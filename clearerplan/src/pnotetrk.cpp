@@ -43,16 +43,26 @@ const PChar_t kNotifyDescriptions[kNumNotifyTypes]={
         "NONE",
         "WARN",
         "ERR",
-        "INFO"
+        "INFO",
+        "ProgrammingERR", /* most prolly developer's fault */
+
+        /* triggered by a paranoid check which should always be false */
+        "FATAL"
 };
 
 
+/* constructor */
 MNotifyTracker::MNotifyTracker()
 {
 }
 
+/* destructor 
+ * FIXME: it doesn't seem to be called when doing a `return' from main() */
 MNotifyTracker::~MNotifyTracker()
 {
+        /* show them all if we didn't got the chance */
+        if (GetLastNote()) 
+                ShowAllNotes();
 }
 
 /* adds a notification and checks to see if we failed to properly add it
@@ -65,7 +75,7 @@ void CheckedAddNote(
                 const Line_t a_Line)
 {
         
-        Bool_t tmpres=gNotifyTracker->AddUserNote(a_NotifyType,
+        EBool_t tmpres=gNotifyTracker->AddUserNote(a_NotifyType,
                                                 a_Desc,
                                                 a_FileName,
                                                 a_Func,

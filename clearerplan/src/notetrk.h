@@ -37,7 +37,7 @@
 typedef enum { 
         kFalse=0, 
         kTrue=1 
-} Bool_t;
+} EBool_t;
 
 typedef char * PChar_t;
 
@@ -116,7 +116,7 @@ public:
         TNotify();
         virtual ~TNotify();
         /* adds a new notification to the list with data provided by params */
-        Bool_t AddUserNote(
+        EBool_t AddUserNote(
                         const NotifyType_t a_NotifyType,
                         PChar_t a_Desc,
                         File_t a_FileName, 
@@ -125,7 +125,7 @@ public:
         
         /* adds a new notification to list with predefined contents */
         /* mostly used internally */
-        Bool_t AddNote(const NotifyItem_st &a_NewNote);
+        EBool_t AddNote(const NotifyItem_st &a_NewNote);
         
         
         /* returns pointer to the last notification, or NULL if list is empty */
@@ -147,7 +147,7 @@ public:
         /* empties the list of notes unconditionally ie. clear all notes */
         void PurgeThemAll();
 
-        Bool_t HasFailedInternally(){ 
+        EBool_t HasFailedInternally(){ 
                 if (fInternalFailed==kTrue) 
                         return kTrue;
                 return kFalse;
@@ -157,7 +157,7 @@ public:
         Counter_t GetNumNotes(){ return fHowMany; };
 
 private:
-        Bool_t Add2List(NotifyItem_st *a_What);
+        EBool_t Add2List(NotifyItem_st *a_What);
 
         /* accessor functions for counting/retrieving the number of notes */
         void SetNoNotes(){ fHowMany=0; };

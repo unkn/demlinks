@@ -31,6 +31,8 @@
 
 #include <stdio.h>
 
+#define PARANOID_CHECKS
+
 #include "pnotetrk.h"
 
 void One(int);
@@ -38,16 +40,16 @@ void One(int);
 void Two(int i)
 {
         if (i>6) {
-                ERR(reached a stop);
+                ERR(reached a stop)
                 return;
         }
-        INFO_IF(i>=3);
+        INFO_IF(i>=3,);
         One(++i);
 }
 
 void One(int i)
 {
-        WARN_IF(!i);
+        WARN_IF(!i,);
         Two(++i);
 }
 
@@ -55,15 +57,18 @@ int main()
 {
         InitNotifyTracker();
 
-        WARN_IF(1-1==3-2-1)
-        WARN_IF(1)
+        WARN_IF(1-1==3-2-1,)
+        WARN_IF(1,)
         
         printf("before trap\n");
         TRAP(0);
         printf("after trap\n");
 
-        INFO_IF(2)
-        ERR_IF(3)
+        INFO_IF(2,)
+        PERR_IF(3,)
+        PARANOID_IF(2==2,
+                delete gNotifyTracker;
+                return 1);
 
         ShowAllNotifications();
         One(0);

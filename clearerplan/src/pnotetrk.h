@@ -39,7 +39,17 @@ enum ENotifyTypes {
         kNotify_Warn,
         kNotify_Err,
         kNotify_Info,
+        
+        /* the developer used certain statements under a disconnected situation
+         * ie. using flush() without having the file opened, or using a NULL
+         * pointer, to put data into */
+        kNotify_ProgrammingError,
 
+        /* this signals that a paranoid check on a condition was true, 
+         * if so then is considered fatal ;) since the condition is expected
+         * always to be false (*doh* paranoid) */
+        kNotify_Paranoid,
+        
         /* last in line*/
         kNumNotifyTypes 
 };
@@ -69,19 +79,74 @@ extern MNotifyTracker *gNotifyTracker;
         gNotifyTracker->ShowAllNotes();         \
 }
 
-/* adds an info to the notify-list if the condition is true */
-#define INFO_IF(a_ConditionalStatement)                          \
+
+/* define this before including this header file in your sources
+ * if defined, turns on the code that does the checks and executes the 
+   statements if the checks are true (see below) */
+#if defined(PARANOID_CHECKS) 
+
+/* adds a paranoia msg to the notify-list if the condition is true 
+ * this usually means that something is going really wrong and this is like
+ * a fatal situation (if the condition is true, of course) */
+#define PARANOID_IF(a_ConditionalStatement,a_MoreStatementsIfTrue)  \
 {                                                               \
         if ((a_ConditionalStatement)) {                         \
-                ADD_NOTE(kNotify_Info,a_ConditionalStatement)    \
+                PARANOID(a_ConditionalStatement)                    \
+                { a_MoreStatementsIfTrue; }                     \
         }                                                       \
 }
 
-/* adds a warning to the notify-list if the condition is true */
-#define WARN_IF(a_ConditionalStatement)                          \
+/* always adds a paranoia-notify to the list, with the passed description */
+#define PARANOID(a_InfoDescription)                 \
+{                                               \
+        ADD_NOTE(kNotify_Paranoid,a_InfoDescription)\
+}
+
+#else //not defined PARANOID_CHECKS
+
+#define PARANOID_IF(a_blah,a_blahblah) /* nada */
+#define PARANOID(a_blah) /* yet again nothing done */
+
+#endif //PARANOID_CHECKS
+
+/* adds an info to the notify-list if the condition is true */
+#define INFO_IF(a_ConditionalStatement,a_MoreStatementsIfTrue)  \
 {                                                               \
         if ((a_ConditionalStatement)) {                         \
-                ADD_NOTE(kNotify_Warn,a_ConditionalStatement)    \
+                INFO(a_ConditionalStatement)                    \
+                { a_MoreStatementsIfTrue; }                     \
+        }                                                       \
+}
+
+/* always adds an INFO to the list, with the passed description */
+#define INFO(a_InfoDescription)                 \
+{                                               \
+        ADD_NOTE(kNotify_Info,a_InfoDescription)\
+}
+
+
+/* adds a warning to the notify-list if the condition is true */
+#define WARN_IF(a_ConditionalStatement,a_MoreStatementsIfTrue)  \
+{                                                               \
+        if ((a_ConditionalStatement)) {                         \
+                WARN(a_ConditionalStatement)                    \
+                { a_MoreStatementsIfTrue; }                     \
+        }                                                       \
+}
+
+/* always adds a WARN to the list, with the passed description */
+#define WARN(a_WarnDescription)                 \
+{                                               \
+        ADD_NOTE(kNotify_Warn,a_WarnDescription)\
+}
+
+
+/* adds an error to the notify-list if the condition is true */
+#define ERR_IF(a_ConditionalStatement,a_MoreStatementsIfTrue)   \
+{                                                               \
+        if ((a_ConditionalStatement)) {                         \
+                ERR(a_ConditionalStatement)                     \
+                { a_MoreStatementsIfTrue; }                     \
         }                                                       \
 }
 
@@ -91,16 +156,24 @@ extern MNotifyTracker *gNotifyTracker;
         ADD_NOTE(kNotify_Err,a_ErrorDescription)\
 }
 
-/* adds an error to the notify-list if the condition is true */
-#define ERR_IF(a_ConditionalStatement)                          \
+/* adds a programming-error to the notify-list if the condition is true 
+ * and optionally executes more statements if so */
+#define PERR_IF(a_ConditionalStatement,a_MoreStatementsIfTrue)  \
 {                                                               \
         if ((a_ConditionalStatement)) {                         \
-                ERR(a_ConditionalStatement)                     \
+                PERR(a_ConditionalStatement)                    \
+                { a_MoreStatementsIfTrue; }                     \
         }                                                       \
 }
 
+/* always adds a programming-error to the list, with the passed description */
+#define PERR(a_ErrorDescription)                 \
+{                                               \
+        ADD_NOTE(kNotify_ProgrammingError,a_ErrorDescription)\
+}
 
-/* adds a notification to the list */
+
+/* adds a notification to the list, generic use */
 #define ADD_NOTE(a_NotifyType, a_Cause)                         \
 {                                                               \
         CheckedAddNote( a_NotifyType,                           \
@@ -113,11 +186,11 @@ extern MNotifyTracker *gNotifyTracker;
 /* adds a notification and checks to see if we failed to properly add it
  * if so displays a message and aborts the running program */
 void CheckedAddNote(   
-                const NotifyType_t a_NotifyType,
-                PChar_t a_Desc,
-                File_t a_FileName,
-                Func_t a_Func,
-                const Line_t a_Line);
+        const NotifyType_t a_NotifyType,
+        PChar_t a_Desc,
+        File_t a_FileName,
+        Func_t a_Func,
+        const Line_t a_Line);
                 
 void ShutDownNotifyTracker();
 void InitNotifyTracker();

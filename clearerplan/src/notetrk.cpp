@@ -102,7 +102,7 @@ NotifyItem_st * TNotify::MoveOutNote(){
         return tmp;
 }
 
-Bool_t TNotify::Add2List(NotifyItem_st *a_What){
+EBool_t TNotify::Add2List(NotifyItem_st *a_What){
         /* even if we fail something we still have to count this note */
         SetMoreNotes();
         
@@ -121,7 +121,7 @@ Bool_t TNotify::Add2List(NotifyItem_st *a_What){
         return kTrue;
 }
 
-Bool_t TNotify::AddNote(const NotifyItem_st &a_NewNote){
+EBool_t TNotify::AddNote(const NotifyItem_st &a_NewNote){
 /* parameter must already be allocated */
 
         NotifyItem_st *tmp=new NotifyItem_st;
@@ -148,12 +148,12 @@ ifailed:
 
 
 
-Bool_t TNotify::AddUserNote(
-                const NotifyType_t a_NotifyType, 
-                PChar_t a_Desc,
-                File_t a_FileName, 
-                Func_t a_Func, 
-                const Line_t a_Line)
+EBool_t TNotify::AddUserNote(
+        const NotifyType_t a_NotifyType, 
+        PChar_t a_Desc,
+        File_t a_FileName, 
+        Func_t a_Func, 
+        const Line_t a_Line)
 {
         /* static or smth */
         NotifyItem_st tmp;
