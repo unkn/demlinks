@@ -25,7 +25,7 @@ directory = 1411
 #The basix for this are the following:
 # 1. the .exe must identify several atoms internaly, namely the filename, 
 #	directory, size and contents. Example. the atomID with ID=300 will be
-#	an acatom which points to the group containing the word "filename";
+#	an gcatom which points to the group containing the word "filename";
 #	also this atom will be refered first in a group to signal to the .exe
 #	that the group is identifying the filename, size, and contents of the
 #	formerly brought file from outside world (nowadays filesystems)
