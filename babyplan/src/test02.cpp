@@ -48,7 +48,7 @@ int main(){
 
     printf("Erase old files?\n");
     printf("drop anykey to YES or ESC to skip...\n");
-    basic_element c=getch();
+    basic_element c=(basic_element)(getch());
     if (c!=27) {
         unlinkall(_fnames);//so we kill the files we can use strictADDelemental()
     }
@@ -72,6 +72,46 @@ int main(){
     }//while
 
 skipadd:
+    
+    atomID prev=_noID_;
+
+    printf("Attempting to add acatoms to each eatom\n");
+    printf("drop anykey to begin or ESC to skip...\n");
+    if (getch()==27) goto skipacatoms;
+    
+    c=0;
+    while ( !( (kbhit())&&(getch()) ) ){
+        printf("attempt2add ACatom to BE==char(%d)",c);
+        ab_if_error_after_statement(
+        atomID _atomID_typeE=test2->find_atomID_type_E(c);
+        );
+        ab_if_error_after_statement(
+        atomID bebe=test2->strict_add_atom_type_AC(_atomID_typeE,_noID_,prev,_noID_);//only used with unlink()
+        );
+        prev=bebe;//at this point we have prev bebe->next=_noID_ unless that
+        //funxion updates prev->next to US, which will do! and should DO!
+        printf(" :acatom has: atomID==%ld\n",bebe);
+        if (c++==255) break;
+    }//while
+    
+    printf("Trying to parse chain from the last added acatom\n");
+    printf("drop anykey to begin or ESC to skip...\n");
+    if (getch()==27) goto skipacatoms;
+//`prev' is last atomID which is an acatom type, so we must get this atom's
+//prev&next&type fields and parse by prev, going to next atomID, then repeat
+//until prev=_noID_
+    
+    while ( !( (kbhit())&&(getch()) ) ){
+        atomtypes _ty;
+        atomID next=_noID_;
+        atomID now=prev;
+        ret_ifnot( test2->get_atomID_s_type_prev_next(now,_ty,prev,next) );
+        ret_if( _ty != _AC_atom );//we know we only have acatoms, by now.
+        printf("passing thru type AC w/ atomID==%ld\n",now);
+        if (prev==_noID_) break;//no more prev items
+    }//while
+
+skipacatoms:
     srand(982);
     printf("Trying find, in random order 256 times takes 5seconds w/optimiz\n");
     printf("drop anykey to begin or ESC to skip...\n");

@@ -47,7 +47,7 @@ dmentalix::~dmentalix(){
 }
 
 
-/*..............*/
+/*______________*/
 #define INIT(_x_) \
     ret_ifnot( if_##_x_##::init(##_x_##fname) )
     
@@ -74,7 +74,7 @@ reterrt dmentalix::init(_declall(const char *,fname))
 /*^^^^^^^^^^^^^^*/
 
 
-/*..............*/
+/*______________*/
 #define DONE(_x_) \
     ret_ifnot( if_##_x_##::shutdown() )
     
@@ -99,7 +99,103 @@ reterrt dmentalix::shutdown(){
 #undef DONE
 /*^^^^^^^^^^^^^^*/
 
-/*..............*/
+/*______________*/
+reterrt dmentalix::get_atomID_s_type_prev_next(const atomID whos_atomID, atomtypes &type, atomID &prev, atomID &next){
+//it also returns error if type=_E_atom since eatoms cannot be parts of chain
+#ifdef WASINITED_SAFETY
+    ret_ifnot(wasinited());//files must be open ~ check
+#endif
+
+    deref_atomID_type _tmpa;
+    ret_ifnot( if_atom::getwithID(whos_atomID,&_tmpa) );
+    ret_if( _tmpa.at_type == _E_atom ); //eatoms can't be chained, use acatoms to them, instead.
+    type=_tmpa.at_type;//set return type, since it's not eatom(handled above^)
+    
+    switch (_tmpa.at_type) {
+        case _GC_atom://get this GCatom in order to see it's prev/next
+                deref_gcatomID_type _gca;
+                ret_ifnot( if_gcatom::getwithID(_tmpa.at_ID,&_gca) );
+                prev=_gca.prevINchain;
+                next=_gca.nextINchain;
+                break;
+        case _AC_atom:
+                deref_acatomID_type _aca;
+                ret_ifnot( if_acatom::getwithID(_tmpa.at_ID,&_aca) );
+                prev=_aca.prevINchain;
+                next=_aca.nextINchain;
+                break;
+        default:
+                ret_ifalways(not dodging atom of unknown type);
+    }//switch
+
+    ret_ok();//all went OK
+}
+/*^^^^^^^^^^^^^^*/
+
+/*______________*/
+atomID dmentalix::strict_add_atom_type_AC(const atomID ptr2what_atomID, const groupID father_groupID, const atomID whosprev_atomID, const atomID whosnext_atomID){//add a new CA
+/*
+    creates a new atom (type CloneAtom) which points to `ptr2what' (initially)
+
+*/
+#ifdef WASINITED_SAFETY
+    ret_ifnot(wasinited());//files must be open ~ check
+#endif
+
+//Invariants() check:
+//if prev!=noID prev.next must be _noID_
+//if next!=noID next.prev must be _noID_
+//note:group can be anything
+//BUT: we must be able to insert this acatom inbetween a chain, so the followin
+//are just temporary rules (those above actually)
+    atomID _prev,_next;
+    atomtypes _type;
+    if (whosprev_atomID != _noID_){
+        ret_ifnot( get_atomID_s_type_prev_next(whosprev_atomID,_type,_prev,_next) );//_E_atom type automaticly handled inside, but we must keep ret_ifnot()
+        ret_if( _next != _noID_ );//prev.next must be _noID_
+    }//fi prev
+    if (whosnext_atomID != _noID_){
+        ret_ifnot( get_atomID_s_type_prev_next(whosnext_atomID,_type,_prev,_next) );
+        ret_if( _prev != _noID_);//next.prev must be _noID_
+    }//fi next
+
+
+//the real thing:
+    deref_atomID_type _atom;
+    if_atom::compose(&_atom,_AC_atom,NULL);
+    atomID father=if_atom::addnew(&_atom);
+    ret_if( father==NULL );//atomID or 0 if failure
+
+
+    deref_acatoms_listID_type _list;
+//compose the new empty list
+    if_acatoms_list::compose(&_list,NULL);//ptr2head=NULL no items in list
+    acatoms_listID listID=if_acatoms_list::addnew(&_list);
+    ret_if(listID==NULL);//return if error ^ somehow list wasn't allocated
+    
+
+    deref_acatomID_type _acatom;
+    if_acatom::compose(&_acatom,father_groupID,whosprev_atomID,whosnext_atomID,listID,ptr2what_atomID);//append/add a new elemental
+    acatomID _acatomID=if_acatom::addnew(&_acatom);//create the new acatom
+    ret_if( _acatomID==NULL );//quit if failed to create it
+    
+    _atom.at_ID=_acatomID;//err...
+    ret_ifnot( if_atom::writewithID(father,&_atom) );//exchange contents of atomID, with the new contents from &_atom
+//so by this line, we've successfuly added a new atomID which has a new
+//acatomID and a new acatoms_listID with no acatomslist_itemID in that list
+//and has a father_groupID (points upwards) and it(acatom) may be a part of
+//a chain of other atoms, prev and next in a list.
+//HOWEVER, we must add into `ptr2what_atomID' 's list the fact that this
+//`father' acatom we created points to it, we do this on the following lines:
+//FIXME: do as above
+//also FIXME:: we have to go to prevatomID and nextatomID and if not _noID_
+//  we should update that atom's next resp. prev to point to US
+
+    return father; //returns atomID, NOT acatomID
+}
+/*^^^^^^^^^^^^^^*/
+
+/*______________*/
 atomID dmentalix::strict_add_atom_type_E(const basic_element BE){//no check, imperativeADD!
 /* adds the eatom, even if it exists! thus adds a new atom too*/
 #ifdef WASINITED_SAFETY
@@ -127,7 +223,7 @@ atomID dmentalix::strict_add_atom_type_E(const basic_element BE){//no check, imp
 /*^^^^^^^^^^^^^^*/
 
 
-/*..............*/
+/*______________*/
 atomID dmentalix::try_add_atom_type_E(const basic_element BE){
 /* adds the atom which is an eatom type and hass all the stuff in it like
 an empty eatoms_list which points to nothing in eatomslist_item
@@ -154,7 +250,7 @@ an empty eatoms_list which points to nothing in eatomslist_item
 }
 /*^^^^^^^^^^^^^^*/
 
-/*..............*/
+/*______________*/
 eatomID dmentalix::strict_addelemental(const atomID whosmy_atomID, const basic_element thenewbe){//no check, appendnew!
 /* this funx adds a new eatomID with the spec `thenewbe' basic_element, w/o
     checking if it already exists;
@@ -193,7 +289,7 @@ while this funx is used for speed(dramatical increase), it also can be very
 }
 /*^^^^^^^^^^^^^^*/
 
-/*..............
+/*______________
 eatomID dmentalix::get_eatomID_of_elemental(const basic_element seekBE){
     ret_ifnot(wasinited());//files must be open ~ check
 
@@ -201,7 +297,7 @@ eatomID dmentalix::get_eatomID_of_elemental(const basic_element seekBE){
 }
 ^^^^^^^^^^^^^^*/
 
-/*..............*/
+/*______________*/
 eatomID dmentalix::try_newelemental(const atomID whosmy_atomID, const basic_element thenewbe){//a new eatom?!
 /*
   when adding a new eatom by basic_element, we must check if this basic_elem

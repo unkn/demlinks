@@ -51,6 +51,7 @@ public:
 
 extern uderrtrk *etracker;
 
+#define ret_ifalways(_i) gret_ifalways(etracker,"DEADEND:",_i,"")
 #define ret_if(_i) gret_if(etracker,"TRUE:",_i,"")
 #define ret_ifnot(_i) gret_ifnot(etracker,"FALSE:",_i,"")
 #define ab_if(_a) gab_if(etracker,"TRUE:",_a,"")

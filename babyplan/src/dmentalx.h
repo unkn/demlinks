@@ -100,6 +100,9 @@ public:
     atomID strict_add_atom_type_E(const basic_element BE);//no check, imperativeADD!
     atomID find_atomID_type_E(const basic_element BE);//only ID is returned
     
+    atomID strict_add_atom_type_AC(const atomID ptr2what, const groupID father_groupID, const atomID whosprev_atomID, const atomID whosnext_atomID);//add a new CA
+    reterrt get_atomID_s_type_prev_next(const atomID whos_atomID, atomtypes &type, atomID &prev, atomID &next);//it also returns error if type=_E_atom since eatoms cannot be parts of chain
+
 private:
     eatomID try_newelemental(const atomID whosmy_atomID, const basic_element thenewbe);//a new eatom?!with check
     eatomID strict_addelemental(const atomID whosmy_atomID, const basic_element thenewbe);//no check, appendnew!

@@ -60,6 +60,9 @@
                 __func__,\
                 __LINE__\
             )
+#define gret_ifalways(zt,prefix,_i,sufix) {\
+        _do_me(zt,prefix,_i,sufix);\
+    }
 #define gret_if(zt,prefix,_i,sufix) {\
     if ((_i)) {\
         _do_me(zt,prefix,_i,sufix);\
