@@ -44,6 +44,11 @@
 #include "ea_list.h"
 #include "eal_item.h"
 
+/* PRIVATE DEFINES */
+//#define WASINITED_SAFETY //always check if was inited before operating
+//#define PRIVATE_PARANOIA_CHECKS //some Invariants() alike checks
+/* end of PRIVATE DEFINES */
+
 #define unlinkall(...) _unlinkall(__VA_ARGS__)
 #define _unlinkall(_1,_2,_3,_4,_5,_6,_7,_8,_9,_10,_11) \
     unlink(_1);unlink(_2);unlink(_3);unlink(_4);unlink(_5);\
@@ -82,8 +87,10 @@ class dmentalix :
         ,private if_eatom
         ,private if_eatoms_list, private if_eatomslist_item
 {
-private:
+#ifdef WASINITED_SAFETY
+protected:
     int inited;
+#endif
 public:
     dmentalix::dmentalix();
     dmentalix::~dmentalix();
@@ -99,9 +106,12 @@ private:
 //    eatomID get_eatomID_of_elemental(const basic_element seekBE);
 
 //other set
-    void setinited(){ inited=_yes_; };//axexor funx
+#ifdef WASINITED_SAFETY
+private:
+    int wasinited() const { if (inited==_yes_) return _yes_; return _no_; }
+    void setinited(){ inited=_yes_; };
     void setdeinited(){ inited=_no_; };
-    int wasinited(){ if (inited==_yes_) return _yes_; return _no_; };
+#endif
 };
 
 

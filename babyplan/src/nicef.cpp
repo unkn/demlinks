@@ -39,6 +39,11 @@
 
 #include "nicef.h"
 
+/* PRIVATE DEFINES */
+//#define NOERRORTRACKER //speed w/o safety ; no ret_if() / ret_ifnot()
+#define EXACT_ERRORS_PLUS_A_BIT_OF_PARANOIA //don't set this, unless u want to see if seekto() far
+/* end of PRIVATE DEFINES */
+
 /* PRIVATE MACROS */
 #ifdef NOERRTRACKER
     #define sret_if(_a_) _a_
@@ -77,20 +82,14 @@ long nicefi::getnumrecords(){//how many records are now
 }
 
 reterrt nicefi::writerec(const long recno, const void * from){//recsize bytes
-#ifdef ISOPEN_SAFETY
-    sret_ifnot(isopened());
-#endif
-    seekto(recno);
+    sret_ifnot(seekto(recno));
     sret_if(recsize != write(fhandle,from,recsize));
     ret_ok();
 }
 
 reterrt nicefi::readrec(const long recno, void *  into){
 //recsize bytes
-#ifdef ISOPEN_SAFETY
-    sret_ifnot(isopened());
-#endif
-    seekto(recno);
+    sret_ifnot(seekto(recno));
     sret_if(recsize != read(fhandle,into,recsize));
     ret_ok();
 }
@@ -146,12 +145,15 @@ long nicefi::recnum2ofs(const long recnum){
 
 reterrt nicefi::seekto(const long recno){
 #ifdef ISOPEN_SAFETY
-    sret_ifnot(isopened());
+    sret_ifnot(isopened()); //this is used inside read/write too, from seekto()
 #endif
     sret_if(fhandle<=0);//if not open;
     sret_if(recno<=0);//cannot be 0 or less
     sret_if(headersize< 0);
     sret_if(recsize<=0);
+#ifdef EXACT_ERRORS_PLUS_A_BIT_OF_PARANOIA
+    sret_if(recno>getnumrecords()+1);//attempting to seek +2, no can do!
+#endif
     long exactofs=recnum2ofs(recno);
     sret_if( exactofs != lseek(fhandle,exactofs,SEEK_SET) );
 

@@ -34,7 +34,9 @@
 #include "dmentalx.h"
 
 dmentalix::dmentalix(){
+#ifdef WASINITED_SAFETY
     setdeinited();
+#endif
 }
 
 dmentalix::~dmentalix(){
@@ -59,7 +61,9 @@ reterrt dmentalix::init(_declall(const char *,fname))
     INIT(gcatoms_list);
     INIT(gcatomslist_item);
 
+#ifdef WASINITED_SAFETY
     setinited();
+#endif
     ret_ok();
 }
 #undef INIT
@@ -83,7 +87,9 @@ reterrt dmentalix::shutdown(){
     DONE(gcatoms_list);
     DONE(gcatomslist_item);
 
+#ifdef WASINITED_SAFETY
     setdeinited();
+#endif
     ret_ok();
 }
 #undef DONE
@@ -92,7 +98,9 @@ reterrt dmentalix::shutdown(){
 /*..............*/
 atomID dmentalix::strict_add_atom_type_E(const basic_element BE){//no check, imperativeADD!
 /* adds the eatom, even if it exists! thus adds a new atom too*/
+#ifdef WASINITED_SAFETY
     ret_ifnot(wasinited());//files must be open ~ check
+#endif
 
 //we create a new atom with type E, with a NULL eatomID because we don't have
 //it yet. We need to create the atom first, because we will pass its atomID
@@ -120,16 +128,22 @@ atomID dmentalix::try_add_atom_type_E(const basic_element BE){
 /* adds the atom which is an eatom type and hass all the stuff in it like
 an empty eatoms_list which points to nothing in eatomslist_item
 */
+#ifdef WASINITED_SAFETY
     ret_ifnot(wasinited());//files must be open ~ check
+#endif
 //try and see if BE already exists
     
     deref_eatomID_type dood;
     eatomID _exist=if_eatom::find_eatom(&dood,BE);
     if (_exist){ //if already exists then we must return the atomID
+#ifdef PRIVATE_PARANOIA_CHECKS
         atomID &atomIDof_eatom=dood.ptrback2atomID_for_faster_search_when_single;
         ret_ifnot(atomIDof_eatom>=0);//invalid atomID? just checking!
         //atomID must be valid, or entire **** was compromised, prior to calling this func
         return atomIDof_eatom;//ok, do it ~ return it, it's ok as in, > 0
+#else
+        return dood.ptrback2atomID_for_faster_search_when_single;
+#endif
     }//fi
 //if we're here, the BE doesn't exist, thus we create it
     return strict_add_atom_type_E(BE);
@@ -145,7 +159,10 @@ while this funx is used for speed(dramatical increase), it also can be very
  there cannot be any two eatoms that have the same basic_element;
  B_E is uniq!!
 */
+#ifdef WASINITED_SAFETY
     ret_ifnot(wasinited());//files must be open ~ check
+#endif
+
     ret_if(whosmy_atomID==NULL);
 
     //we gotta add a new element here:
@@ -188,7 +205,10 @@ doesn't already exist.
   either way we must return eatomID, or 0 if error ( 0==_no_ and eatomID type
 is compatible with reterrt type, thus we can properly use errortracker)
 */
+#ifdef WASINITED_SAFETY
     ret_ifnot(wasinited());//files must be open ~ check
+#endif
+
     ret_if(whosmy_atomID==NULL);
 
     eatomID got_eatomID;
@@ -204,7 +224,9 @@ is compatible with reterrt type, thus we can properly use errortracker)
 /*^^^^^^^^^^^^^^*/
     
 atomID dmentalix::find_atomID_type_E(const basic_element BE){//only ID is returned
+#ifdef WASINITED_SAFETY
     ret_ifnot(wasinited());//files must be open ~ check
+#endif
     
     eatomID got_eatomID;
     deref_eatomID_type eatom;
@@ -215,10 +237,14 @@ atomID dmentalix::find_atomID_type_E(const basic_element BE){//only ID is return
     }
 
     //so we got it...
+#ifdef PRIVATE_PARANOIA_CHECKS
     //some paranoia checks:
     atomID &tmp_atomID=eatom.ptrback2atomID_for_faster_search_when_single;
     ret_ifnot(tmp_atomID>=0);
     return tmp_atomID;
+#else
+    return eatom.ptrback2atomID_for_faster_search_when_single;
+#endif
 }
 /*^^^^^^^^^^^^^^*/
 

@@ -34,7 +34,6 @@
 
 #include "petrackr.h"
 /* PRIVATE DEFINES */
-#define NOERRORTRACKER //speed w/o safety ; no ret_if() / ret_ifnot()
 //#define ISOPEN_SAFETY //alwayscheck if we opened the file prior to operations.
 /* end of PRIVATE DEFINES */
 

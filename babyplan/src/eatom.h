@@ -40,18 +40,21 @@
 
 /* PRIVATE DEFINES */
 //#define WASINITED_SAFETY //always check if was inited before operating
+//#define CHECK_howmany_FUNX //places checks on howmany() which aren't quite needed
+//#define USE_PARTS_AND_SPLIT_AREA_OF_FIND_experimental //used with find*
+#define TRY_OPTIMIZED_GUESS_FIND_first //try this rule(z): eatomID==basic_element+1 thus we might find them soo fast
 /* end of PRIVATE DEFINES */
 
 class if_eatom:public nicefi {
 #ifdef WASINITED_SAFETY
 protected:
-    int inited;                 
+    int inited;
 #endif
 private:
-    const long its_recsize;      
+    const long its_recsize;
 public:                           
-    if_eatom();                    
-    ~if_eatom();                    
+    if_eatom();
+    ~if_eatom();
     reterrt init(const char *fname);    
     reterrt getwithID(const eatomID whateatomID, deref_eatomID_type *into);
     reterrt writewithID(const eatomID whateatomID, const deref_eatomID_type *from);

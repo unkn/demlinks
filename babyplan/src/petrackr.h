@@ -50,16 +50,22 @@ public:
 };
 
 extern uderrtrk *etracker;
-#define ret_if_error_after_statement(_state)\
-    etracker->clearlastfunxerr();\
-    _state;\
-    ret_if(etracker->asks_if_last_funx_had_an_error());
 
 #define ret_if(_i) gret_if(etracker,"TRUE:",_i,"")
 #define ret_ifnot(_i) gret_ifnot(etracker,"FALSE:",_i,"")
 #define ab_if(_a) gab_if(etracker,"TRUE:",_a,"")
 #define ab_ifnot(_a) gab_ifnot(etracker,"FALSE:",_a,"")
 #define ret_ok() gret_ok(etracker)
+
+#define ret_if_error_after_statement(_state)\
+    etracker->clearlastfunxerr();\
+    _state;\
+    gret_if(etracker,"",etracker->asks_if_last_funx_had_an_error()," last funx is: `"#_state##"'");
+
+#define ab_if_error_after_statement(_state)\
+    etracker->clearlastfunxerr();\
+    _state;\
+    gab_if(etracker,"",etracker->asks_if_last_funx_had_an_error()," last funx is: `"#_state##"'");
 
 void deinit_error_tracker();
 void init_error_tracker();

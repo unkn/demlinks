@@ -46,35 +46,69 @@ int main(){
     test2=new dmentalix;
     ab_ifnot(test2);
 
-    unlinkall(_fnames);//so we kill the files we can use strictADDelemental()
+    printf("Erase old files?\n");
+    printf("drop anykey to YES or ESC to skip...\n");
+    basic_element c=getch();
+    if (c!=27)
+        unlinkall(_fnames);//so we kill the files we can use strictADDelemental()
+
     ab_ifnot(test2->init(_fnames));
 
-    int c;
-    c=0;
-    while (
-            ( (int)(c) <256 ) 
-            &&
-            ( !( (kbhit())&&(getch()) ) )
-        ){
-        printf("attempting to add basic_elemnt==char(%d)",c);
-        atomID bebe=test2->strict_add_atom_type_E((basic_element)(c));//only used with unlink()
-        ab_ifnot(bebe);
-        printf(" :has: atomID==%ld\n",bebe);
-        c++;
-    }//while
+    if (c==27) goto skipadd;
+
+    printf("Attempting to add eatoms with BE#0..#255 takes 15seconds\n");
+    printf("drop anykey to begin or ESC to skip...\n");
+    if (getch()==27) goto skipadd;
     
-    while (
-            ( (int)(c) >=0 )
-            &&
-            ( !( (kbhit())&&(getch()) ) )
-        ){
-        printf("find atomID of a type E atom (eatom) that has basic_elem #%d",c);
-        atomID elder=test2->find_atomID_type_E(c);
+    c=0;
+    while ( !( (kbhit())&&(getch()) ) ){
+        printf("attempting to add basic_elemnt==char(%d)",c);
+        ab_if_error_after_statement(
+        atomID bebe=test2->strict_add_atom_type_E(c);//only used with unlink()
+        );
+        //ab_ifnot(bebe);
+        printf(" :has: atomID==%ld\n",bebe);
+        if (c++==255) break;
+    }//while
+
+skipadd:
+    srand(982);
+    printf("Trying find, in random order 256 times takes 5seconds w/optimiz\n");
+    printf("drop anykey to begin or ESC to skip...\n");
+    if (getch()==27) goto skiprnd;
+    
+    c=0;
+    while ( !( (kbhit())&&(getch()) ) ){
+        c--;
+        basic_element d=(basic_element)(rand());//no warnings
+        printf("cnt %d find atomID of eatom with BE#%d",c,d);
+        ab_if_error_after_statement(
+        atomID elder=test2->find_atomID_type_E(d);
+        );
         if (elder==0) printf(" not found!\n");
         else printf(" :atomIDis: %ld\n",elder);
-        c--;
+        if (c==0) break;
     }//while2
 
+skiprnd:
+    printf("Trying find, in backward order, takes 5secs w/optimiz\n");
+    printf("drop anykey to begin or ESC to skip...\n");
+    if (getch()==27) goto skipord;
+
+    c=0;
+    while ( !( (kbhit())&&(getch()) ) ){
+        c--;
+        printf("find atomID of a type E atom (eatom) that has basic_elem #%d",c);
+        ab_if_error_after_statement(
+        atomID elder=test2->find_atomID_type_E(c);
+        );
+        if (elder==0) printf(" not found!\n");
+        else printf(" :atomIDis: %ld\n",elder);
+        if (c==0) break;
+    }//while3
+
+
+skipord:
     ab_ifnot(test2->shutdown());
     delete test2;
 
