@@ -56,6 +56,7 @@ public:
         deref_groupID_type *into,
         const atomID ptr2atom_head_of_chain,
         const gcatoms_listID ptr2list_of_gcatoms
+        //list of gcatoms that point to US(=group)
     );
 };//class
 

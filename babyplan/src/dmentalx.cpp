@@ -166,11 +166,13 @@ reterrt dmentalix::get_atomID_s_type_prev_next(const atomID whos_atomID, atomtyp
 
     ret_ok();//all went OK
 }
+/*^^^^^^^^^^^^^^*/
 
 
+/*______________*/
 atomID dmentalix::strict_add_atom_type_AC_after_prev(const atomID ptr2what_atomID, const groupID father_groupID, const atomID whosprev_atomID){//add a new CA
 /*
-    creates a new atom (type CloneAtom) which points to `ptr2what' (initially)
+    creates a new atom (type AtomClone) which points to `ptr2what' (initially)
     prev/group can be anything
     if prev is _noID_ then this is the first atom in list
     else US.next=prev.next;
@@ -212,7 +214,7 @@ atomID dmentalix::strict_add_atom_type_AC_after_prev(const atomID ptr2what_atomI
 //`father' acatom, we created, points to it, we do this on the following
 //line:
 //add father as an item to the list of thos which point to `ptr2what_atomID'
-    ret_ifnot( add_atomID_to_clone_list(father,ptr2what_atomID) );
+    ret_ifnot( add_atomID_to_clone_list_of_atom(father,ptr2what_atomID) );
 //also DONE:: we have to go to prevatomID we should update that atom's next
 //to point to US
 
@@ -233,7 +235,89 @@ atomID dmentalix::strict_add_atom_type_AC_after_prev(const atomID ptr2what_atomI
 /*^^^^^^^^^^^^^^*/
 
 /*______________*/
-reterrt dmentalix::add_atomID_to_clone_list(const atomID what2add_atomID, const atomID whos_atomID){
+atomID dmentalix::strict_add_atom_type_GC_after_prev(const groupID ptr2what_groupID, const groupID father_groupID, const atomID whosprev_atomID){//add a new CA
+/*
+    creates a new atom (type GroupClone) which points to group `ptr2what' (initially)
+    prev/group can be anything
+    if prev is _noID_ then this is the first atom in list
+    else US.next=prev.next;
+        prev.next = US
+        and US.prev=prev;
+        => insert US after prev and before prev.next
+*/
+#ifdef WASINITED_SAFETY
+    ret_ifnot(wasinited());//files must be open ~ check
+#endif
+
+
+//the real thing:
+    deref_atomID_type _atom;
+    if_atom::compose(&_atom,_GC_atom,NULL);
+    atomID father=if_atom::addnew(&_atom);//new GCATOM
+    ret_if( father==NULL );//atomID or 0 if failure
+
+
+    deref_gcatoms_listID_type _list;
+//compose the new empty list
+    if_gcatoms_list::compose(&_list,_noID_);//ptr2head=NULL=_noID_ no items in list
+    gcatoms_listID listID=if_gcatoms_list::addnew(&_list);
+    ret_if(listID==NULL);//return if error ^ somehow list wasn't allocated
+    
+
+    deref_gcatomID_type _gcatom;
+    if_gcatom::compose(&_gcatom,father_groupID,whosprev_atomID,_noID_,listID,ptr2what_groupID);//append/add a new elemental
+    gcatomID _gcatomID=if_gcatom::addnew(&_gcatom);//create the new gcatom
+    ret_if( _gcatomID==NULL );//quit if failed to create it
+    
+    _atom.at_ID=_gcatomID;//err...
+    ret_ifnot( if_atom::writewithID(father,&_atom) );//exchange contents of atomID, with the new contents from &_atom
+//make group know that it's being refered by smbdy
+    ret_ifnot( add_gcatomID_to_clone_list_of_group(father,ptr2what_groupID) );
+//also DONE:: we have to go to prevatomID we should update that atom's next
+//to point to US
+
+    if (whosprev_atomID != _noID_){
+        //so prev atom is not NULL, we have to insert our selves after it
+
+        //we change prev's next to point to us, and remember oldnext=prev.next
+        atomID oldprevnext;
+        ret_ifnot( strict_modif_next(whosprev_atomID,father,&oldprevnext) );
+
+        //we change us.next to point to prev.next (even if prev.next is _noID_
+        ret_ifnot( strict_modif_next(father,oldprevnext,NULL) );
+        //father.prev was changed before(above) to point to prev.
+    }//fi prev
+
+    return father; //returns atomID, NOT acatomID
+}
+/*^^^^^^^^^^^^^^*/
+
+/*______________*/
+reterrt dmentalix::add_gcatomID_to_clone_list_of_group(const gcatomID what2add_gcatomID, const groupID whos_groupID){
+/*
+add gcatomID `what2add' into group `whos'' list of atoms which point to whos
+because only GCatoms can point to groups!
+*/
+#ifdef WASINITED_SAFETY
+    ret_ifnot(wasinited());//files must be open ~ check
+#endif
+    deref_groupID_type _tmpg;
+    ret_ifnot( if_group::getwithID(whos_groupID,&_tmpg) );//get the group
+
+    ret_ifnot(
+        strict_add_one_more_gcatom_to_this_clone_list(\
+            _tmpg.ptr2list_of_gcatoms,\
+            what2add_gcatomID\
+        )
+    );
+
+    
+    ret_ok();//allOK
+}
+/*^^^^^^^^^^^^^^*/
+
+/*______________*/
+reterrt dmentalix::add_atomID_to_clone_list_of_atom(const atomID what2add_atomID, const atomID whos_atomID){
 /* add what2add into whos' list of atoms which point to whos*/
 #ifdef WASINITED_SAFETY
     ret_ifnot(wasinited());//files must be open ~ check

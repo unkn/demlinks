@@ -103,7 +103,8 @@ public:
     atomID strict_add_atom_type_E(const basic_element BE);//no check, imperativeADD!
     atomID find_atomID_type_E(const basic_element BE);//only ID is returned
     
-    atomID strict_add_atom_type_AC_after_prev(const atomID ptr2what, const groupID father_groupID, const atomID whosprev_atomID);//add a new CA after but connected with `whosprev...'
+    atomID strict_add_atom_type_AC_after_prev(const atomID ptr2what_atomID, const groupID father_groupID, const atomID whosprev_atomID);//add a new CA after but connected with `whosprev...'
+    atomID strict_add_atom_type_GC_after_prev(const groupID ptr2what_groupID, const groupID father_groupID, const atomID whosprev_atomID);//add a new CA after but connected with `whosprev...'
 
     reterrt get_atomID_s_type_prev_next(const atomID whos_atomID, atomtypes &type, atomID &prev, atomID &next);//it also returns error if type=_E_atom since eatoms cannot be parts of chain
 
@@ -115,7 +116,9 @@ private:
     reterrt strict_add_one_more_acatom_to_this_clone_list(const acatoms_listID whatlist, const atomID what2add);
     reterrt strict_add_one_more_eatom_to_this_clone_list(const eatoms_listID whatlist, const atomID what2add);
     
-    reterrt add_atomID_to_clone_list(const atomID what2add_atomID, const atomID whos_atomID);
+    reterrt add_gcatomID_to_clone_list_of_group(const gcatomID what2add_gcatomID, const groupID whos_groupID);//only gcatoms poit to groups
+    reterrt add_atomID_to_clone_list_of_atom(const atomID what2add_atomID, const atomID whos_atomID);
+
     eatomID try_newelemental(const atomID whosmy_atomID, const basic_element thenewbe);//a new eatom?!with check
     eatomID strict_addelemental(const atomID whosmy_atomID, const basic_element thenewbe);//no check, appendnew!
 

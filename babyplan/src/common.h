@@ -141,7 +141,7 @@ struct deref_atomID_type {//generally any ATOM.        ATOMS.DAT
 //GROUP
 struct deref_groupID_type { //GROUPS.DAT
     atomID ptr2atom_head_of_chain;//ptr to that ATOM that has .prev=NULL
-    gcatoms_listID ptr2list_of_gcatoms;
+    gcatoms_listID ptr2list_of_gcatoms;//list of gcatoms that point to US(=group)
 };
 
 
