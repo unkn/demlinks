@@ -40,122 +40,6 @@
 #include "dmlcore.h"
 
 /* constructor */
-MElemental::MElemental():
-        /* the size of one record
-         * the contents of one record are the contents of the entire struct */
-        fRecSize(sizeof(Elemental_st)),
-
-        /* FIXME: no header in file
-         * eventually make a user-defined header and checkit on open, write it
-           on create */
-        fHeaderSize(0)
-{
-        SetNotInited();
-}
-
-/* destructor */
-MElemental::~MElemental()
-{
-        if (IsInited())
-                ERR_IF(!DeInit(),);
-}
-
-bool
-MElemental::Init(const char * a_FileName)
-{
-        LAME_PROGRAMMER_IF(IsInited(),
-                        return false);
-        ERR_IF(!TRecordsStorage::Open(a_FileName,fHeaderSize,fRecSize),
-                        return false);
-        SetInited();
-        return true;
-}
-
-bool
-MElemental::DeInit()
-{
-        LAME_PROGRAMMER_IF(!IsInited(),
-                        return false);
-        ERR_IF(!TRecordsStorage::Close(),
-                        return false);
-        SetNotInited();
-        return true;
-}
-
-bool
-MElemental::ReadWithID(
-        const ElementalID_t a_ElementalID,
-        Elemental_st &a_Into)
-{
-        LAME_PROGRAMMER_IF(!IsInited(),
-                        return false);
-        ERR_IF(!TRecordsStorage::ReadRecord(
-                                a_ElementalID,
-                                &a_Into),
-                        return false);
-        return true;
-}
-
-bool
-MElemental::WriteWithID(
-        const ElementalID_t a_ElementalID,
-        const Elemental_st &a_From)
-{
-        LAME_PROGRAMMER_IF(!IsInited(),
-                        return false);
-        ERR_IF(!TRecordsStorage::WriteRecord(
-                                a_ElementalID,
-                                &a_From),
-                        return false);
-        return true;
-}
-
-
-bool
-MElemental::GetLastID(
-                ElementalID_t &a_ElementalID)
-{
-        LAME_PROGRAMMER_IF(!IsInited(),
-                        return false);
-        ERR_IF(kBadRecCount == (a_ElementalID = TRecordsStorage::GetNumRecords()),
-                        return false);
-        return true;
-}
-
-bool
-MElemental::Compose(
-                Elemental_st &a_Elemental_st,
-                const BasicElement_t a_BasicElementData,
-                const ListOfReferrers_ID_t a_ListOfRef2Elemental_ID)
-{
-        LAME_PROGRAMMER_IF(!IsInited(),
-                        return false);
-
-        a_Elemental_st.BasicElementData = a_BasicElementData;
-        a_Elemental_st.ListOfRef2Elemental_ID = a_ListOfRef2Elemental_ID;
-
-        return true;
-}
-
-bool
-MElemental::InitCache(
-                const RecNum_t a_MaxNumRecordsToBeCached)
-{
-        ERR_IF(!TRecordsStorage::InitCache(a_MaxNumRecordsToBeCached),
-                        return false);
-        return true;
-}
-
-
-bool
-MElemental::KillCache()
-{
-        ERR_IF(!TRecordsStorage::KillCache(),
-                        return false);
-        return true;
-}
-
-/* constructor */
 MDementalLinksCore::MDementalLinksCore()
 {
         SetNotInited();
@@ -170,30 +54,57 @@ MDementalLinksCore::~MDementalLinksCore()
 }
 
 bool
-MDementalLinksCore::Init(const char * a_ElementalsFileName)
+MDementalLinksCore::Init(
+                const char * a_ElementalsFileName,
+                const char * a_ListOfRef2Elemental_FileName)
 {
+        LAME_PROGRAMMER_IF(IsInited(),
+                        return false);
+
         ERR_IF(!MElemental::Init(a_ElementalsFileName),
                         return false);
+
+        ERR_IF(!MListOfRef2Elemental::Init(a_ListOfRef2Elemental_FileName),
+                        return false);
+        SetInited();
         return true;
 }
 
 bool
 MDementalLinksCore::InitCache(const RecNum_t a_MaxNumRecordsToBeCached)
 {
+        LAME_PROGRAMMER_IF(!IsInited(),
+                        return false);
+
         ERR_IF(!MElemental::InitCache(a_MaxNumRecordsToBeCached),
                         return false);
-        SetCache();
+        ERR_IF(!MListOfRef2Elemental::InitCache(a_MaxNumRecordsToBeCached),
+                        return false);
+
+        /* check one of those since all are supposed to have the same issue :
+           they react on kDisableCache and we don't want to clone that
+           functionality here */
+        if (MElemental::IsCacheEnabled())
+                SetCache();
+        else
+                SetNoCache();
+
         return true;
 }
 
-
+/* <if something goes wrong, it is chained> */
 bool
 MDementalLinksCore::DeInit()
 {
         LAME_PROGRAMMER_IF(!IsInited(),
                         return false);
+
         ERR_IF(!MElemental::DeInit(),
                         return false);
+
+        ERR_IF(!MListOfRef2Elemental::DeInit(),
+                        return false);
+
         SetNotInited();
         return true;
 }
@@ -201,31 +112,77 @@ MDementalLinksCore::DeInit()
 bool
 MDementalLinksCore::KillCache()
 {
+        LAME_PROGRAMMER_IF(!IsInited(),
+                        return false);
+
         ERR_IF(!MElemental::KillCache(),
+                        return false);
+        ERR_IF(!MListOfRef2Elemental::KillCache(),
                         return false);
         return true;
 }
 
-
+/* elemental specific */
 ElementalID_t
-MElemental::AddNew(
-                const Elemental_st a_Elemental_st)
+MDementalLinksCore::AbsoluteAddBasicElement(
+                const BasicElement_t a_WhatBasicElement)
 {
         LAME_PROGRAMMER_IF(!IsInited(),
                         return kNoElementalID);
 
+        /* create a new empty list of referrers; this list contains referrers to
+           elementals only */
+        /* FIXME: make this in a separate func */
+        ListOfRef2Elemental_st newListOfRef2Elemental_st;
+        ERR_IF(!MListOfRef2Elemental::Compose(
+                                newListOfRef2Elemental_st,
+                                kNoItemID,/* no head, no tail */
+                                kNoItemID),
+                        return kNoElementalID);
+
+        ListOfRef2Elemental_ID_t newListOfRef2Elemental_ID;
+        ERR_IF(!MListOfRef2Elemental::AddNew(newListOfRef2Elemental_st),
+                        return kNoElementalID);
+        /* WARN: after this line we have a lost list if those below fail */
+
+        /* put the data into the elemental struct */
+        Elemental_st newElemental_st;
+        ERR_IF(!MElemental::Compose(
+                                newElemental_st,
+                                a_WhatBasicElement,
+                                newListOfRef2Elemental_ID),
+                        return kNoElementalID);
+
+        /* add the new elemental */
         ElementalID_t newElementalID;
-        ERR_IF(!GetLastID(newElementalID),
+        ERR_IF(kNoElementalID ==
+                        (newElementalID = MElemental::AddNew(newElemental_st)),
                         return kNoElementalID);
 
-        newElementalID++;
-
-        ERR_IF(!WriteWithID(
-                                newElementalID,
-                                a_Elemental_st),
-                        return kNoElementalID);
-
+        /* return its ID */
         return newElementalID;
+}
+
+
+bool
+MDementalLinksCore::GetBasicElementWithID(
+                BasicElement_t &a_IntoBasicElement,
+                const ElementalID_t a_ElementalID
+                )
+{
+        LAME_PROGRAMMER_IF(!IsInited(),
+                        return false);
+
+        Elemental_st elemental_st;
+
+        ERR_IF(!MElemental::ReadWithID(
+                                a_ElementalID,
+                                elemental_st),
+                        return false);
+
+        a_IntoBasicElement=elemental_st.BasicElementData;
+
+        return true;
 }
 
 

@@ -24,59 +24,40 @@
 *
 *  ========================================================================
 *
-* Description: the core of demlinks
+* Description: the part of demlinks which interfaces Elementals
 *
 ****************************************************************************/
 
 
-#ifndef DMLCORE__H
-#define DMLCORE__H
+#ifndef ELEM_____H
+#define ELEM_____H
 
 #include "common.h"
 
-#include "elem.h"
-#include "ref.h"
-#include "item.h"
-#include "list.h"
-#include "list_r2e.h"
-#include "chain.h"
 
-
-/* NOTE: within internal program two things may be needed: the Type and the ID,
-   in order to be able to identify the compound(chain, ref, elemental)
- * if the compound is a Ref, then the Ref type must also be kept 'in mind' */
-
-
-/* Demental Links Core class.
- * this is what u should use */
-class MDementalLinksCore :
-        private MElemental,
-        private MListOfRef2Elemental
-{
+class MElemental : private TRecordsStorage {
 private:
+        /* sizeof Elemental_st struct */
+        const long fRecSize;
+        const long fHeaderSize;
+
         /* true if Init was called and succeded */
         bool fInited;
-
-        /* true if all compounds have Cache enabled (there cannot be any other
-           way: either all have cache or none has cache) */
-        bool fCache;
 public:
         /* constructor */
-        MDementalLinksCore();
+        MElemental();
         /* destructor */
-        ~MDementalLinksCore();
+        ~MElemental();
 
-        /* open the files + init stuff
+        /* open the file + init stuff
          * use this after constructor somewhere */
-        bool Init(
-                        const char * a_ElementalsFileName,
-                        const char * a_ListOfRef2Elemental_FileName);
+        bool Init(const char * a_FileName);
 
-        /* set all compounds to use cache from now on... see recstor.h */
+        /* use cache from now on... see recstor.h */
         bool InitCache(const RecNum_t a_MaxNumRecordsToBeCached);
 
-        /* is cache enabled (for all compounds) */
-        bool IsCacheEnabled() { return fCache;};
+        /* is cache enabled ? */
+        bool IsCacheEnabled() { return TRecordsStorage::IsCacheEnabled();};
 
         /* stop using cache, frees some memory and also flushes the writes */
         bool KillCache();
@@ -86,25 +67,35 @@ public:
            from within it if needed */
         bool DeInit();
 
-        /* adds a new Elemental to the database with the spec BasicElement
-         * doesn't check for existence of BasicElement
-         * only use this if u know what you're doing */
-        ElementalID_t AbsoluteAddBasicElement(
-                        const BasicElement_t a_WhatBasicElement);
+        /* retrieve the record(contents) of an Elemental with the specified ID*/        bool ReadWithID(
+                        const ElementalID_t a_ElementalID,
+                        Elemental_st &a_Into);
 
-        /* returns the data at specified ID */
-        bool GetBasicElementWithID(
-                        BasicElement_t &a_IntoBasicElement,
-                        const ElementalID_t a_ElementalID);
+        /* write by overwritting prev data, the contents at a spec. ID */
+        bool WriteWithID(
+                        const ElementalID_t a_ElementalID,
+                        const Elemental_st &a_From);
+
+        /* who's the last ID in database */
+        bool GetLastID(ElementalID_t &a_ElementalID);
+
+        /* scather the data into the struct, used before Write */
+        bool Compose(
+                        Elemental_st &a_Elemental_st,
+                        const BasicElement_t a_BasicElementData,
+                        const ListOfReferrers_ID_t a_ListOfRef2Elemental_ID);
+
+        /* create a new elemental
+         * ( also creates its list of refferers *doh* )
+         * return its ID or kNoElementalID if failed */
+        ElementalID_t AddNew(const Elemental_st a_Elemental_st);
 
 private:
         bool IsInited() const { return fInited; };
         void SetInited() { fInited = true; };
         void SetNotInited() { fInited = false; };
-        void SetCache() { fCache = true; };
-        void SetNoCache() { fCache = false; };
 };
 
 
 
-#endif /* DMLCore.h dmental links core header */
+#endif

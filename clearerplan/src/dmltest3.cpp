@@ -42,25 +42,33 @@
 
 #if defined(__WATCOMC__)
 #       define CACHE_THIS_MANY_ITEMS 2048
+#else
+#       define CACHE_THIS_MANY_ITEMS kDisableCache
 #endif
-#       define HOW_MANY_ITEMS 2000
+
+#define HOW_MANY_ITEMS 777
 
 #define KEEP_LINES 7
 
 // FIXME: clean-up on Ctrl-C
 
-MElemental *MyElementals;
+MDementalLinksCore *MyDemlinks;
 
-void MyElementalsCleanUp()
+void MyDemlinksCleanUp()
 {
 /* destructing it, makes sure that writes are flushed, ie. when records are
  * cached */
         printf("Been here.");
-        if (MyElementals) {
+        if (MyDemlinks) {
+                if (MyDemlinks->IsCacheEnabled()) {
+                        printf("Flushing writes.");
+                        fflush(stdout);/* not this one */
+                        ERR_IF(!MyDemlinks->KillCache(),);
+                }
+                ERR_IF(!MyDemlinks->DeInit(),);
+                delete MyDemlinks;
+                MyDemlinks = NULL;
                 printf(".. done that.");
-                ERR_IF(!MyElementals->DeInit(),);
-                delete MyElementals;
-                MyElementals = NULL;
         }
         printf("\n");
 }
@@ -69,48 +77,45 @@ int main()
         InitNotifyTracker();
 
 
-        EXIT_IF(!(MyElementals = new MElemental));
+        EXIT_IF(!(MyDemlinks = new MDementalLinksCore));
 
-        atexit(MyElementalsCleanUp);
+        atexit(MyDemlinksCleanUp);
 
         ElementalID_t element;
         unlink("elements.dat");
-        EXIT_IF(!MyElementals->Init("elements.dat"));
+        EXIT_IF(!MyDemlinks->Init("elements.dat","List_R2E.dat"));
 
-#ifdef __WATCOMC__
-        EXIT_IF(!MyElementals->InitCache(CACHE_THIS_MANY_ITEMS));
-#endif
+        EXIT_IF(!MyDemlinks->InitCache(CACHE_THIS_MANY_ITEMS));
         printf("Do we have cache? %s\n",
-                        MyElementals->IsCacheEnabled()==true?"Yes":"No");
+                        MyDemlinks->IsCacheEnabled()==true?"Yes":"No");
 
-        ElementalID_t tmpCount;
-        Elemental_st elemental_s;
+        ElementalID_t tmpElementalID;
 
         for (element = 1; element <= HOW_MANY_ITEMS; element++){
                 if (element % (HOW_MANY_ITEMS / KEEP_LINES) == 0)
                         printf("attempting to write element %d\n",element);
-                EXIT_IF(!MyElementals->Compose(
-                                        elemental_s,
-                                        element % 256,
-                                        kNoListID));
                 EXIT_IF(kNoElementalID ==
-                                (tmpCount = MyElementals->AddNew(elemental_s)));
-                //EXIT_IF(!MyElementals->WriteWithID(element,elemental_s));
-                //EXIT_IF(!MyElementals->GetLastID(tmpCount));
-                EXIT_IF(tmpCount != element);
+                        (tmpElementalID =
+                         MyDemlinks->AbsoluteAddBasicElement(element % 256)) );
+                EXIT_IF(tmpElementalID != element);
         }
 
+        BasicElement_t tmpBasicElement;
         element = 1;
         while (element <= HOW_MANY_ITEMS){
                 if (element % (HOW_MANY_ITEMS / KEEP_LINES) == 0)
                         printf("attempting to read element %d\n",element);
-                EXIT_IF(!MyElementals->ReadWithID(element,elemental_s));
-                ++element;
+                EXIT_IF(!MyDemlinks->GetBasicElementWithID(
+                                        tmpBasicElement,
+                                        element));
+                EXIT_IF(((element % 256) != tmpBasicElement));
+                element++;
         }
 
-        MyElementalsCleanUp();/* maybe we want to kill it earlier than exit */
+        MyDemlinksCleanUp();/* maybe we want to kill it earlier than exit */
 
         ShutDownNotifyTracker();
 
         return EXIT_SUCCESS;
 }
+

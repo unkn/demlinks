@@ -46,7 +46,13 @@ objs =  $(objdir)\dmltest3.obj &
         $(objdir)\notetrk.obj &
         $(objdir)\pnotetrk.obj &
         $(objdir)\recstor.obj &
-        $(objdir)\dmlcore.obj 
+        $(objdir)\dmlcore.obj &
+        $(objdir)\elem.obj &
+        $(objdir)\list.obj &
+        $(objdir)\list_r2e.obj &
+        $(objdir)\ref.obj &
+        $(objdir)\chain.obj &
+        $(objdir)\item.obj
 
 
 # that's all ~ above
