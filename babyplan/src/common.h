@@ -31,7 +31,7 @@
 
 #ifndef __COMMON_H
 #define __COMMON_H
-#pragma pack(1)
+#pragma pack(1) //allign structs at one byte, prior was four
 
 /* NOTE NOTE NOTE : valid IDs are never zero or less */
 //GROUP

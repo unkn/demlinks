@@ -46,14 +46,14 @@
 
 /* PRIVATE DEFINES */
 //#define WASINITED_SAFETY //always check if was inited before operating
-//#define PRIVATE_PARANOIA_CHECKS //some Invariants() alike checks
+#undef WASINITED_SAFETY
 /* end of PRIVATE DEFINES */
 
 #define unlinkall(...) _unlinkall(__VA_ARGS__)
-#define _unlinkall(_1,_2,_3,_4,_5,_6,_7,_8,_9,_10,_11) \
+#define _unlinkall(_1,_2,_3,_4,_5,_6,_7,_8,_9,_10,_11) {\
     unlink(_1);unlink(_2);unlink(_3);unlink(_4);unlink(_5);\
     unlink(_6);unlink(_7);unlink(_8);unlink(_9);unlink(_10);\
-    unlink(_11);
+    unlink(_11);}
    
 /*************preserve the order of operands in all these 3 macros***********/
 #define _general_declall(_prefix,_append,_1,_2,_3,_4,_5,_6,_7,_8,_9,_10,_11) \

@@ -40,9 +40,7 @@
 
 /* PRIVATE DEFINES */
 //#define WASINITED_SAFETY //always check if was inited before operating
-//#define CHECK_howmany_FUNX //places checks on howmany() which aren't quite needed
-//#define USE_PARTS_AND_SPLIT_AREA_OF_FIND_experimental //used with find*
-#define TRY_OPTIMIZED_GUESS_FIND_first //try this rule(z): eatomID==basic_element+1 thus we might find them soo fast
+#undef WASINITED_SAFETY
 /* end of PRIVATE DEFINES */
 
 class if_eatom:public nicefi {

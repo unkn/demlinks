@@ -41,7 +41,7 @@
 
 /* PRIVATE DEFINES */
 //#define NOERRORTRACKER //speed w/o safety ; no ret_if() / ret_ifnot()
-#define EXACT_ERRORS_PLUS_A_BIT_OF_PARANOIA //don't set this, unless u want to see if seekto() far
+//#define EXACT_ERRORS_PLUS_A_BIT_OF_PARANOIA //don't set this, unless u want to see if seekto() far
 /* end of PRIVATE DEFINES */
 
 /* PRIVATE MACROS */

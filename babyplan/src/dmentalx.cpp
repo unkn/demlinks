@@ -33,6 +33,10 @@
 #include "petrackr.h"
 #include "dmentalx.h"
 
+/* PRIVATE DEFINES */
+//#define PRIVATE_PARANOIA_CHECKS //some Invariants() alike checks
+/* end of PRIVATE DEFINES */
+
 dmentalix::dmentalix(){
 #ifdef WASINITED_SAFETY
     setdeinited();

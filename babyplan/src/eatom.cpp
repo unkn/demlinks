@@ -40,6 +40,11 @@
 #include "eatom.h"
 
 
+/* PRIVATE DEFINES */
+//#define CHECK_howmany_FUNX //places checks on howmany() which aren't quite needed
+//#define USE_PARTS_AND_SPLIT_AREA_OF_FIND_experimental //used with find*
+#define TRY_OPTIMIZED_GUESS_FIND_first //try this rule(z): eatomID==basic_element+1 thus we might find them soo fast
+/* end of PRIVATE DEFINES */
 
 eatomID if_eatom::find_basic_element_and_ret_eatomID(const basic_element what2search){
 #ifdef WASINITED_SAFETY

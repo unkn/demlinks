@@ -49,9 +49,10 @@ int main(){
     printf("Erase old files?\n");
     printf("drop anykey to YES or ESC to skip...\n");
     basic_element c=getch();
-    if (c!=27)
+    if (c!=27) {
         unlinkall(_fnames);//so we kill the files we can use strictADDelemental()
-
+    }
+    
     ab_ifnot(test2->init(_fnames));
 
     if (c==27) goto skipadd;
@@ -66,7 +67,6 @@ int main(){
         ab_if_error_after_statement(
         atomID bebe=test2->strict_add_atom_type_E(c);//only used with unlink()
         );
-        //ab_ifnot(bebe);
         printf(" :has: atomID==%ld\n",bebe);
         if (c++==255) break;
     }//while
@@ -115,7 +115,6 @@ skipord:
 //last in line
     deinit_error_tracker();
     printf("\nDone...press key\n");
-//    printf("sizeof(deref_eatomID_type)=%d\n",sizeof(deref_eatomID_type));
     getch();
     return 0;
 }
