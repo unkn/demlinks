@@ -90,6 +90,7 @@ public:
 	reterrt init(_declall(const char *,fname));//open all files
 	eatomID newelemental(const basic_element thenewbe);//a new eatom?!with check
 	eatomID strictADDelemental(const basic_element thenewbe);//no check, appendnew!
+	eatomID get_eatomID_of_elemental(const basic_element seekBE);
 	reterrt shutdown();//close all files
 private:
 	void setinited(){ inited=_yes_; };//axexor funx

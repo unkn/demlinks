@@ -40,6 +40,19 @@
 #include "eatom.h"
 
 long if_eatom::find_basic_element(const basic_element what2search){
+/*
+	this funx is kinda lame because it has to parse all records to see if
+there's such a basic_elemen within the eatoms. Actually we think that we only
+put 256 eatoms (uniq) and there won't be much problem finding them, even tho
+we allocated a long. In the future if all works out we'll change the eatom
+interface and storage in so that it'll resemble with the nicefi:: idea that
+seeking the basic_element #215(for example) will seek to recno #215 and there
+it is. Thus this implies that we have them in consecutive order, so we can't
+have #254 w/o having #253 and all the prev from #0..#252. Thus one may think
+howto add just the eatom's basic_elem #2GB w/o having to create all prev.
+But, we shouldn't generalize the eatoms , they should only be #0..#255 or at
+worse, about hmm, #0..#64KB
+*/
 #ifdef WASINITED_SAFETY
 	ret_ifnot(wasinited());
 #endif

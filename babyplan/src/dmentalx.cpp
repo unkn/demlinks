@@ -122,6 +122,12 @@ while this funx is used for speed(dramatical increase), it also can be very
 	return if_eatom::addnew(&_eatom);//allocate and return ID or error=0
 }
 
+eatomID dmentalix::get_eatomID_of_elemental(const basic_element seekBE){
+	ret_ifnot(wasinited());//files must be open ~ check
+
+	return find_basic_element(seekBE);
+}
+
 eatomID dmentalix::newelemental(const basic_element thenewbe){//a new eatom?!
 /*
   when adding a new eatom by basic_element, we must check if this basic_elem
@@ -133,7 +139,7 @@ is compatible with reterrt type, thus we can properly use errortracker)
 
 	eatomID got_eatomID;
 
-	ret_if_error_after_statement(got_eatomID=find_basic_element(thenewbe));
+	ret_if_error_after_statement(got_eatomID=get_eatomID_of_elemental(thenewbe));
 
 	if (got_eatomID) {
 		return got_eatomID; //return the found eatomID which has `thenewbe'

@@ -36,44 +36,72 @@
 #include "ea_list.h"
 
 long if_eatoms_list::howmany(){ 
+#ifdef WASINITED_SAFETY
+	ret_ifnot(wasinited());
+#endif
 	return nicefi::getnumrecords();
 }
 
 long if_eatoms_list::addnew(const deref_eatoms_listID_type *from){
+#ifdef WASINITED_SAFETY
+	ret_ifnot(wasinited());
+#endif
 	long neweatoms_listID=howmany()+1;
 	writewithID(neweatoms_listID,from);
 	return neweatoms_listID;
 }
 
 reterrt if_eatoms_list::getwithID(const eatoms_listID whateatoms_listID, deref_eatoms_listID_type *into){
+#ifdef WASINITED_SAFETY
+	ret_ifnot(wasinited());
+#endif
 	ret_ifnot(nicefi::readrec(whateatoms_listID,into));
 	ret_ok();
 }
 
 reterrt if_eatoms_list::writewithID(const eatoms_listID whateatoms_listID, const deref_eatoms_listID_type *from){
+#ifdef WASINITED_SAFETY
+	ret_ifnot(wasinited());
+#endif
 	ret_ifnot(nicefi::writerec(whateatoms_listID,from));
 	ret_ok();
 }                                          
 											
 if_eatoms_list::~if_eatoms_list(){
-	if (opened==_yes_) shutdown();
+#ifdef WASINITED_SAFETY //if unset, user must use shutdown() before destruct.
+	if (wasinited())
+		shutdown(); 
+#endif
 }
 
 if_eatoms_list::if_eatoms_list():
 	its_recsize(sizeof(deref_eatoms_listID_type))
 {
-	opened=_no_;
+#ifdef WASINITED_SAFETY
+	setdeinited();
+#endif
 }
 
 reterrt if_eatoms_list::init(const char * fname){
+#ifdef WASINITED_SAFETY
+	ret_if(wasinited());
+#endif
 	ret_ifnot(nicefi::open(fname,0,its_recsize));
-	opened=_yes_;
+#ifdef WASINITED_SAFETY
+	setinited();
+#endif
 	ret_ok();
 }
 
 reterrt if_eatoms_list::shutdown(){
-	if (opened==_yes_) ret_ifnot(nicefi::close());
-	opened=_no_;
+#ifdef WASINITED_SAFETY
+	if (wasinited()) {
+#endif
+		ret_ifnot(nicefi::close());
+#ifdef WASINITED_SAFETY
+		setdeinited();
+	}
+#endif
 	ret_ok();
 }
 

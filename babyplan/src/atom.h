@@ -43,8 +43,11 @@
 /* end of PRIVATE DEFINES */
 
 class if_atom:public nicefi {
-private:                       
+#ifdef WASINITED_SAFETY
+protected:
 	int inited;                 
+#endif
+private:
 	const long its_recsize;      
 public:                           
 	if_atom();                    
@@ -62,7 +65,7 @@ public:
 	);
 #ifdef WASINITED_SAFETY
 private:
-	int wasinited(){ if (inited==_yes_) return _yes_; return _no_; }
+	int wasinited() const { if (inited==_yes_) return _yes_; return _no_; }
 	void setinited(){ inited=_yes_; };
 	void setdeinited(){ inited=_no_; };
 #endif

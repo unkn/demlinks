@@ -63,6 +63,17 @@ int main(){
 		c++;
 	}//while
 
+	while (
+			( (int)(c) >=0 )
+			&&
+			( !( (kbhit())&&(getch()) ) )
+		){
+		printf("attempting to find eatomID that has BE#%d",c);
+		eatomID elder=test2->get_eatomID_of_elemental(c);
+		if (elder==0) printf(" not found!\n");
+		else printf(" :IDis: %ld\n",elder);
+		c--;
+	}//while2
 	
 	ab_ifnot(test2->shutdown());
 	delete test2;

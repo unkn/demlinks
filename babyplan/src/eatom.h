@@ -43,10 +43,11 @@
 /* end of PRIVATE DEFINES */
 
 class if_eatom:public nicefi {
-private:                       
 #ifdef WASINITED_SAFETY
+protected:
 	int inited;                 
 #endif
+private:
 	const long its_recsize;      
 public:                           
 	if_eatom();                    
@@ -62,10 +63,21 @@ public:
 		deref_eatomID_type *into,
 		eatoms_listID ptr2list,
 		basic_element basicelementdata
+	/*one might realize that we don't need to store basic_element, we could
+	interpret the eatomID as being the char, as char(eatomID - 1); however the
+	other, ptr2list item must be stored.
+	  Also we would require that we'd have all eatomIDs preallocated in file,
+	since adding a new #200 ID would require that all #1..#199 IDs be present
+	since we're using seek and eatomID is the recnum
+	  The way the interface is rite now, we could add only #20 and #214 for
+	example, which is what's intended and considered ideal. However to find
+	the basic element #214 in a bunch of 64000 added and uniq basic elements
+	would require significant time.
+	*/
 	);
 #ifdef WASINITED_SAFETY
 private:
-	int wasinited(){ if (inited==_yes_) return _yes_; return _no_; }
+	int wasinited() const { if (inited==_yes_) return _yes_; return _no_; }
 	void setinited(){ inited=_yes_; };
 	void setdeinited(){ inited=_no_; };
 #endif

@@ -38,10 +38,16 @@
 
 #include "common.h"
 
+/* PRIVATE DEFINES */
+//#define WASINITED_SAFETY //always check if was inited before operating
+/* end of PRIVATE DEFINES */
 
 class if_eatoms_list:public nicefi {
+#ifdef WASINITED_SAFETY
+protected:
+	int inited;
+#endif
 private:                       
-	int opened;                 
 	const long its_recsize;      
 public:                           
 	if_eatoms_list();                    
@@ -56,6 +62,12 @@ public:
 		deref_eatoms_listID_type *into,
 		const eatomslist_itemID ptr2head
 	);
+#ifdef WASINITED_SAFETY
+private:
+	int wasinited() const { if (inited==_yes_) return _yes_; return _no_; }
+	void setinited(){ inited=_yes_; };
+	void setdeinited(){ inited=_no_; };
+#endif
 };//class
 
 
