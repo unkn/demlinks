@@ -137,3 +137,8 @@ void PurgeAllNotifications()
                 gNotifyTracker->PurgeThemAll();
 }
 
+void ShowAllNotifications()
+{
+        if (gNotifyTracker)
+                gNotifyTracker->ShowAllNotes();
+}

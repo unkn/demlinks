@@ -85,13 +85,20 @@ extern MNotifyTracker *gNotifyTracker;
         }                                                       \
 }
 
+/* always adds an error to the list, with the passed description */
+#define ERR(a_ErrorDescription)                 \
+{                                               \
+        ADD_NOTE(kNotify_Err,a_ErrorDescription)\
+}
+
 /* adds an error to the notify-list if the condition is true */
 #define ERR_IF(a_ConditionalStatement)                          \
 {                                                               \
         if ((a_ConditionalStatement)) {                         \
-                ADD_NOTE(kNotify_Err,a_ConditionalStatement)    \
+                ERR(a_ConditionalStatement)                     \
         }                                                       \
 }
+
 
 /* adds a notification to the list */
 #define ADD_NOTE(a_NotifyType, a_Cause)                         \
@@ -115,6 +122,7 @@ void CheckedAddNote(
 void ShutDownNotifyTracker();
 void InitNotifyTracker();
 void PurgeAllNotifications();
+void ShowAllNotifications();
 
 
 #endif
