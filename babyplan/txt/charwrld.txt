@@ -1,0 +1,63 @@
+Char-based world (C) 12 March 2005, AtKaaZ , see the file license.txt :-"
+
+well actually is supposed to keep a directory structure with text files 
+but it is char-based.
+
+some theory...
+* a char is an eatom with basic_element=char
+
+* a word is a group with 1+n acatoms, n being the length in chars of the word
+  each acatom points to an eatom, the latter being the tiniest element in this
+  world. But the first acatom will be refering an atom (not saying what type)
+  which will be recognized internally by the program as the _word_
+  specifier. Simply all groups that have the first acatom refering this atom
+  are to be
+  treated as words, and simply wanting the entire list of words would mean
+  to check the list of <those which refer to me> of the atom, and checking if
+  those are first in groups. Similary if one wants the word "filename" it'll
+  perform an AND search of those eatoms ("filename") and see if they all have
+  in common acatoms (refering to them, eatoms) from within the same group,
+  group whos first acatom points to _word_ specifier. However by misprogramming
+  or not respecting the conventions, there could be more than one AND match
+  ie. "filename" could be found in more than one group, which is not allowed.
+  Of course "filenames" and "filename" are two different groups and are allowed
+  to coexist, since when AND matching we do pose some other conditions, such
+  as the group should contain no more than n+1 acatoms and so...
+  In one implementation, one could perhaps cache the number of atoms in a
+  group, since counting them means parsing the chain(we'd like this
+  pro performance, but it's not necessary; besides I cannot imagine howto
+  shadow dmentalix class w/o directly modifing it (ie. not by inheritance),
+  inheriting it and making sure every group operation is sync'd with our fact
+  to store with the group the number of atoms in it, means reparsing the
+  chain after the operation (with the group) was done. So...)
+
+* a separator is like the word above except that it has other atom which is
+  recognized internally as _separator_. Also to make sure, we say that a
+  separator is a group with 1+n acatoms which point to eatoms, n being the
+  length in chars of the separator ie. "  ", "::", "//", "\\", 5 spaces...
+
+* a content is a group with 1 acatom + n gcatoms, n being the length in
+  words+separators of the content ie. "Ana are mere ;)" would be 3 words and
+  3 separators, thus content length is 6, plus the first acatom which points
+  to that atom recognized internaly as _content_ specifier.
+  Content is what a file has. ie. ioana.txt is a file's filename, file whos
+  contents consist of one group _content_ as described above.
+
+* a filename is a group with 2 atoms, first is an acatom refering to that atom
+  recognized internaly as _filename_ specifier, the second is a gcatom refering
+  to a _content_ group.
+* a dirname is the same thing as above with filename,of course except that the
+  internally reconized atom is _dirname_.
+* a file is a group with 3 atoms, first _file_ , second gcatom refering to a
+  _filename_, 3rd a gcatom refering to a _content_ type.
+* a dir_filelist is a group with 1+n atoms, first _dir_filelist_, then gcatoms
+  refering to _file_ types. (this is a list of files only)
+* a dir_dirlist is a group with 1+n atoms, first _dir_dirlist_, then gcatoms
+  refering to _dir_ types. (this is a list of dirs only)
+* a dircontents is a group with 3 atoms, first _dircontents_, second is a
+  gcatom refering to _dir_dirlist_, 3rd to _dir_filelist_ types.
+  (dircontents is 2 lists one of dirs the other of files)
+* a dir is a group with 3 atoms, first _dir_, second _dirname_, and 3rd a
+  _dircontents_ type.
+* _root_ is an internally recognized gcatom refering to a _dir_
+

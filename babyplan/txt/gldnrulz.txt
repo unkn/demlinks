@@ -1,11 +1,8 @@
 dmental links rules:
 1. eatoms are uniq, for example #0..#255 character types, there can't be two
     eatoms with the same #char !!
-2. groups are never refered by the gcatoms contained within a group. One should
-    create a gcatom outside the group (which will be single), and point the
-    former gcatom(within the group) which now becoms an acatom to this single
-    gcatom. This way, we can hm.... IGNORE this rule for now, until we think
-    about it.
+2. it's at least 50% all about conventions, bad rules can make a mess of the
+    world. Links(references/connections), ordered chains and conventions.
 3. eatoms cannot be a part of a chain, they are single, use an acatom that
     refers to an eatom, and make that acatom part of the chain. Also this implies
     that eatoms cannot be part of any group, they cannot be in a group.
@@ -13,3 +10,4 @@ dmental links rules:
    chain (ie. the same atomID cannot be part of two or more chains : for this
    we must make another atomID type AC which refers to our initial atomID and
    then add this to another chain)
+5. no infinite recursions
