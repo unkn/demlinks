@@ -42,7 +42,7 @@ MMixedClass *TheDomain;
 typedef int MyInt_t;
 
 //    '_st' - struct type
-struct What_t {
+struct What_st {
         int FieldOne;
         long SecondVar;
 };

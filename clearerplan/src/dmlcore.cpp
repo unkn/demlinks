@@ -29,6 +29,53 @@
 ****************************************************************************/
 
 
+#include "_gcdefs.h" /* first */
+/* personalized notification tracking capabilities */
+#include "pnotetrk.h"
+
 #include "dmlcore.h"
+
+/* constructor */
+MElemental::MElemental():
+        /* the size of one record
+         * the contents of one record are the contents of the entire struct */
+        fRecSize(sizeof(Elemental_st)),
+
+        /* FIXME: no header in file
+         * eventually make a user-defined header and checkit on open, write it
+           on create */
+        fHeaderSize(0)
+{
+        SetDeInited();
+}
+
+/* destructor */
+MElemental::~MElemental()
+{
+        if (IsInited())
+                ERR_IF(!DeInit(),);
+}
+
+bool
+MElemental::Init(const char * a_FileName)
+{
+        LAME_PROGRAMMER_IF(IsInited(),
+                        return false);
+        ERR_IF(!TRecordsStorage::Open(a_FileName,fHeaderSize,fRecSize),
+                        return false);
+        SetInited();
+        return true;
+}
+
+bool
+MElemental::DeInit()
+{
+        LAME_PROGRAMMER_IF(!IsInited(),
+                        return false);
+        ERR_IF(!TRecordsStorage::Close(),
+                        return false);
+        SetDeInited();
+        return true;
+}
 
 

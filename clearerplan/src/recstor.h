@@ -36,6 +36,22 @@
 #define RECSTOR__H__
 /* file start */
 
+#ifdef __WATCOMC__
+
+/* storage for the largest size in bytes that can be addressed
+ * however since filelength() returns a 'long' we also set this to 'long'
+ * I wanted unsigned long but some funx return -1,not to talk about the above
+ * only for Open Watcom */
+typedef long FileSize_t; /* ranges (on some machines) -2GB..+2GB */
+
+#else /* gcc */
+
+#include <sys/types.h>
+typedef off_t FileSize_t;
+
+#endif /* gcc */
+
+
 
 /* the type/size of all represented RecNum numbers */
 typedef long RecNum_t; /* must be able to accomodate EFixedRecNumConstants */
@@ -48,20 +64,6 @@ typedef long RecCount_t;/* there may be 0 or more records */
 enum {
         kBadRecCount=-1 /* failed in getting a count of the records */
 };
-
-#ifdef __WATCOMC__
-
-/* storage for the largest size in bytes that can be addressed
- * however since filelength() returns a 'long' we also set this to 'long'
- * I wanted unsigned long but some funx return -1,not to talk about the above
- * only for Open Watcom */
-typedef long FileSize_t; /* ranges (on some machines) -2GB..+2GB */
-
-#else /* gcc */
-
-typedef off_t FileSize_t;
-
-#endif /* gcc */
 
 /* in both open watcom C and gcc this is `int' */
 typedef int FileHandle_t;
@@ -104,7 +106,7 @@ typedef enum {
  * items hold records but they are not the records ie. record=user data field
  * an item may also be referd to as 'cache item', and a record may also be
  * called 'cached item' or 'cached record' note the extra 'd' */
-struct CacheItem {
+struct CacheItem_st {
 
         /* the state of the cached record such as Read or Written */
         EItemState_t State;
@@ -117,8 +119,8 @@ struct CacheItem {
         void * Data;//malloc(fRecSize)
 
       /* the Cache items are linked in chain, one can go to prev or next item */
-        CacheItem *Prev;
-        CacheItem *Next;
+        CacheItem_st *Prev;
+        CacheItem_st *Next;
 };
 
 /* a class to handle storage/retrieval of fixed size records into a file
@@ -139,8 +141,8 @@ private:
 
         /* cache stuff */
         RecNum_t        fNumCachedRecords;//in records
-        CacheItem     * fCacheHead;//head of a FIFO unsorted double-linked list
-        CacheItem     * fCacheTail;//tail
+        CacheItem_st  * fCacheHead;//head of a FIFO unsorted double-linked list
+        CacheItem_st  * fCacheTail;//tail
         RecNum_t        fHighestRecNum;//used with getnumrecords()
 
         //how many records to cache (ie. don't yet writ'em to disk)
@@ -159,7 +161,7 @@ public:
         bool Open(const char * a_FileName,
                         const FileSize_t a_HeaderSize,
                         const RecSize_t a_RecSize);
-        /* TODO: we might want to know weather the file was created with Open
+        /* TODO: we might want to know whether the file was created with Open
            or it was just opened as an existing file;
          * and perhaps an option weather to create new file if not exists just
            like O_CREAT, or to create it everytime on Open (ie. zap it 1st). */

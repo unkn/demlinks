@@ -47,7 +47,7 @@ const PChar_t kNotifyDescriptions[kNumNotifyTypes]={
         "INFO",
         "LAMER", /* most prolly developer's fault */
 
-        /* triggered by a paranoid check which should always be false */
+        /* triggered by a paranoid check(which should always be false) */
         "FATAL"
 };
 

@@ -31,10 +31,13 @@
 
 #ifndef DMLCORE__H
 #define DMLCORE__H
+
 #pragma pack(1) //allign structs at one byte, prior was four
 //FIXME: gcc has some other way of doing this, make it so with defining a macro
 //and use it after the struct; ifdef __WATCOMC__ define it to nothing, since
 //watcom does know about pack(1)
+
+#include "recstor.h"
 
 /* NOTE : valid IDs are never zero or less */
 #define kNoID 0L //identifies no valid ID; this must be 0L don't change!!!
@@ -59,14 +62,14 @@ typedef AnyID_t ChainID_t;
 typedef unsigned char ReferrerTypes_t;
 /* this is while the ID is kNoRefID */
 const ReferrerTypes_t kRefToNone='0';
-/* while the ID is of a valid Ref and not kNoRefID; 
+/* while the ID is of a valid Ref and not kNoRefID;
  * apply2the following three: */
 const ReferrerTypes_t kRefToRef='R';
 const ReferrerTypes_t kRefToChain='C';
 const ReferrerTypes_t kRefToElemental='E';
 
 /* NOTE: within internal program two things may be needed: the Type and the ID,
-   in order to be able to identify the compound(chain, ref, elemental) 
+   in order to be able to identify the compound(chain, ref, elemental)
  * if the compound is a Ref, then the Ref type must also be kept 'in mind' */
 
 /* a list; currently while talkin'bout a list we actually talk about a list of
@@ -74,15 +77,16 @@ const ReferrerTypes_t kRefToElemental='E';
 typedef AnyID_t ListOfReferrers_ID_t; /* the ID of the list */
 
 /* Elemental is the base undivisible element of demlinks
- * holds the human language ;) ie. chars from #0 to #255 
- * as said before, elementals cannot be part of a chain, instead use a 
-   Ref2Elemental and put this in a chain ~ the fundamental idea behind demlinks 
+ * holds the human language ;) ie. chars from #0 to #255
+ * as said before, elementals cannot be part of a chain, instead use a
+   Ref2Elemental and put this in a chain ~ the fundamental idea behind demlinks
  */
 
 typedef AnyID_t ElementalID_t;
 typedef unsigned char BasicElement_t;/* for starters limited range #0..#255 */
-struct Elemental_t {
-        /* ie. chars from #0 to #255 OR from #0 to #2GB */
+struct Elemental_st {
+        /* ie. chars from #0 to #255 OR from #0 to #2GB
+         * but here lies only one of those chars */
         BasicElement_t BasicElementData;
 
         /* list of those referrers which point to us, us the elemental */
@@ -94,9 +98,10 @@ struct Elemental_t {
 typedef AnyID_t ItemID_t;/* the ID of the item, the item from the list */
 
 /* a LIST of referrers */
-struct ListOfReferrers_t {
+struct ListOfReferrers_st {
         /* pointer to head item of the list
-         * can be kNoItemID which means there're no items associated with this list
+         * can be kNoItemID which means there're no items associated with
+           this list
          */
         ItemID_t HeadItemID;
         /* pointer to tail item of the list
@@ -118,7 +123,7 @@ typedef AnyReferrerID_t Ref2ChainID_t;
 typedef AnyReferrerID_t Ref2ElementalID_t;
 
 /* this is a referrer, which point(refers) to an Elemental */
-struct Ref2Elemental_t {
+struct Ref2Elemental_st {
         /* the Elemental this referrece refers to */
         ElementalID_t ElementalID;
 
@@ -137,7 +142,7 @@ struct Ref2Elemental_t {
 };
 
 /* this is a referrer, which point(refers) to a Chain */
-struct Ref2Chain_t {
+struct Ref2Chain_st {
         /* the Chain this referrece refers to */
         ChainID_t ChainID;
 
@@ -157,7 +162,7 @@ struct Ref2Chain_t {
 
 /* this is a referrer, which point(refers) to another referrer
  * cannot refer to itself */
-struct Ref2Referrer_t {
+struct Ref2Referrer_st {
         /* the referrer this referrer refers to */
         ReferrerTypes_t ReferrerType;
         AnyReferrerID_t ReferrerID;
@@ -181,7 +186,7 @@ struct Ref2Referrer_t {
  * (it holds the ID of the referrer)
  * it also holds pointers to prev and next items from this list
  * an item can be only in one list */
-struct Item_t {
+struct Item_st {
         /* this ID could be of any of the three Referrer types
          * however the types are not stored, are deduced from those structs
            which use the lists */
@@ -197,7 +202,7 @@ struct Item_t {
  * a chain actually consist of only a head and a tail pointers to first resp.
    last referrers in the chain
  */
-struct Chain_t {
+struct Chain_st {
         /* points to first referrer in chain
          * the chain can temporarily be empty if this and TailID are kNoRefID */
         ReferrerTypes_t HeadReferrerType;
@@ -215,6 +220,41 @@ struct Chain_t {
            stored within that item ie. item.ReferrerID */
 };
 
+/* classes */
 
+class MElemental : private TRecordsStorage {
+private:
+        const long fRecSize;
+        const long fHeaderSize;
+        bool fOpened;
+public:
+        /* constructor */
+        MElemental();
+        /* destructor */
+        ~MElemental();
+
+        /* open the file + init stuff */
+        bool Init(const char * a_FileName);
+
+        /* use cache from now on... see recstor.h */
+        bool InitCache(const RecNum_t a_MaxNumRecordsToBeCached)
+        {
+                TRecordsStorage::InitCache(a_MaxNumRecordsToBeCached);
+        };
+
+        /* stop using cache, frees some memory and also flushes the writes */
+        bool KillCache()
+        {
+                TRecordsStorage::KillCache();
+        };
+
+        /* flush writes and close the file + cleanup stuff */
+        bool DeInit();
+
+private:
+        bool IsInited() const { return fOpened; };
+        void SetInited() { fOpened = true; };
+        void SetDeInited() { fOpened = false; };
+};
 
 #endif /* DMLCore.h dmental links core header */

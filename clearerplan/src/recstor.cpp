@@ -145,7 +145,7 @@ TRecordsStorage::FlushWrites()
 
         /* well we're gonna parse the cache and write all records marked as
          * written, since they haven't been written to disk yet */
-        CacheItem *iterator;
+        CacheItem_st *iterator;
         iterator=fCacheHead;
         while (iterator){
 
@@ -183,7 +183,7 @@ TRecordsStorage::AbsolutelyGetRecordFromCache(
         /* refusing to check weather a_MemDest != NULL, counting the fact that
          * we do call this internally */
 
-        CacheItem *iter=fCacheTail;
+        CacheItem_st *iter=fCacheTail;
         while (iter != NULL){
                 if (iter->RecNum == a_RecNum){//is it this one?
                         memcpy(a_MemDest, iter->Data, fRecSize);
@@ -218,7 +218,7 @@ TRecordsStorage::AddRecordToCache(
         LAME_PROGRAMMER_IF(a_RecNum > 1 + numRec, /* can't seek +2 */
                         return false);
 
-        CacheItem *iter=fCacheTail;//from tail up
+        CacheItem_st *iter=fCacheTail;//from tail up
         while (iter != NULL) {
                 if (iter->RecNum == a_RecNum){
                 //nasty IFs
@@ -285,7 +285,7 @@ TRecordsStorage::AbsolutelyAddRecordToCache(
         PARANOID_IF(fNumCachedRecords > fMaxNumCachedRecords,
                         return false);
 
-        CacheItem *iter;
+        CacheItem_st *iter;
         if (fNumCachedRecords == fMaxNumCachedRecords){
                 /* the cache is full: drop out one item, the elder */
                 /* FIXME: perhaps we should dropout half or full of the cache */
@@ -318,7 +318,7 @@ TRecordsStorage::AbsolutelyAddRecordToCache(
                 delete iter;//kill them all ;)
                 --fNumCachedRecords;
         }//fi
-        iter = new CacheItem;
+        iter = new CacheItem_st;
         ERR_IF(!iter,
                         return false);//not allocated?
 
@@ -433,7 +433,7 @@ TRecordsStorage::KillCache()
                         return false);
 
         while (fCacheHead != NULL){
-                CacheItem *iter = fCacheHead;
+                CacheItem_st *iter = fCacheHead;
                 fCacheHead = iter->Next;
                 free(iter->Data);
                 delete iter;//the value of iter remains
