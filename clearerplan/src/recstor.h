@@ -42,10 +42,24 @@
  * records also (ie. how many records are there) */
 typedef long RecNum_t; /* must be able to accomodate EFixedRecNumConstants */
 
+
+#ifdef __WATCOMC__
+
 /* storage for the largest size in bytes that can be addressed
  * however since filelength() returns a 'long' we also set this to 'long'
- * I wanted unsigned long but some funx return -1,not to talk about the above */
+ * I wanted unsigned long but some funx return -1,not to talk about the above
+ * only for Open Watcom */
 typedef long FileSize_t; /* ranges (on some machines) -2GB..+2GB */
+
+#else /* gcc */
+
+typedef off_t FileSize_t;
+
+/* when filelength() fails internally due to fstat() */
+enum {
+        kInvalidFileSize=-1
+};
+#endif /* gcc */
 
 /* in both open watcom C and gcc this is `int' */
 typedef int FileHandle_t;
@@ -72,10 +86,10 @@ typedef enum {
         kState_Written=2
 } EItemState_t;
 
-/* this is an item in the double linked Cache list 
+/* this is an item in the double linked Cache list
  * items on the cache list are called items ie. item=cached record
- * items hold records but they are not the records ie. record=user data field 
- * an item may also be referd to as 'cache item', and a record may also be 
+ * items hold records but they are not the records ie. record=user data field
+ * an item may also be referd to as 'cache item', and a record may also be
  * called 'cached item' or 'cached record' note the extra 'd' */
 struct CacheItem {
 
@@ -101,7 +115,7 @@ struct CacheItem {
 class TRecordsStorage {
 private:
         /* the handle of the opened file */
-        FileHandle_t             fFileHandle;
+        FileHandle_t    fFileHandle;
 
         /* the size of the header from the file
          * ie. we must skip this many bytes to get to the first record */
@@ -117,7 +131,7 @@ private:
         RecNum_t        fHighestRecNum;//used with getnumrecords()
 
         //how many records to cache (ie. don't yet writ'em to disk)
-        RecNum_t         fMaxNumCachedRecords;// 1024
+        RecNum_t        fMaxNumCachedRecords;// 1024
 
 public:
         TRecordsStorage();
@@ -137,7 +151,7 @@ public:
 
         /* reads a record from storage(file) into memory */
         bool ReadRecord(
-                const RecNum_t a_RecNum, 
+                const RecNum_t a_RecNum,
                 void * a_MemDest);
 
         /* writes a record from memory to storage(file) */

@@ -69,13 +69,14 @@
 #       ifndef filelength
         /* there's no predefined filesize function with clibs , or so... */
 
+/* returns the size in bytes of the already opened file; used internally */
 FileSize_t
 filelength(FileHandle_t a_FileHandle)
 {
-        /* damnit ... I can't believe this shit, there's no filesize/filelength
-         * AND no tell() functions (that use the open() handles *doh* */
-//        FileSize_t prevFTell = tell(a_FileHandle);
-        return 0;//FIXME:
+        struct stat tmpStat;
+        ERR_IF( fstat(a_FileHandle, &tmpStat),
+                        return kInvalidFileSize);
+        return tmpStat.st_size;
 }
 
 #       endif /* filelength */
