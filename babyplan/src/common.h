@@ -140,24 +140,6 @@ struct deref_groupID_type { //GROUPS.DAT
 	gcatoms_listID ptr2list_of_gcatoms;
 };
 
-/*
-#define interface(_what_,moreshit) \
-class if_##_what_##:public nicefi {\
-private:                       \
-	int opened;                 \
-	const long its_recsize;      \
-public:                           \
-	if_##_what_##();                    \
-	~if_##_what_##();                    \
-	reterrt init(const char *fname);    \
-	reterrt getwithID(const _what_##ID what##_what_##ID, deref_##_what_##ID_type *into);\
-	reterrt writewithID(const _what_##ID what##_what_##ID, const deref_##_what_##ID_type *from);\
-	long addnew(const deref_##_what_##ID_type *from); \
-	long howmany();\
-	reterrt shutdown(); \
-	moreshit \
-};
-*/
 
 #define _in2(_w_)\
 	into->##_w_##=##_w_##;
@@ -171,52 +153,6 @@ public:                           \
 #define _5in2(_1,_2,_3,_4,_5)\
 	_3in2(_1,_2,_3);_2in2(_4,_5);
 
-/*
-#define implement(_what_,_more_) \
-long if_##_what_##::howmany(){ \
-	return nicefi::getnumrecords();\
-}\
-\
-long if_##_what_##::addnew(const deref_##_what_##ID_type *from){\
-	long new##_what_##ID=howmany()+1;\
-	writewithID(new##_what_##ID,from);\
-	return new##_what_##ID;\
-}\
-\
-reterrt if_##_what_##::getwithID(const _what_##ID what##_what_##ID, deref_##_what_##ID_type *into){\
-	ret_ifnot(nicefi::readrec(what##_what_##ID,into));\
-	ret_ok();\
-}\
-\
-reterrt if_##_what_##::writewithID(const _what_##ID what##_what_##ID, const deref_##_what_##ID_type *from){\
-	ret_ifnot(nicefi::writerec(what##_what_##ID,from));\
-	ret_ok();\
-}                                          \
-											\
-if_##_what_##::~if_##_what_##(){\
-	if (opened==_yes_) shutdown();\
-}\
-\
-if_##_what_##::if_##_what_##():\
-	its_recsize(sizeof(deref_##_what_##ID_type))\
-{\
-	opened=_no_;\
-}\
-\
-reterrt if_##_what_##::init(const char * fname){\
-	ret_ifnot(nicefi::open(fname,0,its_recsize));\
-	opened=_yes_;\
-	ret_ok();\
-}\
-\
-reterrt if_##_what_##::shutdown(){\
-	if (opened==_yes_) ret_ifnot(nicefi::close());\
-	opened=_no_;\
-	ret_ok();\
-}\
-\
-_more_
-*/
 
 
 

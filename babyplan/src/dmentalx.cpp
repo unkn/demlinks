@@ -39,12 +39,16 @@ dmentalix::~dmentalix(){
 }
 
 
-void dmentalix::init(_declall(ccp,f))
+reterrt dmentalix::init(_declall(ccp,f))
 {
-	_funcall(_init);
+	_funcall(ret_ifnot,_init);
+
+	ret_ok();
 }
 
-void dmentalix::deinit(){
-	_ptrall2func(shutdown);
+reterrt dmentalix::shutdown(){
+	_ptrall2func(ret_ifnot,shutdown);
+
+	ret_ok();
 }
 

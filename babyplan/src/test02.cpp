@@ -47,11 +47,11 @@ int main(){
 	ab_ifnot(test2);
 
 	unlinkall(_fnames);
-	test2->init(_fnames);
+	ab_ifnot(test2->init(_fnames));
 	
 
 	
-	test2->deinit();
+	ab_ifnot(test2->shutdown());
 	delete test2;
 
 //last in line

@@ -110,7 +110,9 @@ cleanerr : .SYMBOLIC
 	if exist $(errdir)\*.err del $(errdir)\*.err
 
 killdat : .SYMBOLIC       
+	if exist $(tmpdir)\*.dat attrib -shra $(tmpdir)\*.dat 
 	if exist $(tmpdir)\*.dat del $(tmpdir)\*.dat
+	if exist $(bindir)\*.dat attrib -shra $(bindir)\*.dat 
 	if exist $(bindir)\*.dat del $(bindir)\*.dat
 
 cleanall : clean killdat .SYMBOLIC
