@@ -83,27 +83,30 @@ filelength(FileHandle_t a_FileHandle)
 
 /* returns the number of records (counting those from cache too) that "were"
  * written */
-RecNum_t
+RecCount_t
 TRecordsStorage::GetNumRecords()
 {
         LAME_PROGRAMMER_IF(!IsOpen(),
-                        return kInvalidRecNum);
+                        return kBadRecCount);
 
         FileSize_t fileSize = filelength(fFileHandle);
         ERR_IF(fileSize < 0,
-                        return kInvalidRecNum);
+                        return kBadRecCount);
 
         RecNum_t retRecNum = Convert_FileOffset_To_RecNum(fileSize);
         PARANOID_IF(!Invariants(retRecNum),
-                        return kInvalidRecNum);
+                        return kBadRecCount);
 
+
+        --retRecNum;/* seems to be one step ahead ie. points to next record */
+        
         if (IsCacheEnabled()) { /* is cache enabled? */
                 /* return the bigger of the two */
                 if (retRecNum < fHighestRecNum)
                         retRecNum=fHighestRecNum;
 
                 PARANOID_IF(!Invariants(retRecNum),
-                        return kInvalidRecNum);
+                        return kBadRecCount);
         }
 
         return retRecNum;
@@ -205,12 +208,13 @@ TRecordsStorage::AddRecordToCache(
 
 
 
-        RecNum_t numRec;
+        RecCount_t numRec;
 
-        ERR_IF((numRec = GetNumRecords()) == kInvalidRecNum,
+        ERR_IF((numRec = GetNumRecords()) == kBadRecCount,
                         return false);
 
-        LAME_PROGRAMMER_IF(a_RecNum - numRec > 1,
+       /* attempting to put a hole between two supposedly consecutive records */
+        LAME_PROGRAMMER_IF(a_RecNum > 1 + numRec, /* can't seek +2 */
                         return false);
 
         CacheItem *iter=fCacheTail;//from tail up
@@ -274,7 +278,9 @@ TRecordsStorage::AbsolutelyAddRecordToCache(
         //absolute add to tail, don't check for existence!
 {
         /* however there is one extra check that needs to be done
-         * a_RecNum - GetNumRecords() must not be above 1 */
+           a_RecNum - GetNumRecords() must not be above 1 
+           this check is not done inhere (see above) */
+
         PARANOID_IF(fNumCachedRecords > fMaxNumCachedRecords,
                         return false);
 
@@ -383,6 +389,8 @@ TRecordsStorage::WriteRecord(
         return true;
 }
 
+/* TODO: think about the idea of flushing the cache when is full, get rid of all
+   those that need to be written, but still keep them in cache as read */
 bool
 TRecordsStorage::InitCache(
                 const RecNum_t a_MaxNumRecordsToBeCached)
@@ -628,8 +636,8 @@ TRecordsStorage::FileSeekToRecNum(
            allow gaps, we need all RecNum to be consecutive, so as stated before
            can't jump from RecNum 28 to RecNum 30, without having a RecNum 29
         */
-        RecNum_t tmpNumRecordsNow = GetNumRecords();
-        PARANOID_IF(tmpNumRecordsNow == kInvalidRecNum,
+        RecCount_t tmpNumRecordsNow = GetNumRecords();
+        PARANOID_IF(tmpNumRecordsNow == kBadRecCount,
                         return false);
         PARANOID_IF(a_RecNum >= 2+tmpNumRecordsNow,
                         return false);

@@ -32,6 +32,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h> //unlink()
 
 #include "_gcdefs.h"
 
@@ -72,6 +73,7 @@ int main()
         long item;
         char headerBuf [200];
         memset(headerBuf,0,sizeof(headerBuf));
+        unlink("test.fil");
         EXIT_IF(!DataBase->Open("test.fil",
                                 sizeof(headerBuf),
                                 sizeof(item),
@@ -81,10 +83,14 @@ int main()
 
         EXIT_IF(!DataBase->ReadHeader(headerBuf));
 
+        RecCount_t tmpCount;
+        
         for (item = 1; item <= HOW_MANY_ITEMS; item++){
                 if (item % (HOW_MANY_ITEMS / KEEP_LINES) == 0)
                         printf("attempting to write item %d\n",item);
                 EXIT_IF(!DataBase->WriteRecord(item,&item));
+                EXIT_IF((tmpCount = DataBase->GetNumRecords()) == kBadRecCount);
+                EXIT_IF(tmpCount != item);
         }
         item = 1;
         while (item <= HOW_MANY_ITEMS){

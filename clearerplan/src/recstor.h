@@ -37,11 +37,17 @@
 /* file start */
 
 
-/* the type/size of all represented RecNum numbers
- * also since first RecNum is 1, this type is used to represent the count of
- * records also (ie. how many records are there) */
+/* the type/size of all represented RecNum numbers */
 typedef long RecNum_t; /* must be able to accomodate EFixedRecNumConstants */
 
+/* used to return the number of existing records, or those that should exist (if
+   we consider cache) */
+typedef long RecCount_t;/* there may be 0 or more records */
+
+/* orphan enum */
+enum {
+        kBadRecCount=-1 /* failed in getting a count of the records */
+};
 
 #ifdef __WATCOMC__
 
@@ -171,7 +177,7 @@ public:
                 const RecNum_t a_RecNum,
                 const void * a_MemSource);
 
-        RecNum_t GetNumRecords();//how many records are now
+        RecCount_t GetNumRecords();//how many records are now
 
         bool WriteHeader(const void * header);
         bool ReadHeader(void * header);
