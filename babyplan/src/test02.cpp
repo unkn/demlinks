@@ -46,9 +46,22 @@ int main(){
 	test2=new dmentalix;
 	ab_ifnot(test2);
 
-	unlinkall(_fnames);
+	unlinkall(_fnames);//so we kill the files we can use strictADDelemental()
 	ab_ifnot(test2->init(_fnames));
-	
+
+	basic_element c;
+	c=0;
+	while (
+			( (int)(c) <256 ) 
+			&&
+			( !( (kbhit())&&(getch()) ) )
+		){
+		printf("attempting to add basic_elemnt==char(%d)",c);
+		eatomID bebe=test2->strictADDelemental(c);//only used with unlink()
+		ab_ifnot(bebe);
+		printf(" :has: eatomID==%ld\n",bebe);
+		c++;
+	}//while
 
 	
 	ab_ifnot(test2->shutdown());
@@ -57,6 +70,7 @@ int main(){
 //last in line
 	deinit_error_tracker();
 	printf("\nDone...press key\n");
+//	printf("sizeof(deref_eatomID_type)=%d\n",sizeof(deref_eatomID_type));
 	getch();
 	return 0;
 }

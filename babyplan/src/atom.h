@@ -38,9 +38,13 @@
 
 #include "common.h"
 
+/* PRIVATE DEFINES */
+//#define WASINITED_SAFETY //always check if was inited before operating
+/* end of PRIVATE DEFINES */
+
 class if_atom:public nicefi {
 private:                       
-	int opened;                 
+	int inited;                 
 	const long its_recsize;      
 public:                           
 	if_atom();                    
@@ -56,6 +60,12 @@ public:
 		const atomtypes at_type,
 		const anyatomID at_ID
 	);
+#ifdef WASINITED_SAFETY
+private:
+	int wasinited(){ if (inited==_yes_) return _yes_; return _no_; }
+	void setinited(){ inited=_yes_; };
+	void setdeinited(){ inited=_no_; };
+#endif
 };//class
 
 

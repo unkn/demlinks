@@ -38,9 +38,15 @@
 
 #include "common.h"
 
+/* PRIVATE DEFINES */
+//#define WASINITED_SAFETY //always check if was inited before operating
+/* end of PRIVATE DEFINES */
+
 class if_eatom:public nicefi {
 private:                       
-	int opened;                 
+#ifdef WASINITED_SAFETY
+	int inited;                 
+#endif
 	const long its_recsize;      
 public:                           
 	if_eatom();                    
@@ -48,14 +54,22 @@ public:
 	reterrt init(const char *fname);    
 	reterrt getwithID(const eatomID whateatomID, deref_eatomID_type *into);
 	reterrt writewithID(const eatomID whateatomID, const deref_eatomID_type *from);
+	long find_basic_element(const basic_element what2search);
 	long addnew(const deref_eatomID_type *from); 
 	long howmany();
-	reterrt shutdown(); 
+	reterrt shutdown();
 	void compose(
 		deref_eatomID_type *into,
 		eatoms_listID ptr2list,
-		basic_element data
+		basic_element basicelementdata
 	);
+#ifdef WASINITED_SAFETY
+private:
+	int wasinited(){ if (inited==_yes_) return _yes_; return _no_; }
+	void setinited(){ inited=_yes_; };
+	void setdeinited(){ inited=_no_; };
+#endif
+	
 };//class
 
 

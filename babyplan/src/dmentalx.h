@@ -82,12 +82,19 @@ class dmentalix :
 		,private if_eatom
 		,private if_eatoms_list, private if_eatomslist_item
 {
+private:
+	int inited;
 public:
 	dmentalix::dmentalix();
 	dmentalix::~dmentalix();
 	reterrt init(_declall(const char *,fname));//open all files
-	reterrt newelemental(basic_element thenewbe);//a new eatom?!
+	eatomID newelemental(const basic_element thenewbe);//a new eatom?!with check
+	eatomID strictADDelemental(const basic_element thenewbe);//no check, appendnew!
 	reterrt shutdown();//close all files
+private:
+	void setinited(){ inited=_yes_; };//axexor funx
+	void setdeinited(){ inited=_no_; };
+	int wasinited(){ if (inited==_yes_) return _yes_; return _no_; };
 };
 
 

@@ -159,7 +159,8 @@ reterrt errtrk::pushuerr(const errtype_t et, const errcode_t ec, ccp desc,ccp fi
 	tmp->error.errline=line;
 	tmp->error.userdesc=desc;//ptr exchange, no alloc!
 	less();
-	push2list(tmp);
+////	push2list(tmp);
+	pusherr(tmp);//so user must only inherit/override pusherr() for adding features
 ret://last in line
 	return funcerr();//funcret_whenERR;//signal: das wars an error
 }

@@ -38,6 +38,19 @@ uderrtrk::uderrtrk(){
 }
 uderrtrk::~uderrtrk(){
 }
+	
+virtual reterrt uderrtrk::pusherr(const s_item *from){
+//added functionality
+	setlastwas();//last funx, just had an error, we're using this just in case
+				//last funx(), returns funcerr()==_no_==0 both for its use
+				//and for in case there's an error, so the user checks with 
+				// asks_if_last_was_an_error() and if returns _yes_ then the
+				//last function really had an error, of course one should
+				//use clearlastfunxerr() before calling funx()
+
+	return ( errtrk::pusherr(from) );
+}
+
 
 void uderrtrk::usrshowthemall(){
 	s_item *tmp=getlasterr();

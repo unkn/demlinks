@@ -37,13 +37,24 @@
 #include <share.h>
 #include <io.h>
 
-#include "petrackr.h"
 #include "nicef.h"
 
+/* PRIVATE MACROS */
+#ifdef NOERRTRACKER
+	#define sret_if(_a_) _a_
+	#define sret_ifnot(_a) _a_
+#else
+	#define sret_if(_a_) ret_if(_a_)
+	#define sret_ifnot(_a_) ret_ifnot(_a_)
+#endif
+/* end of PRIVATE MACROS */
 
+
+#ifdef ISOPEN_SAFETY
+/* private constants */
 #define _yes_ +1
 #define _no_ 0
-
+/* end */
 int nicefi::isopened(){
 	return ((_opened)&&(fhandle>0));
 }
@@ -53,27 +64,34 @@ void nicefi::_setopened(){
 void nicefi::_setclosed(){
 	 _opened=_no_;
 }
+#endif
 
 
 long nicefi::getnumrecords(){//how many records are now
-	ret_ifnot(isopened());
+#ifdef ISOPEN_SAFETY
+	sret_ifnot(isopened());
+#endif
 	long filesize=filelength(fhandle);
-	ret_if( filesize < 0 );
+	sret_if( filesize < 0 );
 	return ( ofs2recnum(filesize) -1 );
 }
 
 reterrt nicefi::writerec(const long recno, const void * from){//recsize bytes
-	ret_ifnot(isopened());
+#ifdef ISOPEN_SAFETY
+	sret_ifnot(isopened());
+#endif
 	seekto(recno);
-	ret_if(recsize != write(fhandle,from,recsize));
+	sret_if(recsize != write(fhandle,from,recsize));
 	ret_ok();
 }
 
 reterrt nicefi::readrec(const long recno, void *  into){
 //recsize bytes
-	ret_ifnot(isopened());
+#ifdef ISOPEN_SAFETY
+	sret_ifnot(isopened());
+#endif
 	seekto(recno);
-	ret_if(recsize != read(fhandle,into,recsize));
+	sret_if(recsize != read(fhandle,into,recsize));
 	ret_ok();
 }
 
@@ -82,7 +100,9 @@ nicefi::nicefi(){
 	fhandle=-1;
 	recsize=-1;
 	headersize=-1;
+#ifdef ISOPEN_SAFETY
 	_setclosed();
+#endif
 }
 
 nicefi::~nicefi(){
@@ -91,9 +111,11 @@ nicefi::~nicefi(){
 }
 
 reterrt nicefi::close(){
-	ret_ifnot(isopened());
-	ret_if( fhandle <=0 );
-	ret_if( (0 != ::close(fhandle)) );
+#ifdef ISOPEN_SAFETY
+	sret_ifnot(isopened());
+#endif
+	sret_if( fhandle <=0 );
+	sret_if( (0 != ::close(fhandle)) );
 	fhandle=-1;
 	ret_ok();
 }
@@ -101,54 +123,64 @@ reterrt nicefi::close(){
 long nicefi::ofs2recnum(const long ofs){
 //recnum can't be 0, it goes from 1..
 //ofs goes from 0..
-	ret_ifnot(isopened());
-	ret_if(ofs < 0);
+#ifdef ISOPEN_SAFETY
+	sret_ifnot(isopened());
+#endif
+	sret_if(ofs < 0);
 	long ofsminusheader= (ofs - headersize);//just tmp
 	//this shouldn't be != 0 , if it is, the passed ofs is wrong, '
 	//  and perhaps the error is above: to the caller!
-	ret_if( ( ofsminusheader % recsize ) != 0);
+	sret_if( ( ofsminusheader % recsize ) != 0);
 	return ( ( ofsminusheader / recsize ) +1 );//surely reminder is 0 !
 }
 
 long nicefi::recnum2ofs(const long recnum){
 //recnum goes from 1..
 //ofs goes from 0..
-	ret_ifnot(isopened());
-	ret_if(recnum < 0);
+#ifdef ISOPEN_SAFETY
+	sret_ifnot(isopened());
+#endif
+	sret_if(recnum < 0);
 	return (headersize+((recnum-1)*recsize));
 }
 
 reterrt nicefi::seekto(const long recno){
-	ret_ifnot(isopened());
-	ret_if(fhandle<=0);//if not open;
-	ret_if(recno<=0);//cannot be 0 or less
-	ret_if(headersize< 0);
-	ret_if(recsize<=0);
+#ifdef ISOPEN_SAFETY
+	sret_ifnot(isopened());
+#endif
+	sret_if(fhandle<=0);//if not open;
+	sret_if(recno<=0);//cannot be 0 or less
+	sret_if(headersize< 0);
+	sret_if(recsize<=0);
 	long exactofs=recnum2ofs(recno);
-	ret_if( exactofs != lseek(fhandle,exactofs,SEEK_SET) );
+	sret_if( exactofs != lseek(fhandle,exactofs,SEEK_SET) );
 
 	ret_ok();
 }
 
 
 reterrt nicefi::writeheader(const void * header){
-	ret_ifnot(isopened());
-	ret_if(header==NULL);
-	ret_if(fhandle<=0);
-	ret_if(headersize<=0);
-	ret_if(0L != lseek(fhandle,0L,SEEK_SET));
-	ret_if(headersize != write(fhandle,header,headersize));
+#ifdef ISOPEN_SAFETY
+	sret_ifnot(isopened());
+#endif
+	sret_if(header==NULL);
+	sret_if(fhandle<=0);
+	sret_if(headersize<=0);
+	sret_if(0L != lseek(fhandle,0L,SEEK_SET));
+	sret_if(headersize != write(fhandle,header,headersize));
 
 	ret_ok();
 }
 
 reterrt nicefi::readheader(void *  header){
-	ret_ifnot(isopened());
-	ret_if(header==NULL);
-	ret_if(fhandle<=0);
-	ret_if(headersize<=0);
-	ret_if(0L != lseek(fhandle,0L,SEEK_SET));
-	ret_if(headersize != read(fhandle,header,headersize));
+#ifdef ISOPEN_SAFETY
+	sret_ifnot(isopened());
+#endif
+	sret_if(header==NULL);
+	sret_if(fhandle<=0);
+	sret_if(headersize<=0);
+	sret_if(0L != lseek(fhandle,0L,SEEK_SET));
+	sret_if(headersize != read(fhandle,header,headersize));
 
 	ret_ok();
 }
@@ -156,25 +188,29 @@ reterrt nicefi::readheader(void *  header){
 
 
 reterrt nicefi::open(const char * fname, const long header_size,const long rec_size){
-	ret_if(fhandle>0);//if already open
-	ret_if(isopened());
+	sret_if(fhandle>0);//if already open
+#ifdef ISOPEN_SAFETY
+	sret_if(isopened());
+#endif
 
-	ret_if(rec_size<=0);
-	ret_if(header_size<0);
+	sret_if(rec_size<=0);
+	sret_if(header_size<0);
 
 	fhandle = ::sopen(fname, O_RDWR | O_CREAT | O_BINARY /*| O_DENYWRITE*/, SH_DENYWR, S_IREAD | S_IWRITE);
-	ret_if(fhandle<=0);//if open failed
+	sret_if(fhandle<=0);//if open failed
+#ifdef ISOPEN_SAFETY
 	_setopened();
+#endif
 	recsize=rec_size;
 	headersize=header_size;
 /*
 	if (putheader!=NULL) {
 		//read and seek after the header
-		ret_if(headersize != ::read(fhandle,putheader,headersize));
+		sret_if(headersize != ::read(fhandle,putheader,headersize));
 	}
 	else {
 		//just seek after the header
-		ret_if(headersize!=lseek(fhandle,headersize,SEEK_SET));
+		sret_if(headersize!=lseek(fhandle,headersize,SEEK_SET));
 	}
 	*/
 	ret_ok();

@@ -32,16 +32,24 @@
 #ifndef __NICEF_H
 #define __NICEF_H
 
-#include "errtrack.h"
+#include "petrackr.h"
+/* PRIVATE DEFINES */
+#define NOERRORTRACKER //speed w/o safety ; no ret_if() / ret_ifnot()
+//#define ISOPEN_SAFETY //alwayscheck if we opened the file prior to operations.
+/* end of PRIVATE DEFINES */
 
-//typedef unsigned long ulong;
+/* other defines, not quite private */
+#define _FIRST_RECORD_ 1  //starts from 1, don't change!
+/* end */
 
 class nicefi {
 private:
 	int fhandle;
 	long headersize;//long is -2GB..+2GB dammit!
 	long recsize;
+#ifdef ISOPEN_SAFETY
 	int _opened;
+#endif
 public:
 	nicefi();
 	~nicefi();
@@ -53,10 +61,14 @@ public:
 	long getnumrecords();//how many records are now
 	reterrt writeheader(const void * header);
 	reterrt readheader(void * header);
+#ifdef ISOPEN_SAFETY
 	int isopened();
+#endif
 private:
+#ifdef ISOPEN_SAFETY
 	void _setopened();
 	void _setclosed();
+#endif
 	reterrt seekto(const long recno);//1..
 	long recnum2ofs(const long recnum);
 	long ofs2recnum(const long ofs);

@@ -53,11 +53,11 @@ struct deref_eatoms_listID_type {
 	eatomslist_itemID ptr2head;
 };
 
-typedef unsigned char basic_element;//#x=chr(x)  thus #0..#255, but left 3 more bytes.
+typedef long basic_element;//#x=chr(x)  thus #0..#255, but left 3 more bytes.
 typedef anyatomID eatomID;
 struct deref_eatomID_type {//ATOME.DAT	those type of atoms that are elements
 	eatoms_listID ptr2list;
-	basic_element data;//#0..#255
+	basic_element basicelementdata;//#0..#255
 };
 
 

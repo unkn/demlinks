@@ -29,10 +29,12 @@
 ****************************************************************************/
 
 
+#include <stdlib.h> //NULL macro
 #include "petrackr.h"
 #include "dmentalx.h"
 
 dmentalix::dmentalix(){
+	setdeinited();
 }
 
 dmentalix::~dmentalix(){
@@ -57,6 +59,7 @@ reterrt dmentalix::init(_declall(const char *,fname))
 	INIT(gcatoms_list);
 	INIT(gcatomslist_item);
 
+	setinited();
 	ret_ok();
 }
 #undef INIT
@@ -80,13 +83,62 @@ reterrt dmentalix::shutdown(){
 	DONE(gcatoms_list);
 	DONE(gcatomslist_item);
 
+	setdeinited();
 	ret_ok();
 }
 #undef DONE
 /*^^^^^^^^^^^^^^*/
 
-reterrt newelemental(basic_element thenewbe){//a new eatom?!
+eatomID dmentalix::strictADDelemental(const basic_element thenewbe){//no check, appendnew!
+/* this funx adds a new eatomID with the spec `thenewbe' basic_element, w/o
+    checking if it already exists;
+while this funx is used for speed(dramatical increase), it also can be very
+ dangerous since it breaks one of the rules of dmental links which is :
+ there cannot be any two eatoms that have the same basic_element;
+ B_E is uniq!!
+*/
+	ret_ifnot(wasinited());//files must be open ~ check
 
-	ret_ok();
+	//we gotta add a new element here:
+	//so we add a new item, a new list, and then a new eatom; except that
+	//there are no items yet, items are those clones that refer to US
+	//US=the new not yet created eatom
+	//so we create an empty eatoms_listID, that has no `head' item
+	
+
+	//allocating a new list, unconnected to any atoms
+	deref_eatoms_listID_type _eatoms_list;
+	eatoms_listID _eatoms_listID;
+
+	//NULL means no items, eatomslist_itemID==NULL thus no head item
+	if_eatoms_list::compose(&_eatoms_list,0L);
+	_eatoms_listID=if_eatoms_list::addnew(&_eatoms_list);
+	ret_ifnot(_eatoms_listID);//failed prev addition, creating a new list
+	
+	//composing a new eatom, connecting the above list to it; and `thenewbe'.
+	deref_eatomID_type _eatom;
+	if_eatom::compose(&_eatom,_eatoms_listID,thenewbe);
+	
+	return if_eatom::addnew(&_eatom);//allocate and return ID or error=0
+}
+
+eatomID dmentalix::newelemental(const basic_element thenewbe){//a new eatom?!
+/*
+  when adding a new eatom by basic_element, we must check if this basic_elem
+doesn't already exist.
+  either way we must return eatomID, or 0 if error ( 0==_no_ and eatomID type
+is compatible with reterrt type, thus we can properly use errortracker)
+*/
+	ret_ifnot(wasinited());//files must be open ~ check
+
+	eatomID got_eatomID;
+
+	ret_if_error_after_statement(got_eatomID=find_basic_element(thenewbe));
+
+	if (got_eatomID) {
+		return got_eatomID; //return the found eatomID which has `thenewbe'
+	}//fi
+
+	return strictADDelemental(thenewbe);//performs an unchecked append
 }
 

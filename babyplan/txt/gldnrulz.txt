@@ -1,0 +1,8 @@
+dmental links rules:
+1. eatoms are uniq, for example #0..#255 character types, there can't be two
+	eatoms with the same #char !!
+2. groups are never refered by the gcatoms contained within a group. One should
+	create a gcatom outside the group (which will be single), and point the
+	former gcatom(within the group) which now becoms an acatom to this single
+	gcatom. This way, we can hm.... IGNORE this rule for now, until we think
+	about it.

@@ -48,6 +48,7 @@
 #define _ab_me(zt,prefix,_a,sufix) {\
 	zt->pushuerr(t_caused_abort,3,prefix#_a##sufix,__FILE__,__func__,__LINE__);\
 	zt->usrshowthemall();\
+	fprintf(stderr,"Read the above errors in reverse order of appearence!\n");\
 	abort();\
 	}
 
@@ -119,9 +120,9 @@ protected:
 	int howmany;//how many s_items, just for info
 public:
 	errtrk();
-	~errtrk();
+	virtual ~errtrk();
 	reterrt pushuerr(const errtype_t et, const errcode_t ec, ccp desc, ccp fil, ccp func, const errline_t line);
-	reterrt pusherr(const s_item *from);//the func's making a copy of `from`.
+	virtual reterrt pusherr(const s_item *from);//the func's making a copy of `from`.
 	reterrt poperr(s_item *&into);//into may be NULL if nada to pop-out
 	s_item * getlasterr();//w/o poping it
 	reterrt funcok(){ return funcret_whenOK; };
