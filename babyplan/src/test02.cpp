@@ -62,22 +62,19 @@ int main(){
         printf(" :has: atomID==%ld\n",bebe);
         c++;
     }//while
-
-goto skip;
     
     while (
             ( (int)(c) >=0 )
             &&
             ( !( (kbhit())&&(getch()) ) )
         ){
-        printf("attempting to find eatomID that has BE#%d",c);
-        atomID elder;//=test2->get_eatomID_of_elemental(c);
+        printf("find atomID of a type E atom (eatom) that has basic_elem #%d",c);
+        atomID elder=test2->find_atomID_type_E(c);
         if (elder==0) printf(" not found!\n");
-        else printf(" :IDis: %ld\n",elder);
+        else printf(" :atomIDis: %ld\n",elder);
         c--;
     }//while2
 
-skip:
     ab_ifnot(test2->shutdown());
     delete test2;
 

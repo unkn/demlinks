@@ -127,7 +127,8 @@ an empty eatoms_list which points to nothing in eatomslist_item
     eatomID _exist=if_eatom::find_eatom(&dood,BE);
     if (_exist){ //if already exists then we must return the atomID
         atomID &atomIDof_eatom=dood.ptrback2atomID_for_faster_search_when_single;
-        ret_ifnot(atomIDof_eatom);//invalid atomID? just checking!
+        ret_ifnot(atomIDof_eatom>=0);//invalid atomID? just checking!
+        //atomID must be valid, or entire **** was compromised, prior to calling this func
         return atomIDof_eatom;//ok, do it ~ return it, it's ok as in, > 0
     }//fi
 //if we're here, the BE doesn't exist, thus we create it
@@ -199,6 +200,25 @@ is compatible with reterrt type, thus we can properly use errortracker)
     }//fi
 
     return strict_addelemental(whosmy_atomID, thenewbe);//performs an unchecked append
+}
+/*^^^^^^^^^^^^^^*/
+    
+atomID dmentalix::find_atomID_type_E(const basic_element BE){//only ID is returned
+    ret_ifnot(wasinited());//files must be open ~ check
+    
+    eatomID got_eatomID;
+    deref_eatomID_type eatom;
+    ret_if_error_after_statement(got_eatomID=if_eatom::find_eatom(&eatom,BE));
+
+    if (!got_eatomID) {
+        return 0;
+    }
+
+    //so we got it...
+    //some paranoia checks:
+    atomID &tmp_atomID=eatom.ptrback2atomID_for_faster_search_when_single;
+    ret_ifnot(tmp_atomID>=0);
+    return tmp_atomID;
 }
 /*^^^^^^^^^^^^^^*/
 

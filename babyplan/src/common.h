@@ -33,6 +33,7 @@
 #define __COMMON_H
 #pragma pack(1)
 
+/* NOTE NOTE NOTE : valid IDs are never zero or less */
 //GROUP
 //a group actually represents a chain of atoms; group=&chain
 typedef long groupID;//a ptr to a GROUP; a referer to a GROUP; a placeholder

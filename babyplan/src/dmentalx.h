@@ -91,6 +91,7 @@ public:
     reterrt shutdown();//close all files
     atomID try_add_atom_type_E(const basic_element BE);//checks existing
     atomID strict_add_atom_type_E(const basic_element BE);//no check, imperativeADD!
+    atomID find_atomID_type_E(const basic_element BE);//only ID is returned
     
 private:
     eatomID try_newelemental(const atomID whosmy_atomID, const basic_element thenewbe);//a new eatom?!with check
