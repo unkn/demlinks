@@ -60,6 +60,11 @@ public:
         /* is cache enabled ? */
         bool IsCacheEnabled() { return TRecordsStorage::IsCacheEnabled();};
 
+        /* see dmlcore.h */
+        bool BeginConsistentBlock();
+        bool EndConsistentBlock();
+/* FIXME: add funx to handle items addition */
+
         /* stop using cache, frees some memory and also flushes the writes */
         bool KillCache();
 
@@ -78,7 +83,10 @@ public:
                         const ListOfReferrers_ID_t a_ListOfReferrers_ID,
                         const ListOfReferrers_st &a_From);
 
-        /* who's the last ID */
+        /* who's the last ID
+         * returns false if an error
+         * bewarned that the ID may be 0 which is kNoItemID meaning there are
+           no IDs */
         bool GetLastID(ListOfReferrers_ID_t &a_ListOfReferrers_ID);
 
         /* scather the data into the struct, used before Write */
@@ -87,10 +95,11 @@ public:
                         const ItemID_t a_HeadItemID,
                         const ItemID_t a_TailItemID);
 
-        /* create a new one
+        /* create a new one, and since it's empty we just add head and tail 
+           items found within the struct
          * return its ID */
         ListOfReferrers_ID_t AddNew(
-                        const ListOfReferrers_st a_ListOfReferrers_st);
+                        const ListOfReferrers_st &a_ListOfReferrers_st);
 
 private:
         bool IsInited() const { return fInited; };

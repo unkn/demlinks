@@ -102,14 +102,6 @@ typedef enum {
 } EItemState_t;
 
 
-/* TODO: we might use cache to mark the last successful operation that will keep
-   the database consistent ; ie. if not marked when doing a flush/killcache it
-   is prolly because we just had an error and we're quitting, thus sync-ing only
-   those last writes until we hit the mark (of the last successful operation)
-   will keep the database consistent since other unwritten records are prolly
-   incomplete writes of the last unsuccessful operation which mustn't be written
-   */
-
 /* this is an item in the double linked Cache list
  * items on the cache list are called items ie. item=cached record
  * items hold records but they are not the records ie. record=user data field
@@ -158,9 +150,42 @@ private:
         //if this is <= 0 then we won't use cache !!
         RecNum_t        fMaxNumCachedRecords;// 1024
 
+        /* FIXME: this is just temporary until we implement the stuff */
+        bool fConsistentBlockBegun;
+
 public:
         TRecordsStorage();
-       ~TRecordsStorage();
+        ~TRecordsStorage();
+
+/* TODO: we might use cache to mark the last successful operation that will keep
+   the database consistent ; ie. if not marked when doing a flush/killcache it
+   is prolly because we just had an error and we're quitting, thus sync-ing only
+   those last writes until we hit the mark (of the last successful operation)
+   will keep the database consistent since other unwritten records are prolly
+   incomplete writes of the last unsuccessful operation which mustn't be written
+ * BeginConsistentBlock(); write stuff; EndConsistentBlock(); this should be
+   used only within the main highest level subroutines. The writes between Begin
+   and End should be written all at once and with optional flush/sync (ie. sync
+   from linux). If an error occurs between Begin and End, well End shouldn't be
+   executed and usually won't be (with my style of programming) thus when we
+   exit and flush we won't write this block since it starts but never ends
+   */
+
+
+        /* marks the beginning of a block which is considered incomplete until
+           u do call EndConsistendBlock() below
+         * a block is a bunch of writes
+         * while being incomplete, a flush will not write data to disk
+         * returns false if prev Begin wasn't ended/succeded by End */
+        bool BeginConsistentBlock();/* FIXME: not implemented yet */
+
+        /* marks the end of a block which is considered CONSISTENT and thus a
+           flush will write this block to the disk (data marked within beginning           and end of this block)
+         * returns false if prev End wasn't succeded by a Begin */
+        bool EndConsistentBlock();/* FIXME: not yet implemented */
+
+        /* flushes the cache ie. writes to disk those records which should've
+           been written 'long' time ago */
         bool FlushWrites();
 
         /* opens the specified file for as long as we use this class, until we
@@ -198,7 +223,7 @@ public:
 
 /* added functionality: cache */
 /* TODO: make it possible to modify the cache behaviour for example:
-        when reading records don't flush the writes instead make place for the
+        when reading records don't flush the writes, instead make place for the
         newly read record by droping another old read record from cache
       * or don't cache read records
       * or when one written record is to be discarded from cache, discard them
@@ -253,7 +278,7 @@ private:
                         void * a_MemDest);
 
         /* to avoid duplicating some assignement statements in two places */
-        void FlatenCacheVariables();
+        void FlattenCacheVariables();
 }; /* class */
 
 #endif /* file */

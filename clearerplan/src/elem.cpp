@@ -163,7 +163,7 @@ MElemental::KillCache()
 
 ElementalID_t
 MElemental::AddNew(
-                const Elemental_st a_Elemental_st)
+                const Elemental_st &a_Elemental_st)
 {
         LAME_PROGRAMMER_IF(!IsInited(),
                         return kNoElementalID);
@@ -181,5 +181,29 @@ MElemental::AddNew(
                         return kNoElementalID);
 
         return newElementalID;
+}
+
+bool
+MElemental::BeginConsistentBlock()
+{
+        LAME_PROGRAMMER_IF(!IsInited(),
+                        return kNoElementalID);
+
+        ERR_IF(!TRecordsStorage::BeginConsistentBlock(),
+                        return false);
+
+        return true;
+}
+
+bool
+MElemental::EndConsistentBlock()
+{
+        LAME_PROGRAMMER_IF(!IsInited(),
+                        return kNoElementalID);
+
+        ERR_IF(!TRecordsStorage::EndConsistentBlock(),
+                        return false);
+
+        return true;
 }
 

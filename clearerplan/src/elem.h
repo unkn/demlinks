@@ -59,6 +59,11 @@ public:
         /* is cache enabled ? */
         bool IsCacheEnabled() { return TRecordsStorage::IsCacheEnabled();};
 
+        /* see dmlcore.h */
+        bool BeginConsistentBlock();
+        bool EndConsistentBlock();
+
+
         /* stop using cache, frees some memory and also flushes the writes */
         bool KillCache();
 
@@ -67,7 +72,8 @@ public:
            from within it if needed */
         bool DeInit();
 
-        /* retrieve the record(contents) of an Elemental with the specified ID*/        bool ReadWithID(
+        /* retrieve the record(contents) of an Elemental with the specified ID*/
+        bool ReadWithID(
                         const ElementalID_t a_ElementalID,
                         Elemental_st &a_Into);
 
@@ -76,7 +82,10 @@ public:
                         const ElementalID_t a_ElementalID,
                         const Elemental_st &a_From);
 
-        /* who's the last ID in database */
+        /* who's the last ID in database
+         * returns false if an error
+         * bewarned that the ID may be 0 which is kNoItemID meaning there are
+           no IDs */
         bool GetLastID(ElementalID_t &a_ElementalID);
 
         /* scather the data into the struct, used before Write */
@@ -88,7 +97,7 @@ public:
         /* create a new elemental
          * ( also creates its list of refferers *doh* )
          * return its ID or kNoElementalID if failed */
-        ElementalID_t AddNew(const Elemental_st a_Elemental_st);
+        ElementalID_t AddNew(const Elemental_st &a_Elemental_st);
 
 private:
         bool IsInited() const { return fInited; };

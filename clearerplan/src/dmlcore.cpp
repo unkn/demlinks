@@ -122,13 +122,21 @@ MDementalLinksCore::KillCache()
         return true;
 }
 
-/* elemental specific */
+/* elemental specific
+ * ensures consistency: if something fails any in mid data is not to be written
+   to disk (such as the list newly created) */
 ElementalID_t
 MDementalLinksCore::AbsoluteAddBasicElement(
                 const BasicElement_t a_WhatBasicElement)
 {
         LAME_PROGRAMMER_IF(!IsInited(),
                         return kNoElementalID);
+
+        /* a new compound is being added, thus if we fail all other data created
+           with it is not written to the database; if it were written it'd
+           render the dbase inconsistent
+         * talk about workarounds... */
+        BeginConsistentBlock();
 
         /* create a new empty list of referrers; this list contains referrers to
            elementals only */
@@ -158,6 +166,9 @@ MDementalLinksCore::AbsoluteAddBasicElement(
                         (newElementalID =
                          MElemental::AddNew(newElemental_st)),
                         return kNoElementalID);
+
+        EndConsistentBlock();
+        /* by this time the dbase is considered to be consistent */
 
         /* return its ID */
         return newElementalID;
@@ -285,5 +296,34 @@ MDementalLinksCore::AbsoluteAddListOfRef2Elemental(
                         return kNoListID);
 
         return newList_ID;
+}
+
+bool
+MDementalLinksCore::BeginConsistentBlock()
+{
+        LAME_PROGRAMMER_IF(!IsInited(),
+                        return kNoListID);
+
+        ERR_IF(!MElemental::BeginConsistentBlock(),
+                        return false);
+
+        ERR_IF(!MListOfRef2Elemental::BeginConsistentBlock(),
+                        return false);
+        return true;
+}
+
+
+bool
+MDementalLinksCore::EndConsistentBlock()
+{
+        LAME_PROGRAMMER_IF(!IsInited(),
+                        return kNoListID);
+
+        ERR_IF(!MElemental::EndConsistentBlock(),
+                        return false);
+
+        ERR_IF(!MListOfRef2Elemental::EndConsistentBlock(),
+                        return false);
+        return true;
 }
 

@@ -25,8 +25,10 @@
 *  ========================================================================
 *
 * Description: the part of demlinks which interfaces 
-*               Lists of <Referrers to Elementals>
+*               Lists of <Referrers to Elemental>
 *
+*    Practicaly a list of such kind contains referrers that refer to the same
+*    Elemental. (each of the referrers in the list refer to the same elemental)
 ****************************************************************************/
 
 

@@ -41,16 +41,22 @@
 #include "dmlcore.h"
 
 #if defined(__WATCOMC__)
+#       include <conio.h>
 #       define CACHE_THIS_MANY_ITEMS 2048
 #else
+#       define kbhit() false
+#       define getch() false
 #       define CACHE_THIS_MANY_ITEMS kDisableCache
 #endif
 
-#define HOW_MANY_ITEMS 7777
+#define HOW_MANY_ITEMS 777
 
+#define REFRESH_TIME 7 /* ever N items */
 #define KEEP_LINES 7
 
 // FIXME: clean-up on Ctrl-C
+
+const char * gMarker="|/-\\|/-\\";
 
 MDementalLinksCore *MyDemlinks;
 
@@ -93,19 +99,34 @@ int main()
 
         ElementalID_t tmpElementalID;
         BasicElement_t basicElement;
+        int tmpMarkerPos = 0;
 
+        printf("writting...\n");
         for (element = 1; element <= HOW_MANY_ITEMS; element++){
                 basicElement = (element -1) % 256;
 
-                if (element % (HOW_MANY_ITEMS / KEEP_LINES) == 0)
-                        printf("attempting to write element %d\n",element);
+                if (element % REFRESH_TIME == 0) {
+                        printf("%c",gMarker[tmpMarkerPos]);
+                        fflush(stdout);
+                        printf("\b");
+                        tmpMarkerPos++;
+                        if (tmpMarkerPos >= strlen(gMarker))
+                                tmpMarkerPos = 0;
+                }
+
+                if (element % (HOW_MANY_ITEMS / KEEP_LINES) == 0) {
+                        printf(".%d",element);
+                        fflush(stdout);
+                }
 
                 EXIT_IF(kNoElementalID ==
                         (tmpElementalID =
                          MyDemlinks->AddBasicElement(basicElement)) );
 
                 EXIT_IF(tmpElementalID != (basicElement + 1));
+                EXIT_IF((kbhit()) && (getch() == 27));
         }
+        printf("\nreading...\n");
 
         ElementalID_t tmpElemID;
         element = 1;

@@ -409,7 +409,7 @@ TRecordsStorage::InitCache(
         LAME_PROGRAMMER_IF(a_MaxNumRecordsToBeCached == 1,
                         return false);
 
-        FlatenCacheVariables();
+        FlattenCacheVariables();
 
         fMaxNumCachedRecords = a_MaxNumRecordsToBeCached;
 
@@ -452,13 +452,13 @@ TRecordsStorage::KillCache()
         PARANOID_IF(fNumCachedRecords > 0,
                         return false);
 
-        FlatenCacheVariables();
+        FlattenCacheVariables();
         return true;
 }
 
 /* called in two places , before init and after kill ~cache */
 void
-TRecordsStorage::FlatenCacheVariables()
+TRecordsStorage::FlattenCacheVariables()
 {
     fCacheHead=NULL;
     fCacheTail=NULL;
@@ -748,6 +748,38 @@ TRecordsStorage::Open(
         //TODO: make ERR know about strerr(errno) / perror()
 
 
+        return true;
+}
+
+bool
+TRecordsStorage::BeginConsistentBlock()
+{/* FIXME: not yet implemented! */
+        LAME_PROGRAMMER_IF(!IsOpen(),
+                        return false);
+
+        PARANOID_IF(!Invariants(kFirstRecNum),
+                        return false);
+
+        ERR_IF(fConsistentBlockBegun,
+                        return false);
+
+        fConsistentBlockBegun = true;
+        return true;
+}
+
+bool
+TRecordsStorage::EndConsistentBlock()
+{/* FIXME: not yet implemented! */
+        LAME_PROGRAMMER_IF(!IsOpen(),
+                        return false);
+
+        PARANOID_IF(!Invariants(kFirstRecNum),
+                        return false);
+
+        ERR_IF(!fConsistentBlockBegun,
+                        return false);
+
+        fConsistentBlockBegun = false;
         return true;
 }
 

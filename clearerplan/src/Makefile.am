@@ -12,7 +12,8 @@ noinst_HEADERS = 	notetrk.h	\
 			list_r2e.h	\
 			_cppdefs.h	\
 			_gcdefs.h	\
-			ref.h
+			ref.h		\
+			list_r2c.h
 
 dmltest3_SOURCES = 	notetrk.cpp	\
 			pnotetrk.cpp	\
@@ -24,5 +25,6 @@ dmltest3_SOURCES = 	notetrk.cpp	\
 			elem.cpp	\
 			ref.cpp		\
 			item.cpp	\
-			chain.cpp
+			chain.cpp	\
+			list_r2c.cpp
 

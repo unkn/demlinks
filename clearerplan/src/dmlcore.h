@@ -35,11 +35,11 @@
 #include "common.h"
 
 #include "elem.h"
-#include "ref.h"
-#include "item.h"
-#include "list.h"
+//#include "ref.h"
+//#include "item.h"
+//#include "list.h"
 #include "list_r2e.h"
-#include "chain.h"
+//#include "chain.h"
 
 
 /* NOTE: within internal program two things may be needed: the Type and the ID,
@@ -78,6 +78,21 @@ public:
 
         /* is cache enabled (for all compounds) */
         bool IsCacheEnabled() { return fCache;};
+
+        /* marks the beginning of a block which is considered incomplete until
+           u do call EndConsistendBlock() below
+         * a block is a bunch of writes
+         * while being incomplete, a flush will not write data to disk
+         * to be used only when writing compounds(chain,elemental,ref) and NOT
+           lists, items
+         * if the End statement is not encountered everything after Begin is
+           discarded ; Begin and End concept is necessary ! (think about it) */
+        bool BeginConsistentBlock();
+
+        /* marks the end of a block which is considered CONSISTENT and thus a
+           flush will write this block to the disk (data marked within beginning
+           and end of this block) */
+        bool EndConsistentBlock();
 
         /* stop using cache, frees some memory and also flushes the writes */
         bool KillCache();

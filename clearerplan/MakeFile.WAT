@@ -52,6 +52,7 @@ objs =  $(objdir)\dmltest3.obj &
         $(objdir)\list_r2e.obj &
         $(objdir)\ref.obj &
         $(objdir)\chain.obj &
+        $(objdir)\list_r2c.obj &
         $(objdir)\item.obj
 
 

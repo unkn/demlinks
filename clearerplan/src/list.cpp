@@ -164,11 +164,18 @@ MListOfReferrers::KillCache()
 
 ListOfReferrers_ID_t
 MListOfReferrers::AddNew(
-                const ListOfReferrers_st a_ListOfReferrers_st)
+                const ListOfReferrers_st &a_ListOfReferrers_st)
 {
         LAME_PROGRAMMER_IF(!IsInited(),
                         return kNoListID);
 
+        /* the struct contains pointers to Head and Tail Items which items
+           must be created(those items) in case they're not kNoItemID */
+
+        /* FIXME: */
+
+
+        /* back to the list */
         ListOfReferrers_ID_t newListOfReferrers_ID;
         ERR_IF(!GetLastID(newListOfReferrers_ID),
                         return kNoListID);
@@ -181,5 +188,30 @@ MListOfReferrers::AddNew(
                         return kNoListID);
 
         return newListOfReferrers_ID;
+}
+
+
+bool
+MListOfReferrers::BeginConsistentBlock()
+{
+        LAME_PROGRAMMER_IF(!IsInited(),
+                        return kNoElementalID);
+
+        ERR_IF(!TRecordsStorage::BeginConsistentBlock(),
+                        return false);
+
+        return true;
+}
+
+bool
+MListOfReferrers::EndConsistentBlock()
+{
+        LAME_PROGRAMMER_IF(!IsInited(),
+                        return kNoElementalID);
+
+        ERR_IF(!TRecordsStorage::EndConsistentBlock(),
+                        return false);
+
+        return true;
 }
 
