@@ -69,8 +69,8 @@ if_group::if_group():
     opened=_no_;
 }
 
-reterrt if_group::init(const char * fname){
-    ret_ifnot(nicefi::open(fname,0,its_recsize));
+reterrt if_group::init(const char * fname, const long MAXCACHEDRECORDS){
+    ret_ifnot(nicefi::open(fname,0,its_recsize,MAXCACHEDRECORDS));
     opened=_yes_;
     ret_ok();
 }

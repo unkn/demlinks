@@ -46,7 +46,7 @@ private:
 public:                           
     if_group();                    
     ~if_group();                    
-    reterrt init(const char *fname);    
+    reterrt init(const char *fname, const long MAXCACHEDRECORDS);    
     reterrt getwithID(const groupID whatgroupID, deref_groupID_type &into);
     reterrt writewithID(const groupID whatgroupID, const deref_groupID_type &from);
     long addnew(const deref_groupID_type &from); 

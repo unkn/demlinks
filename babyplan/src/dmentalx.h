@@ -100,7 +100,7 @@ protected:
 public:
     dmentalix::dmentalix();
     dmentalix::~dmentalix();
-    reterrt init(_declall(const char *,fname));//open all files
+    reterrt init(_declall(const char *,fname), const long num_cached_records);//open all files
     reterrt shutdown();//close all files
 
     atomID try_add_atom_type_E(const basic_element BE);//checks existing

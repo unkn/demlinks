@@ -46,7 +46,7 @@ private:
 public:                           
     if_eatomslist_item();                    
     ~if_eatomslist_item();                    
-    reterrt init(const char *fname);    
+    reterrt init(const char *fname, const long MAXCACHEDRECORDS);    
     reterrt getwithID(const eatomslist_itemID whateatomslist_itemID, deref_eatomslist_itemID_type &into);
     reterrt writewithID(const eatomslist_itemID whateatomslist_itemID, const deref_eatomslist_itemID_type &from);
     eatomslist_itemID addnew(const deref_eatomslist_itemID_type &from);

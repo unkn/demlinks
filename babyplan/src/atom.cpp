@@ -82,11 +82,11 @@ if_atom::if_atom():
 #endif
 }
 
-reterrt if_atom::init(const char * fname){
+reterrt if_atom::init(const char * fname,const long MAXCACHEDRECORDS){
 #ifdef WASINITED_SAFETY
     ret_if(wasinited());
 #endif
-    ret_ifnot(nicefi::open(fname,0,its_recsize));
+    ret_ifnot(nicefi::open(fname,0,its_recsize,MAXCACHEDRECORDS));
 #ifdef WASINITED_SAFETY
     setinited();
 #endif

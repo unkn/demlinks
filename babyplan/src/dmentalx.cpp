@@ -48,9 +48,9 @@ dmentalix::~dmentalix(){
 
 /*______________*/
 #define INIT(_x_) \
-    ret_ifnot( if_##_x_##::init(##_x_##fname) )
+    ret_ifnot( if_##_x_##::init(##_x_##fname, num_cached_records) )
     
-reterrt dmentalix::init(_declall(const char *,fname))
+reterrt dmentalix::init(_declall(const char *,fname), const long num_cached_records)
 {
     INIT(atom);
     INIT(group);

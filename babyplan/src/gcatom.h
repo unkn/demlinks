@@ -45,7 +45,7 @@ private:
 public:                           
     if_gcatom();                    
     ~if_gcatom();                    
-    reterrt init(const char *fname);    
+    reterrt init(const char *fname, const long MAXCACHEDRECORDS);    
     reterrt getwithID(const gcatomID whatgcatomID, deref_gcatomID_type &into);
     reterrt writewithID(const gcatomID whatgcatomID, const deref_gcatomID_type &from);
     gcatomID addnew(const deref_gcatomID_type &from);

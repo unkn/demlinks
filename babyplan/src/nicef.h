@@ -66,6 +66,8 @@ private:
     cache_record * headCache;//head of a FIFO unsorted double-linked list
     cache_record * tailCache;//tail
     long highest_recno;//used with getnumrecords()
+    long max_numcachedrex;// 1024
+    //how many records to cache (ie. don't yet writ'em to disk)
 
 #ifdef ISOPEN_SAFETY
     int _opened;
@@ -74,7 +76,7 @@ public:
     nicefi();
     ~nicefi();
     reterrt flushwrites();//flush the cache, ...no shit!? we have cache?!
-    reterrt open(const char * fname, const long header_size,const long rec_size);
+    reterrt open(const char * fname, const long header_size,const long rec_size,const long maxcachedrecords);
     reterrt close();
     reterrt readrec(const long recno, void * into);//recsize bytes
     reterrt writerec(const long recno, const void * from);//recsize bytes
@@ -98,7 +100,7 @@ private:
     reterrt AddRecord2Cache(const stat_type typ,const long recno, const void * from);
     unsigned char absGetRecordFromCache(const long recno, void * into);
     reterrt killcache();
-    reterrt initCache();
+    reterrt initCache(const long maxrex);
 
 };
 

@@ -38,6 +38,8 @@
 #include "dmentalx.h"
 
 
+#define num_cached_records 2048
+
 dmentalix *test2;
 
 int main(){
@@ -53,7 +55,7 @@ int main(){
         unlinkall(_fnames);//so we kill the files we can use strictADDelemental()
     }
     
-    ab_ifnot(test2->init(_fnames));
+    ab_ifnot(test2->init(_fnames,num_cached_records));
 
     if (c==27) goto skipadd;
 
@@ -194,6 +196,8 @@ skiprnd:
 
 
 skipord:
+    printf("press key to flush&shutdown/\n");
+    getch();
     printf("Flushing writes and shutting down...\n");
     ab_ifnot(test2->shutdown());
     delete test2;

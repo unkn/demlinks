@@ -35,6 +35,7 @@
 
 /* NOTE NOTE NOTE : valid IDs are never zero or less */
 #define _noID_ 0L //identifies no valid ID; this must be 0L don't change!!!
+
 //GROUP
 //a group actually represents a chain of atoms; group=&chain
 typedef long groupID;//a ptr to a GROUP; a referer to a GROUP; a placeholder

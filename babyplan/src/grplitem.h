@@ -47,7 +47,7 @@ private:
 public:                           
     if_grpatomslist_item();                    
     ~if_grpatomslist_item();                    
-    reterrt init(const char *fname);    
+    reterrt init(const char *fname, const long MAXCACHEDRECORDS);    
     reterrt getwithID(const grpatomslist_itemID whatgrpatomslist_itemID, deref_grpatomslist_itemID_type &into);
     reterrt writewithID(const grpatomslist_itemID whatgrpatomslist_itemID, const deref_grpatomslist_itemID_type &from);
     grpatomslist_itemID addnew(const deref_grpatomslist_itemID_type &from);

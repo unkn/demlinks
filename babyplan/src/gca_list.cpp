@@ -65,8 +65,8 @@ if_gcatoms_list::if_gcatoms_list():
     opened=_no_;
 }
 
-reterrt if_gcatoms_list::init(const char * fname){
-    ret_ifnot(nicefi::open(fname,0,its_recsize));
+reterrt if_gcatoms_list::init(const char * fname, const long MAXCACHEDRECORDS){
+    ret_ifnot(nicefi::open(fname,0,its_recsize,MAXCACHEDRECORDS));
     opened=_yes_;
     ret_ok();
 }

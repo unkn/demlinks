@@ -52,7 +52,7 @@ private:
 public:                           
     if_atom();                    
     ~if_atom();                    
-    reterrt init(const char *fname);
+    reterrt init(const char *fname,const long MAXCACHEDRECORDS);
     reterrt getwithID(const atomID whatatomID, deref_atomID_type &into);
     reterrt writewithID(const atomID whatatomID, const deref_atomID_type &from);
     atomID addnew(const deref_atomID_type &from);

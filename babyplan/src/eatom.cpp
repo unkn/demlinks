@@ -197,11 +197,11 @@ if_eatom::if_eatom():
 #endif
 }
 
-reterrt if_eatom::init(const char * fname){
+reterrt if_eatom::init(const char * fname, const long MAXCACHEDRECORDS){
 #ifdef WASINITED_SAFETY
     ret_if(wasinited());
 #endif
-    ret_ifnot(nicefi::open(fname,0,its_recsize));
+    ret_ifnot(nicefi::open(fname,0,its_recsize,MAXCACHEDRECORDS));
 #ifdef WASINITED_SAFETY
     setinited();
 #endif

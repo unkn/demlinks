@@ -46,7 +46,7 @@ private:
 public:                           
     if_gcatomslist_item();                    
     ~if_gcatomslist_item();                    
-    reterrt init(const char *fname);    
+    reterrt init(const char *fname, const long MAXCACHEDRECORDS);    
     reterrt getwithID(const gcatomslist_itemID whatgcatomslist_itemID, deref_gcatomslist_itemID_type &into);
     reterrt writewithID(const gcatomslist_itemID whatgcatomslist_itemID, const deref_gcatomslist_itemID_type &from);
     gcatomslist_itemID addnew(const deref_gcatomslist_itemID_type &from);

@@ -53,7 +53,7 @@ private:
 public:                           
     if_eatom();
     ~if_eatom();
-    reterrt init(const char *fname);    
+    reterrt init(const char *fname, const long MAXCACHEDRECORDS);    
     reterrt getwithID(const eatomID whateatomID, deref_eatomID_type &into);
     reterrt writewithID(const eatomID whateatomID, const deref_eatomID_type &from);
     eatomID find_eatom(deref_eatomID_type &into,const basic_element searchme);

@@ -46,7 +46,7 @@ private:
 public:                           
     if_acatomslist_item();                    
     ~if_acatomslist_item();                    
-    reterrt init(const char *fname);    
+    reterrt init(const char *fname, const long MAXCACHEDRECORDS);    
     reterrt getwithID(const acatomslist_itemID whatacatomslist_itemID, deref_acatomslist_itemID_type &into);
     reterrt writewithID(const acatomslist_itemID whatacatomslist_itemID, const deref_acatomslist_itemID_type &from);
     acatomslist_itemID addnew(const deref_acatomslist_itemID_type &from);

@@ -63,7 +63,6 @@ TODO: we could use a cache of one or two records (ie. the last ones r/w)
 #endif
 /* end of PRIVATE MACROS */
 
-#define max_numcachedrex 1024 //how many records to cache (ie. don't yet writ'em to disk)
 
 #ifdef ISOPEN_SAFETY
 /* private constants */
@@ -259,11 +258,12 @@ reterrt nicefi::writerec(const long recno, const void * from){
     ret_ok();
 }
 
-reterrt nicefi::initCache(){
+reterrt nicefi::initCache(const long maxrex){
     highest_recno=0;
     numCachedRecords=0;
     headCache=NULL;
     tailCache=NULL;
+    max_numcachedrex=maxrex;
 
     ret_ok();
 }
@@ -416,7 +416,7 @@ reterrt nicefi::readheader(void *  header){
 
 
 
-reterrt nicefi::open(const char * fname, const long header_size,const long rec_size){
+reterrt nicefi::open(const char * fname, const long header_size,const long rec_size,const long maxcachedrecords){
     sret_if(fhandle>0);//if already open
 #ifdef ISOPEN_SAFETY
     sret_if(isopened());
@@ -425,7 +425,7 @@ reterrt nicefi::open(const char * fname, const long header_size,const long rec_s
     sret_if(rec_size<=0);
     sret_if(header_size<0);
     
-    sret_ifnot( initCache() );
+    sret_ifnot( initCache(maxcachedrecords) );
 
     /* open the file */
     fhandle = ::sopen(fname, O_RDWR | O_CREAT | O_BINARY /*| O_DENYWRITE*/, SH_DENYWR, S_IREAD | S_IWRITE);

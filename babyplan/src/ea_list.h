@@ -52,7 +52,7 @@ private:
 public:                           
     if_eatoms_list();                    
     ~if_eatoms_list();                    
-    reterrt init(const char *fname);    
+    reterrt init(const char *fname, const long MAXCACHEDRECORDS);    
     reterrt getwithID(const eatoms_listID whateatoms_listID, deref_eatoms_listID_type &into);
     reterrt writewithID(const eatoms_listID whateatoms_listID, const deref_eatoms_listID_type &from);
     eatoms_listID addnew(const deref_eatoms_listID_type &from);
