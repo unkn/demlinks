@@ -41,22 +41,43 @@
 #define _FIRST_RECORD_ 1  //starts from 1, don't change!
 /* end */
 
+enum bull {
+    stat_read=1,
+    stat_write=2
+};
+
+typedef int stat_type;
+
+struct cache_record {
+    stat_type stat;
+    long recno;
+    void * data;//malloc(recsize)
+    cache_record *prev;
+    cache_record *next;
+};
+
 class nicefi {
 private:
     int fhandle;
     long headersize;//long is -2GB..+2GB dammit!
     long recsize;
+    /* cache stuff: */
+    long numCachedRecords;//in records
+    cache_record * headCache;//head of a FIFO unsorted double-linked list
+    cache_record * tailCache;//tail
+    long highest_recno;//used with getnumrecords()
+
 #ifdef ISOPEN_SAFETY
     int _opened;
 #endif
 public:
     nicefi();
     ~nicefi();
+    reterrt flushwrites();//flush the cache, ...no shit!? we have cache?!
     reterrt open(const char * fname, const long header_size,const long rec_size);
     reterrt close();
     reterrt readrec(const long recno, void * into);//recsize bytes
     reterrt writerec(const long recno, const void * from);//recsize bytes
-//    ulong getrecnum();//get the record number of current filepos
     long getnumrecords();//how many records are now
     reterrt writeheader(const void * header);
     reterrt readheader(void * header);
@@ -71,6 +92,13 @@ private:
     reterrt seekto(const long recno);//1..
     long recnum2ofs(const long recnum);
     long ofs2recnum(const long ofs);
+    reterrt _absolute_readrec(const long recno, void * into);
+    reterrt _absolute_writerec(const long recno, const void * from);
+    reterrt absAddRecord2Cache(const stat_type typ,const long recno, const void * from);
+    reterrt AddRecord2Cache(const stat_type typ,const long recno, const void * from);
+    unsigned char absGetRecordFromCache(const long recno, void * into);
+    reterrt killcache();
+    reterrt initCache();
 
 };
 

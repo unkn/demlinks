@@ -69,6 +69,7 @@ int main(){
         );
         printf(" :has: atomID==%ld\n",bebe);
         if (c++==255) break;
+//        getch();
     }//while
 
 skipadd:
@@ -193,6 +194,7 @@ skiprnd:
 
 
 skipord:
+    printf("Flushing writes and shutting down...\n");
     ab_ifnot(test2->shutdown());
     delete test2;
 
