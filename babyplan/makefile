@@ -3,7 +3,7 @@
 #############################################################################
 #
 #                             dmental links
-#	Copyright (c) 28 Feb 2005 AtKaaZ, AtKaaZ at users.sourceforge.net
+#    Copyright (c) 28 Feb 2005 AtKaaZ, AtKaaZ at users.sourceforge.net
 #    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 #
 #  ========================================================================
@@ -43,22 +43,22 @@ outfile = $(bindir)\$(exe)
 phfile = $(tmpdir)\prechdrs.hdr
 
 objs = $(objdir)\test02.obj &
-	$(objdir)\dmentalx.obj &
-	$(objdir)\errtrack.obj &
-	$(objdir)\petrackr.obj &
-	$(objdir)\nicef.obj &
-	$(objdir)\atom.obj &
-	$(objdir)\group.obj &
-	$(objdir)\acatom.obj &
-	$(objdir)\gcatom.obj &
-	$(objdir)\eatom.obj &
-	$(objdir)\aca_list.obj &
-	$(objdir)\gca_list.obj &
-	$(objdir)\ea_list.obj &
-	$(objdir)\acalitem.obj &
-	$(objdir)\gcalitem.obj &
-	$(objdir)\eal_item.obj 
-	
+    $(objdir)\dmentalx.obj &
+    $(objdir)\errtrack.obj &
+    $(objdir)\petrackr.obj &
+    $(objdir)\nicef.obj &
+    $(objdir)\atom.obj &
+    $(objdir)\group.obj &
+    $(objdir)\acatom.obj &
+    $(objdir)\gcatom.obj &
+    $(objdir)\eatom.obj &
+    $(objdir)\aca_list.obj &
+    $(objdir)\gca_list.obj &
+    $(objdir)\ea_list.obj &
+    $(objdir)\acalitem.obj &
+    $(objdir)\gcalitem.obj &
+    $(objdir)\eal_item.obj 
+    
 
 # that's all ~ above
 
@@ -82,41 +82,41 @@ LNKOPT = option quiet
 .EXTENSIONS: .exe .obj .h .cpp 
 
 .ERROR
-	@cd $(errdir)
-	@echo ERRORsssssssss!
+    @cd $(errdir)
+    @echo ERRORsssssssss!
 
 .BEFORE
         @set INCLUDE=.;$(%watcom)\h
         @set DOS4G=QUIET
 
 .AFTER 
-	@echo Done.
-	
+    @echo Done.
+    
 # explicit rules
 
 all :  $(outfile) .SYMBOLIC
-	@cd $(bindir)
+    @cd $(bindir)
 
 .ERASE
 $(outfile) : $(objs)
-	*wlink $(LNKOPT) system $(SYSTEM) name $(outfile) file {$(objs)} 
+    *wlink $(LNKOPT) system $(SYSTEM) name $(outfile) file {$(objs)} 
 
 clean : cleanerr .SYMBOLIC
         if exist $(objdir)\*.obj del $(objdir)\*.obj
         if exist $(bindir)\*.exe del $(bindir)\*.exe
-	if exist $(phfile) del $(phfile)
+    if exist $(phfile) del $(phfile)
 
 cleanerr : .SYMBOLIC
-	if exist $(errdir)\*.err del $(errdir)\*.err
+    if exist $(errdir)\*.err del $(errdir)\*.err
 
 killdat : .SYMBOLIC       
-	if exist $(tmpdir)\*.dat attrib -shra $(tmpdir)\*.dat 
-	if exist $(tmpdir)\*.dat del $(tmpdir)\*.dat
-	if exist $(bindir)\*.dat attrib -shra $(bindir)\*.dat 
-	if exist $(bindir)\*.dat del $(bindir)\*.dat
+    if exist $(tmpdir)\*.dat attrib -shra $(tmpdir)\*.dat 
+    if exist $(tmpdir)\*.dat del $(tmpdir)\*.dat
+    if exist $(bindir)\*.dat attrib -shra $(bindir)\*.dat 
+    if exist $(bindir)\*.dat del $(bindir)\*.dat
 
 cleanall : clean killdat .SYMBOLIC
-	@%null
+    @%null
 
 # implicit rules
 

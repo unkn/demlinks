@@ -46,10 +46,10 @@ int main(){
     test2=new dmentalix;
     ab_ifnot(test2);
 
-//    unlinkall(_fnames);//so we kill the files we can use strictADDelemental()
+    unlinkall(_fnames);//so we kill the files we can use strictADDelemental()
     ab_ifnot(test2->init(_fnames));
 
-    basic_element c;
+    int c;
     c=0;
     while (
             ( (int)(c) <256 ) 
@@ -57,7 +57,7 @@ int main(){
             ( !( (kbhit())&&(getch()) ) )
         ){
         printf("attempting to add basic_elemnt==char(%d)",c);
-        atomID bebe=test2->try_add_atom_type_E(c);//only used with unlink()
+        atomID bebe=test2->strict_add_atom_type_E((basic_element)(c));//only used with unlink()
         ab_ifnot(bebe);
         printf(" :has: atomID==%ld\n",bebe);
         c++;
