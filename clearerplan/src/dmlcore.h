@@ -46,6 +46,7 @@
 #define kNoChainID kNoID
 #define kNoListID kNoID
 
+#define kNoElementalID kNoID
 #define kNoRef2RefID kNoRefID
 #define kNoRef2ChainID kNoRefID
 #define kNoRef2ElemID kNoRefID
@@ -273,6 +274,10 @@ public:
                         const BasicElement_t a_BasicElementData,
                         const ListOfReferrers_ID_t a_ListOfRef2Elemental_ID);
 
+        /* append a new elemental to the list/database of existing ones
+         * return its ID or kNoElementalID if failed */
+        ElementalID_t AddNew(const Elemental_st a_Elemental_st);
+
 private:
         bool IsInited() const { return fInited; };
         void SetInited() { fInited = true; };
@@ -284,7 +289,7 @@ private:
         /* true if Init was called and succeded */
         bool fInited;
 
-        /* true if all compounds have Cache enabled (there cannot be any other 
+        /* true if all compounds have Cache enabled (there cannot be any other
            way: either all have cache or none has cache) */
         bool fCache;
 public:

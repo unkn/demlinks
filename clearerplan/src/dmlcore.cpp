@@ -27,7 +27,11 @@
 * Description: the core of demlinks
 *
 ****************************************************************************/
-
+/*
+ * "Functions should be short and sweet, and do just one thing.  They should
+   fit on one or two screenfuls of text (the ISO/ANSI screen size is 80x24,
+   as we all know), and do one thing and do that well." quoting Linus here.
+ */
 
 #include "_gcdefs.h" /* first */
 /* personalized notification tracking capabilities */
@@ -113,7 +117,7 @@ MElemental::GetLastID(
 {
         LAME_PROGRAMMER_IF(!IsInited(),
                         return false);
-        ERR_IF(!(a_ElementalID=TRecordsStorage::GetNumRecords()),
+        ERR_IF(kBadRecCount == (a_ElementalID = TRecordsStorage::GetNumRecords()),
                         return false);
         return true;
 }
@@ -201,4 +205,27 @@ MDementalLinksCore::KillCache()
                         return false);
         return true;
 }
+
+
+ElementalID_t
+MElemental::AddNew(
+                const Elemental_st a_Elemental_st)
+{
+        LAME_PROGRAMMER_IF(!IsInited(),
+                        return kNoElementalID);
+
+        ElementalID_t newElementalID;
+        ERR_IF(!GetLastID(newElementalID),
+                        return kNoElementalID);
+
+        newElementalID++;
+
+        ERR_IF(!WriteWithID(
+                                newElementalID,
+                                a_Elemental_st),
+                        return kNoElementalID);
+
+        return newElementalID;
+}
+
 

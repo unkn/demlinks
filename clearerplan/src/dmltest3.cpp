@@ -93,8 +93,10 @@ int main()
                                         elemental_s,
                                         element % 256,
                                         kNoListID));
-                EXIT_IF(!MyElementals->WriteWithID(element,elemental_s));
-                EXIT_IF(!MyElementals->GetLastID(tmpCount));
+                EXIT_IF(kNoElementalID ==
+                                (tmpCount = MyElementals->AddNew(elemental_s)));
+                //EXIT_IF(!MyElementals->WriteWithID(element,elemental_s));
+                //EXIT_IF(!MyElementals->GetLastID(tmpCount));
                 EXIT_IF(tmpCount != element);
         }
 
