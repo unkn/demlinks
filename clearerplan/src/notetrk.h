@@ -43,7 +43,7 @@ typedef PChar_t File_t;//__FILE__
 typedef PChar_t Func_t;//__func__
 
 /* this type is used to count the notes ie. one, two, three, ten, eleven...;) */
-typedef int Counter_t; 
+typedef int Counter_t;
 /* who said anything about base 4 ? :> */
 
 /* ie. constants defined in derived class,like WARN, ERR, DEBUG */
@@ -62,15 +62,15 @@ then the former function returns an error, of depth=2, to the main program.
 
 /* name of the source file where the notification(or error) occured */
         File_t      File;//__FILE__
-    
+
 /* function name */
         Func_t      Func;//__func__
-    
+
 /* line number */
         Line_t      Line;//__LINE__
-    
+
 /* eventually the contents of the line which caused the notif, or a msg */
-        PChar_t     UserDesc;//description 
+        PChar_t     UserDesc;//description
 };
 
 /*
@@ -91,19 +91,19 @@ class TNotify {
 /* items are added at the tail and removed from the head of the list*/
 private:
 
-/* points to first notify that entered the list, the one that will be 
+/* points to first notify that entered the list, the one that will be
  * pop-ed OUT from the list */
         NotifyItem_st *fHead;
-    
+
 /* notify items are pushed IN from the tail */
 /* ie. last notify that happened(the most recent one) is pointed by this*/
         NotifyItem_st *fTail;
-    
-/* 
+
+/*
 set while something such as mem alloc failed, in internal functions
 */
         int fInternalFailed;
-    
+
 protected:
         /* keeps count of how many notifications are in the list */
         Counter_t fHowMany;
@@ -114,36 +114,36 @@ public:
         bool AddUserNote(
                         const NotifyType_t a_NotifyType,
                         PChar_t a_Desc,
-                        File_t a_FileName, 
-                        Func_t a_Func, 
+                        File_t a_FileName,
+                        Func_t a_Func,
                         const Line_t a_Line);
-        
+
         /* adds a new notification to list with predefined contents */
         /* mostly used internally */
         bool AddNote(const NotifyItem_st &a_NewNote);
-        
-        
+
+
         /* returns pointer to the last notification, or NULL if list is empty */
         /* moves the first notification from the list outside into user space,
          * that's removing the link from list, but not deallocating it
          * the user should deallocate as necessary */
         NotifyItem_st * MoveOutNote();
-        
+
         /* returns pointer to the last notification, or NULL if list is empty */
         /* last notification is the first one put in the list when the list was
-           empty. 
+           empty.
          * This is _NOT_ to be deallocated by the caller, like MoveOutNote()*/
         NotifyItem_st * GetLastNote();
 
         /* drops in vain the last note (this is at head of the list, FIFO re?!!)
          * ie. like never happend */
         void ClearLastNote();
-        
+
         /* empties the list of notes unconditionally ie. clear all notes */
         void PurgeThemAll();
 
-        bool HasFailedInternally(){ 
-                if (fInternalFailed==true) 
+        bool HasFailedInternally(){
+                if (fInternalFailed==true)
                         return true;
                 return false;
         };
@@ -161,7 +161,7 @@ private:
 
         void SetFailedInternally(){ fInternalFailed=true; };
         void SetOkInternally(){ fInternalFailed=false; };
-        
+
 };/* class TNotify */
 
 #endif

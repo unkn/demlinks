@@ -39,19 +39,19 @@ enum ENotifyTypes {
         kNotify_Warn,
         kNotify_Err,
         kNotify_Info,
-        
+
         /* the developer used certain statements under a disconnected situation
          * ie. using flush() without having the file opened, or using a NULL
          * pointer, to put data into */
         kNotify_ProgrammingError,
 
-        /* this signals that a paranoid check on a condition was true, 
+        /* this signals that a paranoid check on a condition was true,
          * if so then is considered fatal ;) since the condition is expected
          * always to be false (*doh* paranoid) */
         kNotify_Paranoid,
-        
+
         /* last in line*/
-        kNumNotifyTypes 
+        kNumNotifyTypes
 };
 
 
@@ -64,7 +64,7 @@ public:
         void ShowAllNotes();
 };
 
-/* global notify-tracker variable, used everywhere 
+/* global notify-tracker variable, used everywhere
  * here we hold the list of encountered notifications during program exec.*/
 extern MNotifyTracker *gNotifyTracker;
 
@@ -81,11 +81,11 @@ extern MNotifyTracker *gNotifyTracker;
 
 
 /* define this before including this header file in your sources
- * if defined, turns on the code that does the checks and executes the 
+ * if defined, turns on the code that does the checks and executes the
    statements if the checks are true (see below) */
-#if defined(PARANOID_CHECKS) 
+#if defined(PARANOID_CHECKS)
 
-/* adds a paranoia msg to the notify-list if the condition is true 
+/* adds a paranoia msg to the notify-list if the condition is true
  * this usually means that something is going really wrong and this is like
  * a fatal situation (if the condition is true, of course) */
 #define PARANOID_IF(a_ConditionalStatement,a_MoreStatementsIfTrue)  \
@@ -157,8 +157,8 @@ extern MNotifyTracker *gNotifyTracker;
 }
 
 #if defined(CHECK_FOR_LAME_PROGRAMMERS)
-/* adds a programming-error to the notify-list if the condition is true 
-   and optionally executes more statements if so 
+/* adds a programming-error to the notify-list if the condition is true
+   and optionally executes more statements if so
  * this should only happen if the programmer misused some statements or forgot
  * something such as openning the file before writing to it */
 #define LAME_PROGRAMMER_IF(a_ConditionalStatement,a_MoreStatementsIfTrue)  \
@@ -194,13 +194,13 @@ extern MNotifyTracker *gNotifyTracker;
 
 /* adds a notification and checks to see if we failed to properly add it
  * if so displays a message and aborts the running program */
-void CheckedAddNote(   
+void CheckedAddNote(
         const NotifyType_t a_NotifyType,
         PChar_t a_Desc,
         File_t a_FileName,
         Func_t a_Func,
         const Line_t a_Line);
-                
+
 void ShutDownNotifyTracker();
 void InitNotifyTracker();
 void PurgeAllNotifications();

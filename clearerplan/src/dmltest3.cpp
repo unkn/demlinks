@@ -61,7 +61,7 @@ int main()
 
         WARN_IF(1-1==3-2-1,)
         WARN_IF(1,)
-        
+
         printf("before trap\n");
         TRAP(0);
         printf("after trap\n");

@@ -33,7 +33,7 @@
 
 #include "pnotetrk.h"
 
-/* global uniq variable, this is where we keep all errors 
+/* global uniq variable, this is where we keep all errors
  * this is used in almost all source files */
 MNotifyTracker *gNotifyTracker;
 
@@ -56,18 +56,18 @@ MNotifyTracker::MNotifyTracker()
 {
 }
 
-/* destructor 
+/* destructor
  * FIXME: it doesn't seem to be called when doing a `return' from main() */
 MNotifyTracker::~MNotifyTracker()
 {
         /* show them all if we didn't got the chance */
-        if (GetLastNote()) 
+        if (GetLastNote())
                 ShowAllNotes();
 }
 
 /* adds a notification and checks to see if we failed to properly add it
  * if so displays a message and aborts the running program */
-void 
+void
 CheckedAddNote(
         const NotifyType_t a_NotifyType,
         PChar_t a_Desc,
@@ -75,32 +75,32 @@ CheckedAddNote(
         Func_t a_Func,
         const Line_t a_Line)
 {
-        
+
         bool tmpres=gNotifyTracker->AddUserNote(a_NotifyType,
                                                 a_Desc,
                                                 a_FileName,
                                                 a_Func,
                                                 a_Line);
-        
+
         if ((tmpres==false) && (gNotifyTracker->HasFailedInternally())) {
-        
+
                 fprintf(stderr,
                         "The NotifyTracker has failed internally.\n"
                         "This is perhaps due to lack of memory.\n"
                         "However we're going to try and show you %d"
                         "notifications before aborting...\n",
                         gNotifyTracker->GetNumNotes());
-        
+
                 gNotifyTracker->ShowAllNotes();
-        
+
                 abort();
         }
-                                        
+
 }
-    
+
 /* show a list of all notifications that happened since last time the list was
  * empty */
-void 
+void
 MNotifyTracker::ShowAllNotes()
 {
         NotifyItem_st *tmp=GetLastNote();
@@ -119,7 +119,7 @@ MNotifyTracker::ShowAllNotes()
 }
 
 
-void 
+void
 InitNotifyTracker()
 {
         gNotifyTracker=new MNotifyTracker;
@@ -134,7 +134,7 @@ InitNotifyTracker()
         }
 }
 
-void 
+void
 ShutDownNotifyTracker()
 {
         if (gNotifyTracker) {
@@ -145,14 +145,14 @@ ShutDownNotifyTracker()
         }
 }
 
-void 
+void
 PurgeAllNotifications()
 {
-        if (gNotifyTracker) 
+        if (gNotifyTracker)
                 gNotifyTracker->PurgeThemAll();
 }
 
-void 
+void
 ShowAllNotifications()
 {
         if (gNotifyTracker)

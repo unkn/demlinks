@@ -36,9 +36,9 @@
 
 
 /* constructor */
-TNotify::TNotify(): 
-        fHead(NULL), 
-        fTail(NULL) 
+TNotify::TNotify():
+        fHead(NULL),
+        fTail(NULL)
 {
         SetOkInternally();
         SetNoNotes();
@@ -48,12 +48,12 @@ TNotify::TNotify():
 TNotify::~TNotify()
 {
         /* destroy the list, if not done so */
-        if (fHead) 
+        if (fHead)
                 PurgeThemAll();
 }
 
 /* empties the entire list of notifications */
-void 
+void
 TNotify::PurgeThemAll()
 {
         /* we go forward until we hit the last element */
@@ -69,23 +69,23 @@ TNotify::PurgeThemAll()
 }
 
 /* one less note in the list, particulary the one that enterd the list first */
-void 
+void
 TNotify::ClearLastNote()
 {
-        if (fHead) { 
-                SetLessNotes(); 
+        if (fHead) {
+                SetLessNotes();
                 NotifyItem_st *tmp=fHead;
-                fHead=fHead->Next; 
+                fHead=fHead->Next;
 
                 /* FIXME: not deallocating PChar_t types from within */
                 delete tmp;
-                if (!fHead) 
+                if (!fHead)
                         fTail=NULL;
         }
 }
 
 
-NotifyItem_st * 
+NotifyItem_st *
 TNotify::GetLastNote()
 {
 /* may return NULL */
@@ -93,45 +93,45 @@ TNotify::GetLastNote()
 }
 
 
-/* moves out the item from list, w/o deallocating it 
+/* moves out the item from list, w/o deallocating it
  * it's a job left for the caller
- */ 
-NotifyItem_st * 
+ */
+NotifyItem_st *
 TNotify::MoveOutNote()
 {
 /* return NULL if list is empty, otherwise returns a pointer to the item */
         NotifyItem_st *tmp=fHead;
         if (fHead) {
                 fHead=fHead->Next;
-                if (!fHead) 
+                if (!fHead)
                         fTail=NULL;
                 SetLessNotes();
         }
         return tmp;
 }
 
-bool 
+bool
 TNotify::Add2List(NotifyItem_st *a_What)
 {
         /* even if we fail something we still have to count this note */
         SetMoreNotes();
-        
+
         if (!a_What) {/* oops NULL ptr passed to us */
                 SetFailedInternally();
-                return false; 
+                return false;
         }
 /* this one we add is at the tail so it points to no more items afterwards */
         a_What->Next=NULL;
-        if (fTail) 
+        if (fTail)
                 fTail->Next=a_What;
         else /* fTail is NULL then so must fHead be NULL */
                 fHead=a_What; /* so we only got one item */
-    
+
         fTail=a_What; /* always pointing to last item in list */
         return true;
 }
 
-bool 
+bool
 TNotify::AddNote(const NotifyItem_st &a_NewNote)
 {
 /* parameter must already be allocated */
@@ -145,7 +145,7 @@ TNotify::AddNote(const NotifyItem_st &a_NewNote)
 
 /* except that the Depth must be corrected by us 'cause we compute the Depth */
         tmp->Contents.Depth=GetNumNotes();
-        
+
         /* this function does SetMoreNotes() */
         return Add2List(tmp);/* most always returns true */
 
@@ -160,12 +160,12 @@ ifailed:
 
 
 
-bool 
+bool
 TNotify::AddUserNote(
-        const NotifyType_t a_NotifyType, 
+        const NotifyType_t a_NotifyType,
         PChar_t a_Desc,
-        File_t a_FileName, 
-        Func_t a_Func, 
+        File_t a_FileName,
+        Func_t a_Func,
         const Line_t a_Line)
 {
         /* static or smth */
@@ -176,9 +176,9 @@ TNotify::AddUserNote(
         tmp.Contents.Type=a_NotifyType;
         tmp.Contents.Line=a_Line;
 
-        /* FIXME: just exchanging pointer values here 
+        /* FIXME: just exchanging pointer values here
          * so the user must either provide "strings" on the function call
-           (this is what's intended, since we're using __FILE__ and so macros) 
+           (this is what's intended, since we're using __FILE__ and so macros)
          * or we must alloc these, with the risk of not having enough mem
            (but we may fail the alloc anyways, when adding the note item to the
            list)
