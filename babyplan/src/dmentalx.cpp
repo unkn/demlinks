@@ -99,6 +99,41 @@ reterrt dmentalix::shutdown(){
 #undef DONE
 /*^^^^^^^^^^^^^^*/
 
+reterrt dmentalix::get_eatomslist_item_withID(const eatomslist_itemID whateatomslist_itemID, deref_eatomslist_itemID_type *into){
+#ifdef WASINITED_SAFETY
+    ret_ifnot(wasinited());//files must be open ~ check
+#endif
+
+    return ( if_eatomslist_item::getwithID(whateatomslist_itemID,into) );
+}
+
+reterrt dmentalix::get_atomID_s_headIDof_eatomslistofclones(const atomID which, eatomslist_itemID &head){
+/* get ptr2head item of eatomID
+causes error if there's no head in items, usually where there are no clones!
+*/
+#ifdef WASINITED_SAFETY
+    ret_ifnot(wasinited());//files must be open ~ check
+#endif
+
+    deref_atomID_type _ecin;
+    ret_ifnot ( if_atom::getwithID(which,&_ecin) );
+    
+    atomtypes ty=_ecin.at_type;
+    ret_if( ty != _E_atom ); //expecting only eatom, not gca or aca or other(invalid)
+    
+    deref_eatomID_type _ec;
+    ret_ifnot( if_eatom::getwithID(_ecin.at_ID,&_ec) );
+    eatoms_listID _el=_ec.ptr2list;
+    ret_if( _noID_ == _el );//serious issue
+
+    deref_eatoms_listID_type t_el;
+    ret_ifnot( if_eatoms_list::getwithID(_el,&t_el) );
+    //all ok
+    head=t_el.ptr2head;//may be _noID_ but no error is returned
+    
+    ret_ok();
+}
+
 
 /*______________*/
 reterrt dmentalix::get_atomID_s_type_prev_next(const atomID whos_atomID, atomtypes &type, atomID &prev, atomID &next){
@@ -175,10 +210,9 @@ atomID dmentalix::strict_add_atom_type_AC_after_prev(const atomID ptr2what_atomI
 //a chain of other atoms, prev and next in a list.
 //HOWEVER, we must add into `ptr2what_atomID' 's list the fact that this
 //`father' acatom, we created, points to it, we do this on the following
-//lines:
-//FIXME: do as above
+//line:
 //add father as an item to the list of thos which point to `ptr2what_atomID'
-    ret_ifnot( add_to_clone_list(ptr2what_atomID,father) );
+    ret_ifnot( add_atomID_to_clone_list(father,ptr2what_atomID) );
 //also DONE:: we have to go to prevatomID we should update that atom's next
 //to point to US
 
@@ -199,7 +233,7 @@ atomID dmentalix::strict_add_atom_type_AC_after_prev(const atomID ptr2what_atomI
 /*^^^^^^^^^^^^^^*/
 
 /*______________*/
-reterrt dmentalix::add_to_clone_list(const atomID whos_atomID, const atomID what2add_atomID){
+reterrt dmentalix::add_atomID_to_clone_list(const atomID what2add_atomID, const atomID whos_atomID){
 /* add what2add into whos' list of atoms which point to whos*/
 #ifdef WASINITED_SAFETY
     ret_ifnot(wasinited());//files must be open ~ check
@@ -211,7 +245,7 @@ reterrt dmentalix::add_to_clone_list(const atomID whos_atomID, const atomID what
         case _E_atom:
             deref_eatomID_type _ea;
             ret_ifnot( if_eatom::getwithID(_tmpa.at_ID,&_ea) );
-            ret_ifnot( one_more_eatom_to_this_clone_list(_ea.ptr2list,what2add_atomID) );
+            ret_ifnot( strict_add_one_more_eatom_to_this_clone_list(_ea.ptr2list,what2add_atomID) );
             break;
         case _GC_atom:
                 deref_gcatomID_type _gca;
@@ -223,7 +257,7 @@ reterrt dmentalix::add_to_clone_list(const atomID whos_atomID, const atomID what
                 deref_acatomID_type _aca;
                 ret_ifnot( if_acatom::getwithID(_tmpa.at_ID,&_aca) );
                 //got ACatom
-                ret_ifnot( one_more_acatom_to_this_clone_list(_aca.ptr2clonelist,what2add_atomID) );
+                ret_ifnot( strict_add_one_more_acatom_to_this_clone_list(_aca.ptr2clonelist,what2add_atomID) );
                 break;
         default:
                 ret_ifalways(not dodging atom of unknown type);
@@ -262,11 +296,10 @@ reterrt dmentalix::strict_add_one_more_gcatom_to_this_clone_list(const gcatoms_l
 /*^^^^^^^^^^^^^^*/
 
 /*______________*/
-reterrt dmentalix::one_more_eatom_to_this_clone_list(const eatoms_listID whatlist, const atomID what2add){
+reterrt dmentalix::strict_add_one_more_eatom_to_this_clone_list(const eatoms_listID whatlist, const atomID what2add){
 #ifdef WASINITED_SAFETY
     ret_ifnot(wasinited());//files must be open ~ check
 #endif
-//FIXME::
     deref_eatoms_listID_type _list;
     ret_ifnot( if_eatoms_list::getwithID(whatlist,&_list) );
 
@@ -290,11 +323,26 @@ reterrt dmentalix::one_more_eatom_to_this_clone_list(const eatoms_listID whatlis
 /*^^^^^^^^^^^^^^*/
 
 /*______________*/
-reterrt dmentalix::one_more_acatom_to_this_clone_list(const acatoms_listID whatlist, const atomID what2add){
+reterrt dmentalix::strict_add_one_more_acatom_to_this_clone_list(const acatoms_listID whatlist, const atomID what2add){
 #ifdef WASINITED_SAFETY
     ret_ifnot(wasinited());//files must be open ~ check
 #endif
-//FIXME::
+    deref_acatoms_listID_type _list;
+    ret_ifnot( if_acatoms_list::getwithID(whatlist,&_list) );
+
+
+    deref_acatomslist_itemID_type newitem;
+    newitem.prevINlist=_noID_;
+    newitem.nextINlist=_list.ptr2head;//the old head
+    newitem.ptr2atom_that_points_to_US=what2add;
+    //connected new item to the chain, but put first, instead of last.
+
+    _list.ptr2head=if_acatomslist_item::addnew(&newitem);//append
+    ret_if(_list.ptr2head == _noID_);//catches errors too
+    //wrote new item
+
+    ret_ifnot( if_acatoms_list::writewithID(whatlist,&_list) );
+    //wrote list
 
     ret_ok();
 }

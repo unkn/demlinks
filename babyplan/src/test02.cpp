@@ -65,7 +65,7 @@ int main(){
     while ( !( (kbhit())&&(getch()) ) ){
         printf("attempting to add basic_elemnt==char(%d)",c);
         ab_if_error_after_statement(
-        atomID bebe=test2->strict_add_atom_type_E(c);//only used with unlink()
+            atomID bebe=test2->strict_add_atom_type_E(c);//only used with unlink()
         );
         printf(" :has: atomID==%ld\n",bebe);
         if (c++==255) break;
@@ -75,7 +75,7 @@ skipadd:
     
     atomID prev=_noID_;
 
-    printf("Attempting to add acatoms to each eatom\n");
+    printf("Attempting to add acatoms to each eatom ~ 30secs\n");
     printf("drop anykey to begin or ESC to skip...\n");
     if (getch()==27) goto skipacatoms;
     
@@ -83,10 +83,10 @@ skipadd:
     while ( !( (kbhit())&&(getch()) ) ){
         printf("attempt2add ACatom to BE==char(%d)",c);
         ab_if_error_after_statement(
-        atomID _atomID_typeE=test2->find_atomID_type_E(c);
+            atomID _atomID_typeE=test2->find_atomID_type_E(c);
         );
         ab_if_error_after_statement(
-        atomID bebe=test2->strict_add_atom_type_AC_after_prev(_atomID_typeE,_noID_,prev);//only used with unlink()
+            atomID bebe=test2->strict_add_atom_type_AC_after_prev(_atomID_typeE,_noID_,prev);//only used with unlink()
         );
         prev=bebe;//at this point we have prev bebe->next=_noID_ unless that
         //funxion updates prev->next to US, which will do! and should DO!
@@ -105,23 +105,42 @@ skipadd:
         atomtypes _ty;
         atomID next=_noID_;
         atomID now=prev;
-        ret_ifnot( test2->get_atomID_s_type_prev_next(now,_ty,prev,next) );
-        ret_if( _ty != _AC_atom );//we know we only have acatoms, by now.
+        ab_ifnot( test2->get_atomID_s_type_prev_next(now,_ty,prev,next) );
+        ab_if( _ty != _AC_atom );//we know we only have acatoms, by now.
         printf("passing thru type AC w/ atomID==%ld\n",now);
         if (prev==_noID_) break;//no more prev items
     }//while
 
 
-//FIXME::
-    atomID typeE;
-    printf("Trying to get list of clones to last eatom\n");
+    printf("Trying to get list of clones for all eatoms\n");
     printf("drop anykey to begin or ESC to skip...\n");
     if (getch()==27) goto skipacatoms;
 
-        ab_if_error_after_statement(
-        typeE=test2->find_atomID_type_E(255);
-        );
-//FIXME:
+  c=0;
+  while ( !( (kbhit())&&(getch()) ) ){
+
+    atomID typeEid;
+    ab_if_error_after_statement(
+        typeEid=test2->find_atomID_type_E(c);
+    );
+
+    eatomslist_itemID head;
+
+    ab_ifnot( test2->get_atomID_s_headIDof_eatomslistofclones(typeEid,head) );
+//head might be _noID_ after above call ^ w/o any err to be caused.
+
+    while (
+           ( !( (kbhit())&&(getch()) ) )
+           && (head != _noID_)
+          )
+    {
+        deref_eatomslist_itemID_type inhead;
+        ab_ifnot( test2->get_eatomslist_item_withID(head,&inhead) );
+        printf("atomID==%ld points to BE#%d which is US(=atomID(%ld))\n",inhead.ptr2atom_that_points_to_US,c,typeEid);
+        head=inhead.nextINlist;
+    }//while
+    if (c++==255) break;//quit after pr0xexin last
+  }//while
 
 skipacatoms:
     srand(982);
@@ -135,7 +154,7 @@ skipacatoms:
         basic_element d=(basic_element)(rand());//no warnings
         printf("cnt %d find atomID of eatom with BE#%d",c,d);
         ab_if_error_after_statement(
-        atomID elder=test2->find_atomID_type_E(d);
+            atomID elder=test2->find_atomID_type_E(d);
         );
         if (elder==0) printf(" not found!\n");
         else printf(" :atomIDis: %ld\n",elder);
@@ -152,7 +171,7 @@ skiprnd:
         c--;
         printf("find atomID of a type E atom (eatom) that has basic_elem #%d",c);
         ab_if_error_after_statement(
-        atomID elder=test2->find_atomID_type_E(c);
+            atomID elder=test2->find_atomID_type_E(c);
         );
         if (elder==0) printf(" not found!\n");
         else printf(" :atomIDis: %ld\n",elder);

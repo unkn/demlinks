@@ -96,6 +96,9 @@ public:
     dmentalix::~dmentalix();
     reterrt init(_declall(const char *,fname));//open all files
     reterrt shutdown();//close all files
+
+    reterrt get_eatomslist_item_withID(const eatomslist_itemID whateatomslist_itemID, deref_eatomslist_itemID_type *into);
+    
     atomID try_add_atom_type_E(const basic_element BE);//checks existing
     atomID strict_add_atom_type_E(const basic_element BE);//no check, imperativeADD!
     atomID find_atomID_type_E(const basic_element BE);//only ID is returned
@@ -106,15 +109,15 @@ public:
 
     reterrt strict_modif_next(const atomID whos_atomID, const atomID newnext, atomID *oldnext);//if non NULL oldnext=.next before changin;; whos_atomID.next=newnext;
 
+    reterrt get_atomID_s_headIDof_eatomslistofclones(const atomID which, eatomslist_itemID &head);
 private:
     reterrt strict_add_one_more_gcatom_to_this_clone_list(const gcatoms_listID whatlist, const atomID what2add);
-    reterrt one_more_acatom_to_this_clone_list(const acatoms_listID whatlist, const atomID what2add);
-    reterrt one_more_eatom_to_this_clone_list(const eatoms_listID whatlist, const atomID what2add);
+    reterrt strict_add_one_more_acatom_to_this_clone_list(const acatoms_listID whatlist, const atomID what2add);
+    reterrt strict_add_one_more_eatom_to_this_clone_list(const eatoms_listID whatlist, const atomID what2add);
     
-    reterrt add_to_clone_list(const atomID whos_atomID, const atomID what2add_atomID);
+    reterrt add_atomID_to_clone_list(const atomID what2add_atomID, const atomID whos_atomID);
     eatomID try_newelemental(const atomID whosmy_atomID, const basic_element thenewbe);//a new eatom?!with check
     eatomID strict_addelemental(const atomID whosmy_atomID, const basic_element thenewbe);//no check, appendnew!
-//    eatomID get_eatomID_of_elemental(const basic_element seekBE);
 
 //other set
 #ifdef WASINITED_SAFETY
