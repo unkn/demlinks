@@ -67,12 +67,13 @@ MNotifyTracker::~MNotifyTracker()
 
 /* adds a notification and checks to see if we failed to properly add it
  * if so displays a message and aborts the running program */
-void CheckedAddNote(
-                const NotifyType_t a_NotifyType,
-                PChar_t a_Desc,
-                File_t a_FileName,
-                Func_t a_Func,
-                const Line_t a_Line)
+void 
+CheckedAddNote(
+        const NotifyType_t a_NotifyType,
+        PChar_t a_Desc,
+        File_t a_FileName,
+        Func_t a_Func,
+        const Line_t a_Line)
 {
         
         EBool_t tmpres=gNotifyTracker->AddUserNote(a_NotifyType,
@@ -99,7 +100,8 @@ void CheckedAddNote(
     
 /* show a list of all notifications that happened since last time the list was
  * empty */
-void MNotifyTracker::ShowAllNotes()
+void 
+MNotifyTracker::ShowAllNotes()
 {
         NotifyItem_st *tmp=GetLastNote();
         while (tmp){
@@ -117,7 +119,8 @@ void MNotifyTracker::ShowAllNotes()
 }
 
 
-void InitNotifyTracker()
+void 
+InitNotifyTracker()
 {
         gNotifyTracker=new MNotifyTracker;
         if (!gNotifyTracker) {
@@ -131,7 +134,8 @@ void InitNotifyTracker()
         }
 }
 
-void ShutDownNotifyTracker()
+void 
+ShutDownNotifyTracker()
 {
         if (gNotifyTracker) {
                 if (gNotifyTracker->GetLastNote() != NULL)
@@ -141,14 +145,17 @@ void ShutDownNotifyTracker()
         }
 }
 
-void PurgeAllNotifications()
+void 
+PurgeAllNotifications()
 {
         if (gNotifyTracker) 
                 gNotifyTracker->PurgeThemAll();
 }
 
-void ShowAllNotifications()
+void 
+ShowAllNotifications()
 {
         if (gNotifyTracker)
                 gNotifyTracker->ShowAllNotes();
 }
+

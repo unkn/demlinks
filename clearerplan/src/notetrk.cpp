@@ -53,7 +53,9 @@ TNotify::~TNotify()
 }
 
 /* empties the entire list of notifications */
-void TNotify::PurgeThemAll(){
+void 
+TNotify::PurgeThemAll()
+{
         /* we go forward until we hit the last element */
         while (fHead) {
                 NotifyItem_st *tmp=fHead;
@@ -67,7 +69,9 @@ void TNotify::PurgeThemAll(){
 }
 
 /* one less note in the list, particulary the one that enterd the list first */
-void TNotify::ClearLastNote(){
+void 
+TNotify::ClearLastNote()
+{
         if (fHead) { 
                 SetLessNotes(); 
                 NotifyItem_st *tmp=fHead;
@@ -81,7 +85,9 @@ void TNotify::ClearLastNote(){
 }
 
 
-NotifyItem_st * TNotify::GetLastNote(){
+NotifyItem_st * 
+TNotify::GetLastNote()
+{
 /* may return NULL */
         return fHead;
 }
@@ -90,7 +96,9 @@ NotifyItem_st * TNotify::GetLastNote(){
 /* moves out the item from list, w/o deallocating it 
  * it's a job left for the caller
  */ 
-NotifyItem_st * TNotify::MoveOutNote(){
+NotifyItem_st * 
+TNotify::MoveOutNote()
+{
 /* return NULL if list is empty, otherwise returns a pointer to the item */
         NotifyItem_st *tmp=fHead;
         if (fHead) {
@@ -102,7 +110,9 @@ NotifyItem_st * TNotify::MoveOutNote(){
         return tmp;
 }
 
-EBool_t TNotify::Add2List(NotifyItem_st *a_What){
+EBool_t 
+TNotify::Add2List(NotifyItem_st *a_What)
+{
         /* even if we fail something we still have to count this note */
         SetMoreNotes();
         
@@ -121,7 +131,9 @@ EBool_t TNotify::Add2List(NotifyItem_st *a_What){
         return kTrue;
 }
 
-EBool_t TNotify::AddNote(const NotifyItem_st &a_NewNote){
+EBool_t 
+TNotify::AddNote(const NotifyItem_st &a_NewNote)
+{
 /* parameter must already be allocated */
 
         NotifyItem_st *tmp=new NotifyItem_st;
@@ -148,7 +160,8 @@ ifailed:
 
 
 
-EBool_t TNotify::AddUserNote(
+EBool_t 
+TNotify::AddUserNote(
         const NotifyType_t a_NotifyType, 
         PChar_t a_Desc,
         File_t a_FileName, 

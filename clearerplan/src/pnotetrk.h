@@ -157,17 +157,19 @@ extern MNotifyTracker *gNotifyTracker;
 }
 
 /* adds a programming-error to the notify-list if the condition is true 
- * and optionally executes more statements if so */
-#define PERR_IF(a_ConditionalStatement,a_MoreStatementsIfTrue)  \
+   and optionally executes more statements if so 
+ * this should only happen if the programmer misused some statements or forgot
+ * something such as openning the file before writing to it */
+#define LAME_PROGRAMMER_IF(a_ConditionalStatement,a_MoreStatementsIfTrue)  \
 {                                                               \
         if ((a_ConditionalStatement)) {                         \
-                PERR(a_ConditionalStatement)                    \
+                LAME_PROGRAMMER(a_ConditionalStatement)                    \
                 { a_MoreStatementsIfTrue; }                     \
         }                                                       \
 }
 
 /* always adds a programming-error to the list, with the passed description */
-#define PERR(a_ErrorDescription)                 \
+#define LAME_PROGRAMMER(a_ErrorDescription)                 \
 {                                               \
         ADD_NOTE(kNotify_ProgrammingError,a_ErrorDescription)\
 }

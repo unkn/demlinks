@@ -65,7 +65,7 @@ int main()
         printf("after trap\n");
 
         INFO_IF(2,)
-        PERR_IF(3,)
+        LAME_PROGRAMMER_IF(3,)
         PARANOID_IF(2==2,
                 delete gNotifyTracker;
                 return 1);
@@ -74,5 +74,5 @@ int main()
         One(0);
 
         ShutDownNotifyTracker();
-        return 0;
+        return true;
 }
