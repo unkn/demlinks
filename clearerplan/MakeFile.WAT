@@ -44,7 +44,8 @@ phfile = $(tmpdir)\prechdrs.hdr
 
 objs =  $(objdir)\dmltest3.obj &
         $(objdir)\notetrk.obj &
-        $(objdir)\pnotetrk.obj
+        $(objdir)\pnotetrk.obj &
+        $(objdir)\recstor.obj
 
 
 # that's all ~ above

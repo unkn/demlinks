@@ -1,7 +1,7 @@
 /****************************************************************************
 *
 *                             dmental links
-*	Copyright (c) 28 Feb 2005 AtKaaZ, AtKaaZ at users.sourceforge.net
+*    Copyright (c) 28 Feb 2005 AtKaaZ, AtKaaZ at users.sourceforge.net
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,8 +31,9 @@
 
 dmental links (C) AtKaaZ 28 Feb 2005, see the file license.txt
 
-developed by AtKaaZ with Open Watcom v1.3 under DOSEMU running on GNU/linux slackware 10 dist. w/ kernel 2.6.10, on a 392 bogomips CPU.
-ported (and made clearer) to gcc, since 15 March 2005 by AtKaaZ.
+Developed by AtKaaZ with Open Watcom v1.3 under DOSEMU running on GNU/linux slackware 10 dist. w/ kernel 2.6.10, on a 392 bogomips CPU.
+Ported (and made clean code) to gcc, since 15 March 2005 by AtKaaZ.
+See the file AUTHORS for the list of all contributors.
 
 other possible aliases:
 

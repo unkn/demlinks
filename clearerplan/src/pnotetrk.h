@@ -193,7 +193,8 @@ extern MNotifyTracker *gNotifyTracker;
 }
 
 /* adds a notification and checks to see if we failed to properly add it
- * if so displays a message and aborts the running program */
+ * if so displays a message and the notifications that exist so far and then
+ * aborts the running program */
 void CheckedAddNote(
         const NotifyType_t a_NotifyType,
         PChar_t a_Desc,
@@ -201,7 +202,7 @@ void CheckedAddNote(
         Func_t a_Func,
         const Line_t a_Line);
 
-void ShutDownNotifyTracker();
+void ShutDownNotifyTracker(void);
 void InitNotifyTracker();
 void PurgeAllNotifications();
 void ShowAllNotifications();

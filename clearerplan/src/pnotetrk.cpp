@@ -56,8 +56,7 @@ MNotifyTracker::MNotifyTracker()
 {
 }
 
-/* destructor
- * FIXME: it doesn't seem to be called when doing a `return' from main() */
+/* destructor */
 MNotifyTracker::~MNotifyTracker()
 {
         /* show them all if we didn't got the chance */
@@ -132,10 +131,15 @@ InitNotifyTracker()
                         __func__);
                 abort();
         }
+
+        /* make sure the sutdown procedure is called on normal exit, even if the
+         * programmer forgets to call it */
+        ERR_IF( 0 != atexit(ShutDownNotifyTracker),
+                        abort());
 }
 
 void
-ShutDownNotifyTracker()
+ShutDownNotifyTracker(void)
 {
         if (gNotifyTracker) {
                 if (gNotifyTracker->GetLastNote() != NULL)

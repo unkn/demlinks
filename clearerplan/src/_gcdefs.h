@@ -24,49 +24,23 @@
 *
 *  ========================================================================
 *
-* Description: testing stuff #3
+* Description:  
+*               These are the global temporary defines.
+*               This is included only in .cpp files not in .h files
 *
 ****************************************************************************/
+/* to be included only in .cpp files, first in line but after those with <>
+ * (and before those #include with "")
+ * there's no use for this in .h files
+ * may speed up compilation */
 
 
-#include <stdlib.h>
-#include <stdio.h>
 
-#include "_gcdefs.h"
+#ifndef _GCDEFS__H__
+#define _GCDEFS__H__
 
-#include "pnotetrk.h"
+#define PARANOIA_DEBUG
 
-#include "recstor.h"
+#include "_cppdefs.h" /* last */
 
-void One(int);
-
-void Two(int i)
-{
-        if (i>6) {
-                ERR(reached a stop)
-                return;
-        }
-        INFO_IF(i>=3,);
-        One(++i);
-}
-
-void One(int i)
-{
-        WARN_IF(!i,);
-        Two(++i);
-}
-
-int main()
-{
-        InitNotifyTracker();
-
-        TRecordsStorage *DataBase = new TRecordsStorage;
-        ERR_IF(!DataBase,
-                        return (EXIT_FAILURE));
-
-        delete DataBase;
-        One(0);
-        ShutDownNotifyTracker();
-
-        return EXIT_SUCCESS; //exit(EXIT_SUCCESS);
-}
+#endif /* file */
