@@ -33,10 +33,8 @@
 
 #include <string.h> //for memcpy
 #include <stdlib.h>
-//#include <process.h>
 #include <fcntl.h>
 #include <sys/stat.h>
-//#include <share.h>
 
 #ifdef __WATCOMC__
 
@@ -75,7 +73,7 @@ filelength(FileHandle_t a_FileHandle)
 {
         struct stat tmpStat;
         ERR_IF( fstat(a_FileHandle, &tmpStat),
-                        return kInvalidFileSize);
+                        return kInvalidFileOffset);
         return tmpStat.st_size;
 }
 
@@ -99,14 +97,14 @@ TRecordsStorage::GetNumRecords()
         PARANOID_IF(!Invariants(retRecNum),
                         return kInvalidRecNum);
 
-/*        --retRecNum; I don't remember why is this needed */
+        if (IsCacheEnabled()) { /* is cache enabled? */
+                /* return the bigger of the two */
+                if (retRecNum < fHighestRecNum)
+                        retRecNum=fHighestRecNum;
 
-        /* return the bigger of the two */
-        if (retRecNum < fHighestRecNum)
-                retRecNum=fHighestRecNum;
-
-        PARANOID_IF(!Invariants(retRecNum),
+                PARANOID_IF(!Invariants(retRecNum),
                         return kInvalidRecNum);
+        }
 
         return retRecNum;
 }
@@ -135,6 +133,9 @@ TRecordsStorage::FlushWrites()
 /* write all kState_Written records FROM cache, keep them in cache but mark them
    as kState_Read */
 {
+        if (!IsCacheEnabled()) /* is cache DISabled? */
+                return true;
+
         LAME_PROGRAMMER_IF(!IsOpen(),
                         return false)
 
@@ -172,6 +173,9 @@ TRecordsStorage::AbsolutelyGetRecordFromCache(
                 void * a_MemDest)
 /* only used internally */
 {
+        if (!IsCacheEnabled())
+                return false; /* nothing to get, cached was disabled */
+
         /* refusing to check weather a_MemDest != NULL, counting the fact that
          * we do call this internally */
 
@@ -199,10 +203,6 @@ TRecordsStorage::AddRecordToCache(
  * any existing a_RecNum is too old to be considered,
    since this one has the same a_RecNum.*/
 
-        PARANOID_IF(!Invariants(a_RecNum),
-                        return false);
-        PARANOID_IF(!a_MemSource,
-                        return false);
 
 
         RecNum_t numRec;
@@ -366,27 +366,39 @@ TRecordsStorage::WriteRecord(
         LAME_PROGRAMMER_IF(!IsOpen(),
                         return false);
 
+        LAME_PROGRAMMER_IF(!a_MemSource,
+                        return false);
+
         PARANOID_IF(!Invariants(a_RecNum),
                         return false);
 
-        ERR_IF( !AddRecordToCache(kState_Written, a_RecNum, a_MemSource),
-                        return false);
+        if (IsCacheEnabled()) { /* is cache enabled? */
+                ERR_IF(!AddRecordToCache(kState_Written, a_RecNum, a_MemSource),
+                                return false);
+        } else { /* no cache */
+                ERR_IF(!AbsolutelyWriteRecord(a_RecNum, a_MemSource),
+                                return false);
+        }
+
         return true;
 }
 
 bool
 TRecordsStorage::InitCache(
-                const RecNum_t a_MaxRecordsToBeCached)
+                const RecNum_t a_MaxNumRecordsToBeCached)
 {
+        /* situation with a_MaxRecordsToBeCached <= 0 is handled in every cache
+           function ~ not to worry ~ oh and this means cache is disabled */
+
         /* there should be at least two records cached
          * because there may be some flaws in the implementation and stupid
          * errors could be trigered if there's just one cached record (or 0) */
-        LAME_PROGRAMMER_IF(a_MaxRecordsToBeCached < 2,
+        LAME_PROGRAMMER_IF(a_MaxNumRecordsToBeCached == 1,
                         return false);
 
         FlatenCacheVariables();
 
-        fMaxNumCachedRecords = a_MaxRecordsToBeCached;
+        fMaxNumCachedRecords = a_MaxNumRecordsToBeCached;
 
         return true;
 }
@@ -394,6 +406,9 @@ TRecordsStorage::InitCache(
 bool
 TRecordsStorage::KillCache()
 {
+        if (!IsCacheEnabled()) /* is cache DISabled? */
+                return true; /* we silently ignore it */
+
         ERR_IF( !FlushWrites(),
                         return false);//write all to be written first
 
@@ -459,21 +474,29 @@ TRecordsStorage::ReadRecord(
         LAME_PROGRAMMER_IF(!IsOpen(),
                         return false);
 
+        LAME_PROGRAMMER_IF(!a_MemDest,
+                        return false);
+
         PARANOID_IF(!Invariants(a_RecNum),
                         return false);
 
         if ( ! AbsolutelyGetRecordFromCache(a_RecNum, a_MemDest) ) {
-                //failed above ^  thus a_RecNum is not cached
-                /* read it from file */
+                /* failed above ^ thus record with number a_RecNum is not cached
+                   OR cache is DISabled
+                 * read it from file */
                 ERR_IF( ! AbsolutelyReadRecord(a_RecNum, a_MemDest),
                                 return false);
-                /* add it to cache */
-                ERR_IF( ! AbsolutelyAddRecordToCache(
-                                        kState_Read,
-                                        a_RecNum,
-                                        a_MemDest),
-                                return false);
+
+                if (IsCacheEnabled()) { /* cache is ON */
+                        /* add it to cache */
+                        ERR_IF( ! AbsolutelyAddRecordToCache(
+                                                kState_Read,
+                                                a_RecNum,
+                                                a_MemDest), /* here is Source */
+                                        return false);
+                }
         }
+
         return true;
 }
 
@@ -498,7 +521,7 @@ TRecordsStorage::Close()
                         return false);
 
         ERR_IF( !KillCache(),
-                        return false);//autoflushes writes
+                        return false);//autoflushes writes, if cache is enabled!
 
         ERR_IF( 0 != ::close(fFileHandle),
                         return false);
@@ -527,7 +550,7 @@ TRecordsStorage::Convert_FileOffset_To_RecNum(
 
         /* the header data might not be written, thus filesize would be less
            than headersize, FIXME: make a bool var weather headerdata was or not
-           written 
+           written
          * the programmer/user must call WriteHeader() if fHeaderSize > 0
            or else we "can't quite seek" after it ~ actually we could :P */
         LAME_PROGRAMMER_IF(ofsMinusHeader < 0,
@@ -554,12 +577,16 @@ TRecordsStorage::Convert_RecNum_To_FileOffset(
  * ofs goes from 0..
  */
         LAME_PROGRAMMER_IF(!IsOpen(),
-                        return false);
+                        return kInvalidFileOffset);
 
         PARANOID_IF(!Invariants(a_RecNum),
-                        return false);
+                        return kInvalidFileOffset);
 
-        return (fHeaderSize + ((a_RecNum - 1) * fRecSize));
+        FileSize_t retFileOffset = (fHeaderSize + ((a_RecNum - 1) * fRecSize));
+        PARANOID_IF(retFileOffset <= 0,
+                        return kInvalidFileOffset);
+
+        return retFileOffset;
 }
 
 #if defined(PARANOID_CHECKS)
@@ -624,7 +651,8 @@ TRecordsStorage::FileSeekToRecNum(
 bool
 TRecordsStorage::WriteHeader(
                 const void * a_MemSource)
-{
+{ /* this doesn't use cache... *duh* */
+
         LAME_PROGRAMMER_IF(!IsOpen(),
                         return false);
 
@@ -686,10 +714,12 @@ TRecordsStorage::Open(
         fRecSize=a_RecSize;
         fHeaderSize=a_HeaderSize;
 
-        PARANOID_IF(!Invariants(a_MaxNumRecordsToBeCached),
+        PARANOID_IF(!Invariants(kFirstRecNum),
                         return false);
 
 
+        /* cache disabling is handled inside, since some variables need to be
+           set anyways */
         ERR_IF( !InitCache(a_MaxNumRecordsToBeCached),
                         return false);
 

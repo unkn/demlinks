@@ -45,7 +45,7 @@ const PChar_t kNotifyDescriptions[kNumNotifyTypes]={
         "ERR",
         "EXIT",
         "INFO",
-        "ProgrammingERR", /* most prolly developer's fault */
+        "LAMER", /* most prolly developer's fault */
 
         /* triggered by a paranoid check which should always be false */
         "FATAL"

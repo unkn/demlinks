@@ -39,7 +39,11 @@
 
 #include "recstor.h"
 
-#define CACHE_THIS_MANY_ITEMS 2
+#if defined(__WATCOMC__)
+#       define CACHE_THIS_MANY_ITEMS 2048
+#else /* linux ? */
+#       define CACHE_THIS_MANY_ITEMS kDisableCache
+#endif
 #define HOW_MANY_ITEMS 20000
 #define KEEP_LINES 7
 TRecordsStorage *DataBase;

@@ -55,19 +55,25 @@ typedef long FileSize_t; /* ranges (on some machines) -2GB..+2GB */
 
 typedef off_t FileSize_t;
 
-/* when filelength() fails internally due to fstat() */
-enum {
-        kInvalidFileSize=-1
-};
 #endif /* gcc */
 
 /* in both open watcom C and gcc this is `int' */
 typedef int FileHandle_t;
 
+/* when filelength() fails internally due to fstat() 
+   OR when some operations including FileSize_t (below) fail */
+enum { /* orphan enum */
+        kInvalidFileOffset=-1
+};
+
 /* the record size range, however only positive numbers are used
  */
 typedef FileSize_t RecSize_t;/* -2GB..2GB */
 
+/* orphan enum */
+enum {
+        kDisableCache=-1 /* use this as (the last) parameter to Open() */
+};
 
 enum EFixedRecNumConstants {
 
@@ -131,19 +137,17 @@ private:
         RecNum_t        fHighestRecNum;//used with getnumrecords()
 
         //how many records to cache (ie. don't yet writ'em to disk)
+        //if this is <= 0 then we won't use cache !! 
         RecNum_t        fMaxNumCachedRecords;// 1024
 
 public:
         TRecordsStorage();
        ~TRecordsStorage();
-        /* TODO: make an option to entirely disable cache, seems to work faster
-           in linux ie. the smaller the cached num records the faster
-         * on the other hand with open watcom c in dosemu under linux it's a 
-           real pain how slow it works w/o cache */
         bool FlushWrites();
 
         /* opens the specified file for as long as we use this class, until we
-         * issue a Close() of course */
+           issue a Close() of course 
+         * to disable cache just make a_MaxNumRecordsToBeCached <= 0 */
         bool Open(const char * a_FileName,
                         const FileSize_t a_HeaderSize,
                         const RecSize_t a_RecSize,
@@ -214,8 +218,10 @@ private:
 
         bool KillCache();
 
+        /* if the param is less or equal to zero then the cache is disabled */
         bool InitCache(
-                        const RecNum_t a_MaxRecordsToBeCached);
+                        const RecNum_t a_MaxNumRecordsToBeCached);
+        bool IsCacheEnabled() { return (fMaxNumCachedRecords > 0); };
 
         /* to avoid duplicating some assignement statements in two places */
         void FlatenCacheVariables();
