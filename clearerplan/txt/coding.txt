@@ -1,0 +1,94 @@
+Coding Style as used by AtKaaZ at users.sourceforge.net
+
+tab is 8 spaces (not like inhere)
+
+names:
+
+    CapitalTypes - types begin with a capital letter
+        typedef int MyInt_t;
+
+    CapitalizedWords() - function names
+        void DodgeThis(){};
+
+    identifierName - local variables, temp stuff
+        int localVarName;
+        long tempVector;
+
+    ALL_UPPERCASE - defines
+        #define LAME_CONSTANT 162
+
+    SetSomething() :
+    GetSomething() :
+    IsSomething() - accesor functions use 'Set'/'Get'/'Is'...
+
+
+
+sufixes:
+
+    '_t' - typedef(not typedef enums, see 'E' below), types
+
+    '_st' - struct type
+
+
+
+prefixes:
+
+    'T' - base class
+
+    'M' - derived class
+
+    'E' - enum 
+        enum EVariableName { ... };
+        void Test(enum EVariableName a_TestVar);
+        typedef enum { kOne=1, KTen=10 } EOneTen_t; //not OneTen_t
+        void Test2(EOneTen_t a_Test2Var);
+
+    'f' - class member (field) variable
+        int gMyGlobalInt;
+        class MMyClass : public TBaseClass {
+            int fIntVar;
+            static int fgAnotherVar;
+            void OneFunx();
+        };
+
+    'fg' - static 'f'
+
+    'g' - static global variable
+
+    'a' - function arguments
+        void OneFunc(
+                int a_Dull, 
+                enum ENice a_Lame, 
+                Dood_st a_PassThru);
+
+    'k' - constants, including enum items
+        const int kDumbStorage;
+        enum ESmartie { kZero, kOne };
+
+
+
+braces:
+        int function(int x)
+        {
+                do {
+                        body of do-loop
+                } while (condition);
+
+
+                if (x == y) {
+                        ..
+                } else if (x > y) {
+                        ...
+                } else {
+                        ....
+                }
+
+                body of function
+        }
+
+Rationale: K&R.
+
+inspired from other sources, notably:
+* /usr/src/linux/Documentation/CodingStyle
+* Taligent Rules
+
