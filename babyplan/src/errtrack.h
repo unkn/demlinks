@@ -1,7 +1,7 @@
 /****************************************************************************
 *
 *                             dmental links
-*	Copyright (c) 28 Feb 2005 AtKaaZ, AtKaaZ at users.sourceforge.net
+*    Copyright (c) 28 Feb 2005 AtKaaZ, AtKaaZ at users.sourceforge.net
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,28 +46,28 @@
 #define gab_ifnot(etracker,prefix,_a,sufix) {if (!(_a)) {_ab_me(etracker,prefix,_a,sufix)} }
 
 #define _ab_me(zt,prefix,_a,sufix) {\
-	zt->pushuerr(t_caused_abort,3,prefix#_a##sufix,__FILE__,__func__,__LINE__);\
-	zt->usrshowthemall();\
-	fprintf(stderr,"Read the above errors in reverse order of appearence!\n");\
-	abort();\
-	}
+    zt->pushuerr(t_caused_abort,3,prefix#_a##sufix,__FILE__,__func__,__LINE__);\
+    zt->usrshowthemall();\
+    fprintf(stderr,"Read the above errors in reverse order of appearence!\n");\
+    abort();\
+    }
 
 #define _do_me(zt,prefix,_i,sufix) \ 
-		return zt->pushuerr(t_caused_a_return,\
-				2,\
-				prefix#_i##sufix,\
-				__FILE__,\
-				__func__,\
-				__LINE__\
-			)
+        return zt->pushuerr(t_caused_a_return,\
+                2,\
+                prefix#_i##sufix,\
+                __FILE__,\
+                __func__,\
+                __LINE__\
+            )
 #define gret_if(zt,prefix,_i,sufix) {\
-	if ((_i)) {\
-	    _do_me(zt,prefix,_i,sufix);\
-	}}
+    if ((_i)) {\
+        _do_me(zt,prefix,_i,sufix);\
+    }}
 #define gret_ifnot(zt,prefix,_i,sufix) {\
-    	if (!(_i)) {\
-	    _do_me(zt,prefix,_i,sufix);\
-	}}
+        if (!(_i)) {\
+        _do_me(zt,prefix,_i,sufix);\
+    }}
 
 
 #define funcret_whenERR 0 //don't change this, it must be used with `if`s
@@ -97,45 +97,45 @@ extern ccp str_t_all[t_last_t];
 
 
 struct s_errdata {
-	errtype_t errtype;//ie. WARN, ERR, DEBUG, INFO
-	errcode_t errcode;//_errc_something
-	int level;
-	ccp	errfile;//__FILE__
-	ccp	funx;//__func__
-	errline_t errline;//__LINE__
-	ccp userdesc;//description eventually __LINE__ and stuff
+    errtype_t errtype;//ie. WARN, ERR, DEBUG, INFO
+    errcode_t errcode;//_errc_something
+    int level;
+    ccp    errfile;//__FILE__
+    ccp    funx;//__func__
+    errline_t errline;//__LINE__
+    ccp userdesc;//description eventually __LINE__ and stuff
 };
 
 struct s_item {//FIFO, oops accidentaly done a LIFO first time :-"
-	s_item *below;//NULL is none
-	s_errdata error;
+    s_item *below;//NULL is none
+    s_errdata error;
 };
 
 class errtrk {//attempting a FIFO error tracking
 private:
-	s_item *head;//from head out
-	s_item *tail;//damn FIFOs ;)  at tail in
-	int internalfails;	
+    s_item *head;//from head out
+    s_item *tail;//damn FIFOs ;)  at tail in
+    int internalfails;    
 protected:
-	int howmany;//how many s_items, just for info
+    int howmany;//how many s_items, just for info
 public:
-	errtrk();
-	virtual ~errtrk();
-	reterrt pushuerr(const errtype_t et, const errcode_t ec, ccp desc, ccp fil, ccp func, const errline_t line);
-	virtual reterrt pusherr(const s_item *from);//the func's making a copy of `from`.
-	reterrt poperr(s_item *&into);//into may be NULL if nada to pop-out
-	s_item * getlasterr();//w/o poping it
-	reterrt funcok(){ return funcret_whenOK; };
-	reterrt funcerr(){ return funcret_whenERR; };
-	s_item * rpoperr();//pops like poperr() but returns it with funx
-	void clrlasterr();
-//	void usrshowthemall();
+    errtrk();
+    virtual ~errtrk();
+    reterrt pushuerr(const errtype_t et, const errcode_t ec, ccp desc, ccp fil, ccp func, const errline_t line);
+    virtual reterrt pusherr(const s_item *from);//the func's making a copy of `from`.
+    reterrt poperr(s_item *&into);//into may be NULL if nada to pop-out
+    s_item * getlasterr();//w/o poping it
+    reterrt funcok(){ return funcret_whenOK; };
+    reterrt funcerr(){ return funcret_whenERR; };
+    s_item * rpoperr();//pops like poperr() but returns it with funx
+    void clrlasterr();
+//    void usrshowthemall();
 private:
-	void push2list(s_item *whats);//modified whats->data
-	void popfromlist(s_item *&whats);
-	void destroy();
-	void less(){ howmany--; };
-	void more(){ howmany++; };
+    void push2list(s_item *whats);//modified whats->data
+    void popfromlist(s_item *&whats);
+    void destroy();
+    void less(){ howmany--; };
+    void more(){ howmany++; };
 };
 
 #endif

@@ -1,7 +1,7 @@
 /****************************************************************************
 *
 *                             dmental links 
-*	Copyright (c) 28 Feb 2005 AtKaaZ, AtKaaZ at users.sourceforge.net
+*    Copyright (c) 28 Feb 2005 AtKaaZ, AtKaaZ at users.sourceforge.net
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,51 +36,51 @@
 #include "aca_list.h"
 
 long if_acatoms_list::howmany(){ 
-	return nicefi::getnumrecords();
+    return nicefi::getnumrecords();
 }
 
 long if_acatoms_list::addnew(const deref_acatoms_listID_type *from){
-	long newacatoms_listID=howmany()+1;
-	writewithID(newacatoms_listID,from);
-	return newacatoms_listID;
+    long newacatoms_listID=howmany()+1;
+    writewithID(newacatoms_listID,from);
+    return newacatoms_listID;
 }
 
 reterrt if_acatoms_list::getwithID(const acatoms_listID whatacatoms_listID, deref_acatoms_listID_type *into){
-	ret_ifnot(nicefi::readrec(whatacatoms_listID,into));
-	ret_ok();
+    ret_ifnot(nicefi::readrec(whatacatoms_listID,into));
+    ret_ok();
 }
 
 reterrt if_acatoms_list::writewithID(const acatoms_listID whatacatoms_listID, const deref_acatoms_listID_type *from){
-	ret_ifnot(nicefi::writerec(whatacatoms_listID,from));
-	ret_ok();
+    ret_ifnot(nicefi::writerec(whatacatoms_listID,from));
+    ret_ok();
 }                                          
-											
+                                            
 if_acatoms_list::~if_acatoms_list(){
-	if (opened==_yes_) shutdown();
+    if (opened==_yes_) shutdown();
 }
 
 if_acatoms_list::if_acatoms_list():
-	its_recsize(sizeof(deref_acatoms_listID_type))
+    its_recsize(sizeof(deref_acatoms_listID_type))
 {
-	opened=_no_;
+    opened=_no_;
 }
 
 reterrt if_acatoms_list::init(const char * fname){
-	ret_ifnot(nicefi::open(fname,0,its_recsize));
-	opened=_yes_;
-	ret_ok();
+    ret_ifnot(nicefi::open(fname,0,its_recsize));
+    opened=_yes_;
+    ret_ok();
 }
 
 reterrt if_acatoms_list::shutdown(){
-	if (opened==_yes_) ret_ifnot(nicefi::close());
-	opened=_no_;
-	ret_ok();
+    if (opened==_yes_) ret_ifnot(nicefi::close());
+    opened=_no_;
+    ret_ok();
 }
 
 void if_acatoms_list::compose(
-	deref_acatoms_listID_type *into,
-	const acatomslist_itemID ptr2head
+    deref_acatoms_listID_type *into,
+    const acatomslist_itemID ptr2head
 )
 {
-	_in2(ptr2head);
+    _in2(ptr2head);
 }

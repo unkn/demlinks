@@ -1,7 +1,7 @@
 /****************************************************************************
 *
 *                             dmental links
-*	Copyright (c) 28 Feb 2005 AtKaaZ, AtKaaZ at users.sourceforge.net
+*    Copyright (c) 28 Feb 2005 AtKaaZ, AtKaaZ at users.sourceforge.net
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,48 +41,51 @@
 dmentalix *test2;
 
 int main(){
-	init_error_tracker();
-	
-	test2=new dmentalix;
-	ab_ifnot(test2);
+    init_error_tracker();
+    
+    test2=new dmentalix;
+    ab_ifnot(test2);
 
-	unlinkall(_fnames);//so we kill the files we can use strictADDelemental()
-	ab_ifnot(test2->init(_fnames));
+//    unlinkall(_fnames);//so we kill the files we can use strictADDelemental()
+    ab_ifnot(test2->init(_fnames));
 
-	basic_element c;
-	c=0;
-	while (
-			( (int)(c) <256 ) 
-			&&
-			( !( (kbhit())&&(getch()) ) )
-		){
-		printf("attempting to add basic_elemnt==char(%d)",c);
-		eatomID bebe=test2->strictADDelemental(c);//only used with unlink()
-		ab_ifnot(bebe);
-		printf(" :has: eatomID==%ld\n",bebe);
-		c++;
-	}//while
+    basic_element c;
+    c=0;
+    while (
+            ( (int)(c) <256 ) 
+            &&
+            ( !( (kbhit())&&(getch()) ) )
+        ){
+        printf("attempting to add basic_elemnt==char(%d)",c);
+        atomID bebe=test2->try_add_atom_type_E(c);//only used with unlink()
+        ab_ifnot(bebe);
+        printf(" :has: atomID==%ld\n",bebe);
+        c++;
+    }//while
 
-	while (
-			( (int)(c) >=0 )
-			&&
-			( !( (kbhit())&&(getch()) ) )
-		){
-		printf("attempting to find eatomID that has BE#%d",c);
-		eatomID elder=test2->get_eatomID_of_elemental(c);
-		if (elder==0) printf(" not found!\n");
-		else printf(" :IDis: %ld\n",elder);
-		c--;
-	}//while2
-	
-	ab_ifnot(test2->shutdown());
-	delete test2;
+goto skip;
+    
+    while (
+            ( (int)(c) >=0 )
+            &&
+            ( !( (kbhit())&&(getch()) ) )
+        ){
+        printf("attempting to find eatomID that has BE#%d",c);
+        atomID elder;//=test2->get_eatomID_of_elemental(c);
+        if (elder==0) printf(" not found!\n");
+        else printf(" :IDis: %ld\n",elder);
+        c--;
+    }//while2
+
+skip:
+    ab_ifnot(test2->shutdown());
+    delete test2;
 
 //last in line
-	deinit_error_tracker();
-	printf("\nDone...press key\n");
-//	printf("sizeof(deref_eatomID_type)=%d\n",sizeof(deref_eatomID_type));
-	getch();
-	return 0;
+    deinit_error_tracker();
+    printf("\nDone...press key\n");
+//    printf("sizeof(deref_eatomID_type)=%d\n",sizeof(deref_eatomID_type));
+    getch();
+    return 0;
 }
 

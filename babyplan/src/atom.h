@@ -1,7 +1,7 @@
 /****************************************************************************
 *
 *                             dmental links
-*	Copyright (c) 28 Feb 2005 AtKaaZ, AtKaaZ at users.sourceforge.net
+*    Copyright (c) 28 Feb 2005 AtKaaZ, AtKaaZ at users.sourceforge.net
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,29 +45,29 @@
 class if_atom:public nicefi {
 #ifdef WASINITED_SAFETY
 protected:
-	int inited;                 
+    int inited;                 
 #endif
 private:
-	const long its_recsize;      
+    const long its_recsize;      
 public:                           
-	if_atom();                    
-	~if_atom();                    
-	reterrt init(const char *fname);
-	reterrt getwithID(const atomID whatatomID, deref_atomID_type *into);
-	reterrt writewithID(const atomID whatatomID, const deref_atomID_type *from);
-	long addnew(const deref_atomID_type *from);
-	long howmany();
-	reterrt shutdown(); 
-	void compose(
-		deref_atomID_type *into,
-		const atomtypes at_type,
-		const anyatomID at_ID
-	);
+    if_atom();                    
+    ~if_atom();                    
+    reterrt init(const char *fname);
+    reterrt getwithID(const atomID whatatomID, deref_atomID_type *into);
+    reterrt writewithID(const atomID whatatomID, const deref_atomID_type *from);
+    atomID addnew(const deref_atomID_type *from);
+    long howmany();
+    reterrt shutdown(); 
+    void compose(
+        deref_atomID_type *into,
+        const atomtypes at_type,
+        const anyatomID at_ID
+    );
 #ifdef WASINITED_SAFETY
 private:
-	int wasinited() const { if (inited==_yes_) return _yes_; return _no_; }
-	void setinited(){ inited=_yes_; };
-	void setdeinited(){ inited=_no_; };
+    int wasinited() const { if (inited==_yes_) return _yes_; return _no_; }
+    void setinited(){ inited=_yes_; };
+    void setdeinited(){ inited=_no_; };
 #endif
 };//class
 

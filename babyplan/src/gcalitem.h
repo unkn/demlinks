@@ -1,7 +1,7 @@
 /****************************************************************************
 *
 *                             dmental links
-*	Copyright (c) 28 Feb 2005 AtKaaZ, AtKaaZ at users.sourceforge.net
+*    Copyright (c) 28 Feb 2005 AtKaaZ, AtKaaZ at users.sourceforge.net
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,23 +41,23 @@
 
 class if_gcatomslist_item:public nicefi {
 private:                       
-	int opened;                 
-	const long its_recsize;      
+    int opened;                 
+    const long its_recsize;      
 public:                           
-	if_gcatomslist_item();                    
-	~if_gcatomslist_item();                    
-	reterrt init(const char *fname);    
-	reterrt getwithID(const gcatomslist_itemID whatgcatomslist_itemID, deref_gcatomslist_itemID_type *into);
-	reterrt writewithID(const gcatomslist_itemID whatgcatomslist_itemID, const deref_gcatomslist_itemID_type *from);
-	long addnew(const deref_gcatomslist_itemID_type *from); 
-	long howmany();
-	reterrt shutdown(); 
-	void compose(
-		deref_gcatomslist_itemID_type *into,
-		gcatomslist_itemID prevINlist,
-		gcatomslist_itemID nextINlist,
-		atomID ptr2atom_that_points_to_US
-	);
+    if_gcatomslist_item();                    
+    ~if_gcatomslist_item();                    
+    reterrt init(const char *fname);    
+    reterrt getwithID(const gcatomslist_itemID whatgcatomslist_itemID, deref_gcatomslist_itemID_type *into);
+    reterrt writewithID(const gcatomslist_itemID whatgcatomslist_itemID, const deref_gcatomslist_itemID_type *from);
+    long addnew(const deref_gcatomslist_itemID_type *from); 
+    long howmany();
+    reterrt shutdown(); 
+    void compose(
+        deref_gcatomslist_itemID_type *into,
+        gcatomslist_itemID prevINlist,
+        gcatomslist_itemID nextINlist,
+        atomID ptr2atom_that_points_to_US
+    );
 };//class
 
 

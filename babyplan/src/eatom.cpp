@@ -1,7 +1,7 @@
 /****************************************************************************
 *
 *                             dmental links
-*	Copyright (c) 28 Feb 2005 AtKaaZ, AtKaaZ at users.sourceforge.net
+*    Copyright (c) 28 Feb 2005 AtKaaZ, AtKaaZ at users.sourceforge.net
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,9 +39,19 @@
 #include "petrackr.h"
 #include "eatom.h"
 
-long if_eatom::find_basic_element(const basic_element what2search){
+
+
+eatomID if_eatom::find_basic_element_and_ret_eatomID(const basic_element what2search){
+#ifdef WASINITED_SAFETY
+    ret_ifnot(wasinited());
+#endif
+    deref_eatomID_type tmpinto;
+    return ( find_eatom(&tmpinto,what2search) );
+}
+
+eatomID if_eatom::find_eatom(deref_eatomID_type *into,const basic_element searchme){
 /*
-	this funx is kinda lame because it has to parse all records to see if
+    this funx is kinda lame because it has to parse all records to see if
 there's such a basic_elemen within the eatoms. Actually we think that we only
 put 256 eatoms (uniq) and there won't be much problem finding them, even tho
 we allocated a long. In the future if all works out we'll change the eatom
@@ -54,104 +64,104 @@ But, we shouldn't generalize the eatoms , they should only be #0..#255 or at
 worse, about hmm, #0..#64KB
 */
 #ifdef WASINITED_SAFETY
-	ret_ifnot(wasinited());
+    ret_ifnot(wasinited());
 #endif
-	//find element here
-	etracker->clearlastfunxerr();
-	long tmpi=howmany();//getting 0 both if err and if howmany==0 records
-	ret_if(etracker->asks_if_last_funx_had_an_error());
-	//^^^^^^^^ if howmany() had an error, we exit.
+    ret_if(into==NULL);//`into' param must be preallocated
 
-	deref_eatomID_type *tmpinto=new deref_eatomID_type;
-	ret_if(tmpinto==NULL);
+    //find element here
+    etracker->clearlastfunxerr();
+    long tmpi=howmany();//getting 0 both if err and if howmany==0 records
+    ret_if(etracker->asks_if_last_funx_had_an_error());
+    //^^^^^^^^ if howmany() had an error, we exit.
 
-	for (long i=_FIRST_RECORD_;i<=tmpi;i++){//parse all records
-		nicefi::readrec(i,tmpinto);//recnum `i' means eatomID actually.
-		if ( tmpinto->basicelementdata==what2search ){
-			//found it
-			return i;//eatomID
-		}
-	}
-	//well we didn't find shit
-	return 0;//eatomID cannot be zero, so...
+    for (long i=_FIRST_RECORD_;i<=tmpi;i++){//parse all records
+        nicefi::readrec(i,into);//recnum `i' means eatomID actually.
+        if ( into->basicelementdata==searchme ){
+            //found it
+            return i;//eatomID
+        }
+    }
+    //well we didn't find shit
+    return 0;//eatomID cannot be zero, so...
 }
 
 long if_eatom::howmany(){ 
 #ifdef WASINITED_SAFETY
-	ret_ifnot(wasinited());
+    ret_ifnot(wasinited());
 #endif
-	return nicefi::getnumrecords();
+    return nicefi::getnumrecords();
 }
 
 long if_eatom::addnew(const deref_eatomID_type *from){
 #ifdef WASINITED_SAFETY
-	ret_ifnot(wasinited());
+    ret_ifnot(wasinited());
 #endif
-	long neweatomID=howmany()+1;
-	writewithID(neweatomID,from);
-	return neweatomID;
+    long neweatomID=howmany()+1;
+    writewithID(neweatomID,from);
+    return neweatomID;
 }
 
 reterrt if_eatom::getwithID(const eatomID whateatomID, deref_eatomID_type *into){
 #ifdef WASINITED_SAFETY
-	ret_ifnot(wasinited());
+    ret_ifnot(wasinited());
 #endif
-	ret_ifnot(nicefi::readrec(whateatomID,into));
-	ret_ok();
+    ret_ifnot(nicefi::readrec(whateatomID,into));
+    ret_ok();
 }
 
 reterrt if_eatom::writewithID(const eatomID whateatomID, const deref_eatomID_type *from){
 #ifdef WASINITED_SAFETY
-	ret_ifnot(wasinited());
+    ret_ifnot(wasinited());
 #endif
-	ret_ifnot(nicefi::writerec(whateatomID,from));
-	ret_ok();
+    ret_ifnot(nicefi::writerec(whateatomID,from));
+    ret_ok();
 }                                          
-											
+                                            
 if_eatom::~if_eatom(){
 #ifdef WASINITED_SAFETY //if unset, user must use shutdown() before destruct.
-	if (wasinited())
-		shutdown(); 
+    if (wasinited())
+        shutdown(); 
 #endif
 }
 
 if_eatom::if_eatom():
-	its_recsize(sizeof(deref_eatomID_type))
+    its_recsize(sizeof(deref_eatomID_type))
 {
 #ifdef WASINITED_SAFETY
-	setdeinited();
+    setdeinited();
 #endif
 }
 
 reterrt if_eatom::init(const char * fname){
 #ifdef WASINITED_SAFETY
-	ret_if(wasinited());
+    ret_if(wasinited());
 #endif
-	ret_ifnot(nicefi::open(fname,0,its_recsize));
+    ret_ifnot(nicefi::open(fname,0,its_recsize));
 #ifdef WASINITED_SAFETY
-	setinited();
+    setinited();
 #endif
-	ret_ok();
+    ret_ok();
 }
 
 reterrt if_eatom::shutdown(){
 #ifdef WASINITED_SAFETY
-	if (wasinited()) {
+    if (wasinited()) {
 #endif
-		ret_ifnot(nicefi::close());
+        ret_ifnot(nicefi::close());
 #ifdef WASINITED_SAFETY
-		setdeinited();
-	}
+        setdeinited();
+    }
 #endif
-	ret_ok();
+    ret_ok();
 }
 
 void if_eatom::compose(
-	deref_eatomID_type *into,
-	eatoms_listID ptr2list,
-	basic_element basicelementdata
+    deref_eatomID_type *into,
+    atomID ptrback2atomID_for_faster_search_when_single,
+    eatoms_listID ptr2list,
+    basic_element basicelementdata
 )
 {
-	_2in2(ptr2list,basicelementdata);
+    _3in2(ptrback2atomID_for_faster_search_when_single,ptr2list,basicelementdata);
 }
 

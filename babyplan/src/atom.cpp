@@ -1,7 +1,7 @@
 /****************************************************************************
 *
 *                             dmental links
-*	Copyright (c) 28 Feb 2005 AtKaaZ, AtKaaZ at users.sourceforge.net
+*    Copyright (c) 28 Feb 2005 AtKaaZ, AtKaaZ at users.sourceforge.net
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,81 +37,80 @@
 
 long if_atom::howmany(){ 
 #ifdef WASINITED_SAFETY
-	ret_ifnot(wasinited());
+    ret_ifnot(wasinited());
 #endif
-	return nicefi::getnumrecords();
+    return nicefi::getnumrecords();
 }
 
-long if_atom::addnew(const deref_atomID_type *from){
+atomID if_atom::addnew(const deref_atomID_type *from){
 #ifdef WASINITED_SAFETY
-	ret_ifnot(wasinited());
+    ret_ifnot(wasinited());
 #endif
-	long newatomID=howmany()+1;
-	writewithID(newatomID,from);
-	return newatomID;
+    long newatomID=howmany()+1;
+    writewithID(newatomID,from);
+    return newatomID;
 }
 
 reterrt if_atom::getwithID(const atomID whatatomID, deref_atomID_type *into){
 #ifdef WASINITED_SAFETY
-	ret_ifnot(wasinited());
+    ret_ifnot(wasinited());
 #endif
-	ret_ifnot(nicefi::readrec(whatatomID,into));
-	ret_ok();
+    ret_ifnot(nicefi::readrec(whatatomID,into));
+    ret_ok();
 }
 
 reterrt if_atom::writewithID(const atomID whatatomID, const deref_atomID_type *from){
 #ifdef WASINITED_SAFETY
-	ret_ifnot(wasinited());
+    ret_ifnot(wasinited());
 #endif
-	ret_ifnot(nicefi::writerec(whatatomID,from));
-	ret_ok();
+    ret_ifnot(nicefi::writerec(whatatomID,from));
+    ret_ok();
 }                                          
-											
+                                            
 if_atom::~if_atom(){
 #ifdef WASINITED_SAFETY //if unset, user must use shutdown() before destruct.
-	if (wasinited())
-		shutdown(); 
+    if (wasinited())
+        shutdown(); 
 #endif
 }
 
 if_atom::if_atom():
-	its_recsize(sizeof(deref_atomID_type))
+    its_recsize(sizeof(deref_atomID_type))
 {
 #ifdef WASINITED_SAFETY
-	setdeinited();
+    setdeinited();
 #endif
 }
 
 reterrt if_atom::init(const char * fname){
 #ifdef WASINITED_SAFETY
-	ret_if(wasinited());
+    ret_if(wasinited());
 #endif
-	ret_ifnot(nicefi::open(fname,0,its_recsize));
+    ret_ifnot(nicefi::open(fname,0,its_recsize));
 #ifdef WASINITED_SAFETY
-	setinited();
+    setinited();
 #endif
-	ret_ok();
+    ret_ok();
 }
 
 reterrt if_atom::shutdown(){
 #ifdef WASINITED_SAFETY
-	if (wasinited()) {
+    if (wasinited()) {
 #endif
-		ret_ifnot(nicefi::close());
+        ret_ifnot(nicefi::close());
 #ifdef WASINITED_SAFETY
-		setdeinited();
-	}
+        setdeinited();
+    }
 #endif
-	ret_ok();
+    ret_ok();
 }
 
 void if_atom::compose(
-	deref_atomID_type *into,
-	const atomtypes at_type,
-	const anyatomID at_ID
+    deref_atomID_type *into,
+    const atomtypes at_type,
+    const anyatomID at_ID
 )
 {
-	_2in2(at_type,at_ID);
+    _2in2(at_type,at_ID);
 }
-
 

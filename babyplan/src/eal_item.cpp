@@ -1,7 +1,7 @@
 /****************************************************************************
 *
 *                             dmental links
-*	Copyright (c) 28 Feb 2005 AtKaaZ, AtKaaZ at users.sourceforge.net
+*    Copyright (c) 28 Feb 2005 AtKaaZ, AtKaaZ at users.sourceforge.net
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,54 +37,54 @@
 
 
 long if_eatomslist_item::howmany(){ 
-	return nicefi::getnumrecords();
+    return nicefi::getnumrecords();
 }
 
 long if_eatomslist_item::addnew(const deref_eatomslist_itemID_type *from){
-	long neweatomslist_itemID=howmany()+1;
-	writewithID(neweatomslist_itemID,from);
-	return neweatomslist_itemID;
+    long neweatomslist_itemID=howmany()+1;
+    writewithID(neweatomslist_itemID,from);
+    return neweatomslist_itemID;
 }
 
 reterrt if_eatomslist_item::getwithID(const eatomslist_itemID whateatomslist_itemID, deref_eatomslist_itemID_type *into){
-	ret_ifnot(nicefi::readrec(whateatomslist_itemID,into));
-	ret_ok();
+    ret_ifnot(nicefi::readrec(whateatomslist_itemID,into));
+    ret_ok();
 }
 
 reterrt if_eatomslist_item::writewithID(const eatomslist_itemID whateatomslist_itemID, const deref_eatomslist_itemID_type *from){
-	ret_ifnot(nicefi::writerec(whateatomslist_itemID,from));
-	ret_ok();
+    ret_ifnot(nicefi::writerec(whateatomslist_itemID,from));
+    ret_ok();
 }                                          
-											
+                                            
 if_eatomslist_item::~if_eatomslist_item(){
-	if (opened==_yes_) shutdown();
+    if (opened==_yes_) shutdown();
 }
 
 if_eatomslist_item::if_eatomslist_item():
-	its_recsize(sizeof(deref_eatomslist_itemID_type))
+    its_recsize(sizeof(deref_eatomslist_itemID_type))
 {
-	opened=_no_;
+    opened=_no_;
 }
 
 reterrt if_eatomslist_item::init(const char * fname){
-	ret_ifnot(nicefi::open(fname,0,its_recsize));
-	opened=_yes_;
-	ret_ok();
+    ret_ifnot(nicefi::open(fname,0,its_recsize));
+    opened=_yes_;
+    ret_ok();
 }
 
 reterrt if_eatomslist_item::shutdown(){
-	if (opened==_yes_) ret_ifnot(nicefi::close());
-	opened=_no_;
-	ret_ok();
+    if (opened==_yes_) ret_ifnot(nicefi::close());
+    opened=_no_;
+    ret_ok();
 }
 
 void if_eatomslist_item::compose(
-	deref_eatomslist_itemID_type *into,
-	eatomslist_itemID prevINlist,
-	eatomslist_itemID nextINlist,
-	atomID ptr2atom_that_points_to_US
+    deref_eatomslist_itemID_type *into,
+    eatomslist_itemID prevINlist,
+    eatomslist_itemID nextINlist,
+    atomID ptr2atom_that_points_to_US
 )
 {
-	_3in2(prevINlist,nextINlist,ptr2atom_that_points_to_US);
+    _3in2(prevINlist,nextINlist,ptr2atom_that_points_to_US);
 }
 

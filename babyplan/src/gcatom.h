@@ -1,7 +1,7 @@
 /****************************************************************************
 *
 *                             dmental links
-*	Copyright (c) 28 Feb 2005 AtKaaZ, AtKaaZ at users.sourceforge.net
+*    Copyright (c) 28 Feb 2005 AtKaaZ, AtKaaZ at users.sourceforge.net
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,25 +40,25 @@
 
 class if_gcatom:public nicefi {
 private:                       
-	int opened;                 
-	const long its_recsize;      
+    int opened;                 
+    const long its_recsize;      
 public:                           
-	if_gcatom();                    
-	~if_gcatom();                    
-	reterrt init(const char *fname);    
-	reterrt getwithID(const gcatomID whatgcatomID, deref_gcatomID_type *into);
-	reterrt writewithID(const gcatomID whatgcatomID, const deref_gcatomID_type *from);
-	long addnew(const deref_gcatomID_type *from); 
-	long howmany();
-	reterrt shutdown(); 
-	void compose(
-		deref_gcatomID_type *into,
-		const groupID ptr2group,
-		const atomID prevINchain,
-		const atomID nextINchain,
-		const gcatoms_listID ptr2clonelist,
-		const groupID Irefer2thisGROUP
-	);
+    if_gcatom();                    
+    ~if_gcatom();                    
+    reterrt init(const char *fname);    
+    reterrt getwithID(const gcatomID whatgcatomID, deref_gcatomID_type *into);
+    reterrt writewithID(const gcatomID whatgcatomID, const deref_gcatomID_type *from);
+    long addnew(const deref_gcatomID_type *from); 
+    long howmany();
+    reterrt shutdown(); 
+    void compose(
+        deref_gcatomID_type *into,
+        const groupID ptr2group,
+        const atomID prevINchain,
+        const atomID nextINchain,
+        const gcatoms_listID ptr2clonelist,
+        const groupID Irefer2thisGROUP
+    );
 };//class
 
 #endif

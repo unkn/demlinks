@@ -1,7 +1,7 @@
 /****************************************************************************
 *
 *                             dmental links
-*	Copyright (c) 28 Feb 2005 AtKaaZ, AtKaaZ at users.sourceforge.net
+*    Copyright (c) 28 Feb 2005 AtKaaZ, AtKaaZ at users.sourceforge.net
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,54 +38,54 @@ uderrtrk::uderrtrk(){
 }
 uderrtrk::~uderrtrk(){
 }
-	
+    
 virtual reterrt uderrtrk::pusherr(const s_item *from){
 //added functionality
-	setlastwas();//last funx, just had an error, we're using this just in case
-				//last funx(), returns funcerr()==_no_==0 both for its use
-				//and for in case there's an error, so the user checks with 
-				// asks_if_last_was_an_error() and if returns _yes_ then the
-				//last function really had an error, of course one should
-				//use clearlastfunxerr() before calling funx()
+    setlastwas();//last funx, just had an error, we're using this just in case
+                //last funx(), returns funcerr()==_no_==0 both for its use
+                //and for in case there's an error, so the user checks with 
+                // asks_if_last_was_an_error() and if returns _yes_ then the
+                //last function really had an error, of course one should
+                //use clearlastfunxerr() before calling funx()
 
-	return ( errtrk::pusherr(from) );
+    return ( errtrk::pusherr(from) );
 }
 
 
 void uderrtrk::usrshowthemall(){
-	s_item *tmp=getlasterr();
-	while (tmp){
-		fprintf(stderr,
-			"%stype:levl#%d: `%s',\nin func `%s' from file `%s' at line `%d'\n"
-			,str_t_all[tmp->error.errtype]
-			,tmp->error.level
-			,tmp->error.userdesc
-			,tmp->error.funx
-			,tmp->error.errfile
-			,tmp->error.errline
-		);
-		clrlasterr();
-		tmp=getlasterr();
-	}//while
+    s_item *tmp=getlasterr();
+    while (tmp){
+        fprintf(stderr,
+            "%stype:levl#%d: `%s',\nin func `%s' from file `%s' at line `%d'\n"
+            ,str_t_all[tmp->error.errtype]
+            ,tmp->error.level
+            ,tmp->error.userdesc
+            ,tmp->error.funx
+            ,tmp->error.errfile
+            ,tmp->error.errline
+        );
+        clrlasterr();
+        tmp=getlasterr();
+    }//while
 }
 
 
 void init_error_tracker(){
-	etracker=new uderrtrk;
-	if (!etracker) {
-		fprintf(stderr,"error allocating etracker pointer in file %s at line %d in func %s\n",__FILE__,__LINE__,__func__);
-		abort();
-	}
+    etracker=new uderrtrk;
+    if (!etracker) {
+        fprintf(stderr,"error allocating etracker pointer in file %s at line %d in func %s\n",__FILE__,__LINE__,__func__);
+        abort();
+    }
 }
 
 void deinit_error_tracker(){
-	if (etracker) {
-		if (etracker->getlasterr()!=NULL){//show all errors before kill
-			etracker->usrshowthemall();
-		}
-		delete etracker;
-		etracker=NULL;
-	}
+    if (etracker) {
+        if (etracker->getlasterr()!=NULL){//show all errors before kill
+            etracker->usrshowthemall();
+        }
+        delete etracker;
+        etracker=NULL;
+    }
 }
 
 

@@ -1,7 +1,7 @@
 /****************************************************************************
 *
 *                             dmental links
-*	Copyright (c) 28 Feb 2005 AtKaaZ, AtKaaZ at users.sourceforge.net
+*    Copyright (c) 28 Feb 2005 AtKaaZ, AtKaaZ at users.sourceforge.net
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,25 +40,25 @@
 
 class if_acatom:public nicefi {
 private:                       
-	int opened;                 
-	const long its_recsize;      
+    int opened;                 
+    const long its_recsize;      
 public:                           
-	if_acatom();                    
-	~if_acatom();                    
-	reterrt init(const char *fname);    
-	reterrt getwithID(const acatomID whatacatomID, deref_acatomID_type *into);
-	reterrt writewithID(const acatomID whatacatomID, const deref_acatomID_type *from);
-	long addnew(const deref_acatomID_type *from); 
-	long howmany();
-	reterrt shutdown(); 
-	void compose(
-		deref_acatomID_type *into,
-		groupID ptr2group,
-		atomID prevINchain,
-		atomID nextINchain,
-		acatoms_listID ptr2clonelist,
-		atomID Irefer2thisATOM
-	);
+    if_acatom();                    
+    ~if_acatom();                    
+    reterrt init(const char *fname);    
+    reterrt getwithID(const acatomID whatacatomID, deref_acatomID_type *into);
+    reterrt writewithID(const acatomID whatacatomID, const deref_acatomID_type *from);
+    long addnew(const deref_acatomID_type *from); 
+    long howmany();
+    reterrt shutdown(); 
+    void compose(
+        deref_acatomID_type *into,
+        groupID ptr2group,
+        atomID prevINchain,
+        atomID nextINchain,
+        acatoms_listID ptr2clonelist,
+        atomID Irefer2thisATOM
+    );
 };//class
 
 

@@ -1,7 +1,7 @@
 /****************************************************************************
 *
 *                             dmental links
-*	Copyright (c) 28 Feb 2005 AtKaaZ, AtKaaZ at users.sourceforge.net
+*    Copyright (c) 28 Feb 2005 AtKaaZ, AtKaaZ at users.sourceforge.net
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,23 +37,23 @@
 
 class uderrtrk:public errtrk {
 private:
-		int lastwaserr;
-	void setlastwas(){ lastwaserr=_yes_; };
-	void unsetlastwas(){ lastwaserr=_no_; };
+        int lastwaserr;
+    void setlastwas(){ lastwaserr=_yes_; };
+    void unsetlastwas(){ lastwaserr=_no_; };
 public:
-	uderrtrk();
-	~uderrtrk();
-	void usrshowthemall();
-	virtual reterrt pusherr(const s_item *from);//see .cpp file for dox
-	int asks_if_last_funx_had_an_error(){if (lastwaserr==_yes_) return _yes_; return _no_; };
-	void clearlastfunxerr(){ unsetlastwas(); };
+    uderrtrk();
+    ~uderrtrk();
+    void usrshowthemall();
+    virtual reterrt pusherr(const s_item *from);//see .cpp file for dox
+    int asks_if_last_funx_had_an_error(){if (lastwaserr==_yes_) return _yes_; return _no_; };
+    void clearlastfunxerr(){ unsetlastwas(); };
 };
 
 extern uderrtrk *etracker;
 #define ret_if_error_after_statement(_state)\
-	etracker->clearlastfunxerr();\
-	_state;\
-	ret_if(etracker->asks_if_last_funx_had_an_error());
+    etracker->clearlastfunxerr();\
+    _state;\
+    ret_if(etracker->asks_if_last_funx_had_an_error());
 
 #define ret_if(_i) gret_if(etracker,"TRUE:",_i,"")
 #define ret_ifnot(_i) gret_ifnot(etracker,"FALSE:",_i,"")

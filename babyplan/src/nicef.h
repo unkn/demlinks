@@ -1,7 +1,7 @@
 /****************************************************************************
 *
 *                             dmental links
-*	Copyright (c) 28 Feb 2005 AtKaaZ, AtKaaZ at users.sourceforge.net
+*    Copyright (c) 28 Feb 2005 AtKaaZ, AtKaaZ at users.sourceforge.net
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,34 +44,34 @@
 
 class nicefi {
 private:
-	int fhandle;
-	long headersize;//long is -2GB..+2GB dammit!
-	long recsize;
+    int fhandle;
+    long headersize;//long is -2GB..+2GB dammit!
+    long recsize;
 #ifdef ISOPEN_SAFETY
-	int _opened;
+    int _opened;
 #endif
 public:
-	nicefi();
-	~nicefi();
-	reterrt open(const char * fname, const long header_size,const long rec_size);
-	reterrt close();
-	reterrt readrec(const long recno, void * into);//recsize bytes
-	reterrt writerec(const long recno, const void * from);//recsize bytes
-//	ulong getrecnum();//get the record number of current filepos
-	long getnumrecords();//how many records are now
-	reterrt writeheader(const void * header);
-	reterrt readheader(void * header);
+    nicefi();
+    ~nicefi();
+    reterrt open(const char * fname, const long header_size,const long rec_size);
+    reterrt close();
+    reterrt readrec(const long recno, void * into);//recsize bytes
+    reterrt writerec(const long recno, const void * from);//recsize bytes
+//    ulong getrecnum();//get the record number of current filepos
+    long getnumrecords();//how many records are now
+    reterrt writeheader(const void * header);
+    reterrt readheader(void * header);
 #ifdef ISOPEN_SAFETY
-	int isopened();
+    int isopened();
 #endif
 private:
 #ifdef ISOPEN_SAFETY
-	void _setopened();
-	void _setclosed();
+    void _setopened();
+    void _setclosed();
 #endif
-	reterrt seekto(const long recno);//1..
-	long recnum2ofs(const long recnum);
-	long ofs2recnum(const long ofs);
+    reterrt seekto(const long recno);//1..
+    long recnum2ofs(const long recnum);
+    long ofs2recnum(const long ofs);
 
 };
 

@@ -1,7 +1,7 @@
 /****************************************************************************
 *
 *                             dmental links
-*	Copyright (c) 28 Feb 2005 AtKaaZ, AtKaaZ at users.sourceforge.net
+*    Copyright (c) 28 Feb 2005 AtKaaZ, AtKaaZ at users.sourceforge.net
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,28 +45,28 @@
 class if_eatoms_list:public nicefi {
 #ifdef WASINITED_SAFETY
 protected:
-	int inited;
+    int inited;
 #endif
 private:                       
-	const long its_recsize;      
+    const long its_recsize;      
 public:                           
-	if_eatoms_list();                    
-	~if_eatoms_list();                    
-	reterrt init(const char *fname);    
-	reterrt getwithID(const eatoms_listID whateatoms_listID, deref_eatoms_listID_type *into);
-	reterrt writewithID(const eatoms_listID whateatoms_listID, const deref_eatoms_listID_type *from);
-	long addnew(const deref_eatoms_listID_type *from); 
-	long howmany();
-	reterrt shutdown(); 
-	void compose(
-		deref_eatoms_listID_type *into,
-		const eatomslist_itemID ptr2head
-	);
+    if_eatoms_list();                    
+    ~if_eatoms_list();                    
+    reterrt init(const char *fname);    
+    reterrt getwithID(const eatoms_listID whateatoms_listID, deref_eatoms_listID_type *into);
+    reterrt writewithID(const eatoms_listID whateatoms_listID, const deref_eatoms_listID_type *from);
+    long addnew(const deref_eatoms_listID_type *from); 
+    long howmany();
+    reterrt shutdown(); 
+    void compose(
+        deref_eatoms_listID_type *into,
+        const eatomslist_itemID ptr2head
+    );
 #ifdef WASINITED_SAFETY
 private:
-	int wasinited() const { if (inited==_yes_) return _yes_; return _no_; }
-	void setinited(){ inited=_yes_; };
-	void setdeinited(){ inited=_no_; };
+    int wasinited() const { if (inited==_yes_) return _yes_; return _no_; }
+    void setinited(){ inited=_yes_; };
+    void setdeinited(){ inited=_no_; };
 #endif
 };//class
 
