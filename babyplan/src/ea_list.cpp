@@ -47,7 +47,7 @@ long if_eatoms_list::addnew(const deref_eatoms_listID_type *from){
     ret_ifnot(wasinited());
 #endif
     long neweatoms_listID=howmany()+1;
-    writewithID(neweatoms_listID,from);
+    ret_ifnot( writewithID(neweatoms_listID,from) );
     return neweatoms_listID;
 }
 

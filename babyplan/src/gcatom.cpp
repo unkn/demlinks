@@ -43,7 +43,7 @@ long if_gcatom::howmany(){
 
 long if_gcatom::addnew(const deref_gcatomID_type *from){
     long newgcatomID=howmany()+1;
-    writewithID(newgcatomID,from);
+    ret_ifnot( writewithID(newgcatomID,from) );
     return newgcatomID;
 }
 

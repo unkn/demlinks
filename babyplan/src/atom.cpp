@@ -47,7 +47,7 @@ atomID if_atom::addnew(const deref_atomID_type *from){
     ret_ifnot(wasinited());
 #endif
     long newatomID=howmany()+1;
-    writewithID(newatomID,from);
+    ret_ifnot( writewithID(newatomID,from) );
     return newatomID;
 }
 

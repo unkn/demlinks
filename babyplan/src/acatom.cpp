@@ -42,7 +42,7 @@ long if_acatom::howmany(){
 
 long if_acatom::addnew(const deref_acatomID_type *from){
     long newacatomID=howmany()+1;
-    writewithID(newacatomID,from);
+    ret_ifnot( writewithID(newacatomID,from) );
     return newacatomID;
 }
 

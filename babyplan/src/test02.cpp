@@ -86,7 +86,7 @@ skipadd:
         atomID _atomID_typeE=test2->find_atomID_type_E(c);
         );
         ab_if_error_after_statement(
-        atomID bebe=test2->strict_add_atom_type_AC(_atomID_typeE,_noID_,prev,_noID_);//only used with unlink()
+        atomID bebe=test2->strict_add_atom_type_AC_after_prev(_atomID_typeE,_noID_,prev);//only used with unlink()
         );
         prev=bebe;//at this point we have prev bebe->next=_noID_ unless that
         //funxion updates prev->next to US, which will do! and should DO!
@@ -110,6 +110,18 @@ skipadd:
         printf("passing thru type AC w/ atomID==%ld\n",now);
         if (prev==_noID_) break;//no more prev items
     }//while
+
+
+//FIXME::
+    atomID typeE;
+    printf("Trying to get list of clones to last eatom\n");
+    printf("drop anykey to begin or ESC to skip...\n");
+    if (getch()==27) goto skipacatoms;
+
+        ab_if_error_after_statement(
+        typeE=test2->find_atomID_type_E(255);
+        );
+//FIXME:
 
 skipacatoms:
     srand(982);

@@ -42,7 +42,7 @@ long if_gcatomslist_item::howmany(){
 
 long if_gcatomslist_item::addnew(const deref_gcatomslist_itemID_type *from){
     long newgcatomslist_itemID=howmany()+1;
-    writewithID(newgcatomslist_itemID,from);
+    ret_ifnot( writewithID(newgcatomslist_itemID,from) );
     return newgcatomslist_itemID;
 }
 

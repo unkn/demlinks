@@ -99,6 +99,7 @@ reterrt dmentalix::shutdown(){
 #undef DONE
 /*^^^^^^^^^^^^^^*/
 
+
 /*______________*/
 reterrt dmentalix::get_atomID_s_type_prev_next(const atomID whos_atomID, atomtypes &type, atomID &prev, atomID &next){
 //it also returns error if type=_E_atom since eatoms cannot be parts of chain
@@ -130,34 +131,21 @@ reterrt dmentalix::get_atomID_s_type_prev_next(const atomID whos_atomID, atomtyp
 
     ret_ok();//all went OK
 }
-/*^^^^^^^^^^^^^^*/
 
-/*______________*/
-atomID dmentalix::strict_add_atom_type_AC(const atomID ptr2what_atomID, const groupID father_groupID, const atomID whosprev_atomID, const atomID whosnext_atomID){//add a new CA
+
+atomID dmentalix::strict_add_atom_type_AC_after_prev(const atomID ptr2what_atomID, const groupID father_groupID, const atomID whosprev_atomID){//add a new CA
 /*
     creates a new atom (type CloneAtom) which points to `ptr2what' (initially)
-
+    prev/group can be anything
+    if prev is _noID_ then this is the first atom in list
+    else US.next=prev.next;
+        prev.next = US
+        and US.prev=prev;
+        => insert US after prev and before prev.next
 */
 #ifdef WASINITED_SAFETY
     ret_ifnot(wasinited());//files must be open ~ check
 #endif
-
-//Invariants() check:
-//if prev!=noID prev.next must be _noID_
-//if next!=noID next.prev must be _noID_
-//note:group can be anything
-//BUT: we must be able to insert this acatom inbetween a chain, so the followin
-//are just temporary rules (those above actually)
-    atomID _prev,_next;
-    atomtypes _type;
-    if (whosprev_atomID != _noID_){
-        ret_ifnot( get_atomID_s_type_prev_next(whosprev_atomID,_type,_prev,_next) );//_E_atom type automaticly handled inside, but we must keep ret_ifnot()
-        ret_if( _next != _noID_ );//prev.next must be _noID_
-    }//fi prev
-    if (whosnext_atomID != _noID_){
-        ret_ifnot( get_atomID_s_type_prev_next(whosnext_atomID,_type,_prev,_next) );
-        ret_if( _prev != _noID_);//next.prev must be _noID_
-    }//fi next
 
 
 //the real thing:
@@ -169,13 +157,13 @@ atomID dmentalix::strict_add_atom_type_AC(const atomID ptr2what_atomID, const gr
 
     deref_acatoms_listID_type _list;
 //compose the new empty list
-    if_acatoms_list::compose(&_list,NULL);//ptr2head=NULL no items in list
+    if_acatoms_list::compose(&_list,_noID_);//ptr2head=NULL=_noID_ no items in list
     acatoms_listID listID=if_acatoms_list::addnew(&_list);
     ret_if(listID==NULL);//return if error ^ somehow list wasn't allocated
     
 
     deref_acatomID_type _acatom;
-    if_acatom::compose(&_acatom,father_groupID,whosprev_atomID,whosnext_atomID,listID,ptr2what_atomID);//append/add a new elemental
+    if_acatom::compose(&_acatom,father_groupID,whosprev_atomID,_noID_,listID,ptr2what_atomID);//append/add a new elemental
     acatomID _acatomID=if_acatom::addnew(&_acatom);//create the new acatom
     ret_if( _acatomID==NULL );//quit if failed to create it
     
@@ -186,12 +174,167 @@ atomID dmentalix::strict_add_atom_type_AC(const atomID ptr2what_atomID, const gr
 //and has a father_groupID (points upwards) and it(acatom) may be a part of
 //a chain of other atoms, prev and next in a list.
 //HOWEVER, we must add into `ptr2what_atomID' 's list the fact that this
-//`father' acatom we created points to it, we do this on the following lines:
+//`father' acatom, we created, points to it, we do this on the following
+//lines:
 //FIXME: do as above
-//also FIXME:: we have to go to prevatomID and nextatomID and if not _noID_
-//  we should update that atom's next resp. prev to point to US
+//add father as an item to the list of thos which point to `ptr2what_atomID'
+    ret_ifnot( add_to_clone_list(ptr2what_atomID,father) );
+//also DONE:: we have to go to prevatomID we should update that atom's next
+//to point to US
+
+    if (whosprev_atomID != _noID_){
+        //so prev atom is not NULL, we have to insert our selves after it
+
+        //we change prev's next to point to us, and remember oldnext=prev.next
+        atomID oldprevnext;
+        ret_ifnot( strict_modif_next(whosprev_atomID,father,&oldprevnext) );
+
+        //we change us.next to point to prev.next (even if prev.next is _noID_
+        ret_ifnot( strict_modif_next(father,oldprevnext,NULL) );
+        //father.prev was changed before(above) to point to prev.
+    }//fi prev
 
     return father; //returns atomID, NOT acatomID
+}
+/*^^^^^^^^^^^^^^*/
+
+/*______________*/
+reterrt dmentalix::add_to_clone_list(const atomID whos_atomID, const atomID what2add_atomID){
+/* add what2add into whos' list of atoms which point to whos*/
+#ifdef WASINITED_SAFETY
+    ret_ifnot(wasinited());//files must be open ~ check
+#endif
+    deref_atomID_type _tmpa;
+    ret_ifnot( if_atom::getwithID(whos_atomID,&_tmpa) );//get it
+
+    switch (_tmpa.at_type) {
+        case _E_atom:
+            deref_eatomID_type _ea;
+            ret_ifnot( if_eatom::getwithID(_tmpa.at_ID,&_ea) );
+            ret_ifnot( one_more_eatom_to_this_clone_list(_ea.ptr2list,what2add_atomID) );
+            break;
+        case _GC_atom:
+                deref_gcatomID_type _gca;
+                ret_ifnot( if_gcatom::getwithID(_tmpa.at_ID,&_gca) );
+                //got gcatom
+                ret_ifnot( strict_add_one_more_gcatom_to_this_clone_list(_gca.ptr2clonelist,what2add_atomID) );
+                break;
+        case _AC_atom:
+                deref_acatomID_type _aca;
+                ret_ifnot( if_acatom::getwithID(_tmpa.at_ID,&_aca) );
+                //got ACatom
+                ret_ifnot( one_more_acatom_to_this_clone_list(_aca.ptr2clonelist,what2add_atomID) );
+                break;
+        default:
+                ret_ifalways(not dodging atom of unknown type);
+    }//switch
+
+    
+    ret_ok();//allOK
+}
+/*^^^^^^^^^^^^^^*/
+
+/*______________*/
+reterrt dmentalix::strict_add_one_more_gcatom_to_this_clone_list(const gcatoms_listID whatlist, const atomID what2add){
+/* adds to the list w/o checking if item already exist (hopefully) */
+#ifdef WASINITED_SAFETY
+    ret_ifnot(wasinited());//files must be open ~ check
+#endif
+    deref_gcatoms_listID_type _list;
+    ret_ifnot( if_gcatoms_list::getwithID(whatlist,&_list) );
+
+
+    deref_gcatomslist_itemID_type newitem;
+    newitem.prevINlist=_noID_;
+    newitem.nextINlist=_list.ptr2head;//the old head
+    newitem.ptr2atom_that_points_to_US=what2add;
+    //connected new item to the chain, but put first, instead of last.
+
+    _list.ptr2head=if_gcatomslist_item::addnew(&newitem);//append
+    ret_if(_list.ptr2head == _noID_);//catches errors too
+    //wrote new item
+
+    ret_ifnot( if_gcatoms_list::writewithID(whatlist,&_list) );
+    //wrote list
+    
+    ret_ok();
+}
+/*^^^^^^^^^^^^^^*/
+
+/*______________*/
+reterrt dmentalix::one_more_eatom_to_this_clone_list(const eatoms_listID whatlist, const atomID what2add){
+#ifdef WASINITED_SAFETY
+    ret_ifnot(wasinited());//files must be open ~ check
+#endif
+//FIXME::
+    deref_eatoms_listID_type _list;
+    ret_ifnot( if_eatoms_list::getwithID(whatlist,&_list) );
+
+
+    deref_eatomslist_itemID_type newitem;
+    newitem.prevINlist=_noID_;
+    newitem.nextINlist=_list.ptr2head;//the old head
+    newitem.ptr2atom_that_points_to_US=what2add;
+    //connected new item to the chain, but put first, instead of last.
+
+    _list.ptr2head=if_eatomslist_item::addnew(&newitem);//append
+    ret_if(_list.ptr2head == _noID_);//catches errors too
+    //wrote new item
+
+    ret_ifnot( if_eatoms_list::writewithID(whatlist,&_list) );
+    //wrote list
+    
+
+    ret_ok();
+}
+/*^^^^^^^^^^^^^^*/
+
+/*______________*/
+reterrt dmentalix::one_more_acatom_to_this_clone_list(const acatoms_listID whatlist, const atomID what2add){
+#ifdef WASINITED_SAFETY
+    ret_ifnot(wasinited());//files must be open ~ check
+#endif
+//FIXME::
+
+    ret_ok();
+}
+/*^^^^^^^^^^^^^^*/
+
+/*______________*/
+reterrt dmentalix::strict_modif_next(const atomID whos_atomID, const atomID newnext, atomID *oldnext){
+//oldnext=;; whos_atomID.next=newnext;
+
+#ifdef WASINITED_SAFETY
+    ret_ifnot(wasinited());//files must be open ~ check
+#endif
+
+    deref_atomID_type _tmpa;
+    ret_ifnot( if_atom::getwithID(whos_atomID,&_tmpa) );//get it
+    ret_if( _tmpa.at_type == _E_atom ); //eatoms can't be chained, use acatoms to them, instead.
+
+    switch (_tmpa.at_type) {
+        case _GC_atom://get this GCatom in order to see it's prev/next
+                deref_gcatomID_type _gca;
+                ret_ifnot( if_gcatom::getwithID(_tmpa.at_ID,&_gca) );
+                //got gcatom
+                if (oldnext) *oldnext=_gca.nextINchain;//remember last next
+                _gca.nextINchain=newnext;//modify it
+                ret_ifnot( if_gcatom::writewithID(_tmpa.at_ID,&_gca) );//write it back
+                break;
+        case _AC_atom:
+                deref_acatomID_type _aca;
+                ret_ifnot( if_acatom::getwithID(_tmpa.at_ID,&_aca) );
+                //got ACatom
+                if (oldnext) *oldnext=_aca.nextINchain;//remember last next
+                _aca.nextINchain=newnext;//modify it
+                ret_ifnot( if_acatom::writewithID(_tmpa.at_ID,&_aca) );//write it back
+                break;
+        default:
+                ret_ifalways(not dodging atom of unknown type);
+    }//switch
+
+
+    ret_ok();
 }
 /*^^^^^^^^^^^^^^*/
 

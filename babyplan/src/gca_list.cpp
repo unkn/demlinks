@@ -41,7 +41,7 @@ long if_gcatoms_list::howmany(){
 
 long if_gcatoms_list::addnew(const deref_gcatoms_listID_type *from){
     long newgcatoms_listID=howmany()+1;
-    writewithID(newgcatoms_listID,from);
+    ret_ifnot( writewithID(newgcatoms_listID,from) );
     return newgcatoms_listID;
 }
 

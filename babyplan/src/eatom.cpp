@@ -163,7 +163,7 @@ long if_eatom::addnew(const deref_eatomID_type *from){
     ret_ifnot(wasinited());
 #endif
     long neweatomID=howmany()+1;
-    writewithID(neweatomID,from);
+    ret_ifnot( writewithID(neweatomID,from) );
     return neweatomID;
 }
 

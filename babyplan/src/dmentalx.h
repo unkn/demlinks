@@ -100,10 +100,18 @@ public:
     atomID strict_add_atom_type_E(const basic_element BE);//no check, imperativeADD!
     atomID find_atomID_type_E(const basic_element BE);//only ID is returned
     
-    atomID strict_add_atom_type_AC(const atomID ptr2what, const groupID father_groupID, const atomID whosprev_atomID, const atomID whosnext_atomID);//add a new CA
+    atomID strict_add_atom_type_AC_after_prev(const atomID ptr2what, const groupID father_groupID, const atomID whosprev_atomID);//add a new CA after but connected with `whosprev...'
+
     reterrt get_atomID_s_type_prev_next(const atomID whos_atomID, atomtypes &type, atomID &prev, atomID &next);//it also returns error if type=_E_atom since eatoms cannot be parts of chain
 
+    reterrt strict_modif_next(const atomID whos_atomID, const atomID newnext, atomID *oldnext);//if non NULL oldnext=.next before changin;; whos_atomID.next=newnext;
+
 private:
+    reterrt strict_add_one_more_gcatom_to_this_clone_list(const gcatoms_listID whatlist, const atomID what2add);
+    reterrt one_more_acatom_to_this_clone_list(const acatoms_listID whatlist, const atomID what2add);
+    reterrt one_more_eatom_to_this_clone_list(const eatoms_listID whatlist, const atomID what2add);
+    
+    reterrt add_to_clone_list(const atomID whos_atomID, const atomID what2add_atomID);
     eatomID try_newelemental(const atomID whosmy_atomID, const basic_element thenewbe);//a new eatom?!with check
     eatomID strict_addelemental(const atomID whosmy_atomID, const basic_element thenewbe);//no check, appendnew!
 //    eatomID get_eatomID_of_elemental(const basic_element seekBE);

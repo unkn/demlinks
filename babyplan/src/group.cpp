@@ -45,7 +45,7 @@ long if_group::howmany(){
 
 long if_group::addnew(const deref_groupID_type *from){
     long newgroupID=howmany()+1;
-    writewithID(newgroupID,from);
+    ret_ifnot( writewithID(newgroupID,from) );
     return newgroupID;
 }
 
