@@ -140,7 +140,7 @@ struct deref_groupID_type { //GROUPS.DAT
 	gcatoms_listID ptr2list_of_gcatoms;
 };
 
-
+/*
 #define interface(_what_,moreshit) \
 class if_##_what_##:public nicefi {\
 private:                       \
@@ -150,14 +150,14 @@ public:                           \
 	if_##_what_##();                    \
 	~if_##_what_##();                    \
 	reterrt init(const char *fname);    \
-	reterrt get##_what_##withID(const _what_##ID what##_what_##ID, deref_##_what_##ID_type *into);\
-	reterrt write##_what_##withID(const _what_##ID what##_what_##ID, const deref_##_what_##ID_type *from);\
-	long new##_what_##(const deref_##_what_##ID_type *from); \
-	long howmany##_what_##s();\
+	reterrt getwithID(const _what_##ID what##_what_##ID, deref_##_what_##ID_type *into);\
+	reterrt writewithID(const _what_##ID what##_what_##ID, const deref_##_what_##ID_type *from);\
+	long addnew(const deref_##_what_##ID_type *from); \
+	long howmany();\
 	reterrt shutdown(); \
 	moreshit \
 };
-
+*/
 
 #define _in2(_w_)\
 	into->##_w_##=##_w_##;
@@ -171,23 +171,24 @@ public:                           \
 #define _5in2(_1,_2,_3,_4,_5)\
 	_3in2(_1,_2,_3);_2in2(_4,_5);
 
+/*
 #define implement(_what_,_more_) \
-long if_##_what_##::howmany##_what_##s(){ \
+long if_##_what_##::howmany(){ \
 	return nicefi::getnumrecords();\
 }\
 \
-long if_##_what_##::new##_what_##(const deref_##_what_##ID_type *from){\
-	long new##_what_##ID=howmany##_what_##s()+1;\
-	write##_what_##withID(new##_what_##ID,from);\
+long if_##_what_##::addnew(const deref_##_what_##ID_type *from){\
+	long new##_what_##ID=howmany()+1;\
+	writewithID(new##_what_##ID,from);\
 	return new##_what_##ID;\
 }\
 \
-reterrt if_##_what_##::get##_what_##withID(const _what_##ID what##_what_##ID, deref_##_what_##ID_type *into){\
+reterrt if_##_what_##::getwithID(const _what_##ID what##_what_##ID, deref_##_what_##ID_type *into){\
 	ret_ifnot(nicefi::readrec(what##_what_##ID,into));\
 	ret_ok();\
 }\
 \
-reterrt if_##_what_##::write##_what_##withID(const _what_##ID what##_what_##ID, const deref_##_what_##ID_type *from){\
+reterrt if_##_what_##::writewithID(const _what_##ID what##_what_##ID, const deref_##_what_##ID_type *from){\
 	ret_ifnot(nicefi::writerec(what##_what_##ID,from));\
 	ret_ok();\
 }                                          \
@@ -215,7 +216,7 @@ reterrt if_##_what_##::shutdown(){\
 }\
 \
 _more_
-
+*/
 
 
 

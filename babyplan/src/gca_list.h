@@ -39,11 +39,24 @@
 #include "common.h"
 
 
-interface(gcatoms_list,
-	void composegcatoms_list(
+class if_gcatoms_list:public nicefi {
+private:                       
+	int opened;                 
+	const long its_recsize;      
+public:                           
+	if_gcatoms_list();                    
+	~if_gcatoms_list();                    
+	reterrt init(const char *fname);    
+	reterrt getwithID(const gcatoms_listID whatgcatoms_listID, deref_gcatoms_listID_type *into);
+	reterrt writewithID(const gcatoms_listID whatgcatoms_listID, const deref_gcatoms_listID_type *from);
+	long addnew(const deref_gcatoms_listID_type *from); 
+	long howmany();
+	reterrt shutdown(); 
+	void compose(
 		deref_gcatoms_listID_type *into,
 		const gcatomslist_itemID ptr2head
-);)
+);
+};//class
 
 
 #endif

@@ -38,13 +38,25 @@
 
 #include "common.h"
 
-interface(atom,
-	void composeatom(
+class if_atom:public nicefi {
+private:                       
+	int opened;                 
+	const long its_recsize;      
+public:                           
+	if_atom();                    
+	~if_atom();                    
+	reterrt init(const char *fname);
+	reterrt getwithID(const atomID whatatomID, deref_atomID_type *into);
+	reterrt writewithID(const atomID whatatomID, const deref_atomID_type *from);
+	long addnew(const deref_atomID_type *from);
+	long howmany();
+	reterrt shutdown(); 
+	void compose(
 		deref_atomID_type *into,
 		const atomtypes at_type,
 		const anyatomID at_ID
 	);
-)
+};//class
 
 
 

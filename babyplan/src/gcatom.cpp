@@ -37,8 +37,49 @@
 #include "petrackr.h"
 #include "gcatom.h"
 
-implement(gcatom,
-void if_gcatom::composegcatom(
+long if_gcatom::howmany(){ 
+	return nicefi::getnumrecords();
+}
+
+long if_gcatom::addnew(const deref_gcatomID_type *from){
+	long newgcatomID=howmany()+1;
+	writewithID(newgcatomID,from);
+	return newgcatomID;
+}
+
+reterrt if_gcatom::getwithID(const gcatomID whatgcatomID, deref_gcatomID_type *into){
+	ret_ifnot(nicefi::readrec(whatgcatomID,into));
+	ret_ok();
+}
+
+reterrt if_gcatom::writewithID(const gcatomID whatgcatomID, const deref_gcatomID_type *from){
+	ret_ifnot(nicefi::writerec(whatgcatomID,from));
+	ret_ok();
+}                                          
+											
+if_gcatom::~if_gcatom(){
+	if (opened==_yes_) shutdown();
+}
+
+if_gcatom::if_gcatom():
+	its_recsize(sizeof(deref_gcatomID_type))
+{
+	opened=_no_;
+}
+
+reterrt if_gcatom::init(const char * fname){
+	ret_ifnot(nicefi::open(fname,0,its_recsize));
+	opened=_yes_;
+	ret_ok();
+}
+
+reterrt if_gcatom::shutdown(){
+	if (opened==_yes_) ret_ifnot(nicefi::close());
+	opened=_no_;
+	ret_ok();
+}
+
+void if_gcatom::compose(
 	deref_gcatomID_type *into,
 	const groupID ptr2group,
 	const atomID prevINchain,
@@ -48,4 +89,4 @@ void if_gcatom::composegcatom(
 )
 {
 	_5in2(ptr2group,prevINchain,nextINchain,ptr2clonelist,Irefer2thisGROUP);
-})
+}

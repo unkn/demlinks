@@ -35,11 +35,52 @@
 #include "petrackr.h"
 #include "ea_list.h"
 
-implement(eatoms_list,
-void if_eatoms_list::composeeatoms_list(
+long if_eatoms_list::howmany(){ 
+	return nicefi::getnumrecords();
+}
+
+long if_eatoms_list::addnew(const deref_eatoms_listID_type *from){
+	long neweatoms_listID=howmany()+1;
+	writewithID(neweatoms_listID,from);
+	return neweatoms_listID;
+}
+
+reterrt if_eatoms_list::getwithID(const eatoms_listID whateatoms_listID, deref_eatoms_listID_type *into){
+	ret_ifnot(nicefi::readrec(whateatoms_listID,into));
+	ret_ok();
+}
+
+reterrt if_eatoms_list::writewithID(const eatoms_listID whateatoms_listID, const deref_eatoms_listID_type *from){
+	ret_ifnot(nicefi::writerec(whateatoms_listID,from));
+	ret_ok();
+}                                          
+											
+if_eatoms_list::~if_eatoms_list(){
+	if (opened==_yes_) shutdown();
+}
+
+if_eatoms_list::if_eatoms_list():
+	its_recsize(sizeof(deref_eatoms_listID_type))
+{
+	opened=_no_;
+}
+
+reterrt if_eatoms_list::init(const char * fname){
+	ret_ifnot(nicefi::open(fname,0,its_recsize));
+	opened=_yes_;
+	ret_ok();
+}
+
+reterrt if_eatoms_list::shutdown(){
+	if (opened==_yes_) ret_ifnot(nicefi::close());
+	opened=_no_;
+	ret_ok();
+}
+
+void if_eatoms_list::compose(
 	deref_eatoms_listID_type *into,
 	const eatomslist_itemID ptr2head
 )
 {
 	_in2(ptr2head);
-})
+}

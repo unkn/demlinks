@@ -35,10 +35,10 @@
 
 //the (l)user must define smth like the following 5 #def lines:
 //where `errtrk *etracker;'
-//#define ret_if(_i) gret_if(_i,etracker)
-//#define ret_ifnot(_i) gret_ifnot(_i,etracker)
-//#define ab_if(_a) gab_if(_a,etracker)
-//#define ab_ifnot(_a) gab_ifnot(_a,etracker)
+//#define ret_if(_i) gret_if(etracker,"TRUE:",_i,"")
+//#define ret_ifnot(_i) gret_ifnot(etracker,"FALSE:",_i,"")
+//#define ab_if(_a) gab_if(etracker,"TRUE:",_a,"")
+//#define ab_ifnot(_a) gab_ifnot(etracker,"FALSE:",_a,"")
 //#define ret_ok() gret_ok(etracker)
 
 /*

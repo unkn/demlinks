@@ -40,13 +40,54 @@
 #include "eatom.h"
 
 
-implement(eatom,
-void if_eatom::composeeatom(
+long if_eatom::howmany(){ 
+	return nicefi::getnumrecords();
+}
+
+long if_eatom::addnew(const deref_eatomID_type *from){
+	long neweatomID=howmany()+1;
+	writewithID(neweatomID,from);
+	return neweatomID;
+}
+
+reterrt if_eatom::getwithID(const eatomID whateatomID, deref_eatomID_type *into){
+	ret_ifnot(nicefi::readrec(whateatomID,into));
+	ret_ok();
+}
+
+reterrt if_eatom::writewithID(const eatomID whateatomID, const deref_eatomID_type *from){
+	ret_ifnot(nicefi::writerec(whateatomID,from));
+	ret_ok();
+}                                          
+											
+if_eatom::~if_eatom(){
+	if (opened==_yes_) shutdown();
+}
+
+if_eatom::if_eatom():
+	its_recsize(sizeof(deref_eatomID_type))
+{
+	opened=_no_;
+}
+
+reterrt if_eatom::init(const char * fname){
+	ret_ifnot(nicefi::open(fname,0,its_recsize));
+	opened=_yes_;
+	ret_ok();
+}
+
+reterrt if_eatom::shutdown(){
+	if (opened==_yes_) ret_ifnot(nicefi::close());
+	opened=_no_;
+	ret_ok();
+}
+
+void if_eatom::compose(
 	deref_eatomID_type *into,
 	eatoms_listID ptr2list,
 	basic_element data
 )
 {
 	_2in2(ptr2list,data);
-})
+}
 

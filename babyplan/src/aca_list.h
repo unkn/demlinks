@@ -39,11 +39,24 @@
 #include "common.h"
 
 
-interface(acatoms_list,
-	void composeacatoms_list(
+class if_acatoms_list:public nicefi {
+private:                       
+	int opened;                 
+	const long its_recsize;      
+public:                           
+	if_acatoms_list();                    
+	~if_acatoms_list();                    
+	reterrt init(const char *fname);    
+	reterrt getwithID(const acatoms_listID whatacatoms_listID, deref_acatoms_listID_type *into);
+	reterrt writewithID(const acatoms_listID whatacatoms_listID, const deref_acatoms_listID_type *from);
+	long addnew(const deref_acatoms_listID_type *from); 
+	long howmany();
+	reterrt shutdown(); 
+	void compose(
 		deref_acatoms_listID_type *into,
 		const acatomslist_itemID ptr2head
-);)
+	);
+};//class
 
 
 #endif

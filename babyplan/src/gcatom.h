@@ -38,14 +38,27 @@
 
 #include "common.h"
 
-interface(gcatom,
-	void composegcatom(
+class if_gcatom:public nicefi {
+private:                       
+	int opened;                 
+	const long its_recsize;      
+public:                           
+	if_gcatom();                    
+	~if_gcatom();                    
+	reterrt init(const char *fname);    
+	reterrt getwithID(const gcatomID whatgcatomID, deref_gcatomID_type *into);
+	reterrt writewithID(const gcatomID whatgcatomID, const deref_gcatomID_type *from);
+	long addnew(const deref_gcatomID_type *from); 
+	long howmany();
+	reterrt shutdown(); 
+	void compose(
 		deref_gcatomID_type *into,
 		const groupID ptr2group,
 		const atomID prevINchain,
 		const atomID nextINchain,
 		const gcatoms_listID ptr2clonelist,
 		const groupID Irefer2thisGROUP
-);)
+	);
+};//class
 
 #endif

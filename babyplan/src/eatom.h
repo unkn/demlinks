@@ -38,12 +38,25 @@
 
 #include "common.h"
 
-interface(eatom,
-	void composeeatom(
+class if_eatom:public nicefi {
+private:                       
+	int opened;                 
+	const long its_recsize;      
+public:                           
+	if_eatom();                    
+	~if_eatom();                    
+	reterrt init(const char *fname);    
+	reterrt getwithID(const eatomID whateatomID, deref_eatomID_type *into);
+	reterrt writewithID(const eatomID whateatomID, const deref_eatomID_type *from);
+	long addnew(const deref_eatomID_type *from); 
+	long howmany();
+	reterrt shutdown(); 
+	void compose(
 		deref_eatomID_type *into,
 		eatoms_listID ptr2list,
 		basic_element data
-);)
+	);
+};//class
 
 
 

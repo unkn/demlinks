@@ -35,15 +35,55 @@
 #include "petrackr.h"
 #include "atom.h"
 
+long if_atom::howmany(){ 
+	return nicefi::getnumrecords();
+}
 
-implement(atom,
-void if_atom::composeatom(
+long if_atom::addnew(const deref_atomID_type *from){
+	long newatomID=howmany()+1;
+	writewithID(newatomID,from);
+	return newatomID;
+}
+
+reterrt if_atom::getwithID(const atomID whatatomID, deref_atomID_type *into){
+	ret_ifnot(nicefi::readrec(whatatomID,into));
+	ret_ok();
+}
+
+reterrt if_atom::writewithID(const atomID whatatomID, const deref_atomID_type *from){
+	ret_ifnot(nicefi::writerec(whatatomID,from));
+	ret_ok();
+}                                          
+											
+if_atom::~if_atom(){
+	if (opened==_yes_) shutdown();
+}
+
+if_atom::if_atom():
+	its_recsize(sizeof(deref_atomID_type))
+{
+	opened=_no_;
+}
+
+reterrt if_atom::init(const char * fname){
+	ret_ifnot(nicefi::open(fname,0,its_recsize));
+	opened=_yes_;
+	ret_ok();
+}
+
+reterrt if_atom::shutdown(){
+	if (opened==_yes_) ret_ifnot(nicefi::close());
+	opened=_no_;
+	ret_ok();
+}
+
+void if_atom::compose(
 	deref_atomID_type *into,
 	const atomtypes at_type,
 	const anyatomID at_ID
 )
 {
 	_2in2(at_type,at_ID);
-})
+}
 
 
