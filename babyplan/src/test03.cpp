@@ -77,7 +77,7 @@ reterrt get_word(const char *w, groupID &dest){
 
     eatomslist_itemID heads[MAXWORDLEN];//max 255 chars in a word allowed
     //getting first referer in list for each eatom
-    for (long pos=0;pos<=wlen;pos++){
+    for (long pos=0;pos<wlen;pos++){
         ret_ifnot( test3->get_atomID_s_headIDof_eatomslistofclones(pos,heads[pos]) );
     }//for
     //now we got to carefully parse from each head and see weather we find one
@@ -91,7 +91,7 @@ reterrt get_word(const char *w, groupID &dest){
 //FIXME:
 
     ret_ok();
-}
+}//look at my work[!], not at me!
 
 reterrt abs_add_word(const char *w,groupID &dest){
 //not checking if the word already exists, dangerous tho, shouldn't be called
@@ -108,7 +108,7 @@ reterrt abs_add_word(const char *w,groupID &dest){
             ,_noID_/*who's prev atom*/
             );
     ret_if(_noID_ == prev);
-    for (long i=0;i<=strlen(w);i++){
+    for (long i=0;i<strlen(w);i++){
         prev=test3->strict_add_atom_type_AC_after_prev(
                 w[i]+1,//assuming hard that atomID of char #i is ID=ord(i)+1
                 dest,
