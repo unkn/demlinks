@@ -132,7 +132,7 @@ Bool_t TNotify::AddNote(const NotifyItem_st &a_NewNote){
         /* FIXME: oops the areas where PChar_t values point to, aren't copied */
 
 /* except that the Depth must be corrected by us 'cause we compute the Depth */
-        tmp->Contents.Depth=GetNotes();
+        tmp->Contents.Depth=GetNumNotes();
         
         /* this function does SetMoreNotes() */
         return Add2List(tmp);/* most always returns kTrue */
@@ -150,16 +150,16 @@ ifailed:
 
 Bool_t TNotify::AddUserNote(
                 const NotifyType_t a_NotifyType, 
-                const PChar_t a_Desc,
-                const PChar_t a_FileName, 
-                const PChar_t a_Func, 
+                PChar_t a_Desc,
+                File_t a_FileName, 
+                Func_t a_Func, 
                 const Line_t a_Line)
 {
         /* static or smth */
         NotifyItem_st tmp;
 
         /* making a copy for us */
-        tmp.Contents.Depth=GetNotes();
+        tmp.Contents.Depth=GetNumNotes();
         tmp.Contents.Type=a_NotifyType;
         tmp.Contents.Line=a_Line;
 

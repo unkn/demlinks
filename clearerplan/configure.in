@@ -1,8 +1,9 @@
-AC_INIT(FULL-PACKAGE-NAME, VERSION, BUG-REPORT-ADDRESS)
+AC_INIT([demlinks], [0.0.0], [atkaaz@users.sourceforge.net])
 AC_CONFIG_SRCDIR([src/notetrk.cpp])
 AM_CONFIG_HEADER([config.h])
 
 AM_INIT_AUTOMAKE
+AM_MAINTAINER_MODE
 
 # Checks for programs.
 AC_PROG_CXX
@@ -13,6 +14,7 @@ AC_PROG_CC
 # Checks for header files.
 AC_HEADER_STDC
 AC_CHECK_HEADERS([stdlib.h])
+AC_CHECK_HEADERS([stdio.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST

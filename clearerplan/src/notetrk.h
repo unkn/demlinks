@@ -118,9 +118,9 @@ public:
         /* adds a new notification to the list with data provided by params */
         Bool_t AddUserNote(
                         const NotifyType_t a_NotifyType,
-                        const PChar_t a_Desc,
-                        const PChar_t a_FileName, 
-                        const PChar_t a_Func, 
+                        PChar_t a_Desc,
+                        File_t a_FileName, 
+                        Func_t a_Func, 
                         const Line_t a_Line);
         
         /* adds a new notification to list with predefined contents */
@@ -153,6 +153,9 @@ public:
                 return kFalse;
         };
 
+        /* how many notifications are in list */
+        Counter_t GetNumNotes(){ return fHowMany; };
+
 private:
         Bool_t Add2List(NotifyItem_st *a_What);
 
@@ -160,7 +163,6 @@ private:
         void SetNoNotes(){ fHowMany=0; };
         void SetLessNotes(){ fHowMany--; };
         void SetMoreNotes(){ fHowMany++; };
-        Counter_t GetNotes(){ return fHowMany; };
 
         void SetFailedInternally(){ fInternalFailed=kTrue; };
         void SetOkInternally(){ fInternalFailed=kFalse; };
