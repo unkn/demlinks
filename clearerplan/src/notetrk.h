@@ -53,6 +53,10 @@ struct NotifyData_st {
 
 /* the type or */
         NotifyType_t Type;
+/* TODO: perhaps a way to add a constant and store it with the notification
+   (here in this struct) in this way the caller can check if a specified known
+   error has occured and act accordingly; however this is beyond source level
+   notification tracking which was intended in the first place */
 
 /* the depth level where the notification ocurred */
 /* ie. a function called another function which returned an error(depth=1),

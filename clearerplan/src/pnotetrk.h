@@ -38,6 +38,7 @@ enum ENotifyTypes {
         kNotify_None=0,
         kNotify_Warn,
         kNotify_Err,
+        kNotify_Exit,
         kNotify_Info,
 
         /* the developer used certain statements under a disconnected situation
@@ -138,6 +139,30 @@ extern MNotifyTracker *gNotifyTracker;
 #define WARN(a_WarnDescription)                 \
 {                                               \
         ADD_NOTE(kNotify_Warn,a_WarnDescription)\
+}
+
+/* always adds an EXIT type notification to the list,
+   with the passed description, just before doing the actual clean EXIT 
+ * refusing to do an exit with user supplied exitcode */
+#if defined(EXIT)
+# error EXIT macro is already defined, this may cause problems, check it out !!!
+#endif
+#define EXIT(a_ErrorDescription)                        \
+{                                                       \
+        ADD_NOTE(kNotify_Exit,a_ErrorDescription)       \
+        ShutDownNotifyTracker();                        \
+        exit(EXIT_FAILURE);                             \
+}
+
+/* adds an EXIT type notification to the notify-list if the condition is true
+   AND on doing so it also does display all notifications so far prior to
+   EXITing the program in a nice way with exit() so the at_exit functions may
+   be called */
+#define EXIT_IF(a_ConditionalStatement)                         \
+{                                                               \
+        if ((a_ConditionalStatement)) {                         \
+                EXIT(a_ConditionalStatement)                    \
+        }                                                       \
 }
 
 

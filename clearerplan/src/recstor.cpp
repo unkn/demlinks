@@ -89,12 +89,17 @@ RecNum_t
 TRecordsStorage::GetNumRecords()
 {
         LAME_PROGRAMMER_IF(!IsOpen(),
-                return kInvalidRecNum);
+                        return kInvalidRecNum);
 
         FileSize_t fileSize = filelength(fFileHandle);
-        ERR_IF(fileSize < 0, return kInvalidRecNum);
+        ERR_IF(fileSize < 0,
+                        return kInvalidRecNum);
 
-        RecNum_t retRecNum = Convert_FileOffset_To_RecNum(fileSize) - 1;
+        RecNum_t retRecNum = Convert_FileOffset_To_RecNum(fileSize);
+        PARANOID_IF(!Invariants(retRecNum),
+                        return kInvalidRecNum);
+
+/*        --retRecNum; I don't remember why is this needed */
 
         /* return the bigger of the two */
         if (retRecNum < fHighestRecNum)
@@ -194,7 +199,18 @@ TRecordsStorage::AddRecordToCache(
  * any existing a_RecNum is too old to be considered,
    since this one has the same a_RecNum.*/
 
+        PARANOID_IF(!Invariants(a_RecNum),
+                        return false);
         PARANOID_IF(!a_MemSource,
+                        return false);
+
+
+        RecNum_t numRec;
+
+        ERR_IF((numRec = GetNumRecords()) == kInvalidRecNum,
+                        return false);
+
+        LAME_PROGRAMMER_IF(a_RecNum - numRec > 1,
                         return false);
 
         CacheItem *iter=fCacheTail;//from tail up
@@ -255,11 +271,14 @@ TRecordsStorage::AbsolutelyAddRecordToCache(
                 const EItemState_t a_State,
                 const long a_RecNum,
                 const void * a_MemSource)
-{
         //absolute add to tail, don't check for existence!
-        CacheItem *iter;
+{
+        /* however there is one extra check that needs to be done
+         * a_RecNum - GetNumRecords() must not be above 1 */
         PARANOID_IF(fNumCachedRecords > fMaxNumCachedRecords,
                         return false);
+
+        CacheItem *iter;
         if (fNumCachedRecords == fMaxNumCachedRecords){
                 /* the cache is full: drop out one item, the elder */
 
@@ -490,9 +509,14 @@ TRecordsStorage::Close()
 RecNum_t
 TRecordsStorage::Convert_FileOffset_To_RecNum(
                 const FileSize_t a_FileOffset)
+/* counting on the fact that this function is used only internally and thus the
+   a_FileOffset always represents the offset in the file, just before the record
+   begins */
+/* RecNum can't be 0, it goes from 1..
+ * offset goes from 0..
+ * ie.  if offset == fRecSize then RecNum=2  it's past RecNum 1
+        if offset == 0 then RecNum=1*/
 {
-/* recnum can't be 0, it goes from 1..
- * ofs goes from 0..*/
         LAME_PROGRAMMER_IF(!IsOpen(),
                         return kInvalidRecNum);
 
@@ -500,6 +524,14 @@ TRecordsStorage::Convert_FileOffset_To_RecNum(
                         return kInvalidRecNum);
 
         FileSize_t ofsMinusHeader= (a_FileOffset - fHeaderSize);
+
+        /* the header data might not be written, thus filesize would be less
+           than headersize, FIXME: make a bool var weather headerdata was or not
+           written 
+         * the programmer/user must call WriteHeader() if fHeaderSize > 0
+           or else we "can't quite seek" after it ~ actually we could :P */
+        LAME_PROGRAMMER_IF(ofsMinusHeader < 0,
+                        return kInvalidRecNum);
 
         //this shouldn't be != 0 , if it is, the passed ofs is wrong, '
         //  and perhaps the error is above: to the caller!
@@ -536,6 +568,11 @@ bool
 TRecordsStorage::Invariants(
                 const RecNum_t a_RecNum)
 {
+        /* for a better understanding of error messages */
+        PARANOID_IF(a_RecNum == kInvalidRecNum,
+                        return false);
+
+        /* safety */
         PARANOID_IF(a_RecNum < kFirstRecNum,
                         return false);
 
@@ -564,7 +601,10 @@ TRecordsStorage::FileSeekToRecNum(
            allow gaps, we need all RecNum to be consecutive, so as stated before
            can't jump from RecNum 28 to RecNum 30, without having a RecNum 29
         */
-        PARANOID_IF(a_RecNum >= 2+GetNumRecords(),
+        RecNum_t tmpNumRecordsNow = GetNumRecords();
+        PARANOID_IF(tmpNumRecordsNow == kInvalidRecNum,
+                        return false);
+        PARANOID_IF(a_RecNum >= 2+tmpNumRecordsNow,
                         return false);
 
         FileSize_t exactOffset=Convert_RecNum_To_FileOffset(a_RecNum);
@@ -643,6 +683,9 @@ TRecordsStorage::Open(
         LAME_PROGRAMMER_IF(IsOpen(),
                         return false);
 
+        fRecSize=a_RecSize;
+        fHeaderSize=a_HeaderSize;
+
         PARANOID_IF(!Invariants(a_MaxNumRecordsToBeCached),
                         return false);
 
@@ -662,8 +705,6 @@ TRecordsStorage::Open(
                         return false);//if open failed
         //TODO: make ERR know about strerr(errno) / perror()
 
-        fRecSize=a_RecSize;
-        fHeaderSize=a_HeaderSize;
 
         return true;
 }

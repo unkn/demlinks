@@ -43,6 +43,7 @@ const PChar_t kNotifyDescriptions[kNumNotifyTypes]={
         "NONE",
         "WARN",
         "ERR",
+        "EXIT",
         "INFO",
         "ProgrammingERR", /* most prolly developer's fault */
 
@@ -142,8 +143,12 @@ void
 ShutDownNotifyTracker(void)
 {
         if (gNotifyTracker) {
-                if (gNotifyTracker->GetLastNote() != NULL)
+                if (gNotifyTracker->GetLastNote() != NULL) {
                         gNotifyTracker->ShowAllNotes();
+                        fprintf(stderr,
+                                "Notice: Read the above errors in reverse order"
+                                        " of appearence!\n");
+                }
                 delete gNotifyTracker;
                 gNotifyTracker=NULL;
         }

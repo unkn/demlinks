@@ -31,6 +31,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "_gcdefs.h"
 
@@ -38,34 +39,59 @@
 
 #include "recstor.h"
 
-void One(int);
+#define CACHE_THIS_MANY_ITEMS 2
+#define HOW_MANY_ITEMS 20000
+#define KEEP_LINES 7
+TRecordsStorage *DataBase;
 
-void Two(int i)
+void DataBaseCleanUp()
 {
-        if (i>6) {
-                ERR(reached a stop)
-                return;
+/* destructing it, makes sure that writes are flushed, ie. when records are
+ * cached */
+        printf("Been here.");
+        if (DataBase) {
+                printf(".. done that.");
+                delete DataBase;
+                DataBase = NULL;
         }
-        INFO_IF(i>=3,);
-        One(++i);
+        printf("\n");
 }
-
-void One(int i)
-{
-        WARN_IF(!i,);
-        Two(++i);
-}
-
 int main()
 {
         InitNotifyTracker();
 
-        TRecordsStorage *DataBase = new TRecordsStorage;
-        ERR_IF(!DataBase,
-                        return (EXIT_FAILURE));
+        
+        EXIT_IF(!(DataBase = new TRecordsStorage));
 
-        delete DataBase;
-        One(0);
+        atexit(DataBaseCleanUp);
+
+        long item;
+        char headerBuf [200];
+        memset(headerBuf,0,sizeof(headerBuf));
+        EXIT_IF(!DataBase->Open("test.fil",
+                                sizeof(headerBuf),
+                                sizeof(item),
+                                CACHE_THIS_MANY_ITEMS));
+
+        EXIT_IF(!DataBase->WriteHeader(headerBuf));
+
+        EXIT_IF(!DataBase->ReadHeader(headerBuf));
+
+        for (item = 1; item <= HOW_MANY_ITEMS; item++){
+                if (item % (HOW_MANY_ITEMS / KEEP_LINES) == 0)
+                        printf("attempting to write item %d\n",item);
+                EXIT_IF(!DataBase->WriteRecord(item,&item));
+        }
+        item = 1;
+        while (item <= HOW_MANY_ITEMS){
+                if (item % (HOW_MANY_ITEMS / KEEP_LINES) == 0)
+                        printf("attempting to read item %d\n",item);
+                EXIT_IF(!DataBase->ReadRecord(item,&item));
+                ++item;
+        }
+
+        DataBaseCleanUp();/* maybe we want to kill it earlier than exit */
+        
         ShutDownNotifyTracker();
 
         return EXIT_SUCCESS; //exit(EXIT_SUCCESS);

@@ -136,6 +136,10 @@ private:
 public:
         TRecordsStorage();
        ~TRecordsStorage();
+        /* TODO: make an option to entirely disable cache, seems to work faster
+           in linux ie. the smaller the cached num records the faster
+         * on the other hand with open watcom c in dosemu under linux it's a 
+           real pain how slow it works w/o cache */
         bool FlushWrites();
 
         /* opens the specified file for as long as we use this class, until we
@@ -144,6 +148,10 @@ public:
                         const FileSize_t a_HeaderSize,
                         const RecSize_t a_RecSize,
                         const RecNum_t a_MaxNumRecordsToBeCached);
+        /* TODO: we might want to know weather the file was created with Open
+           or it was just opened as an existing file;
+         * and perhaps an option weather to create new file if not exists just
+           like O_CREAT, or to create it everytime on Open (ie. zap it 1st). */
 
         /* closes the opened file, either we're finished with it or we attempt
          * to use open another file after this */
