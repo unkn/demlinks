@@ -132,35 +132,104 @@ MDementalLinksCore::AbsoluteAddBasicElement(
 
         /* create a new empty list of referrers; this list contains referrers to
            elementals only */
-        /* FIXME: make this in a separate func */
-        ListOfRef2Elemental_st newListOfRef2Elemental_st;
-        ERR_IF(!MListOfRef2Elemental::Compose(
-                                newListOfRef2Elemental_st,
-                                kNoItemID,/* no head, no tail */
-                                kNoItemID),
-                        return kNoElementalID);
+        ListOfRef2Elemental_ID_t newList_ID;
 
-        ListOfRef2Elemental_ID_t newListOfRef2Elemental_ID;
-        ERR_IF(!MListOfRef2Elemental::AddNew(newListOfRef2Elemental_st),
+        ERR_IF(kNoListID ==
+                        (newList_ID =
+                         AbsoluteAddListOfRef2Elemental(
+                                 kNoItemID,/* no head, no tail */
+                                 kNoItemID)),
                         return kNoElementalID);
         /* WARN: after this line we have a lost list if those below fail */
 
         /* put the data into the elemental struct */
         Elemental_st newElemental_st;
+
         ERR_IF(!MElemental::Compose(
                                 newElemental_st,
                                 a_WhatBasicElement,
-                                newListOfRef2Elemental_ID),
+                                newList_ID),
                         return kNoElementalID);
 
         /* add the new elemental */
         ElementalID_t newElementalID;
+
         ERR_IF(kNoElementalID ==
-                        (newElementalID = MElemental::AddNew(newElemental_st)),
+                        (newElementalID =
+                         MElemental::AddNew(newElemental_st)),
                         return kNoElementalID);
 
         /* return its ID */
         return newElementalID;
+}
+
+
+/* returns the ID of the specified BasicElement if exists
+ * or creates a new one
+ * may hang inside Find */
+ElementalID_t
+MDementalLinksCore::AddBasicElement(
+                const BasicElement_t a_WhatBasicElement)
+{
+        LAME_PROGRAMMER_IF(!IsInited(),
+                        return kNoElementalID);
+
+        ElementalID_t elemID;
+
+        if (kNoElementalID ==
+            (elemID = FindBasicElement(a_WhatBasicElement))) {
+                ERR_IF(kNoElementalID ==
+                        (elemID =
+                         AbsoluteAddBasicElement(a_WhatBasicElement)),
+                        return kNoElementalID);
+        }
+
+        /* return its ID */
+        return elemID;
+}
+
+
+/* searches for the needed BasicElement and returns its ID
+ * may hang inside this function */
+ElementalID_t
+MDementalLinksCore::FindBasicElement(
+                const BasicElement_t a_WhatBasicElement)
+{
+        LAME_PROGRAMMER_IF(!IsInited(),
+                        return kNoElementalID);
+
+        ElementalID_t foundElemID;
+        /* first we must try this trick or optimization :
+           the user might have created the BasicElements in order so #0 starts
+           at ID 1 and so on #255 has ID 256
+         * don't trace this since we might have #230 at ID 1 and have only one
+           ID per total in the database */
+        BasicElement_t tmpBasicElement;
+        foundElemID = a_WhatBasicElement + 1;
+        if (GetBasicElementWithID(tmpBasicElement,foundElemID))
+                if (foundElemID != kNoElementalID)
+                        return foundElemID;
+
+        /* prev trick failed thus we perform a brute parsing */
+        ElementalID_t lastElemID;
+        ERR_IF(!MElemental::GetLastID(lastElemID),
+                        return kNoElementalID);
+
+        /* there are no IDs thus empty */
+        if (lastElemID < kFirstElementalID)
+                return kNoElementalID;
+
+        /* parse all IDs from first to last existing and compare */
+        for (foundElemID = kFirstElementalID;
+             foundElemID <= lastElemID;
+             foundElemID++){
+                ERR_IF(!GetBasicElementWithID(tmpBasicElement,foundElemID),
+                                return kNoElementalID);
+                if (a_WhatBasicElement == tmpBasicElement)
+                        return foundElemID;
+        }
+
+        return kNoElementalID;
 }
 
 
@@ -175,6 +244,15 @@ MDementalLinksCore::GetBasicElementWithID(
 
         Elemental_st elemental_st;
 
+        /* if requested ID is out of range don't do ERR, instead only say it
+           didn't work */
+        ElementalID_t lastElemID;
+        ERR_IF(!MElemental::GetLastID(lastElemID),
+                        return false);
+        if (lastElemID < a_ElementalID)
+                return false;
+
+        /* get it */
         ERR_IF(!MElemental::ReadWithID(
                                 a_ElementalID,
                                 elemental_st),
@@ -185,4 +263,27 @@ MDementalLinksCore::GetBasicElementWithID(
         return true;
 }
 
+/* create a new empty list in the proper place: a list for an elemental */
+ListOfRef2Elemental_ID_t
+MDementalLinksCore::AbsoluteAddListOfRef2Elemental(
+                const ItemID_t a_HeadItem,
+                const ItemID_t a_TailItem)
+{
+        LAME_PROGRAMMER_IF(!IsInited(),
+                        return kNoListID);
+
+        ListOfRef2Elemental_st newList_st;
+        ERR_IF(!MListOfRef2Elemental::Compose(
+                                newList_st,
+                                a_HeadItem,
+                                a_TailItem),
+                        return kNoListID);
+
+        ListOfRef2Elemental_ID_t newList_ID;
+        ERR_IF(kNoListID ==
+                (newList_ID = MListOfRef2Elemental::AddNew(newList_st)),
+                        return kNoListID);
+
+        return newList_ID;
+}
 

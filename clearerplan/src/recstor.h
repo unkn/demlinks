@@ -101,6 +101,15 @@ typedef enum {
         kState_Written=2
 } EItemState_t;
 
+
+/* TODO: we might use cache to mark the last successful operation that will keep
+   the database consistent ; ie. if not marked when doing a flush/killcache it
+   is prolly because we just had an error and we're quitting, thus sync-ing only
+   those last writes until we hit the mark (of the last successful operation)
+   will keep the database consistent since other unwritten records are prolly
+   incomplete writes of the last unsuccessful operation which mustn't be written
+   */
+
 /* this is an item in the double linked Cache list
  * items on the cache list are called items ie. item=cached record
  * items hold records but they are not the records ie. record=user data field

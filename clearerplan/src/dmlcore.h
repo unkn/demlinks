@@ -48,6 +48,7 @@
 
 
 /* Demental Links Core class.
+ * the connections between the compound are made in this class
  * this is what u should use */
 class MDementalLinksCore :
         private MElemental,
@@ -92,10 +93,25 @@ public:
         ElementalID_t AbsoluteAddBasicElement(
                         const BasicElement_t a_WhatBasicElement);
 
+        /* same as above but it doesn't add a new one if already exists, instead
+           it returns its ID */
+        ElementalID_t AddBasicElement(
+                        const BasicElement_t a_WhatBasicElement);
+
+        /* searches for the needed BasicElement and returns its ID */
+        ElementalID_t FindBasicElement(
+                        const BasicElement_t a_WhatBasicElement);
+
         /* returns the data at specified ID */
         bool GetBasicElementWithID(
                         BasicElement_t &a_IntoBasicElement,
                         const ElementalID_t a_ElementalID);
+
+        /* create a new empty list in the proper place:
+           a list for an elemental */
+        ListOfRef2Elemental_ID_t AbsoluteAddListOfRef2Elemental(
+                                const ItemID_t a_HeadItem,
+                                const ItemID_t a_TailItem);
 
 private:
         bool IsInited() const { return fInited; };

@@ -41,7 +41,9 @@
 #include "recstor.h"
 
 /* NOTE : valid IDs are never zero or less */
-#define kNoID 0L //identifies no valid ID; this must be 0L don't change!!!
+//identifies no valid ID; this must be 0L don't change!!!
+#define kNoID long(kInvalidRecNum)
+#define kFirstID long(kFirstRecNum)
 
 #define kNoRefID kNoID
 
@@ -53,7 +55,7 @@
 #define kNoListID kNoID
 #define kNoChainID kNoID
 
-
+#define kFirstElementalID kFirstID
 
 /* an ID is like a handle */
 

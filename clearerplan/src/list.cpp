@@ -110,6 +110,7 @@ MListOfReferrers::WriteWithID(
         return true;
 }
 
+/* LastID may be kNoID if there are no IDs, also it may fail thus return false*/
 bool
 MListOfReferrers::GetLastID(
                 ListOfReferrers_ID_t &a_ListOfReferrers_ID)

@@ -46,7 +46,7 @@
 #       define CACHE_THIS_MANY_ITEMS kDisableCache
 #endif
 
-#define HOW_MANY_ITEMS 777
+#define HOW_MANY_ITEMS 7777
 
 #define KEEP_LINES 7
 
@@ -72,6 +72,7 @@ void MyDemlinksCleanUp()
         }
         printf("\n");
 }
+
 int main()
 {
         InitNotifyTracker();
@@ -83,6 +84,7 @@ int main()
 
         ElementalID_t element;
         unlink("elements.dat");
+        unlink("List_R2E.dat");
         EXIT_IF(!MyDemlinks->Init("elements.dat","List_R2E.dat"));
 
         EXIT_IF(!MyDemlinks->InitCache(CACHE_THIS_MANY_ITEMS));
@@ -90,25 +92,34 @@ int main()
                         MyDemlinks->IsCacheEnabled()==true?"Yes":"No");
 
         ElementalID_t tmpElementalID;
+        BasicElement_t basicElement;
 
         for (element = 1; element <= HOW_MANY_ITEMS; element++){
+                basicElement = (element -1) % 256;
+
                 if (element % (HOW_MANY_ITEMS / KEEP_LINES) == 0)
                         printf("attempting to write element %d\n",element);
+
                 EXIT_IF(kNoElementalID ==
                         (tmpElementalID =
-                         MyDemlinks->AbsoluteAddBasicElement(element % 256)) );
-                EXIT_IF(tmpElementalID != element);
+                         MyDemlinks->AddBasicElement(basicElement)) );
+
+                EXIT_IF(tmpElementalID != (basicElement + 1));
         }
 
-        BasicElement_t tmpBasicElement;
+        ElementalID_t tmpElemID;
         element = 1;
         while (element <= HOW_MANY_ITEMS){
+                basicElement = (element - 1) % 256;
+
                 if (element % (HOW_MANY_ITEMS / KEEP_LINES) == 0)
                         printf("attempting to read element %d\n",element);
-                EXIT_IF(!MyDemlinks->GetBasicElementWithID(
-                                        tmpBasicElement,
-                                        element));
-                EXIT_IF(((element % 256) != tmpBasicElement));
+
+                EXIT_IF(kNoElementalID ==
+                        (tmpElemID = MyDemlinks->FindBasicElement(
+                                        basicElement)));
+
+                EXIT_IF((basicElement + 1) != tmpElemID);
                 element++;
         }
 

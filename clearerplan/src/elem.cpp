@@ -108,14 +108,19 @@ MElemental::WriteWithID(
 }
 
 
+/* LastID may be kNoID if there are no IDs, also it may fail thus return false*/
+
 bool
 MElemental::GetLastID(
                 ElementalID_t &a_ElementalID)
 {
         LAME_PROGRAMMER_IF(!IsInited(),
                         return false);
-        ERR_IF(kBadRecCount == (a_ElementalID = TRecordsStorage::GetNumRecords()),
+
+        ERR_IF(kBadRecCount ==
+                        (a_ElementalID = TRecordsStorage::GetNumRecords()),
                         return false);
+
         return true;
 }
 
@@ -167,6 +172,7 @@ MElemental::AddNew(
         ERR_IF(!GetLastID(newElementalID),
                         return kNoElementalID);
 
+        /* can be 0++ */
         newElementalID++;
 
         ERR_IF(!WriteWithID(
