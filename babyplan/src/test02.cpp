@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 
-#include <process.h>
+#include <stdlib.h>
 #include <stdio.h>
 #include <conio.h>
 #include <io.h>

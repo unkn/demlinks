@@ -43,7 +43,7 @@ void uderrtrk::usrshowthemall(){
 	s_item *tmp=getlasterr();
 	while (tmp){
 		fprintf(stderr,
-			"%stypeTRKd::lvl#%d `%s'\nIn func `%s' from file `%s' at line `%d'\n"
+			"%stype:levl#%d: `%s',\nin func `%s' from file `%s' at line `%d'\n"
 			,str_t_all[tmp->error.errtype]
 			,tmp->error.level
 			,tmp->error.userdesc

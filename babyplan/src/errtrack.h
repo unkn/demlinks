@@ -41,15 +41,6 @@
 //#define ab_ifnot(_a) gab_ifnot(etracker,"FALSE:",_a,"")
 //#define ret_ok() gret_ok(etracker)
 
-/*
-#define ab_if(a) { if ( (a) ) {\
-	fprintf(stderr,"ERR&ABORT: Failed `%s'\n         in file %s at line %d.\n",(#a),__FILE__,__LINE__);\
-	flushall();\
-	printf("Aborting...press a key.\n");\
-	getch();\
-	abort();\
-	}}
-*/
 #define gret_ok(etracker) return etracker->funcok();
 #define gab_if(etracker,prefix,_a,sufix) { if ((_a)) {_ab_me(etracker,prefix,_a,sufix)} }
 #define gab_ifnot(etracker,prefix,_a,sufix) {if (!(_a)) {_ab_me(etracker,prefix,_a,sufix)} }

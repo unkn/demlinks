@@ -39,15 +39,53 @@ dmentalix::~dmentalix(){
 }
 
 
-reterrt dmentalix::init(_declall(ccp,f))
+/*..............*/
+#define INIT(_x_) \
+	ret_ifnot( if_##_x_##::init(##_x_##fname) )
+	
+reterrt dmentalix::init(_declall(const char *,fname))
 {
-	_funcall(ret_ifnot,_init);
+	INIT(atom);
+	INIT(group);
+	INIT(eatom);
+	INIT(acatom);
+	INIT(gcatom);
+	INIT(eatoms_list);
+	INIT(eatomslist_item);
+	INIT(acatoms_list);
+	INIT(acatomslist_item);
+	INIT(gcatoms_list);
+	INIT(gcatomslist_item);
 
 	ret_ok();
 }
+#undef INIT
+/*^^^^^^^^^^^^^^*/
 
+
+/*..............*/
+#define DONE(_x_) \
+	ret_ifnot( if_##_x_##::shutdown() )
+	
 reterrt dmentalix::shutdown(){
-	_ptrall2func(ret_ifnot,shutdown);
+	DONE(atom);
+	DONE(group);
+	DONE(eatom);
+	DONE(acatom);
+	DONE(gcatom);
+	DONE(eatoms_list);
+	DONE(eatomslist_item);
+	DONE(acatoms_list);
+	DONE(acatomslist_item);
+	DONE(gcatoms_list);
+	DONE(gcatomslist_item);
+
+	ret_ok();
+}
+#undef DONE
+/*^^^^^^^^^^^^^^*/
+
+reterrt newelemental(basic_element thenewbe){//a new eatom?!
 
 	ret_ok();
 }
