@@ -28,10 +28,12 @@
 *
 ****************************************************************************/
 
+#define PARANOIA_DEBUG
+
 
 #include <stdio.h>
 
-#define PARANOID_CHECKS
+#include "_cppdefs.h"
 
 #include "pnotetrk.h"
 
