@@ -2,4 +2,8 @@ obj/
 bin/
 err/
 tmp/
+obj/*.*
+bin/*.*
+err/*.*
+tmp/*.*
 
