@@ -40,7 +40,7 @@ long if_acatom::howmany(){
     return nicefi::getnumrecords();
 }
 
-long if_acatom::addnew(const deref_acatomID_type *from){
+acatomID if_acatom::addnew(const deref_acatomID_type *from){
     long newacatomID=howmany()+1;
     ret_ifnot( writewithID(newacatomID,from) );
     return newacatomID;

@@ -58,7 +58,7 @@ public:
     reterrt writewithID(const eatomID whateatomID, const deref_eatomID_type *from);
     eatomID find_eatom(deref_eatomID_type *into,const basic_element searchme);
     eatomID find_basic_element_and_ret_eatomID(const basic_element what2search);
-    long addnew(const deref_eatomID_type *from); 
+    eatomID addnew(const deref_eatomID_type *from);
     long howmany();
     reterrt shutdown();
     void compose(

@@ -48,7 +48,7 @@ public:
     reterrt init(const char *fname);    
     reterrt getwithID(const acatomID whatacatomID, deref_acatomID_type *into);
     reterrt writewithID(const acatomID whatacatomID, const deref_acatomID_type *from);
-    long addnew(const deref_acatomID_type *from); 
+    acatomID addnew(const deref_acatomID_type *from);
     long howmany();
     reterrt shutdown(); 
     void compose(
@@ -56,8 +56,8 @@ public:
         groupID ptr2group,
         atomID prevINchain,
         atomID nextINchain,
-        acatoms_listID ptr2clonelist,
-        atomID Irefer2thisATOM
+        acatoms_listID ptr2clonelist,//ptr to a list of atomIDs which refer to US
+        atomID Irefer2thisATOM//who do we refer, since we are acatom, we refer only to other atoms (either acatom, gcatom or eatom)
     );
 };//class
 

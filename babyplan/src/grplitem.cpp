@@ -29,68 +29,62 @@
 ****************************************************************************/
 
 
-//group-clone ATOM
-//an atom that is a referer to a group
 #include <process.h>
 #include <stdio.h>
 
 #include "petrackr.h"
-#include "gcatom.h"
+#include "grplitem.h"
 
-long if_gcatom::howmany(){ 
+
+long if_grpatomslist_item::howmany(){ 
     return nicefi::getnumrecords();
 }
 
-gcatomID if_gcatom::addnew(const deref_gcatomID_type *from){
-    long newgcatomID=howmany()+1;
-    ret_ifnot( writewithID(newgcatomID,from) );
-    return newgcatomID;
+grpatomslist_itemID if_grpatomslist_item::addnew(const deref_grpatomslist_itemID_type *from){
+    long newgrpatomslist_itemID=howmany()+1;
+    ret_ifnot( writewithID(newgrpatomslist_itemID,from) );
+    return newgrpatomslist_itemID;
 }
 
-reterrt if_gcatom::getwithID(const gcatomID whatgcatomID, deref_gcatomID_type *into){
-    ret_ifnot(nicefi::readrec(whatgcatomID,into));
+reterrt if_grpatomslist_item::getwithID(const grpatomslist_itemID whatgrpatomslist_itemID, deref_grpatomslist_itemID_type *into){
+    ret_ifnot(nicefi::readrec(whatgrpatomslist_itemID,into));
     ret_ok();
 }
 
-reterrt if_gcatom::writewithID(const gcatomID whatgcatomID, const deref_gcatomID_type *from){
-    ret_ifnot(nicefi::writerec(whatgcatomID,from));
+reterrt if_grpatomslist_item::writewithID(const grpatomslist_itemID whatgrpatomslist_itemID, const deref_grpatomslist_itemID_type *from){
+    ret_ifnot(nicefi::writerec(whatgrpatomslist_itemID,from));
     ret_ok();
 }                                          
                                             
-if_gcatom::~if_gcatom(){
+if_grpatomslist_item::~if_grpatomslist_item(){
     if (opened==_yes_) shutdown();
 }
 
-if_gcatom::if_gcatom():
-    its_recsize(sizeof(deref_gcatomID_type))
+if_grpatomslist_item::if_grpatomslist_item():
+    its_recsize(sizeof(deref_grpatomslist_itemID_type))
 {
     opened=_no_;
 }
 
-reterrt if_gcatom::init(const char * fname){
+reterrt if_grpatomslist_item::init(const char * fname){
     ret_ifnot(nicefi::open(fname,0,its_recsize));
     opened=_yes_;
     ret_ok();
 }
 
-reterrt if_gcatom::shutdown(){
+reterrt if_grpatomslist_item::shutdown(){
     if (opened==_yes_) ret_ifnot(nicefi::close());
     opened=_no_;
     ret_ok();
 }
 
-void if_gcatom::compose(
-    deref_gcatomID_type *into,
-    const groupID ptr2group,
-    const atomID prevINchain,
-    const atomID nextINchain,
-    const acatoms_listID ptr2clonelist_of_atomIDs_which_point_to_US,
-    const groupID Irefer2thisGROUP
+void if_grpatomslist_item::compose(
+    deref_grpatomslist_itemID_type *into,
+    grpatomslist_itemID prevINlist,
+    grpatomslist_itemID nextINlist,
+    atomID atomID_that_points_to_US_the_group
 )
 {
-    _5in2(ptr2group,
-        prevINchain,
-        nextINchain,
-        ptr2clonelist_of_atomIDs_which_point_to_US,
-        Irefer2thisGROUP);
+    _3in2(prevINlist,nextINlist,atomID_that_points_to_US_the_group);
 }
+

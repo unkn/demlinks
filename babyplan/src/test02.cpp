@@ -46,6 +46,8 @@ int main(){
     test2=new dmentalix;
     ab_ifnot(test2);
 
+//FIXME: make code to add groups as well
+
     printf("Erase old files?\n");
     printf("drop anykey to YES or ESC to skip...\n");
     basic_element c=(basic_element)(getch());
@@ -74,6 +76,7 @@ int main(){
 skipadd:
     
     atomID prev=_noID_;
+    atomID fromhere;//no warnings
 
     printf("Attempting to add acatoms to each eatom ~ 30secs\n");
     printf("drop anykey to begin or ESC to skip...\n");
@@ -97,18 +100,15 @@ skipadd:
     printf("Trying to parse chain from the last added acatom\n");
     printf("drop anykey to begin or ESC to skip...\n");
     if (getch()==27) goto skipacatoms;
-//`prev' is last atomID which is an acatom type, so we must get this atom's
-//prev&next&type fields and parse by prev, going to next atomID, then repeat
-//until prev=_noID_
     
+    fromhere=prev;
+
     while ( !( (kbhit())&&(getch()) ) ){
-        atomtypes _ty;
-        atomID next=_noID_;
-        atomID now=prev;
-        ab_ifnot( test2->get_atomID_s_type_prev_next(now,_ty,prev,next) );
-        ab_if( _ty != _AC_atom );//we know we only have acatoms, by now.
-        printf("passing thru type AC w/ atomID==%ld\n",now);
-        if (prev==_noID_) break;//no more prev items
+        ab_if_error_after_statement(
+            fromhere=test2->get_prev_atomID_in_chain(fromhere)
+        );
+        if (fromhere==_noID_) break;//don't report atomID==0
+        printf("goinUP&passing thru (some not checked type) of atom with atomID==%ld\n",fromhere);
     }//while
 
 

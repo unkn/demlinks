@@ -113,7 +113,9 @@ struct deref_gcatomID_type {//GC_ATOMs.DAT <clone to GROUP> type of ATOM
     groupID ptr2group;//from which group does this GCatom belong
     atomID prevINchain;
     atomID nextINchain;
-    gcatoms_listID ptr2clonelist;//ptr to a list of atoms that only refer to GCatoms
+    gcatoms_listID ptr2clonelist_of_atomIDs_which_point_to_US;
+    //hmm... a list of atomIDs which point to US=gcatom
+    //ptr to a list of atoms that only refer to GCatoms
     groupID Irefer2thisGROUP;//the group to which WE refer, since we're clone
 };
 
@@ -139,11 +141,26 @@ struct deref_atomID_type {//generally any ATOM.        ATOMS.DAT
 
 
 //GROUP
-struct deref_groupID_type { //GROUPS.DAT
-    atomID ptr2atom_head_of_chain;//ptr to that ATOM that has .prev=NULL
-    gcatoms_listID ptr2list_of_gcatoms;//list of gcatoms that point to US(=group)
+
+typedef long grpatomslist_itemID;//an _item_ ID ~ from a grpcatoms LIST
+struct deref_grpatomslist_itemID_type {
+    grpatomslist_itemID prevINlist;
+    grpatomslist_itemID nextINlist;
+    atomID atomID_that_points_to_US_the_group;//US=theGROUP
 };
 
+typedef long grpatoms_listID;//that which refers to a grpatoms_list
+struct deref_grpatoms_listID_type {
+    grpatomslist_itemID ptr2head_item;//ptr to first item in list
+};
+
+struct deref_groupID_type { //GROUPS.DAT
+    atomID ptr2atom_head_of_chain;//ptr to that ATOM that has .prev=NULL
+    grpatoms_listID ptr2list_of_atomIDs;
+// list of atomIDs that point to US(=group) particulary these atomIDs
+//are type GC only
+};
+/***************************************/
 
 #define _in2(_w_)\
     into->##_w_##=##_w_##;

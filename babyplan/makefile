@@ -49,6 +49,8 @@ objs = $(objdir)\test02.obj &
     $(objdir)\nicef.obj &
     $(objdir)\atom.obj &
     $(objdir)\group.obj &
+    $(objdir)\grpalist.obj &
+    $(objdir)\grplitem.obj &
     $(objdir)\acatom.obj &
     $(objdir)\gcatom.obj &
     $(objdir)\eatom.obj &

@@ -55,6 +55,8 @@ reterrt dmentalix::init(_declall(const char *,fname))
 {
     INIT(atom);
     INIT(group);
+    INIT(grpatoms_list);
+    INIT(grpatomslist_item);
     INIT(eatom);
     INIT(acatom);
     INIT(gcatom);
@@ -80,6 +82,8 @@ reterrt dmentalix::init(_declall(const char *,fname))
     
 reterrt dmentalix::shutdown(){
     DONE(atom);
+    DONE(grpatoms_list);
+    DONE(grpatomslist_item);
     DONE(group);
     DONE(eatom);
     DONE(acatom);
@@ -97,6 +101,133 @@ reterrt dmentalix::shutdown(){
     ret_ok();
 }
 #undef DONE
+/*^^^^^^^^^^^^^^*/
+
+groupID dmentalix::strict_add_group_with_headatom(const atomID head){
+/*
+    *adds a new group that has a chain of atoms in it starting with `head' atom
+    *allowing head==_noID_
+    *also adds a new empty grpatoms_list(list which holds atomIDs which refer
+     only to this group, and list holds atomID which refer only to groups in
+     general)
+    *also updates each atom from chain to point to fathergroup=US
+*/
+#ifdef WASINITED_SAFETY
+    ret_ifnot(wasinited());//files must be open ~ check
+#endif
+    //new group -> new list
+    deref_grpatoms_listID_type grplistvar;
+    grpatoms_listID grplist;
+    if_grpatoms_list::compose(&grplistvar,_noID_);
+//    ret_if_error_after_statement(
+        grplist=if_grpatoms_list::addnew(&grplistvar);
+  //  );//ptr2head=NULL -> empty list
+    ret_if(_noID_==grplist);
+    
+    deref_groupID_type dg;
+    groupID gID;
+    if_group::compose(&dg,head,grplist);
+//    ret_if_error_after_statement(
+    gID=if_group::addnew(&dg); //);//new group
+    ret_if(_noID_==gID);//senses the error from above call, there's no use to call ret_if_error_after_statement
+
+//now we must update each atom's fathergroup to point to this newly created group
+//FIXME: ^
+//fixing...
+    atomID atomiter=head;
+    while (atomiter != _noID_) { //more atoms in list?
+        //we first have to proxex head
+        strict_modif_ptr2group(atomiter,gID);//set atomiter.ptr2group=gID
+        ret_if_error_after_statement(
+            atomiter=get_next_atomID_in_chain(atomiter);
+        );//atomiter might be _noID_ even if there's no error
+    }//while
+
+    return gID;//return the newly created group's ID
+}
+/*^^^^^^^^^^^^^^*/
+
+reterrt dmentalix::strict_modif_ptr2group(const atomID whos, const groupID witwat){
+#ifdef WASINITED_SAFETY
+    ret_ifnot(wasinited());//files must be open ~ check
+#endif
+        ret_if( whos == _noID_ );//not allowed inexistent atomID
+
+        deref_atomID_type tat;
+        ret_ifnot( if_atom::getwithID(whos,&tat) );//attempt to bring contents of atomID into &tat
+        ret_if( tat.at_type == _E_atom );//eatoms cannot be part of chains
+        
+        switch (tat.at_type) {//we've to proxex each atomtype separately
+            case _AC_atom:
+                deref_acatomID_type aca;
+                ret_ifnot( if_acatom::getwithID(tat.at_ID,&aca) );//get it
+                aca.ptr2group=witwat;//modify it
+                ret_ifnot( if_acatom::writewithID(tat.at_ID,&aca) );//write it back
+                break;
+            case _GC_atom:
+                deref_gcatomID_type gca;
+                ret_ifnot( if_gcatom::getwithID(tat.at_ID,&gca) );//get gc
+                gca.ptr2group=witwat;//we don't care if groupID==_noID_
+                ret_ifnot( if_gcatom::writewithID(tat.at_ID,&gca) );
+                break;
+            default:
+                ret_ifalways(unknown atom type detected);//fatal
+        }//switch
+
+    ret_ok();
+}
+/*^^^^^^^^^^^^^^*/
+
+atomID dmentalix::get_next_atomID_in_chain(const atomID fromwhere){
+//we're talking about chains(atomIDs) not lists(items)
+#ifdef WASINITED_SAFETY
+    ret_ifnot(wasinited());//files must be open ~ check
+#endif
+    ret_if(fromwhere==_noID_);//obv.
+
+    deref_atomID_type tat;
+    ret_ifnot( if_atom::getwithID(fromwhere,&tat) );
+    ret_if( tat.at_type == _E_atom );//eatoms cannot be part of chains
+    
+    switch (tat.at_type) {//we've to proxex each atomtype separately
+        case _AC_atom:
+            deref_acatomID_type aca;
+            ret_ifnot( if_acatom::getwithID(tat.at_ID,&aca) );//get it
+            return aca.nextINchain;//this is atomID
+        case _GC_atom:
+            deref_gcatomID_type gca;
+            ret_ifnot( if_gcatom::getwithID(tat.at_ID,&gca) );//get gc
+            return gca.nextINchain;
+    }//switch
+
+    ret_ifalways(unknown atom type detected);//fatal
+}
+/*^^^^^^^^^^^^^^*/
+
+atomID dmentalix::get_prev_atomID_in_chain(const atomID fromwhere){
+//we're talking about chains(atomIDs) not lists(items)
+#ifdef WASINITED_SAFETY
+    ret_ifnot(wasinited());//files must be open ~ check
+#endif
+    ret_if(fromwhere==_noID_);//obv.
+
+    deref_atomID_type tat;
+    ret_ifnot( if_atom::getwithID(fromwhere,&tat) );
+    ret_if( tat.at_type == _E_atom );//eatoms cannot be part of chains
+    
+    switch (tat.at_type) {//we've to proxex each atomtype separately
+        case _AC_atom:
+            deref_acatomID_type aca;
+            ret_ifnot( if_acatom::getwithID(tat.at_ID,&aca) );//get it
+            return aca.prevINchain;//this is atomID
+        case _GC_atom:
+            deref_gcatomID_type gca;
+            ret_ifnot( if_gcatom::getwithID(tat.at_ID,&gca) );//get gc
+            return gca.prevINchain;
+    }//switch
+
+    ret_ifalways(unknown atom type detected);//fatal
+}
 /*^^^^^^^^^^^^^^*/
 
 reterrt dmentalix::get_eatomslist_item_withID(const eatomslist_itemID whateatomslist_itemID, deref_eatomslist_itemID_type *into){
@@ -258,7 +389,7 @@ atomID dmentalix::strict_add_atom_type_GC_after_prev(const groupID ptr2what_grou
 
 
     deref_gcatoms_listID_type _list;
-//compose the new empty list
+//compose the new empty list, this list if a list of atomIDs which point to this GCatom
     if_gcatoms_list::compose(&_list,_noID_);//ptr2head=NULL=_noID_ no items in list
     gcatoms_listID listID=if_gcatoms_list::addnew(&_list);
     ret_if(listID==NULL);//return if error ^ somehow list wasn't allocated
@@ -306,7 +437,7 @@ because only GCatoms can point to groups!
 
     ret_ifnot(
         strict_add_one_more_gcatom_to_this_clone_list(\
-            _tmpg.ptr2list_of_gcatoms,\
+            _tmpg.ptr2list_of_atomIDs,\
             what2add_gcatomID\
         )
     );
@@ -335,7 +466,7 @@ reterrt dmentalix::add_atomID_to_clone_list_of_atom(const atomID what2add_atomID
                 deref_gcatomID_type _gca;
                 ret_ifnot( if_gcatom::getwithID(_tmpa.at_ID,&_gca) );
                 //got gcatom
-                ret_ifnot( strict_add_one_more_gcatom_to_this_clone_list(_gca.ptr2clonelist,what2add_atomID) );
+                ret_ifnot( strict_add_one_more_gcatom_to_this_clone_list(_gca.ptr2clonelist_of_atomIDs_which_point_to_US,what2add_atomID) );
                 break;
         case _AC_atom:
                 deref_acatomID_type _aca;

@@ -39,7 +39,7 @@ long if_gcatoms_list::howmany(){
     return nicefi::getnumrecords();
 }
 
-long if_gcatoms_list::addnew(const deref_gcatoms_listID_type *from){
+gcatoms_listID if_gcatoms_list::addnew(const deref_gcatoms_listID_type *from){
     long newgcatoms_listID=howmany()+1;
     ret_ifnot( writewithID(newgcatoms_listID,from) );
     return newgcatoms_listID;

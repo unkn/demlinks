@@ -29,34 +29,58 @@
 ****************************************************************************/
 
 
-#ifndef __GCA_LIST_H
-#define __GCA_LIST_H
+#include <process.h>
+#include <stdio.h>
 
-#include "gdefs.h"
+#include "petrackr.h"
+#include "grpalist.h"
 
-#include "nicef.h"
+long if_grpatoms_list::howmany(){ 
+    return nicefi::getnumrecords();
+}
 
-#include "common.h"
+grpatoms_listID if_grpatoms_list::addnew(const deref_grpatoms_listID_type *from){
+    long newgrpatoms_listID=howmany()+1;
+    ret_ifnot( writewithID(newgrpatoms_listID,from) );
+    return newgrpatoms_listID;
+}
 
+reterrt if_grpatoms_list::getwithID(const grpatoms_listID whatgrpatoms_listID, deref_grpatoms_listID_type *into){
+    ret_ifnot(nicefi::readrec(whatgrpatoms_listID,into));
+    ret_ok();
+}
 
-class if_gcatoms_list:public nicefi {
-private:                       
-    int opened;                 
-    const long its_recsize;      
-public:                           
-    if_gcatoms_list();                    
-    ~if_gcatoms_list();                    
-    reterrt init(const char *fname);    
-    reterrt getwithID(const gcatoms_listID whatgcatoms_listID, deref_gcatoms_listID_type *into);
-    reterrt writewithID(const gcatoms_listID whatgcatoms_listID, const deref_gcatoms_listID_type *from);
-    gcatoms_listID addnew(const deref_gcatoms_listID_type *from);
-    long howmany();
-    reterrt shutdown(); 
-    void compose(
-        deref_gcatoms_listID_type *into,
-        const gcatomslist_itemID ptr2head
-);
-};//class
+reterrt if_grpatoms_list::writewithID(const grpatoms_listID whatgrpatoms_listID, const deref_grpatoms_listID_type *from){
+    ret_ifnot(nicefi::writerec(whatgrpatoms_listID,from));
+    ret_ok();
+}                                          
+                                            
+if_grpatoms_list::~if_grpatoms_list(){
+    if (opened==_yes_) shutdown();
+}
 
+if_grpatoms_list::if_grpatoms_list():
+    its_recsize(sizeof(deref_grpatoms_listID_type))
+{
+    opened=_no_;
+}
 
-#endif
+reterrt if_grpatoms_list::init(const char * fname){
+    ret_ifnot(nicefi::open(fname,0,its_recsize));
+    opened=_yes_;
+    ret_ok();
+}
+
+reterrt if_grpatoms_list::shutdown(){
+    if (opened==_yes_) ret_ifnot(nicefi::close());
+    opened=_no_;
+    ret_ok();
+}
+
+void if_grpatoms_list::compose(
+    deref_grpatoms_listID_type *into,
+    const grpatomslist_itemID ptr2head_item
+)
+{
+    _in2(ptr2head_item);
+}

@@ -49,7 +49,7 @@ public:
     reterrt init(const char *fname);    
     reterrt getwithID(const eatomslist_itemID whateatomslist_itemID, deref_eatomslist_itemID_type *into);
     reterrt writewithID(const eatomslist_itemID whateatomslist_itemID, const deref_eatomslist_itemID_type *from);
-    long addnew(const deref_eatomslist_itemID_type *from); 
+    eatomslist_itemID addnew(const deref_eatomslist_itemID_type *from);
     long howmany();
     reterrt shutdown(); 
     void compose(

@@ -24,7 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  
+* Description: These items all hold atomIDs which refer to acatoms.
 *
 ****************************************************************************/
 
@@ -49,7 +49,7 @@ public:
     reterrt init(const char *fname);    
     reterrt getwithID(const acatomslist_itemID whatacatomslist_itemID, deref_acatomslist_itemID_type *into);
     reterrt writewithID(const acatomslist_itemID whatacatomslist_itemID, const deref_acatomslist_itemID_type *from);
-    long addnew(const deref_acatomslist_itemID_type *from); 
+    acatomslist_itemID addnew(const deref_acatomslist_itemID_type *from);
     long howmany();
     reterrt shutdown(); 
     void compose(

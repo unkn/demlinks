@@ -40,7 +40,7 @@ long if_eatomslist_item::howmany(){
     return nicefi::getnumrecords();
 }
 
-long if_eatomslist_item::addnew(const deref_eatomslist_itemID_type *from){
+eatomslist_itemID if_eatomslist_item::addnew(const deref_eatomslist_itemID_type *from){
     long neweatomslist_itemID=howmany()+1;
     ret_ifnot( writewithID(neweatomslist_itemID,from) );
     return neweatomslist_itemID;

@@ -84,9 +84,9 @@ reterrt if_group::shutdown(){
 void if_group::compose(
     deref_groupID_type *into,
     const atomID ptr2atom_head_of_chain,
-    const gcatoms_listID ptr2list_of_gcatoms
+    const gcatoms_listID ptr2list_of_atomIDs
 )
 {
-    _2in2(ptr2atom_head_of_chain,ptr2list_of_gcatoms);
+    _2in2(ptr2atom_head_of_chain,ptr2list_of_atomIDs);
 }
 

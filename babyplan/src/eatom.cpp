@@ -158,7 +158,7 @@ long if_eatom::howmany(){
     return nicefi::getnumrecords();
 }
 
-long if_eatom::addnew(const deref_eatomID_type *from){
+eatomID if_eatom::addnew(const deref_eatomID_type *from){
 #ifdef WASINITED_SAFETY
     ret_ifnot(wasinited());
 #endif

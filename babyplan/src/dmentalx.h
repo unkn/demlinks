@@ -33,6 +33,8 @@
 #define __DMENTALX_H
 
 #include "group.h"
+#include "grpalist.h"
+#include "grplitem.h"
 #include "atom.h"
 #include "gcatom.h"
 #include "gca_list.h"
@@ -50,26 +52,29 @@
 /* end of PRIVATE DEFINES */
 
 #define unlinkall(...) _unlinkall(__VA_ARGS__)
-#define _unlinkall(_1,_2,_3,_4,_5,_6,_7,_8,_9,_10,_11) {\
+#define _unlinkall(_1,_2,_3,_4,_5,_6,_7,_8,_9,_10,_11,_12,_13) {\
     unlink(_1);unlink(_2);unlink(_3);unlink(_4);unlink(_5);\
     unlink(_6);unlink(_7);unlink(_8);unlink(_9);unlink(_10);\
-    unlink(_11);}
+    unlink(_11);unlink(_12);unlink(_13);}
    
 /*************preserve the order of operands in all these 3 macros***********/
-#define _general_declall(_prefix,_append,_1,_2,_3,_4,_5,_6,_7,_8,_9,_10,_11) \
+#define _general_declall(_prefix,_append,_1,_2,_3,_4,_5,_6,_7,_8,_9,_10,_11,_12,_13) \
     _prefix _1##_append, _prefix _2##_append, _prefix _3##_append,\
     _prefix _4##_append, _prefix _5##_append, _prefix _6##_append,\
     _prefix _7##_append, _prefix _8##_append, _prefix _9##_append,\
-    _prefix _10##_append, _prefix _11##_append
+    _prefix _10##_append, _prefix _11##_append, _prefix _12##_append, \
+    _prefix _13##_append
 
 #define _declall(_prefix,_append) \
     _general_declall(_prefix,_append, \
-        group,atom,eatom,eatoms_list,eatomslist_item,\
+        group,grpatoms_list,grpatomslist_item,atom,eatom,eatoms_list,\
+        eatomslist_item,\
         gcatom,gcatoms_list,gcatomslist_item,\
         acatom,acatoms_list,acatomslist_item)
 
 #define _fnames \
-    "group.dat","atom.dat","eatom.dat","eal.dat","ealitems.dat"\
+    "group.dat","grpalist.dat","grplitem.dat","atom.dat","eatom.dat"\
+    ,"eal.dat","ealitems.dat"\
     ,"gcatom.dat","gcal.dat","gcalitms.dat"\
     ,"acatom.dat","acal.dat","acalitms.dat"
 /****************************************************************************/
@@ -80,6 +85,7 @@
 class dmentalix :
         private if_atom
         ,private if_group
+        ,private if_grpatoms_list, private if_grpatomslist_item
         ,private if_gcatom, private if_gcatoms_list
         ,private if_gcatomslist_item
         ,private if_acatom, private if_acatoms_list
@@ -97,16 +103,25 @@ public:
     reterrt init(_declall(const char *,fname));//open all files
     reterrt shutdown();//close all files
 
-    reterrt get_eatomslist_item_withID(const eatomslist_itemID whateatomslist_itemID, deref_eatomslist_itemID_type *into);
-    
     atomID try_add_atom_type_E(const basic_element BE);//checks existing
     atomID strict_add_atom_type_E(const basic_element BE);//no check, imperativeADD!
     atomID find_atomID_type_E(const basic_element BE);//only ID is returned
+
+    //returns the next atomID which is next in chain to fromwhere(=atomID) or _noID_ if end of chain(no more to go)
+    atomID get_next_atomID_in_chain(const atomID fromwhere);//we're talking about chains(atomIDs) not lists(items)
+    atomID get_prev_atomID_in_chain(const atomID fromwhere);//we're talking about chains(atomIDs) not lists(items)
+    
     
     atomID strict_add_atom_type_AC_after_prev(const atomID ptr2what_atomID, const groupID father_groupID, const atomID whosprev_atomID);//add a new CA after but connected with `whosprev...'
     atomID strict_add_atom_type_GC_after_prev(const groupID ptr2what_groupID, const groupID father_groupID, const atomID whosprev_atomID);//add a new CA after but connected with `whosprev...'
+    groupID strict_add_group_with_headatom(const atomID head);
 
+//lame funx:
+    reterrt get_eatomslist_item_withID(const eatomslist_itemID whateatomslist_itemID, deref_eatomslist_itemID_type *into);
+    
     reterrt get_atomID_s_type_prev_next(const atomID whos_atomID, atomtypes &type, atomID &prev, atomID &next);//it also returns error if type=_E_atom since eatoms cannot be parts of chain
+
+    reterrt strict_modif_ptr2group(const atomID whos, const groupID witwat);
 
     reterrt strict_modif_next(const atomID whos_atomID, const atomID newnext, atomID *oldnext);//if non NULL oldnext=.next before changin;; whos_atomID.next=newnext;
 

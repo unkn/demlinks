@@ -42,7 +42,7 @@ long if_eatoms_list::howmany(){
     return nicefi::getnumrecords();
 }
 
-long if_eatoms_list::addnew(const deref_eatoms_listID_type *from){
+eatoms_listID if_eatoms_list::addnew(const deref_eatoms_listID_type *from){
 #ifdef WASINITED_SAFETY
     ret_ifnot(wasinited());
 #endif

@@ -53,10 +53,12 @@ public:
     long howmany();
     reterrt shutdown(); 
     void compose(
-        deref_groupID_type *into,
+        deref_groupID_type *into,//FIXME:: all params alike this param is a must so we could make it & (referer) instead of ptr
         const atomID ptr2atom_head_of_chain,
-        const gcatoms_listID ptr2list_of_gcatoms
-        //list of gcatoms that point to US(=group)
+        const grpatoms_listID ptr2list_of_atomIDs
+        //only groups have a list of groupatoms that list which is full of gcatoms
+        //but is not the same as the gcatoms_list since that list is a list of acatoms
+        // that point to the  gcatom(s)
     );
 };//class
 

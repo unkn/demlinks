@@ -24,7 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  
+* Description: a GCatom is an atom which points(refers) only to a group
 *
 ****************************************************************************/
 
@@ -38,7 +38,7 @@
 
 #include "common.h"
 
-class if_gcatom:public nicefi {
+class if_gcatom:public nicefi {//atoms which point(refer) to group(s) only!
 private:                       
     int opened;                 
     const long its_recsize;      
@@ -48,7 +48,7 @@ public:
     reterrt init(const char *fname);    
     reterrt getwithID(const gcatomID whatgcatomID, deref_gcatomID_type *into);
     reterrt writewithID(const gcatomID whatgcatomID, const deref_gcatomID_type *from);
-    long addnew(const deref_gcatomID_type *from); 
+    gcatomID addnew(const deref_gcatomID_type *from);
     long howmany();
     reterrt shutdown(); 
     void compose(
@@ -56,7 +56,8 @@ public:
         const groupID ptr2group,
         const atomID prevINchain,
         const atomID nextINchain,
-        const gcatoms_listID ptr2clonelist,
+        const gcatoms_listID ptr2clonelist_of_atomIDs_which_point_to_US,
+        //hmm... a list of atomIDs which point to US=gcatom
         const groupID Irefer2thisGROUP
     );
 };//class

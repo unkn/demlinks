@@ -1,6 +1,6 @@
 /****************************************************************************
 *
-*                             dmental links 
+*                             dmental links
 *    Copyright (c) 28 Feb 2005 AtKaaZ, AtKaaZ at users.sourceforge.net
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
@@ -24,17 +24,13 @@
 *
 *  ========================================================================
 *
-* Description: this list points to head item of a list of atomIDs. Those
-* atomIDs are atoms that point to acatoms, particulary they can only be
-* acatoms since only acatoms can refer to other atoms.
-* But this list represents the list of those atomIDs which refer to US.
-* US being the acatoms.
+* Description:  
 *
 ****************************************************************************/
 
 
-#ifndef __ACA_LIST_H
-#define __ACA_LIST_H
+#ifndef __GRPALIST_H
+#define __GRPALIST_H
 
 #include "gdefs.h"
 
@@ -43,23 +39,24 @@
 #include "common.h"
 
 
-class if_acatoms_list:public nicefi {
+//used only as part of groupID
+class if_grpatoms_list:public nicefi {
 private:                       
     int opened;                 
     const long its_recsize;      
 public:                           
-    if_acatoms_list();                    
-    ~if_acatoms_list();                    
+    if_grpatoms_list();                    
+    ~if_grpatoms_list();                    
     reterrt init(const char *fname);    
-    reterrt getwithID(const acatoms_listID whatacatoms_listID, deref_acatoms_listID_type *into);
-    reterrt writewithID(const acatoms_listID whatacatoms_listID, const deref_acatoms_listID_type *from);
-    acatoms_listID addnew(const deref_acatoms_listID_type *from);
+    reterrt getwithID(const grpatoms_listID whatgrpatoms_listID, deref_grpatoms_listID_type *into);
+    reterrt writewithID(const grpatoms_listID whatgrpatoms_listID, const deref_grpatoms_listID_type *from);
+    grpatoms_listID addnew(const deref_grpatoms_listID_type *from);
     long howmany();
     reterrt shutdown(); 
     void compose(
-        deref_acatoms_listID_type *into,
-        const acatomslist_itemID ptr2head
-    );
+        deref_grpatoms_listID_type *into,
+        const grpatomslist_itemID ptr2head
+);
 };//class
 
 
