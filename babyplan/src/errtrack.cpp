@@ -89,6 +89,9 @@ void errtrk::clrlasterr(){
     if (head) { less(); head=head->below; if (!head) tail=NULL;}
 }
 
+void errtrk::purgemall(){//clear all errors
+    while (getlasterr()) clrlasterr();
+}
 
 s_item * errtrk::getlasterr(){//w/o poping it
     if (!head) return NULL;

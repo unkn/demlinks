@@ -3,7 +3,7 @@ cd ..
 wmake
 if errorlevel 1 goto doomed
 rem cd bin
-dmltest2.exe
+dmltest3.exe
 cd ..\src
 pause
 exit

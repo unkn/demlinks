@@ -132,6 +132,7 @@ public:
     reterrt funcerr(){ return funcret_whenERR; };
     s_item * rpoperr();//pops like poperr() but returns it with funx
     void clrlasterr();
+    void purgemall();//clear all errors
 //    void usrshowthemall();
 private:
     void push2list(s_item *whats);//modified whats->data

@@ -70,7 +70,7 @@ extern uderrtrk *etracker;
 
 void deinit_error_tracker();
 void init_error_tracker();
-
+void purge_all_errors();
 
 
 #endif

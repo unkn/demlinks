@@ -37,12 +37,12 @@ bindir = $(base)\bin
 objdir = $(base)\obj
 tmpdir = $(base)\tmp
 errdir = $(base)\err
-exe = DMLtest2.exe
+exe = DMLtest3.exe
 outfile = $(bindir)\$(exe)
 
 phfile = $(tmpdir)\prechdrs.hdr
 
-objs = $(objdir)\test02.obj &
+objs = $(objdir)\test03.obj &
     $(objdir)\dmentalx.obj &
     $(objdir)\errtrack.obj &
     $(objdir)\petrackr.obj &

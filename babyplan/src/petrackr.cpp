@@ -88,4 +88,7 @@ void deinit_error_tracker(){
     }
 }
 
+void purge_all_errors(){
+    if (etracker) etracker->purgemall();
+}
 

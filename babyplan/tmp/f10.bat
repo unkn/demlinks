@@ -1,5 +1,5 @@
 @echo off
 cd ..\bin
-dmltest2.exe
+dmltest3.exe
 cd ..\src
 pause

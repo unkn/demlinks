@@ -51,11 +51,14 @@
 #undef WASINITED_SAFETY
 /* end of PRIVATE DEFINES */
 
+#define cmrw(_fn) chmod(_fn,S_IREAD|S_IWRITE)
+#define erasef(_fn) {cmrw(_fn);unlink(_fn);}
+
 #define unlinkall(...) _unlinkall(__VA_ARGS__)
 #define _unlinkall(_1,_2,_3,_4,_5,_6,_7,_8,_9,_10,_11,_12,_13) {\
-    unlink(_1);unlink(_2);unlink(_3);unlink(_4);unlink(_5);\
-    unlink(_6);unlink(_7);unlink(_8);unlink(_9);unlink(_10);\
-    unlink(_11);unlink(_12);unlink(_13);}
+    erasef(_1);erasef(_2);erasef(_3);erasef(_4);erasef(_5);\
+    erasef(_6);erasef(_7);erasef(_8);erasef(_9);erasef(_10);\
+    erasef(_11);erasef(_12);erasef(_13);}
    
 /*************preserve the order of operands in all these 3 macros***********/
 #define _general_declall(_prefix,_append,_1,_2,_3,_4,_5,_6,_7,_8,_9,_10,_11,_12,_13) \
