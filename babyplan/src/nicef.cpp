@@ -39,6 +39,10 @@
 
 #include "nicef.h"
 
+/*
+TODO: we could use a cache of one or two records (ie. the last ones r/w)
+*/
+
 /* PRIVATE DEFINES */
 //#define NOERRORTRACKER //speed w/o safety ; no ret_if() / ret_ifnot()
 //#define EXACT_ERRORS_PLUS_A_BIT_OF_PARANOIA //don't set this, unless u want to see if seekto() far

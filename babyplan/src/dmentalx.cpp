@@ -103,7 +103,37 @@ reterrt dmentalix::shutdown(){
 #undef DONE
 /*^^^^^^^^^^^^^^*/
 
-groupID dmentalix::strict_add_group_with_headatom(const atomID head){
+reterrt dmentalix::_who_s_groupID_are_you_atomID(groupID *gid, const atomID me){
+#ifdef WASINITED_SAFETY
+    ret_ifnot(wasinited());//files must be open ~ check
+#endif
+        ret_if( me == _noID_ );//not allowed inexistent atomID
+        ret_if( gid == NULL );//lame NULL ptr passed to us huh?!
+
+        deref_atomID_type tat;
+        ret_ifnot( if_atom::getwithID(me,&tat) );//attempt to bring contents of atomID into &tat
+        ret_if( tat.at_type == _E_atom );//eatoms cannot be in groups!
+        
+        switch (tat.at_type) {
+            case _AC_atom:
+                deref_acatomID_type aca;
+                ret_ifnot( if_acatom::getwithID(tat.at_ID,&aca) );//get it
+                *gid=aca.ptr2group;//we got it
+                break;
+            case _GC_atom:
+                deref_gcatomID_type gca;
+                ret_ifnot( if_gcatom::getwithID(tat.at_ID,&gca) );//get gc
+                *gid=gca.ptr2group;
+                break;
+            default:
+                ret_ifalways(unknown atom type detected);//fatal
+        }//switch
+
+    ret_ok();
+}
+/*^^^^^^^^^^^^^^*/
+
+groupID dmentalix::add_group_with_headatom(atomID *head){
 /*
     *adds a new group that has a chain of atoms in it starting with `head' atom
     *allowing head==_noID_
@@ -115,6 +145,34 @@ groupID dmentalix::strict_add_group_with_headatom(const atomID head){
 #ifdef WASINITED_SAFETY
     ret_ifnot(wasinited());//files must be open ~ check
 #endif
+//we must check `head' that must not be already allocated to another group
+//such as head.ptr2group==_noID_
+    groupID tmpgid;
+    ret_ifnot( _who_s_groupID_are_you_atomID(&tmpgid,*head) );//failure of operation?
+    ret_if( _noID_ != tmpgid );/*head is already part of another group, thus
+                            we'll refuse to create this group with head*/
+
+//maybe head is already a part of a chain and it's not head of that chain
+    atomID atomiter=*head;//initially
+//trying to see if there are prev atoms in chain, if they are we must find
+// the real chain head and make sure we point the group.ptr2head to it
+    atomID tid;
+    do {
+        ret_if_error_after_statement(
+            tid=get_prev_atomID_in_chain(atomiter);
+        );//ret
+        //again, we assume that all atoms in chain have no father group,thus
+        //we don't make checks ~ they'll slow down the operation(s)
+        if (tid != _noID_) {
+            atomiter=tid;//set the new head
+        }
+        else break;//exit do
+        //I guess we could have put the groupID while we were scanning to find
+        //the head but then again, the user could have given use the proper head in the 1st place.
+    } while (1);
+    
+
+
     //new group -> new list
     deref_grpatoms_listID_type grplistvar;
     grpatoms_listID grplist;
@@ -126,17 +184,23 @@ groupID dmentalix::strict_add_group_with_headatom(const atomID head){
     
     deref_groupID_type dg;
     groupID gID;
-    if_group::compose(&dg,head,grplist);
+    if_group::compose(&dg,atomiter,grplist);//atomiter may be==head and head may be _noID_
 //    ret_if_error_after_statement(
     gID=if_group::addnew(&dg); //);//new group
     ret_if(_noID_==gID);//senses the error from above call, there's no use to call ret_if_error_after_statement
 
+    *head=atomiter;//set the new head for returning call, so the user will know the group's head atom
+
 //now we must update each atom's fathergroup to point to this newly created group
-//FIXME: ^
-//fixing...
-    atomID atomiter=head;
+    //atomiter is already set to head of the chain, (from above statmnts)
     while (atomiter != _noID_) { //more atoms in list?
         //we first have to proxex head
+
+        ///here we assume that all other atoms following `head' in the chain
+        //are the same as `head' from the point of view that they too don't
+        //have a `ptr2group' allocated, that their ptr2group==_noID_
+        //if they do, they'll be allocated to this group, and consistency of
+        //the entire environment is composmised.
         strict_modif_ptr2group(atomiter,gID);//set atomiter.ptr2group=gID
         ret_if_error_after_statement(
             atomiter=get_next_atomID_in_chain(atomiter);

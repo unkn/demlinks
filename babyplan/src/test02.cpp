@@ -77,6 +77,8 @@ skipadd:
     
     atomID prev=_noID_;
     atomID fromhere;//no warnings
+    atomID bebe;
+    groupID newgid;
 
     printf("Attempting to add acatoms to each eatom ~ 30secs\n");
     printf("drop anykey to begin or ESC to skip...\n");
@@ -89,14 +91,27 @@ skipadd:
             atomID _atomID_typeE=test2->find_atomID_type_E(c);
         );
         ab_if_error_after_statement(
-            atomID bebe=test2->strict_add_atom_type_AC_after_prev(_atomID_typeE,_noID_,prev);//only used with unlink()
+            bebe=test2->strict_add_atom_type_AC_after_prev(_atomID_typeE,_noID_,prev);//only used with unlink()
         );
         prev=bebe;//at this point we have prev bebe->next=_noID_ unless that
         //funxion updates prev->next to US, which will do! and should DO!
         printf(" :acatom has: atomID==%ld\n",bebe);
         if (c++==255) break;
     }//while
+
+    printf("Trying to group all prev, into a new group...5-10 seconds per call\n");
+    printf("drop anykey to begin or ESC to skip...\n");
+    if (getch()==27) goto skipgrpadd;
+
+    printf("working...\n");
+    //bebe is last, but `add...' will find parse the chain for the `head' atomID of the chain
+    ab_if_error_after_statement(
+        newgid=test2->add_group_with_headatom(&bebe);
+    );
+    printf("added gID==%ld which points to head atomID==%ld\n",newgid,bebe);
     
+
+skipgrpadd:
     printf("Trying to parse chain from the last added acatom\n");
     printf("drop anykey to begin or ESC to skip...\n");
     if (getch()==27) goto skipacatoms;

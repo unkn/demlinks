@@ -114,7 +114,11 @@ public:
     
     atomID strict_add_atom_type_AC_after_prev(const atomID ptr2what_atomID, const groupID father_groupID, const atomID whosprev_atomID);//add a new CA after but connected with `whosprev...'
     atomID strict_add_atom_type_GC_after_prev(const groupID ptr2what_groupID, const groupID father_groupID, const atomID whosprev_atomID);//add a new CA after but connected with `whosprev...'
-    groupID strict_add_group_with_headatom(const atomID head);
+
+    //create a new group with head `head' and return group's head in `head'
+    groupID add_group_with_headatom(atomID *head);//with some checks, and `head' gets destroyed/modified if `head' wasn't the atomID head of the chain
+
+    reterrt _who_s_groupID_are_you_atomID(groupID *gid, const atomID me);
 
 //lame funx:
     reterrt get_eatomslist_item_withID(const eatomslist_itemID whateatomslist_itemID, deref_eatomslist_itemID_type *into);
