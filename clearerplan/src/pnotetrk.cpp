@@ -75,6 +75,11 @@ CheckedAddNote(
         Func_t a_Func,
         const Line_t a_Line)
 {
+        if (!gNotifyTracker) {
+                fprintf(stderr,"lame programmer: notification subsystem is "
+                                "not initialized\n");
+                abort();
+        }
 
         bool tmpres=gNotifyTracker->AddUserNote(a_NotifyType,
                                                 a_Desc,

@@ -46,7 +46,7 @@ MElemental::MElemental():
            on create */
         fHeaderSize(0)
 {
-        SetDeInited();
+        SetNotInited();
 }
 
 /* destructor */
@@ -74,8 +74,131 @@ MElemental::DeInit()
                         return false);
         ERR_IF(!TRecordsStorage::Close(),
                         return false);
-        SetDeInited();
+        SetNotInited();
         return true;
 }
 
+bool
+MElemental::ReadWithID(
+        const ElementalID_t a_ElementalID,
+        Elemental_st &a_Into)
+{
+        LAME_PROGRAMMER_IF(!IsInited(),
+                        return false);
+        ERR_IF(!TRecordsStorage::ReadRecord(
+                                a_ElementalID,
+                                &a_Into),
+                        return false);
+        return true;
+}
+
+bool
+MElemental::WriteWithID(
+        const ElementalID_t a_ElementalID,
+        const Elemental_st &a_From)
+{
+        LAME_PROGRAMMER_IF(!IsInited(),
+                        return false);
+        ERR_IF(!TRecordsStorage::WriteRecord(
+                                a_ElementalID,
+                                &a_From),
+                        return false);
+        return true;
+}
+
+
+bool
+MElemental::GetLastID(
+                ElementalID_t &a_ElementalID)
+{
+        LAME_PROGRAMMER_IF(!IsInited(),
+                        return false);
+        ERR_IF(!(a_ElementalID=TRecordsStorage::GetNumRecords()),
+                        return false);
+        return true;
+}
+
+bool
+MElemental::Compose(
+                Elemental_st &a_Elemental_st,
+                const BasicElement_t a_BasicElementData,
+                const ListOfReferrers_ID_t a_ListOfRef2Elemental_ID)
+{
+        LAME_PROGRAMMER_IF(!IsInited(),
+                        return false);
+
+        a_Elemental_st.BasicElementData = a_BasicElementData;
+        a_Elemental_st.ListOfRef2Elemental_ID = a_ListOfRef2Elemental_ID;
+
+        return true;
+}
+
+bool
+MElemental::InitCache(
+                const RecNum_t a_MaxNumRecordsToBeCached)
+{
+        ERR_IF(!TRecordsStorage::InitCache(a_MaxNumRecordsToBeCached),
+                        return false);
+        return true;
+}
+
+
+bool
+MElemental::KillCache()
+{
+        ERR_IF(!TRecordsStorage::KillCache(),
+                        return false);
+        return true;
+}
+
+/* constructor */
+MDementalLinksCore::MDementalLinksCore()
+{
+        SetNotInited();
+        SetNoCache();
+}
+
+/* destructor */
+MDementalLinksCore::~MDementalLinksCore()
+{
+        if (IsInited())
+                ERR_IF(!DeInit(),);
+}
+
+bool
+MDementalLinksCore::Init(const char * a_ElementalsFileName)
+{
+        ERR_IF(!MElemental::Init(a_ElementalsFileName),
+                        return false);
+        return true;
+}
+
+bool
+MDementalLinksCore::InitCache(const RecNum_t a_MaxNumRecordsToBeCached)
+{
+        ERR_IF(!MElemental::InitCache(a_MaxNumRecordsToBeCached),
+                        return false);
+        SetCache();
+        return true;
+}
+
+
+bool
+MDementalLinksCore::DeInit()
+{
+        LAME_PROGRAMMER_IF(!IsInited(),
+                        return false);
+        ERR_IF(!MElemental::DeInit(),
+                        return false);
+        SetNotInited();
+        return true;
+}
+
+bool
+MDementalLinksCore::KillCache()
+{
+        ERR_IF(!MElemental::KillCache(),
+                        return false);
+        return true;
+}
 

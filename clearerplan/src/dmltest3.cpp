@@ -38,24 +38,29 @@
 
 #include "pnotetrk.h"
 
-#include "recstor.h"
+#include "dmlcore.h"
 
 #if defined(__WATCOMC__)
 #       define CACHE_THIS_MANY_ITEMS 2048
 #endif
-#define HOW_MANY_ITEMS 20000
-#define KEEP_LINES 7
-TRecordsStorage *DataBase;
+#       define HOW_MANY_ITEMS 2000
 
-void DataBaseCleanUp()
+#define KEEP_LINES 7
+
+// FIXME: clean-up on Ctrl-C
+
+MElemental *MyElementals;
+
+void MyElementalsCleanUp()
 {
 /* destructing it, makes sure that writes are flushed, ie. when records are
  * cached */
         printf("Been here.");
-        if (DataBase) {
+        if (MyElementals) {
                 printf(".. done that.");
-                delete DataBase;
-                DataBase = NULL;
+                ERR_IF(!MyElementals->DeInit(),);
+                delete MyElementals;
+                MyElementals = NULL;
         }
         printf("\n");
 }
@@ -63,48 +68,47 @@ int main()
 {
         InitNotifyTracker();
 
-        
-        EXIT_IF(!(DataBase = new TRecordsStorage));
 
-        atexit(DataBaseCleanUp);
+        EXIT_IF(!(MyElementals = new MElemental));
 
-        long item;
-        char headerBuf [200];
-        memset(headerBuf,0,sizeof(headerBuf));
-        unlink("test.fil");
-        EXIT_IF(!DataBase->Open("test.fil",
-                                sizeof(headerBuf),
-                                sizeof(item)));
+        atexit(MyElementalsCleanUp);
 
-        EXIT_IF(!DataBase->WriteHeader(headerBuf));
+        ElementalID_t element;
+        unlink("elements.dat");
+        EXIT_IF(!MyElementals->Init("elements.dat"));
 
-        EXIT_IF(!DataBase->ReadHeader(headerBuf));
 #ifdef __WATCOMC__
-        EXIT_IF(!DataBase->InitCache(CACHE_THIS_MANY_ITEMS));
+        EXIT_IF(!MyElementals->InitCache(CACHE_THIS_MANY_ITEMS));
 #endif
         printf("Do we have cache? %s\n",
-                        DataBase->IsCacheEnabled()==true?"Yes":"No");
+                        MyElementals->IsCacheEnabled()==true?"Yes":"No");
 
-        RecCount_t tmpCount;
-        
-        for (item = 1; item <= HOW_MANY_ITEMS; item++){
-                if (item % (HOW_MANY_ITEMS / KEEP_LINES) == 0)
-                        printf("attempting to write item %d\n",item);
-                EXIT_IF(!DataBase->WriteRecord(item,&item));
-                EXIT_IF((tmpCount = DataBase->GetNumRecords()) == kBadRecCount);
-                EXIT_IF(tmpCount != item);
-        }
-        item = 1;
-        while (item <= HOW_MANY_ITEMS){
-                if (item % (HOW_MANY_ITEMS / KEEP_LINES) == 0)
-                        printf("attempting to read item %d\n",item);
-                EXIT_IF(!DataBase->ReadRecord(item,&item));
-                ++item;
+        ElementalID_t tmpCount;
+        Elemental_st elemental_s;
+
+        for (element = 1; element <= HOW_MANY_ITEMS; element++){
+                if (element % (HOW_MANY_ITEMS / KEEP_LINES) == 0)
+                        printf("attempting to write element %d\n",element);
+                EXIT_IF(!MyElementals->Compose(
+                                        elemental_s,
+                                        element % 256,
+                                        kNoListID));
+                EXIT_IF(!MyElementals->WriteWithID(element,elemental_s));
+                EXIT_IF(!MyElementals->GetLastID(tmpCount));
+                EXIT_IF(tmpCount != element);
         }
 
-        DataBaseCleanUp();/* maybe we want to kill it earlier than exit */
-        
+        element = 1;
+        while (element <= HOW_MANY_ITEMS){
+                if (element % (HOW_MANY_ITEMS / KEEP_LINES) == 0)
+                        printf("attempting to read element %d\n",element);
+                EXIT_IF(!MyElementals->ReadWithID(element,elemental_s));
+                ++element;
+        }
+
+        MyElementalsCleanUp();/* maybe we want to kill it earlier than exit */
+
         ShutDownNotifyTracker();
 
-        return EXIT_SUCCESS; //exit(EXIT_SUCCESS);
+        return EXIT_SUCCESS;
 }

@@ -601,7 +601,7 @@ TRecordsStorage::Convert_RecNum_To_FileOffset(
                         return kInvalidFileOffset);
 
         FileSize_t retFileOffset = (fHeaderSize + ((a_RecNum - 1) * fRecSize));
-        PARANOID_IF(retFileOffset <= 0,
+        PARANOID_IF(retFileOffset < 0,
                         return kInvalidFileOffset);
 
         return retFileOffset;

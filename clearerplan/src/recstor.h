@@ -188,6 +188,13 @@ public:
         bool IsOpen(){ return (fFileHandle > 0); };
 
 /* added functionality: cache */
+/* TODO: make it possible to modify the cache behaviour for example:
+        when reading records don't flush the writes instead make place for the
+        newly read record by droping another old read record from cache
+      * or don't cache read records
+      * or when one written record is to be discarded from cache, discard them
+        all (except last 10, for example)
+      * etc */
 
         /* auto-flushes before dealloc */
         bool KillCache();
