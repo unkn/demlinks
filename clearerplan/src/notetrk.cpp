@@ -110,7 +110,7 @@ TNotify::MoveOutNote()
         return tmp;
 }
 
-EBool_t 
+bool 
 TNotify::Add2List(NotifyItem_st *a_What)
 {
         /* even if we fail something we still have to count this note */
@@ -118,7 +118,7 @@ TNotify::Add2List(NotifyItem_st *a_What)
         
         if (!a_What) {/* oops NULL ptr passed to us */
                 SetFailedInternally();
-                return kFalse; 
+                return false; 
         }
 /* this one we add is at the tail so it points to no more items afterwards */
         a_What->Next=NULL;
@@ -128,10 +128,10 @@ TNotify::Add2List(NotifyItem_st *a_What)
                 fHead=a_What; /* so we only got one item */
     
         fTail=a_What; /* always pointing to last item in list */
-        return kTrue;
+        return true;
 }
 
-EBool_t 
+bool 
 TNotify::AddNote(const NotifyItem_st &a_NewNote)
 {
 /* parameter must already be allocated */
@@ -147,7 +147,7 @@ TNotify::AddNote(const NotifyItem_st &a_NewNote)
         tmp->Contents.Depth=GetNumNotes();
         
         /* this function does SetMoreNotes() */
-        return Add2List(tmp);/* most always returns kTrue */
+        return Add2List(tmp);/* most always returns true */
 
 ifailed:
         /* we still have to count the number of encountered notes */
@@ -155,12 +155,12 @@ ifailed:
 
         /* we did fail internally, let's signal that */
         SetFailedInternally();
-        return kFalse;
+        return false;
 }
 
 
 
-EBool_t 
+bool 
 TNotify::AddUserNote(
         const NotifyType_t a_NotifyType, 
         PChar_t a_Desc,

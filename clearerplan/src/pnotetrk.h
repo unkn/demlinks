@@ -156,6 +156,7 @@ extern MNotifyTracker *gNotifyTracker;
         ADD_NOTE(kNotify_Err,a_ErrorDescription)\
 }
 
+#if defined(CHECK_FOR_LAME_PROGRAMMERS)
 /* adds a programming-error to the notify-list if the condition is true 
    and optionally executes more statements if so 
  * this should only happen if the programmer misused some statements or forgot
@@ -173,6 +174,12 @@ extern MNotifyTracker *gNotifyTracker;
 {                                               \
         ADD_NOTE(kNotify_ProgrammingError,a_ErrorDescription)\
 }
+#else //not defined:
+
+#define LAME_PROGRAMMER_IF(a_blah,a_blahblah) /* refusing to do anything */
+#define LAME_PROGRAMMER(a_blah) /* nothing here */
+
+#endif //CHECK_FOR_LAME_PROGRAMMERS
 
 
 /* adds a notification to the list, generic use */

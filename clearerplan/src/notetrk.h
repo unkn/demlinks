@@ -33,11 +33,6 @@
 #ifndef NOTETRK__H__
 #define NOTETRK__H__
 
-/* some of our functions' return type in case something went wrong internally */
-typedef enum { 
-        kFalse=0, 
-        kTrue=1 
-} EBool_t;
 
 typedef char * PChar_t;
 
@@ -116,7 +111,7 @@ public:
         TNotify();
         virtual ~TNotify();
         /* adds a new notification to the list with data provided by params */
-        EBool_t AddUserNote(
+        bool AddUserNote(
                         const NotifyType_t a_NotifyType,
                         PChar_t a_Desc,
                         File_t a_FileName, 
@@ -125,7 +120,7 @@ public:
         
         /* adds a new notification to list with predefined contents */
         /* mostly used internally */
-        EBool_t AddNote(const NotifyItem_st &a_NewNote);
+        bool AddNote(const NotifyItem_st &a_NewNote);
         
         
         /* returns pointer to the last notification, or NULL if list is empty */
@@ -147,25 +142,25 @@ public:
         /* empties the list of notes unconditionally ie. clear all notes */
         void PurgeThemAll();
 
-        EBool_t HasFailedInternally(){ 
-                if (fInternalFailed==kTrue) 
-                        return kTrue;
-                return kFalse;
+        bool HasFailedInternally(){ 
+                if (fInternalFailed==true) 
+                        return true;
+                return false;
         };
 
         /* how many notifications are in list */
         Counter_t GetNumNotes(){ return fHowMany; };
 
 private:
-        EBool_t Add2List(NotifyItem_st *a_What);
+        bool Add2List(NotifyItem_st *a_What);
 
         /* accessor functions for counting/retrieving the number of notes */
         void SetNoNotes(){ fHowMany=0; };
         void SetLessNotes(){ fHowMany--; };
         void SetMoreNotes(){ fHowMany++; };
 
-        void SetFailedInternally(){ fInternalFailed=kTrue; };
-        void SetOkInternally(){ fInternalFailed=kFalse; };
+        void SetFailedInternally(){ fInternalFailed=true; };
+        void SetOkInternally(){ fInternalFailed=false; };
         
 };/* class TNotify */
 

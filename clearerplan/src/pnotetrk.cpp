@@ -76,13 +76,13 @@ CheckedAddNote(
         const Line_t a_Line)
 {
         
-        EBool_t tmpres=gNotifyTracker->AddUserNote(a_NotifyType,
+        bool tmpres=gNotifyTracker->AddUserNote(a_NotifyType,
                                                 a_Desc,
                                                 a_FileName,
                                                 a_Func,
                                                 a_Line);
         
-        if ((tmpres==kFalse) && (gNotifyTracker->HasFailedInternally())) {
+        if ((tmpres==false) && (gNotifyTracker->HasFailedInternally())) {
         
                 fprintf(stderr,
                         "The NotifyTracker has failed internally.\n"
