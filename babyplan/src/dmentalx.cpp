@@ -131,6 +131,29 @@ reterrt dmentalix::_who_s_groupID_are_you_atomID(groupID &gid, const atomID me){
 }
 /*^^^^^^^^^^^^^^*/
 
+groupID dmentalix::add_empty_group(){
+#ifdef WASINITED_SAFETY
+    ret_ifnot(wasinited());//files must be open ~ check
+#endif
+    //new group -> new list
+    deref_grpatoms_listID_type grplistvar;
+    grpatoms_listID grplist;
+    if_grpatoms_list::compose(grplistvar,_noID_);
+//    ret_if_error_after_statement(
+        grplist=if_grpatoms_list::addnew(grplistvar);
+  //  );//ptr2head=_noID_ -> empty list
+    ret_if(_noID_==grplist);
+    
+
+    deref_groupID_type newone;
+    if_group::compose(newone,_noID_,grplist);
+    //ret_if_error_after_statement(
+        groupID newID=if_group::addnew(newone);
+    //);
+    ret_if(newID==_noID_);
+    return newID;
+}
+
 groupID dmentalix::add_group_with_headatom(atomID *head){
 /*
     *adds a new group that has a chain of atoms in it starting with `head' atom
@@ -488,7 +511,7 @@ atomID dmentalix::strict_add_atom_type_GC_after_prev(const groupID ptr2what_grou
 /*______________*/
 reterrt dmentalix::add_gcatomID_to_clone_list_of_group(const gcatomID what2add_gcatomID, const groupID whos_groupID){
 /*
-add gcatomID `what2add' into group `whos'' list of atoms which point to whos
+add gcatomID `what2add' into group `whos' 's list of atoms which point to whos
 because only GCatoms can point to groups!
 */
 #ifdef WASINITED_SAFETY
@@ -498,7 +521,7 @@ because only GCatoms can point to groups!
     ret_ifnot( if_group::getwithID(whos_groupID,_tmpg) );//get the group
 
     ret_ifnot(
-        strict_add_one_more_gcatom_to_this_clone_list(\
+        strict_add_one_more_atomID_to_this_grp_clone_list(\
             _tmpg.ptr2list_of_atomIDs,\
             what2add_gcatomID\
         )
@@ -510,8 +533,43 @@ because only GCatoms can point to groups!
 /*^^^^^^^^^^^^^^*/
 
 /*______________*/
+reterrt dmentalix::strict_add_one_more_atomID_to_this_grp_clone_list(const grpatoms_listID whatlist, const atomID what2add){
+//a gcatom refering to a group
+/* adds to the list w/o checking if item already exist (hopefully) */
+#ifdef WASINITED_SAFETY
+    ret_ifnot(wasinited());//files must be open ~ check
+#endif
+    deref_grpatoms_listID_type _list;
+    ret_ifnot( if_grpatoms_list::getwithID(whatlist,_list) );
+
+
+    deref_grpatomslist_itemID_type newitem;
+    if_grpatomslist_item::compose(newitem,
+        _noID_/*prev*/,
+        _list.ptr2head_item/*next*/,//the old head
+        what2add/*atomID_that_points_to_US_the_group*/
+    );
+    //connected new item to the chain, but put first, instead of last.
+
+    _list.ptr2head_item=if_grpatomslist_item::addnew(newitem);//append
+    ret_if(_list.ptr2head_item == _noID_);//catches errors too
+    //wrote new item
+
+    ret_ifnot( if_grpatoms_list::writewithID(whatlist,_list) );
+    //wrote list
+    
+    ret_ok();
+}
+/*^^^^^^^^^^^^^^*/
+
+/*______________*/
 reterrt dmentalix::add_atomID_to_clone_list_of_atom(const atomID what2add_atomID, const atomID whos_atomID){
-/* add what2add into whos' list of atoms which point to whos*/
+/*
+*adds an atomID(can be only AC) to the list of <those which point to me> of
+another atom (this list can only be of AC atoms!), this "another" atom can be
+E/GC/AC, it(whos_atomID) is just being refered by an
+AC atom(what2add_atomID).
+*/
 #ifdef WASINITED_SAFETY
     ret_ifnot(wasinited());//files must be open ~ check
 #endif
@@ -522,19 +580,19 @@ reterrt dmentalix::add_atomID_to_clone_list_of_atom(const atomID what2add_atomID
         case _E_atom:
             deref_eatomID_type _ea;
             ret_ifnot( if_eatom::getwithID(_tmpa.at_ID,_ea) );
-            ret_ifnot( strict_add_one_more_eatom_to_this_clone_list(_ea.ptr2list,what2add_atomID) );
+            ret_ifnot( strict_add_one_more_atomID_to_this_eatom_s_clone_list(_ea.ptr2list,what2add_atomID) );
             break;
         case _GC_atom:
                 deref_gcatomID_type _gca;
                 ret_ifnot( if_gcatom::getwithID(_tmpa.at_ID,_gca) );
                 //got gcatom
-                ret_ifnot( strict_add_one_more_gcatom_to_this_clone_list(_gca.ptr2clonelist_of_atomIDs_which_point_to_US,what2add_atomID) );
+                ret_ifnot( strict_add_one_more_atomID_to_this_gcatom_s_clone_list(_gca.ptr2clonelist_of_atomIDs_which_point_to_US,what2add_atomID) );
                 break;
         case _AC_atom:
                 deref_acatomID_type _aca;
                 ret_ifnot( if_acatom::getwithID(_tmpa.at_ID,_aca) );
                 //got ACatom
-                ret_ifnot( strict_add_one_more_acatom_to_this_clone_list(_aca.ptr2clonelist,what2add_atomID) );
+                ret_ifnot( strict_add_one_more_atomID_to_this_acatom_s_clone_list(_aca.ptr2clonelist,what2add_atomID) );
                 break;
         default:
                 ret_ifalways(not dodging atom of unknown type);
@@ -546,8 +604,10 @@ reterrt dmentalix::add_atomID_to_clone_list_of_atom(const atomID what2add_atomID
 /*^^^^^^^^^^^^^^*/
 
 /*______________*/
-reterrt dmentalix::strict_add_one_more_gcatom_to_this_clone_list(const gcatoms_listID whatlist, const atomID what2add){
+reterrt dmentalix::strict_add_one_more_atomID_to_this_gcatom_s_clone_list(const gcatoms_listID whatlist, const atomID what2add){
+//an acatom refering to a gcatom
 /* adds to the list w/o checking if item already exist (hopefully) */
+//only adds to a GCATOMSLIST !!!
 #ifdef WASINITED_SAFETY
     ret_ifnot(wasinited());//files must be open ~ check
 #endif
@@ -573,7 +633,9 @@ reterrt dmentalix::strict_add_one_more_gcatom_to_this_clone_list(const gcatoms_l
 /*^^^^^^^^^^^^^^*/
 
 /*______________*/
-reterrt dmentalix::strict_add_one_more_eatom_to_this_clone_list(const eatoms_listID whatlist, const atomID what2add){
+reterrt dmentalix::strict_add_one_more_atomID_to_this_eatom_s_clone_list(const eatoms_listID whatlist, const atomID what2add){
+//an acatom refering to an eatom
+//adds acatom to an eatomlist
 #ifdef WASINITED_SAFETY
     ret_ifnot(wasinited());//files must be open ~ check
 #endif
@@ -600,7 +662,9 @@ reterrt dmentalix::strict_add_one_more_eatom_to_this_clone_list(const eatoms_lis
 /*^^^^^^^^^^^^^^*/
 
 /*______________*/
-reterrt dmentalix::strict_add_one_more_acatom_to_this_clone_list(const acatoms_listID whatlist, const atomID what2add){
+reterrt dmentalix::strict_add_one_more_atomID_to_this_acatom_s_clone_list(const acatoms_listID whatlist, const atomID what2add){
+//an acatom refering to another acatom
+//adds an acatom to an acatomlist
 #ifdef WASINITED_SAFETY
     ret_ifnot(wasinited());//files must be open ~ check
 #endif

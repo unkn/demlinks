@@ -27,7 +27,9 @@
 * Description: driver program for a char-based world (just testing stuff)
 *
 ****************************************************************************/
-
+/*
+for theory see the file ..\txt\charwrld.txt
+*/
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -39,6 +41,9 @@
 #include "nicef.h"
 
 
+//#define PARANOIA_CHECKS
+#undef PARANOIA_CHECKS //some extra (lame)checks
+
 #define num_cached_records 2048
 #define cfg_fname "test03.cfg"
 
@@ -47,22 +52,63 @@ dmentalix *test3;
 enum enum_specials{
 _spec_filename=0,
 _spec_dirname,
-_spec_date,
+_spec_file,
+_spec_dir,
+_spec_dircontents,
+_spec_dir_dirlist,
+_spec_dir_filelist,
 _spec_contents,
-_spec_simpleword,
-_spec_doubleword,
+_spec_root,
+_spec_word,
 numspex};
 
-atomID _specials[numspex];//there are some special atomIDs recognized internally
+atomID _specials[numspex];//there are some special atomIDs recognized internally; faster if stored in this way
+
+reterrt get_word(const char *w, groupID &dest){
+//attempts to find the word's groupID, if the word exists
+//if not exist, dest=_noID_, funx returns 0 if errors which is prolly bad
+//FIXME:
+    ret_ok();
+}
+
+reterrt abs_add_word(const char *w,groupID &dest){
+//not checking if the word already exists, dangerous tho, shouldn't be called
+//outside add_word()
+//FIXME:
+    ret_ok();
+}
+
+reterrt add_word(const char *w,groupID &dest){
+//adds one word ie. "file" 
+//checks for existing, if the word exists we will return it's groupID
+    groupID tmpgid;
+    ret_ifnot( get_word(w,tmpgid) );
+    if (!tmpgid){//not found, add it
+        ret_ifnot( abs_add_word(w,tmpgid) );
+#ifdef PARANOIA_CHECKS
+        ret_if(tmpgid==_noID_);//funny couldn't manage to add the word
+#endif
+    }//fi
+    dest=tmpgid;
+    ret_ok();
+}
+
 
 reterrt make_new_config(){
 //assuming, not checking if, dmentalix(test3->) is already inited since we
 //add atoms and stuff
 
-    //FIXME: must add few words too
     //FIXME: add the new atoms into _specials[]
 
+    groupID dummygroupID=test3->add_empty_group();
+    ret_if(dummygroupID == _noID_);
+
+    atomID prev=_noID_;//first one has no `.prev'
     for (long i=0;i<numspex;i++){//write'm all
+        ret_if_error_after_statement(
+            prev=test3->strict_add_atom_type_GC_after_prev(dummygroupID,_noID_,prev) 
+        );//why not keep all specials chained ;) and they all ref. to dummygroupID
+        _specials[i]=prev;
         ret_ifnot( lamecfg->writerec(1+i,&_specials[i]) );
     }//for
 
@@ -72,7 +118,6 @@ reterrt make_new_config(){
 reterrt read_config(){
     for (long i=0;i<numspex;i++){//read them all
         ret_ifnot( lamecfg->readrec(i+1,&_specials[i]) );
-        printf("%ld\n",i);
     }//for
 
     ret_ok();
@@ -84,6 +129,7 @@ int main(){
     test3=new dmentalix;
     ab_ifnot(test3);
 
+//    unlink(cfg_fname);//FIXME: temporary shit
         
     lamecfg=new nicefi;
     ab_ifnot(lamecfg);

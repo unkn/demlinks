@@ -116,6 +116,8 @@ killdat : .SYMBOLIC
     if exist $(tmpdir)\*.dat del $(tmpdir)\*.dat
     if exist $(bindir)\*.dat attrib -shra $(bindir)\*.dat 
     if exist $(bindir)\*.dat del $(bindir)\*.dat
+    if exist $(bindir)\*.cfg attrib -shra $(bindir)\*.cfg 
+    if exist $(bindir)\*.cfg del $(bindir)\*.cfg
 
 cleanall : clean killdat .SYMBOLIC
     @%null

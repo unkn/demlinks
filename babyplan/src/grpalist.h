@@ -55,7 +55,7 @@ public:
     reterrt shutdown(); 
     void compose(
         deref_grpatoms_listID_type &into,
-        const grpatomslist_itemID ptr2head
+        const grpatomslist_itemID ptr2head_item
 );
 };//class
 

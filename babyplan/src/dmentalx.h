@@ -120,6 +120,7 @@ public:
 
     //create a new group with head `head' and return group's head in `head'
     groupID add_group_with_headatom(atomID *head);//with some checks, and `head' gets destroyed/modified if `head' wasn't the atomID head of the chain
+    groupID add_empty_group();
 
     reterrt _who_s_groupID_are_you_atomID(groupID &gid, const atomID me);
 
@@ -134,10 +135,14 @@ public:
 
     reterrt get_atomID_s_headIDof_eatomslistofclones(const atomID which, eatomslist_itemID &head);
 private:
-    reterrt strict_add_one_more_gcatom_to_this_clone_list(const gcatoms_listID whatlist, const atomID what2add);
-    reterrt strict_add_one_more_acatom_to_this_clone_list(const acatoms_listID whatlist, const atomID what2add);
-    reterrt strict_add_one_more_eatom_to_this_clone_list(const eatoms_listID whatlist, const atomID what2add);
-    
+//acatoms refering to any of E/GC/AC
+    reterrt strict_add_one_more_atomID_to_this_gcatom_s_clone_list(const gcatoms_listID whatlist, const atomID what2add);
+    reterrt strict_add_one_more_atomID_to_this_acatom_s_clone_list(const acatoms_listID whatlist, const atomID what2add);
+    reterrt strict_add_one_more_atomID_to_this_eatom_s_clone_list(const eatoms_listID whatlist, const atomID what2add);
+//.
+//gcatom refering to a group
+    reterrt strict_add_one_more_atomID_to_this_grp_clone_list(const grpatoms_listID whatlist, const atomID what2add);
+
     reterrt add_gcatomID_to_clone_list_of_group(const gcatomID what2add_gcatomID, const groupID whos_groupID);//only gcatoms poit to groups
     reterrt add_atomID_to_clone_list_of_atom(const atomID what2add_atomID, const atomID whos_atomID);
 
