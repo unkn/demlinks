@@ -46,13 +46,13 @@ public:
     if_acatom();                    
     ~if_acatom();                    
     reterrt init(const char *fname);    
-    reterrt getwithID(const acatomID whatacatomID, deref_acatomID_type *into);
-    reterrt writewithID(const acatomID whatacatomID, const deref_acatomID_type *from);
-    acatomID addnew(const deref_acatomID_type *from);
+    reterrt getwithID(const acatomID whatacatomID, deref_acatomID_type &into);
+    reterrt writewithID(const acatomID whatacatomID, const deref_acatomID_type &from);
+    acatomID addnew(const deref_acatomID_type &from);
     long howmany();
     reterrt shutdown(); 
     void compose(
-        deref_acatomID_type *into,
+        deref_acatomID_type &into,
         groupID ptr2group,
         atomID prevINchain,
         atomID nextINchain,

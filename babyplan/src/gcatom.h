@@ -46,13 +46,13 @@ public:
     if_gcatom();                    
     ~if_gcatom();                    
     reterrt init(const char *fname);    
-    reterrt getwithID(const gcatomID whatgcatomID, deref_gcatomID_type *into);
-    reterrt writewithID(const gcatomID whatgcatomID, const deref_gcatomID_type *from);
-    gcatomID addnew(const deref_gcatomID_type *from);
+    reterrt getwithID(const gcatomID whatgcatomID, deref_gcatomID_type &into);
+    reterrt writewithID(const gcatomID whatgcatomID, const deref_gcatomID_type &from);
+    gcatomID addnew(const deref_gcatomID_type &from);
     long howmany();
     reterrt shutdown(); 
     void compose(
-        deref_gcatomID_type *into,
+        deref_gcatomID_type &into,
         const groupID ptr2group,
         const atomID prevINchain,
         const atomID nextINchain,

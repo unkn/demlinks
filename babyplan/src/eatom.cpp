@@ -51,10 +51,10 @@ eatomID if_eatom::find_basic_element_and_ret_eatomID(const basic_element what2se
     ret_ifnot(wasinited());
 #endif
     deref_eatomID_type tmpinto;
-    return ( find_eatom(&tmpinto,what2search) );
+    return ( find_eatom(tmpinto,what2search) );
 }
 
-eatomID if_eatom::find_eatom(deref_eatomID_type *into,const basic_element searchme){
+eatomID if_eatom::find_eatom(deref_eatomID_type &into,const basic_element searchme){
 /*
     this funx is kinda lame because it has to parse all records to see if
 there's such a basic_elemen within the eatoms. Actually we think that we only
@@ -71,7 +71,6 @@ worse, about hmm, #0..#64KB
 #ifdef WASINITED_SAFETY
     ret_ifnot(wasinited());
 #endif
-    ret_if(into==NULL);//`into' param must be preallocated
 
     //find element here
 #ifdef CHECK_howmany_FUNX
@@ -88,8 +87,8 @@ worse, about hmm, #0..#64KB
 //optimized guess took at most 5seconds to scan each of both with srand(982)
 // and backward order
     i=searchme+1;
-    nicefi::readrec(i,into);//recnum `i' means eatomID actually.
-    if ( into->basicelementdata==searchme ){
+    nicefi::readrec(i,&into);//recnum `i' means eatomID actually.
+    if ( into.basicelementdata==searchme ){
         //found it
         return i;//eatomID
     }//fi
@@ -137,8 +136,8 @@ worse, about hmm, #0..#64KB
     else { //if hm<20 we shouldn't bother
 #endif
         for (i=_FIRST_RECORD_;i<=hm;i++){
-            nicefi::readrec(i,into);//recnum `i' means eatomID actually.
-            if ( into->basicelementdata==searchme ){
+            nicefi::readrec(i,&into);//recnum `i' means eatomID actually.
+            if ( into.basicelementdata==searchme ){
                 //found it
                 return i;//eatomID
             }//fi
@@ -158,7 +157,7 @@ long if_eatom::howmany(){
     return nicefi::getnumrecords();
 }
 
-eatomID if_eatom::addnew(const deref_eatomID_type *from){
+eatomID if_eatom::addnew(const deref_eatomID_type &from){
 #ifdef WASINITED_SAFETY
     ret_ifnot(wasinited());
 #endif
@@ -167,19 +166,19 @@ eatomID if_eatom::addnew(const deref_eatomID_type *from){
     return neweatomID;
 }
 
-reterrt if_eatom::getwithID(const eatomID whateatomID, deref_eatomID_type *into){
+reterrt if_eatom::getwithID(const eatomID whateatomID, deref_eatomID_type &into){
 #ifdef WASINITED_SAFETY
     ret_ifnot(wasinited());
 #endif
-    ret_ifnot(nicefi::readrec(whateatomID,into));
+    ret_ifnot(nicefi::readrec(whateatomID,&into));
     ret_ok();
 }
 
-reterrt if_eatom::writewithID(const eatomID whateatomID, const deref_eatomID_type *from){
+reterrt if_eatom::writewithID(const eatomID whateatomID, const deref_eatomID_type &from){
 #ifdef WASINITED_SAFETY
     ret_ifnot(wasinited());
 #endif
-    ret_ifnot(nicefi::writerec(whateatomID,from));
+    ret_ifnot(nicefi::writerec(whateatomID,&from));
     ret_ok();
 }                                          
                                             
@@ -222,7 +221,7 @@ reterrt if_eatom::shutdown(){
 }
 
 void if_eatom::compose(
-    deref_eatomID_type *into,
+    deref_eatomID_type &into,
     atomID ptrback2atomID_for_faster_search_when_single,
     eatoms_listID ptr2list,
     basic_element basicelementdata

@@ -51,13 +51,13 @@ public:
     if_acatoms_list();                    
     ~if_acatoms_list();                    
     reterrt init(const char *fname);    
-    reterrt getwithID(const acatoms_listID whatacatoms_listID, deref_acatoms_listID_type *into);
-    reterrt writewithID(const acatoms_listID whatacatoms_listID, const deref_acatoms_listID_type *from);
-    acatoms_listID addnew(const deref_acatoms_listID_type *from);
+    reterrt getwithID(const acatoms_listID whatacatoms_listID, deref_acatoms_listID_type &into);
+    reterrt writewithID(const acatoms_listID whatacatoms_listID, const deref_acatoms_listID_type &from);
+    acatoms_listID addnew(const deref_acatoms_listID_type &from);
     long howmany();
     reterrt shutdown(); 
     void compose(
-        deref_acatoms_listID_type *into,
+        deref_acatoms_listID_type &into,
         const acatomslist_itemID ptr2head
     );
 };//class

@@ -43,19 +43,19 @@ long if_group::howmany(){
     return nicefi::getnumrecords();
 }
 
-long if_group::addnew(const deref_groupID_type *from){
+long if_group::addnew(const deref_groupID_type &from){
     long newgroupID=howmany()+1;
     ret_ifnot( writewithID(newgroupID,from) );
     return newgroupID;
 }
 
-reterrt if_group::getwithID(const groupID whatgroupID, deref_groupID_type *into){
-    ret_ifnot(nicefi::readrec(whatgroupID,into));
+reterrt if_group::getwithID(const groupID whatgroupID, deref_groupID_type &into){
+    ret_ifnot(nicefi::readrec(whatgroupID,&into));
     ret_ok();
 }
 
-reterrt if_group::writewithID(const groupID whatgroupID, const deref_groupID_type *from){
-    ret_ifnot(nicefi::writerec(whatgroupID,from));
+reterrt if_group::writewithID(const groupID whatgroupID, const deref_groupID_type &from){
+    ret_ifnot(nicefi::writerec(whatgroupID,&from));
     ret_ok();
 }                                          
                                             
@@ -82,7 +82,7 @@ reterrt if_group::shutdown(){
 }
 
 void if_group::compose(
-    deref_groupID_type *into,
+    deref_groupID_type &into,
     const atomID ptr2atom_head_of_chain,
     const gcatoms_listID ptr2list_of_atomIDs
 )

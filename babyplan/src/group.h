@@ -47,13 +47,13 @@ public:
     if_group();                    
     ~if_group();                    
     reterrt init(const char *fname);    
-    reterrt getwithID(const groupID whatgroupID, deref_groupID_type *into);
-    reterrt writewithID(const groupID whatgroupID, const deref_groupID_type *from);
-    long addnew(const deref_groupID_type *from); 
+    reterrt getwithID(const groupID whatgroupID, deref_groupID_type &into);
+    reterrt writewithID(const groupID whatgroupID, const deref_groupID_type &from);
+    long addnew(const deref_groupID_type &from); 
     long howmany();
     reterrt shutdown(); 
     void compose(
-        deref_groupID_type *into,//FIXME:: all params alike this param is a must so we could make it & (referer) instead of ptr
+        deref_groupID_type &into,
         const atomID ptr2atom_head_of_chain,
         const grpatoms_listID ptr2list_of_atomIDs
         //only groups have a list of groupatoms that list which is full of gcatoms

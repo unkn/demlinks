@@ -42,7 +42,7 @@ long if_eatoms_list::howmany(){
     return nicefi::getnumrecords();
 }
 
-eatoms_listID if_eatoms_list::addnew(const deref_eatoms_listID_type *from){
+eatoms_listID if_eatoms_list::addnew(const deref_eatoms_listID_type &from){
 #ifdef WASINITED_SAFETY
     ret_ifnot(wasinited());
 #endif
@@ -51,19 +51,19 @@ eatoms_listID if_eatoms_list::addnew(const deref_eatoms_listID_type *from){
     return neweatoms_listID;
 }
 
-reterrt if_eatoms_list::getwithID(const eatoms_listID whateatoms_listID, deref_eatoms_listID_type *into){
+reterrt if_eatoms_list::getwithID(const eatoms_listID whateatoms_listID, deref_eatoms_listID_type &into){
 #ifdef WASINITED_SAFETY
     ret_ifnot(wasinited());
 #endif
-    ret_ifnot(nicefi::readrec(whateatoms_listID,into));
+    ret_ifnot(nicefi::readrec(whateatoms_listID,&into));
     ret_ok();
 }
 
-reterrt if_eatoms_list::writewithID(const eatoms_listID whateatoms_listID, const deref_eatoms_listID_type *from){
+reterrt if_eatoms_list::writewithID(const eatoms_listID whateatoms_listID, const deref_eatoms_listID_type &from){
 #ifdef WASINITED_SAFETY
     ret_ifnot(wasinited());
 #endif
-    ret_ifnot(nicefi::writerec(whateatoms_listID,from));
+    ret_ifnot(nicefi::writerec(whateatoms_listID,&from));
     ret_ok();
 }                                          
                                             
@@ -106,7 +106,7 @@ reterrt if_eatoms_list::shutdown(){
 }
 
 void if_eatoms_list::compose(
-    deref_eatoms_listID_type *into,
+    deref_eatoms_listID_type &into,
     const eatomslist_itemID ptr2head
 )
 {

@@ -39,19 +39,19 @@ long if_grpatoms_list::howmany(){
     return nicefi::getnumrecords();
 }
 
-grpatoms_listID if_grpatoms_list::addnew(const deref_grpatoms_listID_type *from){
+grpatoms_listID if_grpatoms_list::addnew(const deref_grpatoms_listID_type &from){
     long newgrpatoms_listID=howmany()+1;
     ret_ifnot( writewithID(newgrpatoms_listID,from) );
     return newgrpatoms_listID;
 }
 
-reterrt if_grpatoms_list::getwithID(const grpatoms_listID whatgrpatoms_listID, deref_grpatoms_listID_type *into){
-    ret_ifnot(nicefi::readrec(whatgrpatoms_listID,into));
+reterrt if_grpatoms_list::getwithID(const grpatoms_listID whatgrpatoms_listID, deref_grpatoms_listID_type &into){
+    ret_ifnot(nicefi::readrec(whatgrpatoms_listID,&into));
     ret_ok();
 }
 
-reterrt if_grpatoms_list::writewithID(const grpatoms_listID whatgrpatoms_listID, const deref_grpatoms_listID_type *from){
-    ret_ifnot(nicefi::writerec(whatgrpatoms_listID,from));
+reterrt if_grpatoms_list::writewithID(const grpatoms_listID whatgrpatoms_listID, const deref_grpatoms_listID_type &from){
+    ret_ifnot(nicefi::writerec(whatgrpatoms_listID,&from));
     ret_ok();
 }                                          
                                             
@@ -78,7 +78,7 @@ reterrt if_grpatoms_list::shutdown(){
 }
 
 void if_grpatoms_list::compose(
-    deref_grpatoms_listID_type *into,
+    deref_grpatoms_listID_type &into,
     const grpatomslist_itemID ptr2head_item
 )
 {

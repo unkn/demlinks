@@ -40,19 +40,19 @@ long if_acatom::howmany(){
     return nicefi::getnumrecords();
 }
 
-acatomID if_acatom::addnew(const deref_acatomID_type *from){
+acatomID if_acatom::addnew(const deref_acatomID_type &from){
     long newacatomID=howmany()+1;
     ret_ifnot( writewithID(newacatomID,from) );
     return newacatomID;
 }
 
-reterrt if_acatom::getwithID(const acatomID whatacatomID, deref_acatomID_type *into){
-    ret_ifnot(nicefi::readrec(whatacatomID,into));
+reterrt if_acatom::getwithID(const acatomID whatacatomID, deref_acatomID_type &into){
+    ret_ifnot(nicefi::readrec(whatacatomID,&into));
     ret_ok();
 }
 
-reterrt if_acatom::writewithID(const acatomID whatacatomID, const deref_acatomID_type *from){
-    ret_ifnot(nicefi::writerec(whatacatomID,from));
+reterrt if_acatom::writewithID(const acatomID whatacatomID, const deref_acatomID_type &from){
+    ret_ifnot(nicefi::writerec(whatacatomID,&from));
     ret_ok();
 }                                          
                                             
@@ -79,7 +79,7 @@ reterrt if_acatom::shutdown(){
 }
 
 void if_acatom::compose(
-    deref_acatomID_type *into,
+    deref_acatomID_type &into,
     groupID ptr2group,
     atomID prevINchain,
     atomID nextINchain,

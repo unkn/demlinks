@@ -91,7 +91,7 @@ reterrt nicefi::writerec(const long recno, const void * from){//recsize bytes
     ret_ok();
 }
 
-reterrt nicefi::readrec(const long recno, void *  into){
+reterrt nicefi::readrec(const long recno, void * into){
 //recsize bytes
     sret_ifnot(seekto(recno));
     sret_if(recsize != read(fhandle,into,recsize));

@@ -46,8 +46,6 @@ int main(){
     test2=new dmentalix;
     ab_ifnot(test2);
 
-//FIXME: make code to add groups as well
-
     printf("Erase old files?\n");
     printf("drop anykey to YES or ESC to skip...\n");
     basic_element c=(basic_element)(getch());
@@ -150,7 +148,7 @@ skipgrpadd:
           )
     {
         deref_eatomslist_itemID_type inhead;
-        ab_ifnot( test2->get_eatomslist_item_withID(head,&inhead) );
+        ab_ifnot( test2->get_eatomslist_item_withID(head,inhead) );
         printf("atomID==%ld points to BE#%d which is US(=atomID(%ld))\n",inhead.ptr2atom_that_points_to_US,c,typeEid);
         head=inhead.nextINlist;
     }//while

@@ -163,7 +163,7 @@ struct deref_groupID_type { //GROUPS.DAT
 /***************************************/
 
 #define _in2(_w_)\
-    into->##_w_##=##_w_##;
+    into.##_w_##=##_w_##;
 
 #define _2in2(_1,_2)\
     _in2(_1);_in2(_2);

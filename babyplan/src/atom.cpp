@@ -42,7 +42,7 @@ long if_atom::howmany(){
     return nicefi::getnumrecords();
 }
 
-atomID if_atom::addnew(const deref_atomID_type *from){
+atomID if_atom::addnew(const deref_atomID_type &from){
 #ifdef WASINITED_SAFETY
     ret_ifnot(wasinited());
 #endif
@@ -51,19 +51,19 @@ atomID if_atom::addnew(const deref_atomID_type *from){
     return newatomID;
 }
 
-reterrt if_atom::getwithID(const atomID whatatomID, deref_atomID_type *into){
+reterrt if_atom::getwithID(const atomID whatatomID, deref_atomID_type &into){
 #ifdef WASINITED_SAFETY
     ret_ifnot(wasinited());
 #endif
-    ret_ifnot(nicefi::readrec(whatatomID,into));
+    ret_ifnot(nicefi::readrec(whatatomID,&into));
     ret_ok();
 }
 
-reterrt if_atom::writewithID(const atomID whatatomID, const deref_atomID_type *from){
+reterrt if_atom::writewithID(const atomID whatatomID, const deref_atomID_type &from){
 #ifdef WASINITED_SAFETY
     ret_ifnot(wasinited());
 #endif
-    ret_ifnot(nicefi::writerec(whatatomID,from));
+    ret_ifnot(nicefi::writerec(whatatomID,&from));
     ret_ok();
 }                                          
                                             
@@ -106,7 +106,7 @@ reterrt if_atom::shutdown(){
 }
 
 void if_atom::compose(
-    deref_atomID_type *into,
+    deref_atomID_type &into,
     const atomtypes at_type,
     const anyatomID at_ID
 )

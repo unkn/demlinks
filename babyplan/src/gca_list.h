@@ -47,13 +47,13 @@ public:
     if_gcatoms_list();                    
     ~if_gcatoms_list();                    
     reterrt init(const char *fname);    
-    reterrt getwithID(const gcatoms_listID whatgcatoms_listID, deref_gcatoms_listID_type *into);
-    reterrt writewithID(const gcatoms_listID whatgcatoms_listID, const deref_gcatoms_listID_type *from);
-    gcatoms_listID addnew(const deref_gcatoms_listID_type *from);
+    reterrt getwithID(const gcatoms_listID whatgcatoms_listID, deref_gcatoms_listID_type &into);
+    reterrt writewithID(const gcatoms_listID whatgcatoms_listID, const deref_gcatoms_listID_type &from);
+    gcatoms_listID addnew(const deref_gcatoms_listID_type &from);
     long howmany();
     reterrt shutdown(); 
     void compose(
-        deref_gcatoms_listID_type *into,
+        deref_gcatoms_listID_type &into,
         const gcatomslist_itemID ptr2head
 );
 };//class

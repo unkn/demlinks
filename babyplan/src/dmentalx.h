@@ -118,10 +118,10 @@ public:
     //create a new group with head `head' and return group's head in `head'
     groupID add_group_with_headatom(atomID *head);//with some checks, and `head' gets destroyed/modified if `head' wasn't the atomID head of the chain
 
-    reterrt _who_s_groupID_are_you_atomID(groupID *gid, const atomID me);
+    reterrt _who_s_groupID_are_you_atomID(groupID &gid, const atomID me);
 
 //lame funx:
-    reterrt get_eatomslist_item_withID(const eatomslist_itemID whateatomslist_itemID, deref_eatomslist_itemID_type *into);
+    reterrt get_eatomslist_item_withID(const eatomslist_itemID whateatomslist_itemID, deref_eatomslist_itemID_type &into);
     
     reterrt get_atomID_s_type_prev_next(const atomID whos_atomID, atomtypes &type, atomID &prev, atomID &next);//it also returns error if type=_E_atom since eatoms cannot be parts of chain
 

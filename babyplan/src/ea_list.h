@@ -53,13 +53,13 @@ public:
     if_eatoms_list();                    
     ~if_eatoms_list();                    
     reterrt init(const char *fname);    
-    reterrt getwithID(const eatoms_listID whateatoms_listID, deref_eatoms_listID_type *into);
-    reterrt writewithID(const eatoms_listID whateatoms_listID, const deref_eatoms_listID_type *from);
-    eatoms_listID addnew(const deref_eatoms_listID_type *from);
+    reterrt getwithID(const eatoms_listID whateatoms_listID, deref_eatoms_listID_type &into);
+    reterrt writewithID(const eatoms_listID whateatoms_listID, const deref_eatoms_listID_type &from);
+    eatoms_listID addnew(const deref_eatoms_listID_type &from);
     long howmany();
     reterrt shutdown(); 
     void compose(
-        deref_eatoms_listID_type *into,
+        deref_eatoms_listID_type &into,
         const eatomslist_itemID ptr2head
     );
 #ifdef WASINITED_SAFETY

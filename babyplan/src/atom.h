@@ -53,13 +53,13 @@ public:
     if_atom();                    
     ~if_atom();                    
     reterrt init(const char *fname);
-    reterrt getwithID(const atomID whatatomID, deref_atomID_type *into);
-    reterrt writewithID(const atomID whatatomID, const deref_atomID_type *from);
-    atomID addnew(const deref_atomID_type *from);
+    reterrt getwithID(const atomID whatatomID, deref_atomID_type &into);
+    reterrt writewithID(const atomID whatatomID, const deref_atomID_type &from);
+    atomID addnew(const deref_atomID_type &from);
     long howmany();
     reterrt shutdown(); 
     void compose(
-        deref_atomID_type *into,
+        deref_atomID_type &into,
         const atomtypes at_type,
         const anyatomID at_ID
     );

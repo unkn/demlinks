@@ -41,19 +41,19 @@ long if_gcatom::howmany(){
     return nicefi::getnumrecords();
 }
 
-gcatomID if_gcatom::addnew(const deref_gcatomID_type *from){
+gcatomID if_gcatom::addnew(const deref_gcatomID_type &from){
     long newgcatomID=howmany()+1;
     ret_ifnot( writewithID(newgcatomID,from) );
     return newgcatomID;
 }
 
-reterrt if_gcatom::getwithID(const gcatomID whatgcatomID, deref_gcatomID_type *into){
-    ret_ifnot(nicefi::readrec(whatgcatomID,into));
+reterrt if_gcatom::getwithID(const gcatomID whatgcatomID, deref_gcatomID_type &into){
+    ret_ifnot(nicefi::readrec(whatgcatomID,&into));
     ret_ok();
 }
 
-reterrt if_gcatom::writewithID(const gcatomID whatgcatomID, const deref_gcatomID_type *from){
-    ret_ifnot(nicefi::writerec(whatgcatomID,from));
+reterrt if_gcatom::writewithID(const gcatomID whatgcatomID, const deref_gcatomID_type &from){
+    ret_ifnot(nicefi::writerec(whatgcatomID,&from));
     ret_ok();
 }                                          
                                             
@@ -80,7 +80,7 @@ reterrt if_gcatom::shutdown(){
 }
 
 void if_gcatom::compose(
-    deref_gcatomID_type *into,
+    deref_gcatomID_type &into,
     const groupID ptr2group,
     const atomID prevINchain,
     const atomID nextINchain,

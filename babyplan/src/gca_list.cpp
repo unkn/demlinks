@@ -39,19 +39,19 @@ long if_gcatoms_list::howmany(){
     return nicefi::getnumrecords();
 }
 
-gcatoms_listID if_gcatoms_list::addnew(const deref_gcatoms_listID_type *from){
+gcatoms_listID if_gcatoms_list::addnew(const deref_gcatoms_listID_type &from){
     long newgcatoms_listID=howmany()+1;
     ret_ifnot( writewithID(newgcatoms_listID,from) );
     return newgcatoms_listID;
 }
 
-reterrt if_gcatoms_list::getwithID(const gcatoms_listID whatgcatoms_listID, deref_gcatoms_listID_type *into){
-    ret_ifnot(nicefi::readrec(whatgcatoms_listID,into));
+reterrt if_gcatoms_list::getwithID(const gcatoms_listID whatgcatoms_listID, deref_gcatoms_listID_type &into){
+    ret_ifnot(nicefi::readrec(whatgcatoms_listID,&into));
     ret_ok();
 }
 
-reterrt if_gcatoms_list::writewithID(const gcatoms_listID whatgcatoms_listID, const deref_gcatoms_listID_type *from){
-    ret_ifnot(nicefi::writerec(whatgcatoms_listID,from));
+reterrt if_gcatoms_list::writewithID(const gcatoms_listID whatgcatoms_listID, const deref_gcatoms_listID_type &from){
+    ret_ifnot(nicefi::writerec(whatgcatoms_listID,&from));
     ret_ok();
 }                                          
                                             
@@ -78,7 +78,7 @@ reterrt if_gcatoms_list::shutdown(){
 }
 
 void if_gcatoms_list::compose(
-    deref_gcatoms_listID_type *into,
+    deref_gcatoms_listID_type &into,
     const gcatomslist_itemID ptr2head
 )
 {

@@ -54,15 +54,15 @@ public:
     if_eatom();
     ~if_eatom();
     reterrt init(const char *fname);    
-    reterrt getwithID(const eatomID whateatomID, deref_eatomID_type *into);
-    reterrt writewithID(const eatomID whateatomID, const deref_eatomID_type *from);
-    eatomID find_eatom(deref_eatomID_type *into,const basic_element searchme);
+    reterrt getwithID(const eatomID whateatomID, deref_eatomID_type &into);
+    reterrt writewithID(const eatomID whateatomID, const deref_eatomID_type &from);
+    eatomID find_eatom(deref_eatomID_type &into,const basic_element searchme);
     eatomID find_basic_element_and_ret_eatomID(const basic_element what2search);
-    eatomID addnew(const deref_eatomID_type *from);
+    eatomID addnew(const deref_eatomID_type &from);
     long howmany();
     reterrt shutdown();
     void compose(
-        deref_eatomID_type *into,
+        deref_eatomID_type &into,
         atomID ptrback2atomID_for_faster_search_when_single,
         eatoms_listID ptr2list,
         basic_element basicelementdata

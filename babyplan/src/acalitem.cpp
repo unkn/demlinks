@@ -40,19 +40,19 @@ long if_acatomslist_item::howmany(){
     return nicefi::getnumrecords();
 }
 
-acatomslist_itemID if_acatomslist_item::addnew(const deref_acatomslist_itemID_type *from){
+acatomslist_itemID if_acatomslist_item::addnew(const deref_acatomslist_itemID_type &from){
     long newacatomslist_itemID=howmany()+1;
     ret_ifnot( writewithID(newacatomslist_itemID,from) );
     return newacatomslist_itemID;
 }
 
-reterrt if_acatomslist_item::getwithID(const acatomslist_itemID whatacatomslist_itemID, deref_acatomslist_itemID_type *into){
-    ret_ifnot(nicefi::readrec(whatacatomslist_itemID,into));
+reterrt if_acatomslist_item::getwithID(const acatomslist_itemID whatacatomslist_itemID, deref_acatomslist_itemID_type &into){
+    ret_ifnot(nicefi::readrec(whatacatomslist_itemID,&into));
     ret_ok();
 }
 
-reterrt if_acatomslist_item::writewithID(const acatomslist_itemID whatacatomslist_itemID, const deref_acatomslist_itemID_type *from){
-    ret_ifnot(nicefi::writerec(whatacatomslist_itemID,from));
+reterrt if_acatomslist_item::writewithID(const acatomslist_itemID whatacatomslist_itemID, const deref_acatomslist_itemID_type &from){
+    ret_ifnot(nicefi::writerec(whatacatomslist_itemID,&from));
     ret_ok();
 }                                          
                                             
@@ -79,7 +79,7 @@ reterrt if_acatomslist_item::shutdown(){
 }
 
 void if_acatomslist_item::compose(
-    deref_acatomslist_itemID_type *into,
+    deref_acatomslist_itemID_type &into,
     acatomslist_itemID prevINlist,
     acatomslist_itemID nextINlist,
     atomID ptr2atom_that_points_to_US
