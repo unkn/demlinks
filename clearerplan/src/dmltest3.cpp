@@ -42,8 +42,6 @@
 
 #if defined(__WATCOMC__)
 #       define CACHE_THIS_MANY_ITEMS 2048
-#else /* linux ? */
-#       define CACHE_THIS_MANY_ITEMS kDisableCache
 #endif
 #define HOW_MANY_ITEMS 20000
 #define KEEP_LINES 7
@@ -76,12 +74,16 @@ int main()
         unlink("test.fil");
         EXIT_IF(!DataBase->Open("test.fil",
                                 sizeof(headerBuf),
-                                sizeof(item),
-                                CACHE_THIS_MANY_ITEMS));
+                                sizeof(item)));
 
         EXIT_IF(!DataBase->WriteHeader(headerBuf));
 
         EXIT_IF(!DataBase->ReadHeader(headerBuf));
+#ifdef __WATCOMC__
+        EXIT_IF(!DataBase->InitCache(CACHE_THIS_MANY_ITEMS));
+#endif
+        printf("Do we have cache? %s\n",
+                        DataBase->IsCacheEnabled()==true?"Yes":"No");
 
         RecCount_t tmpCount;
         

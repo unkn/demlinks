@@ -84,7 +84,7 @@ filelength(FileHandle_t a_FileHandle)
 /* returns the number of records (counting those from cache too) that "were"
  * written */
 RecCount_t
-TRecordsStorage::GetNumRecords()
+TRecordsStorage::GetNumRecords()/* could return 0 which eq kInvalidRecNum */
 {
         LAME_PROGRAMMER_IF(!IsOpen(),
                         return kBadRecCount);
@@ -99,13 +99,14 @@ TRecordsStorage::GetNumRecords()
 
 
         --retRecNum;/* seems to be one step ahead ie. points to next record */
-        
+        /* that could be 0 which is exactly kInvalidRecNum but is ok */
+
         if (IsCacheEnabled()) { /* is cache enabled? */
                 /* return the bigger of the two */
                 if (retRecNum < fHighestRecNum)
                         retRecNum=fHighestRecNum;
 
-                PARANOID_IF(!Invariants(retRecNum),
+                PARANOID_IF(!Invariants(retRecNum+1),
                         return kBadRecCount);
         }
 
@@ -278,7 +279,7 @@ TRecordsStorage::AbsolutelyAddRecordToCache(
         //absolute add to tail, don't check for existence!
 {
         /* however there is one extra check that needs to be done
-           a_RecNum - GetNumRecords() must not be above 1 
+           a_RecNum - GetNumRecords() must not be above 1
            this check is not done inhere (see above) */
 
         PARANOID_IF(fNumCachedRecords > fMaxNumCachedRecords,
@@ -287,6 +288,7 @@ TRecordsStorage::AbsolutelyAddRecordToCache(
         CacheItem *iter;
         if (fNumCachedRecords == fMaxNumCachedRecords){
                 /* the cache is full: drop out one item, the elder */
+                /* FIXME: perhaps we should dropout half or full of the cache */
 
                 PARANOID_IF(!fCacheHead,
                                 return false);
@@ -398,6 +400,9 @@ TRecordsStorage::InitCache(
         /* situation with a_MaxRecordsToBeCached <= 0 is handled in every cache
            function ~ not to worry ~ oh and this means cache is disabled */
 
+        LAME_PROGRAMMER_IF(IsCacheEnabled(),/* already enabled */
+                        return false);
+
         /* there should be at least two records cached
          * because there may be some flaws in the implementation and stupid
          * errors could be trigered if there's just one cached record (or 0) */
@@ -414,8 +419,8 @@ TRecordsStorage::InitCache(
 bool
 TRecordsStorage::KillCache()
 {
-        if (!IsCacheEnabled()) /* is cache DISabled? */
-                return true; /* we silently ignore it */
+        LAME_PROGRAMMER_IF(!IsCacheEnabled(),/* is cache DISabled? */
+                        return false)
 
         ERR_IF( !FlushWrites(),
                         return false);//write all to be written first
@@ -457,8 +462,8 @@ TRecordsStorage::FlatenCacheVariables()
 {
     fCacheHead=NULL;
     fCacheTail=NULL;
-    fNumCachedRecords=0;
-    fHighestRecNum=0;
+    fNumCachedRecords=0;//none
+    fHighestRecNum=kInvalidRecNum;
 }
 
 /* reads the record from file directly into mem */
@@ -488,6 +493,7 @@ TRecordsStorage::ReadRecord(
         PARANOID_IF(!Invariants(a_RecNum),
                         return false);
 
+        /* to avoid duplicating the AbsoluteReadRecord twice we do this: */
         if ( ! AbsolutelyGetRecordFromCache(a_RecNum, a_MemDest) ) {
                 /* failed above ^ thus record with number a_RecNum is not cached
                    OR cache is DISabled
@@ -509,13 +515,16 @@ TRecordsStorage::ReadRecord(
 }
 
 
+/* constructor */
 TRecordsStorage::TRecordsStorage():
         fFileHandle(-1),
         fRecSize(0),
-        fHeaderSize(-1)
+        fHeaderSize(-1),
+        fMaxNumCachedRecords(kDisableCache) /* added functionality */
 {
 }
 
+/* destructor */
 TRecordsStorage::~TRecordsStorage()
 {
         if (IsOpen())
@@ -528,7 +537,8 @@ TRecordsStorage::Close()
         LAME_PROGRAMMER_IF(!IsOpen(),
                         return false);
 
-        ERR_IF( !KillCache(),
+        if (IsCacheEnabled())
+                ERR_IF( !KillCache(),
                         return false);//autoflushes writes, if cache is enabled!
 
         ERR_IF( 0 != ::close(fFileHandle),
@@ -713,8 +723,7 @@ bool
 TRecordsStorage::Open(
                 const char * a_FileName,
                 const FileSize_t a_HeaderSize,
-                const RecSize_t a_RecSize,
-                const RecNum_t a_MaxNumRecordsToBeCached)
+                const RecSize_t a_RecSize)
 {
         LAME_PROGRAMMER_IF(IsOpen(),
                         return false);
@@ -726,12 +735,7 @@ TRecordsStorage::Open(
                         return false);
 
 
-        /* cache disabling is handled inside, since some variables need to be
-           set anyways */
-        ERR_IF( !InitCache(a_MaxNumRecordsToBeCached),
-                        return false);
-
-        //FIXME: some exclusive bullshit to be done here...
+       //FIXME: some exclusive bullshit to be done here...
         /* open the file */
         fFileHandle = ::open(
                         a_FileName,

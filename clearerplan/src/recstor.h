@@ -66,7 +66,7 @@ typedef off_t FileSize_t;
 /* in both open watcom C and gcc this is `int' */
 typedef int FileHandle_t;
 
-/* when filelength() fails internally due to fstat() 
+/* when filelength() fails internally due to fstat()
    OR when some operations including FileSize_t (below) fail */
 enum { /* orphan enum */
         kInvalidFileOffset=-1
@@ -78,7 +78,8 @@ typedef FileSize_t RecSize_t;/* -2GB..2GB */
 
 /* orphan enum */
 enum {
-        kDisableCache=-1 /* use this as (the last) parameter to Open() */
+        kDisableCache=-1 /* use this as parameter to InitCache() or even better
+                                don't use InitCache() at all */
 };
 
 enum EFixedRecNumConstants {
@@ -143,7 +144,7 @@ private:
         RecNum_t        fHighestRecNum;//used with getnumrecords()
 
         //how many records to cache (ie. don't yet writ'em to disk)
-        //if this is <= 0 then we won't use cache !! 
+        //if this is <= 0 then we won't use cache !!
         RecNum_t        fMaxNumCachedRecords;// 1024
 
 public:
@@ -152,12 +153,12 @@ public:
         bool FlushWrites();
 
         /* opens the specified file for as long as we use this class, until we
-           issue a Close() of course 
-         * to disable cache just make a_MaxNumRecordsToBeCached <= 0 */
+           issue a Close() of course
+         * the cache is disabled at this point, u need to call InitCache() to
+           enable the cache */
         bool Open(const char * a_FileName,
                         const FileSize_t a_HeaderSize,
-                        const RecSize_t a_RecSize,
-                        const RecNum_t a_MaxNumRecordsToBeCached);
+                        const RecSize_t a_RecSize);
         /* TODO: we might want to know weather the file was created with Open
            or it was just opened as an existing file;
          * and perhaps an option weather to create new file if not exists just
@@ -183,6 +184,17 @@ public:
         bool ReadHeader(void * header);
 
         bool IsOpen(){ return (fFileHandle > 0); };
+
+/* added functionality: cache */
+
+        /* auto-flushes before dealloc */
+        bool KillCache();
+
+        /* if the param is less or equal to zero then the cache is disabled */
+        bool InitCache(
+                        const RecNum_t a_MaxNumRecordsToBeCached);
+        bool IsCacheEnabled() { return (fMaxNumCachedRecords > 0); };
+
 
 private:
 
@@ -221,13 +233,6 @@ private:
         bool AbsolutelyGetRecordFromCache(
                         const long a_RecNum,
                         void * a_MemDest);
-
-        bool KillCache();
-
-        /* if the param is less or equal to zero then the cache is disabled */
-        bool InitCache(
-                        const RecNum_t a_MaxNumRecordsToBeCached);
-        bool IsCacheEnabled() { return (fMaxNumCachedRecords > 0); };
 
         /* to avoid duplicating some assignement statements in two places */
         void FlatenCacheVariables();
