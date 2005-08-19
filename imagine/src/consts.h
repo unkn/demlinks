@@ -28,13 +28,13 @@
 #ifndef CONSTS___H
 #define CONSTS___H
 
+
 #ifndef M_PI
    #define M_PI   3.1415926
 #endif
 
-/* display a nice 8x8 chessboard grid */
-#define GRID_SIZE    8
-#define TILE_SIZE    1.0f
+#define GRID_SIZEY    10
+
 
 /* convert radians to degrees */
 #define DEG(n)    ((n) * 180.0 / M_PI)
@@ -51,17 +51,11 @@
 #define MOUSE_TURN_SPEED (TURN_SPEED/30.0f)
 #define THRUST_SPEED 0.50f
 
-//#define BMPCROSS
-//#define ITSPAL //use palette of BMPCROSS loaded
 
 #define CROSSHAIR_LEN 20
-#define HOW_MANY_CAMS 4 //u'll get this num at power of two, numcams
-#define NUM_CAMS ((HOW_MANY_CAMS*HOW_MANY_CAMS)) //don't change this for now
 #define SLIDEVIEW_AMMOUNT 10
 #define ENLARGEVIEW_AMMOUNT SLIDEVIEW_AMMOUNT
 
-//rest(x) when no input, reduces cpu cycles inside loop
-#define IDLE_TIME_IN_LOOP 100
 
 
 #define CAMERA_CLASS MProjectedCamera

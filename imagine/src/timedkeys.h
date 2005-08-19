@@ -30,21 +30,24 @@
 
 #include "allegro.h"
 #include "pnotetrk.h"
+#include "timedinput.h"
 
 enum {
         kSimulatedKeyboard=0,
-        kSimulatedKeyboardTimer=0,//just informative
+        kSimulatedKeyboardTimer=0,
+        kNoKeyboardTimer=0,//just informative
+
         kRealKeyboard=1,
         kRealKeyboardTimer=2,
 };
 
-#define MAX_KEYS_BUFFERED (72) //this many keys will be held in a buffer
+#define MAX_KEYS_BUFFERED (10) //this many keys will be held in a buffer
 
 #define TIMER_TYPE int
 
 #define SCANCODE_TYPE unsigned char
 #define KEY_TYPE KeyWithTimer_st
-struct KEY_TYPE {
+struct KEY_TYPE{
         TIMER_TYPE Time;
         SCANCODE_TYPE ScanCode;//scancode of the key( with state)
         KEY_TYPE& operator=(const KEY_TYPE & source);
@@ -73,38 +76,51 @@ extern volatile TIMER_TYPE gActualKeyboardTime;
 #define ISPRESSED(_a_) (!(_a_ & 0x80))//returns false if it's a released key
 #define GETPLAINKEY(_a_) (PRESS(_a_))
 
-//functions
-/*SCANCODE_TYPE
-GetPlainKey(const KEY_TYPE *what);
-*/
+class MKeyboardInputInterface:public TBaseInputInterface {
+public:
+        MKeyboardInputInterface(){};
+        virtual ~MKeyboardInputInterface(){};
 
-//bool
-//IsPressed(const KEY_TYPE *kb);
-//true if key is down that's bit 7(last aka MSB) is NOT set.
+        virtual EFunctionReturnTypes_t
+        MoveFirstFromBuffer(void *into);
 
-EFunctionReturnTypes_t
-RemoveNextKeyFromBuffer(KEY_TYPE *into);
+        virtual int
+        HowManyInBuffer();
 
-int
-HowManyKeysInBuffer();
+        virtual EFunctionReturnTypes_t
+        Alloc(void *&dest);//alloc mem and set dest ptr to it
+
+        virtual EFunctionReturnTypes_t
+        DeAlloc(void *&dest);//freemem
+
+        virtual EFunctionReturnTypes_t
+        CopyContents(const void *&src,void *&dest);
+
+
+        virtual bool
+        IsBufferFull();
+
+        virtual EFunctionReturnTypes_t
+        UnInstall();
+
+        virtual EFunctionReturnTypes_t
+        Install(const Passed_st *a_Params);
+
+        virtual EFunctionReturnTypes_t
+        Compare(void *what, void *withwhat, int &result);
+
+};//class
 
 void
 ClearKeyBuffer();
 
 bool
-IsKeyBufferFull();
-
-bool
 IsAnyKeyHeld();
-
-EFunctionReturnTypes_t
-InstallTimedKeyboard(int a_Flags);
-
-void
-UnInstallTimedKeyboard();
 
 const char *
 GetKeyName(const KEY_TYPE *kb);
+
+
 
 
 #endif

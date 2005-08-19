@@ -25,6 +25,7 @@
 *
 ****************************************************************************/
 
+#include "_gcdefs.h"
 #include <allegro.h>
 #include "pnotetrk.h"
 #include "timedkeys.h"
@@ -69,20 +70,6 @@ KEY_TYPE::operator=(const volatile KEY_TYPE & source)
 }
 
 
-/*SCANCODE_TYPE
-GetPlainKey(const KEY_TYPE *what)
-{//returns scancode without state flag
-        return (what->ScanCode & 0x7F);
-        //remove keydown or keyup FLAG (aka state)
-}
-*/
-/*****************************************************************************/
-/*bool
-IsPressed(const KEY_TYPE *kb)//returns false if it's a released key
-{//true if key is down that's bit 7(last aka MSB) is NOT set.
-        return (!(kb->ScanCode & 0x80));
-}
-*/
 /*****************************************************************************/
 
 int
@@ -112,10 +99,12 @@ WrapAround_Aware_Counter(int a_Head, int a_Tail, int a_WrapsAroundAt_MinusOne)
 
 /*****************************************************************************/
 EFunctionReturnTypes_t
-RemoveNextKeyFromBuffer(KEY_TYPE *into)
+MKeyboardInputInterface::MoveFirstFromBuffer(void *into)
 {
         if (gKeyBufTail != gKeyBufHead) {//aka non empty buffer
-                *into=gKeyBuf[gKeyBufHead];
+                LAME_PROGRAMMER_IF(into==NULL,
+                                return kFuncFailed);
+                *(KEY_TYPE *)into=gKeyBuf[gKeyBufHead];
                 /*into->ScanCode = gKeyBuf[gKeyBufHead].ScanCode;
                 into->Time = gKeyBuf[gKeyBufHead].Time;*/
                 //unnecessary clear
@@ -130,7 +119,7 @@ RemoveNextKeyFromBuffer(KEY_TYPE *into)
 /*****************************************************************************/
 
 int
-HowManyKeysInBuffer()
+MKeyboardInputInterface::HowManyInBuffer()
 {
         if (gKeyBufTail >= gKeyBufHead)
                 return gKeyBufTail-gKeyBufHead;
@@ -141,9 +130,9 @@ HowManyKeysInBuffer()
 /*****************************************************************************/
 
 bool
-IsKeyBufferFull()
+MKeyboardInputInterface::IsBufferFull()
 {
-        return (HowManyKeysInBuffer()==MAX_KEYS_BUFFERED-1);
+        return (HowManyInBuffer()==MAX_KEYS_BUFFERED-1);
 }
 
 /*****************************************************************************/
@@ -216,8 +205,45 @@ void LowLevelKeyboardInterruptHandler(int a_ScanCode)
 
 
 /*****************************************************************************/
-void
-UnInstallTimedKeyboard()
+EFunctionReturnTypes_t
+MKeyboardInputInterface::Alloc(void *&dest)
+{
+        dest=NULL;
+        dest=new KEY_TYPE;
+        ERR_IF(dest==NULL,
+                        return kFuncFailed);
+        return kFuncOK;
+}//alloc mem and set dest ptr to it
+
+EFunctionReturnTypes_t
+MKeyboardInputInterface::CopyContents(const void *&src,void *&dest)
+{
+        ERR_IF(src==NULL,
+                        return kFuncFailed);
+        ERR_IF(dest==NULL,
+                        return kFuncFailed);
+        *(KEY_TYPE *)dest=*(KEY_TYPE *)src;
+        PARANOID_IF(((KEY_TYPE *)src)->Time != ((KEY_TYPE *)dest)->Time,
+                        return kFuncFailed);
+        PARANOID_IF(((KEY_TYPE *)src)->ScanCode != ((KEY_TYPE *)dest)->ScanCode,
+                        return kFuncFailed);
+        return kFuncOK;
+}
+
+
+EFunctionReturnTypes_t
+MKeyboardInputInterface::DeAlloc(void *&dest)//freemem
+{
+        ERR_IF(dest==NULL,
+                        return kFuncFailed);
+        delete (KEY_TYPE *)dest;
+        dest=NULL;
+        return kFuncOK;
+}
+
+/*****************************************************************************/
+EFunctionReturnTypes_t
+MKeyboardInputInterface::UnInstall()
 {
         keyboard_lowlevel_callback=NULL;
         remove_int(TimerHandler);
@@ -226,18 +252,19 @@ UnInstallTimedKeyboard()
                 gKeys[i]=false;//no key pressed;
         }//for
         remove_keyboard();
+        return kFuncOK;
 }
 
 void
 ClearKeyBuffer()
 {
-        gLostKeysDueToClearBuf+=HowManyKeysInBuffer();
+        gLostKeysDueToClearBuf+=AllLowLevelInputs[kKeyboardInputType]->HowManyInBuffer();
         gKeyBufHead=gKeyBufTail;
 }
 
 /*****************************************************************************/
 EFunctionReturnTypes_t
-InstallTimedKeyboard(int a_Flags, int a_KeyboardTimerFreq)
+MKeyboardInputInterface::Install(const Passed_st *a_Params)
 {
         gLostKeysReleased=gLostKeysPressed=0;
         LOCK_VARIABLE(gLostKeysPressed);
@@ -267,11 +294,12 @@ InstallTimedKeyboard(int a_Flags, int a_KeyboardTimerFreq)
                 return kFuncFailed;
               );
 
-        if (a_Flags & kRealKeyboardTimer) {
-                if (a_KeyboardTimerFreq <= 0)
-                        a_KeyboardTimerFreq = DEFAULT_KEYBOARD_TIMER_FREQ_PER_SECOND;
+        if (a_Params->fKeyFlags & kRealKeyboardTimer) {
+                int freq=a_Params->fKeyTimerFreq;
+                if (freq <= 0)
+                        freq = DEFAULT_KEYBOARD_TIMER_FREQ_PER_SECOND;
                 ERR_IF(install_int_ex(TimerHandler,
-                                        BPS_TO_TIMER(a_KeyboardTimerFreq)),
+                                        BPS_TO_TIMER(freq)),
                         return kFuncFailed;
                       );
         }//fi
@@ -280,7 +308,7 @@ InstallTimedKeyboard(int a_Flags, int a_KeyboardTimerFreq)
                 return kFuncFailed;
               );
 
-        if (a_Flags & kRealKeyboard)
+        if (a_Params->fKeyFlags & kRealKeyboard)
                 keyboard_lowlevel_callback = LowLevelKeyboardInterruptHandler;
 
         key_led_flag=0;//don't update keyboard LEDs
@@ -296,5 +324,17 @@ GetKeyName(const KEY_TYPE *kb)
 
 
 /*****************************************************************************/
+EFunctionReturnTypes_t
+MKeyboardInputInterface::Compare(void *what, void *withwhat, int &result)
+{//'what' is a pointer to KEY_TYPE
+        //FIXME:
+        if ( ((KEY_TYPE *)what)->ScanCode == ((KEY_TYPE *)withwhat)->ScanCode){
+                result=0;//equal
+        }//fi
+        else result=-1;//less than equal
+
+        return kFuncOK;
+}
+
 /*****************************************************************************/
 /*****************************************************************************/

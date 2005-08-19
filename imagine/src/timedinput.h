@@ -32,30 +32,73 @@
 //of keyboard unit, then mouse_move_up on mouse unit, not knowing which input
 //came first not to mention that between A and B there was the mouse motion.
 
-#define USING_COMMON_INPUT_BUFFER //before the two includes
-#include "timedmouse.h"
-#include "timedkeys.h"
 #include "pnotetrk.h"
+
+enum {
+        kKeyboardInputType
+        ,kMouseInputType
+//last:
+        ,kMaxInputTypes
+};
+
+struct Passed_st {//a ptr to this struct is passed when calling Install(..)
+        int fKeyFlags;
+        int fKeyTimerFreq;
+        int fMouseFlags;
+        int fMouseTimerFreq;
+};
+
+
+class TBaseInputInterface {
+public:
+        TBaseInputInterface(){};
+        virtual ~TBaseInputInterface(){};
+
+        //removes it from buffer
+        virtual EFunctionReturnTypes_t
+        MoveFirstFromBuffer(void *into)=0;
+
+        virtual int
+        HowManyInBuffer()=0;
+
+        virtual bool
+        IsBufferFull()=0;
+
+        virtual EFunctionReturnTypes_t
+        UnInstall()=0;
+
+        virtual EFunctionReturnTypes_t
+        Alloc(void *&dest)=0;//alloc mem and set dest ptr to it
+
+        virtual EFunctionReturnTypes_t
+        DeAlloc(void *&dest)=0;//freemem
+
+        virtual EFunctionReturnTypes_t
+        CopyContents(const void *&src,void *&dest)=0;
+
+        virtual EFunctionReturnTypes_t
+        Install(const Passed_st *a_Params)=0;
+
+        virtual EFunctionReturnTypes_t
+        Compare(void *what, void *withwhat, int &result)=0;
+
+};//class
+
+extern TBaseInputInterface *AllLowLevelInputs[kMaxInputTypes];//array of pointers
+
+#define USING_COMMON_INPUT_BUFFER //anywhere since timedinput.h is included in:
+#include "timedmouse.h" //for constants only
+#include "timedkeys.h"
 
 
 #define MAX_INPUT_EVENTS_BUFFERED (MAX_MOUSE_EVENTS_BUFFERED+MAX_KEYS_BUFFERED)
 #define INPUT_TYPE InputWithTimer_st
-enum {
-        kNoInputType=0
-        ,kMouseInputType
-        ,kKeyboardInputType
-//last:
-        ,kMaxInputTypes
-};
+
 struct INPUT_TYPE {
         int type;
         int how_many;
-//public:
-        //INPUT_TYPE & operator=(const INPUT_TYPE & source);
         INPUT_TYPE& operator=(const INPUT_TYPE & source);
         INPUT_TYPE& operator=(const volatile INPUT_TYPE & source);
-
-        //volatile INPUT_TYPE & operator=(const INPUT_TYPE & source);
 };
 
 
@@ -63,28 +106,30 @@ struct INPUT_TYPE {
 #ifdef DISCREETE_CLEARENCE
 extern volatile INPUT_TYPE gInputBuf[MAX_INPUT_EVENTS_BUFFERED];
 extern volatile int gInputBufTail;
-extern volatile int gInputBufPrevTail;//last Tail
+extern volatile int gInputBufPrevTail;//last Tail, used to cumulate input
 extern int gInputBufHead;
 #endif
 extern volatile int gLostInput[kMaxInputTypes];
 
 
 EFunctionReturnTypes_t
-RemoveNextInputFromBuffer(INPUT_TYPE *into);
+MoveFirstGroupFromBuffer(INPUT_TYPE *into);
 
 int
-HowManyInputsInBuffer();
+HowManyDifferentInputsInBuffer();
 
 bool
-IsInputBufferFull();
-
-void
-UnInstallTimedInput();
+IsBufferFull();//of many different inputs? (consecutively different)
 
 EFunctionReturnTypes_t
-InstallTimedInput(int a_Flags, int a_KeyboardTimerFreq, int a_MouseTimerFreq);
+UnInstallAllInputs();
 
-inline void
+EFunctionReturnTypes_t
+InstallAllInputs(const Passed_st *a_Params);
+
+
+
+void
 ToCommonBuf(int input_type);
 
 #endif

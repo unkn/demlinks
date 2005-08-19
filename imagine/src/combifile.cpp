@@ -33,9 +33,8 @@
 /*****************************************************************************/
 
 #include "combifile.h"
-//#include "pnotetrk.h"
+#include "pnotetrk.h"
 #include "genericinput.h"
-//#include "input.h"
 
 
 /*****************************************************************************/
@@ -85,6 +84,8 @@ TFacileFile::Close()
 EFunctionReturnTypes_t
 TFacileFile::LoadAll(int a_AllocatedActions, int a_MaxTriggers)
 {
+        //FIXME
+/*
         //allocate and init them all
         int howmanyonfile=0;
         ERR_IF(kFuncOK != adv_read_int(&howmanyonfile),
@@ -103,12 +104,6 @@ TFacileFile::LoadAll(int a_AllocatedActions, int a_MaxTriggers)
 
         int onfile_Input2ActAction;//for current action
         //see         Act_st Act[kMaxTriggers];
-        /*
-         * enum {
-         *         kInput2ActivateAction=0,
-         *                 kInput2DeactivateAction
-                ,kMaxTriggers};
-         * */
         ERR_IF(kFuncOK != adv_read_int(&onfile_Input2ActAction),
                         return kFuncFailed);
         ERR_IF( onfile_Input2ActAction != a_MaxTriggers,
@@ -138,20 +133,11 @@ for (int i=0;i<a_AllocatedActions;i++) {
                                  temp.CombiVars[kHowManyType][kMouseInt]*
                                  sizeof(temp.CombiMouseBuf[0])),
                                 return kFuncFailed);
-                /* read from disk into <temp> then:*/
+                // read from disk into <temp> then:
                 AllActions[i]->Act[k]=temp;
-                /*
-                AllActions[i]->SetCombiInputBuf(k,
-                                temp.CombiInputBuf,
-                                temp.CombiVars[kHowManyType][kInputInt]);
-                AllActions[i]->SetCombiKeyBuf(k,
-                                temp.CombiKeyBuf,
-                                temp.CombiVars[kHowManyType][kKeyInt]);
-                AllActions[i]->SetCombiMouseBuf(k,
-                                temp.CombiMouseBuf,
-                                temp.CombiVars[kHowManyType][kMouseInt]);*/
         }//for2
 }//for1
+*/
         return kFuncOK;
 }
 /*****************************************************************************/
@@ -198,6 +184,8 @@ TFacileFile::SaveAllInOne(
 EFunctionReturnTypes_t
 TFacileFile::SaveAll(int a_AllocatedActions, int a_MaxTriggers)
 {
+//FIXME:
+/*
         //allocate and init them all
         LAME_PROGRAMMER_IF( kAllocatedActions != a_AllocatedActions,
                         return kFuncFailed);
@@ -214,24 +202,15 @@ for (int i=0;i<a_AllocatedActions;i++) {
 
         for (int k=0;k<a_MaxTriggers;k++) {
                 Act_st temp=AllActions[i]->Act[k];
-                /*printf("!%d/%d %d %d ptr(%p)!\n",i,k,
-                                temp.CombiVars[kHowManyType][kInputInt],
-                                AllActions[i]->Act[k].CombiVars[kHowManyType][kInputInt],
-                                AllActions[i]->Act
-                                );*/
                 //first one must be defined(first=activateAction)
                 PARANOID_IF((k==0)&&(temp.CombiVars[kHowManyType][kInputInt] <=0),
                                 return kFuncFailed);
                 ERR_IF(kFuncOK != adv_save_int(&temp.CombiVars[kHowManyType][kInputInt]),
                                 return kFuncFailed);
 
-                /*PARANOID_IF(temp.CombiVars[kHowManyType][kKeyInt] <=0,
-                                return kFuncFailed);*/
                 ERR_IF(kFuncOK != adv_save_int(&temp.CombiVars[kHowManyType][kKeyInt]),
                                 return kFuncFailed);
 
-/*                PARANOID_IF(temp.CombiVars[kHowManyType][kMouseInt] <=0,
-                                return kFuncFailed);*/
                 ERR_IF(kFuncOK != adv_save_int(&temp.CombiVars[kHowManyType][kMouseInt]),
                                 return kFuncFailed);
                 ERR_IF(kFuncOK !=
@@ -252,6 +231,7 @@ for (int i=0;i<a_AllocatedActions;i++) {
 
         }//for2
 }//for1
+*/
         return kFuncOK;
 }
 /*****************************************************************************/

@@ -28,117 +28,31 @@
 #include <allegro.h>
 
 #include "_gcdefs.h"
-
-#ifdef KEYDEBUG
-        #define DISCREETE_CLEARENCE
-        #include "timedinput.h"
-#endif
-
-#include "common.h"
-#include "init.h"
-#include "input.h"
-#include "excamera.h"
 #include "pnotetrk.h"
 
-volatile bool quit_flag=false;
+#include "consts.h"
+
+#include "fps.h"
+#include "init.h"
+#include "input.h"
+#include "camera.h"
+#include "excamera.h"
+#include "flags.h"
+
+//rest(x) when no input, reduces cpu cycles inside loop
+#define IDLE_TIME_IN_LOOP 100
+
 bool need_screen_refresh=true;//first time display screen
 
 
-#ifdef KEYDEBUG
-void doom()
-{
-                KEY_TYPE into;
-      //          MOUSE_TYPE intomouse;
-
-                acquire_screen();
-                clear_to_color(screen,makecol(0,0,0));
-
-                //keybd input
-                textprintf_ex(screen,font,
-                                gKeyBufHead*8,0,
-                                makecol(255,255,255),makecol(0,0,0),
-                                "H%d",gKeyBuf[gKeyBufHead].Time);
-                for (int i=0; i<MAX_KEYS_BUFFERED; i++) {
-                        into.ScanCode=gKeyBuf[i].ScanCode;
-                        into.Time=gKeyBuf[i].Time;
-                        textprintf_ex(screen,font,
-                                i*8,8,
-                                makecol(255,255,255),makecol(0,0,0),
-                                "%s",GetKeyName(&into));
-                }//for
-                textprintf_ex(screen,font,
-                                gKeyBufTail*8,16,
-                                makecol(255,255,255),makecol(0,0,0),
-                                "T%d",gKeyBuf[gKeyBufTail].Time);
-                textprintf_ex(screen,font,
-                                gKeyBufTail*8,24,
-                                makecol(255,255,255),makecol(0,0,0),
-                                "LostPresses/Releases : %d/%d",
-                                gLostKeysPressed,gLostKeysReleased);
-                //mouse input
-                textprintf_ex(screen,font,
-                                gMouseBufHead*8*4,32,
-                                makecol(255,255,255),makecol(0,0,0),
-                                "H%d",gMouseBuf[gMouseBufHead].Time);
-                for (int i=0; i<MAX_MOUSE_EVENTS_BUFFERED; i++) {
-                        volatile MOUSE_TYPE *shit=&gMouseBuf[i];
-                        textprintf_ex(screen,font,
-                                i*8*4,40,
-                                makecol(255,255,255),makecol(0,0,0),
-                                "%d",shit->Flags);
-                }//for
-                textprintf_ex(screen,font,
-                                gMouseBufTail*8*4,48,
-                                makecol(255,255,255),makecol(0,0,0),
-                                "T%d",gMouseBuf[gMouseBufTail].Time);
-                textprintf_ex(screen,font,
-                                0,56,
-                                makecol(255,255,255),makecol(0,0,0),
-                                "LostMouseEvents : %d",
-                                gLostMouseEvents);
-
-                //common input
-                textprintf_ex(screen,font,
-                                gInputBufHead*8*4,64,
-                                makecol(255,255,255),makecol(0,0,0),
-                                "H%d",gInputBuf[gInputBufHead].type);
-                for (int i=0; i<MAX_INPUT_EVENTS_BUFFERED; i++) {
-                        volatile INPUT_TYPE *shit=&gInputBuf[i];
-                        textprintf_ex(screen,font,
-                                i*8*4,72,
-                                makecol(255,255,255),makecol(0,0,0),
-                                "%d",shit->how_many);
-                }//for
-                textprintf_ex(screen,font,
-                                gInputBufTail*8*4,80,
-                                makecol(255,255,255),makecol(0,0,0),
-                                "T%d",gInputBuf[gInputBufTail].type);
-                textprintf_ex(screen,font,
-                                0,88,
-                                makecol(255,255,255),makecol(0,0,0),
-                                "LostInputEvents key/mouse : %d/%d",
-                                gLostInput[kKeyboardInputType],
-                                gLostInput[kMouseInputType]
-                                );
-
-                textprintf_ex(screen,font,
-                                0,100,
-                                makecol(255,255,255),makecol(0,0,0),
-                                "HowManyInputsInBuffer() : %d",
-                                HowManyInputsInBuffer()
-                                );
-
-                release_screen();
-
-}
-#endif
 
 int main(void)
 {
-        EXIT_IF(kFuncOK != init());
+        EXIT_IF(kFuncOK != Init());
 
-   while (!quit_flag) {
+   while (!Flag(kF_QuitProgram)) {
         EXIT_IF(kFuncOK != Executant());
+
 
         bool need_screen_refresh=false;
         for (int i=0;i<NUM_CAMS;i++){
@@ -165,19 +79,15 @@ int main(void)
 
       framecount++;
 
-#ifdef KEYDEBUG
-        doom();
-        ShowAllNotifications();
-#endif
-
 
    }//while not quitting
 
-   destroy_bitmap(buffer);
-#ifdef BMPCROSS
-   destroy_bitmap(tex);
-#endif
-   //allegro_exit();
+
+   EXIT_IF(kFuncOK!=DeInit());
+
+   //allegro_exit(); bad idea, since bugs inside
+
+   INFO(normal exit);
    return 0;
 
 }

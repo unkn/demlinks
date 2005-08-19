@@ -24,11 +24,25 @@
 * Description: 
 *
 ****************************************************************************/
- 
+
 #include "allegro.h"
 
+#define DISCREETE_CLEARENCE
 #include "consts.h"
+#include "camera.h"
+#include "excamera.h"
+#include "fps.h"
 #include "square.h"
+#include "timedinput.h"
+#include "actions.h"
+
+
+#define GRID_SIZEX    MAX_KEYS_BUFFERED
+
+#define TILE_SIZE    1.0f
+
+//temp
+int global_select=3;
 
 /* render a tile of the grid which is centered on x and z(world-space)
    with center vertex x,y,z
@@ -49,21 +63,21 @@ void draw_square(BITMAP *bmp, MATRIX_f *camera, int x, int y,int z)
    }
 
    /* set up four vertices with the world-space position of the tile */
-   v[0]->x = x - GRID_SIZE/2;
+   v[0]->x = x - GRID_SIZEX/2;
    v[0]->y = y;
-   v[0]->z = z - GRID_SIZE/2;
+   v[0]->z = z - GRID_SIZEY/2;
 
-   v[1]->x = x - GRID_SIZE/2 + TILE_SIZE;
+   v[1]->x = x - GRID_SIZEX/2 + TILE_SIZE;
    v[1]->y = y;
-   v[1]->z = z - GRID_SIZE/2;
+   v[1]->z = z - GRID_SIZEY/2;
 
-   v[2]->x = x - GRID_SIZE/2 + TILE_SIZE;
+   v[2]->x = x - GRID_SIZEX/2 + TILE_SIZE;
    v[2]->y = y;
-   v[2]->z = z - GRID_SIZE/2 + TILE_SIZE;
+   v[2]->z = z - GRID_SIZEY/2 + TILE_SIZE;
 
-   v[3]->x = x - GRID_SIZE/2;
+   v[3]->x = x - GRID_SIZEX/2;
    v[3]->y = y;
-   v[3]->z = z - GRID_SIZE/2 + TILE_SIZE;
+   v[3]->z = z - GRID_SIZEY/2 + TILE_SIZE;
 
            /*v[0]->u=0;
            v[0]->v=0;
@@ -190,8 +204,8 @@ void draw_squareS(BITMAP *bmp,MATRIX_f *camera)
 {
    /* draw the grid of squares */
         int y=0;
-   for (int x=0; x<GRID_SIZE; x++)
-      for (int z=0; z<GRID_SIZE; z++)
+   for (int x=0; x<GRID_SIZEX; x++)
+      for (int z=0; z<GRID_SIZEY; z++)
          draw_square(bmp,
                          camera,
                          x,
@@ -200,16 +214,16 @@ void draw_squareS(BITMAP *bmp,MATRIX_f *camera)
 
 
 
-V3D_f tempex[GRID_SIZE*GRID_SIZE+1];
+V3D_f tempex[GRID_SIZEX*GRID_SIZEY+1];
 
         int ofs=-1;
-   for (int x=0; x<GRID_SIZE; x++)
-      for (int z=0; z<GRID_SIZE; z++) {
+   for (int x=0; x<GRID_SIZEX; x++)
+      for (int z=0; z<GRID_SIZEY; z++) {
               ofs++;
       apply_matrix_f(camera,
-                      x-GRID_SIZE/2+TILE_SIZE/2
+                      x-GRID_SIZEX/2+TILE_SIZE/2
                       ,y
-                      ,z-GRID_SIZE/2+TILE_SIZE/2
+                      ,z-GRID_SIZEY/2+TILE_SIZE/2
                       ,
                       &tempex[ofs].x,
                       &tempex[ofs].y,
@@ -220,10 +234,10 @@ V3D_f tempex[GRID_SIZE*GRID_SIZE+1];
       }//fors
 
    //sort by depth
-   int tar=ofs;
-   qsort(&tempex,tar+1,sizeof(V3D_f),(int (*)(const void*, const void*))compar);
+   int tar=ofs+1;
+   qsort(&tempex,tar,sizeof(V3D_f),(int (*)(const void*, const void*))compar);
 
-   for (int ofs=0;ofs<tar+1;ofs++) {
+   for (int ofs=0;ofs<tar;ofs++) {
       persp_project_f(
                       tempex[ofs].x,//3dx
                       tempex[ofs].y,//3dy
@@ -237,17 +251,175 @@ V3D_f tempex[GRID_SIZE*GRID_SIZE+1];
                       xf+2,
                       yf+2,
                       makecol(255,0,0));*/
-        if (tempex[ofs].z>0.1)//in our view not behind us
+#define easy2(_cond_,_shit_,...)  {\
+        if ((_cond_)&&(ofs>=(initial)*GRID_SIZEX)         \
+                &&(ofs<(initial+1)*GRID_SIZEX)) {       \
+                        textprintf_centre_ex(bmp,font, \
+                        (int)tempex[ofs].x, \
+                        (int)tempex[ofs].y, \
+                        makecol(255,255,255),makecol(0,0,0), \
+                        _shit_,__VA_ARGS__ ); \
+        } \
+        initial++; \
+}
+#define easy(_shit_,...)  {\
+        if ((ofs>=(initial)*GRID_SIZEX)         \
+                &&(ofs<(initial+1)*GRID_SIZEX)) {       \
+                        textprintf_centre_ex(bmp,font, \
+                        (int)tempex[ofs].x, \
+                        (int)tempex[ofs].y, \
+                        makecol(255,255,255),makecol(0,0,0), \
+                        _shit_,__VA_ARGS__ ); \
+        } \
+        initial++; \
+}
+#define easy3(_shit_,...) { \
+                now++;initial--; \
+                easy2(ofs==now,_shit_,__VA_ARGS__); \
+}
+
+        if (tempex[ofs].z>0.1) {//in our view not behind us
+switch (global_select) {
+case 0: {
+// this is ok:
                 textprintf_centre_ex(bmp,font,
                 (int)tempex[ofs].x,
                 (int)tempex[ofs].y,
-                   makecol(255,
-                           255,
-                           255),
+                   /*makecol((int)tempex[ofs].z*32 % 255,
+                           (int)tempex[ofs].z*8 % 255,
+                           255),*/
+                        makecol(255,255,255),
                    makecol(0,0,0),
                    "%.0f/%.0f",
                    tempex[ofs].u,
                    tempex[ofs].v);
+break;}
+case 1: {
+                KEY_TYPE into;
+                int ind=ofs % MAX_KEYS_BUFFERED;
+                into.ScanCode=gKeyBuf[ind].ScanCode;
+                into.Time=gKeyBuf[ind].Time;
+
+                int initial=0;
+
+                easy2((ofs % GRID_SIZEY) == gKeyBufHead,
+                        "KHEAD%d",gKeyBufHead);
+
+                easy("%d",into.Time);
+                easy("%s%s",
+                        GetKeyName(&into),
+                        ISPRESSED(into.ScanCode)?"_":"~"
+                        );
+
+                easy2((ofs % GRID_SIZEY) == gKeyBufTail,
+                        "KTAIL%d",gKeyBufTail);
+
+                easy2((ofs % GRID_SIZEY) == gMouseBufHead,
+                        "MHEAD%d",gMouseBufHead);
+
+                int indm= ofs % MAX_MOUSE_EVENTS_BUFFERED;
+                //BUG here, def and assignment fails, they've to be split
+                MOUSE_TYPE mous;
+                mous=gMouseBuf[indm];
+                easy("%d",mous.Time);
+                easy("%d",mous.MickeyX);
+                easy("%d",mous.MickeyY);
+                easy("%d",mous.Flags);
+
+                easy2((ofs % GRID_SIZEY) == gMouseBufTail,
+                        "MTAIL%d",gMouseBufTail);
+break;}
+case 2: {
+                int initial=0;
+                int now=(initial)*GRID_SIZEX;
+                easy2(ofs==now,"LostKP/R:%d/%d",
+                        gLostKeysPressed,
+                        gLostKeysReleased);
+                now+=2;initial--;
+                easy2(ofs==now,"LostMouse:%d",
+                                gLostMouseEvents);
+                now+=2;initial--;
+
+                easy2(ofs==now,"FPS:%d",fps);
+                now++;initial--;
+                easy2(ofs==now,"CAM:%d/%d",current_cam,NUM_CAMS-1);
+
+        MProjectedCamera *mycam=&cams[current_cam];
+                easy3("%s","AspectR");
+                easy3("%.2f",mycam->GetAspect());
+                easy3("%s","FOV");
+                easy3("%d",mycam->GetFOV());
+                initial+=1;
+                now=(initial-1)*GRID_SIZEX-1;
+                easy3("%s","ViewportW");
+                easy3("%d",mycam->GetW());
+                easy3("%s","ViewportH");
+                easy3("%d",mycam->GetH());
+
+   float xf,yf,zf,xu,yu,zu;
+   mycam->GetFrontVector(&xf,&yf,&zf);
+   mycam->GetUpVector(&xu,&yu,&zu);
+      float xpos,ypos,zpos;
+         mycam->GetPos(&xpos,&ypos,&zpos);
+
+
+                initial+=1;
+                now=(initial-1)*GRID_SIZEX-1;
+                easy3("%s","POS");
+                easy3("X:%.2f",xpos);
+                easy3("Y:%.2f",ypos);
+                easy3("Y:%.2f",zpos);
+                initial+=1;
+                now=(initial-1)*GRID_SIZEX-1;
+                easy3("%s","UPvect");
+                easy3("X:%.2f",xu);
+                easy3("Y:%.2f",yu);
+                easy3("Y:%.2f",zu);
+                initial+=1;
+                now=(initial-1)*GRID_SIZEX-1;
+                easy3("%s","FRvect");
+                easy3("X:%.2f",xf);
+                easy3("Y:%.2f",yf);
+                easy3("Y:%.2f",zf);
+break;}
+case 3: {
+                int initial=1;
+                int now=(initial-1)*GRID_SIZEX-1;
+                easy3("Size of GenericInputBuffer:%d",
+                                GenericInputBuffer.GetSize());
+                now=(initial-1)*GRID_SIZEX-1;
+                easy2((ofs % GRID_SIZEY) == GenericInputBuffer.fHead,
+                        "GHEAD%d",GenericInputBuffer.fHead);
+                easy("%d",GenericInputBuffer.Buffer[ofs % GRID_SIZEY].Significant);
+                easy2((ofs % GRID_SIZEY) == GenericInputBuffer.fTail,
+                        "GTAIL%d",GenericInputBuffer.fTail);
+
+                initial+=1;
+                now=(initial-1)*GRID_SIZEX+1;
+                easy3("Size of ActionsInputBuffer:%d",
+                                ActionsInputBuffer.GetSize());
+                now=(initial-1)*GRID_SIZEX-1;
+                easy2((ofs % GRID_SIZEY) == ActionsInputBuffer.fHead,
+                        "AHEAD%d",ActionsInputBuffer.fHead);
+                easy("%d",ActionsInputBuffer.Buffer[ofs % GRID_SIZEY].Significant);
+                easy2((ofs % GRID_SIZEY) == ActionsInputBuffer.fTail,
+                        "ATAIL%d",ActionsInputBuffer.fTail);
+
+                initial+=1;
+                now=(initial-1)*GRID_SIZEX+1;
+                easy3("SLLArray_st GI_StrictOrderSLL[kMaxInputTypes=%d]",
+                                kMaxInputTypes);
+                now=(initial-1)*GRID_SIZEX-1;
+                easy2((ofs % GRID_SIZEY) == 5*(ofs % kMaxInputTypes),
+                        "GI_StrictOrderSLL[%d].HowManySoFar=%d",
+                                ofs % kMaxInputTypes,
+                           GI_StrictOrderSLL[ofs % kMaxInputTypes].HowManySoFar);
+break;}
+default: {
+        ERR(undefined yet);
+         }
+}//switch
+        }//fi visible
       }//for
 }//func
 

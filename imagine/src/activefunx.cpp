@@ -28,12 +28,17 @@
 #include <math.h>
 
 #include "_gcdefs.h"
+#include "pnotetrk.h"
 
 /*****************************************************************************/
-#include "common.h"
 #include "activefunx.h"
-#include "pnotetrk.h"
+#include "consts.h"
+
+#include "camera.h"
 #include "excamera.h"
+#include "actions.h"
+#include "flags.h"
+
 //macros
 #define FOR_ALL_ACTIVE_CAMS(a_statements)      \
 { \
@@ -46,44 +51,58 @@
         }              \
 }
 
-#define MOM_DECL(_what_) \
-        activation_funcs[_what_]=_what_##_a_func; \
-        deactivation_funcs[_what_]=nothing_func;
-
+#define SETME(_what_) \
+        ERR_IF(Functions[_what_]!=NULL, \
+                        return kFuncFailed); \
+        Functions[_what_] = _what_##_;
+/*****************************************************************************/
 
 
 //functions:
-
 /*****************************************************************************/
-void nothing_func() {
-        //supposed to do nothing
-}
 /*****************************************************************************/
-void quit(void){
+EFunctionReturnTypes_t
+kAI_QuitProgram_()
+{
         INFO(quit);
-        quit_flag=true;
+        ERR_IF(kFuncOK!=SetFlag(kF_QuitProgram),
+                        return kFuncFailed);
+        return kFuncOK;
 }
 /*****************************************************************************/
-void  kHold1Key_a_func() {
-        Hold1_Key=true;
+EFunctionReturnTypes_t
+kAI_Hold1KeyPress_()
+{
+        ERR_IF(kFuncOK!=SetFlag(kF_Hold1Key),
+                        return kFuncFailed);
+        return kFuncOK;
 }
 /*****************************************************************************/
-void  kHold1Key_d_func() {
-        Hold1_Key=false;
+EFunctionReturnTypes_t
+kAI_Hold1KeyRelease_()
+{
+        ERR_IF(kFuncOK!=ClearFlag(kF_Hold1Key),
+                        return kFuncFailed);
+        return kFuncOK;
 }
 /*****************************************************************************/
-void kIncFOV_a_func() {
-        if (!Hold1_Key)
+EFunctionReturnTypes_t
+kAI_FOV_()
+{
+        if (!Flag(kF_Hold1Key))
                 FOR_ALL_ACTIVE_CAMS(cam->IncFOV(1))
         else
                 FOR_ALL_ACTIVE_CAMS(cam->IncFOV(-1))
+        return kFuncOK;
 }
 /*****************************************************************************/
-void kIncAspect_a_func() {
+EFunctionReturnTypes_t
+kAI_Aspect_()
+{
                 double frac, iptr;
 FOR_ALL_ACTIVE_CAMS(
                 frac = modf(cam->GetAspect()*10.0, &iptr);
-        if (!Hold1_Key) {//inc
+        if (!Flag(kF_Hold1Key)) {//inc
                         if ((frac>0.59) && (frac<0.61))
                                 cam->IncAspect(0.04f);
                         else
@@ -96,6 +115,7 @@ FOR_ALL_ACTIVE_CAMS(
                                 cam->IncAspect(-0.03f);
         }//else
 );
+        return kFuncOK;
 }
 /*****************************************************************************/
 /*****************************************************************************/
@@ -103,8 +123,10 @@ FOR_ALL_ACTIVE_CAMS(
 /*****************************************************************************/
 
 /*****************************************************************************/
-void kLeftSlideCam_a_func() {
-        if (!Hold1_Key) {//left slide cam
+EFunctionReturnTypes_t
+kAI_CamSlideLeft_()
+{
+        if (!Flag(kF_Hold1Key)) {//left slide cam
                 FOR_ALL_ACTIVE_CAMS(
                         cam->SlideHoriz(SLIDE_SPEED);
                 );
@@ -114,10 +136,13 @@ void kLeftSlideCam_a_func() {
                         cam->SlideView(-SLIDEVIEW_AMMOUNT,0);
                 );
         }//else
+        return kFuncOK;
 }
 /*****************************************************************************/
-void kRightSlideCam_a_func() {
-        if (!Hold1_Key) {//right slide cam
+EFunctionReturnTypes_t
+kAI_CamSlideRight_()
+{
+        if (!Flag(kF_Hold1Key)) {//right slide cam
                 FOR_ALL_ACTIVE_CAMS(
                         cam->SlideHoriz(-SLIDE_SPEED);
                 );
@@ -127,10 +152,13 @@ void kRightSlideCam_a_func() {
                         cam->SlideView(+SLIDEVIEW_AMMOUNT,0);
                 );
         }//else
+        return kFuncOK;
 }
 /*****************************************************************************/
-void kUpSlideCam_a_func() {
-        if (!Hold1_Key) {//up slide cam
+EFunctionReturnTypes_t
+kAI_CamSlideUp_()
+{
+        if (!Flag(kF_Hold1Key)) {//up slide cam
                 FOR_ALL_ACTIVE_CAMS(
                         cam->SlideVert(SLIDE_SPEED););
         } else {//up slide view
@@ -138,10 +166,13 @@ void kUpSlideCam_a_func() {
                         cam->SlideView(0,-SLIDEVIEW_AMMOUNT);
                 );
         }//else
+        return kFuncOK;
 }
 /*****************************************************************************/
-void kDownSlideCam_a_func() {
-        if (!Hold1_Key) {//down slide cam
+EFunctionReturnTypes_t
+kAI_CamSlideDown_()
+{
+        if (!Flag(kF_Hold1Key)) {//down slide cam
                 FOR_ALL_ACTIVE_CAMS(
                         cam->SlideVert(-SLIDE_SPEED););
         } else { //down slide view
@@ -149,10 +180,13 @@ void kDownSlideCam_a_func() {
                         cam->SlideView(0,+SLIDEVIEW_AMMOUNT);
                 );
         }//else
+        return kFuncOK;
 }
 /*****************************************************************************/
-void kLeftTurnCam_a_func() {
-        if (!Hold1_Key) {//turn left cam
+EFunctionReturnTypes_t
+kAI_CamTurnLeft_()
+{
+        if (!Flag(kF_Hold1Key)) {//turn left cam
         FOR_ALL_ACTIVE_CAMS(
                 cam->Turn(-TURN_SPEED););
         } else {//shrink left view
@@ -160,10 +194,13 @@ void kLeftTurnCam_a_func() {
                         cam->EnlargeView(-ENLARGEVIEW_AMMOUNT,0);
                         );
         }//else
+        return kFuncOK;
 }
 /*****************************************************************************/
-void kRightTurnCam_a_func() {
-        if (!Hold1_Key) {//turn right cam
+EFunctionReturnTypes_t
+kAI_CamTurnRight_()
+{
+        if (!Flag(kF_Hold1Key)) {//turn right cam
                 FOR_ALL_ACTIVE_CAMS(
                         cam->Turn(+TURN_SPEED););
         } else {//enlarge right view
@@ -171,10 +208,13 @@ void kRightTurnCam_a_func() {
                         cam->EnlargeView(ENLARGEVIEW_AMMOUNT,0);
                         );
         }//else
+        return kFuncOK;
 }
 /*****************************************************************************/
-void kUpPitchCam_a_func() {
-        if (!Hold1_Key) {//pitch up cam
+EFunctionReturnTypes_t
+kAI_CamPitchUp_()
+{
+        if (!Flag(kF_Hold1Key)) {//pitch up cam
                 FOR_ALL_ACTIVE_CAMS(
                         cam->Pitch(TURN_SPEED);
                         );
@@ -183,10 +223,13 @@ void kUpPitchCam_a_func() {
                         cam->EnlargeView(0,-ENLARGEVIEW_AMMOUNT);
                         );
         }//else
+        return kFuncOK;
 }
 /*****************************************************************************/
-void kDownPitchCam_a_func() {
-        if (!Hold1_Key) {//pitch down cam
+EFunctionReturnTypes_t
+kAI_CamPitchDown_()
+{
+        if (!Flag(kF_Hold1Key)) {//pitch down cam
                 FOR_ALL_ACTIVE_CAMS(
                         cam->Pitch(-TURN_SPEED);
                         );
@@ -195,32 +238,51 @@ void kDownPitchCam_a_func() {
                         cam->EnlargeView(0,ENLARGEVIEW_AMMOUNT);
                         );
         }//else
+        return kFuncOK;
 }
 /*****************************************************************************/
-void kLeftRollCam_a_func() {
+EFunctionReturnTypes_t
+kAI_CamRollLeft_()
+{
         FOR_ALL_ACTIVE_CAMS(
                         cam->Roll(+TURN_SPEED);
                         );
+        return kFuncOK;
 }
 /*****************************************************************************/
-void kRightRollCam_a_func() {
+EFunctionReturnTypes_t
+kAI_CamRollRight_()
+{
         FOR_ALL_ACTIVE_CAMS(
                         cam->Roll(-TURN_SPEED);
                         );
+        return kFuncOK;
 }
 /*****************************************************************************/
-void kForwardSlideCam_a_func() {
+EFunctionReturnTypes_t
+kAI_CamSlideForward_()
+{
         FOR_ALL_ACTIVE_CAMS(
                         cam->Advance(THRUST_SPEED);
                         );
+        return kFuncOK;
 }
 /*****************************************************************************/
-void kBackwardSlideCam_a_func() {
+EFunctionReturnTypes_t
+kAI_CamSlideBackward_()
+{
         FOR_ALL_ACTIVE_CAMS(
                         cam->Advance(-THRUST_SPEED);
                         );
+        return kFuncOK;
 }
 /*****************************************************************************/
+EFunctionReturnTypes_t
+kAI_Undefined_()
+{
+        ERR(this was never supposed to be called);
+        return kFuncFailed;
+}
 /*****************************************************************************/
 
 /*****************************************************************************/
@@ -233,43 +295,52 @@ void kBackwardSlideCam_a_func() {
 /*****************************************************************************/
 /*****************************************************************************/
 /*****************************************************************************/
+
+//FIXME:temp
+extern int global_select;
+#define GLOBALMAX 4
+
+EFunctionReturnTypes_t
+kAI_NextSetOfValues_()
+{
+        global_select=(global_select+1)% GLOBALMAX;
+        return kFuncOK;
+}
 /*****************************************************************************/
 EFunctionReturnTypes_t
-InitFunx()
+InitFunctions()
 {
-        for (int i=0;i<kAllocatedActions;i++)
-                deactivation_funcs[i]=NULL;//safer init
+        for (int i=0;i<kMaxAIs;i++) {
+                Functions[i]=NULL;//safer init
+        }//for
 
-        activation_funcs[kActQuit]=quit;
-        activation_funcs[kToggleCurCam]=ToggleCurrentCam;
-        activation_funcs[kChooseNextCam]=ChooseNextCam;
-        activation_funcs[kHold1_Key]=kHold1Key_a_func;
-        deactivation_funcs[kHold1_Key]=kHold1Key_d_func;
-
-        MOM_DECL(kIncFOV);
-        MOM_DECL(kIncAspect);
-        //MOM_DECL(kLeftSlideView);
-        //MOM_DECL(kRightSlideView);
-        //MOM_DECL(kUpSlideView);
-        //MOM_DECL(kDownSlideView);
-        MOM_DECL(kLeftSlideCam);
-        MOM_DECL(kRightSlideCam);
-        MOM_DECL(kUpSlideCam);
-        MOM_DECL(kDownSlideCam);
-        MOM_DECL(kLeftTurnCam);
-        MOM_DECL(kRightTurnCam);
-        MOM_DECL(kUpPitchCam);
-        MOM_DECL(kDownPitchCam);
-        MOM_DECL(kLeftRollCam);
-        MOM_DECL(kRightRollCam);
-        MOM_DECL(kForwardSlideCam);
-        MOM_DECL(kBackwardSlideCam);
-        /*MOM_DECL(kEnlargeDown_View);
-        MOM_DECL(kShrinkUp_View);
-        MOM_DECL(kEnlargeRight_View);
-        MOM_DECL(kShrinkLeft_View);*/
-
-
+//set part where the assignments go
+        SETME(kAI_Undefined);
+        SETME(kAI_QuitProgram);
+        SETME(kAI_NextSetOfValues);
+        SETME(kAI_CamSlideBackward);
+        SETME(kAI_CamSlideForward);
+        SETME(kAI_CamRollRight);
+        SETME(kAI_CamRollLeft);
+        SETME(kAI_CamPitchDown);
+        SETME(kAI_CamPitchUp);
+        SETME(kAI_CamTurnRight);
+        SETME(kAI_CamTurnLeft);
+        SETME(kAI_Aspect);
+        SETME(kAI_FOV);
+        SETME(kAI_Hold1KeyPress);
+        SETME(kAI_Hold1KeyRelease);
+        SETME(kAI_CamSlideDown);
+        SETME(kAI_CamSlideUp);
+        SETME(kAI_CamSlideRight);
+        SETME(kAI_CamSlideLeft);
+//end of set part
+        //last:
+        for (int i=0;i<kMaxAIs;i++) {
+                //forgot to init some new action?
+                ERR_IF(Functions[i]==NULL,
+                                return kFuncFailed);
+        }//for
 
         return kFuncOK;
 }

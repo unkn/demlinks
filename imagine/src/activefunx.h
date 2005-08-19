@@ -30,9 +30,7 @@
 
 #include "pnotetrk.h"
 
-void oops(void);
-void dummy(void);
 EFunctionReturnTypes_t
-InitFunx();
+InitFunctions();
 
 #endif

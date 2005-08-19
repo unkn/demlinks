@@ -30,7 +30,14 @@
 
 #include "pnotetrk.h"
 
+extern BITMAP *buffer;
+
+
 EFunctionReturnTypes_t
-init();
+Init();
+
+EFunctionReturnTypes_t
+DeInit();
+
 
 #endif

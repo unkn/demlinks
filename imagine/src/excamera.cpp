@@ -28,14 +28,12 @@
 
 #include "allegro.h"
 
-#include "common.h"
+#include "excamera.h"
 #include "consts.h"
 
-#include "draw_text.h"
 #include "square.h"
 
 #include "camera.h"
-#include "excamera.h"
 
 
 //VARIABLES:
@@ -94,7 +92,7 @@ void render(BITMAP *bmp, int cur_cam)
         draw_all(bmp,mycam);
 
         mycam->Deselect(bmp);
-        draw_text(bmp,cur_cam);
+        //draw_text(bmp,cur_cam);
 }
 
 

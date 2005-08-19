@@ -28,7 +28,8 @@
 ****************************************************************************/
 /* to be included only in .cpp files, first in line but after those with <>
  * (and before those #include with "")
- * there's no use for this in .h files
+ * there's no use for this in .h files; actually there are exceptions where the
+   use of ie. ERR_IF in classes that are decl&defined in .h files
  * may speed up compilation */
 
 

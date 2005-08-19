@@ -21,268 +21,157 @@
 *
 *  ========================================================================
 *
-* Description: 
+* Description: helper to tranform from multiple input sources(key,mouse,serial)
+*               to one type of input (generic input)
 *
 ****************************************************************************/
 
 #ifndef GENERICINPUT_H
 #define GENERICINPUT_H
 /*****************************************************************************/
-#include <allegro.h>
+#include "_gcdefs.h"
+
+//#include <allegro.h>
 #include "timedinput.h"
+#include "pnotetrk.h"
+#include "buffer.h"
+#include "SLL.h"
+#include "generichelper.h"
 
-/*
-#define OFS_TYPE int
-#define MAX_INPUTS_IN_REPLAY_BUFFER (OFS_TYPE(200))
-#define MAX_KEYS_IN_REPLAY_BUFFER (100)
-#define MAX_MOUSE_IN_REPLAY_BUFFER (200)
-class TReplayBuffer {
-private:
-INPUT_TYPE InputReplayBuffer[MAX_INPUTS_IN_REPLAY_BUFFER];
-KEY_TYPE KeyReplayBuffer[MAX_KEYS_IN_REPLAY_BUFFER];
-MOUSE_TYPE MouseReplayBuffer[MAX_MOUSE_IN_REPLAY_BUFFER];
-
-OFS_TYPE Ihowmany,Khowmany,Mhowmany;
-
-        EFunctionReturnTypes_t Add2Input(const int a_Type);
-        EFunctionReturnTypes_t Add2Key(const KEY_TYPE *from);
-        EFunctionReturnTypes_t Add2Mouse(const MOUSE_TYPE *from);
-public:
-        TReplayBuffer();
-        ~TReplayBuffer();
-
-        EFunctionReturnTypes_t SaveBuffer();//append
-        EFunctionReturnTypes_t LoadBuffer();//reload
-        EFunctionReturnTypes_t PutInput(const int a_Type,
-                        const void *from);
-};
-*/
 /*****************************************************************************/
+
 /*****************************************************************************/
-enum {
-        kTrigger_ActivateAction=0,
-        kTrigger_DeActivateAction 
-                //please no more additions here, since it depends on bool aka
-                //two values
-//last
-        ,kMaxTriggers
-};
+enum EnumAllGI_t {//these are NOT indexes, may start from anywhere
+        kGI_Undefined=2000,//trapping bugs?
+        kGI_Quit,
+        kGI_NextSetOfValues,//temp
+        kGI_CamSlideBackward,
+        kGI_CamSlideForward,
+        kGI_CamSlideDown,
+        kGI_CamSlideUp,
+        kGI_CamSlideRight,
+        kGI_CamSlideLeft,
+        kGI_CamRollRight,
+        kGI_CamRollLeft,
+        kGI_CamPitchDown,
+        kGI_CamPitchUp,
+        kGI_CamTurnRight,
+        kGI_CamTurnLeft,
+        kGI_Aspect,
+        kGI_FOV,
+        kGI_Hold1KeyPress,
+        kGI_Hold1KeyRelease,
 
-enum {
-        kInputInt=0,
-        kKeyInt,
-        kMouseInt,
         //last:
-        kMax_Int
+        //kMaxGIs
 };
-enum {
-        kOfsType,
-        kHowManyType,
-        //last:
-        kMax_Types
-};
-struct Act_st {
-        INPUT_TYPE CombiInputBuf[MAX_INPUT_EVENTS_BUFFERED];
-        //int CombiVars[kHowManyType][kInputInt];
-        //int CombiVars[kOfsType][kInputInt];//the ofs which is next to be tested
 
-        KEY_TYPE CombiKeyBuf[MAX_KEYS_BUFFERED];
-        //int CombiVars[kHowManyType][kKeyInt];
-        //int CombiVars[kOfsType][kKeyInt];
-
-        MOUSE_TYPE CombiMouseBuf[MAX_MOUSE_EVENTS_BUFFERED];
-        //int CombiVars[kHowManyType][kMouseInt];
-        //int CombiVars[kOfsType][kMouseInt];
-        int CombiVars[kMax_Types][kMax_Int];
-//funx:
-        EFunctionReturnTypes_t GoNextInputType() {
-                this->CombiVars[kOfsType][kInputInt]++;//prepare next part of combination
-                PARANOID_IF(this->CombiVars[kOfsType][kInputInt] > this->CombiVars[kHowManyType][kInputInt],
-                                return kFuncFailed;);
-                return kFuncOK;
-        };
-        bool CombiCompleted() {
-                return (this->CombiVars[kOfsType][kInputInt] == this->CombiVars[kHowManyType][kInputInt]);
-        };
-        bool CombiIsThisIntDone(int which_int) {
-         return (this->CombiVars[kOfsType][which_int] == this->CombiInputBuf[this->CombiVars[kOfsType][kInputInt]].how_many);
-        };
-        EFunctionReturnTypes_t GoNext(int which_int) {
-                this->CombiVars[kOfsType][which_int]++;//try to go next
-                PARANOID_IF(this->CombiVars[kOfsType][which_int] >
-                                this->CombiInputBuf[this->CombiVars[kOfsType][kInputInt]].how_many,
-                                return kFuncFailed;);
-                return kFuncOK;
-        };
-        Act_st(){//constructor
-                for (int i=0;i<kMax_Types;i++) {
-                        for (int j=0;j<kMax_Int;j++) {
-                                CombiVars[i][j]=0;
-                        }//for2
-                }//for
-                for(int i=0;i<MAX_INPUT_EVENTS_BUFFERED;i++) {
-                        CombiInputBuf[i].type=kNoInputType;
-                        CombiInputBuf[i].how_many=0;
-                }//for2
-        };
-
-        Act_st &
-        Act_st::operator=(const Act_st & source)
-        {
-        if (&source==this)
-                return *this;
-                for (int i=0;i<kMax_Types;i++) {
-                        for (int j=0;j<kMax_Int;j++) {
-                                CombiVars[i][j]=source.CombiVars[i][j];
-                        }//for2
-                }//for
-/*        CombiVars[kHowManyType][kInputInt]=source.CombiVars[kHowManyType][kInputInt];
-        CombiVars[kHowManyType][kKeyInt]=source.CombiVars[kHowManyType][kKeyInt];
-        CombiVars[kHowManyType][kMouseInt]=source.CombiVars[kHowManyType][kMouseInt];*/
-        for (int i=0;i<MAX_INPUT_EVENTS_BUFFERED;i++) {
-                CombiInputBuf[i]=source.CombiInputBuf[i];
-        }
-        for (int i=0;i<MAX_KEYS_BUFFERED;i++) {
-                CombiKeyBuf[i]=source.CombiKeyBuf[i];
-        }
-        for (int i=0;i<MAX_MOUSE_EVENTS_BUFFERED;i++) {
-                CombiMouseBuf[i]=source.CombiMouseBuf[i];
-        }
-        return *this;
-        }
-
-};
-//don't use this in your programs:
-class TAnyAction {
-protected:
-        void (*RunAsActive)(void);
-        void (*RunAsNotActive)(void);
-
-        //bool fIsEnabled[kMaxTriggers];//aka is enabled for x trigger
-        bool fIsActive;//aka action is running
-        bool fConstructed;//false if within constructor
-        bool fState;//used as true to signal that a combination was recognized
+/*****************************************************************************/
+//this is the type of the output from GenericInput and input to Actions
+#define GENERICINPUT_TYPE GenericHelper_st<EnumAllGI_t> //used to be int
+#define TRANSDUCER_S__TYPE void
 
 
-        EFunctionReturnTypes_t _AddInput(int which_trigger,int type);
-
-        void
-        TAnyAction::ZeroOffsets(Act_st *act);
-
-        EFunctionReturnTypes_t TriggerIndexWithinBounds(int which){
-                ERR_IF(which < 0,
-                                return kFuncFailed;);
-                ERR_IF(which >=kMaxTriggers,
-                                return kFuncFailed;);
-                return kFuncOK;
-        };
-public:
-        Act_st Act[kMaxTriggers];
-
-        /*EFunctionReturnTypes_t DisableTrigger(int which){
-                ERR_IF(kFuncOK != TriggerIndexWithinBounds(which),
-                                return kFuncFailed);
-                fIsEnabled[which]=false;
-                return kFuncOK;
-        };
-        EFunctionReturnTypes_t EnableTrigger(int which){
-                ERR_IF(kFuncOK != TriggerIndexWithinBounds(which),
-                                return kFuncFailed);
-                fIsEnabled[which]=true;
-                return kFuncOK;
-        };*/
-
-        //Act_st *getAct(int k){return &Act[k];};
-
-        /*
-        EFunctionReturnTypes_t SetCombiKeyBuf(
-                        int a_Input2ActAction,KEY_TYPE from[],int howmany);
-        EFunctionReturnTypes_t SetCombiMouseBuf(
-                        int a_Input2ActAction,MOUSE_TYPE from[],int howmany);
-        EFunctionReturnTypes_t SetCombiInputBuf(
-                        int a_Input2ActAction,INPUT_TYPE from[],int howmany);
-*/
-
-        void ClearState() {fState=false;};
-        bool HasStateChanged() {return fState;};
-        void SetStateChanged() {fState=true;};
-        
-        EFunctionReturnTypes_t SetFunx(
-                                void (*func_active)(void),
-                                void (*func_not_active)(void)){
-                PARANOID_IF(func_active==NULL,
-                        return kFuncFailed;);
-                //PARANOID_IF(func_not_active==NULL,
-                  //      return kFuncFailed;);
-
-                RunAsActive=func_active;
-                RunAsNotActive=func_not_active;
-
-                return kFuncOK;
-        };
-
-        TAnyAction();//constructor
-        virtual ~TAnyAction();
-
-        //run the func asoc. with action only if active
-        //this is run as long a action is active
-        EFunctionReturnTypes_t PerformActive(){
-                //if (IsActive()) {
-                        PARANOID_IF(NULL==RunAsActive,return kFuncFailed);
-                        RunAsActive();
-
-                        //deactivate after one run, if no action on non-active
-                        //this means that if there's no way to deactivate the
-                        //action, no procedure, then we deactivate it now 
-                        //this is prolly a toggle key
-                        //if (RunAsNotActive==NULL)
-                          //      SetNotActive();
-                //}
-                return kFuncOK;
-        };
-
-        //run it when it becomes non-active; this is run only once
-        EFunctionReturnTypes_t PerformNotActive(){
-                //if (!IsActive()) {
-                        PARANOID_IF(NULL==RunAsNotActive,return kFuncFailed);
-                        RunAsNotActive();
-                //}
-                return kFuncOK;
-        };
-
-
-
-        //the combination of inputs which triggers the action
-        EFunctionReturnTypes_t AddKey(int which_trigger,const KEY_TYPE *from);
-        EFunctionReturnTypes_t AddMouse(int which_trigger,const MOUSE_TYPE *from);
-
-        bool IsActive();
-        void SetActive();
-        void SetNotActive();
-
+/*struct GenericHelper_st {
+        EnumAllAI_st Significant;
         EFunctionReturnTypes_t
-        HandleKey(const KEY_TYPE *from,const KEY_TYPE *existing,bool * result);
-
-        EFunctionReturnTypes_t
-        HandleMouse(const MOUSE_TYPE *from,Act_st *which_act,bool * result);
-
-        virtual EFunctionReturnTypes_t HandleInput(const int a_Type,
-                        const void *from,
-                        const int which_trigger,
-                        bool *result);
-
-        EFunctionReturnTypes_t
-        CompareKeys(
-                        const KEY_TYPE *one,
-                        const KEY_TYPE *two,
+        Compare(const GenericHelper_st*withwhat,
                         int *result);
+        EFunctionReturnTypes_t
+        Assign(const EnumAllAI_st *value);//contents of value are COPied, not shared
+};*/
+/*****************************************************************************/
+extern TBuffer<GENERICINPUT_TYPE> GenericInputBuffer;
 
+/*****************************************************************************/
+struct UnifiedInput_st {
+        int type;
+        TRANSDUCER_S__TYPE *data;
 };
+
+/*****************************************************************************/
+struct OneGenericInputTransducer_st {
+        GenericSingleLinkedList_st<TRANSDUCER_S__TYPE> *Head;//in a list of same type inputs
+        GenericSingleLinkedList_st<TRANSDUCER_S__TYPE> *Tail;
+        int HowManySoFar;//counter, prolly just informative
+        GenericSingleLinkedList_st<TRANSDUCER_S__TYPE> *WhosNext;//to be compared with input
+
+        //this is set once, to be the output generinc input when combination
+        //is fulfilled
+        GENERICINPUT_TYPE Result;//trasforming SerialInputs into one
+        //GenericInput which is this 'Result'
+        int LostInputsBecauseTheyDidntMatch;
+
+/******************/
+//        OneGenericInputTransducer_st& operator=(
+  //                      const OneGenericInputTransducer_st & source);
+/******************/
+        OneGenericInputTransducer_st();
+/******************/
+        //copy constructor
+//        OneGenericInputTransducer_st(const OneGenericInputTransducer_st &rhs);
+/******************/
+        ~OneGenericInputTransducer_st();
+/******************/
+        EFunctionReturnTypes_t
+        Append(const TRANSDUCER_S__TYPE* a_Dat);
+/******************/
+        bool HasStarted();
+/******************/
+        EFunctionReturnTypes_t
+        RestartIfStarted();
+/******************/
+        void
+        Reset();
+/******************/
+        EFunctionReturnTypes_t
+        EatThis(const UnifiedInput_st *what,
+                        bool reset_when_failed);
+/******************/
+        EFunctionReturnTypes_t
+        PushToBuffer();
+/******************/
+  //      void
+    //    MakeSureChildsAreGone();
+/******************/
+};//END struct
+
+/*****************************************************************************/
+struct GI_SLLTransducersArray_st{
+        GenericSingleLinkedList_st<OneGenericInputTransducer_st> *Head;
+        GenericSingleLinkedList_st<OneGenericInputTransducer_st> *Tail;
+        int HowManySoFar;//counter, prolly just informative
+
+/******************/
+        GI_SLLTransducersArray_st();
+/******************/
+        ~GI_SLLTransducersArray_st();
+/******************/
+        EFunctionReturnTypes_t Append(
+                        const OneGenericInputTransducer_st * a_Dat);
+/******************/
+};//END struct
+
+/*****************************************************************************/
+extern GI_SLLTransducersArray_st GI_StrictOrderSLL[kMaxInputTypes];//head, may be NULL
+extern GI_SLLTransducersArray_st GI_RelaxedOrderSLL[kMaxInputTypes];//head -//-
+
+/*****************************************************************************/
+/*****************************************************************************/
+EFunctionReturnTypes_t
+GenericInputHandler(
+                const UnifiedInput_st *from);
+/*****************************************************************************/
+EFunctionReturnTypes_t
+InitGenericInput();
+/*****************************************************************************/
+EFunctionReturnTypes_t
+DoneGenericInput();
 /*****************************************************************************/
 /*****************************************************************************/
 /*****************************************************************************/
 /*****************************************************************************/
-/*****************************************************************************/
-/*****************************************************************************/
-/*****************************************************************************/
+
+
 #endif
+

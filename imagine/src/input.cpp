@@ -36,62 +36,23 @@
 
 #include "consts.h"
 #include "input.h"
-#include "common.h"
+#include "camera.h"
 #include "excamera.h"
 #include "pnotetrk.h"
 #include "timedinput.h"//both mouse and keyboard united
 //#include "genericinput.h"
 #include "combifile.h"
 #include "activefunx.h"
-#include "actionsreplay.h"
+//#include "actionsreplay.h"
+#include "actionsinput.h"
+#include "actions.h"
 
 /*****************************************************************************/
 
 const char *kCombiFileName="combinations.dat";
 
-TAnyAction *AllActions[kAllocatedActions];//TODO:must be a double linked list
 
-void (*activation_funcs[kAllocatedActions])(void);
-void (*deactivation_funcs[kAllocatedActions])(void);
-
-const char *ActionNames[kAllocatedActions]= {
-        "kActQuit",
-        "kToggleCurCam",
-        "kChooseNextCam",
-        "kHold1_Key",
-        "kIncFOV",
-        "kIncAspect",
-        //"kLeftSlideView",
-        //"kRightSlideView",
-        //"kUpSlideView",
-        //"kDownSlideView",
-        "kLeftSlideCam",
-        "kRightSlideCam",
-        "kUpSlideCam",
-        "kDownSlideCam",
-        "kLeftTurnCam",
-        "kRightTurnCam",
-        "kUpPitchCam",
-        "kDownPitchCam",
-        "kLeftRollCam",
-        "kRightRollCam",
-        "kForwardSlideCam",
-        "kBackwardSlideCam",
-        //"kEnlargeDown_View",
-        //"kShrinkUp_View",
-        //"kEnlargeRight_View",
-        //"kShrinkLeft_View"
-
-};
-const char *TriggerNames[kMaxTriggers]= {
-        "kTrigger_ActivateAction",
-        "kTrigger_DeActivateAction"
-};
-
-bool Hold1_Key=false;
-
-
-TActionsReplayBuffer ActionsBuffer;
+/*****************************************************************************/
 
 
 
@@ -100,239 +61,180 @@ TActionsReplayBuffer ActionsBuffer;
 
 /*****************************************************************************/
 
-EFunctionReturnTypes_t
-InitActions()
-{
-
-        //init all function pointers
-        ERR_IF(kFuncOK !=
-                        InitFunx(),
-                        return kFuncFailed;
-                );
-//open file
-        //FIXME:load all actions from a predefined file ***work in progress now
-        TFacileFile zfile;
-        ERR_IF(kFuncOK != zfile.AllInOne(kCombiFileName,
-                                kAllocatedActions,kMaxTriggers),
-                        return kFuncFailed);
-
-
-
-
-//begin CUT here
-/*
-        for (int i=0;i<kAllocatedActions;i++) {
-                AllActions[i]=new TAnyAction;
-                AllActions[i]->SetFunx(activation_funcs[i],deactivation_funcs[i]);
-        }
-        KEY_TYPE esc;
-        esc.ScanCode=RELEASE(KEY_ESC);
-
-        ERR_IF(kFuncOK != AllActions[kActQuit]->AddKey(kTrigger_ActivateAction,&esc),
-                        return kFuncFailed;);
-
-        esc.ScanCode=PRESS(KEY_Q);
-        ERR_IF(kFuncOK != AllActions[kActQuit]->AddKey(kTrigger_ActivateAction,&esc),
-                        return kFuncFailed;);
-
-        esc.ScanCode=RELEASE(KEY_Q);
-        ERR_IF(kFuncOK != AllActions[kActQuit]->AddKey(kTrigger_DeActivateAction,&esc),
-                        return kFuncFailed;);
-//end CUT here
-*/
-
-        return kFuncOK;
-}
 /*****************************************************************************/
 EFunctionReturnTypes_t
 InitInput()
 {
+        Passed_st temp;
+        temp.fKeyFlags=kRealKeyboard | kRealKeyboardTimer;
+        temp.fKeyTimerFreq=1000;
+        temp.fMouseFlags=kRealMouse | kRealMouseTimer;
+        temp.fMouseTimerFreq=200;
         ERR_IF( kFuncOK !=
-                InstallTimedInput(kRealKeyboard | kRealKeyboardTimer |
-                        kRealMouse | kRealMouseTimer,
-                        1000,200),
+                InstallAllInputs(&temp),
                 return kFuncFailed;
                );
-        ERR_IF(kFuncOK != InitActions(),
+
+        ERR_IF(kFuncOK != InitActionsInput(),
+                        return kFuncFailed;);
+        ERR_IF(kFuncOK != InitGenericInput(),
+                        return kFuncFailed;);
+
+        ERR_IF(kFuncOK != InitActions(),//FIXME:
                         return kFuncFailed;);
         return kFuncOK;
 }
 
-
-
 /*****************************************************************************/
 EFunctionReturnTypes_t
-AllActions_HandleInput(const int a_Type,
-                        const void *from)
+DeInitInput()
 {
-        LAME_PROGRAMMER_IF(kAllocatedActions==0,
+        ERR_IF(kFuncOK!=DoneActions(),
                         return kFuncFailed);
-        for (int i=0;i<kAllocatedActions;i++) {
-                //pass the same input to each action, only enabled ones MAY
-                //trigger
-                //bool was_active=AllActions[i]->IsActive();
-                //double(or more) DEactivation is ignored;
-                //only double(or more) activation is put into buffer
-                for (int trigger=0;trigger<kMaxTriggers;trigger++) {
-                        bool result;
-                        ERR_IF(kFuncOK !=
-                        AllActions[i]->HandleInput(a_Type,from,trigger,&result),
-                                return kFuncFailed;);
-                        //if result=true, then it recognized the combination of
-                        //current trigger, thus we add it to buffer since it
-                        //means change considering prev state, also can occur:
-                        //on-off-on and we'd not miss it
-                        if (result==true) {
-                                ERR_IF(kFuncOK !=
-                                       ActionsBuffer.ToActionsBuffer(i,
-                                               trigger==0),
-                                        return kFuncFailed);
-                        }//fi
-                }//for
-
-        }//for
+        ERR_IF(kFuncOK!=DoneGenericInput(),
+                        return kFuncFailed);
+        ERR_IF(kFuncOK!=DoneActionsInput(),
+                        return kFuncFailed);
+        //last because AllLowLevelInpus must still be available, not freed
+        ERR_IF(kFuncOK!=UnInstallAllInputs(),
+                        return kFuncFailed);
         return kFuncOK;
 }
 
+
+
 /*****************************************************************************/
+/*****************************************************************************/
+//issue this if any input is available
 EFunctionReturnTypes_t
-RAR_ConsumeMouse(const int a_HowMany)
-{
-        MOUSE_TYPE mou;
-        PARANOID_IF(a_HowMany > MAX_MOUSE_EVENTS_BUFFERED,
-                        return kFuncFailed;);
+TransformToGenericInputs(const INPUT_TYPE *from)
+{//get all inputs of group from buffer, and pass them to <genericinput> handler
+        LAME_PROGRAMMER_IF((from->type<0) || (from->type>=kMaxInputTypes),
+                        return kFuncFailed);
+        //FIXME: shame we've to alloc and free a ptr on each entrace in this
+        //function
+        void *anydatastruc=NULL;
+        ERR_IF(kFuncOK!=
+                AllLowLevelInputs[from->type]->Alloc(anydatastruc),
+                        return kFuncFailed);
+        PARANOID_IF(anydatastruc==NULL,
+                        return kFuncFailed);
+
         int i=0;
-        while (i<a_HowMany) {
-                PARANOID_IF(kFuncOK !=
-                                RemoveNextMouseEventFromBuffer(&mou),
-                        return kFuncFailed;);
-                //save from replay buffer
-                //ReplayInputs.PutInput(kMouseInputType,&mou);
-                //see which actions trigger
+        while (i<from->how_many) {
+                //get one input
+                ERR_IF(kFuncOK!=
+                        AllLowLevelInputs[from->type]->MoveFirstFromBuffer(anydatastruc),
+                                return kFuncFailed);
+
+                //now we've to transform `anydatastruc` into generic input
+                //and also push it into generic input's buffer(if!)
+                UnifiedInput_st passed;
+                passed.type=from->type;
+                passed.data=anydatastruc;
+                //handle the passed input(key,mouse,serial) such as it might
+                //be a part of or complete generic input
                 ERR_IF(kFuncOK !=
-                                AllActions_HandleInput(kMouseInputType,
-                                        (const void *)&mou),
+                       GenericInputHandler(&passed),
+                       //free before returning error
+                        ERR_IF(kFuncOK!=
+                                AllLowLevelInputs[from->type]->DeAlloc(anydatastruc),
+                               return kFuncFailed);
                         return kFuncFailed);
                 i++;
         }//while
-        return kFuncOK;
-}
-
-EFunctionReturnTypes_t
-RAR_ConsumeKey(const int a_HowMany)
-{
-        KEY_TYPE tmpk;
-        PARANOID_IF(a_HowMany > MAX_KEYS_BUFFERED,
-                        return kFuncFailed;);
-        int i=0;
-        while (i<a_HowMany) {
-                PARANOID_IF(kFuncOK !=
-                    RemoveNextKeyFromBuffer(&tmpk),
-                    return kFuncFailed;);
-          //save from replay buffer; replay should be for actions
-          //ReplayInputs.PutInput(kKeyboardInputType,&tmpk);
-          //see which actions trigger
-          ERR_IF(kFuncOK !=
-               AllActions_HandleInput(kKeyboardInputType,
-                        (const void *)&tmpk),
-               return kFuncFailed);
-          i++;
-        }//while
-        return kFuncOK;
-}
-
-//issue this if any input is available
-EFunctionReturnTypes_t
-RefreshActionsAndReplay_ConsumingInput(const INPUT_TYPE *from)
-{
-        switch (from->type) {
-                case kMouseInputType: {
-                        ERR_IF(kFuncOK !=
-                                        RAR_ConsumeMouse(from->how_many),
-                                        return kFuncFailed);
-                        break;
-                }
-                case kKeyboardInputType: {
-                        ERR_IF(kFuncOK !=
-                                        RAR_ConsumeKey(from->how_many),
-                                        return kFuncFailed);
-                        break;
-                }
-                default: {
-                        ERR(lame or undefined input);
-                        return kFuncFailed;
-                }
-        }//swi
+        //freemem
+        ERR_IF(kFuncOK!=
+                        AllLowLevelInputs[from->type]->DeAlloc(anydatastruc),
+                return kFuncFailed);
 
         return kFuncOK;
 }
 
 /*****************************************************************************/
 EFunctionReturnTypes_t
-ExecuteAllActions()
+MakeSureWeExecuteAllActions()
 {
 //executes the actions from the buffer of actions, emptying it, buff may have
 //more than one action if we're lagging (ie. slow PC)
-        while (ActionsBuffer.HasActions()) {
-                int i;
-                bool active;
-                ERR_IF(kFuncOK!= ActionsBuffer.GetLastActionFromBuf(&i,&active),
+//FIXME
+        while (!ActionsInputBuffer.IsEmpty()) {
+                ACTIONSINPUT_TYPE got;
+                ERR_IF(kFuncOK!=ActionsInputBuffer.MoveLastFromBuffer(&got),
                                 return kFuncFailed);
-                PARANOID_IF((i>=kAllocatedActions) || (i<0),
+                //this will perhaps generate items in ActionBuffer
+                ERR_IF(kFuncOK!=ExecuteAction(&got),
+                                return kFuncFailed);
+        }//fi
+
+        /*
+        while (ActionsBuffer.HasActions()) {
+                int index;
+                bool active;
+                ERR_IF(kFuncOK!= ActionsBuffer.GetLastActionFromBuf(&index,&active),
+                                return kFuncFailed);
+                PARANOID_IF((index>=kAllocatedActions) || (index<0),
                         return kFuncFailed);
                 if (active) {//activated
-                        ERR_IF(kFuncOK != AllActions[i]->PerformActive(),
-                                return kFuncFailed);
+                        //FIXME:
+                        //ERR_IF(kFuncOK != AllActions[index]->PerformActive(),
+                          //      return kFuncFailed);
                 } else {//deactivated
-                        ERR_IF(kFuncOK != AllActions[i]->PerformNotActive(),
-                                return kFuncFailed);
+                        //FIXME:
+                        //ERR_IF(kFuncOK != AllActions[index]->PerformNotActive(),
+                          //      return kFuncFailed);
                 }//else
         }//while
+        */
         return kFuncOK;
 }
 
 /*****************************************************************************/
 EFunctionReturnTypes_t
-Executant()
-//transform INPUTs to ACTIONs
-{
-        for (int i=0;i<kAllocatedActions;i++) {
-                //clear state of all cams, so we know which didn't change
-                AllActions[i]->ClearState();
-        }//for
-//see if any new actions go active:
-        if (HowManyInputsInBuffer()) {
-                //so if we got input we transform it into actions, putting
-                //actions as we encounter them into the actionsbuffer
+MakeSureWeHaveActions()
+{//transform generic inputs into actions
+        while (!GenericInputBuffer.IsEmpty()) {
+                GENERICINPUT_TYPE got;
+                ERR_IF(kFuncOK!=GenericInputBuffer.MoveLastFromBuffer(&got),
+                                return kFuncFailed);
+                //this will perhaps generate items in ActionBuffer
+                ERR_IF(kFuncOK!=TransformToActions(&got),
+                                return kFuncFailed);
+        }//fi
+        return kFuncOK;
+}
+/*****************************************************************************/
+EFunctionReturnTypes_t
+MakeSureWeHaveGenericInput()
+{//transform multiple input types into generic inputs
+        if (HowManyDifferentInputsInBuffer()) {
+                //FIXME:temporary, remove it:
+                cams[0].SetNeedRefresh();
+
                 INPUT_TYPE into;
                 //one input group at a time; as in all key or all mouse
-                while (kFuncOK==RemoveNextInputFromBuffer(&into)){
+                while (kFuncOK==MoveFirstGroupFromBuffer(&into)){
                         ERR_IF(kFuncOK !=
-                                  RefreshActionsAndReplay_ConsumingInput(&into),
+                                  TransformToGenericInputs(&into),
                                 return kFuncFailed);
                 }//while
         }//fi
 
-//add into buffer all the actions that previously stayed active
-        for (int i=0;i<kAllocatedActions;i++) {
-                if ((false==AllActions[i]->HasStateChanged())&&
-                        (AllActions[i]->IsActive())){
-                        //ignoring deactivated actions, when not just detected
-                        //we're here because user is for ie. keeping a key
-                        //pressed which in far past activated at least one
-                        //action, and now we must keep executing that action
-                        //even tho no inputs happened since.
-                        //but what we actually do here, is put it into the buff
-                //putting it into buffer in active state
-                        ERR_IF(kFuncOK !=
-                              ActionsBuffer.ToActionsBuffer(i,true/*isactive*/),
-                                        return kFuncFailed);
-                }//fi
-        }//for
+        return kFuncOK;
+}
+/*****************************************************************************/
+EFunctionReturnTypes_t
+Executant()
+//transform INPUTs to ACTIONs and executes those actions
+{
+        ERR_IF(kFuncOK!= MakeSureWeHaveGenericInput(),
+                        return kFuncFailed);
+        ERR_IF(kFuncOK!= MakeSureWeHaveActions(),
+                        return kFuncFailed);
 
         //empties the actionsbuffer by executing them in order as they appear
         //in that buffer, gee
-        ERR_IF(kFuncOK != ExecuteAllActions(),
+        ERR_IF(kFuncOK != MakeSureWeExecuteAllActions(),
               return kFuncFailed);//if and only those that are active
 
         return kFuncOK;

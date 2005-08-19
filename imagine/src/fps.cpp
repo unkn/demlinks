@@ -28,7 +28,6 @@
 #include "allegro.h"
 
 #include "fps.h"
-#include "common.h"
 #include "consts.h"
 
 volatile int fps;

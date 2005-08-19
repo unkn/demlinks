@@ -25,9 +25,10 @@
 *
 ****************************************************************************/
 
+#include "_gcdefs.h"
 #include <allegro.h>
-#include "timedmouse.h"
 #include "pnotetrk.h"
+#include "timedmouse.h"
 
 #define DEFAULT_MOUSE_TIMER_FREQ_PER_SECOND (200)
 
@@ -77,6 +78,7 @@ MOUSE_TYPE::operator=(const MOUSE_TYPE & source)
         return *this;
 }
 
+/*****************************************************************************/
 MOUSE_TYPE&
 MOUSE_TYPE::operator=(const volatile MOUSE_TYPE & source)
 {
@@ -89,24 +91,39 @@ MOUSE_TYPE::operator=(const volatile MOUSE_TYPE & source)
         MickeyY=source.MickeyY;
         return *this;
 }
+/*****************************************************************************
+MOUSE_TYPE&
+MOUSE_TYPE::operator=(volatile MOUSE_TYPE & source)
+{
+        if (&source==this)
+                return *this;
+        Time=source.Time;
+        Flags=source.Flags;
+        MouseZ=source.MouseZ;
+        MickeyX=source.MickeyX;
+        MickeyY=source.MickeyY;
+        return *this;
+}
 
-/*****************************************************************************/
+*****************************************************************************/
 EFunctionReturnTypes_t
-RemoveNextMouseEventFromBuffer(MOUSE_TYPE *into)
+MMouseInputInterface::MoveFirstFromBuffer(void *into)
 {
         if (gMouseBufTail != gMouseBufHead) {//aka non empty buffer
+                LAME_PROGRAMMER_IF(into==NULL,
+                                return kFuncFailed);
                 gMouseLock=gMLock;//lock it so if we get interrupted the int 
                 //cannot modify Head of first item from buffer
 
                 //volatile MOUSE_TYPE *t=&gMouseBuf[gMouseBufHead];
-                *into=gMouseBuf[gMouseBufHead];
+                *(MOUSE_TYPE *)into=gMouseBuf[gMouseBufHead];
 /*                into->Flags = t->Flags;
                 into->MouseZ = t->MouseZ;
                 into->MickeyX = t->MickeyX;
                 into->MickeyY = t->MickeyY;
                 into->Time = t->Time;*/
                 //unnecessary clear
-                gMouseBuf[gMouseBufHead].Flags=0;
+                //gMouseBuf[gMouseBufHead].Flags=0;
                 /*
                 t->Flags=0;
                 t->MouseZ=0;
@@ -138,12 +155,18 @@ void MouseIntHandler(int flags)
                 //to the last entry
                 if ( (gMouseBufHead!=gMouseBufTail) &&//necessary for PrevTail
                         (mz==gMouseBuf[gMouseBufPrevTail].MouseZ) &&
-                        (flags==gMouseBuf[gMouseBufPrevTail].Flags) ) {
+                        (flags==gMouseBuf[gMouseBufPrevTail].Flags)
+                        //&&(flags & MOUSE_FLAG_MOVE) 
+                        ) {
                         gMouseBuf[gMouseBufPrevTail].MickeyX+=mikx;
                         gMouseBuf[gMouseBufPrevTail].MickeyY+=miky;
                         return;
                 }//fi
         }//fi
+        else {
+                mikx=miky=0;
+        }//else move
+
         int tmp_tail=(gMouseBufTail +1 ) % MAX_MOUSE_EVENTS_BUFFERED;
         if (tmp_tail != gMouseBufHead) { ///buffer not full yet
                 //tail always points to the next empty space to be filled
@@ -170,16 +193,17 @@ void MouseTimerHandler()
 } END_OF_FUNCTION(MouseTimerHandler);
 /*****************************************************************************/
 
-void
-UnInstallTimedMouse()
+EFunctionReturnTypes_t
+MMouseInputInterface::UnInstall()
 {
         remove_int(MouseTimerHandler);
         remove_mouse();
+        return kFuncOK;
 }
 /*****************************************************************************/
 
-bool
-InstallTimedMouse(int a_Flags, int a_MouseTimerFreq)
+EFunctionReturnTypes_t
+MMouseInputInterface::Install(const Passed_st *a_Params)
 {
         gLostMouseEvents=0;
         LOCK_VARIABLE(gLostMouseEvents);
@@ -199,23 +223,85 @@ InstallTimedMouse(int a_Flags, int a_MouseTimerFreq)
         LOCK_FUNCTION(MouseIntHandler);
 
         ERR_IF(install_timer()
-                ,return false;
+                ,return kFuncFailed;
               );
-        if (a_Flags & kRealMouseTimer) {
-                if (a_MouseTimerFreq <= 0)
-                        a_MouseTimerFreq = DEFAULT_MOUSE_TIMER_FREQ_PER_SECOND;
+        if (a_Params->fMouseFlags & kRealMouseTimer) {
+                int freq=a_Params->fMouseTimerFreq;
+                if (freq <= 0)
+                        freq = DEFAULT_MOUSE_TIMER_FREQ_PER_SECOND;
                 ERR_IF(install_int_ex(MouseTimerHandler,
-                                BPS_TO_TIMER(a_MouseTimerFreq))
-                        ,return false;
+                                BPS_TO_TIMER(freq))
+                        ,return kFuncFailed;
                       );
         }//fi
 
         ERR_IF(install_mouse() == -1
-                ,return false;
+                ,return kFuncFailed;
                 );
-        if (a_Flags & kRealMouse)
+        if (a_Params->fMouseFlags & kRealMouse)
                 mouse_callback = MouseIntHandler;
 
-        return true;
+        return kFuncOK;
+}
+
+int
+MMouseInputInterface::HowManyInBuffer()
+{
+        if (gMouseBufTail >= gMouseBufHead)
+                return gMouseBufTail-gMouseBufHead;
+        else
+                return (MAX_MOUSE_EVENTS_BUFFERED-gMouseBufHead)+gMouseBufTail;
+}
+
+bool
+MMouseInputInterface::IsBufferFull()
+{
+        return (HowManyInBuffer()==MAX_MOUSE_EVENTS_BUFFERED-1);
+}
+
+EFunctionReturnTypes_t
+MMouseInputInterface::Alloc(void *&dest)//alloc mem and set dest ptr to it
+{
+        dest=NULL;
+        dest=new MOUSE_TYPE;
+        ERR_IF(dest==NULL,
+                        return kFuncFailed);
+        return kFuncOK;
+}
+
+
+EFunctionReturnTypes_t
+MMouseInputInterface::CopyContents(const void *&src,void *&dest)
+{
+        ERR_IF(src==NULL,
+                        return kFuncFailed);
+        ERR_IF(dest==NULL,
+                        return kFuncFailed);
+        *(MOUSE_TYPE *)dest=*(MOUSE_TYPE *)src;
+        return kFuncOK;
+}
+
+
+EFunctionReturnTypes_t
+MMouseInputInterface::DeAlloc(void *&dest)//freemem
+{
+        ERR_IF(dest==NULL,
+                        return kFuncFailed);
+        delete (MOUSE_TYPE *)dest;
+        dest=NULL;
+        return kFuncOK;
+}
+
+EFunctionReturnTypes_t
+MMouseInputInterface::Compare(void *what, void *withwhat, int &result)
+{//'what' is a ptr to MOUSE_TYPE (structure)
+        //FIXME:
+        if ( ((MOUSE_TYPE *)what)->Flags == ((MOUSE_TYPE *)withwhat)->Flags){
+                result=0;//equal
+        }//fi
+        else result=-1;//less than equal
+
+
+        return kFuncOK;
 }
 

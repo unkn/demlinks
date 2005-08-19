@@ -28,7 +28,6 @@
 #ifndef COMBIFILE_H
 #define COMBIFILE_H
 
-#include "common.h"
 #include "pnotetrk.h"
 
 //FIXME: more error handling from programmer side

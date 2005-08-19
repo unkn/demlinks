@@ -29,8 +29,10 @@
 #define TIMEDMOUSE_H
 
 #include "pnotetrk.h"
+#include "timedinput.h"
 
-#define MAX_MOUSE_EVENTS_BUFFERED (7)
+
+#define MAX_MOUSE_EVENTS_BUFFERED (10)
 
 #define MOUSE_TYPE MouseWithTimer_st
 #define MOUSE_TIMER_TYPE int
@@ -43,6 +45,7 @@ struct MOUSE_TYPE {
         signed int MickeyY;
         MOUSE_TYPE& operator=(const MOUSE_TYPE & source);
         MOUSE_TYPE& operator=(const volatile MOUSE_TYPE & source);
+        //MOUSE_TYPE& operator=(volatile MOUSE_TYPE & source);
         int operator==(const MOUSE_TYPE &rhs);//, const MOUSE_TYPE &rhs);
 };//struct
 
@@ -60,18 +63,47 @@ extern volatile MOUSE_TIMER_TYPE gActualMouseTime;
 enum {
         kSimulatedMouse=0,
         kSimulatedMouseTimer=0,
+        kNoMouseTimer=0,
+
         kRealMouse=64,//for timedinput.h don't use same k values like t..keys.h
         kRealMouseTimer=128
 };
 
-void
-UnInstallTimedMouse();
+class MMouseInputInterface:public TBaseInputInterface {
+public:
+        MMouseInputInterface(){};
+        virtual ~MMouseInputInterface(){};
 
-bool
-InstallTimedMouse(int a_Flags, int a_MouseTimerFreq);
+        virtual EFunctionReturnTypes_t
+        MoveFirstFromBuffer(void *into);
 
-EFunctionReturnTypes_t
-RemoveNextMouseEventFromBuffer(MOUSE_TYPE *into);
+        virtual int
+        HowManyInBuffer();
+
+        virtual EFunctionReturnTypes_t
+        Alloc(void *&dest);//alloc mem and set dest ptr to it
+
+        virtual EFunctionReturnTypes_t
+        DeAlloc(void *&dest);//freemem
+
+        virtual EFunctionReturnTypes_t
+        CopyContents(const void *&src,void *&dest);
+
+
+        virtual bool
+        IsBufferFull();
+
+        virtual EFunctionReturnTypes_t
+        UnInstall();
+
+        virtual EFunctionReturnTypes_t
+        Install(const Passed_st *a_Params);
+
+        virtual EFunctionReturnTypes_t
+        Compare(void *what, void *withwhat, int &result);
+
+};//class
+
 
 #endif
 

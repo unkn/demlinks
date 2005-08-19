@@ -29,29 +29,35 @@
 #include "math.h"
 
 
-#include "common.h"
+#include "consts.h"
+#include "_gcdefs.h"
+#include "pnotetrk.h"
+
+#include "camera.h"
 #include "input.h"
 #include "init.h"
 #include "fps.h"
-#include "consts.h"
+#include "flags.h"
+
 
 
 BITMAP *buffer;
 
-#ifdef BMPCROSS
-BITMAP *tex;
-#endif
-
 
 
 EFunctionReturnTypes_t
-init() {
+Init()
+{
 
         InitNotifyTracker();
-        EXIT_IF(allegro_init() != 0);
+        ERR_IF(allegro_init() != 0,
+                        return kFuncFailed);
 
-        EXIT_IF( kFuncFailed ==
-                        InitInput());
+        ERR_IF( kFuncOK != InitInput(),
+                        return kFuncFailed);
+
+        ERR_IF(kFuncOK!= InitFlags(),
+                        return kFuncFailed);
 
    if (set_gfx_mode(GFX_AUTODETECT, 800, 600, 0, 0) != 0) {
       if (set_gfx_mode(GFX_SAFE, 640, 480, 0, 0) != 0) {
@@ -73,6 +79,9 @@ init() {
                 int a=0;
                 int b=0;
          for (int i=0;i<NUM_CAMS;i++){
+                cams[i].SetPos(0,-GRID_SIZEY,0);
+                cams[i].SetFrontVector(0,1,0);
+                cams[i].SetUpVector(-1,0,0);
                 cams[i].Prepare(
                                 a*w,
                                 b*h,
@@ -89,31 +98,15 @@ init() {
         }//for cams
          cams[current_cam].Activate();
 
-#ifdef BMPCROSS
-#ifdef ITSPAL
-        PALETTE pal;
-#endif
-   tex=load_bitmap("1.bmp",
-#ifdef ITSPAL
-                   pal
-#else
-                NULL
-#endif
-                   );
-        if (!tex) {
-                set_gfx_mode(GFX_TEXT, 0, 0, 0, 0);
-                allegro_message("error loading bitmap\n%s\n",
-                                              allegro_error);
-                ERR(damn bitmap);
-                   return kFuncFailed;
-           }
-#ifdef ITSPAL
-        set_palette(pal);
-#endif
-#endif
-        textprintf_centre_ex(screen,font,SCREEN_W/2,SCREEN_H/2,makecol(0,0,0),
-                        -1,"just move the mouse or press a valid key ie. W");
-        clear_to_color(buffer,makecol(0,0,0));
         return kFuncOK;
 }
 
+EFunctionReturnTypes_t
+DeInit()
+{
+        destroy_bitmap(buffer);
+
+        ERR_IF(kFuncOK!=DeInitInput(),
+                        return kFuncFailed);
+        return kFuncOK;
+}

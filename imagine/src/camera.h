@@ -30,6 +30,11 @@
 
 #include "allegro.h"
 
+
+#define HOW_MANY_CAMS 2 //u'll get this num at power of two, numcams
+#define NUM_CAMS ((HOW_MANY_CAMS*HOW_MANY_CAMS)) //don't change this for now
+
+
 class TCamera {//motion is relative to camera
 private:
         int     fov_low_limit,
@@ -219,6 +224,10 @@ public:
         void SlideView(int x, int y);
         void EnlargeView(int w,int h);
 };//class
+
+
+extern CAMERA_CLASS cams[NUM_CAMS];
+extern int current_cam;
 
 
 #endif

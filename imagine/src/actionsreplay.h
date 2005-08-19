@@ -51,7 +51,7 @@ public:
 
         EFunctionReturnTypes_t
         GetLastActionFromBuf(int *actnum, bool *isactive);
-        
+
         EFunctionReturnTypes_t
         ToActionsBuffer(int src,bool isactive);
 

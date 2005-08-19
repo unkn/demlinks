@@ -25,13 +25,9 @@
 *
 ****************************************************************************/
 
+#include "_gcdefs.h"
 #include "timedinput.h"
 #include "pnotetrk.h"
-
-#ifdef USING_COMMON_INPUT_BUFFER
-        #include "timedmouse.cpp"
-        #include "timedkeys.cpp"
-#endif
 
 volatile INPUT_TYPE gInputBuf[MAX_INPUT_EVENTS_BUFFERED];
 volatile int gInputBufTail;
@@ -43,16 +39,8 @@ enum {
         gUnLock=0,
         gLock=1
 };
-/*****************************************************************************/
-/*INPUT_TYPE &
-INPUT_TYPE::operator=(const INPUT_TYPE & source)
-{
-        if (&source==this)
-                return *this;
-        type=source.type;
-        how_many=source.how_many;
-        return *this;
-}*/
+TBaseInputInterface *AllLowLevelInputs[kMaxInputTypes];//array of pointers
+
 /*****************************************************************************/
 INPUT_TYPE&
 INPUT_TYPE::operator=(const volatile INPUT_TYPE & source)
@@ -75,9 +63,11 @@ INPUT_TYPE::operator=(const INPUT_TYPE & source)
 }
 /*****************************************************************************/
 EFunctionReturnTypes_t
-RemoveNextInputFromBuffer(INPUT_TYPE *into)
+MoveFirstGroupFromBuffer(INPUT_TYPE *into)
 {
         if (gInputBufTail != gInputBufHead) {//aka non empty buffer
+                LAME_PROGRAMMER_IF(into==NULL,
+                                return kFuncFailed);
                 gInputLock=gLock;
                 *into=gInputBuf[gInputBufHead];
                 /*into->type = gInputBuf[gInputBufHead].type;
@@ -87,8 +77,8 @@ RemoveNextInputFromBuffer(INPUT_TYPE *into)
 
                 //gInputBuf[gInputBufHead]=kClearInput;
 
-                gInputBuf[gInputBufHead].type=kNoInputType;
-                gInputBuf[gInputBufHead].how_many=0;
+//                gInputBuf[gInputBufHead].type=-1;//unused
+  //              gInputBuf[gInputBufHead].how_many=0;
                 //end u.c.
                 gInputBufHead = (gInputBufHead+1) % MAX_INPUT_EVENTS_BUFFERED;
                 //remove it
@@ -99,7 +89,7 @@ RemoveNextInputFromBuffer(INPUT_TYPE *into)
 }
 /*****************************************************************************/
 int
-HowManyInputsInBuffer()
+HowManyDifferentInputsInBuffer()
 {
         if (gInputBufTail >= gInputBufHead)
                 return gInputBufTail-gInputBufHead;
@@ -108,9 +98,9 @@ HowManyInputsInBuffer()
 }
 /*****************************************************************************/
 bool
-IsInputBufferFull()
+IsBufferFull()
 {
-        return (HowManyInputsInBuffer()==MAX_INPUT_EVENTS_BUFFERED-gInputBufHead-1);
+        return (HowManyDifferentInputsInBuffer()==MAX_INPUT_EVENTS_BUFFERED-gInputBufHead-1);
 }
 
 /*****************************************************************************/
@@ -118,7 +108,7 @@ IsInputBufferFull()
 
 
 EFunctionReturnTypes_t
-InstallTimedInput(int a_Flags, int a_KeyboardTimerFreq, int a_MouseTimerFreq)
+InstallAllInputs(const Passed_st *a_Params)
 {
         LOCK_VARIABLE(gInputBuf);
         LOCK_VARIABLE(gInputBufTail);
@@ -129,31 +119,51 @@ InstallTimedInput(int a_Flags, int a_KeyboardTimerFreq, int a_MouseTimerFreq)
         LOCK_FUNCTION(ToCommonBuf);
         gInputLock=gUnLock;
         gInputBufTail=gInputBufHead=gInputBufPrevTail=0;
+
+        /*these (two lines) need to be changed/added by programmer if any new 
+         * input interfaces are created/deleted */
+        AllLowLevelInputs[kKeyboardInputType]=new MKeyboardInputInterface;
+        AllLowLevelInputs[kMouseInputType]=new MMouseInputInterface;
+
         for (int i=0;i<kMaxInputTypes;i++) {
                 gLostInput[i]=0;
+                LAME_PROGRAMMER_IF(AllLowLevelInputs[i]==NULL,
+                                return kFuncFailed);
+                ERR_IF(kFuncOK!=AllLowLevelInputs[i]->Install(a_Params),
+                                return kFuncFailed);
         }//for
-        gInputBuf[gInputBufPrevTail].type=kNoInputType;
 
-        ERR_IF(!InstallTimedKeyboard(a_Flags, a_KeyboardTimerFreq)
+
+
+        //gInputBuf[gInputBufPrevTail].type=kNoInputType;
+
+/*       ERR_IF(!InstallTimedKeyboard(a_Flags, a_KeyboardTimerFreq)
                 ,return kFuncFailed;
                 );
         ERR_IF(!InstallTimedMouse(a_Flags, a_MouseTimerFreq)
                 ,return kFuncFailed;
                 );
+*/
+        return kFuncOK;
+}
 
+/*****************************************************************************/
+EFunctionReturnTypes_t
+UnInstallAllInputs()
+{
+        for (int i=0;i<kMaxInputTypes;i++) {
+                ERR_IF(kFuncOK!=AllLowLevelInputs[i]->UnInstall(),
+                                return kFuncFailed);
+                LAME_PROGRAMMER_IF(NULL==AllLowLevelInputs[i],
+                                return kFuncFailed;);
+                delete AllLowLevelInputs[i];
+                AllLowLevelInputs[i]=NULL;
+        }//for
         return kFuncOK;
 }
 
 /*****************************************************************************/
 void
-UnInstallTimedInput()
-{
-        UnInstallTimedMouse();
-        UnInstallTimedKeyboard();
-}
-
-/*****************************************************************************/
-inline void
 ToCommonBuf(int input_type)
 {
         //if we have gInputLock==gLock we're in the process of removing one 

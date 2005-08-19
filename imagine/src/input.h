@@ -28,32 +28,20 @@
 #ifndef INPUT___H
 #define INPUT___H
 
-#include "common.h"
 #include "pnotetrk.h"
 #include "genericinput.h"
 
+extern const char *kCombiFileName;
 
 
-//bool install_input();//true if all ok
 
 EFunctionReturnTypes_t
 InitInput();
 
-/*
 EFunctionReturnTypes_t
-InitActions();
+DeInitInput();
 
-EFunctionReturnTypes_t
-AllActionsHandleInput(const int a_Type,
-                        const void **from,
-                        const int a_HowMany);
 
-EFunctionReturnTypes_t
-RefreshActionsAndReplay_ConsumingInput();
-
-EFunctionReturnTypes_t
-ExecuteAllActions();
-*/
 EFunctionReturnTypes_t
 Executant();
 

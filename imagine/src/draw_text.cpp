@@ -30,9 +30,9 @@
 
 void
 draw_text(BITMAP *bmp, int cur_cam) {
-        MProjectedCamera *mycam=&cams[cur_cam];
+   //     MProjectedCamera *mycam=&cams[cur_cam];
    /* overlay some text */
-   set_clip_rect(bmp, 0, 0, bmp->w, bmp->h);
+/*   set_clip_rect(bmp, 0, 0, bmp->w, bmp->h);
    textprintf_ex(bmp, font, 0,  0, makecol(255,255,255), -1,
                  "Viewport width: %d (l/L changes)", mycam->GetW());
    textprintf_ex(bmp, font, 0,  8, makecol(255,255,255), -1,
@@ -51,14 +51,14 @@ draw_text(BITMAP *bmp, int cur_cam) {
                  "Y position: %.2f (n/N changes)", ypos);
    textprintf_ex(bmp, font, 0, 48, makecol(255,255,255), -1,
                  "Z position: %.2f (b/B changes)", zpos);
-/*   textprintf_ex(bmp, font, 0, 56, makecol(255,255,255), -1,
+   textprintf_ex(bmp, font, 0, 56, makecol(255,255,255), -1,
                  "Heading: %.2f deg (left/right changes)", DEG(heading));
    textprintf_ex(bmp, font, 0, 64, makecol(255,255,255), -1,
                  "Pitch: %.2f deg (up/down changes)", DEG(pitch));
    textprintf_ex(bmp, font, 0, 72, makecol(255,255,255), -1,
                  "Roll: %.2f deg (*128.0/M_PI=%.2f) (q/e changes)",
                  DEG(roll),
-                 roll*128.0/M_PI);*/
+                 roll*128.0/M_PI);
    float xf,yf,zf,xu,yu,zu;
    mycam->GetFrontVector(&xf,&yf,&zf);
    mycam->GetUpVector(&xu,&yu,&zu);
@@ -66,11 +66,11 @@ draw_text(BITMAP *bmp, int cur_cam) {
    textprintf_ex(bmp, font, 0, 80, makecol(255,255,255), -1,
                  "Front vector: %.2f, %.2f, %.2f", xf, yf, zf);
    textprintf_ex(bmp, font, 0, 88, makecol(255,255,255), -1,
-                 "Up vector: %.2f, %.2f, %.2f", xu, yu, zu);
-   textprintf_ex(bmp, font, 0, 96, makecol(255,255,255), -1,
-                 "Frames per second: %d", fps);
-   textprintf_ex(bmp, font, 0, 104, makecol(255,255,255), -1,
-                 "Using camera number: (%d)%d/%d", current_cam,cur_cam,NUM_CAMS);
+                 "Up vector: %.2f, %.2f, %.2f", xu, yu, zu);*/
+//   textprintf_ex(bmp, font, 0, 96, makecol(255,255,255), -1,
+  //               "Frames per second: %d", fps);
+   //textprintf_ex(bmp, font, 0, 104, makecol(255,255,255), -1,
+     //            "Using camera number: (%d)%d/%d", current_cam,cur_cam,NUM_CAMS);
 
 }
 
