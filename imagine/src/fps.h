@@ -28,12 +28,13 @@
 #ifndef FPS_____H
 #define FPS_____H
 
+#include "pnotetrk.h"
+
 extern volatile int fps;
 extern volatile int framecount;
 
 
-
-void fps_check(void);
-void install_fps();
+EFunctionReturnTypes_t
+install_fps();
 
 #endif

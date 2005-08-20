@@ -38,7 +38,7 @@
 #include "init.h"
 #include "fps.h"
 #include "flags.h"
-
+#include "globaltimer.h"
 
 
 BITMAP *buffer;
@@ -52,6 +52,8 @@ Init()
         InitNotifyTracker();
         ERR_IF(allegro_init() != 0,
                         return kFuncFailed);
+
+        InstallGlobalTimer();
 
         ERR_IF( kFuncOK != InitInput(),
                         return kFuncFailed);
@@ -108,5 +110,8 @@ DeInit()
 
         ERR_IF(kFuncOK!=DeInitInput(),
                         return kFuncFailed);
+
+        UnInstallGlobalTimer();
+
         return kFuncOK;
 }

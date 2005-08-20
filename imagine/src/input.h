@@ -45,6 +45,7 @@ DeInitInput();
 EFunctionReturnTypes_t
 Executant();
 
-
+EFunctionReturnTypes_t
+MangleInputs();
 
 #endif

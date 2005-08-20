@@ -38,9 +38,10 @@
 #include "camera.h"
 #include "excamera.h"
 #include "flags.h"
+#include "globaltimer.h"
 
 //rest(x) when no input, reduces cpu cycles inside loop
-#define IDLE_TIME_IN_LOOP 100
+#define IDLE_TIME_IN_LOOP 300
 
 bool need_screen_refresh=true;//first time display screen
 
@@ -51,10 +52,16 @@ int main(void)
         EXIT_IF(kFuncOK != Init());
 
    while (!Flag(kF_QuitProgram)) {
-        EXIT_IF(kFuncOK != Executant());
+
+        EXIT_IF(kFuncOK != MangleInputs());
+
+        while (gTimer != gSpeedRegulator) {//are we behind schedule?
+                //then, catch on
+                EXIT_IF(kFuncOK != Executant());
+                gSpeedRegulator=(gSpeedRegulator+1) % GLOBALTIMER_WRAPSAROUND_AT;
+        }
 
 
-        bool need_screen_refresh=false;
         for (int i=0;i<NUM_CAMS;i++){
                 if (cams[i].NeedsRefresh()) {
                         render(buffer,i);//update some part of screen

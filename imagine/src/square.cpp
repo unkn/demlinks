@@ -35,14 +35,14 @@
 #include "square.h"
 #include "timedinput.h"
 #include "actions.h"
-
+#include "globaltimer.h"
 
 #define GRID_SIZEX    MAX_KEYS_BUFFERED
 
 #define TILE_SIZE    1.0f
 
 //temp
-int global_select=3;
+int global_select=1;
 
 /* render a tile of the grid which is centered on x and z(world-space)
    with center vertex x,y,z
@@ -298,14 +298,14 @@ case 1: {
                 KEY_TYPE into;
                 int ind=ofs % MAX_KEYS_BUFFERED;
                 into.ScanCode=gKeyBuf[ind].ScanCode;
-                into.Time=gKeyBuf[ind].Time;
+                into.TimeDiff=gKeyBuf[ind].TimeDiff;
 
                 int initial=0;
 
                 easy2((ofs % GRID_SIZEY) == gKeyBufHead,
                         "KHEAD%d",gKeyBufHead);
 
-                easy("%d",into.Time);
+                easy("%d",into.TimeDiff);
                 easy("%s%s",
                         GetKeyName(&into),
                         ISPRESSED(into.ScanCode)?"_":"~"
@@ -321,7 +321,7 @@ case 1: {
                 //BUG here, def and assignment fails, they've to be split
                 MOUSE_TYPE mous;
                 mous=gMouseBuf[indm];
-                easy("%d",mous.Time);
+                easy("%d",mous.TimeDiff);
                 easy("%d",mous.MickeyX);
                 easy("%d",mous.MickeyY);
                 easy("%d",mous.Flags);
@@ -414,6 +414,24 @@ case 3: {
                         "GI_StrictOrderSLL[%d].HowManySoFar=%d",
                                 ofs % kMaxInputTypes,
                            GI_StrictOrderSLL[ofs % kMaxInputTypes].HowManySoFar);
+break;}
+case 4:{
+                int initial=3;
+                int now=(initial-1)*GRID_SIZEX+3;
+                easy3("TICKS_OF_GLOBALTIMER:%ld",
+                               TICKS_OF_GLOBALTIMER);
+                initial++;
+                now=(initial-1)*GRID_SIZEX+3;
+                easy3("BPS_OF_GLOBALTIMER:%d",
+                               BPS_OF_GLOBALTIMER);
+                initial++;
+                now=(initial-1)*GRID_SIZEX+3;
+                easy3("gTimer:%d",
+                               gTimer);
+                initial++;
+                now=(initial-1)*GRID_SIZEX+3;
+                easy3("gSpeedRegulator:%d",
+                               gSpeedRegulator);
 break;}
 default: {
         ERR(undefined yet);

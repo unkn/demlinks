@@ -1,5 +1,15 @@
 WARNING: This is more like a draft!
 
+=demlinks-0.0.17
+LU: 21 Aug 2005
+* added new global timer gTimer
+* made key &mouse use same timer: gTimer
+* changed timer of inputs(mouse&key) to keep the time difference between them inputs
+* made granularity of gTimer (and all its descendants) = 1000 miliseconds / second.
+$ the goal is to execute the actions depending on the diff between the inputs,
+that long to be the pause between the executed actions, same as the diff
+between the inputs. Hmm....
+
 =demlinks-0.0.16
 LU: 19 Aug 2005
 * done some cleanups

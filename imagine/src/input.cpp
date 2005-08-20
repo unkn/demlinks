@@ -66,10 +66,10 @@ EFunctionReturnTypes_t
 InitInput()
 {
         Passed_st temp;
-        temp.fKeyFlags=kRealKeyboard | kRealKeyboardTimer;
-        temp.fKeyTimerFreq=1000;
-        temp.fMouseFlags=kRealMouse | kRealMouseTimer;
-        temp.fMouseTimerFreq=200;
+        temp.fKeyFlags=kRealKeyboard | kSimulatedKeyboardTimer;
+        //temp.fKeyTimerFreq=1000;
+        temp.fMouseFlags=kRealMouse | kSimulatedMouseTimer;
+        //temp.fMouseTimerFreq=200;
         ERR_IF( kFuncOK !=
                 InstallAllInputs(&temp),
                 return kFuncFailed;
@@ -80,7 +80,7 @@ InitInput()
         ERR_IF(kFuncOK != InitGenericInput(),
                         return kFuncFailed;);
 
-        ERR_IF(kFuncOK != InitActions(),//FIXME:
+        ERR_IF(kFuncOK != InitActions(),
                         return kFuncFailed;);
         return kFuncOK;
 }
@@ -224,24 +224,27 @@ MakeSureWeHaveGenericInput()
 }
 /*****************************************************************************/
 EFunctionReturnTypes_t
-Executant()
-//transform INPUTs to ACTIONs and executes those actions
+MangleInputs()
+//transform INPUTs to ACTIONs but doesn't execute those actions
 {
         ERR_IF(kFuncOK!= MakeSureWeHaveGenericInput(),
                         return kFuncFailed);
         ERR_IF(kFuncOK!= MakeSureWeHaveActions(),
                         return kFuncFailed);
 
-        //empties the actionsbuffer by executing them in order as they appear
-        //in that buffer, gee
-        ERR_IF(kFuncOK != MakeSureWeExecuteAllActions(),
-              return kFuncFailed);//if and only those that are active
-
         return kFuncOK;
 }
 
 
-
+/*****************************************************************************/
+EFunctionReturnTypes_t
+Executant()
+{
+        //empties the actionsbuffer by executing them in order as they appear
+        ERR_IF(kFuncOK != MakeSureWeExecuteAllActions(),
+              return kFuncFailed);
+        return kFuncOK;
+}
 /*****************************************************************************/
 /*****************************************************************************/
 /*****************************************************************************/

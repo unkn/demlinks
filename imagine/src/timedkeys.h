@@ -33,8 +33,8 @@
 #include "timedinput.h"
 
 enum {
-        kSimulatedKeyboard=0,
-        kSimulatedKeyboardTimer=0,
+        kSimulatedKeyboard=0,//don't install interrupt function
+        kSimulatedKeyboardTimer=0,//don't install interrupt timer func
         kNoKeyboardTimer=0,//just informative
 
         kRealKeyboard=1,
@@ -43,12 +43,12 @@ enum {
 
 #define MAX_KEYS_BUFFERED (10) //this many keys will be held in a buffer
 
-#define TIMER_TYPE int
+//#define KEYBOARD_TIMER_TYPE int, defined in timedinput.h
 
 #define SCANCODE_TYPE unsigned char
 #define KEY_TYPE KeyWithTimer_st
 struct KEY_TYPE{
-        TIMER_TYPE Time;
+        KEYBOARD_TIMER_TYPE TimeDiff;
         SCANCODE_TYPE ScanCode;//scancode of the key( with state)
         KEY_TYPE& operator=(const KEY_TYPE & source);
         KEY_TYPE& operator=(const volatile KEY_TYPE & source);
@@ -67,7 +67,7 @@ extern volatile int gKeyBufTail;
 extern volatile KEY_TYPE gKeyBuf[MAX_KEYS_BUFFERED];
 #endif
 
-extern volatile TIMER_TYPE gActualKeyboardTime;
+extern volatile KEYBOARD_TIMER_TYPE gActualKeyboardTime;
 
 
 //macros:

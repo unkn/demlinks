@@ -33,6 +33,17 @@
 //came first not to mention that between A and B there was the mouse motion.
 
 #include "pnotetrk.h"
+#include "globaltimer.h"
+
+#define KEY_USES_THIS_TIMEVARIABLE gTimer //gActualKeyboardTime
+#define KEYBOARD_TIMER_TYPE GLOBAL_TIMER_TYPE
+#define KEYBOARD_TIMER_WRAPSAROUND_AT GLOBALTIMER_WRAPSAROUND_AT
+
+#define MOUSE_USES_THIS_TIMEVARIABLE gTimer //gActualMouseTime
+#define MOUSE_TIMER_TYPE GLOBAL_TIMER_TYPE
+#define MOUSE_TIMER_WRAPSAROUND_AT GLOBALTIMER_WRAPSAROUND_AT
+
+//FIXME: there are some hacks in timed*.* files battling to keep generalization but obviously failing
 
 enum {
         kKeyboardInputType

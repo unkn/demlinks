@@ -298,7 +298,7 @@ kAI_Undefined_()
 
 //FIXME:temp
 extern int global_select;
-#define GLOBALMAX 4
+#define GLOBALMAX 5
 
 EFunctionReturnTypes_t
 kAI_NextSetOfValues_()

@@ -28,7 +28,11 @@
 #include "allegro.h"
 
 #include "fps.h"
+
+#include "_gcdefs.h"
+#include "pnotetrk.h"
 #include "consts.h"
+
 
 volatile int fps;
 volatile int framecount;
@@ -41,10 +45,12 @@ void fps_check(void)
 END_OF_FUNCTION(fps_check);
 
 
-void
+EFunctionReturnTypes_t
 install_fps() {
         LOCK_FUNCTION(fps_check);
         LOCK_VARIABLE(fps);
         LOCK_VARIABLE(framecount);
-        install_int_ex(fps_check, BPS_TO_TIMER(FPS_INT));
+        ERR_IF(0!=install_int_ex(fps_check, BPS_TO_TIMER(FPS_INT)),
+                        return kFuncFailed);
+        return kFuncOK;
 }

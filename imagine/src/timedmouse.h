@@ -35,10 +35,10 @@
 #define MAX_MOUSE_EVENTS_BUFFERED (10)
 
 #define MOUSE_TYPE MouseWithTimer_st
-#define MOUSE_TIMER_TYPE int
+//#define MOUSE_TIMER_TYPE int defined in timedinput.h
 
 struct MOUSE_TYPE {
-        MOUSE_TIMER_TYPE Time;
+        MOUSE_TIMER_TYPE TimeDiff;
         int Flags;
         signed int MouseZ;
         signed int MickeyX;
