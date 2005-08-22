@@ -43,6 +43,7 @@ GI_SLLTransducersArray_st GI_StrictOrderSLL[kMaxInputTypes];//head, may be NULL
 GI_SLLTransducersArray_st GI_RelaxedOrderSLL[kMaxInputTypes];//head -//-
 
 TBuffer<GENERICINPUT_TYPE> GenericInputBuffer(10);
+GLOBAL_TIMER_TYPE gLastGenericInputTime;
 
 /*****************************************************************************/
 /*****************************************************************************/
@@ -194,8 +195,7 @@ InitGenericInput()
                        return kFuncFailed);                     \
         __VA_ARGS__;                                            \
                 {EnumAllGI_t tmpi=_wha_;                        \
-        ERR_IF(kFuncOK!=newtrans->Result.Assign(&tmpi),         \
-                        return kFuncFailed);                    \
+                        newtrans->Result.Significant=tmpi;      \
                 }                                               \
         ERR_IF(kFuncOK!=                                        \
                 GI_##_stuff_##OrderSLL[kKeyboardInputType].Append(newtrans),\
@@ -339,8 +339,7 @@ OneGenericInputTransducer_st::OneGenericInputTransducer_st()
                 WhosNext=Head;
                 HowManySoFar=0;
                 LostInputsBecauseTheyDidntMatch=0;
-                EnumAllGI_t tmpi=kGI_Undefined;
-                WARN_IF(kFuncOK!=Result.Assign(&tmpi),);
+                Result.Significant=kGI_Undefined;
 
   //      MakeSureChildsAreGone();
 /*        Tail=NULL;
@@ -447,6 +446,20 @@ OneGenericInputTransducer_st::EatThis(const UnifiedInput_st *what,
                 WhosNext=WhosNext->Next;
                 if (WhosNext==NULL) {//das wars Tail
                         //then this is one generic input completed
+                        GLOBAL_TIMER_TYPE td;
+                        GLOBAL_TIMER_TYPE timenow;
+                        ERR_IF(kFuncOK!=
+                                AllLowLevelInputs[what->type]->GetMeTime(what->data,&timenow),
+                                return kFuncFailed);
+                        if (gLastGenericInputTime<=timenow) {
+                                td=timenow -gLastGenericInputTime;
+                        } else {
+                                td=GLOBALTIMER_WRAPSAROUND_AT - gLastGenericInputTime+1+timenow;
+                        }//else
+                        Result.Time=timenow;
+                        Result.TimeDiff=td;
+                        gLastGenericInputTime=timenow;
+
                         ERR_IF(kFuncOK!=PushToBuffer(),
                                         return kFuncFailed);
                         Reset();

@@ -34,21 +34,17 @@
 
 enum {
         kSimulatedKeyboard=0,//don't install interrupt function
-        kSimulatedKeyboardTimer=0,//don't install interrupt timer func
-        kNoKeyboardTimer=0,//just informative
-
         kRealKeyboard=1,
-        kRealKeyboardTimer=2,
 };
 
 #define MAX_KEYS_BUFFERED (10) //this many keys will be held in a buffer
 
-//#define KEYBOARD_TIMER_TYPE int, defined in timedinput.h
 
 #define SCANCODE_TYPE unsigned char
 #define KEY_TYPE KeyWithTimer_st
 struct KEY_TYPE{
-        KEYBOARD_TIMER_TYPE TimeDiff;
+        GLOBAL_TIMER_TYPE TimeDiff;
+        GLOBAL_TIMER_TYPE Time;
         SCANCODE_TYPE ScanCode;//scancode of the key( with state)
         KEY_TYPE& operator=(const KEY_TYPE & source);
         KEY_TYPE& operator=(const volatile KEY_TYPE & source);
@@ -67,7 +63,6 @@ extern volatile int gKeyBufTail;
 extern volatile KEY_TYPE gKeyBuf[MAX_KEYS_BUFFERED];
 #endif
 
-extern volatile KEYBOARD_TIMER_TYPE gActualKeyboardTime;
 
 
 //macros:
@@ -108,6 +103,9 @@ public:
 
         virtual EFunctionReturnTypes_t
         Compare(void *what, void *withwhat, int &result);
+
+        virtual EFunctionReturnTypes_t
+        GetMeTime(void * const &from, GLOBAL_TIMER_TYPE *dest);
 
 };//class
 

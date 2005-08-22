@@ -31,14 +31,13 @@
 #include "timedmouse.h"
 
 #ifndef MOUSE_USES_THIS_TIMEVARIABLE
-#error "please set MOUSE_USES_THIS_TIMEVARIABLE to a volatile variable to be used as a timer source for .TimeDiff from MOUSE_TYPE structure. Also don't forget to use kSimulatedMouseTimer on .Install"
+#error "please set MOUSE_USES_THIS_TIMEVARIABLE to a volatile variable to be used as a timer source for .TimeDiff(and .Time) from MOUSE_TYPE structure."
 #endif
 
 
 #define DEFAULT_MOUSE_TIMER_FREQ_PER_SECOND (200)
 
-volatile MOUSE_TIMER_TYPE gLastMouseTime;
-volatile MOUSE_TIMER_TYPE gActualMouseTime;
+volatile GLOBAL_TIMER_TYPE gLastMouseTime;
 
 volatile MOUSE_TYPE gMouseBuf[MAX_MOUSE_EVENTS_BUFFERED];
 int gMouseBufHead;
@@ -77,6 +76,7 @@ MOUSE_TYPE::operator=(const MOUSE_TYPE & source)
         if (&source==this)
                 return *this;
         TimeDiff=source.TimeDiff;
+        Time=source.Time;
         Flags=source.Flags;
         MouseZ=source.MouseZ;
         MickeyX=source.MickeyX;
@@ -91,27 +91,26 @@ MOUSE_TYPE::operator=(const volatile MOUSE_TYPE & source)
         if (&source==this)
                 return *this;
         TimeDiff=source.TimeDiff;
+        Time=source.Time;
         Flags=source.Flags;
         MouseZ=source.MouseZ;
         MickeyX=source.MickeyX;
         MickeyY=source.MickeyY;
         return *this;
 }
-/*****************************************************************************
-MOUSE_TYPE&
-MOUSE_TYPE::operator=(volatile MOUSE_TYPE & source)
+/*****************************************************************************/
+EFunctionReturnTypes_t
+MMouseInputInterface::GetMeTime(void * const&from, GLOBAL_TIMER_TYPE *dest)
 {
-        if (&source==this)
-                return *this;
-        TimeDiff=source.TimeDiff;
-        Flags=source.Flags;
-        MouseZ=source.MouseZ;
-        MickeyX=source.MickeyX;
-        MickeyY=source.MickeyY;
-        return *this;
+        PARANOID_IF(from==NULL,
+                        return kFuncFailed);
+        PARANOID_IF(dest==NULL,
+                        return kFuncFailed);
+        *dest=((MOUSE_TYPE *)from)->Time;
+        return kFuncOK;
 }
 
-*****************************************************************************/
+/*****************************************************************************/
 EFunctionReturnTypes_t
 MMouseInputInterface::MoveFirstFromBuffer(void *into)
 {
@@ -121,22 +120,8 @@ MMouseInputInterface::MoveFirstFromBuffer(void *into)
                 gMouseLock=gMLock;//lock it so if we get interrupted the int 
                 //cannot modify Head of first item from buffer
 
-                //volatile MOUSE_TYPE *t=&gMouseBuf[gMouseBufHead];
+
                 *(MOUSE_TYPE *)into=gMouseBuf[gMouseBufHead];
-/*                into->Flags = t->Flags;
-                into->MouseZ = t->MouseZ;
-                into->MickeyX = t->MickeyX;
-                into->MickeyY = t->MickeyY;
-                into->TimeDiff = t->TimeDiff;*/
-                //unnecessary clear
-                //gMouseBuf[gMouseBufHead].Flags=0;
-                /*
-                t->Flags=0;
-                t->MouseZ=0;
-                t->MickeyX=0;
-                t->MickeyY=0;
-                t->TimeDiff=0;*/
-                //end u.c.
 
                 gMouseBufHead = (gMouseBufHead+1) % MAX_MOUSE_EVENTS_BUFFERED;
                 //remove it
@@ -157,8 +142,6 @@ void MouseIntHandler(int flags)
         }//fi
         if (flags & MOUSE_FLAG_MOVE) {
                 get_mouse_mickeys(&mikx,&miky);
-                //FIXME: if we want to cumulate movements we add mikx&miky
-                //to the last entry
                 if ( (gMouseBufHead!=gMouseBufTail) &&//necessary for PrevTail
                         (mz==gMouseBuf[gMouseBufPrevTail].MouseZ) &&
                         (flags==gMouseBuf[gMouseBufPrevTail].Flags)
@@ -180,14 +163,15 @@ void MouseIntHandler(int flags)
                 gMouseBuf[gMouseBufTail].MickeyX=mikx;
                 gMouseBuf[gMouseBufTail].MickeyY=miky;
                 gMouseBuf[gMouseBufTail].Flags=flags;
-                MOUSE_TIMER_TYPE td;
-                MOUSE_TIMER_TYPE timenow=MOUSE_USES_THIS_TIMEVARIABLE;
+                GLOBAL_TIMER_TYPE td;
+                GLOBAL_TIMER_TYPE timenow=MOUSE_USES_THIS_TIMEVARIABLE;
                 if (gLastMouseTime <= timenow) {
                         td=timenow-gLastMouseTime;
                 } else {
-                        td=MOUSE_TIMER_WRAPSAROUND_AT-gLastMouseTime+1+timenow;
+                        td=GLOBALTIMER_WRAPSAROUND_AT-gLastMouseTime+1+timenow;
                 }//else
                 gMouseBuf[gMouseBufTail].TimeDiff=td;
+                gMouseBuf[gMouseBufTail].Time=timenow;
                 gLastMouseTime=timenow;
 #ifdef USING_COMMON_INPUT_BUFFER
                 ToCommonBuf(kMouseInputType);
@@ -199,18 +183,11 @@ void MouseIntHandler(int flags)
 } END_OF_FUNCTION(MouseIntHandler);
 
 /*****************************************************************************/
-void MouseTimerHandler()
-{
-        gActualMouseTime++;
-        //this implies a certain wrap-around at perhaps 2GB+1=-2GB
-        //but it doesn't quite matter!
-} END_OF_FUNCTION(MouseTimerHandler);
 /*****************************************************************************/
 
 EFunctionReturnTypes_t
 MMouseInputInterface::UnInstall()
 {
-        remove_int(MouseTimerHandler);
         remove_mouse();
         return kFuncOK;
 }
@@ -231,31 +208,20 @@ MMouseInputInterface::Install(const Passed_st *a_Params)
         LOCK_VARIABLE(gMouseLock);
 
 
-        gActualMouseTime=0;
-        LOCK_VARIABLE(gActualMouseTime);
 
         LOCK_VARIABLE(gLastMouseTime);
         gLastMouseTime=MOUSE_USES_THIS_TIMEVARIABLE;
         
-        LOCK_FUNCTION(MouseTimerHandler);
         LOCK_FUNCTION(MouseIntHandler);
 
         ERR_IF(install_timer()
                 ,return kFuncFailed;
               );
-        if (a_Params->fMouseFlags & kRealMouseTimer) {
-                int freq=a_Params->fMouseTimerFreq;
-                if (freq <= 0)
-                        freq = DEFAULT_MOUSE_TIMER_FREQ_PER_SECOND;
-                ERR_IF(install_int_ex(MouseTimerHandler,
-                                BPS_TO_TIMER(freq))
-                        ,return kFuncFailed;
-                      );
-        }//fi
 
         ERR_IF(install_mouse() == -1
                 ,return kFuncFailed;
                 );
+
         if (a_Params->fMouseFlags & kRealMouse)
                 mouse_callback = MouseIntHandler;
 

@@ -30,24 +30,26 @@
 /*****************************************************************************/
 #include "_gcdefs.h"
 #include "pnotetrk.h"
-
+#include "globaltimer.h"
 
 /*****************************************************************************/
 
 template <class T>
 struct GenericHelper_st {
         T Significant;
+        GLOBAL_TIMER_TYPE Time;
+        GLOBAL_TIMER_TYPE TimeDiff;
 
         EFunctionReturnTypes_t
         Compare(const GenericHelper_st*withwhat,
                         int *result);
 
-        EFunctionReturnTypes_t
-        Assign(const T *value);//contents of value are COPied, not shared
+/*        EFunctionReturnTypes_t
+        Assign(const T *value);//contents of value are COPied, not shared*/
 };
 
 /*****************************************************************************/
-template <class T>
+/*template <class T>
 EFunctionReturnTypes_t
 GenericHelper_st<T>::Assign(const T *value)
 {//a COPY of *value is made !!
@@ -55,7 +57,7 @@ GenericHelper_st<T>::Assign(const T *value)
                         return kFuncFailed);
         Significant=*value;
         return kFuncOK;
-}
+}*/
 /*****************************************************************************/
 template <class T>
 EFunctionReturnTypes_t

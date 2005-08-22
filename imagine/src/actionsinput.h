@@ -63,6 +63,7 @@ enum EnumAllAI_t{//action indexes
 #define ACTIONSINPUT_TYPE GenericHelper_st<EnumAllAI_t>
 //this buffer holds the queue of requests_of_actions to be executed
 extern TBuffer<ACTIONSINPUT_TYPE> ActionsInputBuffer;
+extern GLOBAL_TIMER_TYPE gLastActionsInputTime;
 /*****************************************************************************/
 
 

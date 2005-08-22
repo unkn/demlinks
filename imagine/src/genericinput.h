@@ -72,17 +72,9 @@ enum EnumAllGI_t {//these are NOT indexes, may start from anywhere
 #define TRANSDUCER_S__TYPE void
 
 
-/*struct GenericHelper_st {
-        EnumAllAI_st Significant;
-        EFunctionReturnTypes_t
-        Compare(const GenericHelper_st*withwhat,
-                        int *result);
-        EFunctionReturnTypes_t
-        Assign(const EnumAllAI_st *value);//contents of value are COPied, not shared
-};*/
 /*****************************************************************************/
 extern TBuffer<GENERICINPUT_TYPE> GenericInputBuffer;
-
+extern GLOBAL_TIMER_TYPE gLastGenericInputTime;
 /*****************************************************************************/
 struct UnifiedInput_st {
         int type;

@@ -66,10 +66,8 @@ EFunctionReturnTypes_t
 InitInput()
 {
         Passed_st temp;
-        temp.fKeyFlags=kRealKeyboard | kSimulatedKeyboardTimer;
-        //temp.fKeyTimerFreq=1000;
-        temp.fMouseFlags=kRealMouse | kSimulatedMouseTimer;
-        //temp.fMouseTimerFreq=200;
+        temp.fKeyFlags=kRealKeyboard;
+        temp.fMouseFlags=kRealMouse;
         ERR_IF( kFuncOK !=
                 InstallAllInputs(&temp),
                 return kFuncFailed;

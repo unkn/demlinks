@@ -36,14 +36,10 @@
 #include "globaltimer.h"
 
 #define KEY_USES_THIS_TIMEVARIABLE gTimer //gActualKeyboardTime
-#define KEYBOARD_TIMER_TYPE GLOBAL_TIMER_TYPE
-#define KEYBOARD_TIMER_WRAPSAROUND_AT GLOBALTIMER_WRAPSAROUND_AT
 
 #define MOUSE_USES_THIS_TIMEVARIABLE gTimer //gActualMouseTime
-#define MOUSE_TIMER_TYPE GLOBAL_TIMER_TYPE
-#define MOUSE_TIMER_WRAPSAROUND_AT GLOBALTIMER_WRAPSAROUND_AT
 
-//FIXME: there are some hacks in timed*.* files battling to keep generalization but obviously failing
+//FIXME(in progress): there are some hacks in timed*.* files battling to keep generalization but obviously failing
 
 enum {
         kKeyboardInputType
@@ -54,9 +50,7 @@ enum {
 
 struct Passed_st {//a ptr to this struct is passed when calling Install(..)
         int fKeyFlags;
-        int fKeyTimerFreq;
         int fMouseFlags;
-        int fMouseTimerFreq;
 };
 
 
@@ -92,6 +86,9 @@ public:
 
         virtual EFunctionReturnTypes_t
         Compare(void *what, void *withwhat, int &result)=0;
+        
+        virtual EFunctionReturnTypes_t
+        GetMeTime(void * const &from, GLOBAL_TIMER_TYPE *dest)=0;
 
 };//class
 

@@ -37,7 +37,7 @@
 #ifndef _GCDEFS__H__
 #define _GCDEFS__H__
 
-#define PARANOIA_DEBUG
+//#include "../config.h"
 
 #include "_cppdefs.h" /* last */
 

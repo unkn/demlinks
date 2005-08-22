@@ -1,4 +1,10 @@
-WARNING: This is more like a draft!
+
+=demlinks-0.0.18
+LU: 22 Aug 2005
+* trying to get rid of _gcdefs.h by making use of ../config.h
+* cleanups in timed*.*
+* made TimeDiff for generic and actions input
+* and some things I don't remember
 
 =demlinks-0.0.17
 LU: 21 Aug 2005

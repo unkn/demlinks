@@ -35,10 +35,11 @@
 #define MAX_MOUSE_EVENTS_BUFFERED (10)
 
 #define MOUSE_TYPE MouseWithTimer_st
-//#define MOUSE_TIMER_TYPE int defined in timedinput.h
+//#define GLOBAL_TIMER_TYPE int defined in timedinput.h
 
 struct MOUSE_TYPE {
-        MOUSE_TIMER_TYPE TimeDiff;
+        GLOBAL_TIMER_TYPE TimeDiff;
+        GLOBAL_TIMER_TYPE Time;
         int Flags;
         signed int MouseZ;
         signed int MickeyX;
@@ -58,15 +59,11 @@ extern volatile MOUSE_TYPE gMouseBuf[MAX_MOUSE_EVENTS_BUFFERED];
 
 extern volatile int gLostMouseEvents;
 
-extern volatile MOUSE_TIMER_TYPE gActualMouseTime;
 
 enum {
         kSimulatedMouse=0,
-        kSimulatedMouseTimer=0,
-        kNoMouseTimer=0,
 
         kRealMouse=64,//for timedinput.h don't use same k values like t..keys.h
-        kRealMouseTimer=128
 };
 
 class MMouseInputInterface:public TBaseInputInterface {
@@ -101,6 +98,10 @@ public:
 
         virtual EFunctionReturnTypes_t
         Compare(void *what, void *withwhat, int &result);
+
+        virtual EFunctionReturnTypes_t
+        GetMeTime(void * const&from, GLOBAL_TIMER_TYPE *dest);
+
 
 };//class
 

@@ -30,9 +30,9 @@ noinst_HEADERS = 	notetrk.h	\
 dml_imagine_SOURCES = 	notetrk.cpp	\
 			pnotetrk.cpp	\
 			globaltimer.cpp \
+			timedinput.cpp  \
 			timedmouse.cpp \
 			timedkeys.cpp \
-			timedinput.cpp  \
 			input.cpp \
 			genericinput.cpp \
 			actionsinput.cpp \

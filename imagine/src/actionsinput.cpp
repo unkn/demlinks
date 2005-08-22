@@ -29,6 +29,8 @@
 #include "macros.h"
 
 TBuffer<ACTIONSINPUT_TYPE> ActionsInputBuffer(10);
+GLOBAL_TIMER_TYPE gLastActionsInputTime;
+
 //there's only one generic input (source)
 AI_SLLTransducersArray_st AI_StrictOrderSLL;//head, may be NULL
 AI_SLLTransducersArray_st AI_RelaxedOrderSLL;//head -//-
@@ -156,8 +158,7 @@ InitActionsInput()
         __VA_ARGS__;                                    \
         {                                               \
                 EnumAllAI_t tmpi2=_wha_;                \
-                ERR_IF(kFuncOK!=newtrans->Result.Assign(&tmpi2),\
-                        return kFuncFailed);            \
+                newtrans->Result.Significant=tmpi2;     \
         }                                               \
         AI_##_stuff_##OrderSLL.Append(newtrans);
 
@@ -169,8 +170,7 @@ InitActionsInput()
                        return kFuncFailed);             \
        {\
                 EnumAllGI_t tmpi=_a_;                   \
-                ERR_IF(kFuncOK!=newgi->Assign(&tmpi),   \
-                                return kFuncFailed);    \
+               newgi->Significant=tmpi;                 \
        }\
                 newtrans->Append(newgi);
 
@@ -269,8 +269,7 @@ OneActionsInputTransducer_st::OneActionsInputTransducer_st()
         Tail=NULL;
         WhosNext=Head;
         HowManySoFar=0;
-        EnumAllAI_t tmpi=kAI_Undefined;
-        WARN_IF(kFuncOK!=Result.Assign(&tmpi),);
+        Result.Significant=kAI_Undefined;
         LostInputsBecauseTheyDidntMatch=0;
 }
 /*****************************************************************************/
@@ -371,6 +370,18 @@ OneActionsInputTransducer_st::EatThis(const GENERICINPUT_TYPE *whichgi,
                 WhosNext=WhosNext->Next;
                 if (WhosNext==NULL) {//das wars Tail
                         //then this is one generic input completed
+                        GLOBAL_TIMER_TYPE td;
+                        GLOBAL_TIMER_TYPE timenow;
+                        timenow=whichgi->Time;
+                        if (gLastActionsInputTime <= timenow) {
+                                td=timenow -gLastActionsInputTime;
+                        } else {
+                                td=GLOBALTIMER_WRAPSAROUND_AT - gLastActionsInputTime+1+timenow;
+                        }//else
+                        Result.Time=timenow;
+                        Result.TimeDiff=td;
+                        gLastActionsInputTime=timenow;
+
                         ERR_IF(kFuncOK!=PushToBuffer(),
                                         return kFuncFailed);
                         Reset();

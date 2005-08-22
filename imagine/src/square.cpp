@@ -390,7 +390,12 @@ case 3: {
                 now=(initial-1)*GRID_SIZEX-1;
                 easy2((ofs % GRID_SIZEY) == GenericInputBuffer.fHead,
                         "GHEAD%d",GenericInputBuffer.fHead);
-                easy("%d",GenericInputBuffer.Buffer[ofs % GRID_SIZEY].Significant);
+                easy("%d",
+                        GenericInputBuffer.Buffer[ofs % GRID_SIZEY].Significant
+                    );
+                easy("%d",
+                        GenericInputBuffer.Buffer[ofs % GRID_SIZEY].TimeDiff
+                        );
                 easy2((ofs % GRID_SIZEY) == GenericInputBuffer.fTail,
                         "GTAIL%d",GenericInputBuffer.fTail);
 
@@ -401,11 +406,16 @@ case 3: {
                 now=(initial-1)*GRID_SIZEX-1;
                 easy2((ofs % GRID_SIZEY) == ActionsInputBuffer.fHead,
                         "AHEAD%d",ActionsInputBuffer.fHead);
-                easy("%d",ActionsInputBuffer.Buffer[ofs % GRID_SIZEY].Significant);
+                easy("%d",
+                        ActionsInputBuffer.Buffer[ofs % GRID_SIZEY].Significant
+                    );
+                easy("%d",
+                        ActionsInputBuffer.Buffer[ofs % GRID_SIZEY].TimeDiff
+                        );
                 easy2((ofs % GRID_SIZEY) == ActionsInputBuffer.fTail,
                         "ATAIL%d",ActionsInputBuffer.fTail);
 
-                initial+=1;
+                /*initial+=1;
                 now=(initial-1)*GRID_SIZEX+1;
                 easy3("SLLArray_st GI_StrictOrderSLL[kMaxInputTypes=%d]",
                                 kMaxInputTypes);
@@ -413,7 +423,7 @@ case 3: {
                 easy2((ofs % GRID_SIZEY) == 5*(ofs % kMaxInputTypes),
                         "GI_StrictOrderSLL[%d].HowManySoFar=%d",
                                 ofs % kMaxInputTypes,
-                           GI_StrictOrderSLL[ofs % kMaxInputTypes].HowManySoFar);
+                           GI_StrictOrderSLL[ofs % kMaxInputTypes].HowManySoFar);*/
 break;}
 case 4:{
                 int initial=3;

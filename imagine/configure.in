@@ -1,4 +1,4 @@
-AC_INIT([DeMLinks], [0.0.17], [AtKaaZ@users.SourceForge.net])
+AC_INIT([DeMLinks], [0.0.18], [AtKaaZ@users.SourceForge.net])
 AC_CONFIG_SRCDIR([src/notetrk.cpp])
 AM_CONFIG_HEADER([config.h])
 
@@ -7,14 +7,42 @@ AM_MAINTAINER_MODE
 
 # Checks for programs.
 AC_PROG_CXX
-AC_PROG_CC
+#AC_PROG_CC
+
+
+AC_ARG_ENABLE(full-debug,
+   [  --enable-full-debug       full paranoid debugging.],
+   [
+            enable_full_debug="yes"
+            if test "x$enableval" = "xno"; then
+                enable_full_debug=$enableval
+            fi
+   ],
+   [
+    AC_MSG_ERROR([--enable-full-debug is an essential parameter in these early development stages, please specify it], 345)
+    ]
+)
+
+if test "$enable_full_debug" = "yes"; then
+  AC_DEFINE(PARANOIA_DEBUG, 1, [Enable full paranoia debug])
+else
+  AC_DEFINE(DEBUG, 1, [Enable normal debug(ignores PARANOID_IF and LAME_PROGRAMMER_IF)])
+fi
+
+
+#should be 4, but this doesn't actually constrain it to be 4, just sets a var.
+AC_CHECK_SIZEOF(int, 4)
+
+#treat warnings as errors, by default
+AC_LANG_WERROR
 
 # Checks for libraries.
+#AC_HAVE_LIBRARY([alleg-4.2.0],[allegro_init],[],[AC_MSG_ERROR([you must have http://alleg.sf.net library v4.2.0 installed. However, if you have some other version you may skip this check by modifying configure.in],222)])
+
 
 # Checks for header files.
 AC_HEADER_STDC
-AC_CHECK_HEADERS([stdlib.h])
-AC_CHECK_HEADERS([stdio.h])
+AC_CHECK_HEADERS(stdlib.h stdio.h)
 AC_CHECK_HEADERS([allegro.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
