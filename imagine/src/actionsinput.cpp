@@ -190,6 +190,8 @@ InitActionsInput()
                         NGI(kGI_Quit));
 
 
+        NTE(CamRollRight_byMouse);
+
         NTE(CamSlideBackward);
         NTE(CamSlideForward);
         NTE(CamSlideDown);

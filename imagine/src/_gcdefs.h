@@ -39,7 +39,7 @@
 
 //#include "../config.h" conflicts with defs from allegro.h dammit
 
-//#define ENABLE_TIMED_INPUT //enable time capab based on gTimer of all input events
+//#define ENABLE_TIMED_INPUT //enable time capab based on gTimer of all input events OBSOLETE
 
 #define PARANOIA_DEBUG
 

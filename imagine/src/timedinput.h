@@ -33,7 +33,9 @@
 //came first not to mention that between A and B there was the mouse motion.
 
 #include "pnotetrk.h"
-#include "globaltimer.h"
+#ifdef ENABLE_TIMED_INPUT
+        #include "globaltimer.h"
+#endif
 
 #ifdef ENABLE_TIMED_INPUT
 #define KEY_USES_THIS_TIMEVARIABLE gTimer //gActualKeyboardTime

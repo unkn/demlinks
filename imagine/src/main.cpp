@@ -40,6 +40,9 @@
 #include "flags.h"
 #include "globaltimer.h"
 
+
+//#define DISABLE_VSYNC //faster but may(should) flicker
+
 //rest(x) when no input, reduces cpu cycles inside loop
 //this also counts as the fastest response time after going idle; using mouse movements should keep fluidity
 #define IDLE_TIME_IN_LOOP 100 //miliseconds
@@ -56,15 +59,22 @@ int main(void)
 
    while (!Flag(kF_QuitProgram)) {
 
-        //here, transform all inputs into actions and enable them
+        //here, transform all inputs into actions
         EXIT_IF(kFuncOK != MangleInputs());
 
         //game cycles, catching up to timer
         while (gTimer != gSpeedRegulator) {//are we behind schedule?
                 //then, catch on
                 //here, execute all actions, eventually disabling them(ie. one-time actions get executed once then disabled)
-                //gCurrent_ExecuteActionTimer_Time++;
-                EXIT_IF(kFuncOK != Executant());
+
+//using this idea there'd be a worst case lag of at most one second, ie. setting BPS_OF_EXECUTION==1 and pressing and releasing a key which does motion of 'chess' board would still move it, even if neither of the two got processed inside Executant(), this effect would be hated when keeping key down for like few seconds causing continous motion (each second), after releasing the key, there would still be one more motion which would follow at most 1 second apart after releasing the key.
+#define BPS_OF_EXECUTION 10 //==times per second we exec continous actions;
+#if (BPS_OF_GLOBALTIMER < BPS_OF_EXECUTION) || (BPS_OF_EXECUTION<=0)
+#error "BPS_OF_GLOBALTIMER must be bigger than (or at most equal to) BPS_OF_EXECUTION, the latter must be at least ==1"
+#endif
+
+                if (gSpeedRegulator % (BPS_OF_GLOBALTIMER/BPS_OF_EXECUTION)==0)
+                        EXIT_IF(kFuncOK != Executant());
 
                gSpeedRegulator=(gSpeedRegulator+1) % GLOBALTIMER_WRAPSAROUND_AT;
         }//while

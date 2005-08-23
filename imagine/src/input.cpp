@@ -107,6 +107,8 @@ DeInitInput()
 EFunctionReturnTypes_t
 TransformToGenericInputs(const INPUT_TYPE *from)
 {//get all inputs of group from buffer, and pass them to <genericinput> handler
+        PARANOID_IF(from==NULL,
+                        return kFuncFailed);
         LAME_PROGRAMMER_IF((from->type<0) || (from->type>=kMaxInputTypes),
                         return kFuncFailed);
         //FIXME: shame we've to alloc and free a ptr on each entrace in this
@@ -156,29 +158,11 @@ GLOBAL_TIMER_TYPE gCurrent_ExecuteActionTimer_Time=0;
 */
 
 EFunctionReturnTypes_t
-ReentrantLoopWaitingForNextActionToBeQueued()
-{//doesn't litteraly loop!! at each call it checks if loop is done
-
-//executes only one action at a time, respecting TimeDiffs between them
-//here, we wait TimeDiff time(between prev action and this action) before we try to enable this action for execution, however the action doesn't get executed from here, just enabled
-
-//recheck:
+QueueAllActions()
+{
         while (!ActionsInputBuffer.IsEmpty()) {//not empty!
                 ACTIONSINPUT_TYPE got;
 
-/*
-                ERR_IF(kFuncOK!=
-                        ActionsInputBuffer.PeekAtLastFromBuffer(&got),
-                        return kFuncFailed);
-                gTarget_ExecuteActionTimer_Time=got.TimeDiff;
-
-
-             if (
-                 (gCurrent_ExecuteActionTimer_Time >=
-                  gTarget_ExecuteActionTimer_Time)) 
-                {
-
-*/
                 //remove actioninput from buffer
                 ERR_IF(kFuncOK!=ActionsInputBuffer.MoveLastFromBuffer(&got),
                                 return kFuncFailed);
@@ -186,13 +170,6 @@ ReentrantLoopWaitingForNextActionToBeQueued()
                 ERR_IF(kFuncOK!=QueueAction(&got),
                                 return kFuncFailed);
 
-/*
-                //starting to count time elapsed since last action(this one from above) was executed
-                //could get negative
-                gCurrent_ExecuteActionTimer_Time=(gCurrent_ExecuteActionTimer_Time % GLOBALTIMER_WRAPSAROUND_AT) - gTarget_ExecuteActionTimer_Time;//start from
-                goto recheck;
-             }//fi2
-*/
         }//while
 
         return kFuncOK;
@@ -219,7 +196,7 @@ MakeSureWeHaveGenericInput()
 {//transform multiple input types into generic inputs
         if (HowManyDifferentInputsInBuffer()) {
                 //FIXME:temporary, remove it:
-                cams[0].SetNeedRefresh();
+                //cams[0].SetNeedRefresh();
 
                 INPUT_TYPE into;
                 //one input group at a time; as in all key or all mouse
@@ -242,6 +219,8 @@ MangleInputs()
         ERR_IF(kFuncOK!= MakeSureWeHaveActions(),
                         return kFuncFailed);
 
+        ERR_IF(kFuncOK != QueueAllActions(),
+                return kFuncFailed);
         return kFuncOK;
 }
 
@@ -250,10 +229,6 @@ MangleInputs()
 EFunctionReturnTypes_t
 Executant()
 {
-        //tries to enable actions, one at a time, so you must call this many times, since we don't wanna spend time inside this function until all the actions get executed, ie. this might take like 10 seconds if WRAPAROUND of gTimer is 10sec
-        //since the TimeDiffs between the actions are respected, ie. we don't enable next action(even tho there are more in the buffer) until at least TimeDiff (based on gTimer, but computed with gSpeedRegulator[aka game cycles]) has elapsed since last enabled action
-        ERR_IF(kFuncOK != ReentrantLoopWaitingForNextActionToBeQueued(),
-              return kFuncFailed);
 
         //now here, we keep executing all enabled actions, some might get disabled from within(those that are one-time actions) other will execute their function one more time on each call to this function
         ERR_IF(kFuncOK!= ExecuteAllQueuedActions(),

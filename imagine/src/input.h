@@ -33,10 +33,6 @@
 
 extern const char *kCombiFileName;
 
-extern GLOBAL_TIMER_TYPE gCurrent_ExecuteActionTimer_Time;
-extern GLOBAL_TIMER_TYPE gExecuteActionTimer_Incrementor;
-extern bool gExecuteActionTimer_Started;
-
 
 
 

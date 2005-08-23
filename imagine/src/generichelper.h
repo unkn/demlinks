@@ -30,7 +30,9 @@
 /*****************************************************************************/
 #include "_gcdefs.h"
 #include "pnotetrk.h"
-#include "globaltimer.h"
+#ifdef ENABLE_TIMED_INPUT
+        #include "globaltimer.h"
+#endif
 
 /*****************************************************************************/
 

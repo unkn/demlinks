@@ -45,8 +45,9 @@ enum EnumAllGI_t {//these are NOT indexes, may start from anywhere
         kGI_Undefined=2000,//trapping bugs?
         kGI_Quit,
         kGI_NextSetOfValues,//temp
-
         kGI_Hold1Key,
+        kGI_CamRollRight_byMouse,
+
         kGI_CamSlideBackward,
         kGI_CamSlideForward,
         kGI_CamSlideDown,

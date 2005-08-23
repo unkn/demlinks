@@ -42,6 +42,8 @@ enum EnumAllAI_t{//action indexes
 //all other follow:
         kAI_NextSetOfValues,//temp
         kAI_QuitProgram,
+        kAI_CamRollRight_byMouse,
+
         kAI_CamSlideBackward,
         kAI_CamSlideBackward_stop,
         kAI_CamSlideForward,

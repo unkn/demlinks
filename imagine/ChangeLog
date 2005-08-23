@@ -1,4 +1,10 @@
 
+=demlinks-0.0.21
+LU: 23 Aug 2005
+$ need to be able to pass values of lowlevel input(ie. mouse MickeyX) to
+function that gets executed as action
+* can't remember
+
 =demlinks-0.0.20
 LU: 23 Aug 2005
 * ifdef-ed, default to disabled, Time in input events. As secondary effect,

@@ -185,12 +185,15 @@ InitGenericInput()
 
 //temp
         KEY_TYPE *newkey=NULL;
+        MOUSE_TYPE *newmouse=NULL;
         OneGenericInputTransducer_st *newtrans=NULL;
+        LAME_PROGRAMMER_IF(AllLowLevelInputs[kMouseInputType]==NULL,
+                        return kFuncFailed);
         LAME_PROGRAMMER_IF(AllLowLevelInputs[kKeyboardInputType]==NULL,
                         return kFuncFailed);
         void *damnbugs=NULL;
 
-#define NEWKT(_stuff_,_wha_,...)                             \
+#define NEWTRANSITION(_typ_,_stuff_,_wha_,...)                             \
         newtrans=NULL;                                          \
         newtrans=new OneGenericInputTransducer_st;              \
         ERR_IF(newtrans==NULL,                                  \
@@ -200,8 +203,11 @@ InitGenericInput()
                         newtrans->Result.Significant=tmpi;      \
                 }                                               \
         ERR_IF(kFuncOK!=                                        \
-                GI_##_stuff_##OrderSLL[kKeyboardInputType].Append(newtrans),\
+                GI_##_stuff_##OrderSLL[k##_typ_##InputType].Append(newtrans),\
                                 return kFuncFailed);
+
+#define NEWKT(_stuff_,_wha_,...)                             \
+        NEWTRANSITION(Keyboard,_stuff_,_wha_,__VA_ARGS__);
 
 #define NEWK(_a_)                                             \
         damnbugs=NULL;                                          \
@@ -214,7 +220,26 @@ InitGenericInput()
                 newkey->ScanCode=_a_;                           \
                 ERR_IF(kFuncOK!=                                \
                                 newtrans->Append(newkey),       \
-                                return kFuncFailed);            \
+                                return kFuncFailed);
+
+#define NEWMT(_stuff_,_wha_,...)                             \
+        NEWTRANSITION(Mouse,_stuff_,_wha_,__VA_ARGS__);
+
+#define NEWMF(_a_)                                             \
+        damnbugs=NULL;                                          \
+        ERR_IF(kFuncOK!=                                        \
+                AllLowLevelInputs[kMouseInputType]->Alloc(damnbugs),\
+                        return kFuncFailed);                    \
+        (void *)newmouse=damnbugs;                                \
+        ERR_IF(newmouse==NULL,                                    \
+                        return kFuncFailed);                    \
+                newmouse->Flags=_a_;                           \
+                ERR_IF(kFuncOK!=                                \
+                                newtrans->Append(newmouse),       \
+                                return kFuncFailed);
+
+#define NEWME(_easier_,_aflag_) \
+        NEWMT(Strict, _easier_, NEWMF(_aflag_));
 
 #define NTE(_easier_,_akey_) \
         NEWKT(Strict, _easier_, NEWK(PRESS(_akey_)));
@@ -223,15 +248,7 @@ InitGenericInput()
         NEWKT(Strict, _easier_, NEWK(PRESS(_akey_)));   \
         NEWKT(Strict, _easier_##_stop, NEWK(RELEASE(_akey_)));
 
-//       UnifiedInput_st us;
-  //     us.type=kKeyboardInputType;
 
-        //1st
-        //us.data=newkey;
-       //newtrans=new OneGenericInputTransducer_st;
-              //  newkey=new KEY_TYPE;
-                //ERR_IF(newkey==NULL,
-                  //     return kFuncFailed);
         NEWKT(Relaxed,
                         kGI_NextSetOfValues,
                         NEWK(PRESS(KEY_TILDE));
@@ -258,17 +275,16 @@ InitGenericInput()
         NTB(kGI_Hold1Key,KEY_LSHIFT);
         NTB(kGI_Hold1Key,KEY_RSHIFT);
 
-/*        NEWKT(Strict,
-                        kGI_Hold1KeyRelease,
-                        NEWK(RELEASE(KEY_LSHIFT)));*/
-/*        NEWKT(Strict,
-                        kGI_Hold1KeyRelease,
-                        NEWK(RELEASE(KEY_RSHIFT)));*/
 
-
+        NEWME(kGI_CamRollRight_byMouse,MOUSE_FLAG_MOVE);
 
 //last
 #undef NTE
+#undef NTE
+#undef NEWTRANSITION
+#undef NEWMT
+#undef NEWMF
+#undef NEWME
 #undef NEWKT
 #undef NEWK
 //done

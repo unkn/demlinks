@@ -97,7 +97,6 @@ EFunctionReturnTypes_t
 ExecuteAllQueuedActions()
 {
         if ( ( !gQueuedActionsForExecution_DLL.IsEmpty()))
-                //&&(gSpeedRegulator % MODCHECK_OF_EXECUTING_ACTIONS == 0))
         {//not empty?
                 //got actions to be executed, good:
                 //so parse all from first to last:
@@ -173,10 +172,17 @@ InitActionTypes()
 #define STT(_a) \
         Actions[_a##_stop].SetToggleActionType(_a);
 
-        Actions[kAI_NextSetOfValues].SetToggleActionType(kAI_NextSetOfValues);
-        Actions[kAI_QuitProgram].SetToggleActionType(kAI_QuitProgram);
-        Actions[kAI_Hold1Key].SetToggleActionType(kAI_Hold1Key);
-        Actions[kAI_Hold1Key_stop].SetToggleActionType(kAI_Hold1Key_stop);
+#undef STS
+#define STS(_a) \
+        Actions[_a].SetToggleActionType(_a);
+
+        STS(kAI_NextSetOfValues);
+        STS(kAI_QuitProgram);
+        STS(kAI_Hold1Key);
+        STS(kAI_Hold1Key_stop);
+        STS(kAI_CamRollRight_byMouse);
+
+
 
         STT(kAI_CamSlideBackward);
         STT(kAI_CamSlideForward);
@@ -194,6 +200,7 @@ InitActionTypes()
         STT(kAI_FOV);
 
 #undef STT
+#undef STS
         return kFuncOK;
 }
 /*****************************************************************************/

@@ -26,6 +26,8 @@
 ****************************************************************************/
 #include "allegro.h"
 
+#include "_gcdefs.h"
+#include "pnotetrk.h"
 #include "globaltimer.h"
 
 

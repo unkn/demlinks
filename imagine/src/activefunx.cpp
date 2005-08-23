@@ -56,6 +56,11 @@
                         return kFuncFailed); \
         Functions[_what_] = _what_##_;
 
+#define SETME4(_what_,_a_) \
+        ERR_IF(Functions[_what_##_a_]!=NULL, \
+                        return kFuncFailed); \
+        Functions[_what_##_a_] = _what_##_;
+
 #define SETME2(_what_) \
         ERR_IF(Functions[_what_]!=NULL, \
                         return kFuncFailed); \
@@ -343,6 +348,8 @@ InitFunctions()
         SETME(kAI_NextSetOfValues);
 
         SETME3(kAI_Hold1Key);
+
+        SETME4(kAI_CamRollRight,_byMouse);
 
         SETME2(kAI_CamSlideBackward);
         SETME2(kAI_CamSlideForward);
