@@ -45,6 +45,8 @@ enum EnumAllGI_t {//these are NOT indexes, may start from anywhere
         kGI_Undefined=2000,//trapping bugs?
         kGI_Quit,
         kGI_NextSetOfValues,//temp
+
+        kGI_Hold1Key,
         kGI_CamSlideBackward,
         kGI_CamSlideForward,
         kGI_CamSlideDown,
@@ -59,8 +61,22 @@ enum EnumAllGI_t {//these are NOT indexes, may start from anywhere
         kGI_CamTurnLeft,
         kGI_Aspect,
         kGI_FOV,
-        kGI_Hold1KeyPress,
-        kGI_Hold1KeyRelease,
+
+        kGI_Hold1Key_stop,
+        kGI_CamSlideBackward_stop,
+        kGI_CamSlideForward_stop,
+        kGI_CamSlideDown_stop,
+        kGI_CamSlideUp_stop,
+        kGI_CamSlideRight_stop,
+        kGI_CamSlideLeft_stop,
+        kGI_CamRollRight_stop,
+        kGI_CamRollLeft_stop,
+        kGI_CamPitchDown_stop,
+        kGI_CamPitchUp_stop,
+        kGI_CamTurnRight_stop,
+        kGI_CamTurnLeft_stop,
+        kGI_Aspect_stop,
+        kGI_FOV_stop,
 
         //last:
         //kMaxGIs
@@ -74,7 +90,9 @@ enum EnumAllGI_t {//these are NOT indexes, may start from anywhere
 
 /*****************************************************************************/
 extern TBuffer<GENERICINPUT_TYPE> GenericInputBuffer;
+#ifdef ENABLE_TIMED_INPUT
 extern GLOBAL_TIMER_TYPE gLastGenericInputTime;
+#endif
 /*****************************************************************************/
 struct UnifiedInput_st {
         int type;

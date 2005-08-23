@@ -1,4 +1,37 @@
 
+=demlinks-0.0.20
+LU: 23 Aug 2005
+* ifdef-ed, default to disabled, Time in input events. As secondary effect,
+less overhead.
+* disabled the unsatisfactory delay-on-playing actions, that is the piece of
+code which tries to queue to actions only after the TimeDiff between prev and
+current has elapsed; done that in favour of a faster response time based on
+the fact that the user would react to what it sees on screen anyway so ie. if
+he releases the key we wouldn't wanna keep the action executing for more 300ms
+after that just to keep the diff between the key events.
+
+=demlinks-0.0.19
+LU: 23 Aug 2005
+$ TODO: crc on last x keys could launch a GI(generic input) [aka CRC-enabled
+GenericInput]
+* fixed smth like this, if you hold Q,E,A,D all together at the same time(same
+time=when they cancel eachother out thus no motion is being performed on the
+'chess' board) and then release them again at the same time, it succedes in
+that the 'chess' board's position remains the same.(search for "recheck:" in
+input.cpp)
+* fixed regulation of executing actions by compromising the global timer to
+increment at the same rate which the execution of actions needs.
+$ some flaws with regulating execution, while ie. key pressed
+* regulated execution timing
+* continuity done
+* added DDL.h generic double linked list, differs from SLL.h
+* removed config.h from _gcdefs.h
+$ fails PARANOIA_DEBUG set in config.h since cannot include it while conflicts
+with some defs already included from allegro.h
+$ have to do continuity of actions, play and replay of them acording to
+timer(TimeDiff)
+* made sure playing actions is depending on game cycles
+
 =demlinks-0.0.18
 LU: 22 Aug 2005
 * trying to get rid of _gcdefs.h by making use of ../config.h

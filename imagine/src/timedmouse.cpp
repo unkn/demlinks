@@ -30,14 +30,17 @@
 #include "pnotetrk.h"
 #include "timedmouse.h"
 
-#ifndef MOUSE_USES_THIS_TIMEVARIABLE
-#error "please set MOUSE_USES_THIS_TIMEVARIABLE to a volatile variable to be used as a timer source for .TimeDiff(and .Time) from MOUSE_TYPE structure."
+#ifdef ENABLE_TIMED_INPUT
+        #ifndef MOUSE_USES_THIS_TIMEVARIABLE
+                #error "please set MOUSE_USES_THIS_TIMEVARIABLE to a volatile variable to be used as a timer source for .TimeDiff(and .Time) from MOUSE_TYPE structure."
+        #endif
 #endif
 
 
-#define DEFAULT_MOUSE_TIMER_FREQ_PER_SECOND (200)
 
+#ifdef ENABLE_TIMED_INPUT
 volatile GLOBAL_TIMER_TYPE gLastMouseTime;
+#endif
 
 volatile MOUSE_TYPE gMouseBuf[MAX_MOUSE_EVENTS_BUFFERED];
 int gMouseBufHead;
@@ -75,8 +78,10 @@ MOUSE_TYPE::operator=(const MOUSE_TYPE & source)
 {
         if (&source==this)
                 return *this;
+#ifdef ENABLE_TIMED_INPUT
         TimeDiff=source.TimeDiff;
         Time=source.Time;
+#endif
         Flags=source.Flags;
         MouseZ=source.MouseZ;
         MickeyX=source.MickeyX;
@@ -90,8 +95,10 @@ MOUSE_TYPE::operator=(const volatile MOUSE_TYPE & source)
 {
         if (&source==this)
                 return *this;
+#ifdef ENABLE_TIMED_INPUT
         TimeDiff=source.TimeDiff;
         Time=source.Time;
+#endif
         Flags=source.Flags;
         MouseZ=source.MouseZ;
         MickeyX=source.MickeyX;
@@ -99,6 +106,7 @@ MOUSE_TYPE::operator=(const volatile MOUSE_TYPE & source)
         return *this;
 }
 /*****************************************************************************/
+#ifdef ENABLE_TIMED_INPUT
 EFunctionReturnTypes_t
 MMouseInputInterface::GetMeTime(void * const&from, GLOBAL_TIMER_TYPE *dest)
 {
@@ -109,7 +117,7 @@ MMouseInputInterface::GetMeTime(void * const&from, GLOBAL_TIMER_TYPE *dest)
         *dest=((MOUSE_TYPE *)from)->Time;
         return kFuncOK;
 }
-
+#endif
 /*****************************************************************************/
 EFunctionReturnTypes_t
 MMouseInputInterface::MoveFirstFromBuffer(void *into)
@@ -163,6 +171,7 @@ void MouseIntHandler(int flags)
                 gMouseBuf[gMouseBufTail].MickeyX=mikx;
                 gMouseBuf[gMouseBufTail].MickeyY=miky;
                 gMouseBuf[gMouseBufTail].Flags=flags;
+#ifdef ENABLE_TIMED_INPUT
                 GLOBAL_TIMER_TYPE td;
                 GLOBAL_TIMER_TYPE timenow=MOUSE_USES_THIS_TIMEVARIABLE;
                 if (gLastMouseTime <= timenow) {
@@ -173,6 +182,7 @@ void MouseIntHandler(int flags)
                 gMouseBuf[gMouseBufTail].TimeDiff=td;
                 gMouseBuf[gMouseBufTail].Time=timenow;
                 gLastMouseTime=timenow;
+#endif
 #ifdef USING_COMMON_INPUT_BUFFER
                 ToCommonBuf(kMouseInputType);
 #endif
@@ -209,14 +219,12 @@ MMouseInputInterface::Install(const Passed_st *a_Params)
 
 
 
+#ifdef ENABLE_TIMED_INPUT
         LOCK_VARIABLE(gLastMouseTime);
         gLastMouseTime=MOUSE_USES_THIS_TIMEVARIABLE;
-        
+#endif
         LOCK_FUNCTION(MouseIntHandler);
 
-        ERR_IF(install_timer()
-                ,return kFuncFailed;
-              );
 
         ERR_IF(install_mouse() == -1
                 ,return kFuncFailed;

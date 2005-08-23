@@ -150,40 +150,51 @@ TransformToGenericInputs(const INPUT_TYPE *from)
 }
 
 /*****************************************************************************/
+/*static GLOBAL_TIMER_TYPE gTarget_ExecuteActionTimer_Time;
+//depends on game timer, not interrupt driven timer
+GLOBAL_TIMER_TYPE gCurrent_ExecuteActionTimer_Time=0;
+*/
+
 EFunctionReturnTypes_t
-MakeSureWeExecuteAllActions()
-{
-//executes the actions from the buffer of actions, emptying it, buff may have
-//more than one action if we're lagging (ie. slow PC)
-//FIXME
-        while (!ActionsInputBuffer.IsEmpty()) {
+ReentrantLoopWaitingForNextActionToBeQueued()
+{//doesn't litteraly loop!! at each call it checks if loop is done
+
+//executes only one action at a time, respecting TimeDiffs between them
+//here, we wait TimeDiff time(between prev action and this action) before we try to enable this action for execution, however the action doesn't get executed from here, just enabled
+
+//recheck:
+        while (!ActionsInputBuffer.IsEmpty()) {//not empty!
                 ACTIONSINPUT_TYPE got;
+
+/*
+                ERR_IF(kFuncOK!=
+                        ActionsInputBuffer.PeekAtLastFromBuffer(&got),
+                        return kFuncFailed);
+                gTarget_ExecuteActionTimer_Time=got.TimeDiff;
+
+
+             if (
+                 (gCurrent_ExecuteActionTimer_Time >=
+                  gTarget_ExecuteActionTimer_Time)) 
+                {
+
+*/
+                //remove actioninput from buffer
                 ERR_IF(kFuncOK!=ActionsInputBuffer.MoveLastFromBuffer(&got),
                                 return kFuncFailed);
-                //this will perhaps generate items in ActionBuffer
-                ERR_IF(kFuncOK!=ExecuteAction(&got),
+                //queue it, don't execute it now, later.
+                ERR_IF(kFuncOK!=QueueAction(&got),
                                 return kFuncFailed);
-        }//fi
 
-        /*
-        while (ActionsBuffer.HasActions()) {
-                int index;
-                bool active;
-                ERR_IF(kFuncOK!= ActionsBuffer.GetLastActionFromBuf(&index,&active),
-                                return kFuncFailed);
-                PARANOID_IF((index>=kAllocatedActions) || (index<0),
-                        return kFuncFailed);
-                if (active) {//activated
-                        //FIXME:
-                        //ERR_IF(kFuncOK != AllActions[index]->PerformActive(),
-                          //      return kFuncFailed);
-                } else {//deactivated
-                        //FIXME:
-                        //ERR_IF(kFuncOK != AllActions[index]->PerformNotActive(),
-                          //      return kFuncFailed);
-                }//else
+/*
+                //starting to count time elapsed since last action(this one from above) was executed
+                //could get negative
+                gCurrent_ExecuteActionTimer_Time=(gCurrent_ExecuteActionTimer_Time % GLOBALTIMER_WRAPSAROUND_AT) - gTarget_ExecuteActionTimer_Time;//start from
+                goto recheck;
+             }//fi2
+*/
         }//while
-        */
+
         return kFuncOK;
 }
 
@@ -191,6 +202,7 @@ MakeSureWeExecuteAllActions()
 EFunctionReturnTypes_t
 MakeSureWeHaveActions()
 {//transform generic inputs into actions
+        //pops genericinputs from their buffer and transforming them eventually puts actionsinputs in actionsinput buffer
         while (!GenericInputBuffer.IsEmpty()) {
                 GENERICINPUT_TYPE got;
                 ERR_IF(kFuncOK!=GenericInputBuffer.MoveLastFromBuffer(&got),
@@ -238,9 +250,15 @@ MangleInputs()
 EFunctionReturnTypes_t
 Executant()
 {
-        //empties the actionsbuffer by executing them in order as they appear
-        ERR_IF(kFuncOK != MakeSureWeExecuteAllActions(),
+        //tries to enable actions, one at a time, so you must call this many times, since we don't wanna spend time inside this function until all the actions get executed, ie. this might take like 10 seconds if WRAPAROUND of gTimer is 10sec
+        //since the TimeDiffs between the actions are respected, ie. we don't enable next action(even tho there are more in the buffer) until at least TimeDiff (based on gTimer, but computed with gSpeedRegulator[aka game cycles]) has elapsed since last enabled action
+        ERR_IF(kFuncOK != ReentrantLoopWaitingForNextActionToBeQueued(),
               return kFuncFailed);
+
+        //now here, we keep executing all enabled actions, some might get disabled from within(those that are one-time actions) other will execute their function one more time on each call to this function
+        ERR_IF(kFuncOK!= ExecuteAllQueuedActions(),
+                        return kFuncFailed);
+
         return kFuncOK;
 }
 /*****************************************************************************/

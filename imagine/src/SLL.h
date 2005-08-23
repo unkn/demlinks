@@ -62,6 +62,7 @@ struct GenericSingleLinkedList_st {
                 return kFuncOK;
         };
 
+
         EFunctionReturnTypes_t Insert(const T*a_Data){
                 //a copy of the contents is NOT made!
                 //refusing to add a new one if there's already a Next

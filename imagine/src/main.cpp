@@ -41,7 +41,10 @@
 #include "globaltimer.h"
 
 //rest(x) when no input, reduces cpu cycles inside loop
-#define IDLE_TIME_IN_LOOP 300
+//this also counts as the fastest response time after going idle; using mouse movements should keep fluidity
+#define IDLE_TIME_IN_LOOP 100 //miliseconds
+//ie . after realeasing a key(and no other inputs are present) then pressing another(or same) key would wait this time (IDLE_TIME_IN_LOOP) before reacting
+
 
 bool need_screen_refresh=true;//first time display screen
 
@@ -53,13 +56,18 @@ int main(void)
 
    while (!Flag(kF_QuitProgram)) {
 
+        //here, transform all inputs into actions and enable them
         EXIT_IF(kFuncOK != MangleInputs());
 
+        //game cycles, catching up to timer
         while (gTimer != gSpeedRegulator) {//are we behind schedule?
                 //then, catch on
+                //here, execute all actions, eventually disabling them(ie. one-time actions get executed once then disabled)
+                //gCurrent_ExecuteActionTimer_Time++;
                 EXIT_IF(kFuncOK != Executant());
-                gSpeedRegulator=(gSpeedRegulator+1) % GLOBALTIMER_WRAPSAROUND_AT;
-        }
+
+               gSpeedRegulator=(gSpeedRegulator+1) % GLOBALTIMER_WRAPSAROUND_AT;
+        }//while
 
 
         for (int i=0;i<NUM_CAMS;i++){

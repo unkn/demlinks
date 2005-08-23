@@ -30,7 +30,7 @@
 
 
 volatile GLOBAL_TIMER_TYPE gTimer;
-GLOBAL_TIMER_TYPE gSpeedRegulator;
+GLOBAL_TIMER_TYPE gSpeedRegulator;//game cycles ;)
 
 
 void TimerIncrement(void)
@@ -44,8 +44,13 @@ EFunctionReturnTypes_t
 InstallGlobalTimer()
 {
         LOCK_FUNCTION(TimerIncrement);
+
         LOCK_VARIABLE(gTimer);
         gTimer=gSpeedRegulator=INIT_GLOBALTIMER;//safer start =0
+        /*If you call this routine without having first
+         *      installed the timer module, install_timer() will be called
+         *           automatically.
+         */
         ERR_IF(0!=install_int_ex(TimerIncrement, TICKS_OF_GLOBALTIMER),
                         return kFuncFailed);
         return kFuncOK;

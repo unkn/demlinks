@@ -43,7 +43,9 @@ GI_SLLTransducersArray_st GI_StrictOrderSLL[kMaxInputTypes];//head, may be NULL
 GI_SLLTransducersArray_st GI_RelaxedOrderSLL[kMaxInputTypes];//head -//-
 
 TBuffer<GENERICINPUT_TYPE> GenericInputBuffer(10);
+#ifdef ENABLE_TIMED_INPUT
 GLOBAL_TIMER_TYPE gLastGenericInputTime;
+#endif
 
 /*****************************************************************************/
 /*****************************************************************************/
@@ -217,6 +219,10 @@ InitGenericInput()
 #define NTE(_easier_,_akey_) \
         NEWKT(Strict, _easier_, NEWK(PRESS(_akey_)));
 
+#define NTB(_easier_,_akey_) \
+        NEWKT(Strict, _easier_, NEWK(PRESS(_akey_)));   \
+        NEWKT(Strict, _easier_##_stop, NEWK(RELEASE(_akey_)));
+
 //       UnifiedInput_st us;
   //     us.type=kKeyboardInputType;
 
@@ -233,28 +239,31 @@ InitGenericInput()
         NEWKT(Strict,
                         kGI_Quit,
                         NEWK(PRESS(KEY_ESC)));
-        NTE(kGI_CamSlideBackward,KEY_S);
-        NTE(kGI_CamSlideForward,KEY_W);
-        NTE(kGI_CamSlideDown,KEY_CAPSLOCK);
-        NTE(kGI_CamSlideUp,KEY_TAB);
-        NTE(kGI_CamSlideRight,KEY_D);
-        NTE(kGI_CamSlideLeft,KEY_A);
-        NTE(kGI_CamRollRight,KEY_E);
-        NTE(kGI_CamRollLeft,KEY_Q);
-        NTE(kGI_CamPitchDown,KEY_DOWN);
-        NTE(kGI_CamPitchUp,KEY_UP);
-        NTE(kGI_CamTurnRight,KEY_RIGHT);
-        NTE(kGI_CamTurnLeft,KEY_LEFT);
-        NTE(kGI_Aspect,KEY_G);
-        NTE(kGI_FOV,KEY_F);
-        NTE(kGI_Hold1KeyPress,KEY_LSHIFT);
-        NEWKT(Strict,
+
+        NTB(kGI_CamSlideBackward,KEY_S);
+        NTB(kGI_CamSlideForward,KEY_W);
+        NTB(kGI_CamSlideDown,KEY_CAPSLOCK);
+        NTB(kGI_CamSlideUp,KEY_TAB);
+        NTB(kGI_CamSlideRight,KEY_D);
+        NTB(kGI_CamSlideLeft,KEY_A);
+        NTB(kGI_CamRollRight,KEY_E);
+        NTB(kGI_CamRollLeft,KEY_Q);
+        NTB(kGI_CamPitchDown,KEY_DOWN);
+        NTB(kGI_CamPitchUp,KEY_UP);
+        NTB(kGI_CamTurnRight,KEY_RIGHT);
+        NTB(kGI_CamTurnLeft,KEY_LEFT);
+        NTB(kGI_Aspect,KEY_G);
+        NTB(kGI_FOV,KEY_F);
+
+        NTB(kGI_Hold1Key,KEY_LSHIFT);
+        NTB(kGI_Hold1Key,KEY_RSHIFT);
+
+/*        NEWKT(Strict,
                         kGI_Hold1KeyRelease,
-                        NEWK(RELEASE(KEY_LSHIFT)));
-        NTE(kGI_Hold1KeyPress,KEY_RSHIFT);
-        NEWKT(Strict,
+                        NEWK(RELEASE(KEY_LSHIFT)));*/
+/*        NEWKT(Strict,
                         kGI_Hold1KeyRelease,
-                        NEWK(RELEASE(KEY_RSHIFT)));
+                        NEWK(RELEASE(KEY_RSHIFT)));*/
 
 
 
@@ -446,6 +455,7 @@ OneGenericInputTransducer_st::EatThis(const UnifiedInput_st *what,
                 WhosNext=WhosNext->Next;
                 if (WhosNext==NULL) {//das wars Tail
                         //then this is one generic input completed
+#ifdef ENABLE_TIMED_INPUT
                         GLOBAL_TIMER_TYPE td;
                         GLOBAL_TIMER_TYPE timenow;
                         ERR_IF(kFuncOK!=
@@ -459,6 +469,7 @@ OneGenericInputTransducer_st::EatThis(const UnifiedInput_st *what,
                         Result.Time=timenow;
                         Result.TimeDiff=td;
                         gLastGenericInputTime=timenow;
+#endif
 
                         ERR_IF(kFuncOK!=PushToBuffer(),
                                         return kFuncFailed);

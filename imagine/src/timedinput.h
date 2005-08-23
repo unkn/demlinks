@@ -35,9 +35,11 @@
 #include "pnotetrk.h"
 #include "globaltimer.h"
 
+#ifdef ENABLE_TIMED_INPUT
 #define KEY_USES_THIS_TIMEVARIABLE gTimer //gActualKeyboardTime
 
 #define MOUSE_USES_THIS_TIMEVARIABLE gTimer //gActualMouseTime
+#endif
 
 //FIXME(in progress): there are some hacks in timed*.* files battling to keep generalization but obviously failing
 
@@ -87,8 +89,10 @@ public:
         virtual EFunctionReturnTypes_t
         Compare(void *what, void *withwhat, int &result)=0;
         
+#ifdef ENABLE_TIMED_INPUT
         virtual EFunctionReturnTypes_t
         GetMeTime(void * const &from, GLOBAL_TIMER_TYPE *dest)=0;
+#endif
 
 };//class
 

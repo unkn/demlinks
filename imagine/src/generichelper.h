@@ -37,8 +37,10 @@
 template <class T>
 struct GenericHelper_st {
         T Significant;
+#ifdef ENABLE_TIMED_INPUT
         GLOBAL_TIMER_TYPE Time;
         GLOBAL_TIMER_TYPE TimeDiff;
+#endif
 
         EFunctionReturnTypes_t
         Compare(const GenericHelper_st*withwhat,

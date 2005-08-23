@@ -37,25 +37,41 @@
 
 /*****************************************************************************/
 enum EnumAllAI_t{//action indexes
+        //this must be the first one and ==0
         kAI_Undefined=0,//index in an array so must be starting from 0
+//all other follow:
         kAI_NextSetOfValues,//temp
         kAI_QuitProgram,
         kAI_CamSlideBackward,
+        kAI_CamSlideBackward_stop,
         kAI_CamSlideForward,
+        kAI_CamSlideForward_stop,
         kAI_CamSlideDown,
+        kAI_CamSlideDown_stop,
         kAI_CamSlideUp,
+        kAI_CamSlideUp_stop,
         kAI_CamSlideRight,
+        kAI_CamSlideRight_stop,
         kAI_CamSlideLeft,
+        kAI_CamSlideLeft_stop,
         kAI_CamRollRight,
+        kAI_CamRollRight_stop,
         kAI_CamRollLeft,
+        kAI_CamRollLeft_stop,
         kAI_CamPitchDown,
+        kAI_CamPitchDown_stop,
         kAI_CamPitchUp,
+        kAI_CamPitchUp_stop,
         kAI_CamTurnRight,
+        kAI_CamTurnRight_stop,
         kAI_CamTurnLeft,
+        kAI_CamTurnLeft_stop,
         kAI_Aspect,
+        kAI_Aspect_stop,
         kAI_FOV,
-        kAI_Hold1KeyPress,
-        kAI_Hold1KeyRelease,
+        kAI_FOV_stop,
+        kAI_Hold1Key,
+        kAI_Hold1Key_stop,
         //last:
         kMaxAIs
 };
@@ -63,7 +79,9 @@ enum EnumAllAI_t{//action indexes
 #define ACTIONSINPUT_TYPE GenericHelper_st<EnumAllAI_t>
 //this buffer holds the queue of requests_of_actions to be executed
 extern TBuffer<ACTIONSINPUT_TYPE> ActionsInputBuffer;
+#ifdef ENABLE_TIMED_INPUT
 extern GLOBAL_TIMER_TYPE gLastActionsInputTime;
+#endif
 /*****************************************************************************/
 
 

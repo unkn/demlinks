@@ -37,7 +37,11 @@
 #ifndef _GCDEFS__H__
 #define _GCDEFS__H__
 
-//#include "../config.h"
+//#include "../config.h" conflicts with defs from allegro.h dammit
+
+//#define ENABLE_TIMED_INPUT //enable time capab based on gTimer of all input events
+
+#define PARANOIA_DEBUG
 
 #include "_cppdefs.h" /* last */
 

@@ -135,15 +135,6 @@ InstallAllInputs(const Passed_st *a_Params)
 
 
 
-        //gInputBuf[gInputBufPrevTail].type=kNoInputType;
-
-/*       ERR_IF(!InstallTimedKeyboard(a_Flags, a_KeyboardTimerFreq)
-                ,return kFuncFailed;
-                );
-        ERR_IF(!InstallTimedMouse(a_Flags, a_MouseTimerFreq)
-                ,return kFuncFailed;
-                );
-*/
         return kFuncOK;
 }
 

@@ -41,10 +41,17 @@ enum {
 
 
 #define SCANCODE_TYPE unsigned char
-#define KEY_TYPE KeyWithTimer_st
+
+#ifdef ENABLE_TIMED_INPUT
+        #define KEY_TYPE KeyWithTimer_st
+#else
+        #define KEY_TYPE KeyWithoutTimer_st
+#endif
 struct KEY_TYPE{
+#ifdef ENABLE_TIMED_INPUT
         GLOBAL_TIMER_TYPE TimeDiff;
         GLOBAL_TIMER_TYPE Time;
+#endif
         SCANCODE_TYPE ScanCode;//scancode of the key( with state)
         KEY_TYPE& operator=(const KEY_TYPE & source);
         KEY_TYPE& operator=(const volatile KEY_TYPE & source);
@@ -104,8 +111,10 @@ public:
         virtual EFunctionReturnTypes_t
         Compare(void *what, void *withwhat, int &result);
 
+#ifdef ENABLE_TIMED_INPUT
         virtual EFunctionReturnTypes_t
         GetMeTime(void * const &from, GLOBAL_TIMER_TYPE *dest);
+#endif
 
 };//class
 

@@ -36,13 +36,14 @@
 #include "timedinput.h"
 #include "actions.h"
 #include "globaltimer.h"
+#include "input.h"
 
 #define GRID_SIZEX    MAX_KEYS_BUFFERED
 
 #define TILE_SIZE    1.0f
 
 //temp
-int global_select=1;
+int global_select=3;
 
 /* render a tile of the grid which is centered on x and z(world-space)
    with center vertex x,y,z
@@ -298,14 +299,18 @@ case 1: {
                 KEY_TYPE into;
                 int ind=ofs % MAX_KEYS_BUFFERED;
                 into.ScanCode=gKeyBuf[ind].ScanCode;
+#ifdef ENABLE_TIMED_INPUT
                 into.TimeDiff=gKeyBuf[ind].TimeDiff;
+#endif
 
                 int initial=0;
 
                 easy2((ofs % GRID_SIZEY) == gKeyBufHead,
                         "KHEAD%d",gKeyBufHead);
 
+#ifdef ENABLE_TIMED_INPUT
                 easy("%d",into.TimeDiff);
+#endif
                 easy("%s%s",
                         GetKeyName(&into),
                         ISPRESSED(into.ScanCode)?"_":"~"
@@ -321,7 +326,9 @@ case 1: {
                 //BUG here, def and assignment fails, they've to be split
                 MOUSE_TYPE mous;
                 mous=gMouseBuf[indm];
+#ifdef ENABLE_TIMED_INPUT
                 easy("%d",mous.TimeDiff);
+#endif
                 easy("%d",mous.MickeyX);
                 easy("%d",mous.MickeyY);
                 easy("%d",mous.Flags);
@@ -385,6 +392,8 @@ break;}
 case 3: {
                 int initial=1;
                 int now=(initial-1)*GRID_SIZEX-1;
+                //easy3("gCurrent_ExecuteActionTimer_Time:%d",
+                  //              gCurrent_ExecuteActionTimer_Time);
                 easy3("Size of GenericInputBuffer:%d",
                                 GenericInputBuffer.GetSize());
                 now=(initial-1)*GRID_SIZEX-1;
@@ -393,25 +402,31 @@ case 3: {
                 easy("%d",
                         GenericInputBuffer.Buffer[ofs % GRID_SIZEY].Significant
                     );
+#ifdef ENABLE_TIMED_INPUT
                 easy("%d",
                         GenericInputBuffer.Buffer[ofs % GRID_SIZEY].TimeDiff
                         );
+#endif
                 easy2((ofs % GRID_SIZEY) == GenericInputBuffer.fTail,
                         "GTAIL%d",GenericInputBuffer.fTail);
 
                 initial+=1;
                 now=(initial-1)*GRID_SIZEX+1;
-                easy3("Size of ActionsInputBuffer:%d",
-                                ActionsInputBuffer.GetSize());
+                easy3("ActionsInputBuffer.IsEmpty()==%d",
+                        ActionsInputBuffer.IsEmpty());
+/*                easy3("Size of ActionsInputBuffer:%d",
+                                ActionsInputBuffer.GetSize());*/
                 now=(initial-1)*GRID_SIZEX-1;
                 easy2((ofs % GRID_SIZEY) == ActionsInputBuffer.fHead,
                         "AHEAD%d",ActionsInputBuffer.fHead);
                 easy("%d",
                         ActionsInputBuffer.Buffer[ofs % GRID_SIZEY].Significant
                     );
+#ifdef ENABLE_TIMED_INPUT
                 easy("%d",
                         ActionsInputBuffer.Buffer[ofs % GRID_SIZEY].TimeDiff
                         );
+#endif
                 easy2((ofs % GRID_SIZEY) == ActionsInputBuffer.fTail,
                         "ATAIL%d",ActionsInputBuffer.fTail);
 

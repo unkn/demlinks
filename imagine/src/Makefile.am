@@ -23,6 +23,7 @@ noinst_HEADERS = 	notetrk.h	\
 			combifile.h \
 			activefunx.h \
 			flags.h \
+			DLL.h \
 			SLL.h \
 			actionsreplay.h \
 			macros.h

@@ -30,7 +30,8 @@
 
 #include "pnotetrk.h"
 
-#define BPS_OF_GLOBALTIMER 1000 //beats per second 1000 means that the counter equals to miliseconds, since there are 1000 miliseconds in a second and the counter is increased each milisecond(that is 1000 beats per second)
+//the following also counts on how frequent the continous actions are being executed, how many times per second.
+#define BPS_OF_GLOBALTIMER (30) //beats per second 1000 means that the counter equals to miliseconds, since there are 1000 miliseconds in a second and the counter is increased each milisecond(that is 1000 beats per second)
 
 #define TICKS_OF_GLOBALTIMER (BPS_TO_TIMER(BPS_OF_GLOBALTIMER))
 
@@ -56,6 +57,7 @@
 
 extern volatile GLOBAL_TIMER_TYPE gTimer;
 extern GLOBAL_TIMER_TYPE gSpeedRegulator;//highly dependable on gTimer
+
 
 EFunctionReturnTypes_t
 InstallGlobalTimer();

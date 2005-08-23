@@ -29,7 +29,9 @@
 #include "macros.h"
 
 TBuffer<ACTIONSINPUT_TYPE> ActionsInputBuffer(10);
+#ifdef ENABLE_TIMED_INPUT
 GLOBAL_TIMER_TYPE gLastActionsInputTime;
+#endif
 
 //there's only one generic input (source)
 AI_SLLTransducersArray_st AI_StrictOrderSLL;//head, may be NULL
@@ -186,6 +188,8 @@ InitActionsInput()
         NEWT(Relaxed,
                         kAI_QuitProgram,
                         NGI(kGI_Quit));
+
+
         NTE(CamSlideBackward);
         NTE(CamSlideForward);
         NTE(CamSlideDown);
@@ -200,8 +204,24 @@ InitActionsInput()
         NTE(CamTurnLeft);
         NTE(Aspect);
         NTE(FOV);
-        NTE(Hold1KeyPress);
-        NTE(Hold1KeyRelease);
+        NTE(Hold1Key);
+
+        NTE(Hold1Key_stop);
+        NTE(CamSlideBackward_stop);
+        NTE(CamSlideForward_stop);
+        NTE(CamSlideDown_stop);
+        NTE(CamSlideUp_stop);
+        NTE(CamSlideRight_stop);
+        NTE(CamSlideLeft_stop);
+        NTE(CamRollRight_stop);
+        NTE(CamRollLeft_stop);
+        NTE(CamPitchDown_stop);
+        NTE(CamPitchUp_stop);
+        NTE(CamTurnRight_stop);
+        NTE(CamTurnLeft_stop);
+        NTE(Aspect_stop);
+        NTE(FOV_stop);
+
 
 //last:
 #undef NTE
@@ -369,6 +389,7 @@ OneActionsInputTransducer_st::EatThis(const GENERICINPUT_TYPE *whichgi,
                                 return kFuncFailed);
                 WhosNext=WhosNext->Next;
                 if (WhosNext==NULL) {//das wars Tail
+#ifdef ENABLE_TIMED_INPUT
                         //then this is one generic input completed
                         GLOBAL_TIMER_TYPE td;
                         GLOBAL_TIMER_TYPE timenow;
@@ -381,6 +402,7 @@ OneActionsInputTransducer_st::EatThis(const GENERICINPUT_TYPE *whichgi,
                         Result.Time=timenow;
                         Result.TimeDiff=td;
                         gLastActionsInputTime=timenow;
+#endif
 
                         ERR_IF(kFuncOK!=PushToBuffer(),
                                         return kFuncFailed);

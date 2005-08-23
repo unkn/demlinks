@@ -52,7 +52,13 @@ public:
         IsEmpty();//buffer
 
         EFunctionReturnTypes_t
+        ThrowLastFromBuffer();
+
+        EFunctionReturnTypes_t
         MoveLastFromBuffer(_data_ *dest);
+
+        EFunctionReturnTypes_t
+        PeekAtLastFromBuffer(_data_ *into);
 
         EFunctionReturnTypes_t
         CopyIntoBuffer(_data_ *from);
@@ -85,6 +91,17 @@ TBuffer<_data_>::IsEmpty()
 /*****************************************************************************/
 template <class _data_>
 EFunctionReturnTypes_t
+TBuffer<_data_>::ThrowLastFromBuffer()
+{
+        if (fTail != fHead) {
+                fHead=(fHead+1) % itsSize;
+                return kFuncOK;
+        }//fi
+        return kFuncFailed;
+}
+/*****************************************************************************/
+template <class _data_>
+EFunctionReturnTypes_t
 TBuffer<_data_>::MoveLastFromBuffer(_data_ *dest)
 {
 
@@ -94,6 +111,20 @@ TBuffer<_data_>::MoveLastFromBuffer(_data_ *dest)
                 //aka non empty buffer
                 *dest=Buffer[fHead];
                 fHead=(fHead+1) % itsSize;
+                return kFuncOK;
+        }//fi
+        return kFuncFailed;
+}
+/*****************************************************************************/
+template <class _data_>
+EFunctionReturnTypes_t
+TBuffer<_data_>::PeekAtLastFromBuffer(_data_ *into)
+{
+        LAME_PROGRAMMER_IF(into==NULL,
+                        return kFuncFailed);
+        if (fTail != fHead) {
+                //aka non empty buffer
+                *into=Buffer[fHead];
                 return kFuncOK;
         }//fi
         return kFuncFailed;

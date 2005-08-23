@@ -34,12 +34,17 @@
 
 #define MAX_MOUSE_EVENTS_BUFFERED (10)
 
-#define MOUSE_TYPE MouseWithTimer_st
-//#define GLOBAL_TIMER_TYPE int defined in timedinput.h
+#ifdef ENABLE_TIMED_INPUT
+        #define MOUSE_TYPE MouseWithTimer_st
+#else
+        #define MOUSE_TYPE MouseWithoutTimer_st
+#endif
 
 struct MOUSE_TYPE {
+#ifdef ENABLE_TIMED_INPUT
         GLOBAL_TIMER_TYPE TimeDiff;
         GLOBAL_TIMER_TYPE Time;
+#endif
         int Flags;
         signed int MouseZ;
         signed int MickeyX;
@@ -99,8 +104,10 @@ public:
         virtual EFunctionReturnTypes_t
         Compare(void *what, void *withwhat, int &result);
 
+#ifdef ENABLE_TIMED_INPUT
         virtual EFunctionReturnTypes_t
         GetMeTime(void * const&from, GLOBAL_TIMER_TYPE *dest);
+#endif
 
 
 };//class

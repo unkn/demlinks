@@ -30,8 +30,10 @@
 #include "pnotetrk.h"
 #include "timedkeys.h"
 
-#ifndef KEY_USES_THIS_TIMEVARIABLE
-#error "please set KEY_USES_THIS_TIMEVARIABLE to a volatile variable to be used as a timer source for .TimeDiff(and .Time) from KEY_TYPE structure."
+#ifdef ENABLE_TIMED_INPUT
+        #ifndef KEY_USES_THIS_TIMEVARIABLE
+                #error "please set KEY_USES_THIS_TIMEVARIABLE to a volatile variable to be used as a timer source for .TimeDiff(and .Time) from KEY_TYPE structure."
+        #endif
 #endif
 
 
@@ -56,8 +58,10 @@ KEY_TYPE::operator=(const KEY_TYPE & source)
 {
         if (&source==this)
                 return *this;
+#ifdef ENABLE_TIMED_INPUT
         TimeDiff=source.TimeDiff;
         Time=source.Time;
+#endif
         ScanCode=source.ScanCode;
         return *this;
 }
@@ -67,8 +71,10 @@ KEY_TYPE::operator=(const volatile KEY_TYPE & source)
 {
         if (&source==this)
                 return *this;
+#ifdef ENABLE_TIMED_INPUT
         TimeDiff=source.TimeDiff;
         Time=source.Time;
+#endif
         ScanCode=source.ScanCode;
         return *this;
 }
@@ -145,7 +151,9 @@ IsAnyKeyHeld()
         return false;
 }
 /*****************************************************************************/
+#ifdef ENABLE_TIMED_INPUT
 volatile GLOBAL_TIMER_TYPE gLastKeyboardTime;
+#endif
 
 /*****************************************************************************/
 
@@ -167,6 +175,7 @@ void LowLevelKeyboardInterruptHandler(int a_ScanCode)
                         //then buffer wasn't full before this
                         //add one more, on gKeyBufTail pos not tmp_tail pos
                                 gKeyBuf[gKeyBufTail].ScanCode=a_ScanCode;
+#ifdef ENABLE_TIMED_INPUT
                                 //compute time diff, depending on last timer and current timer
                                 GLOBAL_TIMER_TYPE td;
                                 GLOBAL_TIMER_TYPE timenow=KEY_USES_THIS_TIMEVARIABLE;
@@ -178,6 +187,8 @@ void LowLevelKeyboardInterruptHandler(int a_ScanCode)
                                 gKeyBuf[gKeyBufTail].TimeDiff=td;
                                 gKeyBuf[gKeyBufTail].Time=timenow;
                                 gLastKeyboardTime=timenow;
+#endif
+
 #ifdef USING_COMMON_INPUT_BUFFER
                                 ToCommonBuf(kKeyboardInputType);
 #endif
@@ -194,6 +205,7 @@ void LowLevelKeyboardInterruptHandler(int a_ScanCode)
                         if (tmp_tail != gKeyBufHead) //buffer not yet full
                         {
                                 gKeyBuf[gKeyBufTail].ScanCode=a_ScanCode;
+#ifdef ENABLE_TIMED_INPUT
                                 //compute time diff, depending on last timer and current timer
                                 GLOBAL_TIMER_TYPE td;
                                 GLOBAL_TIMER_TYPE timenow=KEY_USES_THIS_TIMEVARIABLE;
@@ -205,6 +217,7 @@ void LowLevelKeyboardInterruptHandler(int a_ScanCode)
                                 gKeyBuf[gKeyBufTail].TimeDiff=td;
                                 gKeyBuf[gKeyBufTail].Time=timenow;
                                 gLastKeyboardTime=timenow;
+#endif
 #ifdef USING_COMMON_INPUT_BUFFER
                                 ToCommonBuf(kKeyboardInputType);
 #endif
@@ -227,7 +240,7 @@ MKeyboardInputInterface::Alloc(void *&dest)
         return kFuncOK;
 }//alloc mem and set dest ptr to it
 
-
+#ifdef ENABLE_TIMED_INPUT
 EFunctionReturnTypes_t
 MKeyboardInputInterface::GetMeTime(void * const&from, GLOBAL_TIMER_TYPE *dest)
 {
@@ -238,7 +251,7 @@ MKeyboardInputInterface::GetMeTime(void * const&from, GLOBAL_TIMER_TYPE *dest)
         *dest=((KEY_TYPE *)from)->Time;
         return kFuncOK;
 }
-
+#endif
 
 EFunctionReturnTypes_t
 MKeyboardInputInterface::CopyContents(const void *&src,void *&dest)
@@ -248,11 +261,13 @@ MKeyboardInputInterface::CopyContents(const void *&src,void *&dest)
         ERR_IF(dest==NULL,
                         return kFuncFailed);
         *(KEY_TYPE *)dest=*(KEY_TYPE *)src;
+#ifdef ENABLE_TIMED_INPUT
         PARANOID_IF(((KEY_TYPE *)src)->TimeDiff != ((KEY_TYPE *)dest)->TimeDiff,
                         return kFuncFailed);
-        PARANOID_IF(((KEY_TYPE *)src)->ScanCode != ((KEY_TYPE *)dest)->ScanCode,
-                        return kFuncFailed);
         PARANOID_IF(((KEY_TYPE *)src)->Time!= ((KEY_TYPE *)dest)->Time,
+                        return kFuncFailed);
+#endif
+        PARANOID_IF(((KEY_TYPE *)src)->ScanCode != ((KEY_TYPE *)dest)->ScanCode,
                         return kFuncFailed);
         return kFuncOK;
 }
@@ -303,9 +318,11 @@ MKeyboardInputInterface::Install(const Passed_st *a_Params)
         gLostKeysDueToClearBuf=0;//used with ClearKeyBuffer()
 
 
+#ifdef ENABLE_TIMED_INPUT
         //initial time
         gLastKeyboardTime=KEY_USES_THIS_TIMEVARIABLE;
         LOCK_VARIABLE(gLastKeyboardTime);
+#endif
 
         for (int i=0;i<KEY_MAX;i++) {
                 //first time init
@@ -316,10 +333,6 @@ MKeyboardInputInterface::Install(const Passed_st *a_Params)
         LOCK_VARIABLE(gKeyBuf);
 
         LOCK_FUNCTION(LowLevelKeyboardInterruptHandler);
-
-        ERR_IF(install_timer(),
-                return kFuncFailed;
-              );
 
         ERR_IF(install_keyboard(),
                 return kFuncFailed;

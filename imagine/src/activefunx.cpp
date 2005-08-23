@@ -55,11 +55,34 @@
         ERR_IF(Functions[_what_]!=NULL, \
                         return kFuncFailed); \
         Functions[_what_] = _what_##_;
+
+#define SETME2(_what_) \
+        ERR_IF(Functions[_what_]!=NULL, \
+                        return kFuncFailed); \
+        Functions[_what_] = _what_##_; \
+        ERR_IF(Functions[_what_##_stop]!=NULL, \
+                        return kFuncFailed); \
+        Functions[_what_##_stop] = none_;
+
+#define SETME3(_what_) \
+        ERR_IF(Functions[_what_]!=NULL, \
+                        return kFuncFailed); \
+        Functions[_what_] = _what_##_; \
+        ERR_IF(Functions[_what_##_stop]!=NULL, \
+                        return kFuncFailed); \
+        Functions[_what_##_stop] = _what_##_stop_;
+
+
 /*****************************************************************************/
 
 
 //functions:
 /*****************************************************************************/
+EFunctionReturnTypes_t
+none_()
+{
+        return kFuncOK;
+}
 /*****************************************************************************/
 EFunctionReturnTypes_t
 kAI_QuitProgram_()
@@ -71,7 +94,7 @@ kAI_QuitProgram_()
 }
 /*****************************************************************************/
 EFunctionReturnTypes_t
-kAI_Hold1KeyPress_()
+kAI_Hold1Key_()
 {
         ERR_IF(kFuncOK!=SetFlag(kF_Hold1Key),
                         return kFuncFailed);
@@ -79,7 +102,7 @@ kAI_Hold1KeyPress_()
 }
 /*****************************************************************************/
 EFunctionReturnTypes_t
-kAI_Hold1KeyRelease_()
+kAI_Hold1Key_stop_()
 {
         ERR_IF(kFuncOK!=ClearFlag(kF_Hold1Key),
                         return kFuncFailed);
@@ -318,22 +341,24 @@ InitFunctions()
         SETME(kAI_Undefined);
         SETME(kAI_QuitProgram);
         SETME(kAI_NextSetOfValues);
-        SETME(kAI_CamSlideBackward);
-        SETME(kAI_CamSlideForward);
-        SETME(kAI_CamRollRight);
-        SETME(kAI_CamRollLeft);
-        SETME(kAI_CamPitchDown);
-        SETME(kAI_CamPitchUp);
-        SETME(kAI_CamTurnRight);
-        SETME(kAI_CamTurnLeft);
-        SETME(kAI_Aspect);
-        SETME(kAI_FOV);
-        SETME(kAI_Hold1KeyPress);
-        SETME(kAI_Hold1KeyRelease);
-        SETME(kAI_CamSlideDown);
-        SETME(kAI_CamSlideUp);
-        SETME(kAI_CamSlideRight);
-        SETME(kAI_CamSlideLeft);
+
+        SETME3(kAI_Hold1Key);
+
+        SETME2(kAI_CamSlideBackward);
+        SETME2(kAI_CamSlideForward);
+        SETME2(kAI_CamRollRight);
+        SETME2(kAI_CamRollLeft);
+        SETME2(kAI_CamPitchDown);
+        SETME2(kAI_CamPitchUp);
+        SETME2(kAI_CamTurnRight);
+        SETME2(kAI_CamTurnLeft);
+        SETME2(kAI_Aspect);
+        SETME2(kAI_FOV);
+        SETME2(kAI_CamSlideDown);
+        SETME2(kAI_CamSlideUp);
+        SETME2(kAI_CamSlideRight);
+        SETME2(kAI_CamSlideLeft);
+
 //end of set part
         //last:
         for (int i=0;i<kMaxAIs;i++) {
