@@ -1,6 +1,6 @@
 AC_INIT([DeMLinks], [0.0.21], [AtKaaZ@users.SourceForge.net])
 AC_CONFIG_SRCDIR([src/notetrk.cpp])
-AM_CONFIG_HEADER([config.h])
+AM_CONFIG_HEADER(config.h)
 
 AM_INIT_AUTOMAKE
 AM_MAINTAINER_MODE
