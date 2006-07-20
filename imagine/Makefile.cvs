@@ -1,7 +1,0 @@
-#usage: gmake -f Makefile.cvs
-all:
-	@echo This Makefile is intended only for the CVS version of the project
-	@echo This will be removed from the release version
-	@echo Use gmake under BSD
-	pwd
-	aclocal && autoheader && automake -a -c && autoconf && mkdir obj ; cd obj && ../configure -C --enable-maintainer-mode --enable-full-debug && make && cd src && ls

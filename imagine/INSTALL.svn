@@ -1,0 +1,21 @@
+#!/bin/bash
+
+#just run:
+make -f Makefile.svn
+
+function do_ {
+echo "echo ----------------------------------------------------------" >"$1"
+echo "cd \"`pwd`/obj/src/\" && pwd && make $2 && clear && \"./$2\"">>"$1"
+chmod +x "$1"
+ln -s "../$1" "./src/$1"
+}
+
+do_ 1 dml_imagine
+
+
+echo "OR you may run the file ./1 anytime u modify some src files"
+
+
+
+
+
