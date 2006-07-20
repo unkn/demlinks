@@ -214,7 +214,7 @@ InitGenericInput()
         ERR_IF(kFuncOK!=                                        \
                 AllLowLevelInputs[kKeyboardInputType]->Alloc(damnbugs),\
                         return kFuncFailed);                    \
-        (void *)newkey=damnbugs;                                \
+        newkey=(KEY_TYPE *)damnbugs;                                \
         ERR_IF(newkey==NULL,                                    \
                         return kFuncFailed);                    \
                 newkey->ScanCode=_a_;                           \
@@ -230,7 +230,7 @@ InitGenericInput()
         ERR_IF(kFuncOK!=                                        \
                 AllLowLevelInputs[kMouseInputType]->Alloc(damnbugs),\
                         return kFuncFailed);                    \
-        (void *)newmouse=damnbugs;                                \
+        newmouse=(MOUSE_TYPE *)damnbugs;                                \
         ERR_IF(newmouse==NULL,                                    \
                         return kFuncFailed);                    \
                 newmouse->Flags=_a_;                           \
