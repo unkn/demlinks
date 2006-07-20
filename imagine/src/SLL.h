@@ -44,7 +44,7 @@ struct GenericSingleLinkedList_st {
                 Next=(GenericSingleLinkedList_st<T> *)a_Next;
                 Data=(T *)a_Data;
         };
-        ~GenericSingleLinkedList_st(){//deletes this parent and all childs
+        ~GenericSingleLinkedList_st(){//deletes this parent and all children
                 //interesting avalanching here:
 
                 //the WARN line is not working since at_exit goes first and.

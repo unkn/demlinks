@@ -50,6 +50,7 @@ Init()
 {
 
         InitNotifyTracker();
+        set_config_file("../../ini/dml_imagine.ini");//instead of allegro.cfg
         ERR_IF(allegro_init() != 0,
                         return kFuncFailed);
 
