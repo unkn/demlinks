@@ -90,20 +90,15 @@ TNotify::GetLastNote()
 }
 
 
-/* moves out the item from list, w/o deallocating it
+/* moves out the last item from list, w/o deallocating it
  * it's a job left for the caller
  */
 NotifyItem_st *
-TNotify::MoveOutNote()
+TNotify::MoveOutLastNote()
 {
 /* return NULL if list is empty, otherwise returns a pointer to the item */
-        NotifyItem_st *tmp=fHead;
-        if (fHead) {
-                fHead=fHead->Next;
-                if (!fHead)
-                        fTail=NULL;
-                SetLessNotes();
-        }
+        NotifyItem_st *tmp=GetLastNote();
+        ClearLastNote();
         return tmp;
 }
 

@@ -28,10 +28,11 @@
 #ifndef SQUARE__H
 #define SQUARE__H
 
-#include "allegro.h"
+#include <allegro.h>
+#include "pnotetrk.h"
 
 void draw_square(BITMAP *bmp, MATRIX_f *camera, int x, int y,int z);
-void draw_squareS(BITMAP *bmp, MATRIX_f *camera);
+function draw_squareS(BITMAP *bmp, MATRIX_f *camera);
 
 
 #endif

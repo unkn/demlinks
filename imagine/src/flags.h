@@ -39,13 +39,13 @@ enum EFlags_t {
 };
 
 
-EFunctionReturnTypes_t
+function
 InitFlags();
 
-EFunctionReturnTypes_t
+function
 SetFlag(EFlags_t which);
 
-EFunctionReturnTypes_t
+function
 ClearFlag(EFlags_t which);
 
 int

@@ -35,43 +35,38 @@ int Flags[kMaxFlags];
 int
 Flag(EFlags_t which)
 {
-        ERR_IF((which<0)||(which>=kMaxFlags),
-                        return 0);
-        ERR_IF(Flags[which]<0,//negative value handled here
-                        return 0);
+        __tIF((which<0)||(which>=kMaxFlags));
+        __tIF(Flags[which]<0);//negative value handled here
+
         return (Flags[which]);
 }
 
-EFunctionReturnTypes_t
+function
 InitFlags()
 {
         for (int i=0;i<kMaxFlags;i++) {
                 Flags[i]=0;
         }//for
-        return kFuncOK;
+        _OK;
 }
 
 
-EFunctionReturnTypes_t
+function
 SetFlag(EFlags_t which)
 {
-        ERR_IF((which<0)||(which>=kMaxFlags),
-                        return kFuncFailed);
+        __tIF((which<0)||(which>=kMaxFlags));
         Flags[which]++;
-        ERR_IF(Flags[which]<=0,
-                        return kFuncFailed);
-        return kFuncOK;
+        __tIF(Flags[which]<=0);
+        _OK;
 }
 
 
-EFunctionReturnTypes_t
+function
 ClearFlag(EFlags_t which)
 {
-        ERR_IF((which<0)||(which>=kMaxFlags),
-                        return kFuncFailed);
+        __tIF((which<0)||(which>=kMaxFlags));
         Flags[which]--;
-        ERR_IF(Flags[which]<0,
-                        return kFuncFailed);
-        return kFuncOK;
+        __tIF(Flags[which]<0);
+        _OK;
 }
 

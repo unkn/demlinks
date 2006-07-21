@@ -38,9 +38,8 @@
 #include "globaltimer.h"
 #include "input.h"
 
-#define GRID_SIZEX    MAX_KEYS_BUFFERED
 
-#define TILE_SIZE    1.0f
+#define GRID_SIZEX    MAX_KEYS_BUFFERED
 
 //temp
 int global_select=3;
@@ -65,6 +64,22 @@ void draw_square(BITMAP *bmp, MATRIX_f *camera, int x, int y,int z)
 
    /* set up four vertices with the world-space position of the tile */
    v[0]->x = x - GRID_SIZEX/2;
+   v[0]->z = z;
+   v[0]->y = y - GRID_SIZEY/2;
+
+   v[1]->x = x - GRID_SIZEX/2 + TILE_SIZE;
+   v[1]->z = z;
+   v[1]->y = y - GRID_SIZEY/2;
+
+   v[2]->x = x - GRID_SIZEX/2 + TILE_SIZE;
+   v[2]->z = z;
+   v[2]->y = y - GRID_SIZEY/2 + TILE_SIZE;
+
+   v[3]->x = x - GRID_SIZEX/2;
+   v[3]->z = z;
+   v[3]->y = y - GRID_SIZEY/2 + TILE_SIZE;
+/*
+   v[0]->x = x - GRID_SIZEX/2;
    v[0]->y = y;
    v[0]->z = z - GRID_SIZEY/2;
 
@@ -79,7 +94,7 @@ void draw_square(BITMAP *bmp, MATRIX_f *camera, int x, int y,int z)
    v[3]->x = x - GRID_SIZEX/2;
    v[3]->y = y;
    v[3]->z = z - GRID_SIZEY/2 + TILE_SIZE;
-
+*/
            /*v[0]->u=0;
            v[0]->v=0;
            v[1]->u=0;
@@ -181,7 +196,7 @@ This function persp_project_f(...)
 
    /* set the color odd ones one color; even ones other color*/
    //only first vertex is needed to have .tmp_vertex_iter=color when using polygon3d...
-   vout[0]->c = ((x + z) & 1) ? makecol((x+1)*16, 63*255/(x+1), 128*(z+1)) : makecol(64*z+(x+1)*(z+1), 32*x+(x+1)*(z+1)/3, 128+255/(z+1));
+   vout[0]->c = ((x + y) & 1) ? makecol((x+1)*16, 63*255/(x+1), 128*(y+1)) : makecol(64*y+(x+1)*(y+1), 32*x+(x+1)*(y+1)/3, 128+255/(y+1));
 
    /* render the polygon */
    polygon3d_f(bmp,
@@ -201,12 +216,13 @@ int compar(const V3D_f *first,const V3D_f *second) {
                 else return 0;//eq
 }
 
-void draw_squareS(BITMAP *bmp,MATRIX_f *camera)
+function
+draw_squareS(BITMAP *bmp,MATRIX_f *camera)
 {
    /* draw the grid of squares */
-        int y=0;
+        int z=0;
    for (int x=0; x<GRID_SIZEX; x++)
-      for (int z=0; z<GRID_SIZEY; z++)
+      for (int y=0; y<GRID_SIZEY; y++)
          draw_square(bmp,
                          camera,
                          x,
@@ -215,27 +231,28 @@ void draw_squareS(BITMAP *bmp,MATRIX_f *camera)
 
 
 
-V3D_f tempex[GRID_SIZEX*GRID_SIZEY+1];
+        V3D_f tempex[GRID_SIZEX*GRID_SIZEY+1];
 
         int ofs=-1;
    for (int x=0; x<GRID_SIZEX; x++)
-      for (int z=0; z<GRID_SIZEY; z++) {
+      for (int y=0; y<GRID_SIZEY; y++) {
               ofs++;
       apply_matrix_f(camera,
                       x-GRID_SIZEX/2+TILE_SIZE/2
-                      ,y
-                      ,z-GRID_SIZEY/2+TILE_SIZE/2
+                      ,y-GRID_SIZEY/2+TILE_SIZE/2
+                      ,z
                       ,
                       &tempex[ofs].x,
                       &tempex[ofs].y,
                       &tempex[ofs].z
                     );
       tempex[ofs].u=x;
-      tempex[ofs].v=z;
+      tempex[ofs].v=y;
       }//fors
 
    //sort by depth
    int tar=ofs+1;
+   //FIXME: this sort messes up the order of textcells displayed on squares
    qsort(&tempex,tar,sizeof(V3D_f),(int (*)(const void*, const void*))compar);
 
    for (int ofs=0;ofs<tar;ofs++) {
@@ -246,12 +263,6 @@ V3D_f tempex[GRID_SIZEX*GRID_SIZEY+1];
                      &tempex[ofs].x,//2dx
                      &tempex[ofs].y);//2dy
 
-      /*rectfill(bmp,
-                      xf-2,
-                      yf-2,
-                      xf+2,
-                      yf+2,
-                      makecol(255,0,0));*/
 #define easy2(_cond_,_shit_,...)  {\
         if ((_cond_)&&(ofs>=(initial)*GRID_SIZEX)         \
                 &&(ofs<(initial+1)*GRID_SIZEX)) {       \
@@ -263,6 +274,7 @@ V3D_f tempex[GRID_SIZEX*GRID_SIZEY+1];
         } \
         initial++; \
 }
+
 #define easy(_shit_,...)  {\
         if ((ofs>=(initial)*GRID_SIZEX)         \
                 &&(ofs<(initial+1)*GRID_SIZEX)) {       \
@@ -274,6 +286,7 @@ V3D_f tempex[GRID_SIZEX*GRID_SIZEY+1];
         } \
         initial++; \
 }
+
 #define easy3(_shit_,...) { \
                 now++;initial--; \
                 easy2(ofs==now,_shit_,__VA_ARGS__); \
@@ -296,6 +309,7 @@ case 0: {
                    tempex[ofs].v);
 break;}
 case 1: {
+
                 KEY_TYPE into;
                 int ind=ofs % MAX_KEYS_BUFFERED;
                 into.ScanCode=gKeyBuf[ind].ScanCode;
@@ -304,6 +318,7 @@ case 1: {
 #endif
 
                 int initial=0;
+                easy2(ofs==7,"COUNT%d",AllLowLevelInputs[kKeyboardInputType]->HowManyInBuffer());
 
                 easy2((ofs % GRID_SIZEY) == gKeyBufHead,
                         "KHEAD%d",gKeyBufHead);
@@ -321,6 +336,7 @@ case 1: {
 
                 easy2((ofs % GRID_SIZEY) == gMouseBufHead,
                         "MHEAD%d",gMouseBufHead);
+
 
                 int indm= ofs % MAX_MOUSE_EVENTS_BUFFERED;
                 //BUG here, def and assignment fails, they've to be split
@@ -373,21 +389,21 @@ case 2: {
                 initial+=1;
                 now=(initial-1)*GRID_SIZEX-1;
                 easy3("%s","POS");
-                easy3("X:%.2f",xpos);
-                easy3("Y:%.2f",ypos);
-                easy3("Y:%.2f",zpos);
+                easy3("PX:%.2f",xpos);
+                easy3("PY:%.2f",ypos);
+                easy3("PZ:%.2f",zpos);
                 initial+=1;
                 now=(initial-1)*GRID_SIZEX-1;
                 easy3("%s","UPvect");
-                easy3("X:%.2f",xu);
-                easy3("Y:%.2f",yu);
-                easy3("Y:%.2f",zu);
+                easy3("UVX:%.2f",xu);
+                easy3("UVY:%.2f",yu);
+                easy3("UVZ:%.2f",zu);
                 initial+=1;
                 now=(initial-1)*GRID_SIZEX-1;
                 easy3("%s","FRvect");
-                easy3("X:%.2f",xf);
-                easy3("Y:%.2f",yf);
-                easy3("Y:%.2f",zf);
+                easy3("FVX:%.2f",xf);
+                easy3("FVY:%.2f",yf);
+                easy3("FVZ:%.2f",zf);
 break;}
 case 3: {
                 int initial=1;
@@ -400,7 +416,7 @@ case 3: {
                 easy2((ofs % GRID_SIZEY) == GenericInputBuffer.fHead,
                         "GHEAD%d",GenericInputBuffer.fHead);
                 easy("%d",
-                        GenericInputBuffer.Buffer[ofs % GRID_SIZEY].Significant
+                        GenericInputBuffer.Buffer[ofs % GRID_SIZEY]
                     );
 #ifdef ENABLE_TIMED_INPUT
                 easy("%d",
@@ -412,6 +428,21 @@ case 3: {
 
                 initial+=1;
                 now=(initial-1)*GRID_SIZEX+1;
+                easy3("gInputBufCount==%d",
+                        gInputBufCount);
+
+                initial+=1;
+                now=(initial-1)*GRID_SIZEX+1;
+                easy3("gMouseBufCount==%d",
+                        gMouseBufCount);
+
+                //initial+=1;
+                now=(initial-1)*GRID_SIZEX+5;
+                easy3("gKeyBufCount==%d",
+                        gKeyBufCount);
+
+                initial+=1;
+                now=(initial-1)*GRID_SIZEX+1;
                 easy3("ActionsInputBuffer.IsEmpty()==%d",
                         ActionsInputBuffer.IsEmpty());
 /*                easy3("Size of ActionsInputBuffer:%d",
@@ -420,7 +451,7 @@ case 3: {
                 easy2((ofs % GRID_SIZEY) == ActionsInputBuffer.fHead,
                         "AHEAD%d",ActionsInputBuffer.fHead);
                 easy("%d",
-                        ActionsInputBuffer.Buffer[ofs % GRID_SIZEY].Significant
+                        ActionsInputBuffer.Buffer[ofs % GRID_SIZEY]
                     );
 #ifdef ENABLE_TIMED_INPUT
                 easy("%d",
@@ -464,6 +495,7 @@ default: {
 }//switch
         }//fi visible
       }//for
+        _OK;
 }//func
 
 

@@ -25,6 +25,11 @@
 *
 ****************************************************************************/
 
+/*
+ *    Inspired from an example program for the Allegro library, excamera.c
+ *    by Shawn Hargreaves and modified by Francisco Pires.
+ */
+
 #include "consts.h"
 #include "camera.h"
 
@@ -232,7 +237,7 @@ TCamera::Roll(float delta_roll)
                    //xup,yup,zup,
                    //0, -1, 0,//the upvector
                    &xup, &yup, &zup);//...gets rotated too
-                SetNeedRefresh();
+                __tIFnok(SetNeedRefresh());
         }//fi
 }//func
 
@@ -255,7 +260,7 @@ TCamera::Turn(float delta_heading)
                    //0, -1, 0,//the upvector
                    &xfront, &yfront, &zfront);//...gets rotated too
                 delta_heading=0;
-                SetNeedRefresh();
+                __tIFnok(SetNeedRefresh());
         }//fi delta_heading
 }//func
 
@@ -285,7 +290,7 @@ TCamera::Pitch(float delta_pitch)
                         &xup,&yup,&zup);
 
         delta_pitch=0;
-                SetNeedRefresh();
+                __tIFnok(SetNeedRefresh());
         }//fi delta_pitch
 }//func
 
@@ -343,7 +348,7 @@ TCamera::float_SetInLimits(
                         *what = to_what;
         }
         if (saved!=to_what) //means change occured
-                SetNeedRefresh();
+                __tIFnok(SetNeedRefresh());
 }
 
 void
@@ -359,7 +364,7 @@ TCamera::int_SetInLimits(int *what, int to_what, int low, int high)
                         *what = to_what;
         }//else
         if (saved!=to_what) //means change occured
-                SetNeedRefresh();
+                __tIFnok(SetNeedRefresh());
 }
 
 void
@@ -379,7 +384,7 @@ TCamera::SetPos(float x, float y, float z)
                         ypos_has_low_limit, ypos_has_high_limit);
         float_SetInLimits(&zpos,z,zpos_low_limit,zpos_high_limit,
                         zpos_has_low_limit, zpos_has_high_limit);
-        SetNeedRefresh();
+        __tIFnok(SetNeedRefresh());
 }
 
 void
@@ -505,7 +510,7 @@ MProjectedCamera::Activate()
 {
         if (!active_state) {//only activate if wasn't active
                 active_state=true;
-                SetNeedRefresh();
+                __tIFnok(SetNeedRefresh())
                 return true;//changed
         }
         return false;//no change in state

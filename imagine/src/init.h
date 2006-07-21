@@ -33,10 +33,10 @@
 extern BITMAP *buffer;
 
 
-EFunctionReturnTypes_t
+function
 Init();
 
-EFunctionReturnTypes_t
+function
 DeInit();
 
 

@@ -99,7 +99,6 @@ struct GenericDoubleLinkedList_st {
         EFunctionReturnTypes_t
         Append(const T*a_Data){//after Tail
                 //a copy of the contents is NOT made!
-                //ie. must be preallocated
                 if (Tail==NULL) {
                         PARANOID_IF(Head!=NULL,//head must also be NULL
                                         return kFuncFailed);
@@ -118,8 +117,8 @@ struct GenericDoubleLinkedList_st {
 
         EFunctionReturnTypes_t
         RemoveFromAnyPlace(GenericDoubleLinkedElement_st<T> *&elem) {
-                LAME_PROGRAMMER_IF(elem==NULL,
-                                return kFuncFailed);
+
+                __tIF(elem==NULL);
                 //keep chain connections extracting us from it
                 if (elem->Next!=NULL) {
                         elem->Next->Prev=elem->Prev;
@@ -139,7 +138,7 @@ struct GenericDoubleLinkedList_st {
 
                 delete elem;
                 elem=NULL;
-                return kFuncOK;
+                _OK;
         };
 
         EFunctionReturnTypes_t

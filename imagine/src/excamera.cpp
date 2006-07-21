@@ -1,7 +1,7 @@
 /****************************************************************************
 *
 *                             dmental links
-*    Copyright (C) 2005 AtKaaZ, AtKaaZ at users.sourceforge.net
+*    Copyright (C) 2005-2006 AtKaaZ, AtKaaZ at users.sourceforge.net
 *
 *  ========================================================================
 *
@@ -24,7 +24,10 @@
 * Description:
 *
 ****************************************************************************/
-
+/*
+ *    Inspired from an example program for the Allegro library, excamera.c
+ *    by Shawn Hargreaves and modified by Francisco Pires.
+ */
 
 #include "allegro.h"
 
@@ -63,11 +66,13 @@ void ToggleCurrentCam()
         cams[current_cam].MarkState();//we keep it in mind
 }
 
-void draw_all(BITMAP *bmp, CAMERA_CLASS *mycam);
+function
+draw_all(BITMAP *bmp, CAMERA_CLASS *mycam);
 
 /* draw everything */
 
-void render(BITMAP *bmp, int cur_cam)
+function 
+render(BITMAP *bmp, int cur_cam)
 {
         CAMERA_CLASS *mycam=&cams[cur_cam];
         /* clear the background */
@@ -88,11 +93,13 @@ void render(BITMAP *bmp, int cur_cam)
                         mycam->GetX()+mycam->GetW(),
                         mycam->GetY()+mycam->GetH(),
                         makecol(255, 255,255));
-        mycam->Select(bmp);
-        draw_all(bmp,mycam);
 
-        mycam->Deselect(bmp);
-        //draw_text(bmp,cur_cam);
+        __tIFnok(mycam->Select(bmp));
+        __tIFnok(draw_all(bmp,mycam));
+
+        __tIFnok(mycam->Deselect(bmp));
+
+        _OK;
 }
 
 
@@ -136,10 +143,12 @@ void draw_cross(BITMAP *bmp, CAMERA_CLASS *mycam) {
 
 }
 
-void draw_all(BITMAP *bmp, CAMERA_CLASS *mycam)
+function
+draw_all(BITMAP *bmp, CAMERA_CLASS *mycam)
 {
         draw_squareS(bmp,mycam->GetUpdatedMatrix());
-        draw_cross(bmp,mycam);
+        //draw_cross(bmp,mycam);
+        _OK;
 }
 
 

@@ -21,7 +21,7 @@
 *
 *  ========================================================================
 *
-* Description:
+* Description: fixed size FIFO queue list
 *
 ****************************************************************************/
 
@@ -104,30 +104,27 @@ template <class _data_>
 EFunctionReturnTypes_t
 TBuffer<_data_>::MoveLastFromBuffer(_data_ *dest)
 {
-
-        LAME_PROGRAMMER_IF(dest==NULL,
-                        return kFuncFailed);
+        __tIF(dest==NULL);
         if (fTail != fHead) {
                 //aka non empty buffer
                 *dest=Buffer[fHead];
                 fHead=(fHead+1) % itsSize;
-                return kFuncOK;
+                _OK;
         }//fi
-        return kFuncFailed;
+        _F;
 }
 /*****************************************************************************/
 template <class _data_>
 EFunctionReturnTypes_t
 TBuffer<_data_>::PeekAtLastFromBuffer(_data_ *into)
 {
-        LAME_PROGRAMMER_IF(into==NULL,
-                        return kFuncFailed);
+        __tIF(into==NULL);
         if (fTail != fHead) {
                 //aka non empty buffer
                 *into=Buffer[fHead];
-                return kFuncOK;
+                _OK;
         }//fi
-        return kFuncFailed;
+        _F;
 }
 /*****************************************************************************/
 template <class _data_>
@@ -135,19 +132,17 @@ EFunctionReturnTypes_t
 TBuffer<_data_>::CopyIntoBuffer(_data_ *from)
 {
 //a COPY OF CONTENTS of passed parameter is MADE
-        LAME_PROGRAMMER_IF(from==NULL,
-                        return kFuncFailed);
+        __tIF(from==NULL);
         int new_tail=(fTail+1) % itsSize;
         if (new_tail != fHead) {//buffer wasn't full before this, 
                 //so add one more
                 Buffer[fTail]=*from;
                 fTail=new_tail;
         } else {
-                ERR(buffer was already full so cannot add anymore and losing it
+                _FA(buffer was already full so cannot add anymore and losing it
                                 is unacceptable so we FAILed);
-                return kFuncFailed;
         }//else
-        return kFuncOK;
+        _OK;
 }
 /*****************************************************************************/
 

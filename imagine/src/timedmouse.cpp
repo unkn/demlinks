@@ -43,15 +43,16 @@ volatile GLOBAL_TIMER_TYPE gLastMouseTime;
 #endif
 
 volatile MOUSE_TYPE gMouseBuf[MAX_MOUSE_EVENTS_BUFFERED];
-int gMouseBufHead;
-volatile int gMouseBufTail;
-volatile int gMouseBufPrevTail;
+int gMouseBufHead;//points to first element to be extracted (FIFO order); there exists one only if gMouseBufCount > 0
+volatile int gMouseBufTail;//points to last element filled
 volatile int gLostMouseEvents;
-volatile int gMouseLock;//first FIFO item from buf is under lock
+volatile int gMouseBufCount;//how many elements in buffer
+volatile mutex_t gMouseLock;//first FIFO item from buf is under lock
 enum {
         gMUnLock=0,
         gMLock=1
 };
+
 
 //functions:
 /*****************************************************************************/
@@ -107,36 +108,40 @@ MOUSE_TYPE::operator=(const volatile MOUSE_TYPE & source)
 }
 /*****************************************************************************/
 #ifdef ENABLE_TIMED_INPUT
-EFunctionReturnTypes_t
+function
 MMouseInputInterface::GetMeTime(void * const&from, GLOBAL_TIMER_TYPE *dest)
 {
-        PARANOID_IF(from==NULL,
-                        return kFuncFailed);
-        PARANOID_IF(dest==NULL,
-                        return kFuncFailed);
+        __tIF(from==NULL);
+        __tIF(dest==NULL);
         *dest=((MOUSE_TYPE *)from)->Time;
-        return kFuncOK;
+        _OK;
 }
 #endif
 /*****************************************************************************/
 EFunctionReturnTypes_t
 MMouseInputInterface::MoveFirstFromBuffer(void *into)
 {
-        if (gMouseBufTail != gMouseBufHead) {//aka non empty buffer
-                LAME_PROGRAMMER_IF(into==NULL,
-                                return kFuncFailed);
-                gMouseLock=gMLock;//lock it so if we get interrupted the int 
-                //cannot modify Head of first item from buffer
+        __tIF(HowManyInBuffer() < 0);
 
+        if (HowManyInBuffer()<=0) {
+                _F;
+        } else {//aka non empty buffer
+                __tIF(into==NULL);
+
+                //lock it so if we get interrupted the int.
+                //cannot modify Head of first item from buffer
+                __tIF(0 != mutex_lock((mutex_t *)&gMouseLock));
 
                 *(MOUSE_TYPE *)into=gMouseBuf[gMouseBufHead];
 
-                gMouseBufHead = (gMouseBufHead+1) % MAX_MOUSE_EVENTS_BUFFERED;
-                //remove it
-                gMouseLock=gMUnLock;
-                return kFuncOK;
+                SET_NEXT_ROTATION(gMouseBufHead, MAX_MOUSE_EVENTS_BUFFERED);//remove it
+
+                gMouseBufCount--;
+
+                __tIF(0 != mutex_unlock((mutex_t *)&gMouseLock));
+
+                _OK;
         }
-        return kFuncFailed;
 }
 
 /*****************************************************************************/
@@ -150,27 +155,36 @@ void MouseIntHandler(int flags)
         }//fi
         if (flags & MOUSE_FLAG_MOVE) {
                 get_mouse_mickeys(&mikx,&miky);
-                if ( (gMouseBufHead!=gMouseBufTail) &&//necessary for PrevTail
-                        (mz==gMouseBuf[gMouseBufPrevTail].MouseZ) &&
-                        (flags==gMouseBuf[gMouseBufPrevTail].Flags)
-                        //&&(flags & MOUSE_FLAG_MOVE) 
-                        ) {
-                        gMouseBuf[gMouseBufPrevTail].MickeyX+=mikx;
-                        gMouseBuf[gMouseBufPrevTail].MickeyY+=miky;
-                        return;
-                }//fi
-        }//fi
-        else {
+                //prevent dups
+                if (mutex_trylock((mutex_t *)&gMouseLock) == 0) {//==0 => we just locked it!
+                //if (gMouseLock == gMUnLock) {
+                        //not locked yet, if locked gMouseBufCount may change since the condition gMouseBufCount > 0 and until lock check(when lock check was last in this series of ifs)
+                        //gMouseLock=gMLock;//prevent MoveFirstFromBuffer()
+                        if ((gMouseBufCount > 0/*at least last element is present*/)&&(mz==gMouseBuf[gMouseBufTail].MouseZ)&&(flags==gMouseBuf[gMouseBufTail].Flags)) {
+                                //so we do need lock in case Head==Tail and we're about to both remove and increment this element from program and from this int.handler
+                                //just compute the difference
+                                gMouseBuf[gMouseBufTail].MickeyX+=mikx;
+                                gMouseBuf[gMouseBufTail].MickeyY+=miky;
+                                //gMouseLock=gMUnLock;
+                                ERR_IF(0!=mutex_unlock((mutex_t *)&gMouseLock));
+                                return;
+                        }//fi
+                 ERR_IF(0!=mutex_unlock((mutex_t *)&gMouseLock));
+                }//filock
+        }//fi move
+        else {//no move
                 mikx=miky=0;
         }//else move
 
-        int tmp_tail=(gMouseBufTail +1 ) % MAX_MOUSE_EVENTS_BUFFERED;
-        if (tmp_tail != gMouseBufHead) { ///buffer not full yet
+        if (gMouseBufCount < MAX_MOUSE_EVENTS_BUFFERED) { ///buffer not full yet
+                //consistency reasons for tmp_tail and not directly gMouseBufTail set; see timedkeys.cpp
+                int tmp_tail=NEXT_ROTATION(gMouseBufTail, MAX_MOUSE_EVENTS_BUFFERED);
                 //tail always points to the next empty space to be filled
-                gMouseBuf[gMouseBufTail].MouseZ=mz;
-                gMouseBuf[gMouseBufTail].MickeyX=mikx;
-                gMouseBuf[gMouseBufTail].MickeyY=miky;
-                gMouseBuf[gMouseBufTail].Flags=flags;
+                gMouseBuf[tmp_tail].MouseZ=mz;
+                gMouseBuf[tmp_tail].MickeyX=mikx;
+                gMouseBuf[tmp_tail].MickeyY=miky;
+                gMouseBuf[tmp_tail].Flags=flags;
+
 #ifdef ENABLE_TIMED_INPUT
                 GLOBAL_TIMER_TYPE td;
                 GLOBAL_TIMER_TYPE timenow=MOUSE_USES_THIS_TIMEVARIABLE;
@@ -179,15 +193,17 @@ void MouseIntHandler(int flags)
                 } else {
                         td=GLOBALTIMER_WRAPSAROUND_AT-gLastMouseTime+1+timenow;
                 }//else
-                gMouseBuf[gMouseBufTail].TimeDiff=td;
-                gMouseBuf[gMouseBufTail].Time=timenow;
+                gMouseBuf[tmp_tail].TimeDiff=td;
+                gMouseBuf[tmp_tail].Time=timenow;
                 gLastMouseTime=timenow;
 #endif
+
+                gMouseBufTail=tmp_tail;
+                gMouseBufCount++;//FIXME: remove tmp_tail eventually, also from timedkeys.cpp;
 #ifdef USING_COMMON_INPUT_BUFFER
                 ToCommonBuf(kMouseInputType);
 #endif
-                gMouseBufPrevTail=gMouseBufTail;
-                gMouseBufTail=tmp_tail;
+                //you're right, we could avoid using tmp_tail because noone would MoveFirstFromBuffer unless this counter says it exists, so as u can see, we only say that after the element is fully and consistenly appended
         }//fi
         else gLostMouseEvents++;
 } END_OF_FUNCTION(MouseIntHandler);
@@ -195,27 +211,39 @@ void MouseIntHandler(int flags)
 /*****************************************************************************/
 /*****************************************************************************/
 
-EFunctionReturnTypes_t
+function
 MMouseInputInterface::UnInstall()
 {
-        remove_mouse();
-        return kFuncOK;
+        if (fMouseFlags & kRealMouse) {
+                mouse_callback = NULL;
+                remove_mouse();
+        }
+        //FIXME: forgetting to clear the buffer here, also those by ENABLE_TIMED_INPUT, and other flags
+
+        _OK;
 }
 /*****************************************************************************/
 
-EFunctionReturnTypes_t
-MMouseInputInterface::Install(const Passed_st *a_Params)
+function
+MMouseInputInterface::Install()
 {
-        gLostMouseEvents=0;
-        LOCK_VARIABLE(gLostMouseEvents);
 
-        gMouseBufTail=gMouseBufHead=gMouseBufPrevTail=0;
+        gLostMouseEvents=0;
+        gMouseBufHead=0;//head is always one element past tail when buffer is empty but we don't look at this, we use gMouseBufCount to know that the buffer is empty
+        gMouseBufTail=MAX_MOUSE_EVENTS_BUFFERED-1;//zero based index
+        gMouseBufCount=0;
+        __tIF(0!=mutex_init((mutex_t* )&gMouseLock, NULL));//always returns 0, they say.
+
+if (fMouseFlags & kRealMouse) {
+        LOCK_VARIABLE(gLostMouseEvents);
         LOCK_VARIABLE(gMouseBufTail);
-        LOCK_VARIABLE(gMouseBufPrevTail);
         LOCK_VARIABLE(gMouseBufHead);
 
         LOCK_VARIABLE(gMouseBuf);
+
         LOCK_VARIABLE(gMouseLock);
+
+        LOCK_VARIABLE(gMouseBufCount);
 
 
 
@@ -224,76 +252,77 @@ MMouseInputInterface::Install(const Passed_st *a_Params)
         gLastMouseTime=MOUSE_USES_THIS_TIMEVARIABLE;
 #endif
         LOCK_FUNCTION(MouseIntHandler);
+        LOCK_FUNCTION(mutex_lock);
+        LOCK_FUNCTION(mutex_trylock);
+        LOCK_FUNCTION(mutex_unlock);
 
 
-        ERR_IF(install_mouse() == -1
-                ,return kFuncFailed;
-                );
 
-        if (a_Params->fMouseFlags & kRealMouse)
+                __tIF(install_mouse() == -1);//can't call this twice! so the question is, what if we want a real mouse and an emulated one in parallel?!
                 mouse_callback = MouseIntHandler;
+        }
 
-        return kFuncOK;
+        _OK;
 }
 
-int
+int inline
 MMouseInputInterface::HowManyInBuffer()
 {
-        if (gMouseBufTail >= gMouseBufHead)
+        /*if (gMouseBufTail >= gMouseBufHead)
                 return gMouseBufTail-gMouseBufHead;
         else
                 return (MAX_MOUSE_EVENTS_BUFFERED-gMouseBufHead)+gMouseBufTail;
+        */
+        __tIF(gMouseBufCount < 0);
+        __tIF(gMouseBufCount > MAX_MOUSE_EVENTS_BUFFERED);
+        return gMouseBufCount;
 }
 
-bool
+bool inline
 MMouseInputInterface::IsBufferFull()
 {
-        return (HowManyInBuffer()==MAX_MOUSE_EVENTS_BUFFERED-1);
+        return (HowManyInBuffer() == MAX_MOUSE_EVENTS_BUFFERED);
 }
 
-EFunctionReturnTypes_t
+function
 MMouseInputInterface::Alloc(void *&dest)//alloc mem and set dest ptr to it
 {
         dest=NULL;
-        dest=new MOUSE_TYPE;
-        ERR_IF(dest==NULL,
-                        return kFuncFailed);
-        return kFuncOK;
+        __( dest=new MOUSE_TYPE );
+        __tIF(dest==NULL);
+        _OK;
 }
 
 
-EFunctionReturnTypes_t
+function
 MMouseInputInterface::CopyContents(const void *&src,void *&dest)
 {
-        ERR_IF(src==NULL,
-                        return kFuncFailed);
-        ERR_IF(dest==NULL,
-                        return kFuncFailed);
+        __tIF(src==NULL);
+        __tIF(dest==NULL);
         *(MOUSE_TYPE *)dest=*(MOUSE_TYPE *)src;
-        return kFuncOK;
+
+        _OK;
 }
 
 
-EFunctionReturnTypes_t
+function
 MMouseInputInterface::DeAlloc(void *&dest)//freemem
 {
-        ERR_IF(dest==NULL,
-                        return kFuncFailed);
+        __tIF(dest==NULL);
         delete (MOUSE_TYPE *)dest;
         dest=NULL;
-        return kFuncOK;
+        _OK;
 }
 
-EFunctionReturnTypes_t
+function
 MMouseInputInterface::Compare(void *what, void *withwhat, int &result)
 {//'what' is a ptr to MOUSE_TYPE (structure)
-        //FIXME:
         if ( ((MOUSE_TYPE *)what)->Flags == ((MOUSE_TYPE *)withwhat)->Flags){
                 result=0;//equal
         }//fi
         else result=-1;//less than equal
 
 
-        return kFuncOK;
+        _OK;
 }
 

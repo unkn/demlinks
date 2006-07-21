@@ -37,6 +37,8 @@
         #include "globaltimer.h"
 #endif
 
+#include "threadslock.h"
+
 #ifdef ENABLE_TIMED_INPUT
 #define KEY_USES_THIS_TIMEVARIABLE gTimer //gActualKeyboardTime
 
@@ -45,6 +47,10 @@
 
 //FIXME(in progress): there are some hacks in timed*.* files battling to keep generalization but obviously failing
 
+#define NEXT_ROTATION(m_Var,const_MAX) ((m_Var + 1) % const_MAX)
+#define SET_NEXT_ROTATION(m_Var,const_MAX) m_Var = NEXT_ROTATION(m_Var, const_MAX)
+
+
 enum {
         kKeyboardInputType
         ,kMouseInputType
@@ -52,13 +58,12 @@ enum {
         ,kMaxInputTypes
 };
 
-struct Passed_st {//a ptr to this struct is passed when calling Install(..)
-        int fKeyFlags;
-        int fMouseFlags;
-};
-
 
 class TBaseInputInterface {
+protected:
+        //we may need these for future reference so we know if the key/mouse is real or emulated
+        int fKeyFlags;
+        int fMouseFlags;
 public:
         TBaseInputInterface(){};
         virtual ~TBaseInputInterface(){};
@@ -73,8 +78,11 @@ public:
         virtual bool
         IsBufferFull()=0;
 
-        virtual EFunctionReturnTypes_t
+        virtual function
         UnInstall()=0;
+
+        virtual function
+        Install()=0;
 
         virtual EFunctionReturnTypes_t
         Alloc(void *&dest)=0;//alloc mem and set dest ptr to it
@@ -84,9 +92,6 @@ public:
 
         virtual EFunctionReturnTypes_t
         CopyContents(const void *&src,void *&dest)=0;
-
-        virtual EFunctionReturnTypes_t
-        Install(const Passed_st *a_Params)=0;
 
         virtual EFunctionReturnTypes_t
         Compare(void *what, void *withwhat, int &result)=0;
@@ -122,11 +127,15 @@ extern volatile INPUT_TYPE gInputBuf[MAX_INPUT_EVENTS_BUFFERED];
 extern volatile int gInputBufTail;
 extern volatile int gInputBufPrevTail;//last Tail, used to cumulate input
 extern int gInputBufHead;
+extern volatile int gInputBufCount;//how many items in buffer
 #endif
+
+
 extern volatile int gLostInput[kMaxInputTypes];
 
 
-EFunctionReturnTypes_t
+
+function
 MoveFirstGroupFromBuffer(INPUT_TYPE *into);
 
 int
@@ -135,11 +144,11 @@ HowManyDifferentInputsInBuffer();
 bool
 IsBufferFull();//of many different inputs? (consecutively different)
 
-EFunctionReturnTypes_t
+function
 UnInstallAllInputs();
 
-EFunctionReturnTypes_t
-InstallAllInputs(const Passed_st *a_Params);
+function
+InstallAllInputs();
 
 
 

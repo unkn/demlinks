@@ -42,7 +42,7 @@ void TimerIncrement(void)
 END_OF_FUNCTION(TimerIncrement);
 
 
-EFunctionReturnTypes_t
+function
 InstallGlobalTimer()
 {
         LOCK_FUNCTION(TimerIncrement);
@@ -53,14 +53,14 @@ InstallGlobalTimer()
          *      installed the timer module, install_timer() will be called
          *           automatically.
          */
-        ERR_IF(0!=install_int_ex(TimerIncrement, TICKS_OF_GLOBALTIMER),
-                        return kFuncFailed);
-        return kFuncOK;
+        __tIF(0 != install_int_ex(TimerIncrement, TICKS_OF_GLOBALTIMER));
+        _OK;
 }
 
-void
+function
 UnInstallGlobalTimer()
 {
         remove_int(TimerIncrement);
+        _OK;
 }
 

@@ -31,10 +31,10 @@
 
 volatile INPUT_TYPE gInputBuf[MAX_INPUT_EVENTS_BUFFERED];
 volatile int gInputBufTail;
-volatile int gInputBufPrevTail;//last Tail
 int gInputBufHead;
 volatile int gLostInput[kMaxInputTypes];
-volatile int gInputLock;//first FIFO item is under lock or not?
+volatile mutex_t gInputLock;//first FIFO item is under lock or not?
+volatile int gInputBufCount;//how many items in buffer
 enum {
         gUnLock=0,
         gLock=1
@@ -62,98 +62,103 @@ INPUT_TYPE::operator=(const INPUT_TYPE & source)
         return *this;
 }
 /*****************************************************************************/
-EFunctionReturnTypes_t
+/*****************************************************************************/
+function
 MoveFirstGroupFromBuffer(INPUT_TYPE *into)
 {
-        if (gInputBufTail != gInputBufHead) {//aka non empty buffer
-                LAME_PROGRAMMER_IF(into==NULL,
-                                return kFuncFailed);
-                gInputLock=gLock;
+        __tIF(HowManyDifferentInputsInBuffer() <0);
+
+        if (HowManyDifferentInputsInBuffer() <=0) {//aka empty buffer
+                _F;
+        } else {//aka non empty buffer
+                __tIF(into==NULL);
+
+                //wait for lock!
+                __tIF(0 != mutex_lock((mutex_t *)&gInputLock));
+
                 *into=gInputBuf[gInputBufHead];
-                /*into->type = gInputBuf[gInputBufHead].type;
-                into->how_many = gInputBuf[gInputBufHead].how_many;*/
 
-                //unnecessary clear
-
-                //gInputBuf[gInputBufHead]=kClearInput;
-
-//                gInputBuf[gInputBufHead].type=-1;//unused
-  //              gInputBuf[gInputBufHead].how_many=0;
-                //end u.c.
-                gInputBufHead = (gInputBufHead+1) % MAX_INPUT_EVENTS_BUFFERED;
+                SET_NEXT_ROTATION(gInputBufHead, MAX_INPUT_EVENTS_BUFFERED);
                 //remove it
-                gInputLock=gUnLock;
-                return kFuncOK;
+                gInputBufCount--;
+
+                __tIF(0 != mutex_unlock((mutex_t *)&gInputLock));
+
+                _OK;
         }
-        return kFuncFailed;
 }
 /*****************************************************************************/
 int
 HowManyDifferentInputsInBuffer()
 {
-        if (gInputBufTail >= gInputBufHead)
-                return gInputBufTail-gInputBufHead;
-        else
-                return (MAX_INPUT_EVENTS_BUFFERED-gInputBufHead)+gInputBufTail;
+        __tIF(gInputBufCount < 0);
+        __tIF(gInputBufCount > MAX_INPUT_EVENTS_BUFFERED);
+        return gInputBufCount;
 }
-/*****************************************************************************/
 bool
 IsBufferFull()
 {
-        return (HowManyDifferentInputsInBuffer()==MAX_INPUT_EVENTS_BUFFERED-gInputBufHead-1);
+        return (HowManyDifferentInputsInBuffer()==MAX_INPUT_EVENTS_BUFFERED);
 }
+
+/*****************************************************************************/
 
 /*****************************************************************************/
 
 
 
-EFunctionReturnTypes_t
-InstallAllInputs(const Passed_st *a_Params)
+function
+InstallAllInputs()
 {
+
         LOCK_VARIABLE(gInputBuf);
         LOCK_VARIABLE(gInputBufTail);
         LOCK_VARIABLE(gInputBufHead);
         LOCK_VARIABLE(gLostInput);
-        LOCK_VARIABLE(gInputBufPrevTail);
+        LOCK_VARIABLE(gInputBufCount);//new
         LOCK_VARIABLE(gInputLock);
         LOCK_FUNCTION(ToCommonBuf);
-        gInputLock=gUnLock;
-        gInputBufTail=gInputBufHead=gInputBufPrevTail=0;
+
+        LOCK_FUNCTION(mutex_lock);
+        LOCK_FUNCTION(mutex_trylock);
+        LOCK_FUNCTION(mutex_unlock);
+
+
+        __tIF(0!=mutex_init((mutex_t* )&gInputLock, NULL));//always returns 0, they say.
+                
+        gInputBufHead=0;
+        gInputBufTail=MAX_INPUT_EVENTS_BUFFERED - 1;//zero-based index
+        gInputBufCount=0;//new
 
         /*these (two lines) need to be changed/added by programmer if any new 
          * input interfaces are created/deleted */
-        AllLowLevelInputs[kKeyboardInputType]=new MKeyboardInputInterface;
-        AllLowLevelInputs[kMouseInputType]=new MMouseInputInterface;
+        AllLowLevelInputs[kKeyboardInputType]=new MKeyboardInputInterface(kRealKeyboard);
+        AllLowLevelInputs[kMouseInputType]=new MMouseInputInterface(kRealMouse);
 
         for (int i=0;i<kMaxInputTypes;i++) {
-                gLostInput[i]=0;
-                LAME_PROGRAMMER_IF(AllLowLevelInputs[i]==NULL,
-                                return kFuncFailed);
-                ERR_IF(kFuncOK!=AllLowLevelInputs[i]->Install(a_Params),
-                                return kFuncFailed);
+                gLostInput[i]=0;//because it must be locked we don't make it part of the class
+                __tIF(AllLowLevelInputs[i]==NULL);
+                __tIFnok(AllLowLevelInputs[i]->Install());
         }//for
 
-
-
-        return kFuncOK;
+        _OK;
 }
 
 /*****************************************************************************/
-EFunctionReturnTypes_t
+function
 UnInstallAllInputs()
 {
         for (int i=0;i<kMaxInputTypes;i++) {
-                ERR_IF(kFuncOK!=AllLowLevelInputs[i]->UnInstall(),
-                                return kFuncFailed);
-                LAME_PROGRAMMER_IF(NULL==AllLowLevelInputs[i],
-                                return kFuncFailed;);
+                __tIFnok(AllLowLevelInputs[i]->UnInstall());
+                __tIF(NULL==AllLowLevelInputs[i]);
                 delete AllLowLevelInputs[i];
                 AllLowLevelInputs[i]=NULL;
         }//for
-        return kFuncOK;
+        _OK;
 }
 
 /*****************************************************************************/
+//used inside an int handler!
 void
 ToCommonBuf(int input_type)
 {
@@ -162,32 +167,35 @@ ToCommonBuf(int input_type)
         //could be lost
         //now add to common aka input buf:
               //if unlocked and same type at tail just increment
-        if ((gInputLock==gUnLock)&&(gInputBufHead!=gInputBufTail)
-                        &&(gInputBuf[gInputBufPrevTail].type == input_type)) {
-                //no need to add a new item, just increment the one
-                //already there since it's <mouse type>
-                gInputBuf[gInputBufPrevTail].how_many++;
-                //we just said there's one more mouse[!] input 2b read
-        } else {
+
+        if (mutex_trylock((mutex_t *)&gInputLock) == 0) {//==0 => we just locked it!
+                if (gInputBufCount > 0){ //at least last elem.present
+                //maybe Head=Tail when only one element present, then we cannot remove it using MoveFirstFromBuffer()!
+                        if (gInputBuf[gInputBufTail].type == input_type){
+                        //no need to add a new item, just increment the one
+                        //already there since it's ie. <mouse type>
+                                gInputBuf[gInputBufTail].how_many++;
+                                ERR_IF(0!=mutex_unlock((mutex_t *)&gInputLock));
+                                return;
+                        //we just said there's one more mouse[!] input 2b read
+                        }//fi3
+                }//fi2
+                ERR_IF(0!=mutex_unlock((mutex_t *)&gInputLock));
+        }//fi1
                 //if locked even if have same type at tail just add another one
                 //we'd like to add a new one if input buf not full:
                 //for that we'll calc next pos for Tail
-                int tmp_input_tail=
-                        (gInputBufTail +1) % MAX_INPUT_EVENTS_BUFFERED;
-                if (tmp_input_tail != gInputBufHead) {
+                if (gInputBufCount < MAX_INPUT_EVENTS_BUFFERED) {//not full
+                        int tmp_input_tail = NEXT_ROTATION(gInputBufTail, MAX_INPUT_EVENTS_BUFFERED);
                         //input buf not full yet
                         //so add one more
-                        gInputBuf[gInputBufTail].type=input_type;
-                        gInputBuf[gInputBufTail].how_many=1;
+                        gInputBuf[tmp_input_tail].type=input_type;
+                        gInputBuf[tmp_input_tail].how_many=1;
                         //remember that this is the last item added:
-                        gInputBufPrevTail=gInputBufTail;
-                        //get to the next position waiting for next one
-                        gInputBufTail = tmp_input_tail;
-                        //gInputBufTail is always ahead with one
+                        gInputBufTail = tmp_input_tail;//always points to last inserted!
+                        gInputBufCount++;
                 }//fi
-                else gLostInput[input_type]++;
-        }//fielse
+                else gLostInput[input_type]++;//loosing in the wild
 } END_OF_FUNCTION(ToCommonBuf);
 /*****************************************************************************/
-//FIXME: if ever implementing a ClearBuf func remember to consider PrevTail var
 

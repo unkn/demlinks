@@ -59,10 +59,10 @@ extern volatile GLOBAL_TIMER_TYPE gTimer;
 extern GLOBAL_TIMER_TYPE gSpeedRegulator;//highly dependable on gTimer
 
 
-EFunctionReturnTypes_t
+function
 InstallGlobalTimer();
 
-void
+function
 UnInstallGlobalTimer();
 
 #endif

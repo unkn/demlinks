@@ -46,13 +46,14 @@ volatile int gLostKeysPressed;
 int gLostKeysDueToClearBuf;
 
 
-//if head==tail => buf empty; thus tail=head-1 => buf full; also memleak 1 elem
-int gKeyBufHead;
-volatile int gKeyBufTail;
+int gKeyBufHead;//not volatile because not changed within an interrupt handler; only read
+volatile int gKeyBufTail;//points to last filled!
+volatile int gKeyBufCount;//how many in buffer (ge 0)
 
 volatile KEY_TYPE gKeyBuf[MAX_KEYS_BUFFERED];//storing scancode full byte
 
 /*****************************************************************************/
+//cannot unify these 2 operator= into one because of the ifdef of ENABLE_TIMED_INPUT
 KEY_TYPE&
 KEY_TYPE::operator=(const KEY_TYPE & source)
 {
@@ -81,7 +82,7 @@ KEY_TYPE::operator=(const volatile KEY_TYPE & source)
 
 
 /*****************************************************************************/
-
+/*
 int
 WrapAround_Aware_Counter(int a_Head, int a_Tail, int a_WrapsAroundAt_MinusOne)
 {//a_rapsAroundAt_MinusOne is the highest last allowable value
@@ -106,38 +107,42 @@ WrapAround_Aware_Counter(int a_Head, int a_Tail, int a_WrapsAroundAt_MinusOne)
                 return +(1+(a_WrapsAroundAt_MinusOne-(a_Head-a_Tail)));
         //NOT anymore!the sign: if negative then tail is before head
 }
-
+*/
 /*****************************************************************************/
-EFunctionReturnTypes_t
+function
 MKeyboardInputInterface::MoveFirstFromBuffer(void *into)
 {
-        if (gKeyBufTail != gKeyBufHead) {//aka non empty buffer
-                LAME_PROGRAMMER_IF(into==NULL,
-                                return kFuncFailed);
+
+        __tIF(gKeyBufCount<0);
+        //__tIF((gKeyBufCount == 0) && (gKeyBufTail != gKeyBufHead));//FIXME:safety3
+        if (HowManyInBuffer() > 0){//aka non empty buffer
+                __tIF(into==NULL);
                 *(KEY_TYPE *)into=gKeyBuf[gKeyBufHead];
 
-                gKeyBufHead = (gKeyBufHead+1) % MAX_KEYS_BUFFERED;//remove it
-                return kFuncOK;
+                SET_NEXT_ROTATION(gKeyBufHead,MAX_KEYS_BUFFERED);//remove it
+                gKeyBufCount--;
+                __tIF(gKeyBufCount<0);
+
+                _OK;
         }
-        return kFuncFailed;
+        _F;
 }
 /*****************************************************************************/
 
-int
+inline int
 MKeyboardInputInterface::HowManyInBuffer()
 {
-        if (gKeyBufTail >= gKeyBufHead)
-                return gKeyBufTail-gKeyBufHead;
-        else//  '0 1 2 3t 4 5h 6 7 8'   B_M=9
-                return (MAX_KEYS_BUFFERED-gKeyBufHead)+gKeyBufTail;
+        __tIF(gKeyBufCount<0);
+        __tIF(gKeyBufCount>MAX_KEYS_BUFFERED);
+        return gKeyBufCount;
 }
 
 /*****************************************************************************/
 
-bool
+inline bool
 MKeyboardInputInterface::IsBufferFull()
 {
-        return (HowManyInBuffer()==MAX_KEYS_BUFFERED-1);
+        return (gKeyBufCount==MAX_KEYS_BUFFERED);//no more leak
 }
 
 /*****************************************************************************/
@@ -169,12 +174,12 @@ void LowLevelKeyboardInterruptHandler(int a_ScanCode)
                 if (!gKeys[which_key]) { //if not kept down already
                         gKeys[which_key]=true;//set as pressed (flag)
 
-                        //calc next pos in buf
-                        int tmp_tail=(gKeyBufTail+1) % MAX_KEYS_BUFFERED;
-                        if (tmp_tail != gKeyBufHead) {
+                        if (gKeyBufCount < MAX_KEYS_BUFFERED) {
+                                //calc next pos in buf
+                                //we want this in temporary tail for some reasons pertaining to locking and modification like tail is already set to next but this next isn't yet filled when we're MoveFirstFromBuffer() err that is consistency ;)
+                                int tmp_tail=NEXT_ROTATION(gKeyBufTail, MAX_KEYS_BUFFERED);//(gKeyBufTail+1) % MAX_KEYS_BUFFERED;
                         //then buffer wasn't full before this
-                        //add one more, on gKeyBufTail pos not tmp_tail pos
-                                gKeyBuf[gKeyBufTail].ScanCode=a_ScanCode;
+                                gKeyBuf[tmp_tail].ScanCode=a_ScanCode;
 #ifdef ENABLE_TIMED_INPUT
                                 //compute time diff, depending on last timer and current timer
                                 GLOBAL_TIMER_TYPE td;
@@ -184,15 +189,17 @@ void LowLevelKeyboardInterruptHandler(int a_ScanCode)
                                 } else {//bigger? means timer did wraparound
                                         td=GLOBALTIMER_WRAPSAROUND_AT-gLastKeyboardTime+1+timenow;
                                 }//else
-                                gKeyBuf[gKeyBufTail].TimeDiff=td;
-                                gKeyBuf[gKeyBufTail].Time=timenow;
+                                gKeyBuf[tmp_tail].TimeDiff=td;
+                                gKeyBuf[tmp_tail].Time=timenow;
                                 gLastKeyboardTime=timenow;
 #endif
 
+                                gKeyBufTail = tmp_tail;
+                                gKeyBufCount++;//you're right, we could avoid using tmp_tail because noone would MoveFirstFromBuffer unless this counter says it exists, so as u can see, we only say that after the element is fully and consistenly appended
 #ifdef USING_COMMON_INPUT_BUFFER
                                 ToCommonBuf(kKeyboardInputType);
 #endif
-                                gKeyBufTail = tmp_tail;
+
                         }//fi
                         else gLostKeysPressed++;
                 }//fi
@@ -201,10 +208,9 @@ void LowLevelKeyboardInterruptHandler(int a_ScanCode)
                 if (gKeys[which_key]) {//if was pressed and kept down already
                         gKeys[which_key]=false;//is up now
 
-                        int tmp_tail=(gKeyBufTail+1) % MAX_KEYS_BUFFERED;
-                        if (tmp_tail != gKeyBufHead) //buffer not yet full
-                        {
-                                gKeyBuf[gKeyBufTail].ScanCode=a_ScanCode;
+                        if (gKeyBufCount!=MAX_KEYS_BUFFERED) {
+                                int tmp_tail=NEXT_ROTATION(gKeyBufTail, MAX_KEYS_BUFFERED);//(gKeyBufTail+1) % MAX_KEYS_BUFFERED;
+                                gKeyBuf[tmp_tail].ScanCode=a_ScanCode;
 #ifdef ENABLE_TIMED_INPUT
                                 //compute time diff, depending on last timer and current timer
                                 GLOBAL_TIMER_TYPE td;
@@ -214,14 +220,16 @@ void LowLevelKeyboardInterruptHandler(int a_ScanCode)
                                 } else {//bigger? means timer did wraparound
                                         td=GLOBALTIMER_WRAPSAROUND_AT-gLastKeyboardTime+1+timenow;
                                 }//else
-                                gKeyBuf[gKeyBufTail].TimeDiff=td;
-                                gKeyBuf[gKeyBufTail].Time=timenow;
+                                gKeyBuf[tmp_tail].TimeDiff=td;
+                                gKeyBuf[tmp_tail].Time=timenow;
                                 gLastKeyboardTime=timenow;
 #endif
+
+                                gKeyBufTail=tmp_tail;
+                                gKeyBufCount++;
 #ifdef USING_COMMON_INPUT_BUFFER
                                 ToCommonBuf(kKeyboardInputType);
 #endif
-                                gKeyBufTail=tmp_tail;
                         }
                         else gLostKeysReleased++;
                 }//fi
@@ -230,92 +238,105 @@ void LowLevelKeyboardInterruptHandler(int a_ScanCode)
 
 
 /*****************************************************************************/
-EFunctionReturnTypes_t
+function
 MKeyboardInputInterface::Alloc(void *&dest)
 {
         dest=NULL;
         dest=new KEY_TYPE;
-        ERR_IF(dest==NULL,
-                        return kFuncFailed);
-        return kFuncOK;
+        __tIF(dest==NULL);
+        _OK;
 }//alloc mem and set dest ptr to it
 
 #ifdef ENABLE_TIMED_INPUT
-EFunctionReturnTypes_t
+function
 MKeyboardInputInterface::GetMeTime(void * const&from, GLOBAL_TIMER_TYPE *dest)
 {
-        PARANOID_IF(from==NULL,
-                        return kFuncFailed);
-        PARANOID_IF(dest==NULL,
-                        return kFuncFailed);
+        __tIF(from==NULL);
+        __tIF(dest==NULL);
         *dest=((KEY_TYPE *)from)->Time;
-        return kFuncOK;
+        _OK;
 }
 #endif
 
-EFunctionReturnTypes_t
+function
 MKeyboardInputInterface::CopyContents(const void *&src,void *&dest)
 {
-        ERR_IF(src==NULL,
-                        return kFuncFailed);
-        ERR_IF(dest==NULL,
-                        return kFuncFailed);
+        __tIF(src==NULL);
+        __tIF(dest==NULL);
         *(KEY_TYPE *)dest=*(KEY_TYPE *)src;
 #ifdef ENABLE_TIMED_INPUT
-        PARANOID_IF(((KEY_TYPE *)src)->TimeDiff != ((KEY_TYPE *)dest)->TimeDiff,
-                        return kFuncFailed);
-        PARANOID_IF(((KEY_TYPE *)src)->Time!= ((KEY_TYPE *)dest)->Time,
-                        return kFuncFailed);
+        __tIF(((KEY_TYPE *)src)->TimeDiff != ((KEY_TYPE *)dest)->TimeDiff);
+        __tIF(((KEY_TYPE *)src)->Time!= ((KEY_TYPE *)dest)->Time);
 #endif
-        PARANOID_IF(((KEY_TYPE *)src)->ScanCode != ((KEY_TYPE *)dest)->ScanCode,
-                        return kFuncFailed);
-        return kFuncOK;
+        __tIF(((KEY_TYPE *)src)->ScanCode != ((KEY_TYPE *)dest)->ScanCode);
+        _OK;
 }
 
 
-EFunctionReturnTypes_t
+function
 MKeyboardInputInterface::DeAlloc(void *&dest)//freemem
 {
-        ERR_IF(dest==NULL,
-                        return kFuncFailed);
+        __tIF(dest==NULL);
         delete (KEY_TYPE *)dest;
         dest=NULL;
-        return kFuncOK;
+        _OK;
 }
 
 /*****************************************************************************/
-EFunctionReturnTypes_t
+function
 MKeyboardInputInterface::UnInstall()
 {
-        keyboard_lowlevel_callback=NULL;
+
+        if (fKeyFlags & kRealKeyboard) {
+                keyboard_lowlevel_callback=NULL;
+                remove_keyboard();
+        }
+        //FIXME: forgetting to clear the buffer here, also those by ENABLE_TIMED_INPUT
         //clearing all flags
         for (int i=0; i<KEY_MAX; i++) {
                 gKeys[i]=false;//no key pressed;
         }//for
-        remove_keyboard();
-        return kFuncOK;
+
+
+        _OK;
 }
 
+/*
 void
 ClearKeyBuffer()
 {
+        //FIXME: we might be inside int handler before gKeyBufCount=0 but after gKeyBufHead=gKeyBufTail; so it messes things up!
         gLostKeysDueToClearBuf+=AllLowLevelInputs[kKeyboardInputType]->HowManyInBuffer();
-        gKeyBufHead=gKeyBufTail;
+        gKeyBufHead=NEXT_ROTATION(gKeyBufTail,MAX_KEYS_BUFFERED);//head after tail => empty buffer
+        gKeyBufCount=0;
 }
+*/
 
 /*****************************************************************************/
-EFunctionReturnTypes_t
-MKeyboardInputInterface::Install(const Passed_st *a_Params)
+function
+MKeyboardInputInterface::Install()
 {
+//FIXME: still cannot run this twice
         gLostKeysReleased=gLostKeysPressed=0;
+        gKeyBufHead=0;
+        gKeyBufTail=MAX_KEYS_BUFFERED-1;//zero based index
+        gKeyBufCount=0;
+        gLostKeysDueToClearBuf=0;//used with ClearKeyBuffer()
+        for (int i=0;i<KEY_MAX;i++) {
+                //first time init
+                gKeys[i]=false;
+        }//for
+
+if (fKeyFlags & kRealKeyboard) {
         LOCK_VARIABLE(gLostKeysPressed);
         LOCK_VARIABLE(gLostKeysReleased);
 
-        gKeyBufHead=gKeyBufTail=0;
         LOCK_VARIABLE(gKeyBufHead);
         LOCK_VARIABLE(gKeyBufTail);
 
-        gLostKeysDueToClearBuf=0;//used with ClearKeyBuffer()
+        LOCK_VARIABLE(gKeyBufCount);
+//there's a BUG of some sort , while in X and keeping a key pressed ie. E, you'll see E presses and E depresses from time to time in the buffer, i believe it's happening at the lower level instead of at our (program) level; if I could run the console version I'd know; ie. 0, 0, 0, E_*, E~, E_, E~, E_, 0, 0, 0 (from an instant)
+
 
 
 #ifdef ENABLE_TIMED_INPUT
@@ -324,25 +345,20 @@ MKeyboardInputInterface::Install(const Passed_st *a_Params)
         LOCK_VARIABLE(gLastKeyboardTime);
 #endif
 
-        for (int i=0;i<KEY_MAX;i++) {
-                //first time init
-                gKeys[i]=false;
-        }//for
         LOCK_VARIABLE(gKeys);
 
         LOCK_VARIABLE(gKeyBuf);
 
         LOCK_FUNCTION(LowLevelKeyboardInterruptHandler);
 
-        ERR_IF(install_keyboard(),
-                return kFuncFailed;
-              );
 
-        if (a_Params->fKeyFlags & kRealKeyboard)
+                __tIF(install_keyboard() != 0);//cannot call this twice!
                 keyboard_lowlevel_callback = LowLevelKeyboardInterruptHandler;
+        }
 
-        key_led_flag=0;//don't update keyboard LEDs
-        return kFuncOK;
+        key_led_flag=0;//don't update keyboard LEDs, FIXME: apparently doesn't work in X (graphical, not console mode)
+
+        _OK;
 }
 
 /*****************************************************************************/
@@ -354,7 +370,7 @@ GetKeyName(const KEY_TYPE *kb)
 
 
 /*****************************************************************************/
-EFunctionReturnTypes_t
+function
 MKeyboardInputInterface::Compare(void *what, void *withwhat, int &result)
 {//'what' is a pointer to KEY_TYPE
         //FIXME:
@@ -363,7 +379,7 @@ MKeyboardInputInterface::Compare(void *what, void *withwhat, int &result)
         }//fi
         else result=-1;//less than equal
 
-        return kFuncOK;
+        _OK;
 }
 
 /*****************************************************************************/

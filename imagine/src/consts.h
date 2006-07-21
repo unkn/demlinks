@@ -45,6 +45,8 @@
 /* uncomment to disable waiting for vsync */
 //#define DISABLE_VSYNC
 
+#define TILE_SIZE    1.0f
+
 #define MOTION_SPEED 0.20f
 #define SLIDE_SPEED MOTION_SPEED
 #define TURN_SPEED 0.10f

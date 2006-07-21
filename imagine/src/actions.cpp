@@ -93,7 +93,7 @@ ActionsClass::Execute()
 /*****************************************************************************/
 /*****************************************************************************/
 /*****************************************************************************/
-EFunctionReturnTypes_t
+function
 ExecuteAllQueuedActions()
 {
         if ( ( !gQueuedActionsForExecution_DLL.IsEmpty()))
@@ -103,40 +103,34 @@ ExecuteAllQueuedActions()
                 GenericDoubleLinkedElement_st<EnumAllAI_t> *parser=
                         gQueuedActionsForExecution_DLL.Head;
                 while (parser!=NULL) {
-                        PARANOID_IF(parser->Data==NULL,
-                                        return kFuncFailed);
+                        __tIF(parser->Data==NULL);
                         //*parser->Data==0..kMaxAIs-1 aka which action is there
                         const EnumAllAI_t which=*parser->Data;
-                        PARANOID_IF((which < 0) || (which >= kMaxAIs),
-                                        return kFuncFailed);
+                        __tIF((which < 0) || (which >= kMaxAIs));
 
                         //execute that action
-                        ERR_IF(kFuncOK!=Actions[which].Execute(),
-                                        return kFuncFailed);
+                        __tIFnok(Actions[which].Execute());
 
                         //prepare ourselves prior parser's eventual death
                         GenericDoubleLinkedElement_st<EnumAllAI_t> *whosnext=parser->Next;
 
                         if (Actions[which].IsToggleType(/*&which*/)) {
                                 //we must remove fRemove action ONLY if previously started, not if queued for start ie. after us , as a next queue element
-                                ERR_IF(kFuncOK!= gQueuedActionsForExecution_DLL.RemoveByContents_StartForwardFrom_Until(
+                                __tIFnok(gQueuedActionsForExecution_DLL.RemoveByContents_StartForwardFrom_Until(
                                                         &Actions[which].fRemove,
                                                         gQueuedActionsForExecution_DLL.Head,
-                                                        parser),
-                                                return kFuncFailed);
+                                                        parser));
                                 if (which != Actions[which].fRemove) {
                                         //if the previous one (fRemove) didn't
                                         //specify us then also remove us
-                                        ERR_IF(kFuncOK!=gQueuedActionsForExecution_DLL.RemoveByContents_StartForwardFrom_Until(
+                                        __tIFnok(gQueuedActionsForExecution_DLL.RemoveByContents_StartForwardFrom_Until(
                                                                 &which,
                                                                 gQueuedActionsForExecution_DLL.Head,
-                                                                parser),
-                                                        return kFuncFailed);
+                                                                parser));
                                 }//fi
                                 //either way since we're a Toggle type we 
                                 //mustn't exist for the next time
-                                PARANOID_IF(parser!=NULL,
-                                                return kFuncFailed);
+                                __tIF(parser!=NULL);
                         }//fi
 
                         //go next from queue
@@ -144,8 +138,9 @@ ExecuteAllQueuedActions()
                 }//while
         }//if
 
-        return kFuncOK;
+        _OK;
 }
+
 EFunctionReturnTypes_t
 QueueAction(const ACTIONSINPUT_TYPE *which)
 {
@@ -156,7 +151,7 @@ QueueAction(const ACTIONSINPUT_TYPE *which)
         //the toggle(one-time) actions get removed from that buffer, continous ones don't; those actions that disable the continous ones get executed and removed and remove those which they disable
         //append:
         EnumAllAI_t *newone=new EnumAllAI_t;
-        *newone=which->Significant;
+        *newone=*which;//a value ~ the index number
         ERR_IF(kFuncOK!=
                 gQueuedActionsForExecution_DLL.Append(newone),
                         return kFuncFailed);
@@ -205,32 +200,28 @@ InitActionTypes()
 }
 /*****************************************************************************/
 
-EFunctionReturnTypes_t
+function
 InitActions()
 {
-        ERR_IF(kFuncOK!=InitFunctions(),
-                        return kFuncFailed);
+        __tIFnok(InitFunctions());
         //typedef ACTIONS_TYPE some_odd_shit[kMaxAIs];//one_of nasty workaround
         Actions=new ACTIONS_TYPE[kMaxAIs];//some_odd_shit[kMaxAIs];//alloc the entire array
-        ERR_IF(NULL==Actions,
-                        return kFuncFailed);
+        __tIF(NULL==Actions);
         for (int i=1;i<kMaxAIs;i++) {
-                ERR_IF(kFuncOK!=Actions[i].SetFunc(EnumAllAI_t(i)),
-                                return kFuncFailed);
+                __tIFnok(Actions[i].SetFunc(EnumAllAI_t(i)));
         }//for
-        ERR_IF(kFuncOK!=InitActionTypes(),
-                        return kFuncFailed);
-        return kFuncOK;
+        __tIFnok(InitActionTypes());
+        _OK;
 }
 
 /*****************************************************************************/
-EFunctionReturnTypes_t
+function
 DoneActions()
 {
-        //FIXME:
-        delete [] Actions;
+        //FIXME: what's there to fix i wonder now, 16 july 2006, 00:13 (Sun)?
+        __(delete [] Actions);
         Actions=NULL;
-        return kFuncOK;
+        _OK;
 }
 
 

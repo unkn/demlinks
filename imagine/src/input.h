@@ -36,17 +36,17 @@ extern const char *kCombiFileName;
 
 
 
-EFunctionReturnTypes_t
+function
 InitInput();
 
-EFunctionReturnTypes_t
+function
 DeInitInput();
 
 
-EFunctionReturnTypes_t
+function
 Executant();
 
-EFunctionReturnTypes_t
+function
 MangleInputs();
 
 #endif

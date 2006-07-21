@@ -60,6 +60,7 @@ struct MOUSE_TYPE {
 extern int gMouseBufHead;
 extern volatile int gMouseBufTail;
 extern volatile MOUSE_TYPE gMouseBuf[MAX_MOUSE_EVENTS_BUFFERED];
+extern volatile int gMouseBufCount;//how many elements in buffer
 #endif
 
 extern volatile int gLostMouseEvents;
@@ -73,39 +74,48 @@ enum {
 
 class MMouseInputInterface:public TBaseInputInterface {
 public:
-        MMouseInputInterface(){};
+        //constructor
+        MMouseInputInterface(const int a_MouseFlags)
+        {//:fMouseFlags(a_MouseFlags){}; what, C bug again ?
+                fMouseFlags=a_MouseFlags;
+        };
+        //constructor
+        MMouseInputInterface(){
+                fMouseFlags=kRealMouse;
+        };
+        //destructor
         virtual ~MMouseInputInterface(){};
 
         virtual EFunctionReturnTypes_t
         MoveFirstFromBuffer(void *into);
 
-        virtual int
+        virtual int inline
         HowManyInBuffer();
 
-        virtual EFunctionReturnTypes_t
+        virtual function
         Alloc(void *&dest);//alloc mem and set dest ptr to it
 
-        virtual EFunctionReturnTypes_t
+        virtual function
         DeAlloc(void *&dest);//freemem
 
-        virtual EFunctionReturnTypes_t
+        virtual function
         CopyContents(const void *&src,void *&dest);
 
 
-        virtual bool
+        virtual bool inline
         IsBufferFull();
 
-        virtual EFunctionReturnTypes_t
+        virtual function
         UnInstall();
 
-        virtual EFunctionReturnTypes_t
-        Install(const Passed_st *a_Params);
+        virtual function
+        Install();
 
-        virtual EFunctionReturnTypes_t
+        virtual function
         Compare(void *what, void *withwhat, int &result);
 
 #ifdef ENABLE_TIMED_INPUT
-        virtual EFunctionReturnTypes_t
+        virtual function
         GetMeTime(void * const&from, GLOBAL_TIMER_TYPE *dest);
 #endif
 

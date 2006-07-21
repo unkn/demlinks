@@ -1,3 +1,12 @@
+=demlinks-0.0.22
+LU: 21 July 2006
+* mutex locked interrupt handler (timed*.cpp)
+* base idea from '../babyplan/txt' implemented using berkeley db
+(classhit.cpp)
+* arithmetic expression(s) as binary trees will be used for key combination
+detection (ie. cheat codes used in games) [polishform.cpp]
+$ need to insert the inputs into berkeley db (classhit.cpp) and then get them
+from those trees/lists
 
 =demlinks-0.0.21
 LU: 23 Aug 2005

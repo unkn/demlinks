@@ -68,6 +68,8 @@ extern int gLostKeysDueToClearBuf;
 extern int gKeyBufHead;
 extern volatile int gKeyBufTail;
 extern volatile KEY_TYPE gKeyBuf[MAX_KEYS_BUFFERED];
+extern volatile int gKeyBufCount;
+//extern volatile int gKeyBufCount;//how many in buffer
 #endif
 
 
@@ -80,46 +82,55 @@ extern volatile KEY_TYPE gKeyBuf[MAX_KEYS_BUFFERED];
 
 class MKeyboardInputInterface:public TBaseInputInterface {
 public:
-        MKeyboardInputInterface(){};
+        //constructor
+        MKeyboardInputInterface(const int a_KeyFlags){
+                fKeyFlags=a_KeyFlags;
+                //FIXME: no constraints yet (aka Invariants)
+        };
+        //constructor
+        MKeyboardInputInterface(){
+                fKeyFlags=kRealKeyboard;//default
+        };
+        //destructor
         virtual ~MKeyboardInputInterface(){};
 
-        virtual EFunctionReturnTypes_t
+        virtual function
         MoveFirstFromBuffer(void *into);
 
-        virtual int
+        virtual inline int
         HowManyInBuffer();
 
-        virtual EFunctionReturnTypes_t
+        virtual function
         Alloc(void *&dest);//alloc mem and set dest ptr to it
 
-        virtual EFunctionReturnTypes_t
+        virtual function
         DeAlloc(void *&dest);//freemem
 
-        virtual EFunctionReturnTypes_t
+        virtual function
         CopyContents(const void *&src,void *&dest);
 
 
-        virtual bool
+        virtual inline bool
         IsBufferFull();
 
-        virtual EFunctionReturnTypes_t
+        virtual function
         UnInstall();
 
-        virtual EFunctionReturnTypes_t
-        Install(const Passed_st *a_Params);
+        virtual function
+        Install();
 
-        virtual EFunctionReturnTypes_t
+        virtual function
         Compare(void *what, void *withwhat, int &result);
 
 #ifdef ENABLE_TIMED_INPUT
-        virtual EFunctionReturnTypes_t
+        virtual function
         GetMeTime(void * const &from, GLOBAL_TIMER_TYPE *dest);
 #endif
 
 };//class
 
-void
-ClearKeyBuffer();
+/*void
+ClearKeyBuffer();*/
 
 bool
 IsAnyKeyHeld();

@@ -65,38 +65,29 @@ const char *kCombiFileName="combinations.dat";
 EFunctionReturnTypes_t
 InitInput()
 {
-        Passed_st temp;
-        temp.fKeyFlags=kRealKeyboard;
-        temp.fMouseFlags=kRealMouse;
-        ERR_IF( kFuncOK !=
-                InstallAllInputs(&temp),
-                return kFuncFailed;
-               );
+        __tIFnok(InstallAllInputs());
 
-        ERR_IF(kFuncOK != InitActionsInput(),
-                        return kFuncFailed;);
-        ERR_IF(kFuncOK != InitGenericInput(),
-                        return kFuncFailed;);
+        //stop doing what u can, start doing what u want! 01:41, 17july2006
+        __tIFnok(InitActionsInput());
 
-        ERR_IF(kFuncOK != InitActions(),
-                        return kFuncFailed;);
-        return kFuncOK;
+        __tIFnok(InitGenericInput());
+
+        __tIFnok(InitActions());
+
+        _OK;
 }
 
 /*****************************************************************************/
-EFunctionReturnTypes_t
+function
 DeInitInput()
 {
-        ERR_IF(kFuncOK!=DoneActions(),
-                        return kFuncFailed);
-        ERR_IF(kFuncOK!=DoneGenericInput(),
-                        return kFuncFailed);
-        ERR_IF(kFuncOK!=DoneActionsInput(),
-                        return kFuncFailed);
+        __tIFnok(DoneActions());
+        __tIFnok(DoneGenericInput());
+        __tIFnok(DoneActionsInput());
         //last because AllLowLevelInpus must still be available, not freed
-        ERR_IF(kFuncOK!=UnInstallAllInputs(),
-                        return kFuncFailed);
-        return kFuncOK;
+        __tIFnok(UnInstallAllInputs());
+        
+        _OK;
 }
 
 
@@ -107,25 +98,36 @@ DeInitInput()
 EFunctionReturnTypes_t
 TransformToGenericInputs(const INPUT_TYPE *from)
 {//get all inputs of group from buffer, and pass them to <genericinput> handler
-        PARANOID_IF(from==NULL,
-                        return kFuncFailed);
-        LAME_PROGRAMMER_IF((from->type<0) || (from->type>=kMaxInputTypes),
-                        return kFuncFailed);
+
+        __tIF(from==NULL);
+        __tIF((from->type < 0) || (from->type >= kMaxInputTypes));
         //FIXME: shame we've to alloc and free a ptr on each entrace in this
         //function
         void *anydatastruc=NULL;
-        ERR_IF(kFuncOK!=
-                AllLowLevelInputs[from->type]->Alloc(anydatastruc),
-                        return kFuncFailed);
-        PARANOID_IF(anydatastruc==NULL,
-                        return kFuncFailed);
+        __tIFnok(
+                AllLowLevelInputs[from->type]->Alloc(anydatastruc));
+        __tIF(anydatastruc==NULL);
+#define THROW_HOOK \
+        __tIFnok(AllLowLevelInputs[from->type]->DeAlloc(anydatastruc));
 
-        int i=0;
-        while (i<from->how_many) {
+        int i=1;
+        while (i <= from->how_many) {
                 //get one input
-                ERR_IF(kFuncOK!=
-                        AllLowLevelInputs[from->type]->MoveFirstFromBuffer(anydatastruc),
-                                return kFuncFailed);
+
+                __tIFnok(AllLowLevelInputs[from->type]->MoveFirstFromBuffer(anydatastruc));
+                /*
+                 * error trapping:
+                EFunctionReturnTypes_t err;
+                int hm=from->how_many;
+                int bufbefore=AllLowLevelInputs[from->type]->HowManyInBuffer();
+
+                _(err=AllLowLevelInputs[from->type]->MoveFirstFromBuffer(anydatastruc));
+                if (kFuncOK != err) {
+                        allegro_message("i:%d hm:%d from->how_many:%d, bufbefore:%d bufafter:%d",i, hm, from->how_many, bufbefore, AllLowLevelInputs[from->type]->HowManyInBuffer());
+                        _t(unhandled);
+                }
+                */
+
 
                 //now we've to transform `anydatastruc` into generic input
                 //and also push it into generic input's buffer(if!)
@@ -134,21 +136,16 @@ TransformToGenericInputs(const INPUT_TYPE *from)
                 passed.data=anydatastruc;
                 //handle the passed input(key,mouse,serial) such as it might
                 //be a part of or complete generic input
-                ERR_IF(kFuncOK !=
-                       GenericInputHandler(&passed),
-                       //free before returning error
-                        ERR_IF(kFuncOK!=
-                                AllLowLevelInputs[from->type]->DeAlloc(anydatastruc),
-                               return kFuncFailed);
-                        return kFuncFailed);
+
+//free before returning error
+                _tIFnok(GenericInputHandler(&passed));
                 i++;
         }//while
         //freemem
-        ERR_IF(kFuncOK!=
-                        AllLowLevelInputs[from->type]->DeAlloc(anydatastruc),
-                return kFuncFailed);
+        THROW_HOOK;//dealloc!
 
-        return kFuncOK;
+        _OK;
+#undef THROW_HOOK
 }
 
 /*****************************************************************************/
@@ -191,50 +188,54 @@ MakeSureWeHaveActions()
         return kFuncOK;
 }
 /*****************************************************************************/
-EFunctionReturnTypes_t
+function
 MakeSureWeHaveGenericInput()
 {//transform multiple input types into generic inputs
-        if (HowManyDifferentInputsInBuffer()) {
+        while (HowManyDifferentInputsInBuffer() > 0) {
                 //FIXME:temporary, remove it:
                 //cams[0].SetNeedRefresh();
 
                 INPUT_TYPE into;
-                //one input group at a time; as in all key or all mouse
-                while (kFuncOK==MoveFirstGroupFromBuffer(&into)){
-                        ERR_IF(kFuncOK !=
-                                  TransformToGenericInputs(&into),
-                                return kFuncFailed);
-                }//while
-        }//fi
+                //one input group at a time; ie. all key OR all mouse
+                        EFunctionReturnTypes_t err;
+                        __(err=MoveFirstGroupFromBuffer(&into));
+                        if (kFuncOK == err) {
+                                __tIFnok(TransformToGenericInputs(&into));
+                        } else {//until buffer is empty, or some error ie. gLock (this may cause some delay tho)
+                                __t(unhandled);
+                               /* if (err == kFuncLocked) {
+                                        break;//while
+                                } else {//assuming some fatal or unhandled error
+                                        allegro_message("%d",err);
+                                        __t(unhandled);
+                                }*/
+                        }
+        }//while
 
-        return kFuncOK;
+        _OK;
 }
 /*****************************************************************************/
-EFunctionReturnTypes_t
+function
 MangleInputs()
 //transform INPUTs to ACTIONs but doesn't execute those actions
 {
-        ERR_IF(kFuncOK!= MakeSureWeHaveGenericInput(),
-                        return kFuncFailed);
-        ERR_IF(kFuncOK!= MakeSureWeHaveActions(),
-                        return kFuncFailed);
+        __tIF(kFuncOK!= MakeSureWeHaveGenericInput());
+        __tIF(kFuncOK!= MakeSureWeHaveActions());
 
-        ERR_IF(kFuncOK != QueueAllActions(),
-                return kFuncFailed);
-        return kFuncOK;
+        __tIF(kFuncOK != QueueAllActions());
+
+        _OK;
 }
 
 
 /*****************************************************************************/
-EFunctionReturnTypes_t
+function
 Executant()
 {
 
         //now here, we keep executing all enabled actions, some might get disabled from within(those that are one-time actions) other will execute their function one more time on each call to this function
-        ERR_IF(kFuncOK!= ExecuteAllQueuedActions(),
-                        return kFuncFailed);
-
-        return kFuncOK;
+        __tIFnok(ExecuteAllQueuedActions());
+        _OK;
 }
 /*****************************************************************************/
 /*****************************************************************************/

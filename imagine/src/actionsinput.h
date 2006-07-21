@@ -30,7 +30,6 @@
 
 #include "_gcdefs.h"
 #include "pnotetrk.h"
-#include "generichelper.h"
 #include "genericinput.h"
 #include "SLL.h"
 #include "buffer.h"
@@ -78,7 +77,7 @@ enum EnumAllAI_t{//action indexes
         kMaxAIs
 };
 
-#define ACTIONSINPUT_TYPE GenericHelper_st<EnumAllAI_t>
+#define ACTIONSINPUT_TYPE EnumAllAI_t//GenericHelper_st<EnumAllAI_t>
 //this buffer holds the queue of requests_of_actions to be executed
 extern TBuffer<ACTIONSINPUT_TYPE> ActionsInputBuffer;
 #ifdef ENABLE_TIMED_INPUT
@@ -87,16 +86,18 @@ extern GLOBAL_TIMER_TYPE gLastActionsInputTime;
 /*****************************************************************************/
 
 
+//this holds a list of genericinputs that's suppose to act as a combination of inputs that when complete(WhosNext points after Tail) it would generate an actioninput Result; ie. a combination of inputs that generates one single action
+//ie. transform from a group of generic inputs(GIs) into one action input(AI)
 struct OneActionsInputTransducer_st {
         GenericSingleLinkedList_st<GENERICINPUT_TYPE> *Head;//in a list of same type inputs
         GenericSingleLinkedList_st<GENERICINPUT_TYPE> *Tail;
         int HowManySoFar;//counter, prolly just informative
-        GenericSingleLinkedList_st<GENERICINPUT_TYPE> *WhosNext;//to be compared with input
+        GenericSingleLinkedList_st<GENERICINPUT_TYPE> *WhosNext;//to be compared with input; a ptr into the list marked with Head and Tail;
 
-        //this is set once, to be the output generinc input when combination
+        //this is set once, to be the output generic input when combination
         //is fulfilled
-        ACTIONSINPUT_TYPE Result;//trasforming SerialInputs into one
-        //GenericInput which is this 'Result'
+        ACTIONSINPUT_TYPE Result;//transforming SerialInputs into one
+                                //...GenericInput which is this 'Result'
         int LostInputsBecauseTheyDidntMatch;
 /******************/
         OneActionsInputTransducer_st();
@@ -121,19 +122,16 @@ struct OneActionsInputTransducer_st {
         EFunctionReturnTypes_t
         PushToBuffer();
 /******************/
-        /*EFunctionReturnTypes_t
-        Compare(const GENERICINPUT_TYPE *one,
-                        const GENERICINPUT_TYPE *two,
-                        int *result);*/
 /******************/
 };//struc
 
 
 /*****************************************************************************/
+//supposed to hold a list of (generic input)combinations(that each yields an action)
 struct AI_SLLTransducersArray_st{
         GenericSingleLinkedList_st<OneActionsInputTransducer_st> *Head;
         GenericSingleLinkedList_st<OneActionsInputTransducer_st> *Tail;
-        int HowManySoFar;//counter, prolly just informative
+        int HowManySoFar;//counter, howmany combinations
 
 /******************/
         AI_SLLTransducersArray_st();
@@ -146,7 +144,10 @@ struct AI_SLLTransducersArray_st{
 };//END struct
 
 /*****************************************************************************/
+//strict order means, the combinations contained in this list, each will enable(the action) only if they are fulfilled in the order of listed generic inputs
+//that is A,B,E will trigger only if A,B,E pressed in this order and not A,E,B in this order
 extern AI_SLLTransducersArray_st AI_StrictOrderSLL;//head, may be NULL
+//here doesn't matter the order, A,E,B will still trigger a combination listed as A,B,E
 extern AI_SLLTransducersArray_st AI_RelaxedOrderSLL;//head -//-
 
 /*****************************************************************************/
@@ -154,13 +155,13 @@ extern AI_SLLTransducersArray_st AI_RelaxedOrderSLL;//head -//-
 
 /*****************************************************************************/
 
-EFunctionReturnTypes_t
+function
 TransformToActions(const GENERICINPUT_TYPE *from);
 /*****************************************************************************/
-EFunctionReturnTypes_t
+function
 InitActionsInput();
 /*****************************************************************************/
-EFunctionReturnTypes_t
+function
 DoneActionsInput();
 /*****************************************************************************/
 

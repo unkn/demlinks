@@ -332,6 +332,7 @@ EFunctionReturnTypes_t
 kAI_NextSetOfValues_()
 {
         global_select=(global_select+1)% GLOBALMAX;
+        cams[current_cam].SetNeedRefresh();
         return kFuncOK;
 }
 /*****************************************************************************/

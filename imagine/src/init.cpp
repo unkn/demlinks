@@ -48,27 +48,23 @@ BITMAP *buffer;
 EFunctionReturnTypes_t
 Init()
 {
-
         InitNotifyTracker();
-        set_config_file("../../ini/dml_imagine.ini");//instead of allegro.cfg
-        ERR_IF(allegro_init() != 0,
-                        return kFuncFailed);
+        __tIF(allegro_init() != 0);
 
-        InstallGlobalTimer();
+        __tIFnok(InstallGlobalTimer());
 
-        ERR_IF( kFuncOK != InitInput(),
-                        return kFuncFailed);
+        __tIFnok(InitInput());
 
-        ERR_IF(kFuncOK!= InitFlags(),
-                        return kFuncFailed);
+        __tIFnok(InitFlags());
 
    if (set_gfx_mode(GFX_AUTODETECT, 800, 600, 0, 0) != 0) {
       if (set_gfx_mode(GFX_SAFE, 640, 480, 0, 0) != 0) {
+        if (set_gfx_mode(GFX_SAFE, 320, 200, 0, 0) != 0) {
          set_gfx_mode(GFX_TEXT, 0, 0, 0, 0);
          allegro_message("Unable to set any graphic mode\n%s\n",
                          allegro_error);
-         ERR(no graphix);
-         return kFuncFailed;
+         _FA(no graphix);
+        }
       }
    }
 
@@ -82,9 +78,9 @@ Init()
                 int a=0;
                 int b=0;
          for (int i=0;i<NUM_CAMS;i++){
-                cams[i].SetPos(0,-GRID_SIZEY,0);
-                cams[i].SetFrontVector(0,1,0);
-                cams[i].SetUpVector(-1,0,0);
+                cams[i].SetPos(0,0,10*TILE_SIZE);
+                cams[i].SetFrontVector(0,0,-1);
+                cams[i].SetUpVector(-1,-0.4,0);
                 cams[i].Prepare(
                                 a*w,
                                 b*h,
@@ -101,18 +97,17 @@ Init()
         }//for cams
          cams[current_cam].Activate();
 
-        return kFuncOK;
+         _OK;
 }
 
-EFunctionReturnTypes_t
+function
 DeInit()
 {
-        destroy_bitmap(buffer);
+        __( destroy_bitmap(buffer); );
 
-        ERR_IF(kFuncOK!=DeInitInput(),
-                        return kFuncFailed);
+        __tIFnok(DeInitInput());
 
-        UnInstallGlobalTimer();
-
-        return kFuncOK;
+        __tIFnok(UnInstallGlobalTimer());
+        _OK;
 }
+

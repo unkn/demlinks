@@ -11,6 +11,7 @@ ln -s "../$1" "./src/$1"
 }
 
 do_ 1 dml_imagine
+do_ 2 setup_inputs
 
 
 echo "OR you may run the file ./1 anytime u modify some src files"

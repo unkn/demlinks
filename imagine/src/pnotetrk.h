@@ -1,7 +1,7 @@
 /****************************************************************************
 *
 *                             dmental links
-*    Copyright (C) 2005 AtKaaZ, AtKaaZ at users.sourceforge.net
+*    Copyright (C) 2005-2006 AtKaaZ, AtKaaZ at users.sourceforge.net
 *
 *  ========================================================================
 *
@@ -30,25 +30,27 @@
 #define PNOTETRK_H__
 
 #include <stdlib.h> //for EXIT_FAILURE
+//#include <db_cxx.h>
+#include <stdexcept>
 #include "notetrk.h"
+#include "_gcdefs.h"
 
-typedef enum {
-        kFuncOK=110,
-        kFuncFailed
+typedef enum {//avoiding to use the value zero
+        kFuncOK=110
+        ,kFuncFailed//can't use this if throwing. ie. _tIF(true)
+        ,kFuncLocked//ie. due to gLock or gMLock
 } EFunctionReturnTypes_t;
 
 enum ENotifyTypes {
         kNotify_None=0,
         kNotify_Warn,
         kNotify_Err,
+        kNotify_Fail,
         kNotify_Exit,
         kNotify_Info,
+        kNotify_Exception,
 
-        /* the developer used certain statements under a disconnected situation
-         * ie. using flush() without having the file opened, or using a NULL
-         * pointer, to put data into */
-        kNotify_ProgrammingError,
-
+        kNotify_PossiblyBug,//check it out
         /* this signals that a paranoid check on a condition was true,
          * if so then is considered fatal ;) since the condition is expected
          * always to be false (*doh* paranoid) */
@@ -128,13 +130,25 @@ extern MNotifyTracker *gNotifyTracker;
         ADD_NOTE(kNotify_Info,a_InfoDescription)\
 }
 
+#define BUG_IF(a_ConditionalStatement,...)  \
+{                                                               \
+        if ((a_ConditionalStatement)) {                         \
+                BUG(a_ConditionalStatement)                    \
+                { __VA_ARGS__; }                     \
+        }                                                       \
+}
+
+#define BUG(a_BugDescription)                 \
+{                                               \
+        ADD_NOTE(kNotify_PossiblyBug,a_BugDescription)\
+}
 
 /* adds a warning to the notify-list if the condition is true */
-#define WARN_IF(a_ConditionalStatement,a_MoreStatementsIfTrue)  \
+#define WARN_IF(a_ConditionalStatement,...)  \
 {                                                               \
         if ((a_ConditionalStatement)) {                         \
                 WARN(a_ConditionalStatement)                    \
-                { a_MoreStatementsIfTrue; }                     \
+                { __VA_ARGS__; }                     \
         }                                                       \
 }
 
@@ -145,7 +159,7 @@ extern MNotifyTracker *gNotifyTracker;
 }
 
 /* always adds an EXIT type notification to the list,
-   with the passed description, just before doing the actual clean EXIT 
+   with the passed description, just before doing the actual clean EXIT
  * refusing to do an exit with user supplied exitcode */
 #if defined(EXIT)
 # error EXIT macro is already defined, this may cause problems, check it out !!!
@@ -168,47 +182,208 @@ extern MNotifyTracker *gNotifyTracker;
         }                                                       \
 }
 
+#define AEXIT(a_Func)                         \
+{                                                               \
+        if (( kFuncOK != a_Func )) {                         \
+                EXIT(AEXIT(a_Func))                    \
+        }                                                       \
+}
 
-/* adds an error to the notify-list if the condition is true */
-#define ERR_IF(a_ConditionalStatement,a_MoreStatementsIfTrue)   \
+/***************************************/
+/***************************************/
+/***************************************/
+//does NOT throw
+#define _TRY(a_DOCmds,...) \
+        try { a_DOCmds; } catch (...) { \
+                ADD_NOTE(kNotify_Exception,a_DOCmds); \
+                __VA_ARGS__; }
+
+/***************************************/
+//tries a_DOCmds and catches any exceptions thrown, if any does (re)throw after executing __VA_ARGS__
+//WARNING: can't use things that use THROW_HOOK within a definition of THROW_HOOK ie. #define THROW_HOOK TRY(This()); because when This() throws it'll run TRY(This()) and so on ... until infinity use __() instead of TRY() which throws without using THROW_HOOK at all
+#define TRY(a_DOCmds) _TRY(a_DOCmds,  THROW_HOOK; throw;);
+
+/***************************************/
+//wrapper, expects: _(DOcmds,UNDOcmds), id DOcmds fail, then UNDOcmds are executed to hopefully undo wtw DOcmds have done so far; the _ before means don't throw
+#define _(a_DOcmds) TRY(a_DOcmds)
+//throw w/o THROW_HOOK, to use within #define THROW_HOOK
+#define __(a_DOcmds) _TRY(a_DOcmds, throw)
+//no throw, no hook, just a catch
+#define ___(a_DOcmds) _TRY(a_DOcmds)
+/***************************************/
+//if evaluation throws an exception it is rethrown WITHOUT HOOK! no hook tIF
+//throw if(true)=_tIF(true)
+#define __tIF(a_DOifcmd) { \
+        bool __bool_ifexpr;\
+        _TRY( __bool_ifexpr= (a_DOifcmd),  throw ) \
+        if (__bool_ifexpr) { \
+                __t(__tIF( a_DOifcmd) );/*not circular*/\
+        }       \
+} //endblock
+
+//an attempt to standardize function call handling
+//a call wrapper; execution stops on throw or kFuncOK != a_Func; no hook (no THROW_HOOK)
+#define __tIFnok(a_Func) { \
+        EFunctionReturnTypes_t __EFunctionReturnTypes_t__FuncReturn;\
+        _TRY( __EFunctionReturnTypes_t__FuncReturn = (a_Func),  throw ) \
+        if (kFuncOK != __EFunctionReturnTypes_t__FuncReturn) { \
+                __t(__tIFnok( a_Func ));/*doesn't recurse here!*/\
+        }       \
+} //endblock
+//with THROW_HOOK
+#define _tIFnok(a_Func) { \
+        EFunctionReturnTypes_t __EFunctionReturnTypes_t__FuncReturn;\
+        _TRY( __EFunctionReturnTypes_t__FuncReturn = (a_Func), THROW_HOOK ; throw ) \
+        if (kFuncOK != __EFunctionReturnTypes_t__FuncReturn) { \
+                _t(_tIFnok( a_Func ));/*doesn't recurse here!*/\
+        }       \
+} //endblock
+
+#define function \
+        EFunctionReturnTypes_t
+
+        //TRY( __bool_ifexpr= (a_DOifcmd) );
+/***************************************/
+//no hook OK ret!
+#ifdef TRACKABLE_RETURNS
+        #define _tret \
+                INFO(_tret);\
+                return 
+#else
+        #define _tret \
+                return 
+#endif
+/***************************************/
+//no hook FAIL ret!
+#ifdef TRACKABLE_RETURNS
+        #define _tfret \
+                INFO(_tfret);\
+                return 
+#else
+        #define _tfret \
+                return 
+#endif
+/***************************************/
+//fail from a function
+//doesn't throw, only exits from function!
+#define _FA(a_Desc) { \
+        FAIL(a_Desc, \
+                _tfret kFuncFailed;) \
+}
+
+#define _F { \
+        _tfret kFuncFailed; \
+}
+
+#define _OK {\
+        _tret kFuncOK; \
+}
+/***************************************/
+//if evaluation throws an exception it is rethrown after executing __VA_ARGS__
+//throw if(true)=_tIF(true)
+#define _tIF(a_DOifcmd) { \
+        bool __bool_ifexpr;\
+        _TRY( __bool_ifexpr= (a_DOifcmd),  THROW_HOOK; throw ) \
+        if (__bool_ifexpr) { \
+                _t(_tIF(a_DOifcmd));/*not circular, just text here*/\
+        }       \
+} //endblock
+
+        //TRY( __bool_ifexpr= (a_DOifcmd) );
+/***************************************/
+//unconditional log prior to throw => log+throw; the line, func and file where this is called is taken and shown in the error message(not in the throw message)
+#define _t(a_ThrowMessage) {\
+        THROW_HOOK;/*prior to throw*/\
+        ADD_NOTE(kNotify_Exception,#a_ThrowMessage); \
+        std::logic_error le(#a_ThrowMessage);\
+        throw le; }
+
+//the 'no hook' version of _t()
+#define __t(a_ThrowMessage) {\
+        ADD_NOTE(kNotify_Exception,#a_ThrowMessage); \
+        std::logic_error le(#a_ThrowMessage);\
+        throw le; }
+
+//wrapper for 'if' that catches the evaluation if it throws exceptions(and rethrows!); don't forget the '}_fi' endblock which puts '}}' at end, because we don't want __bool_ifexpr that we declared temporary to be accessed outside _if()
+//or use _if(expr) { do_this(); } else { do_that; }_fi
+#define _if(a_IFExpr) {    \
+        bool __bool_ifexpr;     \
+        TRY( __bool_ifexpr= (a_IFExpr));\
+        if ( __bool_ifexpr )
+
+#define _fi }
+/***************************************/
+//no hook! but keeps the throw
+#define __if(a_IFExpr) {    \
+        bool __bool_ifexpr;     \
+        _TRY( __bool_ifexpr= (a_IFExpr), throw);\
+        if ( __bool_ifexpr )
+
+#define __fi }
+/***************************************/
+//careful with if (true) _reterr 0; will fail because lacking { and }
+// we also have if (true) _reterr; w/o params so we cannot include { and } inside this macro;
+// do this if (true) { _reterr 1; } but if u use _if u can ommit { and } (it has it's own)
+/***************************************/
+//uses ERR_HOOK hook no the same as _() which uses THROW_HOOK
+#ifdef TRACKABLE_RETURNS
+        #define _reterr \
+                INFO(_reterr);\
+                ERR_HOOK;\
+                return 
+#else
+        #define _reterr \
+                ERR_HOOK;\
+                return 
+#endif
+/***************************************/
+//uses the same hook and the MACROS that (re)throw exceptions
+#ifdef TRACKABLE_RETURNS
+        #define _hret \
+                INFO(_hret);\
+                THROW_HOOK;\
+                return 
+#else
+        #define _hret \
+                THROW_HOOK;\
+                return 
+#endif
+/***************************************/
+#ifdef TRACKABLE_RETURNS
+        #define _okret \
+                INFO(_okret);\
+                OK_HOOK;\
+                return 
+#else
+        #define _okret \
+                OK_HOOK;\
+                return 
+#endif
+/***************************************/
+
+// adds an error to the notify-list if the condition is true
+//a_MoreStatementsIfTrue
+#define ERR_IF(a_ConditionalStatement,...)   \
 {                                                               \
         if ((a_ConditionalStatement)) {                         \
                 ERR(a_ConditionalStatement)                     \
-                { a_MoreStatementsIfTrue; }                     \
+                { __VA_ARGS__; }                     \
         }                                                       \
 }
 
-/* always adds an error to the list, with the passed description */
-#define ERR(a_ErrorDescription)                 \
+// always adds an error to the list, with the passed description
+#define ERR(a_ErrorDescription,...)                 \
 {                                               \
         ADD_NOTE(kNotify_Err,a_ErrorDescription)\
+        { __VA_ARGS__; }                     \
 }
 
-#if defined(CHECK_FOR_LAME_PROGRAMMERS)
-/* adds a programming-error to the notify-list if the condition is true
-   and optionally executes more statements if so
- * this should only happen if the programmer misused some statements or forgot
- * something such as openning the file before writing to it */
-#define LAME_PROGRAMMER_IF(a_ConditionalStatement,a_MoreStatementsIfTrue)  \
-{                                                               \
-        if ((a_ConditionalStatement)) {                         \
-                LAME_PROGRAMMER(a_ConditionalStatement)                    \
-                { a_MoreStatementsIfTrue; }                     \
-        }                                                       \
-}
 
-/* always adds a programming-error to the list, with the passed description */
-#define LAME_PROGRAMMER(a_ErrorDescription)                 \
+#define FAIL(a_ErrorDescription,...)                 \
 {                                               \
-        ADD_NOTE(kNotify_ProgrammingError,a_ErrorDescription)\
+        ADD_NOTE(kNotify_Fail,a_ErrorDescription)\
+        { __VA_ARGS__; }                     \
 }
-#else //not defined:
-
-#define LAME_PROGRAMMER_IF(a_blah,a_blahblah) /* refusing to do anything */
-#define LAME_PROGRAMMER(a_blah) /* nothing here */
-
-#endif //CHECK_FOR_LAME_PROGRAMMERS
-
 
 /* adds a notification to the list, generic use */
 #define ADD_NOTE(a_NotifyType, a_Cause)                         \
@@ -230,7 +405,7 @@ void CheckedAddNote(
         Func_t a_Func,
         const Line_t a_Line);
 
-void ShutDownNotifyTracker(void);
+void ShutDownNotifyTracker(void);//no need to call this manually
 void InitNotifyTracker();
 void PurgeAllNotifications();
 void ShowAllNotifications();

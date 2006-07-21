@@ -53,10 +53,9 @@ EFunctionReturnTypes_t
 ResetAllStartedConsecutives(GenericSingleLinkedList_st<OneGenericInputTransducer_st> *start_from,
                 const int howmany)
 {
-        LAME_PROGRAMMER_IF(howmany<=0,
-                        return kFuncFailed);
-        LAME_PROGRAMMER_IF(start_from==NULL,
-                        return kFuncFailed);
+
+        __tIF(howmany<=0);
+        __tIF(start_from==NULL);
 
         //casting from 'const'
         GenericSingleLinkedList_st<OneGenericInputTransducer_st>
@@ -65,21 +64,17 @@ ResetAllStartedConsecutives(GenericSingleLinkedList_st<OneGenericInputTransducer
                 start_from;*/
 
         for (int k=0;k<howmany;k++) {
-                PARANOID_IF(parser==NULL,
-                                return kFuncFailed);
+                __tIF(parser==NULL);
                 //if started then, it failed since the input we just got
                 //is of another type
-                ERR_IF(kFuncOK!=
-                        parser->Data->RestartIfStarted(),
-                        return kFuncFailed);
+                __tIFnok(parser->Data->RestartIfStarted());
 
                 parser=parser->Next;
         }//for2
         //unsynced HowMany ? :
-        PARANOID_IF(parser!=NULL,
-                        return kFuncFailed);
+        __tIF(parser!=NULL);
 
-        return kFuncOK;
+        _OK;
 }
 /*****************************************************************************/
 EFunctionReturnTypes_t
@@ -89,45 +84,39 @@ ConsumeIntoGenericInput(
                 const int howmany,
                 bool reset_when_failed)
 {
+
 //this would compare "from" with INputs from all 'howmany' Transducers starting
 //from "*start_from", each transducer has a list of combinations that when
 //fullfilled would push that generic input into the geninputbuffer
-        LAME_PROGRAMMER_IF(from==NULL,
-                        return kFuncFailed);
-        LAME_PROGRAMMER_IF(start_from==NULL,
-                        return kFuncFailed);
-        LAME_PROGRAMMER_IF(howmany<=0,
-                        return kFuncFailed);
+        __tIF(from==NULL);
+        __tIF(start_from==NULL);
+        __tIF(howmany<=0);
 
        GenericSingleLinkedList_st<OneGenericInputTransducer_st> *ptr=start_from;
        for (int i=0;i<howmany;i++) {//parse all genericinputs of this type
                //aka all transducers
-               PARANOID_IF(ptr==NULL,//unsync-ed howmany
-                               return kFuncFailed);
+               __tIF(ptr==NULL);//unsync-ed howmany
 
                 OneGenericInputTransducer_st *data=ptr->Data;
 
-                PARANOID_IF(NULL==data,
-                                return kFuncFailed);
+                __tIF(NULL==data);
 
                 //see if tmp->WhosNext == *from
-                ERR_IF(kFuncOK!=data->EatThis(from,reset_when_failed),
-                                return kFuncFailed);
+                __tIFnok(data->EatThis(from,reset_when_failed));
 
                 //parse next item from the list of transducers
                 ptr=ptr->Next;
         }//for
-        return kFuncOK;
+       _OK;
 }
 
 /*****************************************************************************/
-EFunctionReturnTypes_t
+function
 GenericInputHandler(
                 const UnifiedInput_st *from)
 {//only one input at a time
 //consumes the input(one key OR one mouse...) passed as param
-        LAME_PROGRAMMER_IF(from==NULL,
-                        return kFuncFailed);
+        __tIF(from==NULL);
         //see if there are any consecutives that are of other type than 'from'
         //if so, cancel them (aka reset them to zero, they failed)
         for (int i=0;i<kMaxInputTypes;i++) {
@@ -142,101 +131,92 @@ GenericInputHandler(
 
                         int howmany=GI_StrictOrderSLL[i].HowManySoFar;
                         if (howmany>0) {
-                                ERR_IF(kFuncOK!=
+                                __tIFnok(
                                 ResetAllStartedConsecutives(
                                                 GI_StrictOrderSLL[i].Head,
-                                                howmany),
-                                        return kFuncFailed);
+                                                howmany)
+                                );
                         }//fi howmany
                 } else {//our type, let's check it now
                                 //parse both noncons and cons and give them
                                 //our input (from->*)
                         int howmany=GI_StrictOrderSLL[i].HowManySoFar;
                                 if (GI_StrictOrderSLL[i].Head!=NULL)
-                                ERR_IF(kFuncOK!=
+                                __tIFnok(
                                         ConsumeIntoGenericInput(from,
                                                 GI_StrictOrderSLL[i].Head,
                                                 howmany,
                                                 true//reset combi if this is
                                                 //not what was expected
-                                                ),
-                                        return kFuncFailed);
+                                                )
+                                        );
                         howmany=GI_RelaxedOrderSLL[i].HowManySoFar;
                                 if (GI_RelaxedOrderSLL[i].Head!=NULL)
-                                ERR_IF(kFuncOK!=
+                                __tIFnok(
                                         ConsumeIntoGenericInput(from,
                                                GI_RelaxedOrderSLL[i].Head,
                                                 howmany,
                                                 false// no reset if not the
                                                         //expected one
-                                                        ),
-                                        return kFuncFailed);
+                                                        )
+                                        );
                 }//else was ourtype
         }//for1
 
-        return kFuncOK;
+        _OK;
 }
 
 /*****************************************************************************/
-EFunctionReturnTypes_t
+function
 InitGenericInput()
 {//this sets all the combinations upon which the conversion from multiple input
 //to generic input happens.
+
 
 //temp
         KEY_TYPE *newkey=NULL;
         MOUSE_TYPE *newmouse=NULL;
         OneGenericInputTransducer_st *newtrans=NULL;
-        LAME_PROGRAMMER_IF(AllLowLevelInputs[kMouseInputType]==NULL,
-                        return kFuncFailed);
-        LAME_PROGRAMMER_IF(AllLowLevelInputs[kKeyboardInputType]==NULL,
-                        return kFuncFailed);
+        __tIF(AllLowLevelInputs[kMouseInputType]==NULL);
+        __tIF(AllLowLevelInputs[kKeyboardInputType]==NULL);
         void *damnbugs=NULL;
 
 #define NEWTRANSITION(_typ_,_stuff_,_wha_,...)                             \
         newtrans=NULL;                                          \
         newtrans=new OneGenericInputTransducer_st;              \
-        ERR_IF(newtrans==NULL,                                  \
-                       return kFuncFailed);                     \
+        __tIF(newtrans==NULL);                                  \
         __VA_ARGS__;                                            \
                 {EnumAllGI_t tmpi=_wha_;                        \
-                        newtrans->Result.Significant=tmpi;      \
+                        newtrans->Result=tmpi;      \
                 }                                               \
-        ERR_IF(kFuncOK!=                                        \
-                GI_##_stuff_##OrderSLL[k##_typ_##InputType].Append(newtrans),\
-                                return kFuncFailed);
+        __tIFnok(                                        \
+                GI_##_stuff_##OrderSLL[k##_typ_##InputType].Append(newtrans));\
 
 #define NEWKT(_stuff_,_wha_,...)                             \
         NEWTRANSITION(Keyboard,_stuff_,_wha_,__VA_ARGS__);
 
 #define NEWK(_a_)                                             \
         damnbugs=NULL;                                          \
-        ERR_IF(kFuncOK!=                                        \
-                AllLowLevelInputs[kKeyboardInputType]->Alloc(damnbugs),\
-                        return kFuncFailed);                    \
+        __tIFnok(                                        \
+                AllLowLevelInputs[kKeyboardInputType]->Alloc(damnbugs));\
         newkey=(KEY_TYPE *)damnbugs;                                \
-        ERR_IF(newkey==NULL,                                    \
-                        return kFuncFailed);                    \
+        __tIF(newkey==NULL);                                    \
                 newkey->ScanCode=_a_;                           \
-                ERR_IF(kFuncOK!=                                \
-                                newtrans->Append(newkey),       \
-                                return kFuncFailed);
+                __tIFnok(                                \
+                                newtrans->Append(newkey));       \
 
 #define NEWMT(_stuff_,_wha_,...)                             \
         NEWTRANSITION(Mouse,_stuff_,_wha_,__VA_ARGS__);
 
 #define NEWMF(_a_)                                             \
         damnbugs=NULL;                                          \
-        ERR_IF(kFuncOK!=                                        \
-                AllLowLevelInputs[kMouseInputType]->Alloc(damnbugs),\
-                        return kFuncFailed);                    \
+        __tIFnok(                                        \
+                AllLowLevelInputs[kMouseInputType]->Alloc(damnbugs));\
         newmouse=(MOUSE_TYPE *)damnbugs;                                \
-        ERR_IF(newmouse==NULL,                                    \
-                        return kFuncFailed);                    \
+        __tIF(newmouse==NULL);                                    \
                 newmouse->Flags=_a_;                           \
-                ERR_IF(kFuncOK!=                                \
-                                newtrans->Append(newmouse),       \
-                                return kFuncFailed);
+                __tIFnok(                                \
+                                newtrans->Append(newmouse));       \
 
 #define NEWME(_easier_,_aflag_) \
         NEWMT(Strict, _easier_, NEWMF(_aflag_));
@@ -288,49 +268,40 @@ InitGenericInput()
 #undef NEWKT
 #undef NEWK
 //done
-        PARANOID_IF(GI_StrictOrderSLL[kKeyboardInputType].HowManySoFar<=0,
-                        return kFuncFailed);
-        PARANOID_IF(GI_StrictOrderSLL[kKeyboardInputType].Head->Data->HowManySoFar<=0,
-                        return kFuncFailed);
-        PARANOID_IF(GI_RelaxedOrderSLL[kKeyboardInputType].HowManySoFar<=0,
-                        return kFuncFailed);
-        PARANOID_IF(GI_RelaxedOrderSLL[kKeyboardInputType].Head->Data->HowManySoFar<=0,
-                        return kFuncFailed);
+        __tIF(GI_StrictOrderSLL[kKeyboardInputType].HowManySoFar<=0);
+        __tIF(GI_StrictOrderSLL[kKeyboardInputType].Head->Data->HowManySoFar<=0);
+        __tIF(GI_RelaxedOrderSLL[kKeyboardInputType].HowManySoFar<=0);
+        __tIF(GI_RelaxedOrderSLL[kKeyboardInputType].Head->Data->HowManySoFar<=0);
 
 
         //FIXME:feed from file
-        return kFuncOK;
+        _OK;
 }
 
 /*****************************************************************************/
-EFunctionReturnTypes_t
+function
 DisposeGISLLArray(GI_SLLTransducersArray_st *which, const int input_type)
 {
         //we need to dispose all Data elements, manually
-        PARANOID_IF(NULL==which,
-                        return kFuncFailed);
+        __tIF(NULL==which);
+
         GenericSingleLinkedList_st<OneGenericInputTransducer_st> *parser=
                 which->Head;//head transducer from list of transducers
         for (int j=0;j<which->HowManySoFar;j++){
                 //parsing transducers with 'j'
-                ERR_IF(parser==NULL,
-                                return kFuncFailed);
+                __tIF(parser==NULL);
 
                 OneGenericInputTransducer_st *transd=parser->Data;
-                ERR_IF(transd==NULL,
-                                return kFuncFailed);
+                __tIF(transd==NULL);
 
                 GenericSingleLinkedList_st<TRANSDUCER_S__TYPE> *trElem=transd->Head;
 
                 for (int a=0;a<transd->HowManySoFar;a++) {
-                        ERR_IF(trElem==NULL,
-                                return kFuncFailed);
+                        __tIF(trElem==NULL);
                         if (trElem->Data!=NULL) {
-                                PARANOID_IF(AllLowLevelInputs[input_type]==NULL,
-                                                return kFuncFailed);
-                                ERR_IF(kFuncOK!=
-                                     AllLowLevelInputs[input_type]->DeAlloc(trElem->Data),
-                                     return kFuncFailed);
+                                __tIF(AllLowLevelInputs[input_type]==NULL);
+                                __tIFnok(
+                                     AllLowLevelInputs[input_type]->DeAlloc(trElem->Data));
                         }//fi
                         trElem=trElem->Next;
                 }//for3
@@ -339,20 +310,18 @@ DisposeGISLLArray(GI_SLLTransducersArray_st *which, const int input_type)
                 //SAFE_delete(transd);//unsafe
                 parser=parser->Next;
         }//for2
-        return kFuncOK;
+        _OK;
 }
 /*****************************************************************************/
 
-EFunctionReturnTypes_t
+function
 DoneGenericInput()
 {
         for (int i=0;i<kMaxInputTypes;i++) {
-                ERR_IF(kFuncOK!=DisposeGISLLArray(&GI_StrictOrderSLL[i],i),
-                        return kFuncFailed);
-                ERR_IF(kFuncOK!=DisposeGISLLArray(&GI_RelaxedOrderSLL[i],i),
-                        return kFuncFailed);
+                __tIFnok(DisposeGISLLArray(&GI_StrictOrderSLL[i],i));
+                __tIFnok(DisposeGISLLArray(&GI_RelaxedOrderSLL[i],i));
         }//for
-        return kFuncOK;
+        _OK;
 }
 
 /*****************************************************************************/
@@ -364,7 +333,7 @@ OneGenericInputTransducer_st::OneGenericInputTransducer_st()
                 WhosNext=Head;
                 HowManySoFar=0;
                 LostInputsBecauseTheyDidntMatch=0;
-                Result.Significant=kGI_Undefined;
+                Result=kGI_Undefined;
 
   //      MakeSureChildsAreGone();
 /*        Tail=NULL;

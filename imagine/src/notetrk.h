@@ -128,7 +128,7 @@ public:
         /* moves the first notification from the list outside into user space,
          * that's removing the link from list, but not deallocating it
          * the user should deallocate as necessary */
-        NotifyItem_st * MoveOutNote();
+        NotifyItem_st * MoveOutLastNote();
 
         /* returns pointer to the last notification, or NULL if list is empty */
         /* last notification is the first one put in the list when the list was

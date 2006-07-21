@@ -28,7 +28,8 @@
 #ifndef CAMERA___H
 #define CAMERA___H
 
-#include "allegro.h"
+#include <allegro.h>
+#include "pnotetrk.h"
 
 
 #define HOW_MANY_CAMS 2 //u'll get this num at power of two, numcams
@@ -95,9 +96,9 @@ private:
         bool need_refresh;
 public:
 
-        void SetNeedRefresh(){ need_refresh=true;};
-        void SetNoNeedRefresh() { need_refresh=false;};
-        bool NeedsRefresh() { return need_refresh; };
+        function SetNeedRefresh(){ need_refresh=true; _OK;};
+        function SetNoNeedRefresh() { need_refresh=false; _OK;};
+        bool NeedsRefresh()const { return need_refresh; };
 
         TCamera();
         ~TCamera();
@@ -210,16 +211,20 @@ public:
                 proj_h=h;
                 SetNeedRefresh();
         };
-        void Select(BITMAP *bmp){//select camera
+        function
+        Select(BITMAP *bmp){//select camera
                 set_projection_viewport(proj_x, proj_y, proj_w, proj_h);
                 set_clip_rect(bmp,
                                 proj_x,
                                 proj_y,
                                 proj_x+proj_w-1,
                                 proj_y+proj_h-1);
+                _OK;
         };
-        void Deselect(BITMAP *bmp){
+        function
+        Deselect(BITMAP *bmp){
                 set_clip_rect(bmp, 0, 0, bmp->w, bmp->h);
+                _OK;
         };
         void SlideView(int x, int y);
         void EnlargeView(int w,int h);

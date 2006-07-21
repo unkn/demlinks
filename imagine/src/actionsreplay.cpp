@@ -51,34 +51,28 @@ TActionsReplayBuffer::HasActions()
 EFunctionReturnTypes_t
 TActionsReplayBuffer::GetLastActionFromBuf(int *actnum, bool *isactive)
 {
-        LAME_PROGRAMMER_IF((actnum==NULL)||(isactive==NULL),
-                        return kFuncFailed);
-        LAME_PROGRAMMER_IF(*actnum < 0,
-                        return kFuncFailed);
-        LAME_PROGRAMMER_IF(*actnum >= kAllocatedActions,
-                        return kFuncFailed);
+        __tIF((actnum==NULL)||(isactive==NULL));
+        __tIF(*actnum < 0);
+        //_tIF(*actnum >= kAllocatedActions);
 
-        LAME_PROGRAMMER_IF(!HasActions(),
-                        return kFuncFailed);
+        __tIF(!HasActions());
+
         *actnum=Buffer[fHead].index;
         *isactive=Buffer[fHead].isactive;
         fHead=(fHead+1) % MAX_ACTIONS_IN_REPLAY_BUF;
-        return kFuncOK;
+        _OK;
 }
 
 /*****************************************************************************/
 EFunctionReturnTypes_t
 TActionsReplayBuffer::ToActionsBuffer(int src,bool isactive)
 {
-        LAME_PROGRAMMER_IF(trigger >= kMaxTriggers,
-                        return kFuncFailed);
-        LAME_PROGRAMMER_IF(which_trigger < 0,
-                        return kFuncFailed);
+        /*_tIF(trigger >= kMaxTriggers);
+        _tIF(which_trigger < 0);*/
 
         int new_tail=(fTail+1) % MAX_ACTIONS_IN_REPLAY_BUF;
         if (new_tail == fHead) {//buffer is full
-                ERR_IF(kFuncOK != SaveBuffer(),
-                                return kFuncFailed);
+                __tIFnok(SaveBuffer());
                 fHead=fTail;
         }//fi
         //by here we should have place to put stuff into buffer
@@ -86,7 +80,7 @@ TActionsReplayBuffer::ToActionsBuffer(int src,bool isactive)
         Buffer[fTail].isactive=isactive;
         fTail=new_tail;
 
-        return kFuncOK;
+        _OK;
 }
 /*****************************************************************************/
 EFunctionReturnTypes_t

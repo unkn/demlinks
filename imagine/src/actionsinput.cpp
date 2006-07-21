@@ -48,60 +48,54 @@ ConsumeIntoActionsInput(
 //this would compare "from" with INputs from all 'howmany' Transducers starting
 //from "*start_from", each transducer has a list of combinations that when
 //fullfilled would push that actionsinput into the ActionsInputBuffer
-        LAME_PROGRAMMER_IF(from==NULL,
-                        return kFuncFailed);
-        LAME_PROGRAMMER_IF(start_from==NULL,
-                        return kFuncFailed);
-        LAME_PROGRAMMER_IF(howmany<=0,
-                        return kFuncFailed);
+        __tIF(from==NULL);
+        __tIF(start_from==NULL);
+        __tIF(howmany<=0);
 
        GenericSingleLinkedList_st<OneActionsInputTransducer_st> *ptr=start_from;       for (int i=0;i<howmany;i++) {//parse all genericinputs of this type
                //aka all transducers
 
-               PARANOID_IF(ptr==NULL,//unsync-ed howmany
-                               return kFuncFailed);
+               __tIF(ptr==NULL);//unsync-ed howmany
 
                 OneActionsInputTransducer_st *data=ptr->Data;
 
-                PARANOID_IF(NULL==data,
-                                return kFuncFailed);
+                __tIF(NULL==data);
 
                 //see if tmp->WhosNext == *from
-                ERR_IF(kFuncOK!=data->EatThis(from,reset_when_failed),
-                                return kFuncFailed);
+                __tIFnok(data->EatThis(from,reset_when_failed));
 
                 //parse next item from the list of transducers
                 ptr=ptr->Next;
         }//for
-        return kFuncOK;
+       _OK;
 }
 /*****************************************************************************/
 EFunctionReturnTypes_t
 TransformToActions(const GENERICINPUT_TYPE *from)
 {//generate items in ActionBuffer, or cumulate 'from' until the combi of genericinputs is complete then genereate one item in ActionBuffer
-        LAME_PROGRAMMER_IF(from==NULL,
-                        return kFuncFailed);
+
+        __tIF(from==NULL);
         if (AI_StrictOrderSLL.Head!=NULL) {
                 int howmany=AI_StrictOrderSLL.HowManySoFar;
-                ERR_IF(kFuncOK!=ConsumeIntoActionsInput(
+                __tIFnok(ConsumeIntoActionsInput(
                                         from,
                                         AI_StrictOrderSLL.Head,
                                         howmany,
                                         true/*reset combi if failed*/
-                                        ),
-                                return kFuncFailed);
+                                        )
+                        );
         }//fi
         if (AI_RelaxedOrderSLL.Head!=NULL) {
                 int howmany=AI_RelaxedOrderSLL.HowManySoFar;
-                ERR_IF(kFuncOK!=ConsumeIntoActionsInput(
+                __tIFnok(ConsumeIntoActionsInput(
                                         from,
                                         AI_RelaxedOrderSLL.Head,
                                         howmany,
                                         false/*don't reset combi track*/
-                                        ),
-                                return kFuncFailed);
+                                        )
+                        );
         }//fi
-        return kFuncOK;
+        _OK;
 }
 
 /*****************************************************************************/
@@ -145,22 +139,21 @@ AI_SLLTransducersArray_st::Append(
         return kFuncOK;
 }
 /*****************************************************************************/
-EFunctionReturnTypes_t
+function
 InitActionsInput()
 {
 //temp
         GENERICINPUT_TYPE *newgi=NULL;
        OneActionsInputTransducer_st *newtrans=NULL;
 
-#define NEWT(_stuff_,_wha_,...)                             \
+#define NEWT(_stuff_,_whatAction_,...)                             \
        newtrans=NULL;                                   \
        newtrans=new OneActionsInputTransducer_st;       \
-       ERR_IF(NULL==newtrans,                           \
-                       return kFuncFailed);             \
-        __VA_ARGS__;                                    \
+       __tIF(NULL==newtrans)                           \
+        __VA_ARGS__;/*what generic inputs are necessary to cause _whatAction_*/\
         {                                               \
-                EnumAllAI_t tmpi2=_wha_;                \
-                newtrans->Result.Significant=tmpi2;     \
+                EnumAllAI_t tmpi2=_whatAction_;                \
+                newtrans->Result=tmpi2;     \
         }                                               \
         AI_##_stuff_##OrderSLL.Append(newtrans);
 
@@ -168,11 +161,10 @@ InitActionsInput()
 #define NGI(_a_)                                      \
                 newgi=NULL;                             \
                 newgi=new GENERICINPUT_TYPE;            \
-                ERR_IF(newgi==NULL,                     \
-                       return kFuncFailed);             \
+                __tIF(newgi==NULL)                     \
        {\
                 EnumAllGI_t tmpi=_a_;                   \
-               newgi->Significant=tmpi;                 \
+               *newgi=tmpi;                 \
        }\
                 newtrans->Append(newgi);
 
@@ -229,20 +221,17 @@ InitActionsInput()
 #undef NTE
 #undef NEWT
 #undef NGI
-        PARANOID_IF(AI_StrictOrderSLL.HowManySoFar<=0,
-                        return kFuncFailed);
-        PARANOID_IF(AI_StrictOrderSLL.Head->Data->HowManySoFar<=0,
-                        return kFuncFailed);
-        PARANOID_IF(AI_RelaxedOrderSLL.HowManySoFar<=0,
-                        return kFuncFailed);
-        PARANOID_IF(AI_RelaxedOrderSLL.Head->Data->HowManySoFar<=0,
-                        return kFuncFailed);
+        __tIF(AI_StrictOrderSLL.HowManySoFar<=0);
+        __tIF(AI_StrictOrderSLL.Head->Data->HowManySoFar<=0);
+        __tIF(AI_RelaxedOrderSLL.HowManySoFar<=0);
+        __tIF(AI_RelaxedOrderSLL.Head->Data->HowManySoFar<=0);
 //FIMXE: feed from file
-        return kFuncOK;
+        _OK;
 }
 /*****************************************************************************/
 EFunctionReturnTypes_t
 DisposeAISLLArray(AI_SLLTransducersArray_st *which)
+//this is done to deallocate memory(ie. on quit)
 {
         //we need to dispose all Data elements, manually
         GenericSingleLinkedList_st<OneActionsInputTransducer_st> *parser=
@@ -275,14 +264,12 @@ DisposeAISLLArray(AI_SLLTransducersArray_st *which)
         return kFuncOK;
 }
 /*****************************************************************************/
-EFunctionReturnTypes_t
+function
 DoneActionsInput()
 {
-        ERR_IF(kFuncOK!=DisposeAISLLArray(&AI_StrictOrderSLL),
-                return kFuncFailed);
-        ERR_IF(kFuncOK!=DisposeAISLLArray(&AI_RelaxedOrderSLL),
-                return kFuncFailed);
-        return kFuncOK;
+        __tIFnok(DisposeAISLLArray(&AI_StrictOrderSLL /*head*/));
+        __tIFnok(DisposeAISLLArray(&AI_RelaxedOrderSLL /*head*/));
+        _OK;
 }
 /*****************************************************************************/
 OneActionsInputTransducer_st::OneActionsInputTransducer_st()
@@ -291,7 +278,7 @@ OneActionsInputTransducer_st::OneActionsInputTransducer_st()
         Tail=NULL;
         WhosNext=Head;
         HowManySoFar=0;
-        Result.Significant=kAI_Undefined;
+        Result=kAI_Undefined;
         LostInputsBecauseTheyDidntMatch=0;
 }
 /*****************************************************************************/
@@ -350,21 +337,6 @@ OneActionsInputTransducer_st::Reset()
         WhosNext=Head;//reset
 }
 /*****************************************************************************/
-/*EFunctionReturnTypes_t
-OneActionsInputTransducer_st::Compare(const GENERICINPUT_TYPE *one,
-                const GENERICINPUT_TYPE *two,
-                int *result)
-{
-        PARANOID_IF(one==NULL,
-                        return kFuncFailed);
-        PARANOID_IF(two==NULL,
-                        return kFuncFailed);
-        if (*one==*two)
-                *result=0;//equat
-        else
-                *result=-1;//less than equal
-        return kFuncOK;
-}*/
 /*****************************************************************************/
 EFunctionReturnTypes_t
 OneActionsInputTransducer_st::EatThis(const GENERICINPUT_TYPE *whichgi,
@@ -373,20 +345,17 @@ OneActionsInputTransducer_st::EatThis(const GENERICINPUT_TYPE *whichgi,
         //here we compare *what with WhosNext, if they somehow match
         //then we move along, if that was Tail then we Reset after
         //pushing this ActionsInput to the buffer
-        int result;
         PARANOID_IF(WhosNext==NULL,
                         return kFuncFailed);
         PARANOID_IF(WhosNext->Data==NULL,
                         return kFuncFailed);
 //FIXME:
-        ERR_IF(kFuncOK!=WhosNext->Data->Compare(whichgi,&result),
-                        return kFuncFailed);
 /*        ERR_IF(kFuncOK!=AllLowLevelInputs[what->type]->Compare(
                                 what->data,
                                 WhosNext->Data,
                                 result),
                         return kFuncFailed);*/
-        if (result==0) {//equal
+        if (*WhosNext->Data==*whichgi) {//equal
                 PARANOID_IF((WhosNext==Tail)&&(WhosNext->Next!=NULL),
                                 return kFuncFailed);
                 WhosNext=WhosNext->Next;

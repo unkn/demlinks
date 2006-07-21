@@ -105,15 +105,15 @@ EFunctionReturnTypes_t
 QueueAction(const ACTIONSINPUT_TYPE *which);
 
 /*********************/
-EFunctionReturnTypes_t
+function
 ExecuteAllQueuedActions();
 
 /*********************/
-EFunctionReturnTypes_t
+function
 InitActions();
 
 /*********************/
-EFunctionReturnTypes_t
+function
 DoneActions();
 
 /*********************/

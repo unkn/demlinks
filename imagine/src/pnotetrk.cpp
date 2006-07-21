@@ -27,6 +27,8 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <exception>
+#include <signal.h>
 
 #include "pnotetrk.h"
 
@@ -40,9 +42,12 @@ const PChar_t kNotifyDescriptions[kNumNotifyTypes]={
         "NONE",
         "WARN",
         "ERR",
+        "FuncFail",
         "EXIT",
         "INFO",
-        "LAMER", /* most prolly developer's fault */
+        "exception",
+
+        "BUG?",//possible bug, check it out!
 
         /* triggered by a paranoid check(which should always be false) */
         "FATAL"
@@ -105,22 +110,29 @@ CheckedAddNote(
 void
 MNotifyTracker::ShowAllNotes()
 {
-        NotifyItem_st *tmp=GetLastNote();
+        NotifyItem_st *tmp=MoveOutLastNote();
         while (tmp){
                 fprintf(stderr,
-                        "%s#%d: `%s' at line %u in file %s\n\tfunc: %s\n",
+                        "%s#%d: line(%u) file(%s) func(%s) \n\t`%s'\n",
                         kNotifyDescriptions[tmp->Contents.Type],
                         tmp->Contents.Depth,
-                        tmp->Contents.UserDesc,
                         tmp->Contents.Line,
                         tmp->Contents.File,
-                        tmp->Contents.Func);
-                ClearLastNote();
-                tmp=GetLastNote();
+                        tmp->Contents.Func,
+                        tmp->Contents.UserDesc
+                        );
+                tmp=MoveOutLastNote();
         }
 }
 
-
+void SIGINT_sighandler_t(int)
+{
+        ShutDownNotifyTracker();
+}
+void SIGSEGV_sighandler_t(int)
+{
+        ShutDownNotifyTracker();
+}
 void
 InitNotifyTracker()
 {
@@ -139,20 +151,22 @@ InitNotifyTracker()
          * programmer forgets to call it */
         ERR_IF( 0 != atexit(ShutDownNotifyTracker),
                         abort());
+        //std::set_terminate (__gnu_cxx::__verbose_terminate_handler);
+        std::set_unexpected(ShutDownNotifyTracker);
+        std::set_terminate(ShutDownNotifyTracker);
+        signal(SIGSEGV,SIGSEGV_sighandler_t);
+        signal(SIGINT,SIGINT_sighandler_t);
 }
 
 void
 ShutDownNotifyTracker(void)
 {
         if (gNotifyTracker) {
-                if (gNotifyTracker->GetLastNote() != NULL) {
-                        gNotifyTracker->ShowAllNotes();
-                        fprintf(stderr,
-                                "Notice: Read the above in reverse order"
-                                        " of appearence!\n");
-                }
+                ShowAllNotifications();
                 delete gNotifyTracker;
                 gNotifyTracker=NULL;
+                signal(SIGINT,SIG_DFL);
+                signal(SIGSEGV,SIG_DFL);
         }
 }
 

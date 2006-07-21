@@ -28,10 +28,12 @@
 #ifndef EXCAMERA_H
 #define EXCAMERA_H
 
-#include "allegro.h"
+#include <allegro.h>
+#include "pnotetrk.h"
 
 
-void render(BITMAP *bmp, int cur_cam);
+function
+render(BITMAP *bmp, int cur_cam);
 
 //helper funx
 void ChooseNextCam();

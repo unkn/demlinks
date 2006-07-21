@@ -55,12 +55,12 @@ bool need_screen_refresh=true;//first time display screen
 
 int main(void)
 {
-        EXIT_IF(kFuncOK != Init());
+        __tIFnok (Init());//throw if kFuncOK!= Init() OR Init() threw exception
 
    while (!Flag(kF_QuitProgram)) {
 
         //here, transform all inputs into actions
-        EXIT_IF(kFuncOK != MangleInputs());
+        __tIFnok(MangleInputs());
 
         //game cycles, catching up to timer
         while (gTimer != gSpeedRegulator) {//are we behind schedule?
@@ -73,19 +73,23 @@ int main(void)
 #error "BPS_OF_GLOBALTIMER must be bigger than (or at most equal to) BPS_OF_EXECUTION, the latter must be at least ==1"
 #endif
 
-                if (gSpeedRegulator % (BPS_OF_GLOBALTIMER/BPS_OF_EXECUTION)==0)
-                        EXIT_IF(kFuncOK != Executant());
+                if (gSpeedRegulator % (BPS_OF_GLOBALTIMER/BPS_OF_EXECUTION)==0){
+                        __(Executant());
+                        //temporary:
+                        cams[0].SetNeedRefresh();
+                }
 
                gSpeedRegulator=(gSpeedRegulator+1) % GLOBALTIMER_WRAPSAROUND_AT;
         }//while
 
 
         for (int i=0;i<NUM_CAMS;i++){
-                if (cams[i].NeedsRefresh()) {
-                        render(buffer,i);//update some part of screen
-                        need_screen_refresh=true;//signal: need to show screen
-                        cams[i].SetNoNeedRefresh();
-                }//fi
+                __if (cams[i].NeedsRefresh()) {
+                        __tIFnok(render(buffer,i));//update some part of buffered screen
+                        if (false==need_screen_refresh)
+                                need_screen_refresh=true;//signal: need to show buffered screen on monitor
+                        __tIFnok(cams[i].SetNoNeedRefresh());
+                }__fi
         }//for
         if (need_screen_refresh) {//update it
                         #ifndef DISABLE_VSYNC
@@ -108,9 +112,9 @@ int main(void)
    }//while not quitting
 
 
-   EXIT_IF(kFuncOK!=DeInit());
+   __tIFnok(DeInit());
 
-   //allegro_exit(); bad idea, since bugs inside
+   //allegro_exit(); bad idea, since bugs inside OR smth i can't understand!
 
    INFO(normal exit);
    return 0;

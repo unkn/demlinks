@@ -36,7 +36,7 @@
 #include "pnotetrk.h"
 #include "buffer.h"
 #include "SLL.h"
-#include "generichelper.h"
+//#include "generichelper.h"
 
 /*****************************************************************************/
 
@@ -85,7 +85,7 @@ enum EnumAllGI_t {//these are NOT indexes, may start from anywhere
 
 /*****************************************************************************/
 //this is the type of the output from GenericInput and input to Actions
-#define GENERICINPUT_TYPE GenericHelper_st<EnumAllGI_t> //used to be int
+#define GENERICINPUT_TYPE EnumAllGI_t//GenericHelper_st<EnumAllGI_t> //used to be int
 #define TRANSDUCER_S__TYPE void
 
 
@@ -169,14 +169,14 @@ extern GI_SLLTransducersArray_st GI_RelaxedOrderSLL[kMaxInputTypes];//head -//-
 
 /*****************************************************************************/
 /*****************************************************************************/
-EFunctionReturnTypes_t
+function
 GenericInputHandler(
                 const UnifiedInput_st *from);
 /*****************************************************************************/
-EFunctionReturnTypes_t
+function
 InitGenericInput();
 /*****************************************************************************/
-EFunctionReturnTypes_t
+function
 DoneGenericInput();
 /*****************************************************************************/
 /*****************************************************************************/
