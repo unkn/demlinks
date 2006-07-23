@@ -82,54 +82,45 @@ const char * kIDOperatorsPrecedence="00" "1"           "111123333";//higher numb
 bool
 IsOperator(const std::string a_Str)
 {
-#define THROW_HOOK ;
-        _tIF(a_Str.empty());
-        _tIF(a_Str.length() >1 );//only considering one char anyways, but passed more than one, so could be a bug earlier which we signal here
+        __tIF(a_Str.empty());
+        __tIF(a_Str.length() >1 );//only considering one char anyways, but passed more than one, so could be a bug earlier which we signal here
         bool eval;
-        _(eval=IsOperator(a_Str.at(0)));
+        __(eval=IsOperator(a_Str.at(0)));
         return eval;
-#undef THROW_HOOK
 }
 
 bool
 IsOperator(const char a_Char)
 {
-#define THROW_HOOK ;
-        _tIF('\0'==a_Char);
+        __tIF('\0'==a_Char);
         return (NULL != index(kIDOperators,int(a_Char)));
-#undef THROW_HOOK
 }
 
 
 bool
 IsAllowedOperatorForLackingLeftOperand(const char a_Char)
 {
-#define THROW_HOOK ;
-        _tIF('\0'==a_Char);
+        __tIF('\0'==a_Char);
         return (NULL != index(kIDLackingLeft_Operators,int(a_Char)));
-#undef THROW_HOOK
 }
 bool
 IsAllowedOperatorForLackingLeftOperand(const std::string a_Str)
 {
-#define THROW_HOOK
-        _tIF(a_Str.empty());
-        _tIF(a_Str.length() >1 );//only considering one char anyways, but passed more than one, so could be a bug earlier which we signal here
+        __tIF(a_Str.empty());
+        __tIF(a_Str.length() >1 );//only considering one char anyways, but passed more than one, so could be a bug earlier which we signal here
         bool eval;
-        _(eval=IsAllowedOperatorForLackingLeftOperand(a_Str.at(0)));
+        __(eval=IsAllowedOperatorForLackingLeftOperand(a_Str.at(0)));
         return eval;
-#undef THROW_HOOK
 }
 
 /*****************************************************************/
 int
 GetLen(const char * const a_Str)
 {
-#define THROW_HOOK ;
-        _tIF(NULL==a_Str);
-        int len=strnlen(a_Str, MAX_STR_LEN);
+        __tIF(NULL==a_Str);
+        int len;
+        __(len=strnlen(a_Str, MAX_STR_LEN));
         return len;
-#undef THROW_HOOK
 }
 /*****************************************************************/
 
@@ -139,26 +130,27 @@ CmpPrecedence(
                 const TOperator &a_First
                 ,const TOperator &a_Second)
 {//ugly hack lazyness-based
-#define THROW_HOOK ;
         //cout << a_First.GetId() << " "<< a_Second.GetId();
 
-        _tIF(a_First.IsNotDefined());
-        _tIF(a_Second.IsNotDefined());
-        _tIF(a_First.GetId().length()>1);
-        _tIF(a_Second.GetId().length()>1);
+        __tIF(a_First.IsNotDefined());
+        __tIF(a_Second.IsNotDefined());
+        __tIF(a_First.GetId().length()>1);
+        __tIF(a_Second.GetId().length()>1);
         //only 1 char long operators are considered
-        char *x=index(kIDOperators,int(a_First.GetId().at(0)));
-        char *y=index(kIDOperators,int(a_Second.GetId().at(0)));
-        _tIF(NULL==x);
-        _tIF(NULL==y);
+        char *x;
+        __(x=index(kIDOperators,int(a_First.GetId().at(0))));
+        char *y;
+        __(y=index(kIDOperators,int(a_Second.GetId().at(0))));
+        __tIF(NULL==x);
+        __tIF(NULL==y);
         int a=(x-kIDOperators);
         int b=(y-kIDOperators);
-        _tIF(a<0);
-        _tIF(b<0);
+        __tIF(a<0);
+        __tIF(b<0);
         int len;
-        _(len=GetLen(kIDOperatorsPrecedence));
-        _tIF(a>=len);
-        _tIF(b>=len);
+        __(len=GetLen(kIDOperatorsPrecedence));
+        __tIF(a>=len);
+        __tIF(b>=len);
         a=kIDOperatorsPrecedence[a] -0x30;
         b=kIDOperatorsPrecedence[b] -0x30;
         //cout << " => "<<a<<" "<<b<<endl;
@@ -168,7 +160,6 @@ CmpPrecedence(
                 return 0;
         else
                 return -1;
-#undef THROW_HOOK
 }
 
 /*****************************************************************/
@@ -179,11 +170,9 @@ CmpPrecedence(
 void
 PFShowError(const EPFErrors_t a_Err)
 {
-#define THROW_HOOK ;
-        _tIF( a_Err < 0);
-        _tIF( a_Err >= kMaxPFErrors);
+        __tIF( a_Err < 0);
+        __tIF( a_Err >= kMaxPFErrors);
         cout << PFErrorStrings[a_Err]<<endl;
-#undef THROW_HOOK
 }
 /*****************************************************************/
 /*****************************************************************/
@@ -210,12 +199,10 @@ TPolishForm::TPolishForm():
 void
 TPolishForm::Init()
 {
-#define THROW_HOOK ;
-        _tIF(fLink); //calling twice ? throw exception if so
+        __tIF(fLink); //calling twice ? throw exception if so
         std::string envHomePath("./dbhome/");
-        _(fLink=new TLink(envHomePath));
-        _tIF(NULL==fLink);
-#undef THROW_HOOK
+        __(fLink=new TLink(envHomePath));
+        __tIF(NULL==fLink);
 }
 
 /*****************************************************************/
@@ -452,7 +439,6 @@ TPolishForm::setMoreBraces()
 bool
 TPolishForm::IsIndexAtEdge(int a_Ofs)
 {//checks if a_Index is within bounds to access an element of a char * string except when a_Index points to the \0 (NUL) characted and end of string (returns true)
-#define THROW_HOOK
         //_tIF(rIndex < fLowerBound);//bug
         //_tIF(rIndex > fHigherBound);//bug
         if (a_Ofs<0)
@@ -461,36 +447,35 @@ TPolishForm::IsIndexAtEdge(int a_Ofs)
                 return true;//however index is not addressable!
         }
         return false;
-#undef THROW_HOOK
 }
 /********/
 bool
 IsOperandChar(const std::string a_Str)
 {
-#define THROW_HOOK
-        _tIF(a_Str.empty());
-        _tIF(a_Str.length() >1);
-        return (NULL != index(kAllowableOperandChars, int(a_Str.at(0))));
-#undef THROW_HOOK
+        __tIF(a_Str.empty());
+        __tIF(a_Str.length() >1);
+        bool b;
+        __( b=(NULL != index(kAllowableOperandChars, int(a_Str.at(0)))) );
+        return b;
 }
 /********/
 bool
 IsOperandChar(const char a_Char)
 {
-#define THROW_HOOK
-        _tIF('\0'==a_Char);
-        return (NULL != index(kAllowableOperandChars, int(a_Char)));
-#undef THROW_HOOK
+        __tIF('\0'==a_Char);
+        bool b;
+        __( b=(NULL != index(kAllowableOperandChars, int(a_Char))) );
+        return b;
 }
 /********/
 bool
 IsDelimiter(const std::string a_Str)
 {
-#define THROW_HOOK
-        _tIF(a_Str.empty());
-        _tIF(a_Str.length() >1);
-        return (NULL != index(kDelimiters, int(a_Str.at(0))));
-#undef THROW_HOOK
+        __tIF(a_Str.empty());
+        __tIF(a_Str.length() >1);
+        bool b;
+        __( b=(NULL != index(kDelimiters, int(a_Str.at(0)))) );
+        return b;
 }
 /********/
 EPFErrors_t
@@ -622,26 +607,24 @@ EPFErrors_t
 TPolishForm::eatDelimiter(
                 )
 {
-#define THROW_HOOK
         while (true) {
                 std::string curChar;
                 EPFErrors_t err;
-                _if ( err=getCurChar(curChar) ) {
+                __if ( err=getCurChar(curChar) ) {
                         if (err==kUnexpectedEOS) {
                                 return kReachedEOS;
                         }
                         return err;
-                }_fi
+                }__fi
 
-                _if (!IsDelimiter(curChar)) {
+                __if (!IsDelimiter(curChar)) {
                         break;
-                }_fi
+                }__fi
 
-                _(pos4Next(););
+                __(pos4Next(););
         }
 
         return kPFNoError;
-#undef THROW_HOOK
 }
 /********/
 //parsing from right to left: getrightoperand, getoperator, getleftexpr; then group 2 of 3 considering precedence of operators
@@ -836,7 +819,6 @@ TPolishForm::getOperator(
 std::string
 TPolishForm::getUniqueStr()
 {
-#define THROW_HOOK ;
 
         //getting current
         std::string tmp(fUniq);
@@ -844,98 +826,24 @@ TPolishForm::getUniqueStr()
         bool carry=false;
         for (int i=_MAX_FUNIQ-1;i>=0;i--) {
                 if ((carry)||(i==_MAX_FUNIQ-1)){//first char? or carry ? then increment it
-                        _if (fUniq[i]>=_ENDING_CHAR) {
+                        __if (fUniq[i]>=_ENDING_CHAR) {
                                 fUniq[i]=_LEADING_CHAR;
                                 carry=true;
-                                _tIF(i==0);//overflow
+                                __tIF(i==0);//overflow
                         } else {
                                 (fUniq[i])++;
                                 if (carry)
                                         carry=false;
-                        }_fi
+                        }__fi
                 }
         }//for
         while ((tmp.length()>1)&&(tmp.at(0)==_LEADING_CHAR)) {
-                _( tmp.erase(0,1); );
+                __( tmp.erase(0,1); );
         };
 
         return tmp;
-#undef THROW_HOOK
 }
-/***************************
-EPFErrors_t
-TPolishForm::ShowExpr(
-        const std::string a_Root
-        ,int a_TotalHorizLevel
-        ,int a_VertLevel
-        )
-{
-#define THROW_HOOK
-        ETLinkErrors_t err;
-        _if (kTLNotFound==(err=fLink->IsLink(kIDExpressions, a_Root))) {
-                return kRootNotFound;
-        }_fi
-        _tIF(err!=kTLNoError);//other error returned by IsLink (this is not expected!)
-        //FIXME
-        std::string i1("iter1");
-        _if (kTLNoError== (err=fLink->IsGroup(kGroup,i1))) {//must not be a kGroup, can be a kSubGroup
-                //FIXME: remove all elements if exists or smth
-                return kTemporaryIteratorExists;//impossible, perhaps only on unclean shutdown when interrupted after InitIterator and before DeInit
-        }_fi //put this inside MakeIterator
-        _tIF(kTLNotFound != err);
-//
-        TLinkIterator iter1;
-        _if ( err=iter1.InitIterator(i1, a_Root, kGroup, DB_NEXT) ) {
-                _(TLShowError(err););
-                return kFailedCreatingIterator;
-        }_fi
-
-        *int cnt;
-        _( cnt=iter1.Count() );
-        if ((cnt > 3)||(cnt<2)) {
-                return kBrokenRoot; //must have 2 or 3 elements
-        }*
-
-        std::string current, leftOperand, rightOperand, sign;
-        err=kTLNoError; horizLevel=1;
-while (err==kTLNoError) {
-        _( iter1.GetCurrent(current) );
-_if (IsConnection(kIDComposedOperand, current)) {
-        ShowExpr(current, a_TotalHorizLevel+horizLevel, next(a_VertLevel));//going deeper
-} else {
-        _if (IsConnection(kIDLeftOperand, current)) {
-                        _tIF(!leftOperand.empty());//got here twice?
-                        leftOperand=current;
-        } else { _if (IsConnection(kIDRightOperand, current)) {
-                        _tIF(!rightOperand.empty());//got here twice?
-                        rightOperand=current;
-                } else { _if (IsConnection(kIDOperator, current)) {
-                                _tIF(!sign.empty());//got here twice?
-                                sign=current;
-                        }_fi
-                }_fi
-        }_fi
-}_fi
-        _( err=iter1.Next() );
-        horizLevel++;
-}//while
-        _( iter1.DeInit() );
-        horizLevel--;
-        if ((horizLevel > 3)||(horizLevel < 2)) {
-                return kBrokenRoot; //must have 2 or 3 elements, not more not less
-        }
-
-        //could be 2 operands and no sign(operator)
-        _if (sign.empty()) {
-                return kOperatorNotFound;//and since we have at least 2 things they must be both left+right operands that we got so far
-        }_fi
-
-        //so we have the a_VertLevel, the horizLevel and
-postponed! until after we make input handling in demlinks with what we have//
-        return kPFNoError;
-#undef THROW_HOOK
-}
-***************************/
+/***************************/
 TOperand
 TPolishForm::makeOperand(
                                 const TOperand &a_Left,
@@ -944,38 +852,36 @@ TPolishForm::makeOperand(
                 )
 //allocates space on heap on each call
 {
-#define THROW_HOOK ;
 
-        _tIF(a_Operator.IsNotDefined());
-        _tIF( a_Right.IsNotDefined() );//mandatory a_Right exist
+        __tIF(a_Operator.IsNotDefined());
+        __tIF( a_Right.IsNotDefined() );//mandatory a_Right exist
 
         TOperand compOp;
-        _( compOp.Set(kComposedOperand, getUniqueStr()); );
+        __( compOp.Set(kComposedOperand, getUniqueStr()); );
 
 //#ifdef SHOWKEYVAL
-        _( cout << compOp.GetId() << " = " << a_Left.GetId() << " " << a_Operator.GetId() << " " << a_Right.GetId() << endl; );
+        __( cout << compOp.GetId() << " = " << a_Left.GetId() << " " << a_Operator.GetId() << " " << a_Right.GetId() << endl; );
 //#endif
-        _(fLink->NewLink(kIDComposedOperand, compOp.GetId(), fTxn););
+        __(fLink->NewLink(kIDComposedOperand, compOp.GetId(), fTxn););
 
-        _if (a_Left.IsDefined()) {//a_Left exists
-                _if (a_Left.GetType() == kSimpleOperand) {
-                        _(fLink->NewLink(kIDLeftOperand,a_Left.GetId(),fTxn); );
+        __if (a_Left.IsDefined()) {//a_Left exists
+                __if (a_Left.GetType() == kSimpleOperand) {
+                        __(fLink->NewLink(kIDLeftOperand,a_Left.GetId(),fTxn); );
                 }_fi
-                _(fLink->NewLink(compOp.GetId(),a_Left.GetId(),fTxn); );
-        }_fi
+                __(fLink->NewLink(compOp.GetId(),a_Left.GetId(),fTxn); );
+        }__fi
 
-        _if (a_Right.GetType() == kSimpleOperand) {
-                _(fLink->NewLink(kIDRightOperand, a_Right.GetId(),fTxn););
-        }_fi
+        __if (a_Right.GetType() == kSimpleOperand) {
+                __(fLink->NewLink(kIDRightOperand, a_Right.GetId(),fTxn););
+        }__fi
 
-        _(fLink->NewLink(compOp.GetId(),a_Operator.GetId(),fTxn););
+        __(fLink->NewLink(compOp.GetId(),a_Operator.GetId(),fTxn););
 
-        _(fLink->NewLink(compOp.GetId(), a_Right.GetId(),fTxn););
+        __(fLink->NewLink(compOp.GetId(), a_Right.GetId(),fTxn););
 
 
-        _(fLink->NewLink(kIDOperator,a_Operator.GetId(),fTxn););
+        __(fLink->NewLink(kIDOperator,a_Operator.GetId(),fTxn););
 
         return compOp;
-#undef THROW_HOOK
 }
 

@@ -46,7 +46,7 @@
 //rest(x) when no input, reduces cpu cycles inside loop
 //this also counts as the fastest response time after going idle; using mouse movements should keep fluidity
 #define IDLE_TIME_IN_LOOP 100 //miliseconds
-//ie . after realeasing a key(and no other inputs are present) then pressing another(or same) key would wait this time (IDLE_TIME_IN_LOOP) before reacting
+//ie . after releasing a key(and no other inputs are present) then pressing another(or same) key would wait at most this time (IDLE_TIME_IN_LOOP) before reacting (not considering processing time)
 
 
 bool need_screen_refresh=true;//first time display screen
@@ -75,8 +75,6 @@ int main(void)
 
                 if (gSpeedRegulator % (BPS_OF_GLOBALTIMER/BPS_OF_EXECUTION)==0){
                         __(Executant());
-                        //temporary:
-                        cams[0].SetNeedRefresh();
                 }
 
                gSpeedRegulator=(gSpeedRegulator+1) % GLOBALTIMER_WRAPSAROUND_AT;
@@ -86,8 +84,9 @@ int main(void)
         for (int i=0;i<NUM_CAMS;i++){
                 __if (cams[i].NeedsRefresh()) {
                         __tIFnok(render(buffer,i));//update some part of buffered screen
-                        if (false==need_screen_refresh)
+                        if (false==need_screen_refresh) {
                                 need_screen_refresh=true;//signal: need to show buffered screen on monitor
+                        }
                         __tIFnok(cams[i].SetNoNeedRefresh());
                 }__fi
         }//for
@@ -106,7 +105,7 @@ int main(void)
                 rest(IDLE_TIME_IN_LOOP);//give time slice
         }//else
 
-      framecount++;
+        framecount++;
 
 
    }//while not quitting
@@ -117,7 +116,7 @@ int main(void)
    //allegro_exit(); bad idea, since bugs inside OR smth i can't understand!
 
    INFO(normal exit);
-   return 0;
+   return EXIT_SUCCESS;
 
 }
 END_OF_MAIN()

@@ -330,6 +330,7 @@ TLink::IsGroup(
                 )
 {
 #define THROW_HOOK
+
         _tIF(a_GroupId.empty());
 
         DbTxn *thisTxn;
@@ -589,8 +590,8 @@ TLink::NewTransaction(DbTxn * a_ParentTxn,
                         DbTxn ** a_NewTxn,
                         u_int32_t a_Flags)
 {
-        /*Note: Transactions may only span threads if they do so serially; that is, each transaction must be active in only a single thread of control at a time. This restriction holds for parents of nested transactions as well; not two children may be concurrently active in more than one thread of control at any one time.*/
-        /*Note: A parent transaction may not issue any Berkeley DB operations -- except for DbEnv::txn_begin, DbTxn::abort and DbTxn::commit -- while it has active child transactions (child transactions that have not yet been committed or aborted)*/
+        /*"Note: Transactions may only span threads if they do so serially; that is, each transaction must be active in only a single thread of control at a time. This restriction holds for parents of nested transactions as well; not two children may be concurrently active in more than one thread of control at any one time." Berkeley DB docs*/
+        /*"Note: A parent transaction may not issue any Berkeley DB operations -- except for DbEnv::txn_begin, DbTxn::abort and DbTxn::commit -- while it has active child transactions (child transactions that have not yet been committed or aborted)" Berkeley DB docs*/
 #define THROW_HOOK
 
         _tIF(a_NewTxn==NULL);
