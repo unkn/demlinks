@@ -1,7 +1,17 @@
-#!/bin/bash
+#!/bin/sh
 
-#just run:
-make -f Makefile.svn
+#for OpenBSD (at least)
+export AUTOMAKE_VERSION=1.9
+export AUTOCONF_VERSION=2.59
+#the following is for using gmake on BSDs and for linuxes w/o gmake link pointing to make
+type gmake
+if [ "$?" -ne "0" ]; then
+        echo "!!!!!!!!!!!!!!!!!!!!!!"
+        gmake=make
+else
+        gmake=gmake
+fi
+$gmake -f Makefile.svn
 
 function do_ {
 echo "echo ----------------------------------------------------------" >"$1"

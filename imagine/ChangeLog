@@ -1,5 +1,10 @@
+Legend:
+	* means DONE
+	$ means TODO
+	LU means last update on ... date
+
 =demlinks-0.0.22
-LU: 21 July 2006
+LU: 23 July 2006
 * mutex locked interrupt handler (timed*.cpp)
 * base idea from '../babyplan/txt' implemented using berkeley db
 (classhit.cpp)
@@ -7,6 +12,13 @@ LU: 21 July 2006
 detection (ie. cheat codes used in games) [polishform.cpp]
 $ need to insert the inputs into berkeley db (classhit.cpp) and then get them
 from those trees/lists
+$ eventually insert variables and code from C++ into the 3D world so they can
+be viewed/modified by the running program or by another similar program in
+another thread; if an exception occurs in the first program, the second
+program could debug and fix it and then have the first program continue; this
+may seem similar to contemporary practices but at least the connections
+between the items are not implied only in the viewer's brain and only exist at
+the moment of execution by the processor, instead they are properly defined...
 
 =demlinks-0.0.21
 LU: 23 Aug 2005

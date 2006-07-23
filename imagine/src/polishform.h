@@ -149,9 +149,7 @@ public:
         };*/
 
         TOperator(){//constructor
-#define THROW_HOOK
-                _(this->Clear());
-#undef THROW_HOOK
+                __(this->Clear());
         };
 
         ~TOperator(){};//destructor
@@ -189,11 +187,9 @@ public:
         }
         inline void
         SetId(const std::string a_Id){
-#define THROW_HOOK ;
-                _tIF(a_Id.empty());
-                _tIF(a_Id.length() > 1);//only allowing 1 char long operators
+                __tIF(a_Id.empty());
+                __tIF(a_Id.length() > 1);//only allowing 1 char long operators
                 fId=a_Id;
-#undef THROW_HOOK
         };
 
 };//class TOperator (aka sign)
@@ -246,14 +242,12 @@ public:
         };
         inline bool
         IsDefined() const {
-#define THROW_HOOK ;
-                _tIF(fType==kMaxOperandTypes);//total bug
+                __tIF(fType==kMaxOperandTypes);//total bug
                 if (fType == kUndefinedOperand) {
                         WARN_IF( !fId.empty() );//possible bug somewhere outside
                         return false;//not defined
                 }
                 return true;//is defined
-#undef THROW_HOOK
         };
 
         inline void
@@ -274,10 +268,8 @@ public:
 
         inline void
         SetId(const std::string a_Id){
-#define THROW_HOOK ;
-                _tIF(a_Id.empty());
+                __tIF(a_Id.empty());
                 fId=a_Id;
-#undef THROW_HOOK
         };
 
         inline void
@@ -376,43 +368,39 @@ TPolishForm::eatDelimiter(
 
                 EPFErrors_t
                 initIndex(){
-#define THROW_HOOK
                 //init rIndex
                         if (fSense==kBackward) {
                                 rIndex=fHigherBound;
                         } else { if (fSense==kForward) {
                                         rIndex=fLowerBound;
                                 } else {
-                                        _t("not left, not right then what?");
+                                        __t("not left, not right then what?");
                                 }
                 }
                         return kPFNoError;
-#undef THROW_HOOK
                 }
 
 
                 EPFErrors_t
                 pos4Next(){
-#define THROW_HOOK
-                        _if (IsIndexAtEdge()) {
-                                _hret kIndexAlreadyAtEdge;
-                        }_fi
+                        __if (IsIndexAtEdge()) {
+                                _tfret kIndexAlreadyAtEdge;
+                        }__fi
 
                         if (fSense==kBackward) {
                                 rIndex--;
                         } else { if (fSense==kForward) {
                                         rIndex++;
                                 } else {
-                                        _t("not left, not right then what?");
+                                        __t("not left, not right then what?");
                                 }
                         }
 
-                        _if (IsIndexAtEdge()) {
-                                _hret kReachedEOS;
-                        }_fi
+                        __if (IsIndexAtEdge()) {
+                                _tfret kReachedEOS;
+                        }__fi
 
                         return kPFNoError;
-#undef THROW_HOOK
                 };
 
                 EPFErrors_t
@@ -480,9 +468,7 @@ TPolishForm::Init();
 
                 void
                 ShowContents(){
-#define THROW_HOOK
-                        _( fLink->ShowContents(););
-#undef THROW_HOOK
+                        __( fLink->ShowContents(););
                 };
 };//class TPolishForm
 
