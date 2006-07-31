@@ -158,7 +158,7 @@ UnInstallAllInputs()
 }
 
 /*****************************************************************************/
-//used inside an int handler!
+//used inside an int handler! inside both mouse and keyboard 's int handlers so this is a common to both
 void
 ToCommonBuf(int input_type)
 {

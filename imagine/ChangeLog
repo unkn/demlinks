@@ -19,6 +19,7 @@ program could debug and fix it and then have the first program continue; this
 may seem similar to contemporary practices but at least the connections
 between the items are not implied only in the viewer's brain and only exist at
 the moment of execution by the processor, instead they are properly defined...
+* just a note: does compile with alleg.sf.net from svn revision 7392
 
 =demlinks-0.0.21
 LU: 23 Aug 2005

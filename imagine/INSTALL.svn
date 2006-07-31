@@ -6,12 +6,11 @@ export AUTOCONF_VERSION=2.59
 #the following is for using gmake on BSDs and for linuxes w/o gmake link pointing to make
 type gmake
 if [ "$?" -ne "0" ]; then
-        echo "!!!!!!!!!!!!!!!!!!!!!!"
         gmake=make
 else
         gmake=gmake
 fi
-$gmake -f Makefile.svn
+$gmake -f Makefile.svn || exit $?
 
 function do_ {
 echo "echo ----------------------------------------------------------" >"$1"
@@ -20,6 +19,7 @@ chmod +x "$1"
 ln -s "../$1" "./src/$1"
 }
 
+#shortcut links to executables
 do_ 1 dml_imagine
 do_ 2 setup_inputs
 
