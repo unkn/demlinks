@@ -69,21 +69,20 @@ Process(
                 const char * const a_Str)
 {
         cout << "-------------------------"<<endl;
-#define THROW_HOOK ;
-        _tIF(NULL==a_Str);
+        __tIF(NULL==a_Str);
         cout << "\t\t"<<a_Str<<endl;
 
         int flags=kSideOperandsImplyMul|kNextOpenBraceImpliesMul;
-        _if (index(a_Str, ' ')) {
+        __if (index(a_Str, ' ')) {
                 //auto long operands if spaces are present in expression
                 flags |= kLongOperands | kAllowOperandsLongerThanMax;
-        }_fi
+        }__fi
 
         std::string tmpStr(a_Str);
 
         EPFErrors_t err;
-        _( err=g_Expr.MakeGraph(tmpStr,a_Form,flags,0,-1));
-        _if ( err ) {
+        __( err=g_Expr.MakeGraph(tmpStr,a_Form,flags,0,-1));
+        __if ( err ) {
                 //show error
                 PFShowError(err);
                 if ((err==kLeftUnclosedBraces)||(g_Expr.rOpenBraces != 0)) {
@@ -96,11 +95,10 @@ Process(
                         cout << "Problem attempting to show expression from graph with root="<<root.GetId()<<" : ";
                         PFShowError(err);
                 }_fi*/
-        }_fi
+        }__fi
 #ifdef TRACKABLE_RETURNS
                 ShowAllNotifications();
 #endif
-#undef THROW_HOOK
 }
 
 /*****************************************************************/

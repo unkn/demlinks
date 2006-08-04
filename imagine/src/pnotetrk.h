@@ -205,7 +205,7 @@ extern MNotifyTracker *gNotifyTracker;
 
 /***************************************/
 //wrapper, expects: _(DOcmds,UNDOcmds), id DOcmds fail, then UNDOcmds are executed to hopefully undo wtw DOcmds have done so far; the _ before means don't throw
-#define _(a_DOcmds) TRY(a_DOcmds)
+#define _h(a_DOcmds) TRY(a_DOcmds)
 //throw w/o THROW_HOOK, to use within #define THROW_HOOK
 #define __(a_DOcmds) _TRY(a_DOcmds, throw)
 //no throw, no hook, just a catch
@@ -231,11 +231,11 @@ extern MNotifyTracker *gNotifyTracker;
         }       \
 } //endblock
 //with THROW_HOOK
-#define _tIFnok(a_Func) { \
+#define _htIFnok(a_Func) { \
         EFunctionReturnTypes_t __EFunctionReturnTypes_t__FuncReturn;\
         _TRY( __EFunctionReturnTypes_t__FuncReturn = (a_Func), THROW_HOOK ; throw ) \
         if (kFuncOK != __EFunctionReturnTypes_t__FuncReturn) { \
-                _t(_tIFnok( a_Func ));/*doesn't recurse here!*/\
+                _ht(_htIFnok( a_Func ));/*doesn't recurse here!*/\
         }       \
 } //endblock
 
@@ -246,21 +246,21 @@ extern MNotifyTracker *gNotifyTracker;
 /***************************************/
 //no hook OK ret!
 #ifdef TRACKABLE_RETURNS
-        #define _tret \
-                INFO(_tret);\
+        #define _ret \
+                INFO(_ret);\
                 return 
 #else
-        #define _tret \
+        #define _ret \
                 return 
 #endif
 /***************************************/
 //no hook FAIL ret!
 #ifdef TRACKABLE_RETURNS
-        #define _tfret \
-                INFO(_tfret);\
+        #define _fret \
+                INFO(_fret);\
                 return 
 #else
-        #define _tfret \
+        #define _fret \
                 return 
 #endif
 /***************************************/
@@ -268,50 +268,48 @@ extern MNotifyTracker *gNotifyTracker;
 //doesn't throw, only exits from function!
 #define _FA(a_Desc) { \
         FAIL(a_Desc, \
-                _tfret kFuncFailed;) \
+                _F) \
 }
 
 #define _F { \
-        _tfret kFuncFailed; \
+        _fret kFuncFailed; \
 }
 
 #define _OK {\
-        _tret kFuncOK; \
+        _ret kFuncOK; \
 }
 /***************************************/
 //if evaluation throws an exception it is rethrown after executing __VA_ARGS__
 //throw if(true)=_tIF(true)
-#define _tIF(a_DOifcmd) { \
+#define _htIF(a_DOifcmd) { \
         bool __bool_ifexpr;\
         _TRY( __bool_ifexpr= (a_DOifcmd),  THROW_HOOK; throw ) \
         if (__bool_ifexpr) { \
-                _t(_tIF(a_DOifcmd));/*not circular, just text here*/\
+                _ht(_htIF(a_DOifcmd));/*not circular, just text here*/\
         }       \
 } //endblock
 
         //TRY( __bool_ifexpr= (a_DOifcmd) );
 /***************************************/
 //unconditional log prior to throw => log+throw; the line, func and file where this is called is taken and shown in the error message(not in the throw message)
-#define _t(a_ThrowMessage) {\
+#define _ht(a_ThrowMessage) {\
         THROW_HOOK;/*prior to throw*/\
         ADD_NOTE(kNotify_Exception,#a_ThrowMessage); \
-        std::logic_error le(#a_ThrowMessage);\
-        throw le; }
+        throw std::logic_error(#a_ThrowMessage);}
 
 //the 'no hook' version of _t()
 #define __t(a_ThrowMessage) {\
         ADD_NOTE(kNotify_Exception,#a_ThrowMessage); \
-        std::logic_error le(#a_ThrowMessage);\
-        throw le; }
+        throw std::logic_error(#a_ThrowMessage); }
 
 //wrapper for 'if' that catches the evaluation if it throws exceptions(and rethrows!); don't forget the '}_fi' endblock which puts '}}' at end, because we don't want __bool_ifexpr that we declared temporary to be accessed outside _if()
 //or use _if(expr) { do_this(); } else { do_that; }_fi
-#define _if(a_IFExpr) {    \
+#define _hif(a_IFExpr) {    \
         bool __bool_ifexpr;     \
         TRY( __bool_ifexpr= (a_IFExpr));\
         if ( __bool_ifexpr )
 
-#define _fi }
+#define _fih }
 /***************************************/
 //no hook! but keeps the throw
 #define __if(a_IFExpr) {    \
@@ -327,12 +325,12 @@ extern MNotifyTracker *gNotifyTracker;
 /***************************************/
 //uses ERR_HOOK hook no the same as _() which uses THROW_HOOK
 #ifdef TRACKABLE_RETURNS
-        #define _reterr \
-                INFO(_reterr);\
+        #define _hreterr \
+                INFO(_hreterr);\
                 ERR_HOOK;\
                 return 
 #else
-        #define _reterr \
+        #define _hreterr \
                 ERR_HOOK;\
                 return 
 #endif
@@ -350,12 +348,12 @@ extern MNotifyTracker *gNotifyTracker;
 #endif
 /***************************************/
 #ifdef TRACKABLE_RETURNS
-        #define _okret \
-                INFO(_okret);\
+        #define _hokret \
+                INFO(_hokret);\
                 OK_HOOK;\
                 return 
 #else
-        #define _okret \
+        #define _hokret \
                 OK_HOOK;\
                 return 
 #endif

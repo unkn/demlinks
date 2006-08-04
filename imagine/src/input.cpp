@@ -114,7 +114,7 @@ TransformToGenericInputs(const INPUT_TYPE *from)
         while (i <= from->how_many) {
                 //get one input
 
-                __tIFnok(AllLowLevelInputs[from->type]->MoveFirstFromBuffer(anydatastruc));
+                _htIFnok(AllLowLevelInputs[from->type]->MoveFirstFromBuffer(anydatastruc));
                 /*
                  * error trapping:
                 EFunctionReturnTypes_t err;
@@ -138,7 +138,7 @@ TransformToGenericInputs(const INPUT_TYPE *from)
                 //be a part of or complete generic input
 
 //free before returning error
-                _tIFnok(GenericInputHandler(&passed));
+                _htIFnok(GenericInputHandler(&passed));
                 i++;
         }//while
         //freemem
