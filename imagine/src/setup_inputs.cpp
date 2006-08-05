@@ -105,7 +105,6 @@ Process(
 /*****************************************************************/
 int main(const int argc, const char **argv)
 {
-        InitNotifyTracker();
         __tIF(0 != allegro_init());
 
         __(g_Expr.Init());

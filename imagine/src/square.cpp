@@ -367,7 +367,7 @@ case 2: {
                 now++;initial--;
                 easy2(ofs==now,"CAM:%d/%d",current_cam,NUM_CAMS-1);
 
-        MProjectedCamera *mycam=&cams[current_cam];
+        MProjectedCamera *mycam=cams[current_cam];
                 easy3("%s","AspectR");
                 easy3("%.2f",mycam->GetAspect());
                 easy3("%s","FOV");

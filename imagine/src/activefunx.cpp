@@ -44,7 +44,7 @@
 { \
         for (int i=0;i<NUM_CAMS;i++)            \
         {                                       \
-                CAMERA_CLASS *cam=&cams[i];     \
+                CAMERA_CLASS *cam=cams[i];     \
                 if (cam->IsActive()) {          \
                         a_statements;            \
                 }                               \
@@ -332,7 +332,7 @@ EFunctionReturnTypes_t
 kAI_NextSetOfValues_()
 {
         global_select=(global_select+1)% GLOBALMAX;
-        cams[current_cam].SetNeedRefresh();
+        cams[current_cam]->SetNeedRefresh();
         return kFuncOK;
 }
 /*****************************************************************************/

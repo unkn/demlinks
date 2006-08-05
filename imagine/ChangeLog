@@ -4,7 +4,15 @@ Legend:
 	LU means last update on ... date
 
 =demlinks-0.0.22
-LU: 23 July 2006
+LU: 05 August 2006
+$ reduce CPU consumption even further by making the main loop wait for a
+signal which maybe a refresh signal or a timer signal
+* fixed some stuff with the notification tracking system such as made auto
+initialization by not using a pointer thus it is done pre main() entry(so only
+#include "pnotetrk.h" is needed - actually g++ by includint pnotetrk.o should
+do the trick); and
+because of this we had to make cams[i] a pointer to an array otherwise they
+would initialize(by constructors) before the notif.sys.
 * mutex locked interrupt handler (timed*.cpp)
 * base idea from '../babyplan/txt' implemented using berkeley db
 (classhit.cpp)

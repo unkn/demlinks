@@ -41,7 +41,7 @@
 
 //VARIABLES:
 //
-CAMERA_CLASS cams[NUM_CAMS];
+CAMERA_CLASS *cams[NUM_CAMS];//made it a pointer to prevent pre main() initialization(by constructors)
 int current_cam=0;
 
 
@@ -54,16 +54,16 @@ extern BITMAP *tex;
 
 //END VARIABLES
 void ChooseNextCam(){
-        cams[current_cam].Revert2State();
+        cams[current_cam]->Revert2State();
         current_cam = (current_cam+1) % NUM_CAMS;//choose next cam
-        cams[current_cam].MarkState();//remember how it was (active or not)
-        cams[current_cam].Activate();
+        cams[current_cam]->MarkState();//remember how it was (active or not)
+        cams[current_cam]->Activate();
 }
 
 void ToggleCurrentCam()
 {
-        cams[current_cam].Toggle();//if ever toggled then
-        cams[current_cam].MarkState();//we keep it in mind
+        cams[current_cam]->Toggle();//if ever toggled then
+        cams[current_cam]->MarkState();//we keep it in mind
 }
 
 function
@@ -74,7 +74,7 @@ draw_all(BITMAP *bmp, CAMERA_CLASS *mycam);
 function 
 render(BITMAP *bmp, int cur_cam)
 {
-        CAMERA_CLASS *mycam=&cams[cur_cam];
+        CAMERA_CLASS *mycam=cams[cur_cam];
         /* clear the background */
         //clear_to_color(bmp, makecol(0,0,0));
         rectfill(bmp,

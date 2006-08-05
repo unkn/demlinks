@@ -48,7 +48,7 @@ BITMAP *buffer;
 EFunctionReturnTypes_t
 Init()
 {
-        InitNotifyTracker();
+        //InitNotifyTracker();
         __tIF(allegro_init() != 0);
 
         __tIFnok(InstallGlobalTimer());
@@ -78,15 +78,17 @@ Init()
                 int a=0;
                 int b=0;
          for (int i=0;i<NUM_CAMS;i++){
-                cams[i].SetPos(0,0,10*TILE_SIZE);
-                cams[i].SetFrontVector(0,0,-1);
-                cams[i].SetUpVector(-1,-0.4,0);
-                cams[i].Prepare(
+                 __( cams[i]= new CAMERA_CLASS );
+                 __tIF(cams[i] == NULL);
+                __( cams[i]->SetPos(0,0,10*TILE_SIZE) );
+                __( cams[i]->SetFrontVector(0,0,-1) );
+                __( cams[i]->SetUpVector(-1,-0.4,0) );
+                __( cams[i]->Prepare(
                                 a*w,
                                 b*h,
                                 w,
                                 h
-                                );
+                                ) );
                 a++;
                 if (a>=sq) {
                         a=0;
@@ -95,7 +97,7 @@ Init()
                                 b=0;
                 }//fi
         }//for cams
-         cams[current_cam].Activate();
+         cams[current_cam]->Activate();
 
          _OK;
 }
@@ -108,6 +110,8 @@ DeInit()
         __tIFnok(DeInitInput());
 
         __tIFnok(UnInstallGlobalTimer());
+
+        allegro_exit();//seems to be working now, no more segfaults! allegro 4.3.1 svn
         _OK;
 }
 

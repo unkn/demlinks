@@ -231,7 +231,7 @@ public:
 };//class
 
 
-extern CAMERA_CLASS cams[NUM_CAMS];
+extern CAMERA_CLASS *cams[NUM_CAMS];
 extern int current_cam;
 
 

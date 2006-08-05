@@ -34,7 +34,7 @@
 
 /* global uniq variable, this is where we keep all errors
  * this is used in almost all source files */
-MNotifyTracker *gNotifyTracker;
+MNotifyTracker gNotifyTracker;
 
 /*  the textual descriptions of notification types
  *  ie. "WARN" */
@@ -55,16 +55,20 @@ const PChar_t kNotifyDescriptions[kNumNotifyTypes]={
 
 
 /* constructor */
-MNotifyTracker::MNotifyTracker()
+MNotifyTracker::MNotifyTracker():fIsOn(false)
 {
+        SetOn();
 }
 
 /* destructor */
 MNotifyTracker::~MNotifyTracker()
 {
         /* show them all if we didn't got the chance */
-        if (GetLastNote())
-                ShowAllNotes();
+        if (IsOn()) {
+                if (GetLastNote())
+                        ShowAllNotes();
+                SetOff();
+        }
 }
 
 /* adds a notification and checks to see if we failed to properly add it
@@ -77,28 +81,41 @@ CheckedAddNote(
         Func_t a_Func,
         const Line_t a_Line)
 {
-        if (!gNotifyTracker) {
+        if (gNotifyTracker.IsOff()) {
+                fprintf(stderr,
+                        "The error to be reported was:\n%s#%d: line(%u) file(%s) func(%s) \n\t`%s'\n",
+                        kNotifyDescriptions[a_NotifyType],
+                        0,
+                        a_Line,
+                        a_FileName,
+                        a_Func,
+                        a_Desc
+                        );
                 fprintf(stderr,"lame programmer: notification subsystem is "
-                                "not initialized\n");
+                                "not initialized, now this should not happen!\n");
+#ifdef CONTINUE_IF_NOTINITED
+                return;
+#else
                 abort();
+#endif
         }
 
-        bool tmpres=gNotifyTracker->AddUserNote(a_NotifyType,
+        bool tmpres=gNotifyTracker.AddUserNote(a_NotifyType,
                                                 a_Desc,
                                                 a_FileName,
                                                 a_Func,
                                                 a_Line);
 
-        if ((tmpres==false) && (gNotifyTracker->HasFailedInternally())) {
+        if ((tmpres==false) && (gNotifyTracker.HasFailedInternally())) {
 
                 fprintf(stderr,
                         "The NotifyTracker has failed internally.\n"
                         "This is perhaps due to lack of memory.\n"
                         "However we're going to try and show you %d"
                         "notifications before aborting...\n",
-                        gNotifyTracker->GetNumNotes());
+                        gNotifyTracker.GetNumNotes());
 
-                gNotifyTracker->ShowAllNotes();
+                gNotifyTracker.ShowAllNotes();
 
                 abort();
         }
@@ -106,10 +123,12 @@ CheckedAddNote(
 }
 
 /* show a list of all notifications that happened since last time the list was
- * empty */
+ * empty AND clear them out as you show them! */
+
 void
 MNotifyTracker::ShowAllNotes()
 {
+if (IsOn()) {
         NotifyItem_st *tmp=MoveOutLastNote();
         while (tmp){
                 fprintf(stderr,
@@ -123,64 +142,67 @@ MNotifyTracker::ShowAllNotes()
                         );
                 tmp=MoveOutLastNote();
         }
+}//fi
 }
 
 void SIGINT_sighandler_t(int)
 {
-        ShutDownNotifyTracker();
+        gNotifyTracker.SetOff();
 }
 void SIGSEGV_sighandler_t(int)
 {
-        ShutDownNotifyTracker();
+        gNotifyTracker.SetOff();
 }
-void
-InitNotifyTracker()
-{
-        gNotifyTracker=new MNotifyTracker;
-        if (!gNotifyTracker) {
-                fprintf(stderr,
-                        "error allocating memory\n"
-                        "in file %s at line %d in func %s\n",
-                        __FILE__,
-                        __LINE__,
-                        __func__);
-                abort();
-        }
 
+//needed like this for ... see SetOn()
+void
+ShutDownNT(void)
+{
+        gNotifyTracker.SetOff();
+}
+
+void
+MNotifyTracker::SetOff(void)
+{
+        if (IsOn()) {
+                ShowAllNotes();
+                //delete gNotifyTracker;
+                //gNotifyTracker=NULL;
+                signal(SIGINT,SIG_DFL);
+                signal(SIGSEGV,SIG_DFL);
+                fIsOn=false;
+        }
+}
+
+void
+MNotifyTracker::SetOn()
+{
+        WARN_IF(IsOn());
+        fIsOn=true;
         /* make sure the sutdown procedure is called on normal exit, even if the
          * programmer forgets to call it */
-        ERR_IF( 0 != atexit(ShutDownNotifyTracker),
+        ERR_IF( 0 != atexit(ShutDownNT),
                         abort());
         //std::set_terminate (__gnu_cxx::__verbose_terminate_handler);
-        std::set_unexpected(ShutDownNotifyTracker);
-        std::set_terminate(ShutDownNotifyTracker);
+        std::set_unexpected(ShutDownNT);
+        std::set_terminate(ShutDownNT);
         signal(SIGSEGV,SIGSEGV_sighandler_t);
         signal(SIGINT,SIGINT_sighandler_t);
 }
 
-void
-ShutDownNotifyTracker(void)
-{
-        if (gNotifyTracker) {
-                ShowAllNotifications();
-                delete gNotifyTracker;
-                gNotifyTracker=NULL;
-                signal(SIGINT,SIG_DFL);
-                signal(SIGSEGV,SIG_DFL);
-        }
-}
+
 
 void
-PurgeAllNotifications()
+MNotifyTracker::PurgeAllNotifications()
 {
-        if (gNotifyTracker)
-                gNotifyTracker->PurgeThemAll();
+        if (IsOn())
+                PurgeThemAll();
 }
 
 void
 ShowAllNotifications()
 {
-        if (gNotifyTracker)
-                gNotifyTracker->ShowAllNotes();
+        if (gNotifyTracker.IsOn())
+                gNotifyTracker.ShowAllNotes();
 }
 

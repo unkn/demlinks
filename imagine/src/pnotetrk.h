@@ -62,27 +62,34 @@ enum ENotifyTypes {
 
 
 class MNotifyTracker : public TNotify {
+private:
+        bool fIsOn;//true if inited!
 public:
         MNotifyTracker();
        ~MNotifyTracker();
 
+       void SetOn();
+       void SetOff();
+       bool IsOn()const { return fIsOn; }
+       bool IsOff()const { return (!fIsOn); }
+
         /* implicitly kills all notifications after routing them to stderr */
         void ShowAllNotes();
+        void PurgeAllNotifications();
 };
 
-/* global notify-tracker variable, used everywhere
- * here we hold the list of encountered notifications during program exec.*/
-extern MNotifyTracker *gNotifyTracker;
+void ShowAllNotifications();
+
 
 /* displays all notifications prior to executing and after execution of the
  * passed statements */
 #define TRAP(a_BunchOfStatements)               \
 {                                               \
-        gNotifyTracker->ShowAllNotes();         \
+        gNotifyTracker.ShowAllNotes();         \
         {                                       \
                 a_BunchOfStatements;            \
         }                                       \
-        gNotifyTracker->ShowAllNotes();         \
+        gNotifyTracker.ShowAllNotes();         \
 }
 
 
@@ -167,7 +174,7 @@ extern MNotifyTracker *gNotifyTracker;
 #define EXIT(a_ErrorDescription)                        \
 {                                                       \
         ADD_NOTE(kNotify_Exit,a_ErrorDescription)       \
-        ShutDownNotifyTracker();                        \
+        gNotifyTracker.SetOff();                        \
         exit(EXIT_FAILURE);                             \
 }
 
@@ -403,10 +410,6 @@ void CheckedAddNote(
         Func_t a_Func,
         const Line_t a_Line);
 
-void ShutDownNotifyTracker(void);//no need to call this manually
-void InitNotifyTracker();
-void PurgeAllNotifications();
-void ShowAllNotifications();
 
 
 #endif

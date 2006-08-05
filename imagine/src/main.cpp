@@ -52,7 +52,6 @@
 bool need_screen_refresh=true;//first time display screen
 
 
-
 int main(void)
 {
         __tIFnok (Init());//throw if kFuncOK!= Init() OR Init() threw exception
@@ -82,12 +81,12 @@ int main(void)
 
 
         for (int i=0;i<NUM_CAMS;i++){
-                __if (cams[i].NeedsRefresh()) {
+                __if (cams[i]->NeedsRefresh()) {
                         __tIFnok(render(buffer,i));//update some part of buffered screen
                         if (false==need_screen_refresh) {
                                 need_screen_refresh=true;//signal: need to show buffered screen on monitor
                         }
-                        __tIFnok(cams[i].SetNoNeedRefresh());
+                        __tIFnok(cams[i]->SetNoNeedRefresh());
                 }__fi
         }//for
         if (need_screen_refresh) {//update it
@@ -112,8 +111,6 @@ int main(void)
 
 
    __tIFnok(DeInit());
-
-   //allegro_exit(); bad idea, since bugs inside OR smth i can't understand!
 
    INFO(normal exit);
    return EXIT_SUCCESS;
