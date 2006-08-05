@@ -180,7 +180,7 @@ ToCommonBuf(int input_type)
                         //we just said there's one more mouse[!] input 2b read
                         }//fi3
                 }//fi2
-                ERR_IF(0!=mutex_unlock((mutex_t *)&gInputLock));
+                ERR_IF(0!=mutex_unlock((mutex_t *)&gInputLock));//avoiding to throw in the interrupt handler!
         }//fi1
                 //if locked even if have same type at tail just add another one
                 //we'd like to add a new one if input buf not full:

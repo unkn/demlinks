@@ -38,23 +38,22 @@ QUEUE_TYPE gQueuedActionsForExecution_DLL;
 
 
 /*****************************************************************************/
-EFunctionReturnTypes_t
+function
 ActionsClass::SetFunc(EnumAllAI_t a_WhichFunc)
 {
-        ERR_IF(!IsFuncWithinLimits(a_WhichFunc),
-                        return kFuncFailed);
+        __tIF(!IsFuncWithinLimits(a_WhichFunc));
+
         fWhichFunc=a_WhichFunc;
 
-        return kFuncOK;
+        _OK;
 }
 /*****************************************************************************/
 ActionsClass::ActionsClass(EnumAllAI_t a_WhichFunc)//constructor
-        ://fEnabled(false),
+        :
         fType(fContinousActionType),
         fRemove(kAI_Undefined)
-        //:fWhichFunc(a_WhichFunc)
 {
-        WARN_IF(kFuncOK!=SetFunc(a_WhichFunc),);//cannot return error here
+        __tIFnok( SetFunc(a_WhichFunc) );
 }
 /*****************************************************************************/
 /*****************************************************************************/
@@ -72,7 +71,7 @@ ActionsClass::IsFuncWithinLimits(EnumAllAI_t thisone)
         return false;
 }
 /*****************************************************************************/
-EFunctionReturnTypes_t
+function
 ActionsClass::Execute()
 {
         //FIXME:
@@ -80,15 +79,13 @@ ActionsClass::Execute()
         //OR make the ActionsBuffer such that when an item gets removed is
         //saved into a replay buffer of some sort(or a file, eventually)
         //but first...
-        ERR_IF(!IsFuncWithinLimits(fWhichFunc),
-                        return kFuncFailed);
-        ERR_IF(kFuncOK!=Functions[fWhichFunc](),
-                        return kFuncFailed);
+        __tIF(!IsFuncWithinLimits(fWhichFunc));
+        __tIFnok(Functions[fWhichFunc]());
 /*        if (fType==fToggleActionType) {
                 ERR_IF(kFuncOK!= SetDisabled(),
                                 return kFuncFailed);
         }//fi*/
-        return kFuncOK;
+        _OK;
 }
 /*****************************************************************************/
 /*****************************************************************************/
@@ -96,7 +93,7 @@ ActionsClass::Execute()
 function
 ExecuteAllQueuedActions()
 {
-        if ( ( !gQueuedActionsForExecution_DLL.IsEmpty()))
+        __if ( ( !gQueuedActionsForExecution_DLL.IsEmpty()))
         {//not empty?
                 //got actions to be executed, good:
                 //so parse all from first to last:
@@ -114,62 +111,58 @@ ExecuteAllQueuedActions()
                         //prepare ourselves prior parser's eventual death
                         GenericDoubleLinkedElement_st<EnumAllAI_t> *whosnext=parser->Next;
 
-                        if (Actions[which].IsToggleType(/*&which*/)) {
+                        __if (Actions[which].IsToggleType(/*&which*/)) {
                                 //we must remove fRemove action ONLY if previously started, not if queued for start ie. after us , as a next queue element
                                 __tIFnok(gQueuedActionsForExecution_DLL.RemoveByContents_StartForwardFrom_Until(
                                                         &Actions[which].fRemove,
                                                         gQueuedActionsForExecution_DLL.Head,
                                                         parser));
-                                if (which != Actions[which].fRemove) {
+                                __if (which != Actions[which].fRemove) {
                                         //if the previous one (fRemove) didn't
                                         //specify us then also remove us
                                         __tIFnok(gQueuedActionsForExecution_DLL.RemoveByContents_StartForwardFrom_Until(
                                                                 &which,
                                                                 gQueuedActionsForExecution_DLL.Head,
                                                                 parser));
-                                }//fi
+                                }__fi
                                 //either way since we're a Toggle type we 
                                 //mustn't exist for the next time
                                 __tIF(parser!=NULL);
-                        }//fi
+                        }__fi
 
                         //go next from queue
                         parser=whosnext;
                 }//while
-        }//if
+        }__fi
 
         _OK;
 }
 
-EFunctionReturnTypes_t
+function
 QueueAction(const ACTIONSINPUT_TYPE *which)
 {
-        ERR_IF(which==NULL,
-                        return kFuncFailed);
+        __tIF(which==NULL);
 
         //add this action into a buffer that holds actions to be later executed
         //the toggle(one-time) actions get removed from that buffer, continous ones don't; those actions that disable the continous ones get executed and removed and remove those which they disable
         //append:
         EnumAllAI_t *newone=new EnumAllAI_t;
+        __tIF(newone==NULL);
         *newone=*which;//a value ~ the index number
-        ERR_IF(kFuncOK!=
-                gQueuedActionsForExecution_DLL.Append(newone),
-                        return kFuncFailed);
-        return kFuncOK;
+        __tIFnok(gQueuedActionsForExecution_DLL.Append(newone));
+        _OK;
 }
 
 /*****************************************************************************/
 EFunctionReturnTypes_t
 InitActionTypes()
 {
-        //FIXME:Feed from file
-#undef STT
+        //FIXME:Feed from file; no actually feed from the environment(demlinks environment that is)
+//#undef STT, better not undef them to catch previous definitions(thus possible bugs)
 #define STT(_a) \
-        Actions[_a##_stop].SetToggleActionType(_a);
-
-#undef STS
+        __( Actions[_a##_stop].SetToggleActionType(_a) );
 #define STS(_a) \
-        Actions[_a].SetToggleActionType(_a);
+        __( Actions[_a].SetToggleActionType(_a) );
 
         STS(kAI_NextSetOfValues);
         STS(kAI_QuitProgram);
@@ -196,7 +189,8 @@ InitActionTypes()
 
 #undef STT
 #undef STS
-        return kFuncOK;
+
+        _OK;
 }
 /*****************************************************************************/
 
@@ -207,10 +201,13 @@ InitActions()
         //typedef ACTIONS_TYPE some_odd_shit[kMaxAIs];//one_of nasty workaround
         Actions=new ACTIONS_TYPE[kMaxAIs];//some_odd_shit[kMaxAIs];//alloc the entire array
         __tIF(NULL==Actions);
+
         for (int i=1;i<kMaxAIs;i++) {
                 __tIFnok(Actions[i].SetFunc(EnumAllAI_t(i)));
         }//for
+
         __tIFnok(InitActionTypes());
+
         _OK;
 }
 
@@ -218,7 +215,7 @@ InitActions()
 function
 DoneActions()
 {
-        //FIXME: what's there to fix i wonder now, 16 july 2006, 00:13 (Sun)?
+        __tIF(NULL==Actions);
         __(delete [] Actions);
         Actions=NULL;
         _OK;

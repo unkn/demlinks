@@ -104,7 +104,7 @@ struct OneActionsInputTransducer_st {
 /******************/
         ~OneActionsInputTransducer_st();
 /******************/
-        EFunctionReturnTypes_t
+        function
         Append(const GENERICINPUT_TYPE * a_Dat);
 /******************/
         bool HasStarted();
@@ -112,7 +112,7 @@ struct OneActionsInputTransducer_st {
         EFunctionReturnTypes_t
         RestartIfStarted();
 /******************/
-        void
+        function
         Reset();
 /******************/
         EFunctionReturnTypes_t
@@ -138,7 +138,8 @@ struct AI_SLLTransducersArray_st{
 /******************/
         ~AI_SLLTransducersArray_st();
 /******************/
-        EFunctionReturnTypes_t Append(
+        function
+        Append(
                         const OneActionsInputTransducer_st * a_Dat);
 /******************/
 };//END struct

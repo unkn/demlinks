@@ -95,7 +95,7 @@ int main(void)
                         #endif
 
                         acquire_screen();
-                        blit(buffer, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
+                        __( blit(buffer, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H) );//who knows maybe it can throw (sure it can - if it believes so!)
                         release_screen();
 
                         need_screen_refresh=false;

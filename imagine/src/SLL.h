@@ -56,10 +56,9 @@ struct GenericSingleLinkedList_st {
         EFunctionReturnTypes_t New(const T*a_Data){
                 //a copy of the contents is NOT made!
                 //refusing to add a new one if there's already a Next
-                ERR_IF(Next!=NULL,
-                                return kFuncFailed);
-                Insert(a_Data);
-                return kFuncOK;
+                __tIF(Next!=NULL);
+                __tIFnok( Insert(a_Data) );
+                _OK;
         };
 
 
@@ -68,10 +67,9 @@ struct GenericSingleLinkedList_st {
                 //refusing to add a new one if there's already a Next
                 GenericSingleLinkedList_st<T> *tmp=NULL;
                 tmp=new GenericSingleLinkedList_st<T>(a_Data,Next);
+                __tIF(NULL == tmp);
                 Next=tmp;//safer
-                ERR_IF(Next==NULL,
-                                return kFuncFailed);
-                return kFuncOK;
+                _OK;
         };
 };
 

@@ -161,15 +161,13 @@ QueueAllActions()
                 ACTIONSINPUT_TYPE got;
 
                 //remove actioninput from buffer
-                ERR_IF(kFuncOK!=ActionsInputBuffer.MoveLastFromBuffer(&got),
-                                return kFuncFailed);
+                __tIFnok(ActionsInputBuffer.MoveLastFromBuffer(&got));
                 //queue it, don't execute it now, later.
-                ERR_IF(kFuncOK!=QueueAction(&got),
-                                return kFuncFailed);
+                __tIFnok(QueueAction(&got));
 
         }//while
 
-        return kFuncOK;
+        _OK;
 }
 
 /*****************************************************************************/
@@ -197,9 +195,7 @@ MakeSureWeHaveGenericInput()
 
                 INPUT_TYPE into;
                 //one input group at a time; ie. all key OR all mouse
-                        EFunctionReturnTypes_t err;
-                        __(err=MoveFirstGroupFromBuffer(&into));
-                        if (kFuncOK == err) {
+                        __if (kFuncOK == MoveFirstGroupFromBuffer(&into)) {
                                 __tIFnok(TransformToGenericInputs(&into));
                         } else {//until buffer is empty, or some error ie. gLock (this may cause some delay tho)
                                 __t(unhandled);
@@ -209,7 +205,7 @@ MakeSureWeHaveGenericInput()
                                         allegro_message("%d",err);
                                         __t(unhandled);
                                 }*/
-                        }
+                        }__fi
         }//while
 
         _OK;
@@ -219,10 +215,10 @@ function
 MangleInputs()
 //transform INPUTs to ACTIONs but doesn't execute those actions
 {
-        __tIF(kFuncOK!= MakeSureWeHaveGenericInput());
-        __tIF(kFuncOK!= MakeSureWeHaveActions());
+        __tIFnok( MakeSureWeHaveGenericInput());
+        __tIFnok( MakeSureWeHaveActions());
 
-        __tIF(kFuncOK != QueueAllActions());
+        __tIFnok(QueueAllActions());
 
         _OK;
 }

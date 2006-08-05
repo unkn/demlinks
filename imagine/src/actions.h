@@ -90,7 +90,7 @@ public:
         EFunctionReturnTypes_t
         SetEnabled(){ fEnabled=true; return kFuncOK;};
        */
-        EFunctionReturnTypes_t
+        function
         Execute();
 };//end of class
 /*********************/
@@ -101,7 +101,7 @@ extern ACTIONS_TYPE (*Actions);//[kMaxAIs];
 /*********************/
 
 /*********************/
-EFunctionReturnTypes_t
+function
 QueueAction(const ACTIONSINPUT_TYPE *which);
 
 /*********************/

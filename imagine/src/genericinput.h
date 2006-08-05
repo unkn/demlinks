@@ -132,7 +132,7 @@ struct OneGenericInputTransducer_st {
         EFunctionReturnTypes_t
         RestartIfStarted();
 /******************/
-        void
+        function
         Reset();
 /******************/
         EFunctionReturnTypes_t

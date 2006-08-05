@@ -31,6 +31,7 @@
 #include "_gcdefs.h"
 #include "pnotetrk.h"
 
+//don't forget this only links to the data, does NOT copy it!
 template <class T>
 struct GenericDoubleLinkedElement_st {
         GenericDoubleLinkedElement_st<T> *Prev;
@@ -44,7 +45,7 @@ struct GenericDoubleLinkedElement_st {
         };
         ~GenericDoubleLinkedElement_st() {
                 //however, WE DO DEALLOC Data
-                delete Data;
+                delete Data;//no need for Data=NULL because this is the destructor
         }
 };
 
@@ -66,13 +67,15 @@ struct GenericDoubleLinkedList_st {
 
                 //initializing the list with one element
                 Head=new GenericDoubleLinkedElement_st<T>(a_Data);
+                __tIF(NULL==Head);
                 Tail=Head;
         };
         ~GenericDoubleLinkedList_st(){
                 //dealloc entire list starting from Head
                 GenericDoubleLinkedElement_st<T> *tmp=Head;
                 while (tmp!=NULL) {
-                        GenericDoubleLinkedElement_st<T> *next=tmp->Next;
+                        GenericDoubleLinkedElement_st<T> *next;
+                        __( next=tmp->Next; );
                         delete tmp;
                         tmp=next;
                 }
@@ -82,36 +85,38 @@ struct GenericDoubleLinkedList_st {
         Prepend(const T*a_Data){//before Head
                 //a copy of the contents is NOT made!
                 if (Head==NULL) {
-                        PARANOID_IF(Tail != NULL,
-                                        return kFuncFailed);
+                        __tIF(Tail != NULL);
                         //make one element list
                         Head=new GenericDoubleLinkedElement_st<T>(a_Data);
+                        __tIF(NULL==Head);
                         Tail=Head;
                 } else {
                         //multi element list, add one more to Head
                         Head->Prev=new GenericDoubleLinkedElement_st<T>(a_Data);
+                        __tIF(NULL == Head->Prev);
                         Head->Prev->Next=Head;
                         Head=Head->Prev;
                 }//else
-                return kFuncOK;
+                _OK;
         };
 
         EFunctionReturnTypes_t
         Append(const T*a_Data){//after Tail
                 //a copy of the contents is NOT made!
                 if (Tail==NULL) {
-                        PARANOID_IF(Head!=NULL,//head must also be NULL
-                                        return kFuncFailed);
+                        __tIF(Head!=NULL);//head must also be NULL
                         //make one element list
                         Tail=new GenericDoubleLinkedElement_st<T>(a_Data);
+                        __tIF(NULL == Tail);
                         Head=Tail;
                 } else {
                         //multi element list, add one more to Tail
                         Tail->Next=new GenericDoubleLinkedElement_st<T>(a_Data);
+                        __tIF(NULL == Tail->Next);
                         Tail->Next->Prev=Tail;
                         Tail=Tail->Next;
                 }//else
-                return kFuncOK;
+                _OK;
         };
 
 
@@ -149,26 +154,20 @@ struct GenericDoubleLinkedList_st {
                 //kill all elements containing a_Data, starting the parse from
                 //'from' until 'until', inclusively
                 //'from' and 'until' must be from a linked list
-                ERR_IF(until==NULL,
-                                return kFuncFailed);
-                ERR_IF(from==NULL,
-                                return kFuncFailed);
-                ERR_IF(a_Data==NULL,
-                                return kFuncFailed);
+                __tIF(until==NULL);
+                __tIF(from==NULL);
+                __tIF(a_Data==NULL);
                 //parse from 'from' until 'until', including.
                 GenericDoubleLinkedElement_st<T> *parser=from;
                 while (parser!=until->Next) {
-                        PARANOID_IF(parser==NULL,
-                                        return kFuncFailed);
+                        __tIF(parser==NULL);
                         GenericDoubleLinkedElement_st<T> *whosnext=parser->Next;
                         if (*parser->Data==*a_Data) {
                                 GenericDoubleLinkedElement_st<T> *former=parser;
                                 //found our element, let's remove it
-                                ERR_IF(kFuncOK!=RemoveFromAnyPlace(parser),
-                                                return kFuncFailed);
+                                __tIFnok(RemoveFromAnyPlace(parser));
                                 //but we're still searching for more elements
-                                PARANOID_IF(parser!=NULL,
-                                                return kFuncFailed);
+                                __tIF(parser!=NULL);
                                 if (former==from)
                                         from=NULL;
                                 if (former==until) {
@@ -177,10 +176,9 @@ struct GenericDoubleLinkedList_st {
                                 }//fi
                         }//fi
                         parser=whosnext;
-                        PARANOID_IF(until==NULL,
-                                        return kFuncFailed);
+                        __tIF(until==NULL);
                 }//while
-                return kFuncOK;
+                _OK;
         };
 };
 

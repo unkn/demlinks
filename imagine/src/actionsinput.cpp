@@ -238,19 +238,16 @@ DisposeAISLLArray(AI_SLLTransducersArray_st *which)
                 which->Head;//head transducer from list of transducers
         for (int j=0;j<which->HowManySoFar;j++){
                 //parsing transducers with 'j'
-                ERR_IF(parser==NULL,
-                                return kFuncFailed);
+                __tIF(parser==NULL);
 
                 OneActionsInputTransducer_st *transd=parser->Data;
-                ERR_IF(transd==NULL,
-                                return kFuncFailed);
+                __tIF(transd==NULL);
 
                 GenericSingleLinkedList_st<GENERICINPUT_TYPE> *trElem=
                         transd->Head;
 
                 for (int a=0;a<transd->HowManySoFar;a++) {
-                        ERR_IF(trElem==NULL,
-                                return kFuncFailed);
+                        __tIF(trElem==NULL);
                         if (trElem->Data!=NULL) {
                                 SAFE_delete(trElem->Data);
                         }//fi
@@ -261,7 +258,7 @@ DisposeAISLLArray(AI_SLLTransducersArray_st *which)
                 //SAFE_delete(transd);//unsafe
                 parser=parser->Next;
         }//for2
-        return kFuncOK;
+        _OK;
 }
 /*****************************************************************************/
 function
@@ -284,11 +281,12 @@ OneActionsInputTransducer_st::OneActionsInputTransducer_st()
 /*****************************************************************************/
 OneActionsInputTransducer_st::~OneActionsInputTransducer_st()
 {
-        if (Head!=NULL)
+        if (Head!=NULL) {
                 delete Head;/*Tail is done automagically*/
+        }
 }
 /*****************************************************************************/
-EFunctionReturnTypes_t
+function
 OneActionsInputTransducer_st::Append(const GENERICINPUT_TYPE * a_Dat)
 {
         //a COPY OF the CONTENTS of passed param IS NOT MADE
@@ -299,21 +297,18 @@ OneActionsInputTransducer_st::Append(const GENERICINPUT_TYPE * a_Dat)
         if (Head==NULL) {
                 //first time
                 Head=new GenericSingleLinkedList_st<GENERICINPUT_TYPE>(a_Dat);
+                __tIF(NULL == Head);
                 Tail=Head;
                 WhosNext=Head;
-                ERR_IF(Head==NULL,
-                                return kFuncFailed);
         } else {
                 //already has at least one stuff allocated
                 //thus we append
-                ERR_IF(kFuncOK!=Tail->New(a_Dat),
-                                return kFuncFailed);
+                __tIFnok(Tail->New(a_Dat));
                 Tail=Tail->Next;
-                PARANOID_IF(Tail==NULL,
-                                return kFuncFailed);
+                __tIF(Tail==NULL);
         }//else
         HowManySoFar++;
-        return kFuncOK;
+        _OK;
 }
 /*****************************************************************************/
 bool
@@ -326,15 +321,16 @@ EFunctionReturnTypes_t
 OneActionsInputTransducer_st::RestartIfStarted()
 {
         if (HasStarted()) {
-                Reset();
+                __tIFnok( Reset() );
         }//fi
-        return kFuncOK;
+        _OK;
 }
 /*****************************************************************************/
-void
+function //in an attempt to standardize function calls: __tIFnok( Reset() );
 OneActionsInputTransducer_st::Reset()
 {
         WhosNext=Head;//reset
+        _OK;
 }
 /*****************************************************************************/
 /*****************************************************************************/
@@ -345,10 +341,8 @@ OneActionsInputTransducer_st::EatThis(const GENERICINPUT_TYPE *whichgi,
         //here we compare *what with WhosNext, if they somehow match
         //then we move along, if that was Tail then we Reset after
         //pushing this ActionsInput to the buffer
-        PARANOID_IF(WhosNext==NULL,
-                        return kFuncFailed);
-        PARANOID_IF(WhosNext->Data==NULL,
-                        return kFuncFailed);
+        __tIF(WhosNext==NULL);
+        __tIF(WhosNext->Data==NULL);
 //FIXME:
 /*        ERR_IF(kFuncOK!=AllLowLevelInputs[what->type]->Compare(
                                 what->data,
@@ -356,8 +350,7 @@ OneActionsInputTransducer_st::EatThis(const GENERICINPUT_TYPE *whichgi,
                                 result),
                         return kFuncFailed);*/
         if (*WhosNext->Data==*whichgi) {//equal
-                PARANOID_IF((WhosNext==Tail)&&(WhosNext->Next!=NULL),
-                                return kFuncFailed);
+                __tIF((WhosNext==Tail)&&(WhosNext->Next!=NULL));
                 WhosNext=WhosNext->Next;
                 if (WhosNext==NULL) {//das wars Tail
 #ifdef ENABLE_TIMED_INPUT
@@ -375,26 +368,24 @@ OneActionsInputTransducer_st::EatThis(const GENERICINPUT_TYPE *whichgi,
                         gLastActionsInputTime=timenow;
 #endif
 
-                        ERR_IF(kFuncOK!=PushToBuffer(),
-                                        return kFuncFailed);
-                        Reset();
+                        __tIFnok(PushToBuffer());
+                        __tIFnok( Reset() );
                 }//fi
         }//fi
         else {//not equal
                 //reset only if we're StrictOrder
                 if (reset_when_failed)
-                        Reset();
+                        __tIFnok( Reset() );
                 LostInputsBecauseTheyDidntMatch++;
         }//else
-        return kFuncOK;
+        _OK;
 }
 /*****************************************************************************/
 EFunctionReturnTypes_t
 OneActionsInputTransducer_st::PushToBuffer()
 {
-        ERR_IF(kFuncOK!=ActionsInputBuffer.CopyIntoBuffer(&Result),
-                        return kFuncFailed);
-        return kFuncOK;
+        __tIFnok(ActionsInputBuffer.CopyIntoBuffer(&Result));
+        _OK;
 }
 /*****************************************************************************/
 /*****************************************************************************/
