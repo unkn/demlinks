@@ -102,7 +102,7 @@ extern ACTIONS_TYPE (*Actions);//[kMaxAIs];
 
 /*********************/
 function
-QueueAction(const ACTIONSINPUT_TYPE *which);
+QueueAction(const ACTIONSINPUT_TYPE & a_Which);
 
 /*********************/
 function

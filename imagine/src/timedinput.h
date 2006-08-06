@@ -69,14 +69,14 @@ public:
         virtual ~TBaseInputInterface(){};
 
         //removes it from buffer
-        virtual EFunctionReturnTypes_t
+        virtual function
         MoveFirstFromBuffer(void *into)=0;
 
-        virtual int
-        HowManyInBuffer()=0;
+        virtual function
+        Query4HowManyInBuffer(int &m_HowMany)=0;
 
-        virtual bool
-        IsBufferFull()=0;
+        virtual function
+        Query4BufferFull(bool &m_Bool)=0;
 
         virtual function
         UnInstall()=0;
@@ -84,20 +84,17 @@ public:
         virtual function
         Install()=0;
 
-        virtual EFunctionReturnTypes_t
+        virtual function
         Alloc(void *&dest)=0;//alloc mem and set dest ptr to it
 
-        virtual EFunctionReturnTypes_t
+        virtual function
         DeAlloc(void *&dest)=0;//freemem
 
-        virtual EFunctionReturnTypes_t
-        CopyContents(const void *&src,void *&dest)=0;
-
-        virtual EFunctionReturnTypes_t
+        virtual function
         Compare(void *what, void *withwhat, int &result)=0;
         
 #ifdef ENABLE_TIMED_INPUT
-        virtual EFunctionReturnTypes_t
+        virtual function
         GetMeTime(void * const &from, GLOBAL_TIMER_TYPE *dest)=0;
 #endif
 
@@ -136,13 +133,13 @@ extern volatile int gLostInput[kMaxInputTypes];
 
 
 function
-MoveFirstGroupFromBuffer(INPUT_TYPE *into);
+MoveFirstGroupFromBuffer(INPUT_TYPE &m_Into);
 
-int
-HowManyDifferentInputsInBuffer();
+function
+Query4HowManyDifferentInputsInBuffer(int &m_HowMany);
 
-bool
-IsBufferFull();//of many different inputs? (consecutively different)
+function
+Query4BufferFull(bool &m_Bool);//the buffer of the many different inputs? (consecutively different)
 
 function
 UnInstallAllInputs();
@@ -152,6 +149,7 @@ InstallAllInputs();
 
 
 
+//used inside an int handler that's why we won't throw inside this:
 void
 ToCommonBuf(int input_type);
 

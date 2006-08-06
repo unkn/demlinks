@@ -64,21 +64,21 @@ INPUT_TYPE::operator=(const INPUT_TYPE & source)
 /*****************************************************************************/
 /*****************************************************************************/
 function
-MoveFirstGroupFromBuffer(INPUT_TYPE *into)
+MoveFirstGroupFromBuffer(INPUT_TYPE &m_Into)
 {
         //_F;
         //__t(test);
-        __tIF(HowManyDifferentInputsInBuffer() <0);
 
-        if (HowManyDifferentInputsInBuffer() <=0) {//aka empty buffer
+        int howMany;
+        __tIFnok( Query4HowManyDifferentInputsInBuffer(howMany) );
+        if (howMany <= 0) {//aka empty buffer
                 _F;
         } else {//aka non empty buffer
-                __tIF(into==NULL);
 
                 //wait for lock!
                 __tIF(0 != mutex_lock((mutex_t *)&gInputLock));
 
-                *into=gInputBuf[gInputBufHead];
+                m_Into=gInputBuf[gInputBufHead];
 
                 SET_NEXT_ROTATION(gInputBufHead, MAX_INPUT_EVENTS_BUFFERED);
                 //remove it
@@ -90,17 +90,23 @@ MoveFirstGroupFromBuffer(INPUT_TYPE *into)
         }
 }
 /*****************************************************************************/
-int
-HowManyDifferentInputsInBuffer()
+function
+Query4HowManyDifferentInputsInBuffer(int &m_HowMany)
 {
         __tIF(gInputBufCount < 0);
         __tIF(gInputBufCount > MAX_INPUT_EVENTS_BUFFERED);
-        return gInputBufCount;
+        __( m_HowMany = gInputBufCount );
+        _OK;
 }
-bool
-IsBufferFull()
+
+function
+Query4BufferFull(bool &m_Bool)
 {
-        return (HowManyDifferentInputsInBuffer()==MAX_INPUT_EVENTS_BUFFERED);
+        int howMany;
+        __tIFnok( Query4HowManyDifferentInputsInBuffer(howMany) );
+        __tIF(howMany > MAX_INPUT_EVENTS_BUFFERED);
+        __( m_Bool = ( howMany == MAX_INPUT_EVENTS_BUFFERED) );
+        _OK;//this means the function succeded, not that the buffer is full
 }
 
 /*****************************************************************************/

@@ -59,7 +59,11 @@ int main(void)
    while (!Flag(kF_QuitProgram)) {
 
         //here, transform all inputs into actions
-        __tIFnok(MangleInputs());
+        function state;
+        __(state=MangleInputs());//if returns kFuncOK then there are actions in queue to be executed!
+        if (kFuncNoGenericInputs==state) {//this means there were low level inputs but were invalid to generate genericinputs
+                __tIFnok( cams[current_cam]->SetNeedRefresh() );//maybe to refresh on screen the keyboard input buffer
+        }
 
         //game cycles, catching up to timer
         while (gTimer != gSpeedRegulator) {//are we behind schedule?

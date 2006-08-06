@@ -38,7 +38,9 @@
 typedef enum {//avoiding to use the value zero
         kFuncOK=110
         ,kFuncFailed//can't use this if throwing. ie. _tIF(true)
-        ,kFuncLocked//ie. due to gLock or gMLock
+        ,kFuncNoLowLevelInputs
+        ,kFuncNoGenericInputs
+        ,kFuncNoActions
 } EFunctionReturnTypes_t;
 
 enum ENotifyTypes {

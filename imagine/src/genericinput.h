@@ -135,11 +135,12 @@ struct OneGenericInputTransducer_st {
         function
         Reset();
 /******************/
-        EFunctionReturnTypes_t
-        EatThis(const UnifiedInput_st *what,
+        function
+        EatThis(
+                        const UnifiedInput_st & what,
                         bool reset_when_failed);
 /******************/
-        EFunctionReturnTypes_t
+        function
         PushToBuffer();
 /******************/
   //      void
@@ -171,7 +172,7 @@ extern GI_SLLTransducersArray_st GI_RelaxedOrderSLL[kMaxInputTypes];//head -//-
 /*****************************************************************************/
 function
 GenericInputHandler(
-                const UnifiedInput_st *from);
+                const UnifiedInput_st & from);
 /*****************************************************************************/
 function
 InitGenericInput();

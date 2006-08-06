@@ -79,7 +79,7 @@ ResetAllStartedConsecutives(GenericSingleLinkedList_st<OneGenericInputTransducer
 /*****************************************************************************/
 EFunctionReturnTypes_t
 ConsumeIntoGenericInput(
-                const UnifiedInput_st *from,
+                const UnifiedInput_st & from,
                 GenericSingleLinkedList_st<OneGenericInputTransducer_st> *start_from,
                 const int howmany,
                 bool reset_when_failed)
@@ -88,7 +88,6 @@ ConsumeIntoGenericInput(
 //this would compare "from" with INputs from all 'howmany' Transducers starting
 //from "*start_from", each transducer has a list of combinations that when
 //fullfilled would push that generic input into the geninputbuffer
-        __tIF(from==NULL);
         __tIF(start_from==NULL);
         __tIF(howmany<=0);
 
@@ -113,14 +112,13 @@ ConsumeIntoGenericInput(
 /*****************************************************************************/
 function
 GenericInputHandler(
-                const UnifiedInput_st *from)
+                const UnifiedInput_st & from)
 {//only one input at a time
 //consumes the input(one key OR one mouse...) passed as param
-        __tIF(from==NULL);
         //see if there are any consecutives that are of other type than 'from'
         //if so, cancel them (aka reset them to zero, they failed)
-        for (int i=0;i<kMaxInputTypes;i++) {
-                if ((i != from->type)) {//parse all other types
+        for (int i=0; i < kMaxInputTypes; i++) {
+                if ((i != from.type)) {//parse all other types
                         //start from the beginning and parse all items of this
                         //type, see if each is started, if so reset it
                         //
@@ -356,23 +354,7 @@ OneGenericInputTransducer_st::Append(const TRANSDUCER_S__TYPE * a_Dat)
 {
         //a COPY OF the CONTENTS of passed param IS NOT MADE
         __tIF(NULL==a_Dat);
-/*        int input_type=a_Dat->type;
 
-         LAME_PROGRAMMER_IF((input_type<0) ||(input_type>=kMaxInputTypes),
-                        return kFuncFailed);
-        PARANOID_IF(NULL==AllLowLevelInputs[input_type],
-                        return kFuncFailed);
-        TRANSDUCER_S__TYPE *tmp=NULL;
-        //a thing gets allocated here which must and will be disposed upon
-        //destruction of entire transducer
-        ERR_IF(kFuncOK!=AllLowLevelInputs[input_type]->Alloc(tmp),
-                        return kFuncFailed);
-        PARANOID_IF(NULL==tmp,
-                        return kFuncFailed);
-        ERR_IF(kFuncOK!=AllLowLevelInputs[input_type]->CopyContents(
-                                (const TRANSDUCER_S__TYPE*)a_Dat->data,tmp),
-                        return kFuncFailed);
-        */
         if (Head==NULL) {
                 //first time
                 Head=new GenericSingleLinkedList_st<TRANSDUCER_S__TYPE>(a_Dat);
@@ -412,19 +394,20 @@ OneGenericInputTransducer_st::Reset()
         _OK;
 }
 /*****************************************************************************/
-EFunctionReturnTypes_t
-OneGenericInputTransducer_st::EatThis(const UnifiedInput_st *what,
+function
+OneGenericInputTransducer_st :: EatThis(
+                const UnifiedInput_st & what,
                 bool reset_when_failed)
 {
         //here we compare *what with WhosNext, if they somehow match
         //then we move along, if that was Tail then we Reset after
         //pushing this GenericInput to the buffer
         int result;
-        __tIF((what->type >=kMaxInputTypes) || (what->type<0));
+        __tIF((what.type >=kMaxInputTypes) || (what.type<0));
         __tIF(WhosNext==NULL);
         __tIF(WhosNext->Data==NULL);
-        __tIFnok(AllLowLevelInputs[what->type]->Compare(
-                                what->data,
+        __tIFnok(AllLowLevelInputs[what.type]->Compare(
+                                what.data,
                                 WhosNext->Data,
                                 result)
                 );
@@ -438,7 +421,7 @@ OneGenericInputTransducer_st::EatThis(const UnifiedInput_st *what,
 #ifdef ENABLE_TIMED_INPUT
                         GLOBAL_TIMER_TYPE td;
                         GLOBAL_TIMER_TYPE timenow;
-                        __tIFnok(AllLowLevelInputs[what->type]->GetMeTime(what->data,&timenow) );
+                        __tIFnok(AllLowLevelInputs[what.type]->GetMeTime(what.data,&timenow) );
                         if (gLastGenericInputTime<=timenow) {
                                 td=timenow -gLastGenericInputTime;
                         } else {
@@ -463,8 +446,8 @@ OneGenericInputTransducer_st::EatThis(const UnifiedInput_st *what,
         _OK;
 }
 /*****************************************************************************/
-EFunctionReturnTypes_t
-OneGenericInputTransducer_st::PushToBuffer()
+function
+OneGenericInputTransducer_st :: PushToBuffer()
 {
         __tIFnok(GenericInputBuffer.CopyIntoBuffer(&Result));
         _OK;

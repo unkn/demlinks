@@ -328,15 +328,16 @@ kAI_Undefined_()
 extern int global_select;
 #define GLOBALMAX 5
 
-EFunctionReturnTypes_t
+function
 kAI_NextSetOfValues_()
 {
-        global_select=(global_select+1)% GLOBALMAX;
-        cams[current_cam]->SetNeedRefresh();
-        return kFuncOK;
+        //global_select=(global_select+1)% GLOBALMAX;
+        SET_NEXT_ROTATION(global_select,GLOBALMAX);
+        __tIFnok( cams[current_cam]->SetNeedRefresh() );
+        _OK;
 }
 /*****************************************************************************/
-EFunctionReturnTypes_t
+function
 InitFunctions()
 {
         for (int i=0;i<kMaxAIs;i++) {
@@ -371,11 +372,10 @@ InitFunctions()
         //last:
         for (int i=0;i<kMaxAIs;i++) {
                 //forgot to init some new action?
-                ERR_IF(Functions[i]==NULL,
-                                return kFuncFailed);
+                __tIF(Functions[i]==NULL);
         }//for
 
-        return kFuncOK;
+        _OK;
 }
 
 /*****************************************************************************/

@@ -4,7 +4,16 @@ Legend:
 	LU means last update on ... date
 
 =demlinks-0.0.22
-LU: 05 August 2006
+LU: 06 August 2006
+$ and yes the text indeed doesn't keep the same square as when using only q/e
+keys
+* pressing undefined keys now refreshes the camera's screen to show the
+keyboard buffer in action(also remember there's the "`" key to press twice)
+$ lemme restate that performance(aka optimization/speed) is highly irrelevant
+considering (one of) the main goal(s): accesibility (&flexibility) that is why
+things are how they are in the code part.
+* standardizing most functions to return type of 'function' instead of other
+types like bool or int
 $ reduce CPU consumption even further by making the main loop wait for a
 signal which maybe a refresh signal or a timer signal
 * fixed some stuff with the notification tracking system such as made auto

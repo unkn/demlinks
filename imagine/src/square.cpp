@@ -42,7 +42,7 @@
 #define GRID_SIZEX    MAX_KEYS_BUFFERED
 
 //temp
-int global_select=3;
+int global_select=1;
 
 /* render a tile of the grid which is centered on x and z(world-space)
    with center vertex x,y,z
@@ -318,7 +318,11 @@ case 1: {
 #endif
 
                 int initial=0;
-                easy2(ofs==7,"COUNT%d",AllLowLevelInputs[kKeyboardInputType]->HowManyInBuffer());
+                {//block
+                        int howMany;
+                        __tIFnok( AllLowLevelInputs[kKeyboardInputType]->Query4HowManyInBuffer(howMany) );
+                        easy2(ofs==7,"COUNT%d",howMany);
+                }//block
 
                 easy2((ofs % GRID_SIZEY) == gKeyBufHead,
                         "KHEAD%d",gKeyBufHead);
@@ -443,8 +447,11 @@ case 3: {
 
                 initial+=1;
                 now=(initial-1)*GRID_SIZEX+1;
-                easy3("ActionsInputBuffer.IsEmpty()==%d",
-                        ActionsInputBuffer.IsEmpty());
+                {//block
+                        bool empty;
+                        __tIFnok( ActionsInputBuffer.Query4Empty(empty) );
+                        easy3("ActionsInputBuffer.IsEmpty()==%d", empty);
+                }//block
 /*                easy3("Size of ActionsInputBuffer:%d",
                                 ActionsInputBuffer.GetSize());*/
                 now=(initial-1)*GRID_SIZEX-1;

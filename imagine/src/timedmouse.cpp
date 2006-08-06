@@ -118,12 +118,13 @@ MMouseInputInterface::GetMeTime(void * const&from, GLOBAL_TIMER_TYPE *dest)
 }
 #endif
 /*****************************************************************************/
-EFunctionReturnTypes_t
+function
 MMouseInputInterface::MoveFirstFromBuffer(void *into)
 {
-        __tIF(HowManyInBuffer() < 0);
+        int howMany;
+        __tIFnok(Query4HowManyInBuffer(howMany));
 
-        if (HowManyInBuffer()<=0) {
+        if (howMany <= 0) {
                 _F;
         } else {//aka non empty buffer
                 __tIF(into==NULL);
@@ -132,7 +133,7 @@ MMouseInputInterface::MoveFirstFromBuffer(void *into)
                 //cannot modify Head of first item from buffer
                 __tIF(0 != mutex_lock((mutex_t *)&gMouseLock));
 
-                *(MOUSE_TYPE *)into=gMouseBuf[gMouseBufHead];
+                __( *(MOUSE_TYPE *)into=gMouseBuf[gMouseBufHead] );
 
                 SET_NEXT_ROTATION(gMouseBufHead, MAX_MOUSE_EVENTS_BUFFERED);//remove it
 
@@ -157,9 +158,6 @@ void MouseIntHandler(int flags)
                 get_mouse_mickeys(&mikx,&miky);
                 //prevent dups
                 if (mutex_trylock((mutex_t *)&gMouseLock) == 0) {//==0 => we just locked it!
-                //if (gMouseLock == gMUnLock) {
-                        //not locked yet, if locked gMouseBufCount may change since the condition gMouseBufCount > 0 and until lock check(when lock check was last in this series of ifs)
-                        //gMouseLock=gMLock;//prevent MoveFirstFromBuffer()
                         if ((gMouseBufCount > 0/*at least last element is present*/)&&(mz==gMouseBuf[gMouseBufTail].MouseZ)&&(flags==gMouseBuf[gMouseBufTail].Flags)) {
                                 //so we do need lock in case Head==Tail and we're about to both remove and increment this element from program and from this int.handler
                                 //just compute the difference
@@ -265,8 +263,8 @@ if (fMouseFlags & kRealMouse) {
         _OK;
 }
 
-int inline
-MMouseInputInterface::HowManyInBuffer()
+function
+MMouseInputInterface::Query4HowManyInBuffer(int &m_HowMany)
 {
         /*if (gMouseBufTail >= gMouseBufHead)
                 return gMouseBufTail-gMouseBufHead;
@@ -275,13 +273,18 @@ MMouseInputInterface::HowManyInBuffer()
         */
         __tIF(gMouseBufCount < 0);
         __tIF(gMouseBufCount > MAX_MOUSE_EVENTS_BUFFERED);
-        return gMouseBufCount;
+        __( m_HowMany = gMouseBufCount );
+        _OK;
 }
 
-bool inline
-MMouseInputInterface::IsBufferFull()
+function
+MMouseInputInterface::Query4BufferFull(bool &m_Bool)
 {
-        return (HowManyInBuffer() == MAX_MOUSE_EVENTS_BUFFERED);
+        int howMany;
+        __tIFnok(Query4HowManyInBuffer(howMany));
+        __tIF(howMany > MAX_MOUSE_EVENTS_BUFFERED);
+        __( m_Bool= (howMany == MAX_MOUSE_EVENTS_BUFFERED) );
+        _OK;
 }
 
 function
@@ -293,16 +296,6 @@ MMouseInputInterface::Alloc(void *&dest)//alloc mem and set dest ptr to it
         _OK;
 }
 
-
-function
-MMouseInputInterface::CopyContents(const void *&src,void *&dest)
-{
-        __tIF(src==NULL);
-        __tIF(dest==NULL);
-        *(MOUSE_TYPE *)dest=*(MOUSE_TYPE *)src;
-
-        _OK;
-}
 
 
 function
@@ -317,11 +310,12 @@ MMouseInputInterface::DeAlloc(void *&dest)//freemem
 function
 MMouseInputInterface::Compare(void *what, void *withwhat, int &result)
 {//'what' is a ptr to MOUSE_TYPE (structure)
+        __tIF(NULL==what);
+        __tIF(NULL==withwhat);
         if ( ((MOUSE_TYPE *)what)->Flags == ((MOUSE_TYPE *)withwhat)->Flags){
                 result=0;//equal
         }//fi
         else result=-1;//less than equal
-
 
         _OK;
 }

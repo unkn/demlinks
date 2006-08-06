@@ -95,50 +95,36 @@ DeInitInput()
 /*****************************************************************************/
 /*****************************************************************************/
 //issue this if any input is available
-EFunctionReturnTypes_t
-TransformToGenericInputs(const INPUT_TYPE *from)
+function
+TransformToGenericInputs(const INPUT_TYPE &from)
 {//get all inputs of group from buffer, and pass them to <genericinput> handler
 
-        __tIF(from==NULL);
-        __tIF((from->type < 0) || (from->type >= kMaxInputTypes));
+        __tIF((from.type < 0) || (from.type >= kMaxInputTypes));
         //FIXME: shame we've to alloc and free a ptr on each entrace in this
         //function
-        void *anydatastruc=NULL;
-        __tIFnok(
-                AllLowLevelInputs[from->type]->Alloc(anydatastruc));
-        __tIF(anydatastruc==NULL);
+        void *anydatastruc=NULL;//either key or mouse types
+        __tIFnok( AllLowLevelInputs[from.type]->Alloc(anydatastruc) );
+        __tIF(NULL == anydatastruc);
+        //we allocate it here, so we won't have to alloc/dealloc after each input got, inside the 'while'
 #define THROW_HOOK \
-        __tIFnok(AllLowLevelInputs[from->type]->DeAlloc(anydatastruc));
+        __tIFnok(AllLowLevelInputs[from.type]->DeAlloc(anydatastruc));
 
         int i=1;
-        while (i <= from->how_many) {
+        while (i <= from.how_many) {
                 //get one input
 
-                _htIFnok(AllLowLevelInputs[from->type]->MoveFirstFromBuffer(anydatastruc));
-                /*
-                 * error trapping:
-                EFunctionReturnTypes_t err;
-                int hm=from->how_many;
-                int bufbefore=AllLowLevelInputs[from->type]->HowManyInBuffer();
-
-                _(err=AllLowLevelInputs[from->type]->MoveFirstFromBuffer(anydatastruc));
-                if (kFuncOK != err) {
-                        allegro_message("i:%d hm:%d from->how_many:%d, bufbefore:%d bufafter:%d",i, hm, from->how_many, bufbefore, AllLowLevelInputs[from->type]->HowManyInBuffer());
-                        _t(unhandled);
-                }
-                */
-
+                _htIFnok(AllLowLevelInputs[from.type]->MoveFirstFromBuffer(anydatastruc));
 
                 //now we've to transform `anydatastruc` into generic input
                 //and also push it into generic input's buffer(if!)
                 UnifiedInput_st passed;
-                passed.type=from->type;
+                passed.type=from.type;
                 passed.data=anydatastruc;
                 //handle the passed input(key,mouse,serial) such as it might
                 //be a part of or complete generic input
 
 //free before returning error
-                _htIFnok(GenericInputHandler(&passed));
+                _htIFnok(GenericInputHandler(passed));
                 i++;
         }//while
         //freemem
@@ -154,65 +140,116 @@ TransformToGenericInputs(const INPUT_TYPE *from)
 GLOBAL_TIMER_TYPE gCurrent_ExecuteActionTimer_Time=0;
 */
 
-EFunctionReturnTypes_t
+function
 QueueAllActions()
 {
-        while (!ActionsInputBuffer.IsEmpty()) {//not empty!
-                ACTIONSINPUT_TYPE got;
+        bool once=false;
+        while (true) {
+                bool empty;
+                __tIFnok( ActionsInputBuffer.Query4Empty(empty));
+                if (empty) {
+                        if (once) {
+                                _OK;
+                        } else {
+                                _F;
+                        }
+                }
 
+                if (!once) {
+                        once=true;
+                }
+
+                ACTIONSINPUT_TYPE got;
                 //remove actioninput from buffer
-                __tIFnok(ActionsInputBuffer.MoveLastFromBuffer(&got));
+                __tIFnok(ActionsInputBuffer.MoveLastFromBuffer(got));
                 //queue it, don't execute it now, later.
-                __tIFnok(QueueAction(&got));
+                __tIFnok(QueueAction(got));
 
         }//while
 
-        _OK;
+        _FA(cannot reach this);
 }
 
 /*****************************************************************************/
-EFunctionReturnTypes_t
+function
 MakeSureWeHaveActions()
 {//transform generic inputs into actions
         //pops genericinputs from their buffer and transforming them eventually puts actionsinputs in actionsinput buffer
-        while (!GenericInputBuffer.IsEmpty()) {
+        bool once=false;
+        while (true) {
+                bool empty;
+                __tIFnok( GenericInputBuffer.Query4Empty(empty) );
+                if (empty) {
+                        if (once) {
+                                _OK;
+                        } else {
+                                _F;
+                        }
+                }
+                if (!once) {
+                        once=true;
+                }
                 GENERICINPUT_TYPE got;
-                ERR_IF(kFuncOK!=GenericInputBuffer.MoveLastFromBuffer(&got),
-                                return kFuncFailed);
+                __tIFnok(GenericInputBuffer.MoveLastFromBuffer(got));
                 //this will perhaps generate items in ActionBuffer
-                ERR_IF(kFuncOK!=TransformToActions(&got),
-                                return kFuncFailed);
+                __tIFnok(TransformToActions(&got));
         }//fi
-        return kFuncOK;
+
+        _FA(cannot reach this);
 }
 /*****************************************************************************/
 function
 MakeSureWeHaveGenericInput()
 {//transform multiple input types into generic inputs
-        while (HowManyDifferentInputsInBuffer() > 0) {
-                //FIXME:temporary, remove it:
-                //cams[0].SetNeedRefresh();
+        int howMany;
+        bool once=false;
+        while (true) {
+                __tIFnok( Query4HowManyDifferentInputsInBuffer(howMany) );
+                if (howMany <= 0) {
+                        if (once) {
+                                _OK;
+                        } else {
+                                _F;
+                        }
+                }
+
+                if (!once) {
+                        once=true;
+                }
 
                 INPUT_TYPE into;
                 //one input group at a time; ie. all key OR all mouse
-                        __doIFok (MoveFirstGroupFromBuffer(&into)) {
-                                __tIFnok(TransformToGenericInputs(&into));
-                        }__kofido
+                __doIFok (MoveFirstGroupFromBuffer(into)) {
+                        __tIFnok(TransformToGenericInputs(into));
+                }__kofido
         }//while
 
-        _OK;
+        _FA(cannot reach this);
 }
 /*****************************************************************************/
 function
 MangleInputs()
 //transform INPUTs to ACTIONs but doesn't execute those actions
 {
-        __tIFnok( MakeSureWeHaveGenericInput());
-        __tIFnok( MakeSureWeHaveActions());
+        function err;
+        __( err=MakeSureWeHaveGenericInput() );
+        if (kFuncOK == err) {//if we had any inputs this means we prolly put them into the genericinput buffer thus :
+                __( err=MakeSureWeHaveActions());//genericinput TO actionsinput buffer
+                if (kFuncOK == err) {
+                        __(err=QueueAllActions());
+                        if (kFuncOK==err) {
+                                _OK;
+                        } else {
+                                _fret kFuncNoActions;
+                        }
+                } else {
+                        _fret kFuncNoGenericInputs;
+                }
+        } else {
+                _fret kFuncNoLowLevelInputs;
+        }
 
-        __tIFnok(QueueAllActions());
-
-        _OK;
+        _FA(cannot reach this);
 }
 
 

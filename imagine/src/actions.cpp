@@ -139,16 +139,16 @@ ExecuteAllQueuedActions()
 }
 
 function
-QueueAction(const ACTIONSINPUT_TYPE *which)
+QueueAction(const ACTIONSINPUT_TYPE & a_Which) //copy contents
 {
-        __tIF(which==NULL);
 
         //add this action into a buffer that holds actions to be later executed
         //the toggle(one-time) actions get removed from that buffer, continous ones don't; those actions that disable the continous ones get executed and removed and remove those which they disable
         //append:
-        EnumAllAI_t *newone=new EnumAllAI_t;
+        ACTIONSINPUT_TYPE *newone;
+        __( newone=new ACTIONSINPUT_TYPE );
         __tIF(newone==NULL);
-        *newone=*which;//a value ~ the index number
+        *newone=a_Which;//a value ~ the index number
         __tIFnok(gQueuedActionsForExecution_DLL.Append(newone));
         _OK;
 }

@@ -97,8 +97,8 @@ public:
         virtual function
         MoveFirstFromBuffer(void *into);
 
-        virtual inline int
-        HowManyInBuffer();
+        virtual function
+        Query4HowManyInBuffer(int &m_HowMany);
 
         virtual function
         Alloc(void *&dest);//alloc mem and set dest ptr to it
@@ -106,12 +106,9 @@ public:
         virtual function
         DeAlloc(void *&dest);//freemem
 
+
         virtual function
-        CopyContents(const void *&src,void *&dest);
-
-
-        virtual inline bool
-        IsBufferFull();
+        Query4BufferFull(bool &m_Bool);
 
         virtual function
         UnInstall();

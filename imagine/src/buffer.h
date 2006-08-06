@@ -48,19 +48,19 @@ public:
         TBuffer(int a_Size=DEFAULT_MAX_IN_BUF);
         ~TBuffer();
 
-        bool
-        IsEmpty();//buffer
+        function
+        Query4Empty(bool &m_Bool);
 
-        EFunctionReturnTypes_t
+        function
         ThrowLastFromBuffer();
 
-        EFunctionReturnTypes_t
-        MoveLastFromBuffer(_data_ *dest);
+        function
+        MoveLastFromBuffer(_data_ &m_Dest);
 
-        EFunctionReturnTypes_t
+        function
         PeekAtLastFromBuffer(_data_ *into);
 
-        EFunctionReturnTypes_t
+        function
         CopyIntoBuffer(_data_ *from);
 
 }; //END of class
@@ -78,36 +78,24 @@ TBuffer<_data_>::TBuffer(int a_Size)//constructor
 template <class _data_>
 TBuffer<_data_>::~TBuffer()//destructor
 {
-        delete [] Buffer;
+        __( delete [] Buffer );
 }
 /*****************************************************************************/
 template <class _data_>
-bool
-TBuffer<_data_>::IsEmpty()
+function
+TBuffer<_data_>::Query4Empty(bool &m_Bool)
 {
-        return (fHead==fTail);
+        m_Bool=(fHead==fTail);
+        _OK;
 }
 
 /*****************************************************************************/
+/*****************************************************************************/
 template <class _data_>
-EFunctionReturnTypes_t
+function
 TBuffer<_data_>::ThrowLastFromBuffer()
 {
         if (fTail != fHead) {
-                fHead=(fHead+1) % itsSize;
-                return kFuncOK;
-        }//fi
-        return kFuncFailed;
-}
-/*****************************************************************************/
-template <class _data_>
-EFunctionReturnTypes_t
-TBuffer<_data_>::MoveLastFromBuffer(_data_ *dest)
-{
-        __tIF(dest==NULL);
-        if (fTail != fHead) {
-                //aka non empty buffer
-                *dest=Buffer[fHead];
                 fHead=(fHead+1) % itsSize;
                 _OK;
         }//fi
@@ -115,7 +103,20 @@ TBuffer<_data_>::MoveLastFromBuffer(_data_ *dest)
 }
 /*****************************************************************************/
 template <class _data_>
-EFunctionReturnTypes_t
+function
+TBuffer<_data_>::MoveLastFromBuffer(_data_ &m_Dest)
+{
+        if (fTail != fHead) {
+                //aka non empty buffer
+                m_Dest=Buffer[fHead];
+                fHead=(fHead+1) % itsSize;
+                _OK;
+        }//fi
+        _F;
+}
+/*****************************************************************************/
+template <class _data_>
+function
 TBuffer<_data_>::PeekAtLastFromBuffer(_data_ *into)
 {
         __tIF(into==NULL);
@@ -128,7 +129,7 @@ TBuffer<_data_>::PeekAtLastFromBuffer(_data_ *into)
 }
 /*****************************************************************************/
 template <class _data_>
-EFunctionReturnTypes_t
+function
 TBuffer<_data_>::CopyIntoBuffer(_data_ *from)
 {
 //a COPY OF CONTENTS of passed parameter is MADE

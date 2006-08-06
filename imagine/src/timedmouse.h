@@ -89,8 +89,8 @@ public:
         virtual EFunctionReturnTypes_t
         MoveFirstFromBuffer(void *into);
 
-        virtual int inline
-        HowManyInBuffer();
+        virtual function
+        Query4HowManyInBuffer(int &m_HowMany);
 
         virtual function
         Alloc(void *&dest);//alloc mem and set dest ptr to it
@@ -99,11 +99,7 @@ public:
         DeAlloc(void *&dest);//freemem
 
         virtual function
-        CopyContents(const void *&src,void *&dest);
-
-
-        virtual bool inline
-        IsBufferFull();
+        Query4BufferFull(bool &m_Bool);
 
         virtual function
         UnInstall();

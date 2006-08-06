@@ -110,39 +110,46 @@ WrapAround_Aware_Counter(int a_Head, int a_Tail, int a_WrapsAroundAt_MinusOne)
 */
 /*****************************************************************************/
 function
-MKeyboardInputInterface::MoveFirstFromBuffer(void *into)
+MKeyboardInputInterface :: MoveFirstFromBuffer(void *into)
 {
 
-        __tIF(gKeyBufCount<0);
-        //__tIF((gKeyBufCount == 0) && (gKeyBufTail != gKeyBufHead));//FIXME:safety3
-        if (HowManyInBuffer() > 0){//aka non empty buffer
-                __tIF(into==NULL);
-                *(KEY_TYPE *)into=gKeyBuf[gKeyBufHead];
+        int howMany;
+        __tIFnok(Query4HowManyInBuffer(howMany));
+
+        if (howMany <= 0) {
+                _F;
+        } else {//aka non empty buffer
+                __tIF(NULL == into);
+
+                __( *(KEY_TYPE *)into=gKeyBuf[gKeyBufHead] );//copy contents
 
                 SET_NEXT_ROTATION(gKeyBufHead,MAX_KEYS_BUFFERED);//remove it
                 gKeyBufCount--;
-                __tIF(gKeyBufCount<0);
 
                 _OK;
         }
-        _F;
 }
 /*****************************************************************************/
 
-inline int
-MKeyboardInputInterface::HowManyInBuffer()
+function
+MKeyboardInputInterface::Query4HowManyInBuffer(int &m_HowMany)
 {
         __tIF(gKeyBufCount<0);
         __tIF(gKeyBufCount>MAX_KEYS_BUFFERED);
-        return gKeyBufCount;
+        __( m_HowMany = gKeyBufCount);
+        _OK;
 }
 
 /*****************************************************************************/
 
-inline bool
-MKeyboardInputInterface::IsBufferFull()
+function
+MKeyboardInputInterface::Query4BufferFull(bool &m_Bool)
 {
-        return (gKeyBufCount==MAX_KEYS_BUFFERED);//no more leak
+        int howMany;
+        __tIFnok( Query4HowManyInBuffer(howMany) );
+        __tIF(howMany > MAX_KEYS_BUFFERED);
+        m_Bool = (howMany == MAX_KEYS_BUFFERED);
+        _OK;
 }
 
 /*****************************************************************************/
@@ -241,8 +248,8 @@ void LowLevelKeyboardInterruptHandler(int a_ScanCode)
 function
 MKeyboardInputInterface::Alloc(void *&dest)
 {
-        dest=NULL;
-        dest=new KEY_TYPE;
+        dest=NULL;//being too safe here
+        __( dest=new KEY_TYPE );
         __tIF(dest==NULL);
         _OK;
 }//alloc mem and set dest ptr to it
@@ -258,19 +265,6 @@ MKeyboardInputInterface::GetMeTime(void * const&from, GLOBAL_TIMER_TYPE *dest)
 }
 #endif
 
-function
-MKeyboardInputInterface::CopyContents(const void *&src,void *&dest)
-{
-        __tIF(src==NULL);
-        __tIF(dest==NULL);
-        *(KEY_TYPE *)dest=*(KEY_TYPE *)src;
-#ifdef ENABLE_TIMED_INPUT
-        __tIF(((KEY_TYPE *)src)->TimeDiff != ((KEY_TYPE *)dest)->TimeDiff);
-        __tIF(((KEY_TYPE *)src)->Time!= ((KEY_TYPE *)dest)->Time);
-#endif
-        __tIF(((KEY_TYPE *)src)->ScanCode != ((KEY_TYPE *)dest)->ScanCode);
-        _OK;
-}
 
 
 function
@@ -374,6 +368,8 @@ function
 MKeyboardInputInterface::Compare(void *what, void *withwhat, int &result)
 {//'what' is a pointer to KEY_TYPE
         //FIXME:
+        __tIF(NULL==what);
+        __tIF(NULL==withwhat);
         if ( ((KEY_TYPE *)what)->ScanCode == ((KEY_TYPE *)withwhat)->ScanCode){
                 result=0;//equal
         }//fi
