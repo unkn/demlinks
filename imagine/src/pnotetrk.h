@@ -326,6 +326,28 @@ void ShowAllNotifications();
 
 #define __fi }
 /***************************************/
+/* failed this:#define __while(a_IFExpr) {    \
+        bool __bool_whileexpr;     \
+        _TRY( __bool_whileexpr= (a_IFExpr), throw);\
+        while ( __bool_whileexpr ) {
+
+#define __elihw \
+        } _TRY( __bool_whileexpr= (a_IFExpr), throw);*eval again before while test/\
+        }
+*/
+/***************************************/
+//do block if kFuncOK, otherwise throw!
+#define __doIFok(a_Func) { \
+        EFunctionReturnTypes_t __EFunctionReturnTypes_t__FuncReturn;\
+        _TRY( __EFunctionReturnTypes_t__FuncReturn = (a_Func),  throw ) \
+        if (kFuncOK == __EFunctionReturnTypes_t__FuncReturn)
+
+#define __kofido \
+        else {\
+                __t(__doIFok( a_Func ) where a_Func!=kFuncOK);/*doesn't recurse here!*/\
+        } \
+} //endblock
+/***************************************/
 //careful with if (true) _reterr 0; will fail because lacking { and }
 // we also have if (true) _reterr; w/o params so we cannot include { and } inside this macro;
 // do this if (true) { _reterr 1; } but if u use _if u can ommit { and } (it has it's own)

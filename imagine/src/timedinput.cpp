@@ -66,6 +66,8 @@ INPUT_TYPE::operator=(const INPUT_TYPE & source)
 function
 MoveFirstGroupFromBuffer(INPUT_TYPE *into)
 {
+        //_F;
+        //__t(test);
         __tIF(HowManyDifferentInputsInBuffer() <0);
 
         if (HowManyDifferentInputsInBuffer() <=0) {//aka empty buffer

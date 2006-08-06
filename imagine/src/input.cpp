@@ -195,17 +195,9 @@ MakeSureWeHaveGenericInput()
 
                 INPUT_TYPE into;
                 //one input group at a time; ie. all key OR all mouse
-                        __if (kFuncOK == MoveFirstGroupFromBuffer(&into)) {
+                        __doIFok (MoveFirstGroupFromBuffer(&into)) {
                                 __tIFnok(TransformToGenericInputs(&into));
-                        } else {//until buffer is empty, or some error ie. gLock (this may cause some delay tho)
-                                __t(unhandled);
-                               /* if (err == kFuncLocked) {
-                                        break;//while
-                                } else {//assuming some fatal or unhandled error
-                                        allegro_message("%d",err);
-                                        __t(unhandled);
-                                }*/
-                        }__fi
+                        }__kofido
         }//while
 
         _OK;
