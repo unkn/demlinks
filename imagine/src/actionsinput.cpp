@@ -152,7 +152,7 @@ InitActionsInput()
        __tIF(NULL==newtrans)                           \
         __VA_ARGS__;/*what generic inputs are necessary to cause _whatAction_*/\
         {                                               \
-                EnumAllAI_t tmpi2=_whatAction_;                \
+                ACTIONSINPUT_TYPE tmpi2=_whatAction_;                \
                 newtrans->Result=tmpi2;     \
         }                                               \
         AI_##_stuff_##OrderSLL.Append(newtrans);

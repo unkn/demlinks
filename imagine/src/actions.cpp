@@ -33,13 +33,13 @@
 ACTIONS_TYPE (*Actions)/*[kMaxAIs]*/=NULL;//a pointer to an array of ACTIONS_TYPE
 EFunctionReturnTypes_t (*Functions[kMaxAIs])(void);//an array of pointers_to_functions
 
-#define QUEUE_TYPE GenericDoubleLinkedList_st<EnumAllAI_t>
+#define QUEUE_TYPE GenericDoubleLinkedList_st<ACTIONSINPUT_TYPE>
 QUEUE_TYPE gQueuedActionsForExecution_DLL;
 
 
 /*****************************************************************************/
 function
-ActionsClass::SetFunc(EnumAllAI_t a_WhichFunc)
+ActionsClass::SetFunc(ACTIONSINPUT_TYPE a_WhichFunc)
 {
         __tIF(!IsFuncWithinLimits(a_WhichFunc));
 
@@ -48,7 +48,7 @@ ActionsClass::SetFunc(EnumAllAI_t a_WhichFunc)
         _OK;
 }
 /*****************************************************************************/
-ActionsClass::ActionsClass(EnumAllAI_t a_WhichFunc)//constructor
+ActionsClass::ActionsClass(ACTIONSINPUT_TYPE a_WhichFunc)//constructor
         :
         fType(fContinousActionType),
         fRemove(kAI_Undefined)
@@ -62,7 +62,7 @@ ActionsClass::~ActionsClass()//destructor
 }
 /*****************************************************************************/
 bool
-ActionsClass::IsFuncWithinLimits(EnumAllAI_t thisone)
+ActionsClass::IsFuncWithinLimits(ACTIONSINPUT_TYPE thisone)
 {
         if ((thisone < kMaxAIs)&&(thisone >= kAI_Undefined)) {
                 if (NULL != Functions[thisone])
@@ -97,19 +97,20 @@ ExecuteAllQueuedActions()
         {//not empty?
                 //got actions to be executed, good:
                 //so parse all from first to last:
-                GenericDoubleLinkedElement_st<EnumAllAI_t> *parser=
+                GenericDoubleLinkedElement_st<ACTIONSINPUT_TYPE> *parser=
                         gQueuedActionsForExecution_DLL.Head;
                 while (parser!=NULL) {
                         __tIF(parser->Data==NULL);
                         //*parser->Data==0..kMaxAIs-1 aka which action is there
-                        const EnumAllAI_t which=*parser->Data;
+                        const ACTIONSINPUT_TYPE which=*parser->Data;
                         __tIF((which < 0) || (which >= kMaxAIs));
 
                         //execute that action
                         __tIFnok(Actions[which].Execute());
 
                         //prepare ourselves prior parser's eventual death
-                        GenericDoubleLinkedElement_st<EnumAllAI_t> *whosnext=parser->Next;
+                        GenericDoubleLinkedElement_st<ACTIONSINPUT_TYPE> *whosnext;
+                        __( whosnext=parser->Next );
 
                         __if (Actions[which].IsToggleType(/*&which*/)) {
                                 //we must remove fRemove action ONLY if previously started, not if queued for start ie. after us , as a next queue element
@@ -203,7 +204,7 @@ InitActions()
         __tIF(NULL==Actions);
 
         for (int i=1;i<kMaxAIs;i++) {
-                __tIFnok(Actions[i].SetFunc(EnumAllAI_t(i)));
+                __tIFnok(Actions[i].SetFunc(ACTIONSINPUT_TYPE(i)));
         }//for
 
         __tIFnok(InitActionTypes());

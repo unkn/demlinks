@@ -49,14 +49,14 @@ extern EFunctionReturnTypes_t (*Functions[kMaxAIs])(void);//lot of pointers to f
 /*********************/
 class ActionsClass {
 private:
-        EnumAllAI_t fWhichFunc;//0..kMaxAIs-1
+        ACTIONSINPUT_TYPE fWhichFunc;//0..kMaxAIs-1
        // bool fEnabled;
         EActionTypes_t fType;
 public:
-        EnumAllAI_t fRemove;//0..kMaxAIs-1
+        ACTIONSINPUT_TYPE fRemove;//0..kMaxAIs-1
 
         bool
-        IsToggleType() {//const EnumAllAI_t *who_are_we) {
+        IsToggleType() {//const ACTIONSINPUT_TYPE *who_are_we) {
                 /*TRAP(LAME_PROGRAMMER_IF(who_are_we==NULL,));
                 //a toggle-type means it gets itself executed only once and also kills fRemove if ever was activated as a continous action
                 if (fRemove==kAI_Undefined) {//means we must remove ourselves
@@ -65,20 +65,20 @@ public:
         return (fType==fToggleActionType)&&(fRemove>0)&&(fRemove<kMaxAIs);
         };
         
-        ActionsClass(EnumAllAI_t a_WhichFunc=kAI_Undefined);
+        ActionsClass(ACTIONSINPUT_TYPE a_WhichFunc=kAI_Undefined);
         ~ActionsClass();
 
         EFunctionReturnTypes_t
-        SetToggleActionType(EnumAllAI_t whoami) {
+        SetToggleActionType(ACTIONSINPUT_TYPE whoami) {
                 fType=fToggleActionType;
                 fRemove=whoami;
                 return kFuncOK;
         };
         EFunctionReturnTypes_t
-        SetFunc(EnumAllAI_t a_WhichFunc);
+        SetFunc(ACTIONSINPUT_TYPE a_WhichFunc);
 
         bool
-        IsFuncWithinLimits(EnumAllAI_t thisone);
+        IsFuncWithinLimits(ACTIONSINPUT_TYPE thisone);
 
         /*bool
         IsEnabled() { return fEnabled;};
