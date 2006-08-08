@@ -61,7 +61,8 @@ int main(void)
         //here, transform all inputs into actions
         function state;
         __(state=MangleInputs());//if returns kFuncOK then there are actions in queue to be executed!
-        if (kFuncNoGenericInputs==state) {//this means there were low level inputs but were invalid to generate genericinputs
+        if ((kFuncNoGenericInputs==state)
+                ||(kFuncNoActions==state)){//this means there were low level inputs but were invalid to generate genericinputs; OR there were both but there were no actions executed(test this by pressing and releasing the grave "`" key)
                 __tIFnok( cams[current_cam]->SetNeedRefresh() );//maybe to refresh on screen the keyboard input buffer
         }
 

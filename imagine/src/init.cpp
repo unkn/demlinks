@@ -57,7 +57,7 @@ Init()
 
         __tIFnok(InitFlags());
 
-   if (set_gfx_mode(GFX_AUTODETECT, 800, 600, 0, 0) != 0) {
+   if (set_gfx_mode(GFX_AUTODETECT_WINDOWED, 800, 600, 0, 0) != 0) {
       if (set_gfx_mode(GFX_SAFE, 640, 480, 0, 0) != 0) {
         if (set_gfx_mode(GFX_SAFE, 320, 200, 0, 0) != 0) {
          set_gfx_mode(GFX_TEXT, 0, 0, 0, 0);

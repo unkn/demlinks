@@ -265,18 +265,17 @@ TPolishForm::polishToGraph()
                         }_fih
 
                         TOperator sign;
-                        _h(sign.SetId(curChar););
-                        _h( rRoot=makeOperand(left,sign,rRoot);
-                         );
+                        _h(sign.SetId(curChar) );
+                        _h( rRoot=makeOperand(left,sign,rRoot) );
                         _ret kPFNoError;
-                } else {//not operator
+                } _fihelse {//not operator
                         //because we're called recursive, we don't know if this is the first call, if it were then this should be an error if we're not at end of string
                         _hif ( err=getSimpleOperand()) {
                                 _hret err;
                         }_fih
                         _ret kPFNoError;//so far so good
                 }_fih
-        } else {
+        } _fihelse {
                 _hret kUnexpectedEOS;
         }_fih
 #undef THROW_HOOK
@@ -309,7 +308,7 @@ TPolishForm::MakeGraph(
         _h(length=fStr.length());//default
         _hif ((a_HigherBound < 0)||(a_HigherBound >= length)) {
                 fHigherBound=length-1;
-        } else {
+        } _fihelse {
                 fHigherBound=a_HigherBound;
         }_fih
 
@@ -362,10 +361,10 @@ if (a_Form == kArithmeticForm) {
 
                 _h( rRoot = rOperand );
                 _htIF(rRoot.IsNotDefined());
-                ETLinkErrors_t tlerr;
-                _hif ((tlerr=fLink->NewLink(kIDExpressions,rRoot.GetId(),fTxn))) {
-                        if (tlerr!=kTLAlreadyExists) {
-                                _h(TLShowError(tlerr));
+                function tlerr;
+                _hif ( kFuncOK != (tlerr=fLink->NewLink(kIDExpressions,rRoot.GetId(),fTxn))) {
+                        if (tlerr != kFuncAlreadyExists) {
+                                cout << tlerr<<endl;
                                 _hreterr kFailedCreatingRootExpressionInTree;
                         }
                         //ignoring if already exists
@@ -534,7 +533,7 @@ TPolishForm::getComposedOperand(
                         _htIF(l.IsNotDefined());//impossible
 
                 _h(m_Into=l );
-        } else {
+        } _fihelse {
                 //if not operator AND not ')' AND not '(' then assumed simple operand
                 _hif ( err= getSimpleOperand()) {
                         _hret err;
@@ -595,7 +594,7 @@ TPolishForm::getSimpleOperand()//into rRoot
 
                 rRoot.Set(kSimpleOperand, tmp);
                 //already at next or EOS
-        } else {//one char operands
+        } _fihelse {//one char operands
                 rRoot.Set(kSimpleOperand, curChar);
                 _h( pos4Next(); );
         }_fih
@@ -801,13 +800,13 @@ TPolishForm::getOperator(
                 _hif ( IsOperator(curChar) ) {//we got what we wanted here!
                         m_Into.SetId(curChar);
                         _h( pos4Next(); );
-                } else {//automul2
+                } _fihelse {//automul2
                         _hif (!IsOperandChar(curChar)) {//expecting operand
                                 _hret kUnallowedCharForOperand;//but got invalid char for it to be part of a valid operand
                         }_fih
                         _hif (fExprFlags & kSideOperandsImplyMul) {
                                 _h(m_Into.SetId(_OPERATOR_MUL););//assuming multiplication if ie. a+bc <=> a+b*c OR abc def <=> abc*def
-                        } else {
+                        } _fihelse {
                                 _hret kExpectedOperatorNotOperand;
                         }_fih
                 }_fih
@@ -831,7 +830,7 @@ TPolishForm::getUniqueStr()
                                 fUniq[i]=_LEADING_CHAR;
                                 carry=true;
                                 __tIF(i==0);//overflow
-                        } else {
+                        } __fielse {
                                 (fUniq[i])++;
                                 if (carry)
                                         carry=false;

@@ -36,20 +36,8 @@
 using namespace std;
 
 /****************************/
-const char * TLErrorStrings[kMaxTLinkErrors]={
-                "All OK."
-                ,"Already exists"
-                ,"Not found"
-};
 /****************************/
 /*****************************************************************/
-void
-TLShowError(const ETLinkErrors_t a_Err)
-{
-        __tIF( a_Err < 0);
-        __tIF( a_Err >= kMaxTLinkErrors);
-        cout << TLErrorStrings[a_Err]<<endl;
-}
 /*****************************************************************/
 /********************************************************/
 
@@ -82,7 +70,7 @@ TLShowError(const ETLinkErrors_t a_Err)
 
 
 /****************************/
-ETLinkErrors_t
+function
 TLink::findAndChange(
                 Db *a_DBWhich,
                 DbTxn *a_ParentTxn,
@@ -90,11 +78,15 @@ TLink::findAndChange(
                 Dbt *a_Value,
                 Dbt *a_NewValue)//we fail(not throw) if newval already exists
 {
+        __tIF(NULL == a_Key);
+        __tIF(NULL == a_Value);
+        __tIF(NULL == a_NewValue);
         __tIF(NULL==a_DBWhich);
 
 
         DbTxn *thisTxn;
-        __(NewTransaction(a_ParentTxn,&thisTxn, DB_TXN_NOSYNC););
+        __tIFnok(NewTransaction(a_ParentTxn,&thisTxn, DB_TXN_NOSYNC));
+
 #define THROW_HOOK \
         ABORT_HOOK
 
@@ -103,11 +95,11 @@ TLink::findAndChange(
 
 
 
-        _h( a_DBWhich->cursor(thisTxn,&cursor1, 0) );
+        _htIF( 0 != a_DBWhich->cursor(thisTxn,&cursor1, 0) );
 
 #undef THROW_HOOK
 #define THROW_HOOK \
-                cursor1->close();/*done prior to Abort()*/\
+                __( cursor1->close() );/*done prior to Abort()*/\
                 ABORT_HOOK;
 #define ERR_HOOK \
         THROW_HOOK
@@ -115,7 +107,7 @@ TLink::findAndChange(
 
         //a_Key+a_NewValue must not already exist!
         _hif( DB_NOTFOUND != cursor1->get( a_Key, a_NewValue, DB_GET_BOTH|DB_RMW) ) {
-                _hreterr kTLAlreadyExists;//doesn't throw if already exists but instead it reports it
+                _hreterr kFuncAlreadyExists;//doesn't throw if already exists but instead it reports it
         }_fih
         //find current
         _htIF(0!=cursor1->get( a_Key, a_Value, DB_GET_BOTH|DB_RMW));
@@ -129,42 +121,45 @@ TLink::findAndChange(
 
         _h(cursor1->close());
 
-#undef THROW_HOOK
 
-        __( Commit(&thisTxn); );
-        _ret kTLNoError;
+        __tIFnok( Commit(&thisTxn) );
+
+        _OK;
+#undef THROW_HOOK
 #undef ERR_HOOK
 }
 /*************************/
 //performes unsynced delete from one of the databases (unsynced means the other db is left inconsistent ie. A->B in primary, and B->A in secondary, delFrom deletes one but leaves untouched the other so you're left with either A->B or B->A thus inconsistent)
-void
+function
 TLink::delFrom(
                 Db *a_DBInto,
-                DbTxn *a_ParentTxn,
+                DbTxn *a_ParentTxn,//can be NULL
                 Dbt *a_Key,
                 Dbt *a_Value
                 )
 {
 
+        __tIF(NULL == a_Key);
+        __tIF(NULL == a_Value);
         __tIF(NULL==a_DBInto);
 
 
         DbTxn *thisTxn;
-        __(NewTransaction(a_ParentTxn,&thisTxn, DB_TXN_NOSYNC););
+        __tIFnok(NewTransaction(a_ParentTxn,&thisTxn, DB_TXN_NOSYNC));
 
 #define THROW_HOOK \
         ABORT_HOOK
 
         Dbc *cursor1=NULL;
-        _h(a_DBInto->cursor(thisTxn,&cursor1, 0));
+        _htIF( 0 != a_DBInto->cursor(thisTxn,&cursor1, 0) );
 
 #undef THROW_HOOK
 #define THROW_HOOK \
-                cursor1->close();/*done prior to Abort()*/\
+                __( cursor1->close() );/*done prior to Abort()*/\
                 ABORT_HOOK
 
         //position on the item
-        _htIF(0!=cursor1->get(a_Key, a_Value, DB_GET_BOTH|DB_RMW) );
+        _htIF(0 != cursor1->get(a_Key, a_Value, DB_GET_BOTH|DB_RMW) );
 
         //delete current item
         _htIF( 0 != cursor1->del(0) );
@@ -175,14 +170,15 @@ TLink::delFrom(
 
         _h(cursor1->close());
 
+
+        __tIFnok( Commit(&thisTxn) );
+
+        _OK;
 #undef THROW_HOOK
-
-        __( Commit(&thisTxn); );
-
 }
 
 /*************************/
-ETLinkErrors_t
+function
 TLink::putInto(
                 Db *a_DBInto,
                 DbTxn *a_ParentTxn,
@@ -190,17 +186,19 @@ TLink::putInto(
                 Dbt *a_Value)
 {
 
+        __tIF(NULL == a_Key);
+        __tIF(NULL == a_Value);
         __tIF(NULL==a_DBInto);
 
         DbTxn *thisTxn;
-        __(NewTransaction(a_ParentTxn,&thisTxn, DB_TXN_NOSYNC););
+        __tIFnok(NewTransaction(a_ParentTxn,&thisTxn, DB_TXN_NOSYNC));
 
 #define THROW_HOOK \
         ABORT_HOOK;
 
 //no DUPS! fail(not throw!) if already exists
         Dbc *cursor1=NULL;
-        _h(a_DBInto->cursor(thisTxn,&cursor1, 0));
+        _htIF( 0 != a_DBInto->cursor(thisTxn,&cursor1, 0));
 
 #undef THROW_HOOK
 #define THROW_HOOK \
@@ -210,7 +208,7 @@ TLink::putInto(
         THROW_HOOK
 
         _hif (0==cursor1->get(a_Key, a_Value, DB_GET_BOTH|DB_RMW)) {
-                _hreterr kTLAlreadyExists;
+                _hreterr kFuncAlreadyExists;
         }_fih
 
 #undef THROW_HOOK
@@ -223,11 +221,11 @@ TLink::putInto(
         //if not found, then put it
         _htIF(0 != a_DBInto->put(thisTxn, a_Key, a_Value, 0) );
 
+
+        __tIFnok( Commit(&thisTxn) );
+
+        _OK;
 #undef THROW_HOOK
-
-        __( Commit(&thisTxn); );
-        _ret kTLNoError;
-
 #undef ERR_HOOK
 }
 
@@ -235,7 +233,7 @@ TLink::putInto(
 /****************************/
 //kGroup:a->b =>a->c ~ pri:A-B, sec:B-A => pri: A-C, sec:C-A(new)(B-A deleted)
 //kSubGroup:b<-a => b<-c
-ETLinkErrors_t
+function
 TLink::ModLink(
                 const std::string a_GroupId,
                 const std::string a_SubGroupId,
@@ -249,7 +247,7 @@ TLink::ModLink(
         __tIF(a_NewLinkName.empty());
 
         DbTxn *thisTxn;
-        __(NewTransaction(a_ParentTxn,&thisTxn, DB_TXN_NOSYNC););
+        __tIFnok(NewTransaction(a_ParentTxn,&thisTxn, DB_TXN_NOSYNC));
 
 #define THROW_HOOK \
         ABORT_HOOK
@@ -260,13 +258,13 @@ TLink::ModLink(
                 Dbt newValue;
                 Dbt key;
 
-                key.set_data((void *)a_GroupId.c_str());
+                _h( key.set_data((void *)a_GroupId.c_str()) );
                 key.set_size((u_int32_t)a_GroupId.length() + 1);
 
-                value.set_data((void *)a_SubGroupId.c_str());
+                _h( value.set_data((void *)a_SubGroupId.c_str()) );
                 value.set_size((u_int32_t)a_SubGroupId.length() + 1);
 
-                newValue.set_data((void *)a_NewLinkName.c_str());
+                _h( newValue.set_data((void *)a_NewLinkName.c_str()) );
                 newValue.set_size((u_int32_t)a_NewLinkName.length() + 1);
 
 #ifdef SHOWKEYVAL
@@ -280,30 +278,27 @@ TLink::ModLink(
 #endif
 
         //modify in primary
-        ETLinkErrors_t err;
+        _hfIFnok( findAndChange(g_DBGroupToSubGroup,thisTxn,&key,&value,&newValue) );//from A->B changed to A->C(only if A->C didn't exist already)
 
-        _hif ( kTLNoError != (err = findAndChange(g_DBGroupToSubGroup,thisTxn,&key,&value,&newValue))) {
-                        _hreterr err;//keep error state thru calls
-        }_fih //from A->B changed to A->C(only if A->C didn't exist already)
-
-        _h(delFrom(g_DBSubGroupFromGroup,thisTxn,&value,&key));//del B<-A from SECondary
-        //must not return kTLAlreadyExists otherwise a bug is present somewhere
-        _htIF(kTLNoError != putInto(g_DBSubGroupFromGroup,thisTxn,&newValue,&key));//create C<-A in secondary
+        _htIFnok( delFrom(g_DBSubGroupFromGroup,thisTxn,&value,&key) );//del B<-A from SECondary
+        //must not return kFuncAlreadyExists otherwise a bug is present somewhere
+        _htIFnok( putInto(g_DBSubGroupFromGroup,thisTxn,&newValue,&key) );//create C<-A in secondary
 
 #ifdef SHOWKEYVAL
         cout <<"\t"<< "Mod:done."<<endl;
 #endif
 
+
+        __tIFnok( Commit(&thisTxn) );
+
+        _OK;
+
 #undef THROW_HOOK
-
-        __( Commit(&thisTxn); );
-        _ret kTLNoError;
-
 #undef ERR_HOOK
 }
 
 /*************************/
-ETLinkErrors_t
+function
 TLink::IsGroup(
                 const EIdType_t a_IdType,
                 const std::string a_GroupId,
@@ -314,7 +309,7 @@ TLink::IsGroup(
         __tIF(a_GroupId.empty());
 
         DbTxn *thisTxn;
-        __(NewTransaction(a_ParentTxn,&thisTxn, DB_TXN_NOSYNC););
+        __tIFnok(NewTransaction(a_ParentTxn,&thisTxn, DB_TXN_NOSYNC));
 
 #define THROW_HOOK \
         ABORT_HOOK
@@ -324,9 +319,9 @@ TLink::IsGroup(
         Dbt value;
         Dbt key;
 
-        key.set_data((void *)a_GroupId.c_str());
+        _h( key.set_data((void *)a_GroupId.c_str()) );
         key.set_size((u_int32_t)a_GroupId.length() + 1);
-        _h(value.set_flags(DB_DBT_MALLOC););
+        _h( value.set_flags(DB_DBT_MALLOC) );
         //value.set_data((void *)a_SubGroupId.c_str());
         //value.set_size((u_int32_t)a_SubGroupId.length() + 1);
 
@@ -351,12 +346,12 @@ TLink::IsGroup(
                 default:
                                 _ht("more than kGroup or kSubGroup specified!");
         }//switch
-        _h( db->cursor(thisTxn,&cursor1, 0) );
+        _htIF( 0 != db->cursor(thisTxn,&cursor1, 0) );
 
 #undef ERR_HOOK
 #undef THROW_HOOK
 #define THROW_HOOK \
-                cursor1->close();/*done prior to Abort()*/\
+                __( cursor1->close() );/*done prior to Abort()*/\
                 ABORT_HOOK;
 #define FREE_VAL \
         if (value.get_data()) \
@@ -371,7 +366,7 @@ TLink::IsGroup(
 #ifdef SHOWKEYVAL
                 std::cout<<"\tIsGroup: is not!."<<endl;
 #endif
-                _hreterr kTLNotFound;
+                _hreterr kFuncNotFound;
         }_fih
         //else throws! just in case it doesn't we check for err==0 => ok, below
         _htIF(err!=0);
@@ -388,14 +383,14 @@ TLink::IsGroup(
                 std::cout<<"\tIsGroup:true."<<endl;
 #endif
 
+
+        __tIFnok( Commit(&thisTxn) );
+
+        _OK;//found
 #undef THROW_HOOK
-
-        __( Commit(&thisTxn); )
-
-        _ret kTLNoError;//found
 }
 /*************************/
-ETLinkErrors_t
+function
 TLink::IsLink(
                 const std::string a_GroupId,//may or may not exist
                 const std::string a_SubGroupId,//same
@@ -412,7 +407,7 @@ TLink::IsLink(
 
 
         DbTxn *thisTxn;
-        __(NewTransaction(a_ParentTxn,&thisTxn, DB_TXN_NOSYNC););
+        __tIFnok(NewTransaction(a_ParentTxn,&thisTxn, DB_TXN_NOSYNC));
 
 #undef THROW_HOOK
 #define THROW_HOOK \
@@ -423,9 +418,9 @@ TLink::IsLink(
         Dbt value;
         Dbt key;
 
-        key.set_data((void *)a_GroupId.c_str());
+        _h( key.set_data((void *)a_GroupId.c_str()) );
         key.set_size((u_int32_t)a_GroupId.length() + 1);
-        value.set_data((void *)a_SubGroupId.c_str());
+        _h( value.set_data((void *)a_SubGroupId.c_str()) );
         value.set_size((u_int32_t)a_SubGroupId.length() + 1);
 
 #ifdef SHOWKEYVAL
@@ -436,12 +431,12 @@ TLink::IsLink(
 #endif
 
         Dbc *cursor1=NULL;
-        _h( g_DBGroupToSubGroup->cursor(thisTxn,&cursor1, 0) );
+        _htIF( 0 != g_DBGroupToSubGroup->cursor(thisTxn,&cursor1, 0) );
 
 #undef ERR_HOOK
 #undef THROW_HOOK
 #define THROW_HOOK \
-                cursor1->close();/*done prior to Abort()*/\
+                __( cursor1->close() );/*done prior to Abort()*/\
                 ABORT_HOOK;
 #define ERR_HOOK \
         THROW_HOOK
@@ -452,7 +447,7 @@ TLink::IsLink(
 #ifdef SHOWKEYVAL
                 std::cout<<"\tIsLink: is not!."<<endl;
 #endif
-                _hreterr kTLNotFound;
+                _hreterr kFuncNotFound;
         }_fih
         //else throws! just in case it doesn't we check for err==0 => ok, below
         _htIF(err!=0);
@@ -468,11 +463,11 @@ TLink::IsLink(
                 std::cout<<"\tIsLink:true."<<endl;
 #endif
 
+
+        __tIFnok( Commit(&thisTxn) );
+
+        _OK;
 #undef THROW_HOOK
-
-        __( Commit(&thisTxn); )
-        _ret kTLNoError;
-
 }
 
 /*************************/
@@ -484,7 +479,7 @@ TLink::IsLink(
  * if any group doesn't aready exist it is created
  * if connection exists an exception is thrown
  * ***************/
-ETLinkErrors_t
+function
 TLink::NewLink(
                 const std::string a_GroupId,//may or may not exist
                 const std::string a_SubGroupId,//same
@@ -498,7 +493,7 @@ TLink::NewLink(
 
 
         DbTxn *thisTxn;
-        __(NewTransaction(a_ParentTxn,&thisTxn, DB_TXN_NOSYNC););
+        __tIFnok(NewTransaction(a_ParentTxn,&thisTxn, DB_TXN_NOSYNC));
 
 #define THROW_HOOK \
         ABORT_HOOK
@@ -508,10 +503,10 @@ TLink::NewLink(
         Dbt value;
         Dbt key;
 
-        key.set_data((void *)a_GroupId.c_str());
-        key.set_size((u_int32_t)a_GroupId.length() + 1);
-        value.set_data((void *)a_SubGroupId.c_str());
-        value.set_size((u_int32_t)a_SubGroupId.length() + 1);
+        _h( key.set_data((void *)a_GroupId.c_str()) );
+        _h( key.set_size((u_int32_t)a_GroupId.length() + 1) );
+        _h( value.set_data((void *)a_SubGroupId.c_str()) );
+        _h( value.set_size((u_int32_t)a_SubGroupId.length() + 1) );
 
 #ifdef SHOWKEYVAL
                 std::cout<<"\tNewLink:begin:"<<
@@ -520,43 +515,42 @@ TLink::NewLink(
                 (char *)value.get_data()<<endl;
 #endif
 
-        ETLinkErrors_t err;
         //insert in primary
-        _hif( (err=putInto(g_DBGroupToSubGroup,thisTxn,&key,&value)) ) {
-                        _hreterr err;//this we need
-                        //no throw!
-        }_fih
+        _hfIFnok( putInto(g_DBGroupToSubGroup,thisTxn,&key,&value) );
         //insert in secondary
-        //if we're here, means we successfuly entered the record in primary, so the record must be successfully entered in secondary, ie. cannot return kTLAlreadyExists; so it must be clean, otherwise we throw (up;)
-        _htIF(kTLNoError != putInto(g_DBSubGroupFromGroup,thisTxn,&value,&key));
+        //if we're here, means we successfuly entered the record in primary, so the record must be successfully entered in secondary, ie. cannot return kFuncAlreadyExists; so it must be clean, otherwise we throw (up;)
+        _htIFnok( putInto(g_DBSubGroupFromGroup,thisTxn,&value,&key) );
 #ifdef SHOWKEYVAL
                 std::cout<<"\tNewLink:done."<<endl;
 #endif
 
+
+        __tIFnok( Commit(&thisTxn) );
+
+        _OK;
+
 #undef THROW_HOOK
-
-        __( Commit(&thisTxn); )
-        _ret kTLNoError;
-
 #undef ERR_HOOK
 }
 
 /*************************/
-void
+function
 TLink::ShowContents(
                 DbTxn *a_ParentTxn)
 {
         std::cout<<"\t\t\tPRI: "<<std::endl;
-        __(showRecords(a_ParentTxn,g_DBGroupToSubGroup,"->"));
+        __fIFnok(showRecords(a_ParentTxn,g_DBGroupToSubGroup,"->"));
         std::cout<<"\t\t\tSEC: "<<std::endl;
-        __(showRecords(a_ParentTxn,g_DBSubGroupFromGroup,"<-"));
+        __fIFnok(showRecords(a_ParentTxn,g_DBSubGroupFromGroup,"<-"));
+
+        _OK;
 }
 
 /****************************/
-void
-TLink::NewTransaction(DbTxn * a_ParentTxn,
+function
+TLink :: NewTransaction(DbTxn * a_ParentTxn,
                         DbTxn ** a_NewTxn,
-                        u_int32_t a_Flags)
+                        const u_int32_t a_Flags)
 {
         /*"Note: Transactions may only span threads if they do so serially; that is, each transaction must be active in only a single thread of control at a time. This restriction holds for parents of nested transactions as well; not two children may be concurrently active in more than one thread of control at any one time." Berkeley DB docs*/
         /*"Note: A parent transaction may not issue any Berkeley DB operations -- except for DbEnv::txn_begin, DbTxn::abort and DbTxn::commit -- while it has active child transactions (child transactions that have not yet been committed or aborted)" Berkeley DB docs*/
@@ -573,8 +567,9 @@ TLink::NewTransaction(DbTxn * a_ParentTxn,
         __(this->Abort(a_NewTxn));
 
         _h( std::cout << "through "<<*a_NewTxn<<"("<<fStackLevel<<")"<<std::endl;);
+#undef THROW_HOOK
 #endif
-
+        _OK;
 }
 /****************************/
 //destructor
@@ -605,7 +600,7 @@ TLink::~TLink()
 
 /****************************/
 // Open a Berkeley DB database
-void
+function
 TLink::OpenDB(
                 Db **a_DBpp,
                 const std::string * const a_DBName)
@@ -637,11 +632,12 @@ TLink::OpenDB(
                   0);         // File mode. Using defaults
          );
 
+        _OK;
 }
 
 /****************************/
 /****************************/
-void
+function
 TLink::KillDB(
                 const std::string * const a_PathFN,
                 const std::string * const a_FName
@@ -649,7 +645,10 @@ TLink::KillDB(
 {
                 if (file_exists(a_PathFN->c_str(),0,NULL)) {
                         __(fDBEnviron->dbremove(NULL,a_FName->c_str(),NULL,0));
-                } else INFO("can't dbremove:dbase file doesn't yet exist, first dry run?");
+                        _OK;//killed
+                } else {
+                        _F;//failed to kill
+                }
 }
 
 
@@ -708,7 +707,9 @@ TLink::TLink(
 
         if (a_PreKill) {
                 const std::string fn=fEnvHomePath+fDBFileName;
-                _h(KillDB(&fn,&fDBFileName););
+                _hdoIFnok( KillDB(&fn,&fDBFileName) ) {
+                        INFO("can't dbremove:dbase file doesn't yet exist, first dry run?");
+                }_konfiodh
         }
 
         // If we had utility threads (for running checkpoints or
@@ -717,19 +718,20 @@ TLink::TLink(
         // that is not required.
 
         // Open databases
-        _h(OpenDB(&g_DBGroupToSubGroup, &nameDBGroupToGroup););
+        _htIFnok( OpenDB(&g_DBGroupToSubGroup, &nameDBGroupToGroup) );
 
 #undef THROW_HOOK
 #define THROW_HOOK \
         DB1CLOSE_HOOK\
         ENVCLOSE_HOOK
 
-        _h(OpenDB(&g_DBSubGroupFromGroup, &nameDBGroupFromGroup););
+        _htIFnok( OpenDB(&g_DBSubGroupFromGroup, &nameDBGroupFromGroup) );
+
 #undef THROW_HOOK
 }
 
 /****************************/
-void
+function
 TLink::showRecords(
                 DbTxn *a_ParentTxn,
                 Db *a_DB,
@@ -740,7 +742,7 @@ TLink::showRecords(
         __tIF(NULL==a_Sep);
 
         DbTxn *thisTxn;
-        __(NewTransaction(a_ParentTxn,&thisTxn, DB_TXN_NOSYNC););
+        __tIFnok(NewTransaction(a_ParentTxn,&thisTxn, DB_TXN_NOSYNC));
 
 #define THROW_HOOK ABORT_HOOK
 
@@ -752,10 +754,10 @@ TLink::showRecords(
         int count = 0;
 
         // Get the cursor
-        _h(a_DB->cursor(thisTxn, &cursorp, 0));
+        _htIF(0 != a_DB->cursor(thisTxn, &cursorp, 0));
 #undef THROW_HOOK
 #define THROW_HOOK \
-        ___(cursorp->close());\
+        __(cursorp->close());\
         ABORT_HOOK
 
         Dbt key, value;
@@ -763,8 +765,10 @@ TLink::showRecords(
         _h(value.set_flags(DB_DBT_MALLOC););
             /*DB_NEXT
     If the cursor is not yet initialized, DB_NEXT is identical to DB_FIRST. Otherwise, the cursor is moved to the next key/data pair of the database, and that pair is returned. In the presence of duplicate key values, the value of the key may not Change.*/
-        _h(
-        while (cursorp->get(&key, &value, DB_NEXT) == 0) {
+        while (true) {
+                _hif( 0 != cursorp->get(&key, &value, DB_NEXT) ) {
+                        break;
+                }_fih
 #ifdef SHOWCONTENTS
                 _h(cout <<"\t"<< (char *)key.get_data()<< " " << a_Sep << " " <<(char *)value.get_data()<<endl);
 #endif
@@ -775,7 +779,7 @@ TLink::showRecords(
                         if (v)
                                 _h(free(v));
                 count++;
-        });
+        }//while
 
 #undef THROW_HOOK
 #define THROW_HOOK ABORT_HOOK
@@ -783,33 +787,38 @@ TLink::showRecords(
 
         std::cout<<"\t\t\tgot "<<count<<" records."<<std::endl<<std::endl;
 
+
+        __tIFnok( Commit(&thisTxn) );
+
+        _OK;
 #undef THROW_HOOK
-
-        __( Commit(&thisTxn) );
-
 }
 /****************************/
 /*******************************/
-void
+function
 TLink::Commit(DbTxn **a_Txn)
-{
+{//one cannot&shouldnot call Abort after calling this function: is in the Berkeley DB docs that cannot call abort after a failed(or successful) DbTxn->commit()
         __tIF(NULL==a_Txn);
-        if (NULL!=*a_Txn) {
-                        __((*a_Txn)->commit(0));
+        if (NULL != *a_Txn) {
+                __((*a_Txn)->commit(0));
 #ifdef SHOWTXNS
-                for (int i=1;i<fStackLevel;i++)
+                for (int i=1;i<fStackLevel;i++) {
                         std::cout << " ";
-                __(std::cout << "commitd "<<*a_Txn<<"("<<fStackLevel<<")"<<std::endl;);
+                }
+                __( std::cout << "commitd "<<*a_Txn<<"("<<fStackLevel<<")"
+                                <<std::endl; );
 #endif
-        fStackLevel--;
-                        *a_Txn=NULL;
+                fStackLevel--;
+                *a_Txn=NULL;
         } else {
-                WARN_IF(NULL==*a_Txn);
+                _FA(*a_Txn is NULL);
         }
+
+        _OK;
 }
 
 /*******************************/
-void
+function
 TLink::Abort(DbTxn **a_Txn)
 {
         __tIF(NULL==a_Txn);
@@ -823,8 +832,9 @@ TLink::Abort(DbTxn **a_Txn)
                         fStackLevel--;
                         *a_Txn=NULL;
         } else {
-                WARN_IF(NULL==*a_Txn);
+                _FA(*a_Txn is NULL);
         }
+        _OK;
 }
 
 

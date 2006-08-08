@@ -41,6 +41,11 @@ typedef enum {//avoiding to use the value zero
         ,kFuncNoLowLevelInputs
         ,kFuncNoGenericInputs
         ,kFuncNoActions
+        ,kFuncAlreadyExists //some element already exists(used in classhit.cpp)
+        ,kFuncNotFound //some element wasn't found (-//-)
+
+//last
+        ,kMaxFuncErrors
 } EFunctionReturnTypes_t;
 
 enum ENotifyTypes {
@@ -230,6 +235,8 @@ void ShowAllNotifications();
         }       \
 } //endblock
 
+/***************************************/
+//__tIFnok(callee()) rethrows the exception if the callee threw one; if none, then checks to see that the callee()==kFuncOK if NOT then throws!
 //an attempt to standardize function call handling
 //a call wrapper; execution stops on throw or kFuncOK != a_Func; no hook (no THROW_HOOK)
 #define __tIFnok(a_Func) { \
@@ -239,12 +246,28 @@ void ShowAllNotifications();
                 __t(__tIFnok( a_Func ));/*doesn't recurse here!*/\
         }       \
 } //endblock
+#define __fIFnok(a_Func) { \
+        EFunctionReturnTypes_t __EFunctionReturnTypes_t__FuncReturn;\
+        _TRY( __EFunctionReturnTypes_t__FuncReturn = (a_Func),  throw ) \
+        if (kFuncOK != __EFunctionReturnTypes_t__FuncReturn) { \
+                _fret __EFunctionReturnTypes_t__FuncReturn;/*returns same error*/\
+        }       \
+} //endblock
 //with THROW_HOOK
 #define _htIFnok(a_Func) { \
         EFunctionReturnTypes_t __EFunctionReturnTypes_t__FuncReturn;\
         _TRY( __EFunctionReturnTypes_t__FuncReturn = (a_Func), THROW_HOOK ; throw ) \
         if (kFuncOK != __EFunctionReturnTypes_t__FuncReturn) { \
                 _ht(_htIFnok( a_Func ));/*doesn't recurse here!*/\
+        }       \
+} //endblock
+
+//with THROW_HOOK, fails if the callee fails(with the same error) and same THROW_HOOK(not ERR_HOOK!), throws(with THROW_HOOK) if callee throws!
+#define _hfIFnok(a_Func) { \
+        EFunctionReturnTypes_t __EFunctionReturnTypes_t__FuncReturn;\
+        _TRY( __EFunctionReturnTypes_t__FuncReturn = (a_Func), THROW_HOOK ; throw ) \
+        if (kFuncOK != __EFunctionReturnTypes_t__FuncReturn) { \
+                _hret __EFunctionReturnTypes_t__FuncReturn;/*returns same error*/\
         }       \
 } //endblock
 
@@ -315,18 +338,20 @@ void ShowAllNotifications();
 //or use _if(expr) { do_this(); } else { do_that; }_fi
 #define _hif(a_IFExpr) {    \
         bool __bool_ifexpr;     \
-        TRY( __bool_ifexpr= (a_IFExpr));\
-        if ( __bool_ifexpr )
+        TRY( __bool_ifexpr= (a_IFExpr) );\
+        if ( __bool_ifexpr ) {//added beginning of block here to prevent forgotten semicolons left after the _hif() statement to close this path
 
-#define _fih }
+#define _fihelse } else {
+#define _fih }}
 /***************************************/
 //no hook! but keeps the throw
 #define __if(a_IFExpr) {    \
         bool __bool_ifexpr;     \
         _TRY( __bool_ifexpr= (a_IFExpr), throw);\
-        if ( __bool_ifexpr )
+        if ( __bool_ifexpr ) {
 
-#define __fi }
+#define __fielse } else {
+#define __fi }}
 /***************************************/
 /* failed this:#define __while(a_IFExpr) {    \
         bool __bool_whileexpr;     \
@@ -338,13 +363,23 @@ void ShowAllNotifications();
         }
 */
 /***************************************/
+//do block if NOT kFuncOK; throw only when callee threw; do nothing on kFuncOK!
+#define _hdoIFnok(a_Func) { \
+        EFunctionReturnTypes_t __EFunctionReturnTypes_t__FuncReturn;\
+        _TRY( __EFunctionReturnTypes_t__FuncReturn = (a_Func),  THROW_HOOK; throw ) \
+        if (kFuncOK != __EFunctionReturnTypes_t__FuncReturn) {
+
+#define _konfiodhelse }
+#define _konfiodh }} //endblock
+/***************************************/
+/***************************************/
 //do block if kFuncOK, otherwise throw!
 #define __doIFok(a_Func) { \
         EFunctionReturnTypes_t __EFunctionReturnTypes_t__FuncReturn;\
         _TRY( __EFunctionReturnTypes_t__FuncReturn = (a_Func),  throw ) \
-        if (kFuncOK == __EFunctionReturnTypes_t__FuncReturn)
+        if (kFuncOK == __EFunctionReturnTypes_t__FuncReturn) {
 
-#define __kofido \
+#define __kofiod } \
         else {\
                 __t(__doIFok( a_Func ) where a_Func!=kFuncOK);/*doesn't recurse here!*/\
         } \

@@ -29,6 +29,7 @@
 #define CLASSHIT_H__
 
 #include <db_cxx.h> //using Berkeley DB
+#include "pnotetrk.h"
 
 /*************debug vars*/
 //show debug statistics such as key+value
@@ -43,20 +44,11 @@
 #define MAX_GROUPNAME_LEN 65530
 
 typedef enum {
-        kSubGroup=1,
+        kSubGroup = 1,
         kGroup
 } EIdType_t;
 
-typedef enum {
-        kTLNoError=0
-        ,kTLAlreadyExists
-        ,kTLNotFound
-//last:
-        ,kMaxTLinkErrors
-} ETLinkErrors_t;
 /****************************/
-void
-TLShowError(const ETLinkErrors_t a_Err);
 /****************************/
 class TLink {
 private:
@@ -75,33 +67,33 @@ private:
 
         TLink(){};/*inaccessible constructor*/
 
-        void
+        function
         OpenDB(
                 Db **a_DBpp,
                 const std::string * const a_DBName);
 
 
-        void
+        function
         showRecords(
                 DbTxn *a_ParentTxn,
                 Db *a_DB,
                 char *a_Sep="==");
 
-        ETLinkErrors_t
+        function
         putInto(
                 Db *a_DBInto,
                 DbTxn *a_ParentTxn,
                 Dbt *a_Key,
                 Dbt *a_Value);
 
-        void
+        function
         delFrom(
                 Db *a_DBInto,
                 DbTxn *a_ParentTxn,
                 Dbt *a_Key,
                 Dbt *a_Value);
 
-        ETLinkErrors_t
+        function
         TLink::findAndChange(
                 Db *a_DBWhich,
                 DbTxn *a_ParentTxn,
@@ -119,7 +111,7 @@ public:
 
         ~TLink();
 
-        ETLinkErrors_t
+        function
         TLink::ModLink(
                 const std::string a_GroupId,
                 const std::string a_SubGroupId,
@@ -128,14 +120,14 @@ public:
                 );
 
 
-        ETLinkErrors_t
+        function
         TLink::IsGroup(
                 const EIdType_t a_IdType,
                 const std::string a_GroupId,
                 DbTxn *a_ParentTxn=NULL
                 );
 
-        ETLinkErrors_t
+        function
         TLink::IsLink(
                 const std::string a_GroupId,
                 const std::string a_SubGroupId,
@@ -143,37 +135,37 @@ public:
                 );
 
         //links are created, groups are just there as part of links, they don't have to already exist(and if they do they're part of the links only)
-        ETLinkErrors_t
+        function
         TLink::NewLink(
                 const std::string a_GroupId,
                 const std::string a_SubGroupId,
                 DbTxn *a_ParentTxn=NULL
                 );
 //FIXME: need to add iterator (aka cursor) which parses a Group's kTo connections(this group pointing to many subgroups) or a SubGroup's kFrom(many groups pointing to this subgroup) connections
-        void
+        function
         TLink::ShowContents(
                 DbTxn *a_ParentTxn=NULL
                 );
 
-        void
+        function
         KillDB(
                 const std::string * const a_PathFN,
                 const std::string * const a_FName
                 );
 
 
-        void
+        function
         NewTransaction(DbTxn * a_ParentTxn,
                         DbTxn ** a_NewTxn,
-                        u_int32_t a_Flags=DB_TXN_NOSYNC
+                        const u_int32_t a_Flags=DB_TXN_NOSYNC
                         );
 
 
 /****************************/
-        void
+        function
         Commit(DbTxn **a_Txn);
 
-        void
+        function
         Abort(DbTxn **a_Txn);
 
 /*******************************/

@@ -4,7 +4,11 @@ Legend:
 	LU means last update on ... date
 
 =demlinks-0.0.22
-LU: 06 August 2006
+LU: 07 August 2006
+* fixed macros like _hif() that can get a semicolon after them and totally
+ignore the block after that semicolon, now they don't the block until _fih is
+still executed (if true) and the developer has to use _fihelse instead of else
+* going windowed again; allegro 4.3.1 svn 7454 goes full screen by default
 $ and yes the text indeed doesn't keep the same square as when using only q/e
 keys
 * pressing undefined keys now refreshes the camera's screen to show the

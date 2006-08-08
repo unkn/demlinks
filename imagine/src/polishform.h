@@ -42,6 +42,7 @@
 /*****************************************************************/
 #include <iostream> //for size_t and some strcat alike operations inside .cpp
 #include "classhit.h"
+#include "pnotetrk.h"
 
 //**********HOOKS
 
@@ -466,9 +467,10 @@ TPolishForm::Init();
 
 
 
-                void
+                function
                 ShowContents(){
-                        __( fLink->ShowContents(););
+                        __fIFnok( fLink->ShowContents());
+                        _OK;
                 };
 };//class TPolishForm
 

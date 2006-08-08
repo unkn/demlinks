@@ -89,7 +89,7 @@ Process(
                         cout << g_Expr.rOpenBraces << " open braces left."<<endl;
                 }
                 ShowErrorPosition(g_Expr.rIndex, a_Str);
-        } else {
+        } __fielse {
                 cout << "root["<<g_Expr.rRoot.GetType()<<"]="<<g_Expr.rRoot.GetId()<<endl;
                 /*_if (err=g_Expr.ShowExpr(root.GetId(),1,1)) {
                         cout << "Problem attempting to show expression from graph with root="<<root.GetId()<<" : ";
@@ -197,7 +197,7 @@ int main(const int argc, const char **argv)
         __(Process(kArithmeticForm," _KEY_CTRL & (_KEY_Q | _KEY_X)"));//i know this is the correct form
 //        }//for
 
-        g_Expr.ShowContents();
+        __tIFnok( g_Expr.ShowContents() );
 //***************************************** END
         printf("All ok.\n");
 }//main

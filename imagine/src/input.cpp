@@ -221,7 +221,7 @@ MakeSureWeHaveGenericInput()
                 //one input group at a time; ie. all key OR all mouse
                 __doIFok (MoveFirstGroupFromBuffer(into)) {
                         __tIFnok(TransformToGenericInputs(into));
-                }__kofido
+                }__kofiod
         }//while
 
         _FA(cannot reach this);
