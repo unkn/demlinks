@@ -85,7 +85,7 @@ int main(void)
         }//while
 
 
-        for (int i=0;i<NUM_CAMS;i++){
+        for (int i=0;i < NUM_CAMS; i++){
                 __if (cams[i]->NeedsRefresh()) {
                         __tIFnok(render(buffer,i));//update some part of buffered screen
                         if (false==need_screen_refresh) {

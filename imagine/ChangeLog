@@ -1,6 +1,7 @@
 Legend:
 	* means DONE
 	$ means TODO
+	~ means NOTE
 	LU means last update on ... date
 
 =demlinks-0.0.22
@@ -40,7 +41,8 @@ program could debug and fix it and then have the first program continue; this
 may seem similar to contemporary practices but at least the connections
 between the items are not implied only in the viewer's brain and only exist at
 the moment of execution by the processor, instead they are properly defined...
-* just a note: does compile with alleg.sf.net from svn revision 7392
+~ just a note: does compile with alleg.sf.net from svn revision 7392
+~ only the first cammera is accessible (since some time now)
 
 =demlinks-0.0.21
 LU: 23 Aug 2005

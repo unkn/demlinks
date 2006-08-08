@@ -34,5 +34,8 @@
 void draw_square(BITMAP *bmp, MATRIX_f *camera, int x, int y,int z);
 function draw_squareS(BITMAP *bmp, MATRIX_f *camera);
 
+#define GLOBALMAX 5
+extern int global_select;
+
 
 #endif

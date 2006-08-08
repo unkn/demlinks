@@ -41,7 +41,7 @@
 
 #define GRID_SIZEX    MAX_KEYS_BUFFERED
 
-//temp
+//don't forget to change GLOBALMAX in square.h if you add more selects
 int global_select=1;
 
 /* render a tile of the grid which is centered on x and z(world-space)
@@ -496,6 +496,7 @@ case 4:{
                 easy3("gSpeedRegulator:%d",
                                gSpeedRegulator);
 break;}
+//don't forget to change GLOBALMAX in square.h if you add more selects
 default: {
         ERR(undefined yet);
          }

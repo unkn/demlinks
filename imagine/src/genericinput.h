@@ -138,7 +138,7 @@ struct OneGenericInputTransducer_st {
         function
         EatThis(
                         const UnifiedInput_st & what,
-                        bool reset_when_failed);
+                        const bool reset_when_failed);
 /******************/
         function
         PushToBuffer();
@@ -160,7 +160,7 @@ struct GI_SLLTransducersArray_st{
         ~GI_SLLTransducersArray_st();
 /******************/
         EFunctionReturnTypes_t Append(
-                        const OneGenericInputTransducer_st * a_Dat);
+                        const OneGenericInputTransducer_st * const a_Dat);
 /******************/
 };//END struct
 

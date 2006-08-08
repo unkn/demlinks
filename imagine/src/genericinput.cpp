@@ -175,8 +175,9 @@ InitGenericInput()
         KEY_TYPE *newkey=NULL;
         MOUSE_TYPE *newmouse=NULL;
         OneGenericInputTransducer_st *newtrans=NULL;
-        __tIF(AllLowLevelInputs[kMouseInputType]==NULL);
-        __tIF(AllLowLevelInputs[kKeyboardInputType]==NULL);
+        for (int i=0; i<kMaxInputTypes; i++) {
+                __tIF(AllLowLevelInputs[i]==NULL);
+        }
         void *damnbugs=NULL;
 
 #define NEWTRANSITION(_typ_,_stuff_,_wha_,...)                             \
@@ -188,7 +189,7 @@ InitGenericInput()
                         newtrans->Result=tmpi;      \
                 }                                               \
         __tIFnok(                                        \
-                GI_##_stuff_##OrderSLL[k##_typ_##InputType].Append(newtrans));\
+                GI_##_stuff_##OrderSLL[k##_typ_##InputType].Append(newtrans));
 
 #define NEWKT(_stuff_,_wha_,...)                             \
         NEWTRANSITION(Keyboard,_stuff_,_wha_,__VA_ARGS__);
@@ -200,8 +201,7 @@ InitGenericInput()
         newkey=(KEY_TYPE *)damnbugs;                                \
         __tIF(newkey==NULL);                                    \
                 newkey->ScanCode=_a_;                           \
-                __tIFnok(                                \
-                                newtrans->Append(newkey));       \
+                __tIFnok( newtrans->Append(newkey) );
 
 #define NEWMT(_stuff_,_wha_,...)                             \
         NEWTRANSITION(Mouse,_stuff_,_wha_,__VA_ARGS__);
@@ -212,9 +212,8 @@ InitGenericInput()
                 AllLowLevelInputs[kMouseInputType]->Alloc(damnbugs));\
         newmouse=(MOUSE_TYPE *)damnbugs;                                \
         __tIF(newmouse==NULL);                                    \
-                newmouse->Flags=_a_;                           \
-                __tIFnok(                                \
-                                newtrans->Append(newmouse));       \
+        newmouse->Flags=_a_;                           \
+        __tIFnok( newtrans->Append(newmouse) );
 
 #define NEWME(_easier_,_aflag_) \
         NEWMT(Strict, _easier_, NEWMF(_aflag_));
@@ -272,7 +271,7 @@ InitGenericInput()
         __tIF(GI_RelaxedOrderSLL[kKeyboardInputType].Head->Data->HowManySoFar<=0);
 
 
-        //FIXME:feed from file
+        //FIXME:feed from file;NO, will feed from the demlinks environment(kept inside a berkeley database)
         _OK;
 }
 
@@ -295,11 +294,10 @@ DisposeGISLLArray(GI_SLLTransducersArray_st *which, const int input_type)
                 GenericSingleLinkedList_st<TRANSDUCER_S__TYPE> *trElem=transd->Head;
 
                 for (int a=0;a<transd->HowManySoFar;a++) {
-                        __tIF(trElem==NULL);
-                        if (trElem->Data!=NULL) {
+                        __tIF(trElem == NULL);
+                        if (trElem->Data != NULL) {
                                 __tIF(AllLowLevelInputs[input_type]==NULL);
-                                __tIFnok(
-                                     AllLowLevelInputs[input_type]->DeAlloc(trElem->Data));
+                                __tIFnok( AllLowLevelInputs[input_type]->DeAlloc(trElem->Data) );
                         }//fi
                         trElem=trElem->Next;
                 }//for3
@@ -373,23 +371,24 @@ OneGenericInputTransducer_st::Append(const TRANSDUCER_S__TYPE * a_Dat)
 }
 /*****************************************************************************/
 bool
-OneGenericInputTransducer_st::HasStarted()
+OneGenericInputTransducer_st :: HasStarted()
 {
         return ((WhosNext != NULL)&&(WhosNext != Head));
 }
 /*****************************************************************************/
 function
-OneGenericInputTransducer_st::RestartIfStarted()
+OneGenericInputTransducer_st :: RestartIfStarted()
 {
-        if (HasStarted()) {
+        __if (HasStarted()) {
                 __tIFnok( Reset() );
-        }//fi
+        }__fi
+
         _OK;
 }
 /*****************************************************************************/
 function
-OneGenericInputTransducer_st::Reset()
-{ //I know this doesn't (normally) throw, but the call has to be __( Reset() );
+OneGenericInputTransducer_st :: Reset()
+{
         WhosNext=Head;//reset
         _OK;
 }
@@ -397,15 +396,15 @@ OneGenericInputTransducer_st::Reset()
 function
 OneGenericInputTransducer_st :: EatThis(
                 const UnifiedInput_st & what,
-                bool reset_when_failed)
+                const bool reset_when_failed)
 {
         //here we compare *what with WhosNext, if they somehow match
         //then we move along, if that was Tail then we Reset after
         //pushing this GenericInput to the buffer
         int result;
-        __tIF((what.type >=kMaxInputTypes) || (what.type<0));
-        __tIF(WhosNext==NULL);
-        __tIF(WhosNext->Data==NULL);
+        __tIF( (what.type >= kMaxInputTypes) || (what.type < 0) );
+        __tIF(WhosNext == NULL);
+        __tIF(WhosNext->Data == NULL);
         __tIFnok(AllLowLevelInputs[what.type]->Compare(
                                 what.data,
                                 WhosNext->Data,
@@ -432,7 +431,7 @@ OneGenericInputTransducer_st :: EatThis(
                         gLastGenericInputTime=timenow;
 #endif
 
-                        __tIFnok(PushToBuffer());
+                        __tIFnok( PushToBuffer() );
                         __tIFnok( Reset() );
                 }//fi
         }//fi
@@ -467,27 +466,15 @@ GI_SLLTransducersArray_st::~GI_SLLTransducersArray_st()
         }
 }
 /*****************************************************************************/
-EFunctionReturnTypes_t
+function
 GI_SLLTransducersArray_st::Append(
-                const OneGenericInputTransducer_st * a_Dat)
+                const OneGenericInputTransducer_st * const a_Dat)
 {
         //a COPY OF the CONTENTS of passed param IS NOT MADE, so a_Dat must
         //be preallocated before calling this func, and must not be disposed
         //outside this func
 
         __tIF(NULL==a_Dat);
-/*        OneGenericInputTransducer_st *tmp=new OneGenericInputTransducer_st;
-        PARANOID_IF(NULL==tmp,
-                        return kFuncFailed);
-        *tmp=*a_Dat;
-        tmp=(OneGenericInputTransducer_st *)a_Dat;//FIXME:
-        PARANOID_IF(tmp->Result!=a_Dat->Result,
-                        return kFuncFailed);
-        PARANOID_IF(tmp->HowManySoFar != a_Dat->HowManySoFar,
-                        return kFuncFailed);
-        PARANOID_IF(tmp->Head != a_Dat->Head,
-                        return kFuncFailed);*/
-        //done
         if (Head==NULL) {
                 //first time
                 Head=new GenericSingleLinkedList_st<OneGenericInputTransducer_st>(a_Dat);

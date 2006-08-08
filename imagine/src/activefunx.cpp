@@ -38,6 +38,7 @@
 #include "excamera.h"
 #include "actions.h"
 #include "flags.h"
+#include "square.h"
 
 //macros
 #define FOR_ALL_ACTIVE_CAMS(a_statements)      \
@@ -52,29 +53,23 @@
 }
 
 #define SETME(_what_) \
-        ERR_IF(Functions[_what_]!=NULL, \
-                        return kFuncFailed); \
+        __tIF(Functions[_what_] != NULL); \
         Functions[_what_] = _what_##_;
 
 #define SETME4(_what_,_a_) \
-        ERR_IF(Functions[_what_##_a_]!=NULL, \
-                        return kFuncFailed); \
+        __tIF(Functions[_what_##_a_]!=NULL); \
         Functions[_what_##_a_] = _what_##_;
 
 #define SETME2(_what_) \
-        ERR_IF(Functions[_what_]!=NULL, \
-                        return kFuncFailed); \
+        __tIF(Functions[_what_]!=NULL); \
         Functions[_what_] = _what_##_; \
-        ERR_IF(Functions[_what_##_stop]!=NULL, \
-                        return kFuncFailed); \
+        __tIF(Functions[_what_##_stop]!=NULL); \
         Functions[_what_##_stop] = none_;
 
 #define SETME3(_what_) \
-        ERR_IF(Functions[_what_]!=NULL, \
-                        return kFuncFailed); \
+        __tIF(Functions[_what_]!=NULL); \
         Functions[_what_] = _what_##_; \
-        ERR_IF(Functions[_what_##_stop]!=NULL, \
-                        return kFuncFailed); \
+        __tIF(Functions[_what_##_stop]!=NULL); \
         Functions[_what_##_stop] = _what_##_stop_;
 
 
@@ -83,48 +78,48 @@
 
 //functions:
 /*****************************************************************************/
-EFunctionReturnTypes_t
+function
 none_()
 {
-        return kFuncOK;
+        _OK;
 }
 /*****************************************************************************/
-EFunctionReturnTypes_t
+function
 kAI_QuitProgram_()
 {
         INFO(quit);
         ERR_IF(kFuncOK!=SetFlag(kF_QuitProgram),
-                        return kFuncFailed);
-        return kFuncOK;
+                        _F);
+        _OK;
 }
 /*****************************************************************************/
-EFunctionReturnTypes_t
+function
 kAI_Hold1Key_()
 {
         ERR_IF(kFuncOK!=SetFlag(kF_Hold1Key),
-                        return kFuncFailed);
-        return kFuncOK;
+                        _F);
+        _OK;
 }
 /*****************************************************************************/
-EFunctionReturnTypes_t
+function
 kAI_Hold1Key_stop_()
 {
         ERR_IF(kFuncOK!=ClearFlag(kF_Hold1Key),
-                        return kFuncFailed);
-        return kFuncOK;
+                        _F);
+        _OK;
 }
 /*****************************************************************************/
-EFunctionReturnTypes_t
+function
 kAI_FOV_()
 {
         if (!Flag(kF_Hold1Key))
                 FOR_ALL_ACTIVE_CAMS(cam->IncFOV(1))
         else
                 FOR_ALL_ACTIVE_CAMS(cam->IncFOV(-1))
-        return kFuncOK;
+        _OK;
 }
 /*****************************************************************************/
-EFunctionReturnTypes_t
+function
 kAI_Aspect_()
 {
                 double frac, iptr;
@@ -143,7 +138,7 @@ FOR_ALL_ACTIVE_CAMS(
                                 cam->IncAspect(-0.03f);
         }//else
 );
-        return kFuncOK;
+        _OK;
 }
 /*****************************************************************************/
 /*****************************************************************************/
@@ -151,7 +146,7 @@ FOR_ALL_ACTIVE_CAMS(
 /*****************************************************************************/
 
 /*****************************************************************************/
-EFunctionReturnTypes_t
+function
 kAI_CamSlideLeft_()
 {
         if (!Flag(kF_Hold1Key)) {//left slide cam
@@ -164,10 +159,10 @@ kAI_CamSlideLeft_()
                         cam->SlideView(-SLIDEVIEW_AMMOUNT,0);
                 );
         }//else
-        return kFuncOK;
+        _OK;
 }
 /*****************************************************************************/
-EFunctionReturnTypes_t
+function
 kAI_CamSlideRight_()
 {
         if (!Flag(kF_Hold1Key)) {//right slide cam
@@ -180,10 +175,10 @@ kAI_CamSlideRight_()
                         cam->SlideView(+SLIDEVIEW_AMMOUNT,0);
                 );
         }//else
-        return kFuncOK;
+        _OK;
 }
 /*****************************************************************************/
-EFunctionReturnTypes_t
+function
 kAI_CamSlideUp_()
 {
         if (!Flag(kF_Hold1Key)) {//up slide cam
@@ -194,10 +189,10 @@ kAI_CamSlideUp_()
                         cam->SlideView(0,-SLIDEVIEW_AMMOUNT);
                 );
         }//else
-        return kFuncOK;
+        _OK;
 }
 /*****************************************************************************/
-EFunctionReturnTypes_t
+function
 kAI_CamSlideDown_()
 {
         if (!Flag(kF_Hold1Key)) {//down slide cam
@@ -208,10 +203,10 @@ kAI_CamSlideDown_()
                         cam->SlideView(0,+SLIDEVIEW_AMMOUNT);
                 );
         }//else
-        return kFuncOK;
+        _OK;
 }
 /*****************************************************************************/
-EFunctionReturnTypes_t
+function
 kAI_CamTurnLeft_()
 {
         if (!Flag(kF_Hold1Key)) {//turn left cam
@@ -222,10 +217,10 @@ kAI_CamTurnLeft_()
                         cam->EnlargeView(-ENLARGEVIEW_AMMOUNT,0);
                         );
         }//else
-        return kFuncOK;
+        _OK;
 }
 /*****************************************************************************/
-EFunctionReturnTypes_t
+function
 kAI_CamTurnRight_()
 {
         if (!Flag(kF_Hold1Key)) {//turn right cam
@@ -236,10 +231,10 @@ kAI_CamTurnRight_()
                         cam->EnlargeView(ENLARGEVIEW_AMMOUNT,0);
                         );
         }//else
-        return kFuncOK;
+        _OK;
 }
 /*****************************************************************************/
-EFunctionReturnTypes_t
+function
 kAI_CamPitchUp_()
 {
         if (!Flag(kF_Hold1Key)) {//pitch up cam
@@ -251,10 +246,10 @@ kAI_CamPitchUp_()
                         cam->EnlargeView(0,-ENLARGEVIEW_AMMOUNT);
                         );
         }//else
-        return kFuncOK;
+        _OK;
 }
 /*****************************************************************************/
-EFunctionReturnTypes_t
+function
 kAI_CamPitchDown_()
 {
         if (!Flag(kF_Hold1Key)) {//pitch down cam
@@ -266,50 +261,49 @@ kAI_CamPitchDown_()
                         cam->EnlargeView(0,ENLARGEVIEW_AMMOUNT);
                         );
         }//else
-        return kFuncOK;
+        _OK;
 }
 /*****************************************************************************/
-EFunctionReturnTypes_t
+function
 kAI_CamRollLeft_()
 {
         FOR_ALL_ACTIVE_CAMS(
                         cam->Roll(+TURN_SPEED);
                         );
-        return kFuncOK;
+        _OK;
 }
 /*****************************************************************************/
-EFunctionReturnTypes_t
+function
 kAI_CamRollRight_()
 {
         FOR_ALL_ACTIVE_CAMS(
                         cam->Roll(-TURN_SPEED);
                         );
-        return kFuncOK;
+        _OK;
 }
 /*****************************************************************************/
-EFunctionReturnTypes_t
+function
 kAI_CamSlideForward_()
 {
         FOR_ALL_ACTIVE_CAMS(
                         cam->Advance(THRUST_SPEED);
                         );
-        return kFuncOK;
+        _OK;
 }
 /*****************************************************************************/
-EFunctionReturnTypes_t
+function
 kAI_CamSlideBackward_()
 {
         FOR_ALL_ACTIVE_CAMS(
                         cam->Advance(-THRUST_SPEED);
                         );
-        return kFuncOK;
+        _OK;
 }
 /*****************************************************************************/
-EFunctionReturnTypes_t
+function
 kAI_Undefined_()
 {
-        ERR(this was never supposed to be called);
-        return kFuncFailed;
+        _FA(this was never supposed to be called);
 }
 /*****************************************************************************/
 
@@ -324,9 +318,6 @@ kAI_Undefined_()
 /*****************************************************************************/
 /*****************************************************************************/
 
-//FIXME:temp
-extern int global_select;
-#define GLOBALMAX 5
 
 function
 kAI_NextSetOfValues_()

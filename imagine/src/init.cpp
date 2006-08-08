@@ -97,7 +97,7 @@ Init()
                                 b=0;
                 }//fi
         }//for cams
-         cams[current_cam]->Activate();
+        cams[current_cam]->Activate();
 
          _OK;
 }
@@ -111,7 +111,8 @@ DeInit()
 
         __tIFnok(UnInstallGlobalTimer());
 
-        allegro_exit();//seems to be working now, no more segfaults! allegro 4.3.1 svn
+        allegro_exit();
+
         _OK;
 }
 
