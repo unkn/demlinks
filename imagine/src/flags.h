@@ -32,7 +32,7 @@
 #include "pnotetrk.h"
 
 enum EFlags_t {
-        kF_Hold1Key=0,
+        kF_Hold1Key = 0,
         kF_QuitProgram,
 //last:
         kMaxFlags

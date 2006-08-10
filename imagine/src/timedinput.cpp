@@ -33,7 +33,7 @@ volatile INPUT_TYPE gInputBuf[MAX_INPUT_EVENTS_BUFFERED];
 volatile int gInputBufTail;
 int gInputBufHead;
 volatile int gLostInput[kMaxInputTypes];
-volatile mutex_t gInputLock;//first FIFO item is under lock or not?
+volatile mutex_t gInputMutexLock;//first FIFO item is under lock or not?
 volatile int gInputBufCount;//how many items in buffer
 enum {
         gUnLock=0,
@@ -76,7 +76,7 @@ MoveFirstGroupFromBuffer(INPUT_TYPE &m_Into)
         } else {//aka non empty buffer
 
                 //wait for lock!
-                __tIF(0 != mutex_lock((mutex_t *)&gInputLock));
+                __tIF(0 != mutex_lock((mutex_t *)&gInputMutexLock));
 
                 m_Into=gInputBuf[gInputBufHead];
 
@@ -84,7 +84,7 @@ MoveFirstGroupFromBuffer(INPUT_TYPE &m_Into)
                 //remove it
                 gInputBufCount--;
 
-                __tIF(0 != mutex_unlock((mutex_t *)&gInputLock));
+                __tIF(0 != mutex_unlock((mutex_t *)&gInputMutexLock));
 
                 _OK;
         }
@@ -124,7 +124,7 @@ InstallAllInputs()
         LOCK_VARIABLE(gInputBufHead);
         LOCK_VARIABLE(gLostInput);
         LOCK_VARIABLE(gInputBufCount);//new
-        LOCK_VARIABLE(gInputLock);
+        LOCK_VARIABLE(gInputMutexLock);
         LOCK_FUNCTION(ToCommonBuf);
 
         LOCK_FUNCTION(mutex_lock);
@@ -132,7 +132,7 @@ InstallAllInputs()
         LOCK_FUNCTION(mutex_unlock);
 
 
-        __tIF(0!=mutex_init((mutex_t* )&gInputLock, NULL));//always returns 0, they say.
+        __tIF(0!=mutex_init((mutex_t* )&gInputMutexLock, NULL));//always returns 0, they say.
                 
         gInputBufHead=0;
         gInputBufTail=MAX_INPUT_EVENTS_BUFFERED - 1;//zero-based index
@@ -170,25 +170,25 @@ UnInstallAllInputs()
 void
 ToCommonBuf(int input_type)
 {
-        //if we have gInputLock==gLock we're in the process of removing one 
+        //if we have gInputMutexLock==gLock we're in the process of removing one 
         //input and this input may be the last so we cannot increment as it 
         //could be lost
         //now add to common aka input buf:
               //if unlocked and same type at tail just increment
 
-        if (mutex_trylock((mutex_t *)&gInputLock) == 0) {//==0 => we just locked it!
+        if (mutex_trylock((mutex_t *)&gInputMutexLock) == 0) {//==0 => we just locked it!
                 if (gInputBufCount > 0){ //at least last elem.present
                 //maybe Head=Tail when only one element present, then we cannot remove it using MoveFirstFromBuffer()!
                         if (gInputBuf[gInputBufTail].type == input_type){
                         //no need to add a new item, just increment the one
                         //already there since it's ie. <mouse type>
                                 gInputBuf[gInputBufTail].how_many++;
-                                ERR_IF(0!=mutex_unlock((mutex_t *)&gInputLock));
+                                ERR_IF(0!=mutex_unlock((mutex_t *)&gInputMutexLock));
                                 return;
                         //we just said there's one more mouse[!] input 2b read
                         }//fi3
                 }//fi2
-                ERR_IF(0!=mutex_unlock((mutex_t *)&gInputLock));//avoiding to throw in the interrupt handler!
+                ERR_IF(0!=mutex_unlock((mutex_t *)&gInputMutexLock));//avoiding to throw in the interrupt handler!
         }//fi1
                 //if locked even if have same type at tail just add another one
                 //we'd like to add a new one if input buf not full:

@@ -179,16 +179,15 @@ TLink::delFrom(
 
 /*************************/
 function
-TLink::putInto(
+TLink :: putInto(
                 Db *a_DBInto,
                 DbTxn *a_ParentTxn,
                 Dbt *a_Key,
                 Dbt *a_Value)
 {
-
+        __tIF(NULL == a_DBInto);
         __tIF(NULL == a_Key);
         __tIF(NULL == a_Value);
-        __tIF(NULL==a_DBInto);
 
         DbTxn *thisTxn;
         __tIFnok(NewTransaction(a_ParentTxn,&thisTxn, DB_TXN_NOSYNC));
@@ -197,7 +196,7 @@ TLink::putInto(
         ABORT_HOOK;
 
 //no DUPS! fail(not throw!) if already exists
-        Dbc *cursor1=NULL;
+        Dbc *cursor1 = NULL;
         _htIF( 0 != a_DBInto->cursor(thisTxn,&cursor1, 0));
 
 #undef THROW_HOOK
@@ -207,7 +206,7 @@ TLink::putInto(
 #define ERR_HOOK \
         THROW_HOOK
 
-        _hif (0==cursor1->get(a_Key, a_Value, DB_GET_BOTH|DB_RMW)) {
+        _hif (0 == cursor1->get(a_Key, a_Value, DB_GET_BOTH|DB_RMW)) {
                 _hreterr kFuncAlreadyExists;
         }_fih
 
@@ -220,19 +219,19 @@ TLink::putInto(
 
         //if not found, then put it
         _htIF(0 != a_DBInto->put(thisTxn, a_Key, a_Value, 0) );
+#undef THROW_HOOK
+#undef ERR_HOOK
 
 
         __tIFnok( Commit(&thisTxn) );
 
         _OK;
-#undef THROW_HOOK
-#undef ERR_HOOK
 }
 
 
 /****************************/
-//kGroup:a->b =>a->c ~ pri:A-B, sec:B-A => pri: A-C, sec:C-A(new)(B-A deleted)
-//kSubGroup:b<-a => b<-c
+//ie.a->b =>a->c ~ pri:A-B, sec:B-A => pri: A-C(changed from A-B), sec:C-A(new)(B-A deleted)
+//the connection MUST already exist! or fails(not throws)
 function
 TLink::ModLink(
                 const std::string a_GroupId,
@@ -477,7 +476,7 @@ TLink::IsLink(
 /*************
  * creates a connection between a_GroupId TO/FROM a_SubGroupId
  * if any group doesn't aready exist it is created
- * if connection exists an exception is thrown
+ * if connection exists the function fails (doesnt' throw)
  * ***************/
 function
 TLink::NewLink(

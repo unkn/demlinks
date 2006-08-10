@@ -5,7 +5,17 @@ Legend:
 	LU means last update on ... date
 
 =demlinks-0.0.22
-LU: 07 August 2006
+LU: 10 August 2006
+* easier to pinpoint the errors by tripple clicking the output line with
+'zvim' and then middle mouse button press to paste it(ie. in konsole) => opens
+vim on the file&line with the error. (to test just put __tIF(test); somewhere
+in the code then run it)
+~ alot of inconsistencies projected to exist (ie. outdated comments)
+~ ./2 ; the root expression doesn't get assigned neither as left nor as right
+operand - this was/is the intended behaviour
+~ there are two patches (still not present in svn 7457) that fix the issue
+with keeping a key pressed (in X) while in our program causes random release
+then keypress again events (allegro's way of getting inputs from X)
 * fixed macros like _hif() that can get a semicolon after them and totally
 ignore the block after that semicolon, now they don't the block until _fih is
 still executed (if true) and the developer has to use _fihelse instead of else

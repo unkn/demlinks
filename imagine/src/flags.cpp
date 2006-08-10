@@ -56,7 +56,7 @@ SetFlag(EFlags_t which)
 {
         __tIF((which<0)||(which>=kMaxFlags));
         Flags[which]++;
-        __tIF(Flags[which]<=0);
+        __tIF(Flags[which]<=0);//less or _equal_; that's why handled after ++
         _OK;
 }
 

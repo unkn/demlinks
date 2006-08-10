@@ -349,8 +349,8 @@ case 1: {
 #ifdef ENABLE_TIMED_INPUT
                 easy("%d",mous.TimeDiff);
 #endif
-                easy("%d",mous.MickeyX);
-                easy("%d",mous.MickeyY);
+                easy("%dx",mous.MickeyX);
+                easy("%dy",mous.MickeyY);
                 easy("%d",mous.Flags);
 
                 easy2((ofs % GRID_SIZEY) == gMouseBufTail,

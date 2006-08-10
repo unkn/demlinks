@@ -116,69 +116,69 @@ int main(const int argc, const char **argv)
 /*
         //default string, if not specified
         char *str="*-^*2x+*3yza-*4t3";
-        _(Process(kPolishForm, str));
-        _(Process(kPolishForm, "+-*3*^x2y*5*^x2^y2*2*^y3x"));
-        _(Process(kPolishForm, "+-*3*^x 2 y*5*^x 2^y 2*2*^y 3 x"));//intend to add variant with operands more than one char long
-        _(Process(kPolishForm, "+-ab"));
+        __(Process(kPolishForm, str));
+        __(Process(kPolishForm, "+-*3*^x2y*5*^x2^y2*2*^y3x"));
+        __(Process(kPolishForm, "+-*3*^x 2 y*5*^x 2^y 2*2*^y 3 x"));//intend to add variant with operands more than one char long
+        __(Process(kPolishForm, "+-ab"));
 // ***************************************** from arithmetic form to graph
 
-        _(Process(kArithmeticForm,"a+(b+c)+d"););
+        __(Process(kArithmeticForm,"a+(b+c)+d"););
 
-        _(Process(kArithmeticForm,"a+(b-c-d+(((e+f"););
-        _(Process(kArithmeticForm,"a++d"););
-        _(Process(kArithmeticForm,"(-a+b*c)"));
-        _(Process(kArithmeticForm,"b+(-a)"););
-        _(Process(kArithmeticForm,"+(-a+b)"););
-        _(Process(kArithmeticForm,"-a*b"););
-        _(Process(kArithmeticForm,"-a*(b+c)"););
-        _(Process(kArithmeticForm,"(b)-a*(-b+c)"););
-        _(Process(kArithmeticForm,"(b)-a*-b"););
-        _(Process(kArithmeticForm,"a+b*c+d"));
-        _(Process(kArithmeticForm,"a+(b*c+d)"));
-        _(Process(kArithmeticForm,"a+(b+c)*d"));
-        _(Process(kArithmeticForm,"a*(b+c)*d"));
-        _(Process(kArithmeticForm,"(a+e)*(b+c)*d+f"));
-        _(Process(kArithmeticForm,"a*b+f"));
-        _(Process(kArithmeticForm,"-a+b+c"));
-        _(Process(kArithmeticForm,"-a*b+c"));
-        _(Process(kArithmeticForm,"-a*(-b)+c"));
-        _(Process(kArithmeticForm,"a"));
-        _(Process(kArithmeticForm,"g+"));
-        _(Process(kArithmeticForm,"+j"));
-        _(Process(kArithmeticForm,"(a"));
-        _(Process(kArithmeticForm,"(abc)-2"));
-        _(Process(kArithmeticForm,"(abc)- 2"));
-        _(Process(kArithmeticForm,"(ab c)- 2"));
-        _(Process(kArithmeticForm,"3(ab+c)d"));
-        _(Process(kArithmeticForm,"3(ab+c)   d"));
-        _(Process(kArithmeticForm,"a+b "));
-        _(Process(kArithmeticForm,"L+E+F+T+(A/B)*1^5"));
-        _(Process(kArithmeticForm,"A+B*C^D"));
-        _(Process(kArithmeticForm,"A+E+K+B*C+F*G^D"));
-        _(Process(kArithmeticForm,"B+C*F*G*H^D"));
-        _(Process(kArithmeticForm,"  (  (  A  )  )  "));
-        _(Process(kArithmeticForm,"  a  +  b  "));
-        _(Process(kArithmeticForm,"  +  b  "));
-        _(Process(kArithmeticForm," A "));
-        _(Process(kArithmeticForm," A + b "));
-        _(Process(kArithmeticForm,"+b"));
-        _(Process(kArithmeticForm,"   "));
-        _(Process(kArithmeticForm,"   a"));
-        _(Process(kArithmeticForm,"a   "));
-        _(Process(kArithmeticForm,"d+(a+b)+c   "));
-        _(Process(kArithmeticForm,"a+b+c+d+e+f   "));
-        _(Process(kArithmeticForm,"+b*c   "));
-        _(Process(kArithmeticForm,"a + ( b ) * c   "));
-        _(Process(kArithmeticForm,"a + "));
-        _(Process(kArithmeticForm,"a  "));
-        _(Process(kArithmeticForm,"a+-b  "));
-        _(Process(kArithmeticForm,"  a  +  (  -  b  )   "));
-        _(Process(kArithmeticForm,"  a  +    -  b     "));
-        _(Process(kArithmeticForm,"  a  +    (-  b    (((("));
-        _(Process(kArithmeticForm,"  a  +    (-  b    (()("));
-        _(Process(kArithmeticForm,"a+-+-+------b  "));
-        _(Process(kArithmeticForm,"a+- + -+   --    - ---b  "));
-        _(Process(kArithmeticForm,"a+- + -+   -*+    - ---b  "));
+        __(Process(kArithmeticForm,"a+(b-c-d+(((e+f"););
+        __(Process(kArithmeticForm,"a++d"););
+        __(Process(kArithmeticForm,"(-a+b*c)"));
+        __(Process(kArithmeticForm,"b+(-a)"););
+        __(Process(kArithmeticForm,"+(-a+b)"););
+        __(Process(kArithmeticForm,"-a*b"););
+        __(Process(kArithmeticForm,"-a*(b+c)"););
+        __(Process(kArithmeticForm,"(b)-a*(-b+c)"););
+        __(Process(kArithmeticForm,"(b)-a*-b"););
+        __(Process(kArithmeticForm,"a+b*c+d"));
+        __(Process(kArithmeticForm,"a+(b*c+d)"));
+        __(Process(kArithmeticForm,"a+(b+c)*d"));
+        __(Process(kArithmeticForm,"a*(b+c)*d"));
+        __(Process(kArithmeticForm,"(a+e)*(b+c)*d+f"));
+        __(Process(kArithmeticForm,"a*b+f"));
+        __(Process(kArithmeticForm,"-a+b+c"));
+        __(Process(kArithmeticForm,"-a*b+c"));
+        __(Process(kArithmeticForm,"-a*(-b)+c"));
+        __(Process(kArithmeticForm,"a"));
+        __(Process(kArithmeticForm,"g+"));
+        __(Process(kArithmeticForm,"+j"));
+        __(Process(kArithmeticForm,"(a"));
+        __(Process(kArithmeticForm,"(abc)-2"));
+        __(Process(kArithmeticForm,"(abc)- 2"));
+        __(Process(kArithmeticForm,"(ab c)- 2"));
+        __(Process(kArithmeticForm,"3(ab+c)d"));
+        __(Process(kArithmeticForm,"3(ab+c)   d"));
+        __(Process(kArithmeticForm,"a+b "));
+        __(Process(kArithmeticForm,"L+E+F+T+(A/B)*1^5"));
+        __(Process(kArithmeticForm,"A+B*C^D"));
+        __(Process(kArithmeticForm,"A+E+K+B*C+F*G^D"));
+        __(Process(kArithmeticForm,"B+C*F*G*H^D"));
+        __(Process(kArithmeticForm,"  (  (  A  )  )  "));
+        __(Process(kArithmeticForm,"  a  +  b  "));
+        __(Process(kArithmeticForm,"  +  b  "));
+        __(Process(kArithmeticForm," A "));
+        __(Process(kArithmeticForm," A + b "));
+        __(Process(kArithmeticForm,"+b"));
+        __(Process(kArithmeticForm,"   "));
+        __(Process(kArithmeticForm,"   a"));
+        __(Process(kArithmeticForm,"a   "));
+        __(Process(kArithmeticForm,"d+(a+b)+c   "));
+        __(Process(kArithmeticForm,"a+b+c+d+e+f   "));
+        __(Process(kArithmeticForm,"+b*c   "));
+        __(Process(kArithmeticForm,"a + ( b ) * c   "));
+        __(Process(kArithmeticForm,"a + "));
+        __(Process(kArithmeticForm,"a  "));
+        __(Process(kArithmeticForm,"a+-b  "));
+        __(Process(kArithmeticForm,"  a  +  (  -  b  )   "));
+        __(Process(kArithmeticForm,"  a  +    -  b     "));
+        __(Process(kArithmeticForm,"  a  +    (-  b    (((("));
+        __(Process(kArithmeticForm,"  a  +    (-  b    (()("));
+        __(Process(kArithmeticForm,"a+-+-+------b  "));
+        __(Process(kArithmeticForm,"a+- + -+   --    - ---b  "));
+        __(Process(kArithmeticForm,"a+- + -+   -*+    - ---b  "));
         __(Process(kArithmeticForm,"a+b+c+d+e*f*g*h*i^j^k^l^m*n*o*p+q+r+s-t"));
         __(Process(kArithmeticForm,"a^b^c^d^e*f*g*h*i-j-k-l+m"));
         __(Process(kArithmeticForm,"a*(b*c^d)^e*f*g+h+i"));
@@ -196,6 +196,7 @@ int main(const int argc, const char **argv)
         __(Process(kArithmeticForm," (_KEY_CTRL & _KEY_Q) | (_KEY_CTRL & _KEY_X)"));//how the fsck do u handle this? multiple trees associated with one action!
         __(Process(kArithmeticForm," _KEY_CTRL & (_KEY_Q | _KEY_X)"));//i know this is the correct form
 //        }//for
+        __(Process(kArithmeticForm," KEY_CTRL"));//i know this is the correct form
 
         __tIFnok( g_Expr.ShowContents() );
 //***************************************** END

@@ -238,7 +238,7 @@ TPolishForm::polishToGraph()
         EPFErrors_t err;
 
         _hif ( kReachedEOS != (err=eatDelimiter() )) {
-                _htIF(err != kPFNoError);//just in case eatDelimiter returns more than one different error (currently kAlreadyAtEOS) need to be handled here, since it's assumed that if not kAlreadyAtEOS then there are no errors
+                _htIF(err != kPFNoError);//just in case eatDelimiter returns more than one different error (currently kReachedEOS) need to be handled here, since it's assumed that if not kReachedEOS then there are no errors
 
                 std::string curChar;
                 _hif ( err=getCurChar(curChar) ) {
@@ -352,7 +352,7 @@ if (a_Form == kArithmeticForm) {
         if (err) {
                 _hreterr err;
         } else {
-                _htIF(rOpenBraces<0 );//impossible
+                _htIF(rOpenBraces < 0 );//impossible
 
                 if (rOpenBraces != 0) {//some braces not closed
                         //"a+(b-c-d+(((e+f" is considered valid until here

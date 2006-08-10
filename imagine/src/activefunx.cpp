@@ -88,24 +88,21 @@ function
 kAI_QuitProgram_()
 {
         INFO(quit);
-        ERR_IF(kFuncOK!=SetFlag(kF_QuitProgram),
-                        _F);
+        __fIFnok(SetFlag(kF_QuitProgram));
         _OK;
 }
 /*****************************************************************************/
 function
 kAI_Hold1Key_()
 {
-        ERR_IF(kFuncOK!=SetFlag(kF_Hold1Key),
-                        _F);
+        __fIFnok(SetFlag(kF_Hold1Key));
         _OK;
 }
 /*****************************************************************************/
 function
 kAI_Hold1Key_stop_()
 {
-        ERR_IF(kFuncOK!=ClearFlag(kF_Hold1Key),
-                        _F);
+        __fIFnok(ClearFlag(kF_Hold1Key));
         _OK;
 }
 /*****************************************************************************/

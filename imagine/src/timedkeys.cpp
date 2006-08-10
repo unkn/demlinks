@@ -329,7 +329,6 @@ if (fKeyFlags & kRealKeyboard) {
         LOCK_VARIABLE(gKeyBufTail);
 
         LOCK_VARIABLE(gKeyBufCount);
-//there's a BUG of some sort , while in X and keeping a key pressed ie. E, you'll see E presses and E depresses from time to time in the buffer, i believe it's happening at the lower level instead of at our (program) level; if I could run the console version I'd know; ie. 0, 0, 0, E_*, E~, E_, E~, E_, 0, 0, 0 (from an instant)
 
 
 
