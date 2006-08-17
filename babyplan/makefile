@@ -4,29 +4,26 @@
 #
 #                             dmental links
 #	Copyright (c) 28 Feb 2005 AtKaaZ, AtKaaZ at users.sourceforge.net
-#    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 #
 #  ========================================================================
 #
-#    This file contains Original Code and/or Modifications of Original
-#    Code as defined in and that are subject to the Sybase Open Watcom
-#    Public License version 1.0 (the 'License'). You may not use this file
-#    except in compliance with the License. BY USING THIS FILE YOU AGREE TO
-#    ALL TERMS AND CONDITIONS OF THE LICENSE. A copy of the License is
-#    provided with the Original Code and Modifications, and is also
-#    available at www.sybase.com/developer/opensource.
+#    This program is free software; you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation; either version 2 of the License, or
+#    (at your option) any later version.
 #
-#    The Original Code and all software distributed under the License are
-#    distributed on an 'AS IS' basis, WITHOUT WARRANTY OF ANY KIND, EITHER
-#    EXPRESS OR IMPLIED, AND SYBASE AND ALL CONTRIBUTORS HEREBY DISCLAIM
-#    ALL SUCH WARRANTIES, INCLUDING WITHOUT LIMITATION, ANY WARRANTIES OF
-#    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, QUIET ENJOYMENT OR
-#    NON-INFRINGEMENT. Please see the License for the specific language
-#    governing rights and limitations under the License.
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program; if not, write to the Free Software
+#    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 #  ========================================================================
 #
-# Description:  
+# Description:
 #
 #############################################################################
 
@@ -57,7 +54,7 @@ objs = $(objdir)\test02.obj &
 	$(objdir)\ea_list.obj &
 	$(objdir)\acalitem.obj &
 	$(objdir)\gcalitem.obj &
-	$(objdir)\eal_item.obj 
+	$(objdir)\eal_item.obj
 	
 
 # that's all ~ above
@@ -79,7 +76,7 @@ CFLAGS = -m$(MODEL) $(VERBOSITY) $(CACHE) $(DEBug) $(ERRors) $(WARNINGS)
 LNKOPT = option quiet
 
 .EXTENSIONS:
-.EXTENSIONS: .exe .obj .h .cpp 
+.EXTENSIONS: .exe .obj .h .cpp
 
 .ERROR
 	@cd $(errdir)
@@ -89,7 +86,7 @@ LNKOPT = option quiet
         @set INCLUDE=.;$(%watcom)\h
         @set DOS4G=QUIET
 
-.AFTER 
+.AFTER
 	@echo Done.
 	
 # explicit rules
@@ -99,7 +96,7 @@ all :  $(outfile) .SYMBOLIC
 
 .ERASE
 $(outfile) : $(objs)
-	*wlink $(LNKOPT) system $(SYSTEM) name $(outfile) file {$(objs)} 
+	*wlink $(LNKOPT) system $(SYSTEM) name $(outfile) file {$(objs)}
 
 clean : cleanerr .SYMBOLIC
         if exist $(objdir)\*.obj del $(objdir)\*.obj
@@ -109,7 +106,7 @@ clean : cleanerr .SYMBOLIC
 cleanerr : .SYMBOLIC
 	if exist $(errdir)\*.err del $(errdir)\*.err
 
-killdat : .SYMBOLIC       
+killdat : .SYMBOLIC
 	if exist $(tmpdir)\*.dat del $(tmpdir)\*.dat
 	if exist $(bindir)\*.dat del $(bindir)\*.dat
 
@@ -122,5 +119,5 @@ cleanall : clean killdat .SYMBOLIC
 .cpp : $(srcdir)
 .cpp.obj : .AUTODEPEND
         *$(CC) $(srcdir)\$^& -fo=$(objdir)\$^& $(CFLAGS)
-       
+
 
