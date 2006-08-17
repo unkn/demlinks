@@ -1,4 +1,4 @@
-Char-based world (C) 12 March 2005, AtKaaZ , see the file license.txt :-"
+Char-based world (C) 12 March 2005, AtKaaZ
 
 well actually is supposed to keep a directory structure with text files 
 but it is char-based.

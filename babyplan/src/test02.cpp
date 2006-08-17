@@ -2,29 +2,26 @@
 *
 *                             dmental links
 *    Copyright (c) 28 Feb 2005 AtKaaZ, AtKaaZ at users.sourceforge.net
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
 *
-*    This file contains Original Code and/or Modifications of Original
-*    Code as defined in and that are subject to the Sybase Open Watcom
-*    Public License version 1.0 (the 'License'). You may not use this file
-*    except in compliance with the License. BY USING THIS FILE YOU AGREE TO
-*    ALL TERMS AND CONDITIONS OF THE LICENSE. A copy of the License is
-*    provided with the Original Code and Modifications, and is also
-*    available at www.sybase.com/developer/opensource.
+*    This program is free software; you can redistribute it and/or modify
+*    it under the terms of the GNU General Public License as published by
+*    the Free Software Foundation; either version 2 of the License, or
+*    (at your option) any later version.
 *
-*    The Original Code and all software distributed under the License are
-*    distributed on an 'AS IS' basis, WITHOUT WARRANTY OF ANY KIND, EITHER
-*    EXPRESS OR IMPLIED, AND SYBASE AND ALL CONTRIBUTORS HEREBY DISCLAIM
-*    ALL SUCH WARRANTIES, INCLUDING WITHOUT LIMITATION, ANY WARRANTIES OF
-*    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, QUIET ENJOYMENT OR
-*    NON-INFRINGEMENT. Please see the License for the specific language
-*    governing rights and limitations under the License.
+*    This program is distributed in the hope that it will be useful,
+*    but WITHOUT ANY WARRANTY; without even the implied warranty of
+*    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+*    GNU General Public License for more details.
+*
+*    You should have received a copy of the GNU General Public License
+*    along with this program; if not, write to the Free Software
+*    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 *
 *  ========================================================================
 *
-* Description: just testing stuff 
+* Description: just testing stuff
 *
 ****************************************************************************/
 
@@ -44,7 +41,7 @@ dmentalix *test2;
 
 int main(){
     init_error_tracker();
-    
+
     test2=new dmentalix;
     ab_ifnot(test2);
 
@@ -54,7 +51,7 @@ int main(){
     if (c!=27) {
         unlinkall(_fnames);//so we kill the files we can use strictADDelemental()
     }
-    
+
     ab_ifnot(test2->init(_fnames,num_cached_records));
 
     if (c==27) goto skipadd;
@@ -62,7 +59,7 @@ int main(){
     printf("Attempting to add eatoms with BE#0..#255 takes 15seconds\n");
     printf("drop anykey to begin or ESC to skip...\n");
     if (getch()==27) goto skipadd;
-    
+
     c=0;
     while ( !( (kbhit())&&(getch()) ) ){
         printf("attempting to add basic_elemnt==char(%d)",c);
@@ -75,7 +72,7 @@ int main(){
     }//while
 
 skipadd:
-    
+
     atomID prev=_noID_;
     atomID fromhere;//no warnings
     atomID bebe;
@@ -84,7 +81,7 @@ skipadd:
     printf("Attempting to add acatoms to each eatom ~ 30secs\n");
     printf("drop anykey to begin or ESC to skip...\n");
     if (getch()==27) goto skipacatoms;
-    
+
     c=0;
     while ( !( (kbhit())&&(getch()) ) ){
         printf("attempt2add ACatom to BE==char(%d)",c);
@@ -110,13 +107,13 @@ skipadd:
         newgid=test2->add_group_with_headatom(&bebe);
     );
     printf("added gID==%ld which points to head atomID==%ld\n",newgid,bebe);
-    
+
 
 skipgrpadd:
     printf("Trying to parse chain from the last added acatom\n");
     printf("drop anykey to begin or ESC to skip...\n");
     if (getch()==27) goto skipacatoms;
-    
+
     fromhere=prev;
 
     while ( !( (kbhit())&&(getch()) ) ){
@@ -163,7 +160,7 @@ skipacatoms:
     printf("Trying find, in random order 256 times takes 5seconds w/optimiz\n");
     printf("drop anykey to begin or ESC to skip...\n");
     if (getch()==27) goto skiprnd;
-    
+
     c=0;
     while ( !( (kbhit())&&(getch()) ) ){
         c--;

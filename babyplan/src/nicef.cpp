@@ -2,29 +2,26 @@
 *
 *                             dmental links
 *    Copyright (c) 28 Feb 2005 AtKaaZ, AtKaaZ at users.sourceforge.net
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
 *
-*    This file contains Original Code and/or Modifications of Original
-*    Code as defined in and that are subject to the Sybase Open Watcom
-*    Public License version 1.0 (the 'License'). You may not use this file
-*    except in compliance with the License. BY USING THIS FILE YOU AGREE TO
-*    ALL TERMS AND CONDITIONS OF THE LICENSE. A copy of the License is
-*    provided with the Original Code and Modifications, and is also
-*    available at www.sybase.com/developer/opensource.
+*    This program is free software; you can redistribute it and/or modify
+*    it under the terms of the GNU General Public License as published by
+*    the Free Software Foundation; either version 2 of the License, or
+*    (at your option) any later version.
 *
-*    The Original Code and all software distributed under the License are
-*    distributed on an 'AS IS' basis, WITHOUT WARRANTY OF ANY KIND, EITHER
-*    EXPRESS OR IMPLIED, AND SYBASE AND ALL CONTRIBUTORS HEREBY DISCLAIM
-*    ALL SUCH WARRANTIES, INCLUDING WITHOUT LIMITATION, ANY WARRANTIES OF
-*    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, QUIET ENJOYMENT OR
-*    NON-INFRINGEMENT. Please see the License for the specific language
-*    governing rights and limitations under the License.
+*    This program is distributed in the hope that it will be useful,
+*    but WITHOUT ANY WARRANTY; without even the implied warranty of
+*    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+*    GNU General Public License for more details.
+*
+*    You should have received a copy of the GNU General Public License
+*    along with this program; if not, write to the Free Software
+*    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 *
 *  ========================================================================
 *
-* Description:  
+* Description:
 *
 ****************************************************************************/
 
@@ -88,7 +85,7 @@ long nicefi::get_all_unwritten_above_this_recno(const long recno){
     tmp=headCache;
     while (tmp!=NULL){
         if ( (tmp->stat==stat_write)&&(tmp->recno>recno) ){
-            ++cnt; 
+            ++cnt;
         }//fi
         tmp=tmp->next;
     }//while
@@ -223,7 +220,7 @@ reterrt nicefi::absAddRecord2Cache(const stat_type typ, const long recno, const 
     }//fi
     tmp=new cache_record;
     sret_ifnot(tmp);//not allocated?
-    
+
     tmp->data=malloc(recsize);
     sret_ifnot(tmp->data);//not allocated?
     memcpy(tmp->data,from,recsize);
@@ -238,7 +235,7 @@ reterrt nicefi::absAddRecord2Cache(const stat_type typ, const long recno, const 
         tailCache->next=tmp;
     }
     if (headCache==NULL) headCache=tmp;
-    
+
 
     tailCache=tmp;//new tail
 
@@ -246,7 +243,7 @@ reterrt nicefi::absAddRecord2Cache(const stat_type typ, const long recno, const 
         highest_recno=recno;
     }
     ++numCachedRecords;//oh, we added one more
-    
+
     ret_ok();
 }
 
@@ -270,7 +267,7 @@ reterrt nicefi::initCache(const long maxrex){
 
 reterrt nicefi::killcache(){//dealloc and stuff
     sret_ifnot( flushwrites() );//write all to be written first
-    
+
 #ifdef EXACT_ERRORS_PLUS_A_BIT_OF_PARANOIA
     sret_if( headCache );
     sret_if( tailCache );
@@ -339,7 +336,7 @@ reterrt nicefi::close(){
     sret_ifnot(isopened());
 #endif
     sret_ifnot( killcache() );//autoflushes writes, duh**
-    
+
     sret_if( fhandle <=0 );
     sret_if( (0 != ::close(fhandle)) );
     fhandle=-1;
@@ -424,7 +421,7 @@ reterrt nicefi::open(const char * fname, const long header_size,const long rec_s
 
     sret_if(rec_size<=0);
     sret_if(header_size<0);
-    
+
     sret_ifnot( initCache(maxcachedrecords) );
 
     /* open the file */

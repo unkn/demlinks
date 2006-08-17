@@ -2,25 +2,22 @@
 *
 *                             dmental links
 *    Copyright (c) 28 Feb 2005 AtKaaZ, AtKaaZ at users.sourceforge.net
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
 *
-*    This file contains Original Code and/or Modifications of Original
-*    Code as defined in and that are subject to the Sybase Open Watcom
-*    Public License version 1.0 (the 'License'). You may not use this file
-*    except in compliance with the License. BY USING THIS FILE YOU AGREE TO
-*    ALL TERMS AND CONDITIONS OF THE LICENSE. A copy of the License is
-*    provided with the Original Code and Modifications, and is also
-*    available at www.sybase.com/developer/opensource.
+*    This program is free software; you can redistribute it and/or modify
+*    it under the terms of the GNU General Public License as published by
+*    the Free Software Foundation; either version 2 of the License, or
+*    (at your option) any later version.
 *
-*    The Original Code and all software distributed under the License are
-*    distributed on an 'AS IS' basis, WITHOUT WARRANTY OF ANY KIND, EITHER
-*    EXPRESS OR IMPLIED, AND SYBASE AND ALL CONTRIBUTORS HEREBY DISCLAIM
-*    ALL SUCH WARRANTIES, INCLUDING WITHOUT LIMITATION, ANY WARRANTIES OF
-*    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, QUIET ENJOYMENT OR
-*    NON-INFRINGEMENT. Please see the License for the specific language
-*    governing rights and limitations under the License.
+*    This program is distributed in the hope that it will be useful,
+*    but WITHOUT ANY WARRANTY; without even the implied warranty of
+*    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+*    GNU General Public License for more details.
+*
+*    You should have received a copy of the GNU General Public License
+*    along with this program; if not, write to the Free Software
+*    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 *
 *  ========================================================================
 *
@@ -49,7 +46,7 @@ dmentalix::~dmentalix(){
 /*______________*/
 #define INIT(_x_) \
     ret_ifnot( if_##_x_##::init(##_x_##fname, num_cached_records) )
-    
+
 reterrt dmentalix::init(_declall(const char *,fname), const long num_cached_records)
 {
     INIT(atom);
@@ -78,7 +75,7 @@ reterrt dmentalix::init(_declall(const char *,fname), const long num_cached_reco
 /*______________*/
 #define DONE(_x_) \
     ret_ifnot( if_##_x_##::shutdown() )
-    
+
 reterrt dmentalix::shutdown(){
     DONE(atom);
     DONE(grpatoms_list);
@@ -111,7 +108,7 @@ reterrt dmentalix::_who_s_groupID_are_you_atomID(groupID &gid, const atomID me){
         deref_atomID_type tat;
         ret_ifnot( if_atom::getwithID(me,tat) );//attempt to bring contents of atomID into &tat
         ret_if( tat.at_type == _E_atom );//eatoms cannot be in groups!
-        
+
         switch (tat.at_type) {
             case _AC_atom:
                 deref_acatomID_type aca;
@@ -143,7 +140,7 @@ groupID dmentalix::add_empty_group(){
         grplist=if_grpatoms_list::addnew(grplistvar);
   //  );//ptr2head=_noID_ -> empty list
     ret_if(_noID_==grplist);
-    
+
 
     deref_groupID_type newone;
     if_group::compose(newone,_noID_,grplist);
@@ -191,7 +188,7 @@ groupID dmentalix::add_group_with_headatom(atomID *head){
         //I guess we could have put the groupID while we were scanning to find
         //the head but then again, the user could have given use the proper head in the 1st place.
     } while (1);
-    
+
 
 
     //new group -> new list
@@ -202,7 +199,7 @@ groupID dmentalix::add_group_with_headatom(atomID *head){
         grplist=if_grpatoms_list::addnew(grplistvar);
   //  );//ptr2head=_noID_ -> empty list
     ret_if(_noID_==grplist);
-    
+
     deref_groupID_type dg;
     groupID gID;
     if_group::compose(dg,atomiter,grplist);//atomiter may be==head and head may be _noID_
@@ -241,7 +238,7 @@ reterrt dmentalix::strict_modif_ptr2group(const atomID whos, const groupID witwa
         deref_atomID_type tat;
         ret_ifnot( if_atom::getwithID(whos,tat) );//attempt to bring contents of atomID into &tat
         ret_if( tat.at_type == _E_atom );//eatoms cannot be part of chains
-        
+
         switch (tat.at_type) {//we've to proxex each atomtype separately
             case _AC_atom:
                 deref_acatomID_type aca;
@@ -273,7 +270,7 @@ atomID dmentalix::get_next_atomID_in_chain(const atomID fromwhere){
     deref_atomID_type tat;
     ret_ifnot( if_atom::getwithID(fromwhere,tat) );
     ret_if( tat.at_type == _E_atom );//eatoms cannot be part of chains
-    
+
     switch (tat.at_type) {//we've to proxex each atomtype separately
         case _AC_atom:
             deref_acatomID_type aca;
@@ -299,7 +296,7 @@ atomID dmentalix::get_prev_atomID_in_chain(const atomID fromwhere){
     deref_atomID_type tat;
     ret_ifnot( if_atom::getwithID(fromwhere,tat) );
     ret_if( tat.at_type == _E_atom );//eatoms cannot be part of chains
-    
+
     switch (tat.at_type) {//we've to proxex each atomtype separately
         case _AC_atom:
             deref_acatomID_type aca;
@@ -333,10 +330,10 @@ causes error if there's no head in items, usually where there are no clones!
 
     deref_atomID_type _ecin;
     ret_ifnot ( if_atom::getwithID(which,_ecin) );
-    
+
     atomtypes ty=_ecin.at_type;
     ret_if( ty != _E_atom ); //expecting only eatom, not gca or aca or other(invalid)
-    
+
     deref_eatomID_type _ec;
     ret_ifnot( if_eatom::getwithID(_ecin.at_ID,_ec) );
     eatoms_listID _el=_ec.ptr2list;
@@ -346,7 +343,7 @@ causes error if there's no head in items, usually where there are no clones!
     ret_ifnot( if_eatoms_list::getwithID(_el,t_el) );
     //all ok
     head=t_el.ptr2head;//may be _noID_ but no error is returned
-    
+
     ret_ok();
 }
 
@@ -362,7 +359,7 @@ reterrt dmentalix::get_atomID_s_type_prev_next(const atomID whos_atomID, atomtyp
     ret_ifnot( if_atom::getwithID(whos_atomID,_tmpa) );
     ret_if( _tmpa.at_type == _E_atom ); //eatoms can't be chained, use acatoms to them, instead.
     type=_tmpa.at_type;//set return type, since it's not eatom(handled above^)
-    
+
     switch (_tmpa.at_type) {
         case _GC_atom://get this GCatom in order to see it's prev/next
                 deref_gcatomID_type _gca;
@@ -413,13 +410,13 @@ atomID dmentalix::strict_add_atom_type_AC_after_prev(const atomID ptr2what_atomI
     if_acatoms_list::compose(_list,_noID_);//ptr2head=_noID_=_noID_ no items in list
     acatoms_listID listID=if_acatoms_list::addnew(_list);
     ret_if(listID==_noID_);//return if error ^ somehow list wasn't allocated
-    
+
 
     deref_acatomID_type _acatom;
     if_acatom::compose(_acatom,father_groupID,whosprev_atomID,_noID_,listID,ptr2what_atomID);//append/add a new elemental
     acatomID _acatomID=if_acatom::addnew(_acatom);//create the new acatom
     ret_if( _acatomID==_noID_ );//quit if failed to create it
-    
+
     _atom.at_ID=_acatomID;//err...
     ret_ifnot( if_atom::writewithID(father,_atom) );//exchange contents of atomID, with the new contents from &_atom
 //so by this line, we've successfuly added a new atomID which has a new
@@ -478,13 +475,13 @@ atomID dmentalix::strict_add_atom_type_GC_after_prev(const groupID ptr2what_grou
     if_gcatoms_list::compose(_list,_noID_);//ptr2head=_noID_=_noID_ no items in list
     gcatoms_listID listID=if_gcatoms_list::addnew(_list);
     ret_if(listID==_noID_);//return if error ^ somehow list wasn't allocated
-    
+
 
     deref_gcatomID_type _gcatom;
     if_gcatom::compose(_gcatom,father_groupID,whosprev_atomID,_noID_,listID,ptr2what_groupID);//append/add a new elemental
     gcatomID _gcatomID=if_gcatom::addnew(_gcatom);//create the new gcatom
     ret_if( _gcatomID==_noID_ );//quit if failed to create it
-    
+
     _atom.at_ID=_gcatomID;//err...
     ret_ifnot( if_atom::writewithID(father,_atom) );//exchange contents of atomID, with the new contents from &_atom
 //make group know that it's being refered by smbdy
@@ -527,7 +524,7 @@ because only GCatoms can point to groups!
         )
     );
 
-    
+
     ret_ok();//allOK
 }
 /*^^^^^^^^^^^^^^*/
@@ -557,7 +554,7 @@ reterrt dmentalix::strict_add_one_more_atomID_to_this_grp_clone_list(const grpat
 
     ret_ifnot( if_grpatoms_list::writewithID(whatlist,_list) );
     //wrote list
-    
+
     ret_ok();
 }
 /*^^^^^^^^^^^^^^*/
@@ -598,7 +595,7 @@ AC atom(what2add_atomID).
                 ret_ifalways(not dodging atom of unknown type);
     }//switch
 
-    
+
     ret_ok();//allOK
 }
 /*^^^^^^^^^^^^^^*/
@@ -627,7 +624,7 @@ reterrt dmentalix::strict_add_one_more_atomID_to_this_gcatom_s_clone_list(const 
 
     ret_ifnot( if_gcatoms_list::writewithID(whatlist,_list) );
     //wrote list
-    
+
     ret_ok();
 }
 /*^^^^^^^^^^^^^^*/
@@ -655,7 +652,7 @@ reterrt dmentalix::strict_add_one_more_atomID_to_this_eatom_s_clone_list(const e
 
     ret_ifnot( if_eatoms_list::writewithID(whatlist,_list) );
     //wrote list
-    
+
 
     ret_ok();
 }
@@ -764,7 +761,7 @@ an empty eatoms_list which points to nothing in eatomslist_item
     ret_ifnot(wasinited());//files must be open ~ check
 #endif
 //try and see if BE already exists
-    
+
     deref_eatomID_type dood;
     eatomID _exist=if_eatom::find_eatom(dood,BE);
     if (_exist){ //if already exists then we must return the atomID
@@ -802,7 +799,7 @@ while this funx is used for speed(dramatical increase), it also can be very
     //there are no items yet, items are those clones that refer to US
     //US=the new not yet created eatom
     //so we create an empty eatoms_listID, that has no `head' item
-    
+
 
     //allocating a new list, unconnected to any atoms
     deref_eatoms_listID_type _eatoms_list;
@@ -812,11 +809,11 @@ while this funx is used for speed(dramatical increase), it also can be very
     if_eatoms_list::compose(_eatoms_list,_noID_);
     _eatoms_listID=if_eatoms_list::addnew(_eatoms_list);
     ret_ifnot(_eatoms_listID);//failed prev addition, creating a new list
-    
+
     //composing a new eatom, connecting the above list to it; and `thenewbe'.
     deref_eatomID_type _eatom;
     if_eatom::compose(_eatom,whosmy_atomID,_eatoms_listID,thenewbe);
-    
+
     return if_eatom::addnew(_eatom);//allocate and return ID or error=0
 }
 /*^^^^^^^^^^^^^^*/
@@ -847,12 +844,12 @@ is compatible with reterrt type, thus we can properly use errortracker)
     return strict_addelemental(whosmy_atomID, thenewbe);//performs an unchecked append
 }
 /*^^^^^^^^^^^^^^*/
-    
+
 atomID dmentalix::find_atomID_type_E(const basic_element BE){//only ID is returned
 #ifdef WASINITED_SAFETY
     ret_ifnot(wasinited());//files must be open ~ check
 #endif
-    
+
     eatomID got_eatomID;
     deref_eatomID_type eatom;
     ret_if_error_after_statement(got_eatomID=if_eatom::find_eatom(eatom,BE));

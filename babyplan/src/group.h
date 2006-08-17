@@ -2,29 +2,26 @@
 *
 *                             dmental links
 *    Copyright (c) 28 Feb 2005 AtKaaZ, AtKaaZ at users.sourceforge.net
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
 *
-*    This file contains Original Code and/or Modifications of Original
-*    Code as defined in and that are subject to the Sybase Open Watcom
-*    Public License version 1.0 (the 'License'). You may not use this file
-*    except in compliance with the License. BY USING THIS FILE YOU AGREE TO
-*    ALL TERMS AND CONDITIONS OF THE LICENSE. A copy of the License is
-*    provided with the Original Code and Modifications, and is also
-*    available at www.sybase.com/developer/opensource.
+*    This program is free software; you can redistribute it and/or modify
+*    it under the terms of the GNU General Public License as published by
+*    the Free Software Foundation; either version 2 of the License, or
+*    (at your option) any later version.
 *
-*    The Original Code and all software distributed under the License are
-*    distributed on an 'AS IS' basis, WITHOUT WARRANTY OF ANY KIND, EITHER
-*    EXPRESS OR IMPLIED, AND SYBASE AND ALL CONTRIBUTORS HEREBY DISCLAIM
-*    ALL SUCH WARRANTIES, INCLUDING WITHOUT LIMITATION, ANY WARRANTIES OF
-*    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, QUIET ENJOYMENT OR
-*    NON-INFRINGEMENT. Please see the License for the specific language
-*    governing rights and limitations under the License.
+*    This program is distributed in the hope that it will be useful,
+*    but WITHOUT ANY WARRANTY; without even the implied warranty of
+*    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+*    GNU General Public License for more details.
+*
+*    You should have received a copy of the GNU General Public License
+*    along with this program; if not, write to the Free Software
+*    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 *
 *  ========================================================================
 *
-* Description:  
+* Description:
 *
 ****************************************************************************/
 
@@ -40,18 +37,18 @@
 
 
 class if_group:public nicefi {
-private:                       
-    int opened;                 
-    const long its_recsize;      
-public:                           
-    if_group();                    
-    ~if_group();                    
-    reterrt init(const char *fname, const long MAXCACHEDRECORDS);    
+private:
+    int opened;
+    const long its_recsize;
+public:
+    if_group();
+    ~if_group();
+    reterrt init(const char *fname, const long MAXCACHEDRECORDS);
     reterrt getwithID(const groupID whatgroupID, deref_groupID_type &into);
     reterrt writewithID(const groupID whatgroupID, const deref_groupID_type &from);
-    long addnew(const deref_groupID_type &from); 
+    long addnew(const deref_groupID_type &from);
     long howmany();
-    reterrt shutdown(); 
+    reterrt shutdown();
     void compose(
         deref_groupID_type &into,
         const atomID ptr2atom_head_of_chain,

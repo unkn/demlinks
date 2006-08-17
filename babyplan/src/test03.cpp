@@ -2,25 +2,22 @@
 *
 *                             dmental links
 *    Copyright (c) 28 Feb 2005 AtKaaZ, AtKaaZ at users.sourceforge.net
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
 *
-*    This file contains Original Code and/or Modifications of Original
-*    Code as defined in and that are subject to the Sybase Open Watcom
-*    Public License version 1.0 (the 'License'). You may not use this file
-*    except in compliance with the License. BY USING THIS FILE YOU AGREE TO
-*    ALL TERMS AND CONDITIONS OF THE LICENSE. A copy of the License is
-*    provided with the Original Code and Modifications, and is also
-*    available at www.sybase.com/developer/opensource.
+*    This program is free software; you can redistribute it and/or modify
+*    it under the terms of the GNU General Public License as published by
+*    the Free Software Foundation; either version 2 of the License, or
+*    (at your option) any later version.
 *
-*    The Original Code and all software distributed under the License are
-*    distributed on an 'AS IS' basis, WITHOUT WARRANTY OF ANY KIND, EITHER
-*    EXPRESS OR IMPLIED, AND SYBASE AND ALL CONTRIBUTORS HEREBY DISCLAIM
-*    ALL SUCH WARRANTIES, INCLUDING WITHOUT LIMITATION, ANY WARRANTIES OF
-*    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, QUIET ENJOYMENT OR
-*    NON-INFRINGEMENT. Please see the License for the specific language
-*    governing rights and limitations under the License.
+*    This program is distributed in the hope that it will be useful,
+*    but WITHOUT ANY WARRANTY; without even the implied warranty of
+*    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+*    GNU General Public License for more details.
+*
+*    You should have received a copy of the GNU General Public License
+*    along with this program; if not, write to the Free Software
+*    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 *
 *  ========================================================================
 *
@@ -84,7 +81,7 @@ reterrt get_word(const char *w, groupID &dest){
     //common group for all... damn is this backtracking? this is gonna hurt :D
     //BUT, after we find them all to be part of the same group we must check
     //that 1st acatom is _word_ special, and that the rest atoms which follow
-    //must be in the order need, ie. words like ACE and CEA would have their 
+    //must be in the order need, ie. words like ACE and CEA would have their
     //acatoms yield the same group but they are in different order. And lastly
     //the last acatom must have .next =null this means that the word isn't
     //longer than the one we're lookin for, ie. ACE and ACED.
@@ -116,12 +113,12 @@ reterrt abs_add_word(const char *w,groupID &dest){
         );
         ret_if(prev == _noID_);
     }//for
-    
+
     ret_ok();
 }
 
 reterrt add_word(const char *w,groupID &dest){
-//adds one word ie. "file" 
+//adds one word ie. "file"
 //checks for existing, if the word exists we will return it's groupID
     groupID tmpgid;
     ret_ifnot( get_word(w,tmpgid) );
@@ -143,7 +140,7 @@ reterrt prealloc_eatoms(){//only call this IF database is empty
     for (long i=0;i<=255;i++){
         tmp=test3->strict_add_atom_type_E(basic_element(i));//any errors mean tmp==0
         //the following is an imperative check!(a must)
-        ret_if(tmp != i+1);//ensuring that atomID = 1+ord(char) for the sake of performance in this program, since w/o this we'd have to call a func to return the atomID of char(x) which would be very bad for performance. 
+        ret_if(tmp != i+1);//ensuring that atomID = 1+ord(char) for the sake of performance in this program, since w/o this we'd have to call a func to return the atomID of char(x) which would be very bad for performance.
     }//for
     ret_ok();
 }
@@ -162,7 +159,7 @@ reterrt make_new_config(){
     atomID prev=_noID_;//first one has no `.prev'
     for (long i=0;i<numspex;i++){//write'm all
         ret_if_error_after_statement(
-            prev=test3->strict_add_atom_type_GC_after_prev(dummygroupID,_noID_,prev) 
+            prev=test3->strict_add_atom_type_GC_after_prev(dummygroupID,_noID_,prev)
         );//why not keep all specials chained ;) and they all ref. to dummygroupID
         _specials[i]=prev;
         ret_ifnot( lamecfg->writerec(1+i,&_specials[i]) );
@@ -181,12 +178,12 @@ reterrt read_config(){
 
 int main(){
     init_error_tracker();
-    
+
     test3=new dmentalix;
     ab_ifnot(test3);
 
     unlink(cfg_fname);//FIXME: temporary shit
-        
+
     lamecfg=new nicefi;
     ab_ifnot(lamecfg);
     ab_ifnot( lamecfg->open(cfg_fname,0,sizeof(atomID),numspex) );
@@ -196,11 +193,11 @@ int main(){
         printf("Unable to read config file, recreating everything!\n");
         printf("Erasing data files...\n");
         unlinkall(_fnames);//we don't care about errors here
-    }//fi 
+    }//fi
 
     printf("Attempting to open data files...\n");
     ab_ifnot( test3->init(_fnames,num_cached_records) );
-    
+
     if (! rc) {
         printf("Making new config...\n");
         ab_ifnot( make_new_config() );//must already be inited ~ dmentalix
