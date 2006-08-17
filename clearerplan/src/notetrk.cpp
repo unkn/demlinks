@@ -2,25 +2,22 @@
 *
 *                             dmental links
 *    Copyright (c) 28 Feb 2005 AtKaaZ, AtKaaZ at users.sourceforge.net
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
 *
-*    This file contains Original Code and/or Modifications of Original
-*    Code as defined in and that are subject to the Sybase Open Watcom
-*    Public License version 1.0 (the 'License'). You may not use this file
-*    except in compliance with the License. BY USING THIS FILE YOU AGREE TO
-*    ALL TERMS AND CONDITIONS OF THE LICENSE. A copy of the License is
-*    provided with the Original Code and Modifications, and is also
-*    available at www.sybase.com/developer/opensource.
+*    This program is free software; you can redistribute it and/or modify
+*    it under the terms of the GNU General Public License as published by
+*    the Free Software Foundation; either version 2 of the License, or
+*    (at your option) any later version.
 *
-*    The Original Code and all software distributed under the License are
-*    distributed on an 'AS IS' basis, WITHOUT WARRANTY OF ANY KIND, EITHER
-*    EXPRESS OR IMPLIED, AND SYBASE AND ALL CONTRIBUTORS HEREBY DISCLAIM
-*    ALL SUCH WARRANTIES, INCLUDING WITHOUT LIMITATION, ANY WARRANTIES OF
-*    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, QUIET ENJOYMENT OR
-*    NON-INFRINGEMENT. Please see the License for the specific language
-*    governing rights and limitations under the License.
+*    This program is distributed in the hope that it will be useful,
+*    but WITHOUT ANY WARRANTY; without even the implied warranty of
+*    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+*    GNU General Public License for more details.
+*
+*    You should have received a copy of the GNU General Public License
+*    along with this program; if not, write to the Free Software
+*    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 *
 *  ========================================================================
 *
@@ -36,9 +33,9 @@
 
 
 /* constructor */
-TNotify::TNotify(): 
-        fHead(NULL), 
-        fTail(NULL) 
+TNotify::TNotify():
+        fHead(NULL),
+        fTail(NULL)
 {
         SetOkInternally();
         SetNoNotes();
@@ -48,7 +45,7 @@ TNotify::TNotify():
 TNotify::~TNotify()
 {
         /* destroy the list, if not done so */
-        if (fHead) 
+        if (fHead)
                 PurgeThemAll();
 }
 
@@ -68,14 +65,14 @@ void TNotify::PurgeThemAll(){
 
 /* one less note in the list, particulary the one that enterd the list first */
 void TNotify::ClearLastNote(){
-        if (fHead) { 
-                SetLessNotes(); 
+        if (fHead) {
+                SetLessNotes();
                 NotifyItem_st *tmp=fHead;
-                fHead=fHead->Next; 
+                fHead=fHead->Next;
 
                 /* FIXME: not deallocating PChar_t types from within */
                 delete tmp;
-                if (!fHead) 
+                if (!fHead)
                         fTail=NULL;
         }
 }
@@ -87,15 +84,15 @@ NotifyItem_st * TNotify::GetLastNote(){
 }
 
 
-/* moves out the item from list, w/o deallocating it 
+/* moves out the item from list, w/o deallocating it
  * it's a job left for the caller
- */ 
+ */
 NotifyItem_st * TNotify::MoveOutNote(){
 /* return NULL if list is empty, otherwise returns a pointer to the item */
         NotifyItem_st *tmp=fHead;
         if (fHead) {
                 fHead=fHead->Next;
-                if (!fHead) 
+                if (!fHead)
                         fTail=NULL;
                 SetLessNotes();
         }
@@ -105,18 +102,18 @@ NotifyItem_st * TNotify::MoveOutNote(){
 Bool_t TNotify::Add2List(NotifyItem_st *a_What){
         /* even if we fail something we still have to count this note */
         SetMoreNotes();
-        
+
         if (!a_What) {/* oops NULL ptr passed to us */
                 SetFailedInternally();
-                return kFalse; 
+                return kFalse;
         }
 /* this one we add is at the tail so it points to no more items afterwards */
         a_What->Next=NULL;
-        if (fTail) 
+        if (fTail)
                 fTail->Next=a_What;
         else /* fTail is NULL then so must fHead be NULL */
                 fHead=a_What; /* so we only got one item */
-    
+
         fTail=a_What; /* always pointing to last item in list */
         return kTrue;
 }
@@ -133,7 +130,7 @@ Bool_t TNotify::AddNote(const NotifyItem_st &a_NewNote){
 
 /* except that the Depth must be corrected by us 'cause we compute the Depth */
         tmp->Contents.Depth=GetNotes();
-        
+
         /* this function does SetMoreNotes() */
         return Add2List(tmp);/* most always returns kTrue */
 
@@ -149,10 +146,10 @@ ifailed:
 
 
 Bool_t TNotify::AddUserNote(
-                const NotifyType_t a_NotifyType, 
+                const NotifyType_t a_NotifyType,
                 const PChar_t a_Desc,
-                const PChar_t a_FileName, 
-                const PChar_t a_Func, 
+                const PChar_t a_FileName,
+                const PChar_t a_Func,
                 const Line_t a_Line)
 {
         /* static or smth */
@@ -163,9 +160,9 @@ Bool_t TNotify::AddUserNote(
         tmp.Contents.Type=a_NotifyType;
         tmp.Contents.Line=a_Line;
 
-        /* FIXME: just exchanging pointer values here 
+        /* FIXME: just exchanging pointer values here
          * so the user must either provide "strings" on the function call
-           (this is what's intended, since we're using __FILE__ and so macros) 
+           (this is what's intended, since we're using __FILE__ and so macros)
          * or we must alloc these, with the risk of not having enough mem
            (but we may fail the alloc anyways, when adding the note item to the
            list)

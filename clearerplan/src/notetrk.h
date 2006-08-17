@@ -2,25 +2,22 @@
 *
 *                             dmental links
 *    Copyright (c) 28 Feb 2005 AtKaaZ, AtKaaZ at users.sourceforge.net
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
 *
-*    This file contains Original Code and/or Modifications of Original
-*    Code as defined in and that are subject to the Sybase Open Watcom
-*    Public License version 1.0 (the 'License'). You may not use this file
-*    except in compliance with the License. BY USING THIS FILE YOU AGREE TO
-*    ALL TERMS AND CONDITIONS OF THE LICENSE. A copy of the License is
-*    provided with the Original Code and Modifications, and is also
-*    available at www.sybase.com/developer/opensource.
+*    This program is free software; you can redistribute it and/or modify
+*    it under the terms of the GNU General Public License as published by
+*    the Free Software Foundation; either version 2 of the License, or
+*    (at your option) any later version.
 *
-*    The Original Code and all software distributed under the License are
-*    distributed on an 'AS IS' basis, WITHOUT WARRANTY OF ANY KIND, EITHER
-*    EXPRESS OR IMPLIED, AND SYBASE AND ALL CONTRIBUTORS HEREBY DISCLAIM
-*    ALL SUCH WARRANTIES, INCLUDING WITHOUT LIMITATION, ANY WARRANTIES OF
-*    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, QUIET ENJOYMENT OR
-*    NON-INFRINGEMENT. Please see the License for the specific language
-*    governing rights and limitations under the License.
+*    This program is distributed in the hope that it will be useful,
+*    but WITHOUT ANY WARRANTY; without even the implied warranty of
+*    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+*    GNU General Public License for more details.
+*
+*    You should have received a copy of the GNU General Public License
+*    along with this program; if not, write to the Free Software
+*    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 *
 *  ========================================================================
 *
@@ -34,9 +31,9 @@
 #define NOTETRK__H__
 
 /* some of our functions' return type in case something went wrong internally */
-typedef enum { 
-        kFalse=0, 
-        kTrue=1 
+typedef enum {
+        kFalse=0,
+        kTrue=1
 } Bool_t;
 
 typedef char * PChar_t;
@@ -48,7 +45,7 @@ typedef PChar_t File_t;//__FILE__
 typedef PChar_t Func_t;//__func__
 
 /* this type is used to count the notes ie. one, two, three, ten, eleven...;) */
-typedef int Counter_t; 
+typedef int Counter_t;
 /* who said anything about base 4 ? :> */
 
 /* ie. constants defined in derived class,like WARN, ERR, DEBUG */
@@ -67,15 +64,15 @@ then the former function returns an error, of depth=2, to the main program.
 
 /* name of the source file where the notification(or error) occured */
         File_t      File;//__FILE__
-    
+
 /* function name */
         Func_t      Func;//__func__
-    
+
 /* line number */
         Line_t      Line;//__LINE__
-    
+
 /* eventually the contents of the line which caused the notif, or a msg */
-        PChar_t     UserDesc;//description 
+        PChar_t     UserDesc;//description
 };
 
 /*
@@ -96,19 +93,19 @@ class TNotify {
 /* items are added at the tail and removed from the head of the list*/
 private:
 
-/* points to first notify that entered the list, the one that will be 
+/* points to first notify that entered the list, the one that will be
  * pop-ed OUT from the list */
         NotifyItem_st *fHead;
-    
+
 /* notify items are pushed IN from the tail */
 /* ie. last notify that happened(the most recent one) is pointed by this*/
         NotifyItem_st *fTail;
-    
-/* 
+
+/*
 set while something such as mem alloc failed, in internal functions
 */
         int fInternalFailed;
-    
+
 protected:
         /* keeps count of how many notifications are in the list */
         Counter_t fHowMany;
@@ -119,36 +116,36 @@ public:
         Bool_t AddUserNote(
                         const NotifyType_t a_NotifyType,
                         const PChar_t a_Desc,
-                        const PChar_t a_FileName, 
-                        const PChar_t a_Func, 
+                        const PChar_t a_FileName,
+                        const PChar_t a_Func,
                         const Line_t a_Line);
-        
+
         /* adds a new notification to list with predefined contents */
         /* mostly used internally */
         Bool_t AddNote(const NotifyItem_st &a_NewNote);
-        
-        
+
+
         /* returns pointer to the last notification, or NULL if list is empty */
         /* moves the first notification from the list outside into user space,
          * that's removing the link from list, but not deallocating it
          * the user should deallocate as necessary */
         NotifyItem_st * MoveOutNote();
-        
+
         /* returns pointer to the last notification, or NULL if list is empty */
         /* last notification is the first one put in the list when the list was
-           empty. 
+           empty.
          * This is _NOT_ to be deallocated by the caller, like MoveOutNote()*/
         NotifyItem_st * GetLastNote();
 
         /* drops in vain the last note (this is at head of the list, FIFO re?!!)
          * ie. like never happend */
         void ClearLastNote();
-        
+
         /* empties the list of notes unconditionally ie. clear all notes */
         void PurgeThemAll();
 
-        Bool_t HasFailedInternally(){ 
-                if (fInternalFailed==kTrue) 
+        Bool_t HasFailedInternally(){
+                if (fInternalFailed==kTrue)
                         return kTrue;
                 return kFalse;
         };
@@ -164,7 +161,7 @@ private:
 
         void SetFailedInternally(){ fInternalFailed=kTrue; };
         void SetOkInternally(){ fInternalFailed=kFalse; };
-        
+
 };/* class TNotify */
 
 #endif
