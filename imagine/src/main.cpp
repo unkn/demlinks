@@ -45,7 +45,7 @@
 
 //rest(x) when no input, reduces cpu cycles inside loop
 //this also counts as the fastest response time after going idle; using mouse movements should keep fluidity
-#define IDLE_TIME_IN_LOOP 100 //miliseconds
+#define IDLE_TIME_IN_LOOP 100 //miliseconds; this also affects the rate at which same mouse inputs get put into that buffer ie. moving the mouse in any X direction may or may not increase/decrease the current input in the buffer if it wasn't extracted already by a too fast program hungry to get those inputs out; so righte now(svn rev<100) demlinks is moving the 3D table like Q/E does each time it gets any moving input from the mouse, no matter what X,Y says; anyways try moving mouse with this set to 1 then to 100 you'll see; (old comment follows)
 //ie . after releasing a key(and no other inputs are present) then pressing another(or same) key would wait at most this time (IDLE_TIME_IN_LOOP) before reacting (not considering processing time)
 
 

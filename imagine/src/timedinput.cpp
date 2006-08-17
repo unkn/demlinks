@@ -69,9 +69,9 @@ MoveFirstGroupFromBuffer(INPUT_TYPE &m_Into)
         //_F;
         //__t(test);
 
-        int howMany;
-        __tIFnok( Query4HowManyDifferentInputsInBuffer(howMany) );
-        if (howMany <= 0) {//aka empty buffer
+        bool isFull;
+        __tIFnok( Query4BufferFull(isFull));
+        if (isFull) {//aka empty buffer
                 _F;
         } else {//aka non empty buffer
 
@@ -170,7 +170,7 @@ UnInstallAllInputs()
 void
 ToCommonBuf(int input_type)
 {
-        //if we have gInputMutexLock==gLock we're in the process of removing one 
+        //if we have gInputMutexLock==gLock we're in the process of removing one
         //input and this input may be the last so we cannot increment as it 
         //could be lost
         //now add to common aka input buf:
@@ -183,27 +183,27 @@ ToCommonBuf(int input_type)
                         //no need to add a new item, just increment the one
                         //already there since it's ie. <mouse type>
                                 gInputBuf[gInputBufTail].how_many++;
-                                ERR_IF(0!=mutex_unlock((mutex_t *)&gInputMutexLock));
+                                ERR_IF(0!=mutex_unlock((mutex_t *)&gInputMutexLock));//this shouldn't normally happen(errors) but if it does we surely like to report it after crash or exit(same applies to other ERR_IF in other interrupt handlers; if any)
                                 return;
                         //we just said there's one more mouse[!] input 2b read
                         }//fi3
                 }//fi2
                 ERR_IF(0!=mutex_unlock((mutex_t *)&gInputMutexLock));//avoiding to throw in the interrupt handler!
         }//fi1
-                //if locked even if have same type at tail just add another one
-                //we'd like to add a new one if input buf not full:
-                //for that we'll calc next pos for Tail
-                if (gInputBufCount < MAX_INPUT_EVENTS_BUFFERED) {//not full
-                        int tmp_input_tail = NEXT_ROTATION(gInputBufTail, MAX_INPUT_EVENTS_BUFFERED);
-                        //input buf not full yet
-                        //so add one more
-                        gInputBuf[tmp_input_tail].type=input_type;
-                        gInputBuf[tmp_input_tail].how_many=1;
-                        //remember that this is the last item added:
-                        gInputBufTail = tmp_input_tail;//always points to last inserted!
-                        gInputBufCount++;
-                }//fi
-                else gLostInput[input_type]++;//loosing in the wild
+        //if locked even if have same type at tail just add another one
+        //we'd like to add a new one if input buf not full:
+        //for that we'll calc next pos for Tail
+        if (gInputBufCount < MAX_INPUT_EVENTS_BUFFERED) {//not full
+                int tmp_input_tail = NEXT_ROTATION(gInputBufTail, MAX_INPUT_EVENTS_BUFFERED);
+                //input buf not full yet
+                //so add one more
+                gInputBuf[tmp_input_tail].type=input_type;
+                gInputBuf[tmp_input_tail].how_many=1;
+                //remember that this is the last item added:
+                gInputBufTail = tmp_input_tail;//always points to last inserted!
+                gInputBufCount++;
+        }//fi
+        else gLostInput[input_type]++;//loosing in the wild
 } END_OF_FUNCTION(ToCommonBuf);
 /*****************************************************************************/
 

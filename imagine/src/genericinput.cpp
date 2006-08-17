@@ -101,7 +101,7 @@ ConsumeIntoGenericInput(
                 __tIF(NULL==data);
 
                 //see if tmp->WhosNext == *from
-                __tIFnok(data->EatThis(from,reset_when_failed));
+                __fIFnok(data->EatThis(from,reset_when_failed));
 
                 //parse next item from the list of transducers
                 ptr=ptr->Next;
@@ -140,7 +140,7 @@ GenericInputHandler(
                                 //our input (from->*)
                         int howmany=GI_StrictOrderSLL[i].HowManySoFar;
                                 if (GI_StrictOrderSLL[i].Head!=NULL)
-                                __tIFnok(
+                                __fIFnok(
                                         ConsumeIntoGenericInput(from,
                                                 GI_StrictOrderSLL[i].Head,
                                                 howmany,
@@ -403,7 +403,7 @@ OneGenericInputTransducer_st :: EatThis(
         //pushing this GenericInput to the buffer
         int result;
         __tIF( (what.type >= kMaxInputTypes) || (what.type < 0) );
-        __tIF(WhosNext == NULL);
+        __tIF(WhosNext == NULL);//FIXME: can't get to the 'if' section below, thus this func throws when what==Tail (last element of buffer)
         __tIF(WhosNext->Data == NULL);
         __tIFnok(AllLowLevelInputs[what.type]->Compare(
                                 what.data,
@@ -431,7 +431,7 @@ OneGenericInputTransducer_st :: EatThis(
                         gLastGenericInputTime=timenow;
 #endif
 
-                        __tIFnok( PushToBuffer() );
+                        __fIFnok( PushToBuffer() );
                         __tIFnok( Reset() );
                 }//fi
         }//fi
@@ -448,7 +448,7 @@ OneGenericInputTransducer_st :: EatThis(
 function
 OneGenericInputTransducer_st :: PushToBuffer()
 {
-        __tIFnok(GenericInputBuffer.CopyIntoBuffer(&Result));
+        __fIFnok(GenericInputBuffer.CopyIntoBuffer(&Result));
         _OK;
 }
 /*****************************************************************************/

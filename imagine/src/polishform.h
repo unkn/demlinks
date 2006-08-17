@@ -34,7 +34,7 @@
  * an operator is a sign, one char long
  * braces allowed
  * operator precedence considered
- * an operand can contain a sign ie. +a but not like this a+-b,instead a+(-b)
+ * an operand can contain a sign ie. +a even like this a+-b OR a++--+-+-b
  */
 
 #ifndef __POLISHFORM_H

@@ -170,7 +170,7 @@ volatile GLOBAL_TIMER_TYPE gLastKeyboardTime;
 /*****************************************************************************/
 
 void LowLevelKeyboardInterruptHandler(int a_ScanCode)
-{
+{//this always adds a new after tail, doesn't modify an already existing tail (i hope, 16Aug2006)
 //note key[KEY_*] doesn't work inside this so we must use ours 'gKeys[]'
         int which_key=a_ScanCode & 0x7f;
         int released=a_ScanCode & 0x80;

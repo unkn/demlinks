@@ -118,13 +118,13 @@ TransformToGenericInputs(const INPUT_TYPE &from)
                 //now we've to transform `anydatastruc` into generic input
                 //and also push it into generic input's buffer(if!)
                 UnifiedInput_st passed;
-                passed.type=from.type;
-                passed.data=anydatastruc;
+                passed.type=from.type;//key or mouse
+                passed.data=anydatastruc;//pointer
                 //handle the passed input(key,mouse,serial) such as it might
                 //be a part of or complete generic input
 
 //free before returning error
-                _htIFnok(GenericInputHandler(passed));
+                _hfIFnok(GenericInputHandler(passed));
                 i++;
         }//while
         //freemem
@@ -220,7 +220,7 @@ MakeSureWeHaveGenericInput()
                 INPUT_TYPE into;
                 //one input group at a time; ie. all key OR all mouse
                 __doIFok (MoveFirstGroupFromBuffer(into)) {
-                        __tIFnok(TransformToGenericInputs(into));
+                        __fIFnok(TransformToGenericInputs(into));
                 }__kofiod
         }//while
 

@@ -4,6 +4,12 @@ Legend:
 	~ means NOTE
 	LU means last update on ... date
 
+=demlinks-0.0.23
+LU: 16 August 2006
+~ we won't try to make a unit standalone (ie. timedkeys.cpp: we'll make
+MoveFirstFromBuffer() to create elemens using classhit.cpp therefore the first
+will depend on the latter so timedkey.cpp is not standalone)
+
 =demlinks-0.0.22
 LU: 10 August 2006
 * easier to pinpoint the errors by tripple clicking the output line with
