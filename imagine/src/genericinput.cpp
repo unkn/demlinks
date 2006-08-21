@@ -226,13 +226,30 @@ InitGenericInput()
         NEWKT(Strict, _easier_##_stop, NEWK(RELEASE(_akey_)));
 
 
-        NEWKT(Relaxed,
+        NEWKT(Relaxed,//<- this means press tilde then u can press/release any, but when u release tilde it will still act!
                         kGI_NextSetOfValues,
                         NEWK(PRESS(KEY_TILDE));
                         NEWK(RELEASE(KEY_TILDE)));
         NEWKT(Strict,
                         kGI_Quit,
                         NEWK(PRESS(KEY_ESC)));
+
+        NEWKT(Relaxed,
+                        kGI_OnCam1,
+                        NEWK(PRESS(KEY_1));
+                        NEWK(RELEASE(KEY_1)));
+        NEWKT(Relaxed,
+                        kGI_OnCam2,
+                        NEWK(PRESS(KEY_2));
+                        NEWK(RELEASE(KEY_2)));
+        NEWKT(Relaxed,
+                        kGI_OnCam3,
+                        NEWK(PRESS(KEY_3));
+                        NEWK(RELEASE(KEY_3)));
+        NEWKT(Relaxed,
+                        kGI_OnCam4,
+                        NEWK(PRESS(KEY_4));
+                        NEWK(RELEASE(KEY_4)));
 
         NTB(kGI_CamSlideBackward,KEY_S);
         NTB(kGI_CamSlideForward,KEY_W);

@@ -5,7 +5,10 @@ Legend:
 	LU means last update on ... date
 
 =demlinks-0.0.23
-LU: 16 August 2006
+LU: 21 August 2006
+* added keys 1,2,3 and 4 to toggle those respective cams(views) thus all
+active cams will act(move) at once (there was an earlier svn rev that could do
+that but underlaying has changed since then)
 ~ we won't try to make a unit standalone (ie. timedkeys.cpp: we'll make
 MoveFirstFromBuffer() to create elemens using classhit.cpp therefore the first
 will depend on the latter so timedkey.cpp is not standalone)

@@ -39,6 +39,10 @@ enum EnumAllAI_t{//action indexes
         //this must be the first one and ==0
         kAI_Undefined=0,//index in an array so must be starting from 0
 //all other follow:
+        kAI_OnCam1,
+        kAI_OnCam2,
+        kAI_OnCam3,
+        kAI_OnCam4,
         kAI_NextSetOfValues,//temp
         kAI_QuitProgram,
         kAI_CamRollRight_byMouse,

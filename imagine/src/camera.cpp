@@ -527,10 +527,11 @@ MProjectedCamera::Revert2State()
         return false;//no change
 }
 
-void
+function
 MProjectedCamera::Toggle()
 {
         active_state = ! active_state;
+        _OK;
 }
 
 bool

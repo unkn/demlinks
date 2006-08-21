@@ -171,6 +171,10 @@ InitActionTypes()
         STS(kAI_Hold1Key_stop);
         STS(kAI_CamRollRight_byMouse);
 
+        STS(kAI_OnCam1);
+        STS(kAI_OnCam2);
+        STS(kAI_OnCam3);
+        STS(kAI_OnCam4);
 
 
         STT(kAI_CamSlideBackward);

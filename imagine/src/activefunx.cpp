@@ -310,9 +310,34 @@ kAI_Undefined_()
 /*****************************************************************************/
 /*****************************************************************************/
 /*****************************************************************************/
+function
+kAI_OnCam4_()
+{
+        INFO(Cam4 toggled);//this is to proove that this function doesn't get called repeatedly after the action has occured; had to make sure of that in actions.cpp line 168 : STS(kAI_OnCam4); (fToggleActionType)
+        __tIFnok( cams[3]->Toggle() );
+        _OK;
+}
 /*****************************************************************************/
+function
+kAI_OnCam3_()
+{
+        __tIFnok( cams[2]->Toggle() );
+        _OK;
+}
 /*****************************************************************************/
+function
+kAI_OnCam2_()
+{
+        __tIFnok( cams[1]->Toggle() );
+        _OK;
+}
 /*****************************************************************************/
+function
+kAI_OnCam1_()
+{
+        __tIFnok( cams[0]->Toggle() );
+        _OK;
+}
 /*****************************************************************************/
 
 
@@ -337,9 +362,15 @@ InitFunctions()
         SETME(kAI_QuitProgram);
         SETME(kAI_NextSetOfValues);
 
+        SETME(kAI_OnCam1);
+        SETME(kAI_OnCam2);
+        SETME(kAI_OnCam3);
+        SETME(kAI_OnCam4);
+
         SETME3(kAI_Hold1Key);
 
         SETME4(kAI_CamRollRight,_byMouse);
+
 
         SETME2(kAI_CamSlideBackward);
         SETME2(kAI_CamSlideForward);

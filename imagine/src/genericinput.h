@@ -44,6 +44,10 @@
 enum EnumAllGI_t {//these are NOT indexes, may start from anywhere
         kGI_Undefined=2000,//trapping bugs?
         kGI_Quit,
+        kGI_OnCam1,
+        kGI_OnCam2,
+        kGI_OnCam3,
+        kGI_OnCam4,
         kGI_NextSetOfValues,//temp
         kGI_Hold1Key,
         kGI_CamRollRight_byMouse,

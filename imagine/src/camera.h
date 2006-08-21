@@ -197,7 +197,7 @@ public:
         bool Activate();//make active(if wasn't)
         bool Deactivate();//deactivate(if was active)
         bool Revert2State();//to last_active_state
-        void Toggle();
+        function Toggle();
         bool IsActive(){ return active_state; };
         int GetX(){ return proj_x;};
         int GetY(){ return proj_y;};
