@@ -14,7 +14,7 @@ $gmake -f Makefile.svn || exit $?
 
 function do_ {
 echo "echo ----------------------------------------------------------" >"$1"
-echo "cd \"`pwd`/obj/src/\" && pwd && make $2 && clear && \"./$2\"">>"$1"
+echo "cd \"`pwd`/obj/src/\" && pwd && make $2 && clear && \"./$2\" ; if [ \"\$?\" -eq \"134\" ]; then sudo \"./$2\" ; fi">>"$1"
 chmod +x "$1"
 ln -s "../$1" "./src/$1" >/dev/null 2>&1
 }
