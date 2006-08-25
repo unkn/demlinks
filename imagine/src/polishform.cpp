@@ -29,7 +29,7 @@
 
 
 #include "pnotetrk.h"
-#include "classhit.h"
+#include "dmlenv.h"
 #include "polishform.h"
 
 using namespace std;

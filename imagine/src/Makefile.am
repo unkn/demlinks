@@ -4,7 +4,7 @@ noinst_HEADERS = 	notetrk.h	\
 			pnotetrk.h	\
 			_cppdefs.h	\
 			_gcdefs.h	\
-			classhit.h	\
+			dmlenv.h	\
 			globaltimer.h \
 			genericinput.h \
 			timedinput.h \
@@ -31,7 +31,7 @@ noinst_HEADERS = 	notetrk.h	\
 
 dml_imagine_SOURCES = 	notetrk.cpp	\
 			pnotetrk.cpp	\
-			classhit.cpp	\
+			dmlenv.cpp	\
 			globaltimer.cpp \
 			timedinput.cpp  \
 			timedmouse.cpp \
@@ -54,7 +54,7 @@ dml_imagine_SOURCES = 	notetrk.cpp	\
 setup_inputs_SOURCES = 	notetrk.cpp	\
 			pnotetrk.cpp	\
 			setup_inputs.cpp \
-			classhit.cpp	\
+			dmlenv.cpp	\
 			polishform.cpp	
 
 setup_inputs_LDFLAGS = -L/usr/local/BerkeleyDB.4.4/lib -ldb_cxx `allegro-config --libs`

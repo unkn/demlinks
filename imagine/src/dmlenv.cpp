@@ -30,7 +30,7 @@
 #include <sys/types.h>
 #include <allegro.h>
 
-#include "classhit.h"
+#include "dmlenv.h"
 #include "pnotetrk.h"
 
 using namespace std;

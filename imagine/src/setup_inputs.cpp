@@ -40,7 +40,7 @@ ie.     a+b                     => +ab
 #include <allegro.h>
 #include "pnotetrk.h"
 #include "polishform.h"
-//#include "dmlenv.h"
+#include "dmlenv.h"
 
 using namespace std;
 
@@ -190,7 +190,6 @@ int main(const int argc, const char **argv)
         __(Process(kArithmeticForm," _KEY_ESC _KEY_ESC2"));
         __(Process(kArithmeticForm," _KEY_ESC *~KEY_ESC2"));
         __(Process(kArithmeticForm," ~KEY_LSHIFT"));//press & release(harder to parse)
-*/
         __(Process(kArithmeticForm," _KEY_TILDE & `KEY_TILDE"));
         __(Process(kArithmeticForm," _KEY_ESC | (_KEY_ALT & _KEY_Q)"));
         __(Process(kArithmeticForm," (_KEY_LSHIFT & `KEY_LSHIFT) | (_KEY_RSHIFT & `KEY_RSHIFT)"));
@@ -198,25 +197,17 @@ int main(const int argc, const char **argv)
         __(Process(kArithmeticForm," _KEY_CTRL & (_KEY_Q | _KEY_X)"));//i know this is the correct form
 //        }//for
         __(Process(kArithmeticForm," KEY_CTRL"));//i know this is the correct form
+*/
 
         __tIFnok( g_Expr.ShowContents() );
 //***************************************** END
-/*
-        dmlCursor meCurs;
-        __tIFnok( CreateCursor(meCurs, NULL, kGroup, "A1", DB_WRITECURSOR) );
-        __tIFnok( DestroyCursor(meCurs) );
-
-        dmlCursor *meCurs;
-        __( meCurs=new dmlCursor(NULL, kGroup,"A1", DB_WRITECURSOR) );//done after DBs are inited!!!
-        __( delete meCurs );
-        */
-
 /*
         dmlCursor *meCurs;
         __( meCurs=new dmlCursor );//done after DBs are inited!!!
         __tIFnok( meCurs->InitFor(kGroup,"A1", NULL, kCreateNodeIfNotExists | kCursorWriteLocks) );//prepare to parse kSubGroups of kGroup with id "A1"; create "A1" if not exists; DB_WRITECURSOR acquire write locks with this cursor
         while (true) do {
                 function err;
+                __( err=meCurs->Put(kAfterNode,"B") );//a node cannot point to the same id twice
                 __( err=meCurs->Get(kNextNode) );
                 if (kFuncNotFound == err) {
                         break;

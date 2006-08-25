@@ -13,7 +13,9 @@ Legend:
 	LU means last update on ... date
 
 =demlinks-0.0.23
-LU: 24 August 2006
+LU: 25 August 2006
+* if TERM="linux" then we automaticly invoke executable thru 'sudo': assumed
+we're running from console and afaik root rights are needed then.
 ~ running on console with nvidiafb framebuffer using allegro 4.3.1 from svn
 7475
 * when running ./1 if exitcode is 134 then most prolly you're running it from
@@ -27,8 +29,10 @@ could work on slackware with svgalib.
 active cams will act(move) at once (there was an earlier svn rev that could do
 that but underlaying has changed since then)
 ~ we won't try to make a unit standalone (ie. timedkeys.cpp: we'll make
-MoveFirstFromBuffer() to create elemens using classhit.cpp therefore the first
-will depend on the latter so timedkey.cpp is not standalone)
+MoveFirstFromBuffer() to create elemens using dmlenv.cpp therefore the former
+will depend on the latter so timedkey.cpp is not standalone); we won't care
+about making standalone units anymore: they'll be irrelevant considering
+demlinks can do what they do better;
 
 =demlinks-0.0.22
 LU: 10 August 2006
