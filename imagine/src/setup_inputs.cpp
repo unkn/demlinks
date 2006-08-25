@@ -21,7 +21,7 @@
 *
 *  ========================================================================
 *
-* Description: define the input combinations used within ./dml_imagine
+* Description: define the input combinations used within ./dml_imagine (not yet)
 *
 ****************************************************************************/
 
@@ -40,6 +40,7 @@ ie.     a+b                     => +ab
 #include <allegro.h>
 #include "pnotetrk.h"
 #include "polishform.h"
+//#include "dmlenv.h"
 
 using namespace std;
 
@@ -200,6 +201,31 @@ int main(const int argc, const char **argv)
 
         __tIFnok( g_Expr.ShowContents() );
 //***************************************** END
+/*
+        dmlCursor meCurs;
+        __tIFnok( CreateCursor(meCurs, NULL, kGroup, "A1", DB_WRITECURSOR) );
+        __tIFnok( DestroyCursor(meCurs) );
+
+        dmlCursor *meCurs;
+        __( meCurs=new dmlCursor(NULL, kGroup,"A1", DB_WRITECURSOR) );//done after DBs are inited!!!
+        __( delete meCurs );
+        */
+
+/*
+        dmlCursor *meCurs;
+        __( meCurs=new dmlCursor );//done after DBs are inited!!!
+        __tIFnok( meCurs->InitFor(kGroup,"A1", NULL, kCreateNodeIfNotExists | kCursorWriteLocks) );//prepare to parse kSubGroups of kGroup with id "A1"; create "A1" if not exists; DB_WRITECURSOR acquire write locks with this cursor
+        while (true) do {
+                function err;
+                __( err=meCurs->Get(kNextNode) );
+                if (kFuncNotFound == err) {
+                        break;
+                }
+        }
+        __tIFnok( meCurs->DeInit() );//release berkeleydb cursor
+        __( delete meCurs );
+        */
+//***
         printf("All ok.\n");
 }//main
 

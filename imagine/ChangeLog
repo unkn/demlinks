@@ -13,13 +13,16 @@ Legend:
 	LU means last update on ... date
 
 =demlinks-0.0.23
-LU: 22 August 2006
+LU: 24 August 2006
+~ running on console with nvidiafb framebuffer using allegro 4.3.1 from svn
+7475
 * when running ./1 if exitcode is 134 then most prolly you're running it from
 console and mouse initialization fails, needs root, thus we do run the
 executable thru sudo but even this doesn't work on ubuntu "Can't open
 framebuffer /dev/fb0" (guess it depends on ubuntu setting and how u've
 compiled allegro)
-~ yes, graphics mode, doesn't work in console (at least not in ubuntu afaik), could work on slackware with svgalib.
+~ yes, graphics mode, doesn't work in console (at least not in ubuntu afaik),
+could work on slackware with svgalib.
 * added keys 1,2,3 and 4 to toggle those respective cams(views) thus all
 active cams will act(move) at once (there was an earlier svn rev that could do
 that but underlaying has changed since then)

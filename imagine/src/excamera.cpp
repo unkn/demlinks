@@ -71,7 +71,7 @@ draw_all(BITMAP *bmp, CAMERA_CLASS *mycam);
 
 /* draw everything */
 
-function 
+function
 render(BITMAP *bmp, int cur_cam)
 {
         CAMERA_CLASS *mycam=cams[cur_cam];

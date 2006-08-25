@@ -34,7 +34,7 @@
 /*************debug vars*/
 //show debug statistics such as key+value
 #define SHOWKEYVAL
-//#define SHOWCONTENTS
+#define SHOWCONTENTS
 //#define SHOWTXNS
 /*************/
 
@@ -46,7 +46,7 @@
 typedef enum {
         kSubGroup = 1,
         kGroup
-} EIdType_t;
+} ENodeType_t; //a Node is either a kGroup or a kSubGroup; however it can be both depending on p.o.v.
 
 /****************************/
 /****************************/
@@ -122,7 +122,7 @@ public:
 
         function
         TLink::IsGroup(
-                const EIdType_t a_IdType,
+                const ENodeType_t a_NodeType,
                 const std::string a_GroupId,
                 DbTxn *a_ParentTxn=NULL
                 );

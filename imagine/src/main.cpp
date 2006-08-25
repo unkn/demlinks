@@ -101,6 +101,7 @@ int main(void)
 
                         acquire_screen();
                         __( blit(buffer, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H) );//who knows maybe it can throw (sure it can - if it believes so!)
+                        //__( stretch_blit(buffer, screen, 0, 0, SCREEN_W/2, SCREEN_H/2, 0,0,SCREEN_W, SCREEN_H) );//who knows maybe it can throw (sure it can - if it believes so!)
                         release_screen();
 
                         need_screen_refresh=false;

@@ -299,7 +299,7 @@ TLink::ModLink(
 /*************************/
 function
 TLink::IsGroup(
-                const EIdType_t a_IdType,
+                const ENodeType_t a_NodeType,
                 const std::string a_GroupId,
                 DbTxn *a_ParentTxn
                 )
@@ -333,7 +333,7 @@ TLink::IsGroup(
 
         Dbc *cursor1=NULL;
         Db *db;
-        switch (a_IdType) {
+        switch (a_NodeType) {
                 case kGroup: {
                                      db=g_DBGroupToSubGroup;
                                      break;

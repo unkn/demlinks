@@ -57,7 +57,14 @@ Init()
 
         __tIFnok(InitFlags());
 
-   if (set_gfx_mode(GFX_AUTODETECT_WINDOWED, 800, 600, 0, 0) != 0) {
+   set_color_depth(8);
+   //if (set_gfx_mode(GFX_AUTODETECT, 1024, 768, 0, 0) != 0) {
+   //if (set_gfx_mode(GFX_AUTODETECT, 640, 480, 0, 0) != 0) {
+   if (set_gfx_mode(GFX_AUTODETECT, 1024, 766, 0, 0) != 0) {
+           {//if (set_gfx_mode(GFX_SAFE, 640, 480, 0, 0) != 0) {
+   //if (set_gfx_mode(GFX_SAFE, 800, 600, 0, 0) != 0) {
+ //if (set_gfx_mode(GFX_AUTODETECT_WINDOWED, 800, 600, 0, 0) != 0) {
+  /*    if (set_gfx_mode(GFX_SAFE, 640, 400, 0, 0) != 0) {
       if (set_gfx_mode(GFX_SAFE, 640, 480, 0, 0) != 0) {
         if (set_gfx_mode(GFX_SAFE, 320, 200, 0, 0) != 0) {
          set_gfx_mode(GFX_TEXT, 0, 0, 0, 0);
@@ -66,8 +73,15 @@ Init()
          _FA(no graphix);
         }
       }
+      }*/
+                 }
+           _FA(no graphix);
    }
 
+//   set_palette(default_palette);
+//textout_centre_ex(screen,font,"crappy crap",100,100,7,-1);
+//   sleep(1);
+   //set_palette(black_palette);
    set_palette(desktop_palette);
    buffer = create_bitmap(SCREEN_W, SCREEN_H);
         install_fps();

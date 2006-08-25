@@ -21,7 +21,7 @@
 *
 *  ========================================================================
 *
-* Description: 
+* Description:
 *
 ****************************************************************************/
 
@@ -133,12 +133,12 @@ InstallAllInputs()
 
 
         __tIF(0!=mutex_init((mutex_t* )&gInputMutexLock, NULL));//always returns 0, they say.
-                
+
         gInputBufHead=0;
         gInputBufTail=MAX_INPUT_EVENTS_BUFFERED - 1;//zero-based index
         gInputBufCount=0;//new
 
-        /*these (two lines) need to be changed/added by programmer if any new 
+        /*these (two lines) need to be changed/added by programmer if any new
          * input interfaces are created/deleted */
         AllLowLevelInputs[kKeyboardInputType]=new MKeyboardInputInterface(kRealKeyboard);
         AllLowLevelInputs[kMouseInputType]=new MMouseInputInterface(kRealMouse);
@@ -171,7 +171,7 @@ void
 ToCommonBuf(int input_type)
 {
         //if we have gInputMutexLock==gLock we're in the process of removing one
-        //input and this input may be the last so we cannot increment as it 
+        //input and this input may be the last so we cannot increment as it
         //could be lost
         //now add to common aka input buf:
               //if unlocked and same type at tail just increment
