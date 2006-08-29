@@ -13,7 +13,13 @@ Legend:
 	LU means last update on ... date
 
 =demlinks-0.0.23
-LU: 25 August 2006
+LU: 29 August 2006
+* fixed missing 'zvim' script
+~ for some unknown reason while running ./1 from within 'mc'(Midnight Commander 4.6.1)
+allegro fails to init keyboard at line 348 in file timedkeys.cpp; so exit 'mc'
+this with framebuffer in mind(not in X.org) also note declare -x SHLVL="2" from
+within 'mc' and the fact that ./1 is running the executable with root rights(sudo)
+also /usr/lib/mc/cons.saver has suid root (chmod u+s cons.saver)
 * if TERM="linux" then we automaticly invoke executable thru 'sudo': assumed
 we're running from console and afaik root rights are needed then.
 ~ running on console with nvidiafb framebuffer using allegro 4.3.1 from svn

@@ -23,6 +23,13 @@ ln -s "../$1" "./src/$1" >/dev/null 2>&1
 do_ 1 dml_imagine
 do_ 2 setup_inputs
 
+zvim() {
+        local outf="$1"
+        echo "cd \"`pwd`/obj/src\" && vim \"\$@\"" >"$outf"
+        chmod +x "$outf"
+        ln -s "../$outf" "./src/$outf" >/dev/null 2>&1
+}
+zvim zvim
 
 echo "OR you may run the file ./1 anytime u modify some src files"
 
