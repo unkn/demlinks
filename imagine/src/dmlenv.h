@@ -57,6 +57,7 @@ typedef enum{
         ,kNextNode //first time when used, kNextNode is kFirstNode just like DB_NEXT
         ,kFirstNode
         ,kLastNode
+        ,kPinPoint //ie. DB_GET_BOTH key/data pair -> makes the cursor position on this
 //last:
         ,kCursorMax
 } ECursorFlags_t;
@@ -67,10 +68,12 @@ private:
         Dbc *fCursor;
         TLink *fLink;
         DbTxn *thisTxn;
-        Dbt fCurVal;
+        //Dbt fCurVal;
         Dbt fCurKey;
-        Dbt fOriginalKey;//lame workaround FIXME: if u can parse with a cursor all data of key 'X' only! w/o getting get() to modify the key_value('X') in the process
+        std::string fCurKeyStr;
+        //Dbt fOriginalKey;//lame workaround FIXME: if u can parse with a cursor all data of key 'X' only! w/o getting get() to modify the key_value('X') in the process
         Db *fDb;
+        u_int32_t fFlags;//of the cursor when inited Db->cursor()
         //int fOKMaxLen;//strnlen ceil
         bool fFirstTimeGet;
 
