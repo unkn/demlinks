@@ -385,7 +385,7 @@ TPolishForm::eatDelimiter(
                 EPFErrors_t
                 pos4Next(){
                         __if (IsIndexAtEdge()) {
-                                _fret kIndexAlreadyAtEdge;
+                                _fret(kIndexAlreadyAtEdge);
                         }__fi
 
                         if (fSense==kBackward) {
@@ -398,7 +398,7 @@ TPolishForm::eatDelimiter(
                         }
 
                         __if (IsIndexAtEdge()) {
-                                _fret kReachedEOS;
+                                _fret(kReachedEOS);
                         }__fi
 
                         return kPFNoError;
@@ -411,10 +411,10 @@ TPolishForm::eatDelimiter(
 
                         EPFErrors_t err;
                         _hif ( err=getCharAt(rIndex,m_Into) ) {
-                                _hret err;
+                                _hret(err);
                         }_fih
 
-                        _ret kPFNoError;
+                        _ret(kPFNoError);
 #undef THROW_HOOK
                 };
 
@@ -424,12 +424,12 @@ TPolishForm::eatDelimiter(
                 m_Into.clear();
 
                         _hif (IsIndexAtEdge(a_Offset)) {
-                                _hret kUnexpectedEOS;
+                                _hret(kUnexpectedEOS);
                         }_fih
 
                         _h( m_Into=fStr.at(a_Offset));
 
-                        _ret kPFNoError;
+                        _ret(kPFNoError);
 #undef THROW_HOOK
                 };
 

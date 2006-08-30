@@ -250,7 +250,7 @@ void ShowAllNotifications();
         EFunctionReturnTypes_t __EFunctionReturnTypes_t__FuncReturn;\
         _TRY( __EFunctionReturnTypes_t__FuncReturn = (a_Func),  throw ) \
         if (kFuncOK != __EFunctionReturnTypes_t__FuncReturn) { \
-                _fret __EFunctionReturnTypes_t__FuncReturn;/*returns same error*/\
+                _fret(__EFunctionReturnTypes_t__FuncReturn);/*returns same error*/\
         }       \
 } //endblock
 //with THROW_HOOK
@@ -267,7 +267,7 @@ void ShowAllNotifications();
         EFunctionReturnTypes_t __EFunctionReturnTypes_t__FuncReturn;\
         _TRY( __EFunctionReturnTypes_t__FuncReturn = (a_Func), THROW_HOOK ; throw ) \
         if (kFuncOK != __EFunctionReturnTypes_t__FuncReturn) { \
-                _hret __EFunctionReturnTypes_t__FuncReturn;/*returns same error*/\
+                _hret(__EFunctionReturnTypes_t__FuncReturn);/*returns same error*/\
         }       \
 } //endblock
 
@@ -278,22 +278,22 @@ void ShowAllNotifications();
 /***************************************/
 //no hook OK ret!
 #ifdef TRACKABLE_RETURNS
-        #define _ret \
-                INFO(_ret);\
-                return 
+        #define _ret(...) \
+                INFO(_ret(__VA_ARGS__));\
+                return __VA_ARGS__;
 #else
         #define _ret \
-                return 
+                return __VA_ARGS__;
 #endif
 /***************************************/
 //no hook FAIL ret!
 #ifdef TRACKABLE_RETURNS
-        #define _fret \
-                INFO(_fret);\
-                return 
+        #define _fret(...) \
+                INFO(_fret(__VA_ARGS__));\
+                return __VA_ARGS__;
 #else
-        #define _fret \
-                return 
+        #define _fret(...) \
+                return __VA_ARGS__;
 #endif
 /***************************************/
 //fail from a function
@@ -304,11 +304,11 @@ void ShowAllNotifications();
 }
 
 #define _F { \
-        _fret kFuncFailed; \
+        _fret(kFuncFailed); \
 }
 
 #define _OK {\
-        _ret kFuncOK; \
+        _ret(kFuncOK); \
 }
 /***************************************/
 //if evaluation throws an exception it is rethrown after executing __VA_ARGS__
@@ -391,37 +391,37 @@ void ShowAllNotifications();
 /***************************************/
 //uses ERR_HOOK hook no the same as _() which uses THROW_HOOK
 #ifdef TRACKABLE_RETURNS
-        #define _hreterr \
-                INFO(_hreterr);\
+        #define _hreterr(...) \
+                INFO(_hreterr(__VA_ARGS__));\
                 ERR_HOOK;\
-                return 
+                return __VA_ARGS__;
 #else
-        #define _hreterr \
+        #define _hreterr(...) \
                 ERR_HOOK;\
-                return 
+                return __VA_ARGS__;
 #endif
 /***************************************/
 //uses the same hook and the MACROS that (re)throw exceptions
 #ifdef TRACKABLE_RETURNS
-        #define _hret \
-                INFO(_hret);\
+        #define _hret(...) \
+                INFO(_hret(__VA_ARGS__));\
                 THROW_HOOK;\
-                return 
+                return __VA_ARGS__;
 #else
-        #define _hret \
+        #define _hret(...) \
                 THROW_HOOK;\
-                return 
+                return __VA_ARGS__;
 #endif
 /***************************************/
 #ifdef TRACKABLE_RETURNS
-        #define _hokret \
-                INFO(_hokret);\
+        #define _hokret(...) \
+                INFO(_hokret(__VA_ARGS__));\
                 OK_HOOK;\
-                return 
+                return __VA_ARGS__;
 #else
-        #define _hokret \
+        #define _hokret(...) \
                 OK_HOOK;\
-                return 
+                return __VA_ARGS__;
 #endif
 /***************************************/
 

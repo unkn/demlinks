@@ -122,7 +122,7 @@ TLink::findAndChange(
 
         //a_Key+a_NewValue must not already exist!
         _hif( DB_NOTFOUND != cursor1->get( a_Key, a_NewValue, DB_GET_BOTH|DB_RMW) ) {
-                _hreterr kFuncAlreadyExists;//doesn't throw if already exists but instead it reports it
+                _hreterr(kFuncAlreadyExists);//doesn't throw if already exists but instead it reports it
         }_fih
         //find current
         _htIF(0!=cursor1->get( a_Key, a_Value, DB_GET_BOTH|DB_RMW));
@@ -222,7 +222,7 @@ TLink :: putInto(
         THROW_HOOK
 
         _hif (0 == cursor1->get(a_Key, a_Value, DB_GET_BOTH|DB_RMW)) {
-                _hreterr kFuncAlreadyExists;
+                _hreterr(kFuncAlreadyExists);
         }_fih
 
 #undef THROW_HOOK
@@ -380,7 +380,7 @@ TLink::IsGroup(
 #ifdef SHOWKEYVAL
                 std::cout<<"\tIsGroup: is not!."<<endl;
 #endif
-                _hreterr kFuncNotFound;
+                _hreterr(kFuncNotFound);
         }_fih
         //else throws! just in case it doesn't we check for err==0 => ok, below
         _htIF(err!=0);
@@ -462,7 +462,7 @@ TLink::IsLink(
 #ifdef SHOWKEYVAL
                 std::cout<<"\tIsLink: is not!."<<endl;
 #endif
-                _hreterr kFuncNotFound;
+                _hreterr(kFuncNotFound);
         }_fih
         //else throws! just in case it doesn't we check for err==0 => ok, below
         _htIF(err!=0);
@@ -488,6 +488,30 @@ TLink::IsLink(
 /*************************/
 
 /*************************/
+function
+TLink::NewLink(
+                const ENodeType_t a_NodeType,
+                const NodeId_t a_NodeId1,//may or may not exist
+                const NodeId_t a_NodeId2,//same
+                DbTxn *a_ParentTxn
+                )
+{
+        __tIF(a_NodeId1.empty());
+        __tIF(a_NodeId2.empty());
+        switch (a_NodeType) {
+                case kGroup: {
+                                     __fIFnok( NewLink(a_NodeId1, a_NodeId2, a_ParentTxn) );
+                                     break;
+                             }
+                case kSubGroup: {
+                                     __fIFnok( NewLink(a_NodeId2, a_NodeId1, a_ParentTxn) );
+                                     break;
+                             }
+                default:
+                                __t("more than kGroup or kSubGroup specified!");
+        }//switch
+        _OK;
+}
 /*************************/
 /*************
  * creates a connection between a_GroupId TO/FROM a_SubGroupId
@@ -524,7 +548,7 @@ TLink::NewLink(
         _h( value.set_size((u_int32_t)a_SubGroupId.length() + 1) );
 
 #ifdef SHOWKEYVAL
-                std::cout<<"\tNewLink:begin:"<<
+                std::cout<<"\tNewLink(G-sG):begin:"<<
                 (char *)key.get_data()<<
                 "->" <<
                 (char *)value.get_data()<<endl;
@@ -536,7 +560,7 @@ TLink::NewLink(
         //if we're here, means we successfuly entered the record in primary, so the record must be successfully entered in secondary, ie. cannot return kFuncAlreadyExists; so it must be clean, otherwise we throw (up;)
         _htIFnok( putInto(g_DBSubGroupFromGroup,thisTxn,&value,&key) );
 #ifdef SHOWKEYVAL
-                std::cout<<"\tNewLink:done."<<endl;
+                std::cout<<"\tNewLink(G-sG):done."<<endl;
 #endif
 
 
@@ -913,7 +937,8 @@ TDMLCursor :: InitFor(
                 (char *)fCurKey.get_data()<<endl;
 #endif
 
-        switch (a_NodeType) {
+        fNodeType=a_NodeType;
+        switch (fNodeType) {
                 case kGroup: {
                                      fDb=fLink->g_DBGroupToSubGroup;
                                      break;
@@ -1037,7 +1062,7 @@ if (a_Flags & kNextNode){
                 );
 #endif
                 FREE_VAL;//maybe?
-                _fret kFuncNotFound;
+                _fret(kFuncNotFound);
         }_fih
         _htIF(0 != err);//other unspecified error
 
@@ -1090,20 +1115,25 @@ TDMLCursor :: Put(
                 }
         }
 
-        Dbt curVal;//temp
+        /*Dbt curVal;//temp
         //_h( curVal.set_flags(DB_DBT_MALLOC) );
         _h( curVal.set_flags(0) );
         _h( curVal.set_data((void *)a_Node.c_str()) );
         _h( curVal.set_size((u_int32_t)a_Node.length() + 1) );
-
+&*/
         //int err;
-        _htIF( 0 != fCursor->put( &fCurKey, &curVal, flags));//FIXME: must put in both dbases
+        //_htIF( 0 != fCursor->put( &fCurKey, &curVal, flags));//FIXME: must put in both dbases
+        function err;
+        _hif ( kFuncAlreadyExists == (err=fLink->NewLink(fNodeType, fCurKeyStr, a_Node, thisTxn)) ) {
+                _fret(err);
+        }_fih
+        _htIFnok(err);//other unhandled error is bad for us
 
 #undef THROW_HOOK
 
 #ifdef SHOWKEYVAL
                 std::cout<<"\tTDMLCursor::Put:done:"<<
-                (char *)fCurKey.get_data()<<" = "<< (char *)curVal.get_data() <<endl; //weird thing here, when DB_SET, key=data
+                (char *)fCurKey.get_data()<<" = "<< a_Node <<endl; //weird thing here, when DB_SET, key=data
 #endif
 
         _OK;

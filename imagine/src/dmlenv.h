@@ -50,10 +50,11 @@ typedef std::string NodeId_t;
 /****************************/
 typedef enum{
         kNone=0,//first
-        kCreateNodeIfNotExists=1
+        kCreateNodeIfNotExists=1 //DB_WRITECURSOR on init, and DB_RMW on get()
         ,kCursorWriteLocks=2
         ,kCurrentNode=4
         ,kBeforeNode=8
+        ,kPrevNode=8
         ,kAfterNode=16 //after current or specified node
         ,kNextNode=16 //first time when used, kNextNode is kFirstNode just like DB_NEXT
         ,kFirstNode=32
@@ -66,12 +67,13 @@ typedef enum{
 /*forward*/class TLink;
 class TDMLCursor {
 private:
+        ENodeType_t fNodeType;
         Dbc *fCursor;
         TLink *fLink;
         DbTxn *thisTxn;
         //Dbt fCurVal;
         Dbt fCurKey;
-        std::string fCurKeyStr;
+        NodeId_t fCurKeyStr;
         //Dbt fOriginalKey;//lame workaround FIXME: if u can parse with a cursor all data of key 'X' only! w/o getting get() to modify the key_value('X') in the process
         Db *fDb;
         u_int32_t fFlags;//of the cursor when inited Db->cursor()
@@ -189,6 +191,14 @@ public:
         TLink::IsLink(
                 const NodeId_t a_GroupId,
                 const NodeId_t a_SubGroupId,
+                DbTxn *a_ParentTxn=NULL
+                );
+
+        function
+        TLink::NewLink(
+                const ENodeType_t a_NodeType,
+                const NodeId_t a_NodeId1,//may or may not exist
+                const NodeId_t a_NodeId2,//same
                 DbTxn *a_ParentTxn=NULL
                 );
 

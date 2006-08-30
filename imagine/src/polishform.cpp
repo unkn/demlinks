@@ -245,7 +245,7 @@ TPolishForm::polishToGraph()
 
                 std::string curChar;
                 _hif ( err=getCurChar(curChar) ) {
-                        _hret err;//EOS handled above
+                        _hret(err);//EOS handled above
                 }_fih
 
                 _hif (IsOperator(curChar)) {//is operator and curChar is set to it!
@@ -255,7 +255,7 @@ TPolishForm::polishToGraph()
                         _h( pos4Next(); );
 
                         _hif ( err=polishToGraph() ) {
-                                _hret kExpectedLeftOperandNotEOS;
+                                _hret(kExpectedLeftOperandNotEOS);
                         }_fih
                         TOperand left=rRoot;
 
@@ -264,22 +264,22 @@ TPolishForm::polishToGraph()
                         //pos for next is autopositioned
 
                         _hif ( err=polishToGraph() ) {
-                                _hret kExpectedRightOperandNotEOS;
+                                _hret(kExpectedRightOperandNotEOS);
                         }_fih
 
                         TOperator sign;
                         _h(sign.SetId(curChar) );
                         _h( rRoot=makeOperand(left,sign,rRoot) );
-                        _ret kPFNoError;
+                        _ret(kPFNoError);
                 } _fihelse {//not operator
                         //because we're called recursive, we don't know if this is the first call, if it were then this should be an error if we're not at end of string
                         _hif ( err=getSimpleOperand()) {
-                                _hret err;
+                                _hret(err);
                         }_fih
-                        _ret kPFNoError;//so far so good
+                        _ret(kPFNoError);//so far so good
                 }_fih
         } _fihelse {
-                _hret kUnexpectedEOS;
+                _hret(kUnexpectedEOS);
         }_fih
 #undef THROW_HOOK
 }
@@ -353,13 +353,13 @@ if (a_Form == kArithmeticForm) {
         //_tIF(1 != fLevel);
 
         if (err) {
-                _hreterr err;
+                _hreterr(err);
         } else {
                 _htIF(rOpenBraces < 0 );//impossible
 
                 if (rOpenBraces != 0) {//some braces not closed
                         //"a+(b-c-d+(((e+f" is considered valid until here
-                        _hreterr kLeftUnclosedBraces;
+                        _hreterr(kLeftUnclosedBraces);
                 }
 
                 _h( rRoot = rOperand );
@@ -368,7 +368,7 @@ if (a_Form == kArithmeticForm) {
                 _hif ( kFuncOK != (tlerr=fLink->NewLink(kIDExpressions,rRoot.GetId(),fTxn))) {
                         if (tlerr != kFuncAlreadyExists) {
                                 cout << tlerr<<endl;
-                                _hreterr kFailedCreatingRootExpressionInTree;
+                                _hreterr(kFailedCreatingRootExpressionInTree);
                         }
                         //ignoring if already exists
                 }_fih
@@ -380,11 +380,11 @@ if (a_Form == kArithmeticForm) {
                 {//block
                         std::string c;
                         _hif ( err=getCharAt(fLowerBound,c) ) {
-                                _hret err;
+                                _hret(err);
                         }_fih
                 _hif ( ! IsOperator(c) ) {
                 //first char must be an operator, otherwise invalid polish form
-                        _hreterr kExpectedOperatorNotOperand;//there are no parantheses in polish form (only operands and operators)
+                        _hreterr(kExpectedOperatorNotOperand);//there are no parantheses in polish form (only operands and operators)
                 }_fih
                 }//block
 
@@ -392,13 +392,13 @@ if (a_Form == kArithmeticForm) {
         _h( err= polishToGraph();
          );
         if (err != kPFNoError) {
-                _hreterr err;
+                _hreterr(err);
         } else {//noerror:
                 _hif (rIndex <= fHigherBound) {//we didn't parse it all
-                        _hreterr kIncompleteParse;
+                        _hreterr(kIncompleteParse);
                 }_fih
 
-                _h(fLink->NewLink(kIDExpressions,rRoot.GetId(),fTxn);
+                _htIFnok(fLink->NewLink(kIDExpressions,rRoot.GetId(),fTxn)
                  );
         }
 
@@ -415,7 +415,7 @@ if (a_Form == kArithmeticForm) {
 
 
 //all ok:
-        _ret kPFNoError;//no errors
+        _ret(kPFNoError);//no errors
 #undef THROW_HOOK
 }
 /********/
@@ -499,29 +499,29 @@ TPolishForm::getComposedOperand(
              /*   if (err == kUnexpectedEOS) {
                          _hret kExpectedOperandNotEOS;//this cannot happen here, handled above in getExpr() function
                 }*/
-                _hret err;//if any other error happened
+                _hret(err);//if any other error happened
         }_fih
 
         _hif( IsOperator(curChar) ) {//FIXME a++B is allowed since we don't know when we're first time a+  or second time +B
                 _hif (IsAllowedOperatorForLackingLeftOperand(curChar)) {
                         //_(m_Into.SetId("0");)
                         //return kPFNoError;
-                        _hret kPFNoError;//allowing missing operand before operator, and not moving to next (we remain stationary on the operator(sign))
+                        _hret(kPFNoError);//allowing missing operand before operator, and not moving to next (we remain stationary on the operator(sign))
                 }_fih
-                _hret kExpectedOperandNotOperator;
+                _hret(kExpectedOperandNotOperator);
         }_fih
 
         _hif (curChar == _AF_STR_CLOSEBRACE) {
-                _hret kExpectedOperandNotClosedBrace;
+                _hret(kExpectedOperandNotClosedBrace);
         }_fih
 
         _hif (curChar == _AF_STR_OPENBRACE) {//a begining of an leftExpression that is to be considered as an operand, considering fSense if kBackward
                 _hif ( (err=setLessBraces()) ) {
-                        _hret err;
+                        _hret(err);
                 }_fih
 
                 _hif (err=pos4Next()) {
-                        _hret kExpectedOperandNotEOS;
+                        _hret(kExpectedOperandNotEOS);
                 }_fih
 
                 TOperand l;
@@ -529,7 +529,7 @@ TPolishForm::getComposedOperand(
                         int prevLevel=fLevel;
                         fLevel=_PF_LEVEL0;
                         _hif ( err = getExpr(l,p) ) {
-                                _hret err;//some nasty error
+                                _hret(err);//some nasty error
                         }_fih
                         fLevel=prevLevel;
 
@@ -539,13 +539,13 @@ TPolishForm::getComposedOperand(
         } _fihelse {
                 //if not operator AND not ')' AND not '(' then assumed simple operand
                 _hif ( err= getSimpleOperand()) {
-                        _hret err;
+                        _hret(err);
                 }_fih
                 _h( m_Into=rRoot );
         }_fih
 
         //cout<<"Operand:"<<m_Into.GetId()<<endl;
-        _ret kPFNoError;
+        _ret(kPFNoError);
 #undef THROW_HOOK
 }
 /********/
@@ -559,13 +559,13 @@ TPolishForm::getSimpleOperand()//into rRoot
                 std::string curChar;
                 _hif ( err=getCurChar(curChar) ) {
                         if (kUnexpectedEOS == err) {
-                                _hret kExpectedSimpleOperand;
+                                _hret(kExpectedSimpleOperand);
                         }
-                        _hret err;
+                        _hret(err);
                 }_fih
 
         _hif (!IsOperandChar(curChar)) {
-                _hret kUnallowedCharForOperand;
+                _hret(kUnallowedCharForOperand);
         }_fih
 
         _hif (fExprFlags & kLongOperands) {
@@ -581,7 +581,7 @@ TPolishForm::getSimpleOperand()//into rRoot
                                 if (err==kUnexpectedEOS) {
                                         break;
                                 }
-                                _hret err;
+                                _hret(err);
                         }_fih
                         //until:
                         _hif (!IsOperandChar(curChar)) {
@@ -589,7 +589,7 @@ TPolishForm::getSimpleOperand()//into rRoot
                         }_fih
 
                         _hif ( (! (fExprFlags & kAllowOperandsLongerThanMax)) && (tmp.length() >= MAX_OPERAND_LEN)) {
-                                        _hret kOperandLongerThanMax;
+                                        _hret(kOperandLongerThanMax);
                         }_fih
 
                         //all constraints ok, then we get this next and add it later at top of 'do'
@@ -602,7 +602,7 @@ TPolishForm::getSimpleOperand()//into rRoot
                 _h( pos4Next(); );
         }_fih
 
-        _ret kPFNoError;
+        _ret(kPFNoError);
 #undef THROW_HOOK
 }
 /********/
@@ -655,7 +655,7 @@ TPolishForm::getExpr(
                 _h( prevOperator = m_Operator );
 
                 _hif ( err=getBoth(m_Operand, m_Operator) ) {
-                        _hret err;
+                        _hret(err);
                 }_fih
 
                 _hif (m_Operator.IsDefined()) {
@@ -663,7 +663,7 @@ TPolishForm::getExpr(
                                 || (m_Operand.IsNotDefined())) {//ie. a++b
                                         ++fLevel;
                                         _hif ( err = getExpr(m_Operand,m_Operator) ) {
-                                                _hret err;
+                                                _hret(err);
                                         }_fih
                                         --fLevel;
                                         //_tIF(m_Operator.IsDefined());
@@ -674,12 +674,12 @@ TPolishForm::getExpr(
                         //_tIF(prevOperand.IsNotDefined());//_+ eliptic left operand
                         _h( m_Operand = makeOperand(prevOperand, prevOperator, m_Operand) );
                         _hif ((m_Operator.IsNotDefined())||((CmpPrecedence(prevOperator/*left*/, m_Operator/*right*/) > 0)&&(fLevel > _PF_LEVEL0))) {
-                                _ret kPFNoError;//back a level
+                                _ret(kPFNoError);//back a level
                         }_fih
                 }_fih
 
                 _hif (m_Operator.IsNotDefined()) {
-                        _ret kPFNoError;//back a level
+                        _ret(kPFNoError);//back a level
                 }_fih
         } while (true);
 #undef THROW_HOOK
@@ -705,49 +705,49 @@ TPolishForm::getBoth(
         _hif ( err=eatDelimiter() ) {
                 if (kReachedEOS == err) {
                         //_if (prevOperand.IsNotDefined()) {//first time?
-                                _hret kExpectedOperandNotEOS;//only if first time
+                                _hret(kExpectedOperandNotEOS);//only if first time
                         //}_fi
                 } else {
-                        _hret err;
+                        _hret(err);
                 }
         }_fih
 
 //2) get operand
 
         _hif ( (err=getComposedOperand(m_Operand)) ) {
-                _hret err;
+                _hret(err);
         }_fih
         //_tIF(m_Operand.IsNotDefined());//impossible bug
 
 //3) skip more delimiters, or return operand only, if EOS
         _hif ( err=eatDelimiter() ) {
                 if (kReachedEOS == err) {
-                        _hokret kPFNoError;//return only right operand
+                        _hokret(kPFNoError);//return only right operand
                 }
-                _hret err;
+                _hret(err);
         }_fih
 
 //4) check for unnecessary group of braces ie. ((a+b))
         std::string curChar;
         _hif ( err=getCurChar(curChar) ) {
-                _hret err;//EOS handled above
+                _hret(err);//EOS handled above
         }_fih
 
         _hif (curChar == _AF_STR_CLOSEBRACE) {//unnecessary group of braces ie. ((a+b))+c OR (a)+(b)
                 //but we ignore them
                 _hif ( (err=setMoreBraces()) ) {
-                       _hret err;
+                       _hret(err);
                 }_fih
                 _h( pos4Next(); );
                 //counting on caller to eat delims after this
-                _hokret kPFNoError;//return only operand, Operator is set to null and perhaps there's more to parse of fStr
+                _hokret(kPFNoError);//return only operand, Operator is set to null and perhaps there's more to parse of fStr
         }_fih
 
 //5) get operator
 
 
         _hif ( (err=getOperator(m_Operator)) ) {
-                _hret err;
+                _hret(err);
         }_fih
 
         _htIF(m_Operator.IsNotDefined());//impossible bug
@@ -755,13 +755,13 @@ TPolishForm::getBoth(
 //6) skip more delimiters
         _hif ( err=eatDelimiter() ) {
                 if (kReachedEOS == err) {
-                        _hret kExpectedRightOperandNotEOS;
+                        _hret(kExpectedRightOperandNotEOS);
                 }
                 //ie. a+
-                _hret err;
+                _hret(err);
         }_fih
 //if we're here, there are more to go ie. a+ b*c  [after 'a+ '] handled outside this funx
-        _ret kPFNoError;
+        _ret(kPFNoError);
 #undef THROW_HOOK
 #undef OK_HOOK
 }
@@ -780,9 +780,9 @@ TPolishForm::getOperator(
 
         _hif ( err=getCurChar(curChar) ) {
                 if (err==kUnexpectedEOS) {
-                        _hret kExpectedOperatorNotEOS;
+                        _hret(kExpectedOperatorNotEOS);
                 }
-                _hret err;
+                _hret(err);
         }_fih
 
 
@@ -797,7 +797,7 @@ TPolishForm::getOperator(
                         _h(m_Into.SetId(_OPERATOR_MUL););//default
                         //and we don't advance!
                 } else {
-                        _hret kExpectedOperatorNotClosedBrace;
+                        _hret(kExpectedOperatorNotClosedBrace);
                 }
         } else {//not any brace
                 _hif ( IsOperator(curChar) ) {//we got what we wanted here!
@@ -805,17 +805,17 @@ TPolishForm::getOperator(
                         _h( pos4Next(); );
                 } _fihelse {//automul2
                         _hif (!IsOperandChar(curChar)) {//expecting operand
-                                _hret kUnallowedCharForOperand;//but got invalid char for it to be part of a valid operand
+                                _hret(kUnallowedCharForOperand);//but got invalid char for it to be part of a valid operand
                         }_fih
                         _hif (fExprFlags & kSideOperandsImplyMul) {
                                 _h(m_Into.SetId(_OPERATOR_MUL););//assuming multiplication if ie. a+bc <=> a+b*c OR abc def <=> abc*def
                         } _fihelse {
-                                _hret kExpectedOperatorNotOperand;
+                                _hret(kExpectedOperatorNotOperand);
                         }_fih
                 }_fih
         }//else
 
-        _ret kPFNoError;
+        _ret(kPFNoError);
 #undef THROW_HOOK
 }
 /***************************/
@@ -865,25 +865,26 @@ TPolishForm::makeOperand(
         __( compOp.Set(kComposedOperand, getUniqueStr()); );
 
         __( cout << compOp.GetId() << " = " << a_Left.GetId() << " " << a_Operator.GetId() << " " << a_Right.GetId() << endl; );
-        __(fLink->NewLink(kIDComposedOperand, compOp.GetId(), fTxn););
+        __(fLink->NewLink(kIDComposedOperand, compOp.GetId(), fTxn));
 
         __if (a_Left.IsDefined()) {//a_Left exists
                 __if (a_Left.GetType() == kSimpleOperand) {
-                        __(fLink->NewLink(kIDLeftOperand,a_Left.GetId(),fTxn); );
+                        __(fLink->NewLink(kIDLeftOperand,a_Left.GetId(),fTxn) );
                 }__fi
-                __(fLink->NewLink(compOp.GetId(),a_Left.GetId(),fTxn); );
+                __(fLink->NewLink(compOp.GetId(),a_Left.GetId(),fTxn) );
         }__fi
 
         __if (a_Right.GetType() == kSimpleOperand) {
-                __(fLink->NewLink(kIDRightOperand, a_Right.GetId(),fTxn););
+                __(fLink->NewLink(kIDRightOperand, a_Right.GetId(),fTxn));
         }__fi
 
-        __(fLink->NewLink(compOp.GetId(),a_Operator.GetId(),fTxn););
+        __(fLink->NewLink(compOp.GetId(),a_Operator.GetId(),fTxn));
 
-        __(fLink->NewLink(compOp.GetId(), a_Right.GetId(),fTxn););
+        __(fLink->NewLink(compOp.GetId(), a_Right.GetId(),fTxn));
 
 
-        __(fLink->NewLink(kIDOperator,a_Operator.GetId(),fTxn););
+        __(fLink->NewLink(kIDOperator,a_Operator.GetId(),fTxn));
+        //there is a good reason why __tIFnok() isn't used; because Nodes may already exist and NewLink would fail!
 
         return compOp;
 }

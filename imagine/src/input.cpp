@@ -240,13 +240,13 @@ MangleInputs()
                         if (kFuncOK==err) {
                                 _OK;
                         } else {
-                                _fret kFuncNoActions;
+                                _fret(kFuncNoActions);
                         }
                 } else {
-                        _fret kFuncNoGenericInputs;
+                        _fret(kFuncNoGenericInputs);
                 }
         } else {
-                _fret kFuncNoLowLevelInputs;
+                _fret(kFuncNoLowLevelInputs);
         }
 
         _FA(cannot reach this);

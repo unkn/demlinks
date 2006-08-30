@@ -267,6 +267,7 @@ int main(const int argc, const char **argv)
         nod2="C";
         __tIFnok( meCurs->Get(nod2, kPinPoint) );
         __tIFnok( meCurs->Put(nod, kBeforeNode) );
+        __tIFnok( meCurs->Put(nod, kBeforeNode) );
         //__tIFnok( meCurs->Put(nod, kAfterNode, nod2) );
         __tIFnok( meCurs->DeInit() );//release berkeleydb cursor
 

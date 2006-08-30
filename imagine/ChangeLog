@@ -14,6 +14,8 @@ Legend:
 
 =demlinks-0.0.23
 LU: 30 August 2006
+* added Put() and: NewLink() override
+* made TRACKABLE_RETURNS display their param also
 * weird acting TDMLCursor Get() with DB_SET and DB_NEXT but i guess this is
 normal.
 * unified new_transaction flags to macro TRANSACTION_FLAGS
