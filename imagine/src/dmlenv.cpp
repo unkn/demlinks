@@ -905,11 +905,11 @@ TDMLCursor :: InitFor(
         THROW_HOOK
 
         //fOKMaxLen=a_NodeId.length() + 1;
-        //fCurKeyStr=a_NodeId;//yeah let's hope this makes a copy
-        //_h( fCurKey.set_data((void *)fCurKeyStr.c_str()) );//points to that, so don't kill fCurKeyStr!!
-        //_h( fCurKey.set_size((u_int32_t)fCurKeyStr.length() + 1) );
-        _h( fCurKey.set_data((void *)a_NodeId.c_str()) );//points to that, so don't kill fCurKeyStr!!
-        _h( fCurKey.set_size((u_int32_t)a_NodeId.length() + 1) );
+        fCurKeyStr=a_NodeId;//yeah let's hope this makes a copy
+        _h( fCurKey.set_data((void *)fCurKeyStr.c_str()) );//points to that, so don't kill fCurKeyStr!!
+        _h( fCurKey.set_size((u_int32_t)fCurKeyStr.length() + 1) );
+        //_h( fCurKey.set_data((void *)a_NodeId.c_str()) );//points to that, so don't kill fCurKeyStr!!
+        //_h( fCurKey.set_size((u_int32_t)a_NodeId.length() + 1) );
 #ifdef SHOWKEYVAL
                 std::cout<<"\tTDMLCursor::Init:SetKey="<<
                 (char *)fCurKey.get_data()<<endl;
