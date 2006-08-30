@@ -37,11 +37,11 @@ using namespace std;
 #define MAX_STR_LEN 65530 //for strnlen()
 
 
-const std::string kIDExpressions="Expression";
-const std::string kIDComposedOperand="ComposedOperand";
-const std::string kIDLeftOperand="LeftOperand";
-const std::string kIDRightOperand="RightOperand";
-const std::string kIDOperator="OPerator";
+const NodeId_t kIDExpressions="Expression";
+const NodeId_t kIDComposedOperand="ComposedOperand";
+const NodeId_t kIDLeftOperand="LeftOperand";
+const NodeId_t kIDRightOperand="RightOperand";
+const NodeId_t kIDOperator="OPerator";
 
 const char * PFErrorStrings[kMaxPFErrors]={
         "All OK."
@@ -177,9 +177,8 @@ PFShowError(const EPFErrors_t a_Err)
 /*****************************************************************/
 /*****************************************************************/
 //constructor1
-TPolishForm::TPolishForm():
-        fLink(NULL)
-        ,fTxn(NULL)
+TPolishForm::TPolishForm(TLink *m_WorkingOnThisTLink):
+        fTxn(NULL)
         ,fSense(kForward)
         ,fLevel(_PF_LEVEL0)
                 /*a_Form(kNoForm),
@@ -193,18 +192,21 @@ TPolishForm::TPolishForm():
         fStr.clear();
         rRoot.Clear();*/
 {
+        __tIF(NULL == m_WorkingOnThisTLink);
+        fLink=m_WorkingOnThisTLink;
         for (int i=0; i<_MAX_FUNIQ; i++)
                 fUniq[i]=_LEADING_CHAR;
+        fUniq[_MAX_FUNIQ]='\0';
 }
-void
+/*void
 TPolishForm::Init()
 {
-        __tIF(fLink); //calling twice ? throw exception if so
-        std::string envHomePath("./dbhome/");
-        __(fLink=new TLink(envHomePath));
-        __tIF(NULL==fLink);
+        //__tIF(fLink); //calling twice ? throw exception if so
+        //std::string envHomePath("./dbhome/");
+        //__(fLink=new TLink(envHomePath));
+        //__tIF(NULL==fLink);
 }
-
+*/
 /*****************************************************************/
 /*****************************************************************/
 //destructor
@@ -213,9 +215,10 @@ TPolishForm::~TPolishForm()
 #define THROW_HOOK \
         BDBCLOSE_HOOK
 
+        __tIF(NULL == fLink);//cannot be
         _htIF(fTxn);//a still open transaction?! this is a bad bug:P
 
-        BDBCLOSE_HOOK;
+        //BDBCLOSE_HOOK;don't do this on deinit, only when errors are found and thrown
 #undef THROW_HOOK
 }
 
@@ -826,8 +829,8 @@ TPolishForm::getUniqueStr()
         bool carry=false;
         for (int i=_MAX_FUNIQ-1;i>=0;i--) {
                 if ((carry)||(i==_MAX_FUNIQ-1)){//first char? or carry ? then increment it
-                        __if (fUniq[i]>=_ENDING_CHAR) {
-                                fUniq[i]=_LEADING_CHAR;
+                        __if (fUniq[i] >= _ENDING_CHAR) {
+                                fUniq[i] = _LEADING_CHAR;
                                 carry=true;
                                 __tIF(i==0);//overflow
                         } __fielse {
@@ -841,6 +844,8 @@ TPolishForm::getUniqueStr()
                 __( tmp.erase(0,1); );
         };
 
+        //printf("!%s!",tmp.c_str());
+        //cout << "!"<<tmp<<"!\n";
         return tmp;
 }
 /***************************/
@@ -859,9 +864,7 @@ TPolishForm::makeOperand(
         TOperand compOp;
         __( compOp.Set(kComposedOperand, getUniqueStr()); );
 
-//#ifdef SHOWKEYVAL
         __( cout << compOp.GetId() << " = " << a_Left.GetId() << " " << a_Operator.GetId() << " " << a_Right.GetId() << endl; );
-//#endif
         __(fLink->NewLink(kIDComposedOperand, compOp.GetId(), fTxn););
 
         __if (a_Left.IsDefined()) {//a_Left exists

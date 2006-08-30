@@ -297,7 +297,7 @@ class TPolishForm {
         private:
 
                 TLink *fLink;
-                char fUniq[_MAX_FUNIQ];
+                char fUniq[_MAX_FUNIQ+1];//includes a \0 for later init with std::string newvar(fUniq); fixed
                 DbTxn *fTxn;//tmp transaction used when needed
 
                 std::string fStr;
@@ -436,12 +436,13 @@ TPolishForm::eatDelimiter(
                 bool
                 IsIndexAtEdge(int a_Ofs=-1);
 
+        TPolishForm();//constructor;purposely made private so it cannot be used
 public:
         int rOpenBraces;//returned if err==kLeftUnclosedBraces
         TOperand rRoot;//Id of head of tree representing expression
         int rIndex;
 //the structors
-                TPolishForm();
+                TPolishForm(TLink *m_WorkingOnThisTLink);
                 ~TPolishForm();
 //those that DO
 void

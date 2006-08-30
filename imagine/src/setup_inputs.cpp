@@ -44,7 +44,8 @@ ie.     a+b                     => +ab
 
 using namespace std;
 
-        TPolishForm g_Expr;
+        TPolishForm *g_Expr;
+        TLink *gLink;
 
 /*****************************************************************/
 
@@ -69,7 +70,7 @@ Process(
                 const EForms_t a_Form,
                 const char * const a_Str)
 {
-        cout << "-------------------------"<<endl;
+        cout << "------------START-------------"<<endl;
         __tIF(NULL==a_Str);
         cout << "\t\t"<<a_Str<<endl;
 
@@ -82,16 +83,16 @@ Process(
         std::string tmpStr(a_Str);
 
         EPFErrors_t err;
-        __( err=g_Expr.MakeGraph(tmpStr,a_Form,flags,0,-1));
+        __( err=g_Expr->MakeGraph(tmpStr,a_Form,flags,0,-1));
         __if ( err ) {
                 //show error
                 PFShowError(err);
-                if ((err==kLeftUnclosedBraces)||(g_Expr.rOpenBraces != 0)) {
-                        cout << g_Expr.rOpenBraces << " open braces left."<<endl;
+                if ((err==kLeftUnclosedBraces)||(g_Expr->rOpenBraces != 0)) {
+                        cout << g_Expr->rOpenBraces << " open braces left."<<endl;
                 }
-                ShowErrorPosition(g_Expr.rIndex, a_Str);
+                ShowErrorPosition(g_Expr->rIndex, a_Str);
         } __fielse {
-                cout << "root["<<g_Expr.rRoot.GetType()<<"]="<<g_Expr.rRoot.GetId()<<endl;
+                cout << "root["<<g_Expr->rRoot.GetType()<<"]="<<g_Expr->rRoot.GetId()<<endl;
                 /*_if (err=g_Expr.ShowExpr(root.GetId(),1,1)) {
                         cout << "Problem attempting to show expression from graph with root="<<root.GetId()<<" : ";
                         PFShowError(err);
@@ -103,19 +104,69 @@ Process(
 }
 
 /*****************************************************************/
+function
+ShowAllNodesOfNode(
+                TDMLCursor *m_Curs,
+                const ENodeType_t a_NodeType,
+                const NodeId_t a_NodeId,
+                DbTxn *a_ParentTxn
+                )
+{
+        __tIF(NULL == m_Curs);
+        __tIFnok( m_Curs->InitFor(a_NodeType,a_NodeId, a_ParentTxn/*parent txn*/, kNone) );//prepare to parse kSubGroups of kGroup with id "A1"; create "A1" if not exists; DB_WRITECURSOR acquire write locks with this cursor
+        bool once=false;
+        int count=0;
+        while (true) {
+                count++;
+                if (count >10) break;
+                NodeId_t node;
+                //node="B";
+
+                function err;
+//                __( err=m_Curs->Put(node, kAfterNode) );//a node cannot point to the same id twice
+//                if (kFuncNotFound == err) {
+//                        break;
+//                }
+
+
+                __( err=m_Curs->Get(node,kNextNode) );//first time kNextNode is kFirstNode
+                if (kFuncNotFound == err) {
+                        //once=true;
+                        if (once) {
+                                break;
+                        } else __t(no records);
+                } else __tIFnok(err);
+                if (!once) {
+                        once=true;
+                }
+                cout << "Node: "<<node<<endl;
+        };
+        __tIFnok( m_Curs->DeInit() );//release berkeleydb cursor
+        _OK;
+}
+
+/*****************************************************************/
+/*****************************************************************/
 /*****************************************************************/
 int main(const int argc, const char **argv)
 {
         __tIF(0 != allegro_init());
 
-        __(g_Expr.Init());
+        std::string envHomePath("./dbhome/");
+        __(gLink=new TLink(envHomePath));
+        __tIF(NULL==gLink);
+
+
+        __(g_Expr = new TPolishForm(gLink));
+
+        //__(g_Expr->Init());
 
 
 
 //        for (int i=0;i<1;i++) {
 //***************************************** from polishform to graph
 /*
-        //default string, if not specified
+//default string, if not specified
         char *str="*-^*2x+*3yza-*4t3";
         __(Process(kPolishForm, str));
         __(Process(kPolishForm, "+-*3*^x2y*5*^x2^y2*2*^y3x"));
@@ -197,25 +248,22 @@ int main(const int argc, const char **argv)
         __(Process(kArithmeticForm," _KEY_CTRL & (_KEY_Q | _KEY_X)"));//i know this is the correct form
 //        }//for
         __(Process(kArithmeticForm," KEY_CTRL"));//i know this is the correct form
-*/
-
-        __tIFnok( g_Expr.ShowContents() );
-//***************************************** END
-/*
-        dmlCursor *meCurs;
-        __( meCurs=new dmlCursor );//done after DBs are inited!!!
-        __tIFnok( meCurs->InitFor(kGroup,"A1", NULL, kCreateNodeIfNotExists | kCursorWriteLocks) );//prepare to parse kSubGroups of kGroup with id "A1"; create "A1" if not exists; DB_WRITECURSOR acquire write locks with this cursor
-        while (true) do {
-                function err;
-                __( err=meCurs->Put(kAfterNode,"B") );//a node cannot point to the same id twice
-                __( err=meCurs->Get(kNextNode) );
-                if (kFuncNotFound == err) {
-                        break;
-                }
-        }
-        __tIFnok( meCurs->DeInit() );//release berkeleydb cursor
-        __( delete meCurs );
         */
+        __(Process(kArithmeticForm,"a+(b+c)+d"););
+
+        __tIFnok( g_Expr->ShowContents() );
+        __(delete g_Expr);//gLink should still be open and available after this!
+//***************************************** END
+
+        TDMLCursor *meCurs;
+        __( meCurs=new TDMLCursor(gLink) );//done after DBs are inited!!!
+        __tIFnok( ShowAllNodesOfNode(meCurs, kGroup,"ComposedOperand",NULL) );
+        __tIFnok( ShowAllNodesOfNode(meCurs, kSubGroup,"B",NULL) );
+        __( delete meCurs );//gLink should still be open and available after this!
+        meCurs=NULL;
+
+        __( delete gLink );
+
 //***
         printf("All ok.\n");
 }//main

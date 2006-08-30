@@ -13,7 +13,16 @@ Legend:
 	LU means last update on ... date
 
 =demlinks-0.0.23
-LU: 29 August 2006
+LU: 30 August 2006
+* weird acting TDMLCursor Get() with DB_SET and DB_NEXT but i guess this is
+normal.
+* unified new_transaction flags to macro TRANSACTION_FLAGS
+~ we'll have to fix stuff when situations like throwing while db is open will
+have to close it before throwin from main() otherwise who knows what's
+happening with the data; so far we're recreating the dbase on each run.
+* fixed string initialization from fUniq with std::string newstr(fUniq);
+~ for some weird reason, 800x600 and 1024x768 resolutions don't work with
+nvidiafb (console framebuffer) thus we use 1024x766
 * fixed missing 'zvim' script
 ~ for some unknown reason while running ./1 from within 'mc'(Midnight Commander 4.6.1)
 allegro fails to init keyboard at line 348 in file timedkeys.cpp; so exit 'mc'
@@ -24,6 +33,8 @@ also /usr/lib/mc/cons.saver has suid root (chmod u+s cons.saver)
 we're running from console and afaik root rights are needed then.
 ~ running on console with nvidiafb framebuffer using allegro 4.3.1 from svn
 7475
+~ kGroup or kSubGroup are called Node(s); A node can be paradoxally any or
+both of kGroup and kSubGroup, depending on the point of view;
 * when running ./1 if exitcode is 134 then most prolly you're running it from
 console and mouse initialization fails, needs root, thus we do run the
 executable thru sudo but even this doesn't work on ubuntu "Can't open

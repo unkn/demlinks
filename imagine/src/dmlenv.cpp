@@ -35,11 +35,21 @@
 
 using namespace std;
 
+/*************debug vars*/
+//show debug statistics such as key+value
+//#define SHOWKEYVAL
+#define SHOWCONTENTS
+//#define SHOWTXNS
+/*************/
+
 /****************************/
 /****************************/
 /*****************************************************************/
 /*****************************************************************/
 /********************************************************/
+
+#define CURSOR_ABORT_HOOK \
+        __(fLink->Abort(&thisTxn));
 
 #define ABORT_HOOK \
         __(this->Abort(&thisTxn));
@@ -85,7 +95,7 @@ TLink::findAndChange(
 
 
         DbTxn *thisTxn;
-        __tIFnok(NewTransaction(a_ParentTxn,&thisTxn, DB_TXN_NOSYNC));
+        __tIFnok(NewTransaction(a_ParentTxn,&thisTxn ));
 
 #define THROW_HOOK \
         ABORT_HOOK
@@ -145,7 +155,7 @@ TLink::delFrom(
 
 
         DbTxn *thisTxn;
-        __tIFnok(NewTransaction(a_ParentTxn,&thisTxn, DB_TXN_NOSYNC));
+        __tIFnok(NewTransaction(a_ParentTxn,&thisTxn ));
 
 #define THROW_HOOK \
         ABORT_HOOK
@@ -190,7 +200,7 @@ TLink :: putInto(
         __tIF(NULL == a_Value);
 
         DbTxn *thisTxn;
-        __tIFnok(NewTransaction(a_ParentTxn,&thisTxn, DB_TXN_NOSYNC));
+        __tIFnok(NewTransaction(a_ParentTxn,&thisTxn ));
 
 #define THROW_HOOK \
         ABORT_HOOK;
@@ -234,9 +244,9 @@ TLink :: putInto(
 //the connection MUST already exist! or fails(not throws)
 function
 TLink::ModLink(
-                const std::string a_GroupId,
-                const std::string a_SubGroupId,
-                const std::string a_NewLinkName,
+                const NodeId_t a_GroupId,
+                const NodeId_t a_SubGroupId,
+                const NodeId_t a_NewLinkName,
                 DbTxn *a_ParentTxn
                 )
 {
@@ -246,7 +256,7 @@ TLink::ModLink(
         __tIF(a_NewLinkName.empty());
 
         DbTxn *thisTxn;
-        __tIFnok(NewTransaction(a_ParentTxn,&thisTxn, DB_TXN_NOSYNC));
+        __tIFnok(NewTransaction(a_ParentTxn,&thisTxn ));
 
 #define THROW_HOOK \
         ABORT_HOOK
@@ -300,7 +310,7 @@ TLink::ModLink(
 function
 TLink::IsGroup(
                 const ENodeType_t a_NodeType,
-                const std::string a_GroupId,
+                const NodeId_t a_GroupId,
                 DbTxn *a_ParentTxn
                 )
 {
@@ -308,7 +318,7 @@ TLink::IsGroup(
         __tIF(a_GroupId.empty());
 
         DbTxn *thisTxn;
-        __tIFnok(NewTransaction(a_ParentTxn,&thisTxn, DB_TXN_NOSYNC));
+        __tIFnok(NewTransaction(a_ParentTxn,&thisTxn ));
 
 #define THROW_HOOK \
         ABORT_HOOK
@@ -376,7 +386,7 @@ TLink::IsGroup(
         ABORT_HOOK
 #undef ERR_HOOK
 
-        _h(cursor1->close());
+        _htIF(0 != cursor1->close());
 
 #ifdef SHOWKEYVAL
                 std::cout<<"\tIsGroup:true."<<endl;
@@ -387,12 +397,13 @@ TLink::IsGroup(
 
         _OK;//found
 #undef THROW_HOOK
+#undef FREE_VAL
 }
 /*************************/
 function
 TLink::IsLink(
-                const std::string a_GroupId,//may or may not exist
-                const std::string a_SubGroupId,//same
+                const NodeId_t a_GroupId,//may or may not exist
+                const NodeId_t a_SubGroupId,//same
                 DbTxn *a_ParentTxn
                 )
 {
@@ -406,7 +417,7 @@ TLink::IsLink(
 
 
         DbTxn *thisTxn;
-        __tIFnok(NewTransaction(a_ParentTxn,&thisTxn, DB_TXN_NOSYNC));
+        __tIFnok(NewTransaction(a_ParentTxn,&thisTxn ));
 
 #undef THROW_HOOK
 #define THROW_HOOK \
@@ -435,7 +446,7 @@ TLink::IsLink(
 #undef ERR_HOOK
 #undef THROW_HOOK
 #define THROW_HOOK \
-                __( cursor1->close() );/*done prior to Abort()*/\
+                __tIF( 0 != cursor1->close() );/*done prior to Abort()*/\
                 ABORT_HOOK;
 #define ERR_HOOK \
         THROW_HOOK
@@ -456,7 +467,7 @@ TLink::IsLink(
         ABORT_HOOK
 #undef ERR_HOOK
 
-        _h(cursor1->close());
+        _htIF( 0 != cursor1->close());
 
 #ifdef SHOWKEYVAL
                 std::cout<<"\tIsLink:true."<<endl;
@@ -480,8 +491,8 @@ TLink::IsLink(
  * ***************/
 function
 TLink::NewLink(
-                const std::string a_GroupId,//may or may not exist
-                const std::string a_SubGroupId,//same
+                const NodeId_t a_GroupId,//may or may not exist
+                const NodeId_t a_SubGroupId,//same
                 DbTxn *a_ParentTxn
                 )
 {
@@ -492,7 +503,7 @@ TLink::NewLink(
 
 
         DbTxn *thisTxn;
-        __tIFnok(NewTransaction(a_ParentTxn,&thisTxn, DB_TXN_NOSYNC));
+        __tIFnok(NewTransaction(a_ParentTxn,&thisTxn ));
 
 #define THROW_HOOK \
         ABORT_HOOK
@@ -741,7 +752,7 @@ TLink::showRecords(
         __tIF(NULL==a_Sep);
 
         DbTxn *thisTxn;
-        __tIFnok(NewTransaction(a_ParentTxn,&thisTxn, DB_TXN_NOSYNC));
+        __tIFnok(NewTransaction(a_ParentTxn,&thisTxn ));
 
 #define THROW_HOOK ABORT_HOOK
 
@@ -756,7 +767,7 @@ TLink::showRecords(
         _htIF(0 != a_DB->cursor(thisTxn, &cursorp, 0));
 #undef THROW_HOOK
 #define THROW_HOOK \
-        __(cursorp->close());\
+        __tIF(0 != cursorp->close());\
         ABORT_HOOK
 
         Dbt key, value;
@@ -782,7 +793,7 @@ TLink::showRecords(
 
 #undef THROW_HOOK
 #define THROW_HOOK ABORT_HOOK
-        _h(cursorp->close());
+        _htIF(0 != cursorp->close());
 
         std::cout<<"\t\t\tgot "<<count<<" records."<<std::endl<<std::endl;
 
@@ -838,3 +849,176 @@ TLink::Abort(DbTxn **a_Txn)
 
 
 
+/*******************************/
+//constructor
+TDMLCursor :: TDMLCursor(TLink *m_WorkingOnThisTLink):
+        fCursor(NULL)
+{
+        fLink=m_WorkingOnThisTLink;
+        __tIF(NULL == fLink);
+        thisTxn=NULL;
+        fDb=NULL;
+}
+/*******************************/
+//destructor
+TDMLCursor :: ~TDMLCursor()
+{
+        __tIF(NULL == fLink);//cannot be
+        __tIF(fCursor != NULL);//forgot to call DeInit() ?
+        __tIF(NULL != fDb);//DeInit() must be called!
+}
+/*******************************/
+//opens the cursor
+function
+TDMLCursor :: InitFor(
+                const ENodeType_t a_NodeType,
+                const NodeId_t a_NodeId,
+                DbTxn *a_ParentTxn,//can be NULL, no problem
+                const ECursorFlags_t a_Flags
+                )
+{
+#ifdef SHOWKEYVAL
+                std::cout<<"\tTDMLCursor::Init:begin"<<endl;
+#endif
+        __tIF(a_NodeId.empty());
+        __tIF(NULL != thisTxn);//cannot call InitFor() twice, not before DeInit()
+
+        __tIFnok(fLink->NewTransaction(a_ParentTxn,&thisTxn));
+
+#define THROW_HOOK \
+        CURSOR_ABORT_HOOK
+#define ERR_HOOK \
+        THROW_HOOK
+
+        //fOKMaxLen=a_NodeId.length() + 1;
+        _h( fCurKey.set_data((void *)a_NodeId.c_str()) );
+        _h( fCurKey.set_size((u_int32_t)a_NodeId.length() + 1) );
+        _h( fOriginalKey.set_data((void *)a_NodeId.c_str()) );
+        _h( fOriginalKey.set_size((u_int32_t)a_NodeId.length() + 1) );
+        _h( fCurVal.set_flags(DB_DBT_MALLOC) );//this hopefully remains between multiple Put(), Get() calls
+
+        switch (a_NodeType) {
+                case kGroup: {
+                                     fDb=fLink->g_DBGroupToSubGroup;
+                                     break;
+                             }
+                case kSubGroup: {
+                                     fDb=fLink->g_DBSubGroupFromGroup;
+                                     break;
+                             }
+                default:
+                                _ht("more than kGroup or kSubGroup specified!");
+        }//switch
+        _htIF( 0 != fDb->cursor(thisTxn,&fCursor, 0) );
+        _htIF(NULL == fCursor);//feeling paranoid?
+#undef ERR_HOOK
+#undef THROW_HOOK
+        fFirstTimeGet=true;
+
+#ifdef SHOWKEYVAL
+                std::cout<<"\tTDMLCursor::Init:end."<<endl;
+#endif
+        _OK;
+}
+/*******************************/
+function
+TDMLCursor :: DeInit()
+{
+#ifdef SHOWKEYVAL
+                std::cout<<"\tTDMLCursor::DeInit:begin"<<endl;
+#endif
+#define THROW_HOOK \
+        CURSOR_ABORT_HOOK
+        _htIF(NULL == fCursor);//called DeInit() before InitFor() ? or smth happened inbetween
+        _htIF(0 != fCursor->close());
+        fCursor=NULL;
+        __tIFnok( fLink->Commit(&thisTxn) );
+        fDb=NULL;
+        /*__if (fCurVal.get_data()) {
+                __( free(fCurVal.get_data()) );
+        }__fi*/
+#ifdef SHOWKEYVAL
+                std::cout<<"\tTDMLCursor::DeInit:end."<<endl;
+#endif
+        _OK;
+#undef THROW_HOOK
+}
+/*******************************/
+function
+TDMLCursor :: Get(
+                NodeId_t &m_Node,
+                const ECursorFlags_t a_Flags
+                )
+{
+#define FREE_VAL \
+        if (fCurVal.get_data()) \
+                free(fCurVal.get_data());
+
+#define THROW_HOOK \
+        FREE_VAL \
+        CURSOR_ABORT_HOOK
+
+
+#ifdef SHOWKEYVAL
+                std::cout<<"\tTDMLCursor::Get:begin:"<<
+                (char *)fCurKey.get_data()<<endl;
+#endif
+        u_int32_t flags=0;//FIXME:
+
+if (a_Flags & kNextNode){
+        if (fFirstTimeGet) {
+                fFirstTimeGet=false;
+                flags=DB_SET;
+                //cout << "first";
+        } else {
+                flags=DB_NEXT_DUP;
+                //cout <<"not";
+        }
+} else {
+        if (a_Flags & kFirstNode) {
+                flags=DB_FIRST;
+        } else {
+                if (a_Flags & kLastNode) {
+                        flags=DB_LAST;
+                } else {
+                        if (a_Flags & kCurrentNode) {
+                                flags=DB_CURRENT;
+                        }
+                }
+        }
+}
+
+        int err;
+        _hif( DB_NOTFOUND == (err=fCursor->get( &fCurKey, &fCurVal, flags)) ) {
+                _fret kFuncNotFound;
+        }_fih
+        _htIF(0 != err);//other unspecified error
+
+        _htIF(NULL == fCurVal.get_data());//impossible?
+        m_Node=(char *)fCurVal.get_data();//hopefully this does copy contents not just point!
+        //((char *)fCurVal.get_data())[0]='j';//poisoning to test the above; FIXME: delthisline
+        FREE_VAL;//maybe we should call this in DeInit();
+#ifdef SHOWKEYVAL
+                std::cout<<"\tTDMLCursor::Get:done:"<<
+                (char *)fCurKey.get_data()<<" = "<< m_Node <<endl; //weird thing here, when DB_SET, key=data
+#endif
+
+        _OK;
+#undef ERR_HOOK
+#undef THROW_HOOK
+#undef FREE_VAL
+}
+/*******************************/
+/*******************************/
+/*******************************/
+/*******************************/
+/*******************************/
+/*******************************/
+/*******************************/
+/*******************************/
+/*******************************/
+/*******************************/
+/*******************************/
+/*******************************/
+/*******************************/
+/*******************************/

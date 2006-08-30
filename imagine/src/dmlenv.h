@@ -32,14 +32,11 @@
 #include "pnotetrk.h"
 
 /*************debug vars*/
-//show debug statistics such as key+value
-#define SHOWKEYVAL
-#define SHOWCONTENTS
-//#define SHOWTXNS
+//see dmlenv.cpp file (this header's cpp file)
 /*************/
 
 /*******************MACROS**************/
-
+#define TRANSACTION_FLAGS DB_TXN_NOSYNC
 //*************CONSTANTS **********
 #define MAX_GROUPNAME_LEN 65530
 
@@ -49,7 +46,57 @@ typedef enum {
 } ENodeType_t; //a Node is either a kGroup or a kSubGroup; however it can be both depending on p.o.v.
 
 /****************************/
+typedef std::string NodeId_t;
 /****************************/
+typedef enum{
+        kNone=0,//first
+        kCreateNodeIfNotExists
+        ,kCursorWriteLocks
+        ,kCurrentNode
+        ,kAfterNode
+        ,kNextNode //first time when used, kNextNode is kFirstNode just like DB_NEXT
+        ,kFirstNode
+        ,kLastNode
+//last:
+        ,kCursorMax
+} ECursorFlags_t;
+/****************************/
+/*forward*/class TLink;
+class TDMLCursor {
+private:
+        Dbc *fCursor;
+        TLink *fLink;
+        DbTxn *thisTxn;
+        Dbt fCurVal;
+        Dbt fCurKey;
+        Dbt fOriginalKey;//lame workaround FIXME: if u can parse with a cursor all data of key 'X' only! w/o getting get() to modify the key_value('X') in the process
+        Db *fDb;
+        //int fOKMaxLen;//strnlen ceil
+        bool fFirstTimeGet;
+
+        TDMLCursor();//unusable constructor; purposely
+public:
+        TDMLCursor(TLink *m_WorkingOnThisTLink);
+        ~TDMLCursor();
+
+        function
+        InitFor(
+                        const ENodeType_t a_NodeType,
+                        const NodeId_t a_NodeId,
+                        DbTxn *a_ParentTxn,
+                        const ECursorFlags_t a_Flags
+                        );
+
+        function
+        Get(
+                        NodeId_t &m_Node,
+                        const ECursorFlags_t a_Flags
+                        );
+
+        function
+        DeInit();
+};
+/*************************/
 class TLink {
 private:
         int fStackLevel;
@@ -103,6 +150,7 @@ private:
 
 public:
 /****************************PUBLIC**********/
+        friend class TDMLCursor;
         TLink(
                 const std::string a_EnvHomePath="dbhome",
                 const std::string a_DBFileName="implied arrows.db",
@@ -113,9 +161,9 @@ public:
 
         function
         TLink::ModLink(
-                const std::string a_GroupId,
-                const std::string a_SubGroupId,
-                const std::string a_NewLinkName,
+                const NodeId_t a_GroupId,
+                const NodeId_t a_SubGroupId,
+                const NodeId_t a_NewLinkName,
                 DbTxn *a_ParentTxn=NULL
                 );
 
@@ -123,22 +171,22 @@ public:
         function
         TLink::IsGroup(
                 const ENodeType_t a_NodeType,
-                const std::string a_GroupId,
+                const NodeId_t a_GroupId,
                 DbTxn *a_ParentTxn=NULL
                 );
 
         function
         TLink::IsLink(
-                const std::string a_GroupId,
-                const std::string a_SubGroupId,
+                const NodeId_t a_GroupId,
+                const NodeId_t a_SubGroupId,
                 DbTxn *a_ParentTxn=NULL
                 );
 
         //links are created, groups are just there as part of links, they don't have to already exist(and if they do they're part of the links only)
         function
         TLink::NewLink(
-                const std::string a_GroupId,
-                const std::string a_SubGroupId,
+                const NodeId_t a_GroupId,
+                const NodeId_t a_SubGroupId,
                 DbTxn *a_ParentTxn=NULL
                 );
 //FIXME: need to add iterator (aka cursor) which parses a Group's kTo connections(this group pointing to many subgroups) or a SubGroup's kFrom(many groups pointing to this subgroup) connections
@@ -157,7 +205,7 @@ public:
         function
         NewTransaction(DbTxn * a_ParentTxn,
                         DbTxn ** a_NewTxn,
-                        const u_int32_t a_Flags=DB_TXN_NOSYNC
+                        const u_int32_t a_Flags=TRANSACTION_FLAGS
                         );
 
 

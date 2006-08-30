@@ -13,7 +13,7 @@ fi
 $gmake -f Makefile.svn || exit $?
 
 function do_ {
-echo "echo ----------------------------------------------------------" >"$1"
+echo "echo --------------------START--------------------------------------" >"$1"
 echo "cd \"`pwd`/obj/src/\" && pwd && make $2 && clear && if [ \"\$TERM\" != \"linux\" ]; then \"./$2\" ; if [ \"\$?\" -eq \"134\" ]; then sudo \"./$2\" ; fi ; else sudo \"./$2\" ; fi">>"$1"
 chmod +x "$1"
 ln -s "../$1" "./src/$1" >/dev/null 2>&1
@@ -31,7 +31,7 @@ zvim() {
 }
 zvim zvim
 
-echo "OR you may run the file ./1 anytime u modify some src files"
+echo "OR you may run ./1 OR ./2 anytime u modify some src files"
 
 
 
