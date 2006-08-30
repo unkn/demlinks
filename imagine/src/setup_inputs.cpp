@@ -258,9 +258,7 @@ int main(const int argc, const char **argv)
         TDMLCursor *meCurs;
         __( meCurs=new TDMLCursor(gLink) );//done after DBs are inited!!!
 
-        NodeId_t snod="ComposedOperand";
-        __tIFnok( ShowAllNodesOfNode(meCurs, kGroup,snod,NULL) );
-        snod="B";
+        __tIFnok( ShowAllNodesOfNode(meCurs, kGroup,"ComposedOperand",NULL) );
         __tIFnok( ShowAllNodesOfNode(meCurs, kSubGroup,"B",NULL) );
 
         __tIFnok( meCurs->InitFor(kSubGroup,"B", NULL, kNone) );//prepare to parse kSubGroups of kGroup with id "A1"; create "A1" if not exists; DB_WRITECURSOR acquire write locks with this cursor
@@ -268,10 +266,11 @@ int main(const int argc, const char **argv)
         nod="J";
         nod2="C";
         __tIFnok( meCurs->Get(nod2, kPinPoint) );
+        __tIFnok( meCurs->Put(nod, kBeforeNode) );
         //__tIFnok( meCurs->Put(nod, kAfterNode, nod2) );
         __tIFnok( meCurs->DeInit() );//release berkeleydb cursor
 
-        //__tIFnok( ShowAllNodesOfNode(meCurs, kSubGroup,snod,NULL) );
+        __tIFnok( ShowAllNodesOfNode(meCurs, kSubGroup,"B",NULL) );
 
         __( delete meCurs );//gLink should still be open and available after this!
         meCurs=NULL;

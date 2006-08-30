@@ -630,15 +630,13 @@ TLink::OpenDB(
         // Point to the new'd Db
         *a_DBpp = dbp;
 
-        __( (void )dbp->set_flags(DB_DUP) );
+        __( (void )dbp->set_flags(DB_DUP) );//allow duplicate keys; order is order of insertion unless cursor puts;
 
         // Now open the database */
         openFlags = DB_CREATE              |// Allow database creation
                     //DB_READ_UNCOMMITTED    | // Allow uncommitted reads
                     DB_AUTO_COMMIT ;          // Allow autocommit
 
-        //without the following, insertion is sorted
-        //dbp->set_dup_compare(&dup_compare_fcn);
         __( dbp->open(NULL,       // Txn pointer
                   fDBFileName.c_str(),   // File name
                   a_DBName->c_str(),       // Logical db name
@@ -974,18 +972,19 @@ TDMLCursor :: Get(
         CURSOR_CLOSE_HOOK \
         CURSOR_ABORT_HOOK
 
+        //_htIF(!m_Node.empty());
 
 #ifdef SHOWKEYVAL
                 std::cout<<"\tTDMLCursor::Get:begin:Key="<<
-                (char *)fCurKey.get_data()<<endl;//how is this "J" here when InitFor() clearly sets it to "B"
+                (char *)fCurKey.get_data()<<endl;
 #endif
         u_int32_t flags=0;//FIXME:
-        if (fFlags & DB_WRITECURSOR) {
+        if ((fFlags & DB_WRITECURSOR)||(a_Flags & kCursorWriteLocks)) {
                 flags|=DB_RMW;
         }
 
         Dbt curVal;
-        _h( curVal.set_flags(DB_DBT_MALLOC) );//this hopefully remains between multiple Put(), Get() calls
+        _h( curVal.set_flags(DB_DBT_MALLOC) );
 if (a_Flags & kNextNode){
         if (fFirstTimeGet) {
                 fFirstTimeGet=false;
@@ -1010,6 +1009,11 @@ if (a_Flags & kNextNode){
                                         _h( curVal.set_flags(0) );
                                         _h( curVal.set_data((void *)m_Node.c_str()) );
                                         _h( curVal.set_size((u_int32_t)m_Node.length() + 1) );
+#ifdef SHOWKEYVAL
+                __( std::cout<<"\tTDMLCursor::Get:PinPoint:Val="<<
+                (char *)curVal.get_data()<<endl;
+                );
+#endif
                                 }
                         }
                 }
@@ -1052,6 +1056,58 @@ if (a_Flags & kNextNode){
 #undef FREE_VAL
 }
 /*******************************/
+/*******************************/
+function
+TDMLCursor :: Put(
+                const NodeId_t a_Node,
+                const ECursorFlags_t a_Flags
+                )
+{
+
+#define THROW_HOOK \
+        CURSOR_CLOSE_HOOK \
+        CURSOR_ABORT_HOOK
+
+        _htIF(a_Node.empty());
+
+#ifdef SHOWKEYVAL
+                std::cout<<"\tTDMLCursor::Put:begin:Key="<<
+                (char *)fCurKey.get_data()<< " val=" << a_Node << endl;
+#endif
+        u_int32_t flags=0;//FIXME:
+        if ((fFlags & DB_WRITECURSOR)||(a_Flags & kCursorWriteLocks)) {
+                flags|=DB_RMW;
+        }
+        if (a_Flags & kCurrentNode) {
+                flags|=DB_CURRENT;//overwrite current, FIXME: 2nd db must be updated also
+        } else {
+                if ((a_Flags & kAfterNode)||(a_Flags & kNextNode)) {
+                        flags|=DB_AFTER; //after current
+                } else {
+                        if (a_Flags & kBeforeNode) {
+                                flags|=DB_BEFORE;//before current
+                        }
+                }
+        }
+
+        Dbt curVal;//temp
+        //_h( curVal.set_flags(DB_DBT_MALLOC) );
+        _h( curVal.set_flags(0) );
+        _h( curVal.set_data((void *)a_Node.c_str()) );
+        _h( curVal.set_size((u_int32_t)a_Node.length() + 1) );
+
+        //int err;
+        _htIF( 0 != fCursor->put( &fCurKey, &curVal, flags));//FIXME: must put in both dbases
+
+#undef THROW_HOOK
+
+#ifdef SHOWKEYVAL
+                std::cout<<"\tTDMLCursor::Put:done:"<<
+                (char *)fCurKey.get_data()<<" = "<< (char *)curVal.get_data() <<endl; //weird thing here, when DB_SET, key=data
+#endif
+
+        _OK;
+}
 /*******************************/
 /*******************************/
 /*******************************/

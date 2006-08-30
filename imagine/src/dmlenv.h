@@ -50,14 +50,15 @@ typedef std::string NodeId_t;
 /****************************/
 typedef enum{
         kNone=0,//first
-        kCreateNodeIfNotExists
-        ,kCursorWriteLocks
-        ,kCurrentNode
-        ,kAfterNode
-        ,kNextNode //first time when used, kNextNode is kFirstNode just like DB_NEXT
-        ,kFirstNode
-        ,kLastNode
-        ,kPinPoint //ie. DB_GET_BOTH key/data pair -> makes the cursor position on this
+        kCreateNodeIfNotExists=1
+        ,kCursorWriteLocks=2
+        ,kCurrentNode=4
+        ,kBeforeNode=8
+        ,kAfterNode=16 //after current or specified node
+        ,kNextNode=16 //first time when used, kNextNode is kFirstNode just like DB_NEXT
+        ,kFirstNode=32
+        ,kLastNode=64
+        ,kPinPoint=128 //ie. DB_GET_BOTH key/data pair -> makes the cursor position on this
 //last:
         ,kCursorMax
 } ECursorFlags_t;
@@ -93,6 +94,12 @@ public:
         function
         Get(
                         NodeId_t &m_Node,
+                        const ECursorFlags_t a_Flags
+                        );
+
+        function
+        Put(
+                        const NodeId_t a_Node,
                         const ECursorFlags_t a_Flags
                         );
 
