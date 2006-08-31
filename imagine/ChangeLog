@@ -13,7 +13,11 @@ Legend:
 	LU means last update on ... date
 
 =demlinks-0.0.23
-LU: 30 August 2006
+LU: 31 August 2006
+* colour enabled error reporting with ^[3Xm (X=0..9) ^[ is \x1B or C-v,C-[ in
+vim
+~ so far there's no sensible way to view the contents of the database(s);
+planning on doing that with 3D
 * added Put() and: NewLink() override
 * made TRACKABLE_RETURNS display their param also
 * weird acting TDMLCursor Get() with DB_SET and DB_NEXT but i guess this is

@@ -42,15 +42,15 @@ const PChar_t kNotifyDescriptions[kNumNotifyTypes]={
         "NONE",
         "WARN",
         "ERR",
-        "FuncFail",
-        "EXIT",
-        "INFO",
-        "exception",
+        "\x1B[34mFuncFail",
+        "\x1B[35mEXIT",
+        "\x1B[33mINFO",
+        "\x1B[37mexception",
 
-        "BUG?",//possible bug, check it out!
+        "\x1B[31mBUG?",//possible bug, check it out!
 
         /* triggered by a paranoid check(which should always be false) */
-        "FATAL"
+        "\x1B[31mFATAL"
 };
 
 
@@ -83,7 +83,7 @@ CheckedAddNote(
 {
         if (gNotifyTracker.IsOff()) {
                 fprintf(stderr,
-                        "The error to be reported was:\n%s#%d: line(%u) file(%s) func(%s) \n\t`%s'\n",
+                        "\x1B[31mThe error to be reported was:\n%s#%d: line(%u) file(%s) func(%s) \n\t`%s'\x1B[39m\n",
                         kNotifyDescriptions[a_NotifyType],
                         0,
                         a_Line,
@@ -91,8 +91,8 @@ CheckedAddNote(
                         a_Func,
                         a_Desc
                         );
-                fprintf(stderr,"lame programmer: notification subsystem is "
-                                "not initialized, now this should not happen!\n");
+                fprintf(stderr,"\x1B[31mlame programmer: notification subsystem is "
+                                "not initialized, now this should not happen!\x1B[39m\n");
 #ifdef CONTINUE_IF_NOTINITED
                 return;
 #else
@@ -109,10 +109,10 @@ CheckedAddNote(
         if ((tmpres==false) && (gNotifyTracker.HasFailedInternally())) {
 
                 fprintf(stderr,
-                        "The NotifyTracker has failed internally.\n"
+                        "\x1B[31mThe NotifyTracker has failed internally.\n"
                         "This is perhaps due to lack of memory.\n"
                         "However we're going to try and show you %d"
-                        "notifications before aborting...\n",
+                        "notifications before aborting...\x1B[39m\n",
                         gNotifyTracker.GetNumNotes());
 
                 gNotifyTracker.ShowAllNotes();
@@ -133,7 +133,7 @@ if (IsOn()) {
         while (tmp){
                 //so you'll have to tripple click on the 'zvim' line
                 fprintf(stderr,
-                        "%s#%d: func(%s)\n\t`%s'\n\tzvim %s +%u\n",
+                        "%s\x1B[39m#\x1B[33m%d\x1B[39m: func(\x1B[32m%s\x1B[39m)\n\t`\x1B[36m%s\x1B[39m'\n\t\x1B[38mzvim %s +%u\x1B[39m\n",
                         kNotifyDescriptions[tmp->Contents.Type],
                         tmp->Contents.Depth,
                         tmp->Contents.Func,

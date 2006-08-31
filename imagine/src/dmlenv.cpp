@@ -107,6 +107,7 @@ TLink::findAndChange(
         ABORT_HOOK
 
         /*Note: Cursors may not span transactions; that is, each cursor must be opened and closed within a single transaction.*/
+        /*on a more personal note: you cannot Put() if you created other transactions after the cursor transaction, you must have those closed first; they don't have to be children of cursor transaction - same applies;*/
         Dbc *cursor1=NULL;
 
 
@@ -208,26 +209,25 @@ TLink :: cPutInto(
         __tIF(NULL == a_Key);
         __tIF(NULL == a_Value);
 
-        DbTxn *thisTxn;
-        thisTxn=a_ParentTxn;
-        //__tIFnok(NewTransaction(a_ParentTxn,&thisTxn ));
-
+        /*DbTxn *thisTxn;
+        //thisTxn=a_ParentTxn;
+        __tIFnok(NewTransaction(NULL, &thisTxn ));
+*/
 #ifdef SHOWKEYVAL
         cout << "cPutInto: begin:"<< (char *)a_Key->get_data() << " = " << (char *)a_Value->get_data() <<endl;
 #endif
-
+/*
 #define THROW_HOOK \
         ABORT_HOOK;
-
+*/
         //since dbase is opened DB_DUP it will allow dup key+data pairs; but we won't!
 //no DUPS! fail(not throw!) if already exists
         Dbc *cursor1 = NULL;
-        _htIF( 0 != a_DBInto->cursor(thisTxn, &cursor1, 0));
+        __tIF( 0 != a_DBInto->cursor(a_ParentTxn, &cursor1, 0));
 
 #undef THROW_HOOK
 #define THROW_HOOK \
-                cursor1->close(); \
-                ABORT_HOOK
+                __( cursor1->close() );
 #define ERR_HOOK \
         THROW_HOOK
 
@@ -238,19 +238,20 @@ TLink :: cPutInto(
                 //int err=3001;
         //cout <<"err="<<err<<endl;
 #undef THROW_HOOK
-#define THROW_HOOK \
+#undef ERR_HOOK
+/*#define THROW_HOOK \
         ABORT_HOOK
-
-        _h(cursor1->close());
+*/
+        __tIF(0 != cursor1->close());
 
 
         //if not found, then put it
         if (NULL == m_Cursor) {
-                _htIF(0 != a_DBInto->put(thisTxn, a_Key, a_Value, 0) );
+                __tIF(0 != a_DBInto->put(a_ParentTxn, a_Key, a_Value, 0) );
         } else {
                 //u_int32_t flags=a_CursorPutFlags; //what teh?!
-                cout << (char *)a_Key->get_data() << " = " << (char *)a_Value->get_data() << " flags= "<< a_CursorPutFlags <<endl;
-                _htIF( m_Cursor->put(a_Key, a_Value, a_CursorPutFlags) );//even if DB_CURRENT and a_Value exist in this same place, it'll return kFuncAlreadyExists above! there's no use to overwrite with the same value!
+                //cout << (char *)a_Key->get_data() << " = " << (char *)a_Value->get_data() << " flags= "<< a_CursorPutFlags <<endl;
+                __tIF( m_Cursor->put(a_Key, a_Value, a_CursorPutFlags) );//even if DB_CURRENT and a_Value exist in this same place, it'll return kFuncAlreadyExists above! there's no use to overwrite with the same value!
                 /*try {
                         m_Cursor->put(a_Key, a_Value, a_CursorPutFlags);
                 } catch (DbException &e) {
@@ -262,8 +263,7 @@ TLink :: cPutInto(
         cout << "cPutInto: done:"<< (char *)a_Key->get_data() << " = " << (char *)a_Value->get_data() <<endl;
 #endif
 
-#undef THROW_HOOK
-#undef ERR_HOOK
+//#undef THROW_HOOK
 
 
         //__tIFnok( Commit(&thisTxn) );
@@ -581,7 +581,7 @@ TLink::NewCursorLink(
                 const ENodeType_t a_NodeType,
                 const NodeId_t a_NodeId1,//may or may not exist
                 const NodeId_t a_NodeId2,//same
-                DbTxn *a_ParentTxn
+                DbTxn *a_ParentTxn //no child transaction created except with putInto(); apparently the cursor may not span transactions RTFM;
                 )
 {
 
@@ -590,22 +590,23 @@ TLink::NewCursorLink(
 
 
 
-        DbTxn *thisTxn;
-        thisTxn=a_ParentTxn;
-        //__tIFnok(NewTransaction(a_ParentTxn,&thisTxn ));
+        /*DbTxn *thisTxn;
+        //thisTxn=a_ParentTxn;
+        __tIFnok(NewTransaction(NULL, &thisTxn ));
+        
 
 #define THROW_HOOK \
         ABORT_HOOK
 #define ERR_HOOK \
         THROW_HOOK
-
+*/
         Dbt value;
         Dbt key;
 
-        _h( key.set_data((void *)a_NodeId1.c_str()) );
-        _h( key.set_size((u_int32_t)a_NodeId1.length() + 1) );
-        _h( value.set_data((void *)a_NodeId2.c_str()) );
-        _h( value.set_size((u_int32_t)a_NodeId2.length() + 1) );
+        __( key.set_data((void *)a_NodeId1.c_str()) );
+        __( key.set_size((u_int32_t)a_NodeId1.length() + 1) );
+        __( value.set_data((void *)a_NodeId2.c_str()) );
+        __( value.set_size((u_int32_t)a_NodeId2.length() + 1) );
 
         switch (a_NodeType) {
                 case kGroup: {
@@ -617,10 +618,10 @@ TLink::NewCursorLink(
 #endif
 
                                 //insert in primary
-                                _hfIFnok( cPutInto(m_Cursor, a_CursorPutFlags, g_DBGroupToSubGroup,thisTxn,&key,&value) );
+                                __fIFnok( cPutInto(m_Cursor, a_CursorPutFlags, g_DBGroupToSubGroup, a_ParentTxn, &key,&value) );
                                 //insert in secondary
                                 //if we're here, means we successfuly entered the record in primary, so the record must be successfully entered in secondary, ie. cannot return kFuncAlreadyExists; so it must be clean, otherwise we throw (up;)
-                                _htIFnok( putInto(g_DBSubGroupFromGroup,thisTxn,&value,&key) );//appended at end of list
+                                __tIFnok( putInto(g_DBSubGroupFromGroup, a_ParentTxn, &value,&key) );//appended at end of list
                                 break;
                              }
                 case kSubGroup: {
@@ -632,15 +633,21 @@ TLink::NewCursorLink(
 #endif
 
 
+#ifdef SHOWKEYVAL
+                std::cout<<"\tNewCursorLink(sG-G):part1:secondary"<<endl;
+#endif
                                 //insert in secondary
                                 //if we're here, means we successfuly entered the record in primary, so the record must be successfully entered in secondary, ie. cannot return kFuncAlreadyExists; so it must be clean, otherwise we throw (up;)
-                                _hfIFnok( cPutInto(m_Cursor, a_CursorPutFlags, g_DBSubGroupFromGroup,thisTxn,&key,&value) );
+                                __fIFnok( cPutInto(m_Cursor, a_CursorPutFlags, g_DBSubGroupFromGroup, a_ParentTxn, &key,&value) );
+#ifdef SHOWKEYVAL
+                std::cout<<"\tNewCursorLink(sG-G):part2:primary"<<endl;
+#endif
                                 //insert in primary
-                                _htIFnok( putInto(g_DBGroupToSubGroup,thisTxn,&value,&key) );//order of insertion(appended)
+                                __tIFnok( putInto(g_DBGroupToSubGroup, a_ParentTxn, &value,&key) );//order of insertion(appended)
                                 break;
                              }
                 default:
-                                _ht("more than kGroup or kSubGroup specified!");
+                                __t("more than kGroup or kSubGroup specified!");
         }//switch
 #ifdef SHOWKEYVAL
                 std::cout<<"\tNewCursorLink(G-sG):done."<<endl;
@@ -651,8 +658,8 @@ TLink::NewCursorLink(
 
         _OK;
 
-#undef THROW_HOOK
-#undef ERR_HOOK
+//#undef THROW_HOOK
+//#undef ERR_HOOK
 }
 /*************************/
 /*************************/
