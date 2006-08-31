@@ -14,6 +14,10 @@ Legend:
 
 =demlinks-0.0.23
 LU: 01 September 2006
+~ bewarned that DB_XXX flags passed to ie. Db->put() or Dbc->put() are not
+binary ie. DB_CURRENT=7 and DB_KEYFIRST=15 thus if you're expecting the former
+with (DB_CURRENT == (DB_CURRENT & flags)) you'll get it even if it's only the
+latter; ok, if this wasn't clear enough former=DB_CURRENT; latter=DB_KEYFIRST
 * Put() should work now; also note putInfo() is consistently modified to
 handle itself with or without cursor.
 * colour enabled error reporting with ^[3Xm (X=0..9) ^[ is \x1B or C-v,C-[ in

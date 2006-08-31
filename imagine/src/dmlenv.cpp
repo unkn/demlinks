@@ -619,13 +619,20 @@ TLink::NewCursorLink(
                 (char *)value.get_data()<<endl;
 #endif
 
-                                if (DB_CURRENT == (DB_CURRENT & a_CursorPutFlags)) {//must read current value for later to delFrom()
+                                if (a_CursorPutFlags - DB_CURRENT == 0) {//must read current value for later to delFrom()
                                         __tIF(0 != m_Cursor->get(&key, &curvalue, DB_CURRENT | DB_RMW) );//flagged for later deletion
                                 }
                                 //insert or overwrite in primary
                                 __fIFnok( putInto(g_DBGroupToSubGroup, a_ParentTxn, &key,&value, a_CursorPutFlags, m_Cursor) );
                                 //if DB_CURRENT then we must pre-delete the old value to make dbase consistent within it's own system (our defined system)
-                                if (DB_CURRENT == (DB_CURRENT & a_CursorPutFlags)) {
+                                if (a_CursorPutFlags - DB_CURRENT == 0) {
+#ifdef SHOWKEYVAL
+                std::cout<<"\tNewCursorLink:del(sG-G):"<<
+                (char *)curvalue.get_data()<<
+                "->" <<
+                (char *)key.get_data()<<
+                endl;
+#endif
                                        __tIFnok( delFrom(g_DBSubGroupFromGroup, a_ParentTxn, &curvalue,&key) );//order of insertion(appended)
                                        if (curvalue.get_data()) {
                                                __( free(curvalue.get_data()) );
@@ -649,7 +656,7 @@ TLink::NewCursorLink(
                 std::cout<<"\tNewCursorLink(sG-G):part1:secondary"<<endl;
 #endif
                 //FIXed: must delete or replace the other connection if DB_CURRENT overwritten something just in one dbase ie. previous B <- J becomes B <- F (in secondary dbase) but remains J -> B and is added F -> B in primary; solution is to replace J -> B to F -> B or if not possible, delete then add; yes DB_CURRENT ignores the key so we can't change the key only the data, thus we will delete J -> B and insert a new F -> B key/data pair with put() w/o cursor
-                                if (DB_CURRENT == (DB_CURRENT & a_CursorPutFlags)) {//must read current value for later to delFrom()
+                                if (a_CursorPutFlags - DB_CURRENT == 0) {//must read current value for later to delFrom()
                                         __tIF(0 != m_Cursor->get(&key, &curvalue, DB_CURRENT | DB_RMW) );//flagged for later deletion
                                 }
                                 //insert or overwrite in secondary
@@ -659,7 +666,18 @@ TLink::NewCursorLink(
                 std::cout<<"\tNewCursorLink(sG-G):part2:primary"<<endl;
 #endif
                                 //if DB_CURRENT then we must pre-delete the old value to make dbase consistent within it's own system (our defined system)
-                                if (DB_CURRENT == (DB_CURRENT & a_CursorPutFlags)) {
+                //DB_XXX flags are not binary ie. DB_CURRENT=7 and DB_KEYFIRST=15 if the latter is present so it the former
+                                if (a_CursorPutFlags - DB_CURRENT == 0) {
+                                        WARN_IF(DB_KEYFIRST & (DB_KEYFIRST & a_CursorPutFlags));//this should be interesting
+                                        cout<<a_CursorPutFlags<<endl;
+                                        cout<<DB_CURRENT<<endl;
+#ifdef SHOWKEYVAL
+                std::cout<<"\tNewCursorLink:del(G-sG):"<<
+                (char *)curvalue.get_data()<<
+                "->" <<
+                (char *)key.get_data()<<
+                endl;
+#endif
                                        __tIFnok( delFrom(g_DBGroupToSubGroup, a_ParentTxn, &curvalue,&key) );//order of insertion(appended)
                                        if (curvalue.get_data()) {
                                                __( free(curvalue.get_data()) );
