@@ -282,7 +282,7 @@ void ShowAllNotifications();
                 INFO(_ret(__VA_ARGS__));\
                 return __VA_ARGS__;
 #else
-        #define _ret \
+        #define _ret(...) \
                 return __VA_ARGS__;
 #endif
 /***************************************/

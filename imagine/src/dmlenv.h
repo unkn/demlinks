@@ -53,8 +53,10 @@ typedef enum{
         kCreateNodeIfNotExists=1 //DB_WRITECURSOR on init, and DB_RMW on get()
         ,kCursorWriteLocks=2
         ,kCurrentNode=4
+        ,kThisNode=4 //alias
+        ,kOverwriteNode=4 //alias
         ,kBeforeNode=8
-        ,kPrevNode=8
+        ,kPrevNode=8//alias
         ,kAfterNode=16 //after current or specified node
         ,kNextNode=16 //first time when used, kNextNode is kFirstNode just like DB_NEXT
         ,kFirstNode=32
@@ -106,6 +108,13 @@ public:
                         );
 
         function
+        TDMLCursor :: Put(
+                        const NodeId_t a_Node1,
+                        const ECursorFlags_t a_Flags,
+                        const NodeId_t a_Node2
+                        );
+
+        function
         DeInit();
 };
 /*************************/
@@ -137,6 +146,15 @@ private:
                 DbTxn *a_ParentTxn,
                 Db *a_DB,
                 char *a_Sep="==");
+
+        function
+        cPutInto(
+                Dbc * const m_Cursor,
+                const u_int32_t a_CursorPutFlags,
+                Db *a_DBInto,
+                DbTxn *a_ParentTxn,
+                Dbt *a_Key,
+                Dbt *a_Value);
 
         function
         putInto(
@@ -194,6 +212,17 @@ public:
                 DbTxn *a_ParentTxn=NULL
                 );
 
+        function
+        TLink::NewCursorLink(
+                Dbc * const m_Cursor,
+                const u_int32_t a_CursorPutFlags,
+                const ENodeType_t a_NodeType,
+                const NodeId_t a_NodeId1,
+                const NodeId_t a_NodeId2,
+                DbTxn *a_ParentTxn=NULL
+                );
+
+        //ie. NewLink(kSubGroup,"sub1","grp1") // => grp1 -> sub1
         function
         TLink::NewLink(
                 const ENodeType_t a_NodeType,

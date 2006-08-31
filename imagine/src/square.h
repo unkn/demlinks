@@ -30,9 +30,10 @@
 
 #include <allegro.h>
 #include "pnotetrk.h"
+#include "camera.h"
 
 void draw_square(BITMAP *bmp, MATRIX_f *camera, int x, int y,int z);
-function draw_squareS(BITMAP *bmp, MATRIX_f *camera);
+function draw_squareS(BITMAP *bmp, CAMERA_CLASS *mycam);
 
 #define GLOBALMAX 5
 extern int global_select;

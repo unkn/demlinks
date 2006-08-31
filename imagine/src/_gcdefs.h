@@ -40,7 +40,7 @@
 //#include "../config.h" conflicts with defs from allegro.h dammit
 
 //#define ENABLE_TIMED_INPUT //enable time capab based on gTimer of all input events OBSOLETE
-#define TRACKABLE_RETURNS //_hret _ret _hreterr
+//#define TRACKABLE_RETURNS //_hret _ret _hreterr
 
 //#define CONTINUE_IF_NOTINITED //continue even if notification subsystem is not initialized, this could happen if some classes are instantiated before executing anything from main() 04aug2006
 

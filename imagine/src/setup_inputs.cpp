@@ -112,6 +112,7 @@ ShowAllNodesOfNode(
                 DbTxn *a_ParentTxn
                 )
 {
+        cout << "-----------Show---"<< (a_NodeType==kGroup?"Group":"SubGroup") <<"-----"<< a_NodeId <<endl;
         __tIF(NULL == m_Curs);
         __tIFnok( m_Curs->InitFor(a_NodeType,a_NodeId, a_ParentTxn/*parent txn*/, kNone) );//prepare to parse kSubGroups of kGroup with id "A1"; create "A1" if not exists; DB_WRITECURSOR acquire write locks with this cursor
         bool once=false;
@@ -261,13 +262,12 @@ int main(const int argc, const char **argv)
         __tIFnok( ShowAllNodesOfNode(meCurs, kGroup,"ComposedOperand",NULL) );
         __tIFnok( ShowAllNodesOfNode(meCurs, kSubGroup,"B",NULL) );
 
+        cout << "---WRite"<<endl;
         __tIFnok( meCurs->InitFor(kSubGroup,"B", NULL, kNone) );//prepare to parse kSubGroups of kGroup with id "A1"; create "A1" if not exists; DB_WRITECURSOR acquire write locks with this cursor
         NodeId_t nod,nod2;
-        nod="J";
-        nod2="C";
-        __tIFnok( meCurs->Get(nod2, kPinPoint) );
-        __tIFnok( meCurs->Put(nod, kBeforeNode) );
-        __tIFnok( meCurs->Put(nod, kBeforeNode) );
+        //__tIFnok( meCurs->Get(nod2, kPinPoint) );
+        //__tIFnok( meCurs->Put(nod, kBeforeNode) );
+        __tIFnok( meCurs->Put("J", kBeforeNode, "C") );
         //__tIFnok( meCurs->Put(nod, kAfterNode, nod2) );
         __tIFnok( meCurs->DeInit() );//release berkeleydb cursor
 

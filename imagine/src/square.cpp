@@ -217,8 +217,9 @@ int compar(const V3D_f *first,const V3D_f *second) {
 }
 
 function
-draw_squareS(BITMAP *bmp,MATRIX_f *camera)
+draw_squareS(BITMAP *bmp, CAMERA_CLASS *mycam)
 {
+        MATRIX_f *camera=mycam->GetUpdatedMatrix();
    /* draw the grid of squares */
         int z=0;
    for (int x=0; x<GRID_SIZEX; x++)
@@ -371,7 +372,7 @@ case 2: {
                 now++;initial--;
                 easy2(ofs==now,"CAM:%d/%d",current_cam,NUM_CAMS-1);
 
-        MProjectedCamera *mycam=cams[current_cam];
+        //MProjectedCamera *mycam=cams[current_cam];
                 easy3("%s","AspectR");
                 easy3("%.2f",mycam->GetAspect());
                 easy3("%s","FOV");

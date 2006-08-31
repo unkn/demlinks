@@ -346,7 +346,10 @@ kAI_NextSetOfValues_()
 {
         //global_select=(global_select+1)% GLOBALMAX;
         SET_NEXT_ROTATION(global_select,GLOBALMAX);
-        __tIFnok( cams[current_cam]->SetNeedRefresh() );
+        //__tIFnok( cams[current_cam]->SetNeedRefresh() );
+        FOR_ALL_ACTIVE_CAMS(
+                __tIFnok( cam->SetNeedRefresh() );
+        );
         _OK;
 }
 /*****************************************************************************/

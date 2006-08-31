@@ -146,7 +146,7 @@ void draw_cross(BITMAP *bmp, CAMERA_CLASS *mycam) {
 function
 draw_all(BITMAP *bmp, CAMERA_CLASS *mycam)
 {
-        draw_squareS(bmp,mycam->GetUpdatedMatrix());
+        __tIFnok( draw_squareS(bmp,mycam) );
         //draw_cross(bmp,mycam);
         _OK;
 }

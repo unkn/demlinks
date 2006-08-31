@@ -111,7 +111,25 @@ Init()
                                 b=0;
                 }//fi
         }//for cams
-        cams[current_cam]->Activate();
+        if (NUM_CAMS >=2){
+                __( cams[1]->SetPos(0,0,-10*TILE_SIZE) );
+                __( cams[1]->SetFrontVector(0,0,1) );
+                __( cams[1]->SetUpVector(-1,-0.4,0) );
+                __( cams[1]->Activate() );
+        }
+        if (NUM_CAMS >=3){
+                __( cams[2]->SetPos(-0.6,-8,4*TILE_SIZE) );
+                __( cams[2]->SetFrontVector(0,1,-0.5) );
+                __( cams[2]->SetUpVector(-1,0,0) );
+                __( cams[2]->Activate() );
+        }
+        if (NUM_CAMS >=4){
+                __( cams[2]->SetPos(-5,-12,6*TILE_SIZE) );
+                __( cams[2]->SetFrontVector(0.5,1,-0.5) );
+                __( cams[2]->SetUpVector(0,-0.50,-1) );
+                __( cams[3]->Activate() );
+        }
+        __( cams[current_cam]->Activate() );
 
          _OK;
 }
