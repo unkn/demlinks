@@ -276,7 +276,7 @@ int main(const int argc, const char **argv)
 
         __tIFnok( ShowAllNodesOfNode(meCurs, kSubGroup,"B",NULL) );
         __tIFnok( ShowAllNodesOfNode(meCurs, kGroup,"F",NULL) );
-        __( ShowAllNodesOfNode(meCurs, kGroup,"J",NULL) );//obv. none!
+        __sIFnok( ShowAllNodesOfNode(meCurs, kGroup,"J",NULL) );//obv. none!
 
         __( delete meCurs );//gLink should still be open and available after this!
         meCurs=NULL;

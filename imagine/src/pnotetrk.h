@@ -253,6 +253,15 @@ void ShowAllNotifications();
                 _fret(__EFunctionReturnTypes_t__FuncReturn);/*returns same error*/\
         }       \
 } //endblock
+
+//show if not ok
+#define __sIFnok(a_Func) { \
+        EFunctionReturnTypes_t __EFunctionReturnTypes_t__FuncReturn;\
+        _TRY( __EFunctionReturnTypes_t__FuncReturn = (a_Func),  throw ) \
+        if (kFuncOK != __EFunctionReturnTypes_t__FuncReturn) { \
+                FAIL(a_Func);/*returns same error*/\
+        }       \
+} //endblock
 //with THROW_HOOK
 #define _htIFnok(a_Func) { \
         EFunctionReturnTypes_t __EFunctionReturnTypes_t__FuncReturn;\
