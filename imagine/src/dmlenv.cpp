@@ -49,7 +49,8 @@ using namespace std;
 /********************************************************/
 
 #define CURSOR_ABORT_HOOK \
-        __(fLink->Abort(&thisTxn));
+        __(fLink->Abort(&thisTxn)); \
+        thisTxn=NULL;
 #define CURSOR_CLOSE_HOOK \
         if (fCursor) { \
                 __tIF(0 != fCursor->close()); \
@@ -208,7 +209,8 @@ TLink :: cPutInto(
         __tIF(NULL == a_Value);
 
         DbTxn *thisTxn;
-        __tIFnok(NewTransaction(a_ParentTxn,&thisTxn ));
+        thisTxn=a_ParentTxn;
+        //__tIFnok(NewTransaction(a_ParentTxn,&thisTxn ));
 
 #ifdef SHOWKEYVAL
         cout << "cPutInto: begin:"<< (char *)a_Key->get_data() << " = " << (char *)a_Value->get_data() <<endl;
@@ -220,11 +222,11 @@ TLink :: cPutInto(
         //since dbase is opened DB_DUP it will allow dup key+data pairs; but we won't!
 //no DUPS! fail(not throw!) if already exists
         Dbc *cursor1 = NULL;
-        _htIF( 0 != a_DBInto->cursor(NULL, &cursor1, 0));
+        _htIF( 0 != a_DBInto->cursor(thisTxn, &cursor1, 0));
 
 #undef THROW_HOOK
 #define THROW_HOOK \
-                cursor1->close();/*done prior to Abort()*/\
+                cursor1->close(); \
                 ABORT_HOOK
 #define ERR_HOOK \
         THROW_HOOK
@@ -248,14 +250,13 @@ TLink :: cPutInto(
         } else {
                 //u_int32_t flags=a_CursorPutFlags; //what teh?!
                 cout << (char *)a_Key->get_data() << " = " << (char *)a_Value->get_data() << " flags= "<< a_CursorPutFlags <<endl;
-                //_htIF( m_Cursor->put(a_Key, a_Value, a_CursorPutFlags) );//even if DB_CURRENT and a_Value exist in this same place, it'll return kFuncAlreadyExists above! there's no use to overwrite with the same value!
-                try {
+                _htIF( m_Cursor->put(a_Key, a_Value, a_CursorPutFlags) );//even if DB_CURRENT and a_Value exist in this same place, it'll return kFuncAlreadyExists above! there's no use to overwrite with the same value!
+                /*try {
                         m_Cursor->put(a_Key, a_Value, a_CursorPutFlags);
                 } catch (DbException &e) {
                         cout << e.what()<<endl;
                         throw;
-                }
-                //_htIF(0!=err);
+                }*/
         }
 #ifdef SHOWKEYVAL
         cout << "cPutInto: done:"<< (char *)a_Key->get_data() << " = " << (char *)a_Value->get_data() <<endl;
@@ -265,7 +266,7 @@ TLink :: cPutInto(
 #undef ERR_HOOK
 
 
-        __tIFnok( Commit(&thisTxn) );
+        //__tIFnok( Commit(&thisTxn) );
 
         _OK;
 }
@@ -590,7 +591,8 @@ TLink::NewCursorLink(
 
 
         DbTxn *thisTxn;
-        __tIFnok(NewTransaction(a_ParentTxn,&thisTxn ));
+        thisTxn=a_ParentTxn;
+        //__tIFnok(NewTransaction(a_ParentTxn,&thisTxn ));
 
 #define THROW_HOOK \
         ABORT_HOOK
@@ -645,7 +647,7 @@ TLink::NewCursorLink(
 #endif
 
 
-        __tIFnok( Commit(&thisTxn) );
+        //__tIFnok( Commit(&thisTxn) );
 
         _OK;
 
