@@ -148,20 +148,14 @@ private:
                 char *a_Sep="==");
 
         function
-        cPutInto(
-                Dbc * const m_Cursor,
-                const u_int32_t a_CursorPutFlags,
-                Db *a_DBInto,
-                DbTxn *a_ParentTxn,
-                Dbt *a_Key,
-                Dbt *a_Value);
-
-        function
         putInto(
                 Db *a_DBInto,
                 DbTxn *a_ParentTxn,
                 Dbt *a_Key,
-                Dbt *a_Value);
+                Dbt *a_Value,
+                const u_int32_t a_CursorPutFlags=0,//mandatory if m_Cursor is used below
+                Dbc * const m_Cursor=NULL
+               );
 
         function
         delFrom(

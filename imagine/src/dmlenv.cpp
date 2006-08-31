@@ -87,7 +87,7 @@ using namespace std;
 
 /****************************/
 function
-TLink::findAndChange(
+TLink::findAndChange( //affecting only the value of the a_Key, aka the key cannot be changed anyways(u must do del then put for that)
                 Db *a_DBWhich,
                 DbTxn *a_ParentTxn,
                 Dbt *a_Key,
@@ -197,31 +197,25 @@ TLink::delFrom(
 
 /*************************/
 function
-TLink :: cPutInto(
-                Dbc *const m_Cursor,//can be NULL, then put() is used thus appended to the list of data of that key(ie. order of insertion)
-                const u_int32_t a_CursorPutFlags,
+TLink :: putInto(
                 Db *a_DBInto,
                 DbTxn *a_ParentTxn,
                 Dbt *a_Key,
-                Dbt *a_Value)
+                Dbt *a_Value,
+                const u_int32_t a_CursorPutFlags,
+                Dbc *const m_Cursor//can be NULL, then put() is used thus appended to the list of data of that key(ie. order of insertion)
+                )
 {
         __tIF(NULL == a_DBInto);
         __tIF(NULL == a_Key);
         __tIF(NULL == a_Value);
 
-        /*DbTxn *thisTxn;
-        //thisTxn=a_ParentTxn;
-        __tIFnok(NewTransaction(NULL, &thisTxn ));
-*/
 #ifdef SHOWKEYVAL
-        cout << "cPutInto: begin:"<< (char *)a_Key->get_data() << " = " << (char *)a_Value->get_data() <<endl;
+        cout << "putInto: begin:"<<(NULL!=m_Cursor?"Cursor:":":")<< (char *)a_Key->get_data() << " = " << (char *)a_Value->get_data() <<endl;
 #endif
-/*
-#define THROW_HOOK \
-        ABORT_HOOK;
-*/
         //since dbase is opened DB_DUP it will allow dup key+data pairs; but we won't!
 //no DUPS! fail(not throw!) if already exists
+        //the value we're about to put() must not already exist within this key!! this isn't allowed in our system
         Dbc *cursor1 = NULL;
         __tIF( 0 != a_DBInto->cursor(a_ParentTxn, &cursor1, 0));
 
@@ -246,8 +240,17 @@ TLink :: cPutInto(
 
 
         //if not found, then put it
-        if (NULL == m_Cursor) {
-                __tIF(0 != a_DBInto->put(a_ParentTxn, a_Key, a_Value, 0) );
+        if (NULL == m_Cursor) { //only using a new child transaction if there's no cursor specified
+                DbTxn *thisTxn;
+                __tIFnok(NewTransaction(a_ParentTxn, &thisTxn ));
+#define THROW_HOOK \
+        ABORT_HOOK
+                        _htIF(0 != a_DBInto->put(thisTxn, a_Key, a_Value, 0) );
+                        /*The default behavior of the Db::put
+                         * function is to enter the new key/data pair, replacing any previously existing key if duplicates are
+                         * disallowed, or adding a duplicate data item if duplicates are allowed. (from berkeley db docs)*/
+#undef THROW_HOOK
+                __tIFnok( Commit(&thisTxn) );
         } else {
                 //u_int32_t flags=a_CursorPutFlags; //what teh?!
                 //cout << (char *)a_Key->get_data() << " = " << (char *)a_Value->get_data() << " flags= "<< a_CursorPutFlags <<endl;
@@ -260,19 +263,15 @@ TLink :: cPutInto(
                 }*/
         }
 #ifdef SHOWKEYVAL
-        cout << "cPutInto: done:"<< (char *)a_Key->get_data() << " = " << (char *)a_Value->get_data() <<endl;
+        cout << "putInto: done:"<<(NULL!=m_Cursor?"Cursor:":":")<< (char *)a_Key->get_data() << " = " << (char *)a_Value->get_data() <<endl;
 #endif
 
 //#undef THROW_HOOK
-
-
-        //__tIFnok( Commit(&thisTxn) );
-
         _OK;
 }
 /****************************/
 
-/*************************/
+/*************************
 function
 TLink :: putInto(
                 Db *a_DBInto,
@@ -300,7 +299,7 @@ TLink :: putInto(
 
 #undef THROW_HOOK
 #define THROW_HOOK \
-                cursor1->close();/*done prior to Abort()*/\
+                cursor1->close();\
                 ABORT_HOOK
 #define ERR_HOOK \
         THROW_HOOK
@@ -329,7 +328,7 @@ TLink :: putInto(
 
         _OK;
 }
-/****************************/
+****************************/
 
 
 /****************************/
@@ -457,7 +456,7 @@ TLink::IsGroup(
                 ABORT_HOOK;
 #define FREE_VAL \
         if (value.get_data()) \
-                free(value.get_data());
+                __( free(value.get_data()) );
 #define ERR_HOOK \
         FREE_VAL \
         THROW_HOOK
@@ -608,6 +607,9 @@ TLink::NewCursorLink(
         __( value.set_data((void *)a_NodeId2.c_str()) );
         __( value.set_size((u_int32_t)a_NodeId2.length() + 1) );
 
+        Dbt curvalue; //curvalue is used to read current value or key when DB_CURRENT is flagged
+        __(curvalue.set_flags(DB_DBT_MALLOC););
+
         switch (a_NodeType) {
                 case kGroup: {
 #ifdef SHOWKEYVAL
@@ -617,9 +619,19 @@ TLink::NewCursorLink(
                 (char *)value.get_data()<<endl;
 #endif
 
-                                //insert in primary
-                                __fIFnok( cPutInto(m_Cursor, a_CursorPutFlags, g_DBGroupToSubGroup, a_ParentTxn, &key,&value) );
-                                //insert in secondary
+                                if (DB_CURRENT == (DB_CURRENT & a_CursorPutFlags)) {//must read current value for later to delFrom()
+                                        __tIF(0 != m_Cursor->get(&key, &curvalue, DB_CURRENT | DB_RMW) );//flagged for later deletion
+                                }
+                                //insert or overwrite in primary
+                                __fIFnok( putInto(g_DBGroupToSubGroup, a_ParentTxn, &key,&value, a_CursorPutFlags, m_Cursor) );
+                                //if DB_CURRENT then we must pre-delete the old value to make dbase consistent within it's own system (our defined system)
+                                if (DB_CURRENT == (DB_CURRENT & a_CursorPutFlags)) {
+                                       __tIFnok( delFrom(g_DBSubGroupFromGroup, a_ParentTxn, &curvalue,&key) );//order of insertion(appended)
+                                       if (curvalue.get_data()) {
+                                               __( free(curvalue.get_data()) );
+                                       }
+                                }
+                                //just insert in secondary
                                 //if we're here, means we successfuly entered the record in primary, so the record must be successfully entered in secondary, ie. cannot return kFuncAlreadyExists; so it must be clean, otherwise we throw (up;)
                                 __tIFnok( putInto(g_DBSubGroupFromGroup, a_ParentTxn, &value,&key) );//appended at end of list
                                 break;
@@ -636,13 +648,24 @@ TLink::NewCursorLink(
 #ifdef SHOWKEYVAL
                 std::cout<<"\tNewCursorLink(sG-G):part1:secondary"<<endl;
 #endif
-                                //insert in secondary
+                //FIXed: must delete or replace the other connection if DB_CURRENT overwritten something just in one dbase ie. previous B <- J becomes B <- F (in secondary dbase) but remains J -> B and is added F -> B in primary; solution is to replace J -> B to F -> B or if not possible, delete then add; yes DB_CURRENT ignores the key so we can't change the key only the data, thus we will delete J -> B and insert a new F -> B key/data pair with put() w/o cursor
+                                if (DB_CURRENT == (DB_CURRENT & a_CursorPutFlags)) {//must read current value for later to delFrom()
+                                        __tIF(0 != m_Cursor->get(&key, &curvalue, DB_CURRENT | DB_RMW) );//flagged for later deletion
+                                }
+                                //insert or overwrite in secondary
                                 //if we're here, means we successfuly entered the record in primary, so the record must be successfully entered in secondary, ie. cannot return kFuncAlreadyExists; so it must be clean, otherwise we throw (up;)
-                                __fIFnok( cPutInto(m_Cursor, a_CursorPutFlags, g_DBSubGroupFromGroup, a_ParentTxn, &key,&value) );
+                                __fIFnok( putInto(g_DBSubGroupFromGroup, a_ParentTxn, &key,&value, a_CursorPutFlags,m_Cursor) );
 #ifdef SHOWKEYVAL
                 std::cout<<"\tNewCursorLink(sG-G):part2:primary"<<endl;
 #endif
-                                //insert in primary
+                                //if DB_CURRENT then we must pre-delete the old value to make dbase consistent within it's own system (our defined system)
+                                if (DB_CURRENT == (DB_CURRENT & a_CursorPutFlags)) {
+                                       __tIFnok( delFrom(g_DBGroupToSubGroup, a_ParentTxn, &curvalue,&key) );//order of insertion(appended)
+                                       if (curvalue.get_data()) {
+                                               __( free(curvalue.get_data()) );
+                                       }
+                                }
+                                //just insert in primary
                                 __tIFnok( putInto(g_DBGroupToSubGroup, a_ParentTxn, &value,&key) );//order of insertion(appended)
                                 break;
                              }
@@ -1130,7 +1153,7 @@ TDMLCursor :: InitFor(
                                 _ht("more than kGroup or kSubGroup specified!");
         }//switch
         fFlags=a_Flags;
-        if (fFlags & kCursorWriteLocks) {
+        if (kCursorWriteLocks == (fFlags & kCursorWriteLocks)) {
                 fFlags=DB_WRITECURSOR;
         }
         _htIF( 0 != fDb->cursor(thisTxn,&fCursor, fFlags) );
@@ -1183,13 +1206,13 @@ TDMLCursor :: Get(
                 (char *)fCurKey.get_data()<<endl;
 #endif
         u_int32_t flags=0;//FIXME:
-        if ((fFlags & DB_WRITECURSOR)||(a_Flags & kCursorWriteLocks)) {
+        if ((DB_WRITECURSOR == (fFlags & DB_WRITECURSOR))||(kCursorWriteLocks == (a_Flags & kCursorWriteLocks))) {
                 flags|=DB_RMW;
         }
 
         Dbt curVal;
         _h( curVal.set_flags(DB_DBT_MALLOC) );
-if (a_Flags & kNextNode){
+if (kNextNode == (a_Flags & kNextNode)){
         if (fFirstTimeGet) {
                 fFirstTimeGet=false;
                 flags|=DB_SET;
@@ -1199,16 +1222,16 @@ if (a_Flags & kNextNode){
                 //cout <<"not";
         }
 } else {
-        if (a_Flags & kFirstNode) {
+        if (kFirstNode == (a_Flags & kFirstNode)) {
                 flags|=DB_FIRST;
         } else {
-                if (a_Flags & kLastNode) {
+                if (kLastNode == (a_Flags & kLastNode)) {
                         flags|=DB_LAST;
                 } else {
-                        if (a_Flags & kCurrentNode) {
+                        if (kCurrentNode == (a_Flags & kCurrentNode)) {
                                 flags|=DB_CURRENT;
                         } else {
-                                if (a_Flags & kPinPoint) {
+                                if (kPinPoint == (a_Flags & kPinPoint)) {
                                         flags|=DB_GET_BOTH;
                                         _h( curVal.set_flags(0) );
                                         _h( curVal.set_data((void *)m_Node.c_str()) );
@@ -1225,8 +1248,8 @@ if (a_Flags & kNextNode){
 }
 
 #define FREE_VAL \
-        if ((flags & DB_GET_BOTH==0) && (curVal.get_data())) \
-                free(curVal.get_data());
+        if ((DB_GET_BOTH != (flags & DB_GET_BOTH)) && (curVal.get_data())) \
+                __( free(curVal.get_data()) );
 #undef THROW_HOOK
 #define THROW_HOOK \
         FREE_VAL \
@@ -1279,25 +1302,25 @@ TDMLCursor :: Put(
                 (char *)fCurKey.get_data()<< " val=" << a_Node << endl;
 #endif
         u_int32_t flags=0;//FIXME:
-        if ((fFlags & DB_WRITECURSOR)||(a_Flags & kCursorWriteLocks)) {
+        if ((DB_WRITECURSOR == (fFlags & DB_WRITECURSOR))||(kCursorWriteLocks == (a_Flags & kCursorWriteLocks))) {
                 flags|=DB_RMW;
 #ifdef SHOWKEYVAL
                 std::cout<<"\tTDMLCursor::Put:flags|=DB_RMW"<<endl;
 #endif
         }
-        if (a_Flags & kCurrentNode) {
+        if (kCurrentNode == (a_Flags & kCurrentNode)) {
                 flags|=DB_CURRENT;//overwrite current, FIXME: 2nd db must be updated also
 #ifdef SHOWKEYVAL
                 std::cout<<"\tTDMLCursor::Put:flags|=DB_CURRENT"<<endl;
 #endif
         } else {
-                if ((a_Flags & kAfterNode)||(a_Flags & kNextNode)) {
+                if ((kAfterNode == (a_Flags & kAfterNode))||(kNextNode == (a_Flags & kNextNode))) {
                         flags|=DB_AFTER; //after current
 #ifdef SHOWKEYVAL
                 std::cout<<"\tTDMLCursor::Put:flags|=DB_AFTER"<<endl;
 #endif
                 } else {
-                        if (a_Flags & kBeforeNode) {
+                        if (kBeforeNode == (a_Flags & kBeforeNode)) {
                                 flags|=DB_BEFORE;//before current
 #ifdef SHOWKEYVAL
                 std::cout<<"\tTDMLCursor::Put:flags|=DB_BEFORE"<<endl;
@@ -1314,12 +1337,15 @@ TDMLCursor :: Put(
 &*/
         //int err;
         //_htIF( 0 != fCursor->put( &fCurKey, &curVal, flags));//FIXME: must put in both dbases
-        function err;
-        _hif ( kFuncAlreadyExists == (err=fLink->NewCursorLink(fCursor, flags, fNodeType, fCurKeyStr, a_Node, thisTxn)) ) {
-        //_hif ( kFuncAlreadyExists == (err=fLink->NewLink(fNodeType, fCurKeyStr, a_Node, thisTxn)) ) {
-                _fret(err);
-        }_fih
-        _htIFnok(err);//other unhandled error is bad for us
+        //if (DB_CURRENT == (flags & DB_CURRENT)) { //overwriting current
+                //FIXME:
+        {//} else { // not overwriting current record, thus it must be an insertion
+                function err;
+                _hif ( kFuncAlreadyExists == (err=fLink->NewCursorLink(fCursor, flags, fNodeType, fCurKeyStr, a_Node, thisTxn)) ) {
+                        _fret(err);
+                }_fih
+                _htIFnok(err);//other unhandled error is bad for us
+        }//fi
 
 #undef THROW_HOOK
 

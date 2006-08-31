@@ -13,7 +13,9 @@ Legend:
 	LU means last update on ... date
 
 =demlinks-0.0.23
-LU: 31 August 2006
+LU: 01 September 2006
+* Put() should work now; also note putInfo() is consistently modified to
+handle itself with or without cursor.
 * colour enabled error reporting with ^[3Xm (X=0..9) ^[ is \x1B or C-v,C-[ in
 vim
 ~ so far there's no sensible way to view the contents of the database(s);
