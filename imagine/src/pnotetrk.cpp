@@ -40,8 +40,8 @@ MNotifyTracker gNotifyTracker;
  *  ie. "WARN" */
 const PChar_t kNotifyDescriptions[kNumNotifyTypes]={
         "NONE",
-        "WARN",
-        "ERR",
+        "\x1B[33mWARN",
+        "\x1B[31mERR",
         "\x1B[34mFuncFail",
         "\x1B[35mEXIT",
         "\x1B[33mINFO",

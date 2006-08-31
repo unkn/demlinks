@@ -270,11 +270,13 @@ int main(const int argc, const char **argv)
         NodeId_t nod,nod2;
         __tIFnok( meCurs->Put("J", kBeforeNode, "C") );
         __tIFnok( meCurs->Put("F", kThisNode, "J") );
+        __tIFnok( meCurs->Put("G", kLastNode) );
+        __tIFnok( meCurs->Put("1", kFirstNode) );
         __tIFnok( meCurs->DeInit() );//release berkeleydb cursor
 
         __tIFnok( ShowAllNodesOfNode(meCurs, kSubGroup,"B",NULL) );
         __tIFnok( ShowAllNodesOfNode(meCurs, kGroup,"F",NULL) );
-        __( ShowAllNodesOfNode(meCurs, kGroup,"J",NULL) );
+        __( ShowAllNodesOfNode(meCurs, kGroup,"J",NULL) );//obv. none!
 
         __( delete meCurs );//gLink should still be open and available after this!
         meCurs=NULL;

@@ -1314,7 +1314,7 @@ TDMLCursor :: Put(
                 std::cout<<"\tTDMLCursor::Put:flags|=DB_CURRENT"<<endl;
 #endif
         } else {
-                if ((kAfterNode == (a_Flags & kAfterNode))||(kNextNode == (a_Flags & kNextNode))) {
+                if ( (kAfterNode == (a_Flags & kAfterNode)) || (kNextNode == (a_Flags & kNextNode)) ) {
                         flags|=DB_AFTER; //after current
 #ifdef SHOWKEYVAL
                 std::cout<<"\tTDMLCursor::Put:flags|=DB_AFTER"<<endl;
@@ -1325,9 +1325,24 @@ TDMLCursor :: Put(
 #ifdef SHOWKEYVAL
                 std::cout<<"\tTDMLCursor::Put:flags|=DB_BEFORE"<<endl;
 #endif
+                        } else {
+                                if (kFirstNode == (a_Flags & kFirstNode)) {
+                                        flags|=DB_KEYFIRST;
+#ifdef SHOWKEYVAL
+                std::cout<<"\tTDMLCursor::Put:flags|=DB_FIRST"<<endl;
+#endif
+                                } else {
+                                        if (kLastNode == (a_Flags & kLastNode)) {
+                                                flags|=DB_KEYLAST;
+#ifdef SHOWKEYVAL
+                std::cout<<"\tTDMLCursor::Put:flags|=DB_LAST"<<endl;
+#endif
+                                        }
+                                }
                         }
                 }
         }
+        __tIF(0==flags);
 
         /*Dbt curVal;//temp
         //_h( curVal.set_flags(DB_DBT_MALLOC) );
@@ -1337,15 +1352,11 @@ TDMLCursor :: Put(
 &*/
         //int err;
         //_htIF( 0 != fCursor->put( &fCurKey, &curVal, flags));//FIXME: must put in both dbases
-        //if (DB_CURRENT == (flags & DB_CURRENT)) { //overwriting current
-                //FIXME:
-        {//} else { // not overwriting current record, thus it must be an insertion
-                function err;
-                _hif ( kFuncAlreadyExists == (err=fLink->NewCursorLink(fCursor, flags, fNodeType, fCurKeyStr, a_Node, thisTxn)) ) {
-                        _fret(err);
-                }_fih
-                _htIFnok(err);//other unhandled error is bad for us
-        }//fi
+        function err;
+        _hif ( kFuncAlreadyExists == (err=fLink->NewCursorLink(fCursor, flags, fNodeType, fCurKeyStr, a_Node, thisTxn)) ) {
+                _fret(err);
+        }_fih
+        _htIFnok(err);//other unhandled error is bad for us
 
 #undef THROW_HOOK
 
@@ -1364,7 +1375,7 @@ TDMLCursor :: Put(
                 const NodeId_t a_Node2
                 )
 {
-        if ( (a_Flags == kBeforeNode) || (a_Flags == kAfterNode) || (a_Flags==kThisNode) ) {
+        if ( (a_Flags == kBeforeNode) || (a_Flags == kAfterNode) || (a_Flags==kThisNode) ) {//FIXME: weird if.
                 NodeId_t temp=a_Node2;
                 __fIFnok( this->Get(temp, kPinPoint) );
                 __tIF(temp != a_Node2);
