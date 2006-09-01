@@ -37,7 +37,7 @@ using namespace std;
 
 /*************debug vars*/
 //show debug statistics such as key+value
-#define SHOWKEYVAL
+//#define SHOWKEYVAL
 //#define SHOWCONTENTS //if disabled, the consistency check is still performed, just no records are displayed on console
 //#define SHOWTXNS
 /*************/
@@ -1330,10 +1330,13 @@ if ( (kNextNode == (a_Flags & kNextNode)) || (kPrevNode == (a_Flags & kPrevNode)
                 if (kLastNode == (a_Flags & kLastNode)) {
                         //FIXME: somehow! ie. parse all until not found, return last found;
                         _ht(bdb apparently doesnt support returning the last datum of a given key if this key has more than one datum associated with it ie. A - B and A - D  cannot return A - D with DB_LAST refers to last of dbase not of key and key is ignored)
-/*                        flags|=DB_LAST;
+                                /*
+                        flags|=DB_KEYLAST;//Dbc::get: Invalid argument
+                                //DB_LAST not working either, gets the last datum of the dbase not of the key
                         #ifdef SHOWKEYVAL
-                                std::cout<<"\tTDMLCursor::Get:flags|=DB_LAST"<<endl;
-                        #endif*/
+                                std::cout<<"\tTDMLCursor::Get:flags|=DB_KEYLAST"<<endl;
+                        #endif
+                        */
                 } else {
                         if (kCurrentNode == (a_Flags & kCurrentNode)) {
                                 flags|=DB_CURRENT;
@@ -1367,6 +1370,13 @@ if ( (kNextNode == (a_Flags & kNextNode)) || (kPrevNode == (a_Flags & kPrevNode)
         CURSOR_ABORT_HOOK
 
         int err;
+/*        try { 
+                (err=fCursor->get( &fCurKey, &curVal, flags));
+        } catch (DbException &e) {
+                cout << e.what()<<endl;
+                throw;
+        }*/
+        //_hif ( DB_NOTFOUND == err) {
         _hif( DB_NOTFOUND == (err=fCursor->get( &fCurKey, &curVal, flags)) ) {
 #ifdef SHOWKEYVAL
                 __( std::cout<<"\tTDMLCursor::Get:fail:Key="<<
@@ -1499,6 +1509,19 @@ TDMLCursor :: Put(
         _OK;
 }
 /*******************************/
+function
+TDMLCursor :: Count(
+                db_recno_t &m_Into
+                )
+{
+#define THROW_HOOK \
+        CURSOR_CLOSE_HOOK \
+        CURSOR_ABORT_HOOK
+        //db_recno_t countp;
+        _htIF( 0 != fCursor->count( &m_Into, 0) );
+        _OK;
+#undef THROW_HOOK
+}
 /*******************************/
 /*******************************/
 /*******************************/

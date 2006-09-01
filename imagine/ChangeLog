@@ -13,13 +13,17 @@ Legend:
 	LU means last update on ... date
 
 =demlinks-0.0.23
-LU: 01 September 2006
+LU: 02 September 2006
+* added TDMLCursor::Count()
 ~ this may be just apparent but seems to me that berkeley db cannot return the
 last datum of a give dup key with DB_LAST; the latter refers to the last item
 of the database thus the key param to get()[cursor] is ignored!
 * added IsLinkConsisten() consistency checks in a few points (dmlenv.cpp) that
 does check if the link is consistent in both dbases; ie. Put(), Get(),
-showRecords(), ShowContents(), NewLink(), ModLink() they've all been protected
+showRecords(), ShowContents(), NewLink(), ModLink() they've all been
+protected; however this IsLinkConsistent() seems rather barbaric where it is
+called, because some actions will be repeated ie. key=val may already exist in
+primary but it is still checked again within IsLinkConsistent()
 $ rewrite all bdb funx from dmlenv.cpp they're ugly!
 ~ bewarned that DB_XXX flags passed to ie. Db->put() or Dbc->put() are not
 binary ie. DB_CURRENT=7 and DB_KEYFIRST=15 thus if you're expecting the former

@@ -115,6 +115,11 @@ public:
                         );
 
         function
+        TDMLCursor :: Count(
+                        db_recno_t &m_Into
+                        );
+
+        function
         DeInit();
 };
 /*************************/
