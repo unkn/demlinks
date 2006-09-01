@@ -114,7 +114,11 @@ ShowAllNodesOfNode(
 {
         cout << "-----------Show---"<< (a_NodeType==kGroup?"Group":"SubGroup") <<"-----"<< a_NodeId <<endl;
         __tIF(NULL == m_Curs);
-        __tIFnok( m_Curs->InitFor(a_NodeType,a_NodeId, a_ParentTxn/*parent txn*/, kNone) );//prepare to parse kSubGroups of kGroup with id "A1"; create "A1" if not exists;
+        bool wasInited;
+        __( wasInited=m_Curs->IsInited() );//std call, i know it doesn't throw but when it could who will add __() ?!
+        if (! wasInited) {
+                __tIFnok( m_Curs->InitFor(a_NodeType,a_NodeId, a_ParentTxn/*parent txn*/, kNone) );//prepare to parse kSubGroups of kGroup with id "A1"; create "A1" if not exists;
+        }
         bool once=false;
         while (true) {
                 NodeId_t node;
@@ -137,7 +141,9 @@ ShowAllNodesOfNode(
                 }
                 cout << "Node: "<<node<<endl;
         };
-        __tIFnok( m_Curs->DeInit() );//release berkeleydb cursor
+        if (! wasInited) {
+                __tIFnok( m_Curs->DeInit() );//release berkeleydb cursor
+        }
         _OK;
 }
 
@@ -272,12 +278,14 @@ int main(const int argc, const char **argv)
         //__tIFnok( meCurs->Put("F", kThisNode, "J") );
         __tIFnok( meCurs->Put("J", kBeforeNode, "C") );
         __tIFnok( meCurs->Put("F", kThisNode, "J") );
+        __tIFnok( ShowAllNodesOfNode(meCurs, kSubGroup,nod2,NULL) );
         db_recno_t here=0;
         __sIFnok( meCurs->Count(here) );
         cout << here << " records so far." <<endl;
         //__tIFnok( meCurs->Get(nod, kFirstNode) );
         //cout<<nod<<endl;
         __tIFnok( meCurs->DeInit() );//release berkeleydb cursor
+        cout << "---DeInit-ed"<<endl;
 
         //__tIFnok( gLink->Commit(&tmp1) );
 

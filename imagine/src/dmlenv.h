@@ -87,6 +87,9 @@ public:
         TDMLCursor(TLink *m_WorkingOnThisTLink);
         ~TDMLCursor();
 
+        bool
+        TDMLCursor :: IsInited();
+
         function
         InitFor(
                         const ENodeType_t a_NodeType,

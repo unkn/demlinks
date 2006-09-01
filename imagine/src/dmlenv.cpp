@@ -1169,7 +1169,7 @@ TDMLCursor :: TDMLCursor(TLink *m_WorkingOnThisTLink):
         fLink=m_WorkingOnThisTLink;
         __tIF(NULL == fLink);
         thisTxn=NULL;
-        fDb=NULL;
+        fDb=NULL;//also used by IsInited() below
 }
 /*******************************/
 //destructor
@@ -1178,6 +1178,12 @@ TDMLCursor :: ~TDMLCursor()
         __tIF(NULL == fLink);//cannot be
         __tIF(fCursor != NULL);//forgot to call DeInit() ?
         __tIF(NULL != fDb);//DeInit() must be called!
+}
+/*******************************/
+bool
+TDMLCursor :: IsInited()
+{
+        return (fDb != NULL);
 }
 /*******************************/
 //opens the cursor
