@@ -400,6 +400,33 @@ TLink::ModLink(
 
 /*************************/
 function
+TLink::IsLinkConsistent(
+                const ENodeType_t a_NodeType,
+                const NodeId_t a_NodeId1,
+                const NodeId_t a_NodeId2,
+                DbTxn *a_ParentTxn
+                )
+{
+        DbTxn *thisTxn;
+        __tIFnok(NewTransaction(a_ParentTxn,&thisTxn ));
+#define THROW_HOOK \
+        ABORT_HOOK
+
+        _htIFnok( IsLink(a_NodeType, a_NodeId1, a_NodeId2, thisTxn) );
+        ENodeType_t otherNodeType=a_NodeType;
+        if (otherNodeType == kGroup) {
+                otherNodeType=kSubGroup;
+        } else {//assumed kSubGroup; we're in trouble if there will be three types
+                otherNodeType = kGroup;
+        }
+        _htIFnok( IsLink(otherNodeType, a_NodeId2, a_NodeId1, thisTxn) );
+#undef THROW_HOOK
+        __tIFnok( Commit(&thisTxn) );
+
+        _OK;
+}
+/*************************/
+function
 TLink::IsGroup(
                 const ENodeType_t a_NodeType,
                 const NodeId_t a_GroupId,
@@ -494,17 +521,14 @@ TLink::IsGroup(
 /*************************/
 function
 TLink::IsLink(
-                const NodeId_t a_GroupId,//may or may not exist
-                const NodeId_t a_SubGroupId,//same
+                const ENodeType_t a_NodeType,
+                const NodeId_t a_NodeId1,//may or may not exist
+                const NodeId_t a_NodeId2,//same
                 DbTxn *a_ParentTxn
                 )
 {
-        //FIXME: do one of :
-        //1) count a_GroupId kTo records, and a_SubGroupId kFrom records, and run the search on the one with least records (problem: dno if count has the value cached or it really parses each and counts them, which defeats our purpose)
-        //OR 2) run two threads one that finds a_GroupId kTo a_SubGroupId (default)  and second that finds a_SubGroupId kFrom a_GroupId and whichever finishes first ends the other (can we really stop the other one??! don't think so; that's why we prefer variant 1) )
-
-        __tIF(a_GroupId.empty());
-        __tIF(a_SubGroupId.empty());
+        __tIF(a_NodeId1.empty());
+        __tIF(a_NodeId2.empty());
 
 
 
@@ -517,13 +541,27 @@ TLink::IsLink(
 #define ERR_HOOK \
         THROW_HOOK
 
+        Db *db;
+        switch (a_NodeType) {
+                case kGroup: {
+                                     db=g_DBGroupToSubGroup;
+                                     break;
+                             }
+                case kSubGroup: {
+                                     db=g_DBSubGroupFromGroup;
+                                     break;
+                             }
+                default:
+                                _ht("more than kGroup or kSubGroup specified!");
+        }//switch
+
         Dbt value;
         Dbt key;
 
-        _h( key.set_data((void *)a_GroupId.c_str()) );
-        key.set_size((u_int32_t)a_GroupId.length() + 1);
-        _h( value.set_data((void *)a_SubGroupId.c_str()) );
-        value.set_size((u_int32_t)a_SubGroupId.length() + 1);
+        _h( key.set_data((void *)a_NodeId1.c_str()) );
+        _h( key.set_size((u_int32_t)a_NodeId1.length() + 1) );
+        _h( value.set_data((void *)a_NodeId2.c_str()) );
+        _h( value.set_size((u_int32_t)a_NodeId2.length() + 1) );
 
 #ifdef SHOWKEYVAL
                 std::cout<<"\tIsLink:begin:"<<
@@ -533,7 +571,7 @@ TLink::IsLink(
 #endif
 
         Dbc *cursor1=NULL;
-        _htIF( 0 != g_DBGroupToSubGroup->cursor(thisTxn,&cursor1, 0) );
+        _htIF( 0 != db->cursor(thisTxn,&cursor1, 0) );//for duplicate key values(as it is our case) we must use a cursor instead of Db::get()
 
 #undef ERR_HOOK
 #undef THROW_HOOK
@@ -656,6 +694,7 @@ TLink::NewCursorLink(
                 std::cout<<"\tNewCursorLink(sG-G):part1:secondary"<<endl;
 #endif
                 //FIXed: must delete or replace the other connection if DB_CURRENT overwritten something just in one dbase ie. previous B <- J becomes B <- F (in secondary dbase) but remains J -> B and is added F -> B in primary; solution is to replace J -> B to F -> B or if not possible, delete then add; yes DB_CURRENT ignores the key so we can't change the key only the data, thus we will delete J -> B and insert a new F -> B key/data pair with put() w/o cursor
+                                //if (a_CursorPutFlags & DB_CURRENT) {
                                 if (a_CursorPutFlags - DB_CURRENT == 0) {//must read current value for later to delFrom()
                                         __tIF(0 != m_Cursor->get(&key, &curvalue, DB_CURRENT | DB_RMW) );//flagged for later deletion
                                 }
@@ -667,10 +706,8 @@ TLink::NewCursorLink(
 #endif
                                 //if DB_CURRENT then we must pre-delete the old value to make dbase consistent within it's own system (our defined system)
                 //DB_XXX flags are not binary ie. DB_CURRENT=7 and DB_KEYFIRST=15 if the latter is present so it the former
+                                //if (a_CursorPutFlags & DB_CURRENT) {
                                 if (a_CursorPutFlags - DB_CURRENT == 0) {
-                                        WARN_IF(DB_KEYFIRST & (DB_KEYFIRST & a_CursorPutFlags));//this should be interesting
-                                        cout<<a_CursorPutFlags<<endl;
-                                        cout<<DB_CURRENT<<endl;
 #ifdef SHOWKEYVAL
                 std::cout<<"\tNewCursorLink:del(G-sG):"<<
                 (char *)curvalue.get_data()<<
@@ -1285,17 +1322,19 @@ if (kNextNode == (a_Flags & kNextNode)){
                 _fret(kFuncNotFound);
         }_fih
         _htIF(0 != err);//other unspecified error
-
         _htIF(NULL == curVal.get_data());//impossible?
         m_Node=(char *)curVal.get_data();//hopefully this does copy contents not just point!
-        //((char *)curVal.get_data())[0]='j';//poisoning to test the above; FIXME: delthisline
         FREE_VAL;//maybe we should call this in DeInit();
-#undef THROW_HOOK
-
 #ifdef SHOWKEYVAL
-                std::cout<<"\tTDMLCursor::Get:done:"<<
+                std::cout<<"\tTDMLCursor::Get:found:"<<
                 (char *)fCurKey.get_data()<<" = "<< m_Node <<endl; //weird thing here, when DB_SET, key=data
 #endif
+
+//follows: consistency check, if A -> B exist so must B <- A in the other database; otherwise something happened prior to calling this function and we catched it here
+        _htIFnok( fLink->IsLinkConsistent(fNodeType, fCurKeyStr, m_Node, thisTxn) );
+        std::cout<<"\tTDMLCursor::Get:done."<<endl;
+#undef THROW_HOOK
+
 
         _OK;
 #undef FREE_VAL
@@ -1393,11 +1432,11 @@ TDMLCursor :: Put(
                 const NodeId_t a_Node2
                 )
 {
-        if ( (a_Flags == kBeforeNode) || (a_Flags == kAfterNode) || (a_Flags==kThisNode) ) {//FIXME: weird if.
+        if ( (a_Flags == kBeforeNode) || (a_Flags == kAfterNode) || (a_Flags==kThisNode) ) {
                 NodeId_t temp=a_Node2;
                 __fIFnok( this->Get(temp, kPinPoint) );
                 __tIF(temp != a_Node2);
-        }
+        } else __t(useless combination of flags);
         __fIFnok( this->Put(a_Node1, a_Flags) );
         _OK;
 }

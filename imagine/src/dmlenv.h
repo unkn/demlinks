@@ -193,12 +193,27 @@ public:
 
 
         function
+        TLink::IsLinkConsistent( //checks both dbases for this link to be consistent ie. A -> B must have B <- A
+                const ENodeType_t a_NodeType,
+                const NodeId_t a_NodeId1,
+                const NodeId_t a_NodeId2,
+                DbTxn *a_ParentTxn=NULL
+                );
+
+        function
         TLink::IsGroup(
                 const ENodeType_t a_NodeType,
                 const NodeId_t a_GroupId,
                 DbTxn *a_ParentTxn=NULL
                 );
 
+        function
+        TLink::IsLink(
+                const ENodeType_t a_NodeType,
+                const NodeId_t a_NodeId1,
+                const NodeId_t a_NodeId2,
+                DbTxn *a_ParentTxn=NULL
+                );
         function
         TLink::IsLink(
                 const NodeId_t a_GroupId,
