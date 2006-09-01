@@ -14,6 +14,10 @@ Legend:
 
 =demlinks-0.0.23
 LU: 01 September 2006
+* added IsLinkConsisten() consistency checks in a few points (dmlenv.cpp) that
+does check if the link is consistent in both dbases; ie. Put(), Get(),
+showRecords(), ShowContents(), NewLink(), ModLink() they've all been protected
+$ rewrite all bdb funx from dmlenv.cpp they're ugly!
 ~ bewarned that DB_XXX flags passed to ie. Db->put() or Dbc->put() are not
 binary ie. DB_CURRENT=7 and DB_KEYFIRST=15 thus if you're expecting the former
 with (DB_CURRENT == (DB_CURRENT & flags)) you'll get it even if it's only the

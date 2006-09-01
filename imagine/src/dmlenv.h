@@ -51,7 +51,7 @@ typedef std::string NodeId_t;
 typedef enum{
         kNone=0,//first
         kCreateNodeIfNotExists=1 //DB_WRITECURSOR on init, and DB_RMW on get()
-        ,kCursorWriteLocks=2
+        ,kCursorWriteLocks=2 //only used with Get() not with Put()
         ,kCurrentNode=4
         ,kThisNode=4 //alias
         ,kOverwriteNode=4 //alias
@@ -98,7 +98,7 @@ public:
         function
         Get(
                         NodeId_t &m_Node,
-                        const ECursorFlags_t a_Flags
+                        const int a_Flags
                         );
 
         function
@@ -144,7 +144,7 @@ private:
         function
         showRecords(
                 DbTxn *a_ParentTxn,
-                Db *a_DB,
+                ENodeType_t a_NodeType,
                 char *a_Sep="==");
 
         function

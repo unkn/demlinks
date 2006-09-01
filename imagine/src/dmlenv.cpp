@@ -38,8 +38,8 @@ using namespace std;
 /*************debug vars*/
 //show debug statistics such as key+value
 #define SHOWKEYVAL
-#define SHOWCONTENTS
-#define SHOWTXNS
+//#define SHOWCONTENTS //if disabled, the consistency check is still performed, just no records are displayed on console
+//#define SHOWTXNS
 /*************/
 
 /****************************/
@@ -385,6 +385,7 @@ TLink::ModLink(
         //must not return kFuncAlreadyExists otherwise a bug is present somewhere
         _htIFnok( putInto(g_DBSubGroupFromGroup,thisTxn,&newValue,&key) );//create C<-A in secondary
 
+        _htIFnok( IsLinkConsistent(kGroup, a_GroupId, a_NewLinkName, thisTxn) );
 #ifdef SHOWKEYVAL
         cout <<"\t"<< "Mod:done."<<endl;
 #endif
@@ -821,6 +822,7 @@ TLink::NewLink(
 #endif
 
 
+        _htIFnok( IsLinkConsistent(kGroup, a_GroupId, a_SubGroupId, thisTxn) );
         __tIFnok( Commit(&thisTxn) );
 
         _OK;
@@ -835,9 +837,9 @@ TLink::ShowContents(
                 DbTxn *a_ParentTxn)
 {
         std::cout<<"\t\t\tPRI: "<<std::endl;
-        __fIFnok(showRecords(a_ParentTxn,g_DBGroupToSubGroup,"->"));
+        __fIFnok(showRecords(a_ParentTxn,kGroup,"->"));
         std::cout<<"\t\t\tSEC: "<<std::endl;
-        __fIFnok(showRecords(a_ParentTxn,g_DBSubGroupFromGroup,"<-"));
+        __fIFnok(showRecords(a_ParentTxn,kSubGroup,"<-"));
 
         _OK;
 }
@@ -1028,11 +1030,10 @@ TLink::TLink(
 function
 TLink::showRecords(
                 DbTxn *a_ParentTxn,
-                Db *a_DB,
+                ENodeType_t a_NodeType,
                 char *a_Sep)
 {
 
-        __tIF(NULL==a_DB);
         __tIF(NULL==a_Sep);
 
         DbTxn *thisTxn;
@@ -1040,15 +1041,29 @@ TLink::showRecords(
 
 #define THROW_HOOK ABORT_HOOK
 
+        Db *db;
+        switch (a_NodeType) {
+                case kGroup: {
+                                     db=g_DBGroupToSubGroup;
+                                     break;
+                             }
+                case kSubGroup: {
+                                        db=g_DBSubGroupFromGroup;
+                                     break;
+                             }
+                default:
+                                _ht("more than kGroup or kSubGroup specified!");
+        }//switch
+
         const char *fn,*dbn;
-        _h(a_DB->get_dbname(&fn,&dbn));
+        _h(db->get_dbname(&fn,&dbn));
 
         std::cout<<"\t\t\tdbase "<<fn<<" aka "<<dbn<<std::endl;
         Dbc *cursorp = NULL;
         int count = 0;
 
         // Get the cursor
-        _htIF(0 != a_DB->cursor(thisTxn, &cursorp, 0));
+        _htIF(0 != db->cursor(thisTxn, &cursorp, 0));
 #undef THROW_HOOK
 #define THROW_HOOK \
         __tIF(0 != cursorp->close());\
@@ -1066,6 +1081,14 @@ TLink::showRecords(
 #ifdef SHOWCONTENTS
                 _h(cout <<"\t"<< (char *)key.get_data()<< " " << a_Sep << " " <<(char *)value.get_data()<<endl);
 #endif
+                //consistency check
+                std::string keyStr;
+                std::string valStr;
+                __( keyStr=(char *)key.get_data() );
+                __( valStr=(char *)value.get_data() );
+                _htIFnok( IsLinkConsistent(a_NodeType, keyStr, valStr, thisTxn) );
+                //eocc
+
                         void *k=key.get_data();
                         if (k)
                                 _h(free(k));
@@ -1170,15 +1193,17 @@ TDMLCursor :: InitFor(
                 std::cout<<"\tTDMLCursor::Init:begin"<<endl;
 #endif
 #define THROW_HOOK \
-        CURSOR_CLOSE_HOOK \
-        CURSOR_ABORT_HOOK
+        CURSOR_CLOSE_HOOK
         _htIF(a_NodeId.empty());
         _htIF(NULL != thisTxn);//cannot call InitFor() twice, not before DeInit(); however if called twice we need to close the cursor prior to aborting the current transaction!
+        _htIF(kNone != a_Flags);//no flags supported yet
+        fFlags=0;//FIXME: currently unused
 #undef THROW_HOOK
 
         __tIFnok(fLink->NewTransaction(a_ParentTxn,&thisTxn));
 
 #define THROW_HOOK \
+        CURSOR_CLOSE_HOOK \
         CURSOR_ABORT_HOOK
 #define ERR_HOOK \
         THROW_HOOK
@@ -1207,10 +1232,13 @@ TDMLCursor :: InitFor(
                 default:
                                 _ht("more than kGroup or kSubGroup specified!");
         }//switch
-        fFlags=a_Flags;
-        if (kCursorWriteLocks == (fFlags & kCursorWriteLocks)) {
-                fFlags=DB_WRITECURSOR;
-        }
+        //fFlags=a_Flags;
+/*        if (kCursorWriteLocks == (fFlags & kCursorWriteLocks)) {
+                fFlags|=DB_WRITECURSOR;
+#ifdef SHOWKEYVAL
+                std::cout<<"\tTDMLCursor::Init:flags|=DB_WRITECURSOR"<<endl;
+#endif
+        }*/
         _htIF( 0 != fDb->cursor(thisTxn,&fCursor, fFlags) );
         _htIF(NULL == fCursor);//feeling paranoid?
 #undef ERR_HOOK
@@ -1246,7 +1274,7 @@ TDMLCursor :: DeInit()
 function
 TDMLCursor :: Get(
                 NodeId_t &m_Node,
-                const ECursorFlags_t a_Flags
+                const int a_Flags
                 )
 {
 
@@ -1261,7 +1289,7 @@ TDMLCursor :: Get(
                 (char *)fCurKey.get_data()<<endl;
 #endif
         u_int32_t flags=0;//FIXME:
-        if ((DB_WRITECURSOR == (fFlags & DB_WRITECURSOR))||(kCursorWriteLocks == (a_Flags & kCursorWriteLocks))) {
+        if ( /*(DB_WRITECURSOR == (fFlags & DB_WRITECURSOR))||*/(kCursorWriteLocks == (a_Flags & kCursorWriteLocks)) ) {
                 flags|=DB_RMW;
         }
 
@@ -1332,7 +1360,9 @@ if (kNextNode == (a_Flags & kNextNode)){
 
 //follows: consistency check, if A -> B exist so must B <- A in the other database; otherwise something happened prior to calling this function and we catched it here
         _htIFnok( fLink->IsLinkConsistent(fNodeType, fCurKeyStr, m_Node, thisTxn) );
+#ifdef SHOWKEYVAL
         std::cout<<"\tTDMLCursor::Get:done."<<endl;
+#endif
 #undef THROW_HOOK
 
 
@@ -1359,12 +1389,12 @@ TDMLCursor :: Put(
                 (char *)fCurKey.get_data()<< " val=" << a_Node << endl;
 #endif
         u_int32_t flags=0;//FIXME:
-        if ((DB_WRITECURSOR == (fFlags & DB_WRITECURSOR))||(kCursorWriteLocks == (a_Flags & kCursorWriteLocks))) {
-                flags|=DB_RMW;
+        //if ( /*(DB_WRITECURSOR == (fFlags & DB_WRITECURSOR))||*/(kCursorWriteLocks == (a_Flags & kCursorWriteLocks))) {
+/*                flags|=DB_RMW;
 #ifdef SHOWKEYVAL
                 std::cout<<"\tTDMLCursor::Put:flags|=DB_RMW"<<endl;
 #endif
-        }
+        //}*/
         if (kCurrentNode == (a_Flags & kCurrentNode)) {
                 flags|=DB_CURRENT;//overwrite current, FIXME: 2nd db must be updated also
 #ifdef SHOWKEYVAL
@@ -1435,7 +1465,7 @@ TDMLCursor :: Put(
 {
         if ( (a_Flags == kBeforeNode) || (a_Flags == kAfterNode) || (a_Flags==kThisNode) ) {
                 NodeId_t temp=a_Node2;
-                __fIFnok( this->Get(temp, kPinPoint) );
+                __fIFnok( this->Get(temp, kPinPoint | kCursorWriteLocks) );
                 __tIF(temp != a_Node2);
         } else __t(useless combination of flags);
         __fIFnok( this->Put(a_Node1, a_Flags) );

@@ -114,7 +114,7 @@ ShowAllNodesOfNode(
 {
         cout << "-----------Show---"<< (a_NodeType==kGroup?"Group":"SubGroup") <<"-----"<< a_NodeId <<endl;
         __tIF(NULL == m_Curs);
-        __tIFnok( m_Curs->InitFor(a_NodeType,a_NodeId, a_ParentTxn/*parent txn*/, kNone) );//prepare to parse kSubGroups of kGroup with id "A1"; create "A1" if not exists; DB_WRITECURSOR acquire write locks with this cursor
+        __tIFnok( m_Curs->InitFor(a_NodeType,a_NodeId, a_ParentTxn/*parent txn*/, kNone) );//prepare to parse kSubGroups of kGroup with id "A1"; create "A1" if not exists;
         bool once=false;
         int count=0;
         while (true) {
@@ -169,7 +169,7 @@ int main(const int argc, const char **argv)
 
 //        for (int i=0;i<1;i++) {
 //***************************************** from polishform to graph
-/*
+
 //default string, if not specified
         char *str="*-^*2x+*3yza-*4t3";
         __(Process(kPolishForm, str));
@@ -252,7 +252,6 @@ int main(const int argc, const char **argv)
         __(Process(kArithmeticForm," _KEY_CTRL & (_KEY_Q | _KEY_X)"));//i know this is the correct form
 //        }//for
         __(Process(kArithmeticForm," KEY_CTRL"));//i know this is the correct form
-        */
         __(Process(kArithmeticForm,"a+(b+c)+d"););
 
         __tIFnok( g_Expr->ShowContents() );
@@ -275,7 +274,7 @@ int main(const int argc, const char **argv)
         __tIFnok( meCurs->Put("Z", kLastNode) );
         __tIFnok( meCurs->DeInit() );//release berkeleydb cursor
 
-        __tIFnok( ShowAllNodesOfNode(meCurs, kSubGroup,"B",NULL) );
+        __tIFnok( ShowAllNodesOfNode(meCurs, kSubGroup,"B",NULL) );//this doesn't see G & Z ?!
         //__tIFnok( ShowAllNodesOfNode(meCurs, kGroup,"F",NULL) );
         //__sIFnok( ShowAllNodesOfNode(meCurs, kGroup,"J",NULL) );//obv. none!
 
