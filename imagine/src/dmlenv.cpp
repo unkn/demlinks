@@ -1415,6 +1415,7 @@ TDMLCursor :: Put(
         }_fih
         _htIFnok(err);//other unhandled error is bad for us
 
+        _htIFnok( fLink->IsLinkConsistent(fNodeType, fCurKeyStr, a_Node, thisTxn) );
 #undef THROW_HOOK
 
 #ifdef SHOWKEYVAL
