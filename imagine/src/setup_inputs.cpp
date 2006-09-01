@@ -116,18 +116,10 @@ ShowAllNodesOfNode(
         __tIF(NULL == m_Curs);
         __tIFnok( m_Curs->InitFor(a_NodeType,a_NodeId, a_ParentTxn/*parent txn*/, kNone) );//prepare to parse kSubGroups of kGroup with id "A1"; create "A1" if not exists;
         bool once=false;
-        int count=0;
         while (true) {
-                count++;
-                if (count >10) break;
                 NodeId_t node;
-                //node="B";
 
                 function err;
-//                __( err=m_Curs->Put(node, kAfterNode) );//a node cannot point to the same id twice
-//                if (kFuncNotFound == err) {
-//                        break;
-//                }
 
 
                 __( err=m_Curs->Get(node,kNextNode) );//first time kNextNode is kFirstNode
@@ -265,6 +257,9 @@ int main(const int argc, const char **argv)
         __tIFnok( ShowAllNodesOfNode(meCurs, kSubGroup,"B",NULL) );
 
         cout << "---WRite"<<endl;
+        //DbTxn *tmp1;
+        //__tIFnok(gLink->NewTransaction(NULL,&tmp1 ));
+                        
         __tIFnok( meCurs->InitFor(kSubGroup,"B", NULL, kNone) );//prepare to parse kSubGroups of kGroup with id "A1"; create "A1" if not exists; DB_WRITECURSOR acquire write locks with this cursor
         NodeId_t nod,nod2;
         __tIFnok( meCurs->Put("J", kBeforeNode, "C") );
@@ -274,7 +269,10 @@ int main(const int argc, const char **argv)
         __tIFnok( meCurs->Put("Z", kLastNode) );
         __tIFnok( meCurs->DeInit() );//release berkeleydb cursor
 
-        __tIFnok( ShowAllNodesOfNode(meCurs, kSubGroup,"B",NULL) );//this doesn't see G & Z ?!
+        //__tIFnok( gLink->Commit(&tmp1) );
+
+
+        __tIFnok( ShowAllNodesOfNode(meCurs, kSubGroup,"B",NULL) );
         //__tIFnok( ShowAllNodesOfNode(meCurs, kGroup,"F",NULL) );
         //__sIFnok( ShowAllNodesOfNode(meCurs, kGroup,"J",NULL) );//obv. none!
 

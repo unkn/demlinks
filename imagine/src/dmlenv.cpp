@@ -37,7 +37,7 @@ using namespace std;
 
 /*************debug vars*/
 //show debug statistics such as key+value
-#define SHOWKEYVAL
+//#define SHOWKEYVAL
 //#define SHOWCONTENTS //if disabled, the consistency check is still performed, just no records are displayed on console
 //#define SHOWTXNS
 /*************/
