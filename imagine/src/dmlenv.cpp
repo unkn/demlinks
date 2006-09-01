@@ -37,7 +37,7 @@ using namespace std;
 
 /*************debug vars*/
 //show debug statistics such as key+value
-//#define SHOWKEYVAL
+#define SHOWKEYVAL
 //#define SHOWCONTENTS //if disabled, the consistency check is still performed, just no records are displayed on console
 //#define SHOWTXNS
 /*************/
@@ -1295,24 +1295,51 @@ TDMLCursor :: Get(
 
         Dbt curVal;
         _h( curVal.set_flags(DB_DBT_MALLOC) );
-if (kNextNode == (a_Flags & kNextNode)){
+
+if ( (kNextNode == (a_Flags & kNextNode)) || (kPrevNode == (a_Flags & kPrevNode)) || (kFirstNode == (a_Flags & kFirstNode)) ){
         if (fFirstTimeGet) {
                 fFirstTimeGet=false;
                 flags|=DB_SET;
+#ifdef SHOWKEYVAL
+                std::cout<<"\tTDMLCursor::Get:flags|=DB_SET"<<endl;
+#endif
                 //cout << "first";
         } else {
-                flags|=DB_NEXT_DUP;
+                if (kNextNode == (a_Flags & kNextNode)) {
+                                flags|=DB_NEXT_DUP;
+#ifdef SHOWKEYVAL
+                std::cout<<"\tTDMLCursor::Get:flags|=DB_NEXT_DUP"<<endl;
+#endif
+                } else {
+                        if (kPrevNode == (a_Flags & kPrevNode)) {
+                                flags|=DB_PREV;
+#ifdef SHOWKEYVAL
+                std::cout<<"\tTDMLCursor::Get:flags|=DB_PREV"<<endl;
+#endif
+                        }
+                }
                 //cout <<"not";
         }
 } else {
-        if (kFirstNode == (a_Flags & kFirstNode)) {
-                flags|=DB_FIRST;
-        } else {
+        /*if (kFirstNode == (a_Flags & kFirstNode)) {
+                flags|=DB_FIRST;//first of dbase not of key
+                #ifdef SHOWKEYVAL
+                        std::cout<<"\tTDMLCursor::Get:flags|=DB_FIRST"<<endl;
+                #endif
+        } else {*/
                 if (kLastNode == (a_Flags & kLastNode)) {
-                        flags|=DB_LAST;
+                        //FIXME: somehow! ie. parse all until not found, return last found;
+                        _ht(bdb apparently doesnt support returning the last datum of a given key if this key has more than one datum associated with it ie. A - B and A - D  cannot return A - D with DB_LAST refers to last of dbase not of key and key is ignored)
+/*                        flags|=DB_LAST;
+                        #ifdef SHOWKEYVAL
+                                std::cout<<"\tTDMLCursor::Get:flags|=DB_LAST"<<endl;
+                        #endif*/
                 } else {
                         if (kCurrentNode == (a_Flags & kCurrentNode)) {
                                 flags|=DB_CURRENT;
+#ifdef SHOWKEYVAL
+                std::cout<<"\tTDMLCursor::Get:flags|=DB_CURRENT"<<endl;
+#endif
                         } else {
                                 if (kPinPoint == (a_Flags & kPinPoint)) {
                                         flags|=DB_GET_BOTH;
@@ -1327,7 +1354,7 @@ if (kNextNode == (a_Flags & kNextNode)){
                                 }
                         }
                 }
-        }
+        //}
 }
 
 #define FREE_VAL \
@@ -1352,7 +1379,6 @@ if (kNextNode == (a_Flags & kNextNode)){
         _htIF(0 != err);//other unspecified error
         _htIF(NULL == curVal.get_data());//impossible?
         m_Node=(char *)curVal.get_data();//hopefully this does copy contents not just point!
-        FREE_VAL;//maybe we should call this in DeInit();
 #ifdef SHOWKEYVAL
                 std::cout<<"\tTDMLCursor::Get:found:"<<
                 (char *)fCurKey.get_data()<<" = "<< m_Node <<endl; //weird thing here, when DB_SET, key=data
@@ -1360,6 +1386,7 @@ if (kNextNode == (a_Flags & kNextNode)){
 
 //follows: consistency check, if A -> B exist so must B <- A in the other database; otherwise something happened prior to calling this function and we catched it here
         _htIFnok( fLink->IsLinkConsistent(fNodeType, fCurKeyStr, m_Node, thisTxn) );
+        FREE_VAL;//maybe we should call this in DeInit(); watch the HOOK!
 #ifdef SHOWKEYVAL
         std::cout<<"\tTDMLCursor::Get:done."<<endl;
 #endif

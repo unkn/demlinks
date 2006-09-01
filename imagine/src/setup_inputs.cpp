@@ -259,20 +259,24 @@ int main(const int argc, const char **argv)
         cout << "---WRite"<<endl;
         //DbTxn *tmp1;
         //__tIFnok(gLink->NewTransaction(NULL,&tmp1 ));
-                        
-        __tIFnok( meCurs->InitFor(kSubGroup,"B", NULL, kNone) );//prepare to parse kSubGroups of kGroup with id "A1"; create "A1" if not exists; DB_WRITECURSOR acquire write locks with this cursor
+
+        __tIFnok( meCurs->InitFor(kSubGroup,"meB", NULL, kNone) );//prepare to parse kSubGroups of kGroup with id "A1"; create "A1" if not exists; DB_WRITECURSOR acquire write locks with this cursor
         NodeId_t nod,nod2;
-        __tIFnok( meCurs->Put("J", kBeforeNode, "C") );
-        __tIFnok( meCurs->Put("F", kThisNode, "J") );
+        //__tIFnok( meCurs->Put("J", kBeforeNode, "C") );
+        //__tIFnok( meCurs->Put("F", kThisNode, "J") );
         __tIFnok( meCurs->Put("G", kLastNode) );
         __tIFnok( meCurs->Put("1", kFirstNode) );
         __tIFnok( meCurs->Put("Z", kLastNode) );
+        __tIFnok( meCurs->Put("J", kBeforeNode, "G") );
+        __tIFnok( meCurs->Put("F", kThisNode, "J") );
+        __tIFnok( meCurs->Get(nod, kFirstNode) );
+        cout<<nod<<endl;
         __tIFnok( meCurs->DeInit() );//release berkeleydb cursor
 
         //__tIFnok( gLink->Commit(&tmp1) );
 
 
-        __tIFnok( ShowAllNodesOfNode(meCurs, kSubGroup,"B",NULL) );
+        __tIFnok( ShowAllNodesOfNode(meCurs, kSubGroup,"meB",NULL) );
         //__tIFnok( ShowAllNodesOfNode(meCurs, kGroup,"F",NULL) );
         //__sIFnok( ShowAllNodesOfNode(meCurs, kGroup,"J",NULL) );//obv. none!
 

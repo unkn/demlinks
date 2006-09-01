@@ -14,6 +14,9 @@ Legend:
 
 =demlinks-0.0.23
 LU: 01 September 2006
+~ this may be just apparent but seems to me that berkeley db cannot return the
+last datum of a give dup key with DB_LAST; the latter refers to the last item
+of the database thus the key param to get()[cursor] is ignored!
 * added IsLinkConsisten() consistency checks in a few points (dmlenv.cpp) that
 does check if the link is consistent in both dbases; ie. Put(), Get(),
 showRecords(), ShowContents(), NewLink(), ModLink() they've all been protected
