@@ -1,9 +1,7 @@
 #ifndef ADDITIONAL_H
 #define ADDITIONAL_H
 
-#if HAVE_CONFIG_H
-#include "config.h"
-#endif
+#include <demlinks-config.h>
 
 
 #ifndef HAVE_STRNLEN

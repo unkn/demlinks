@@ -1,8 +1,9 @@
 AC_INIT([DeMLinks], [0.0.23], [AtKaaZ@users.SourceForge.net])
+AM_INIT_AUTOMAKE
 AC_CONFIG_SRCDIR([src/notetrk.cpp])
 AM_CONFIG_HEADER(config.h)
+AX_PREFIX_CONFIG_H(,DML)
 
-AM_INIT_AUTOMAKE
 AM_MAINTAINER_MODE
 
 # Checks for programs.
@@ -49,14 +50,33 @@ AC_LANG_WERROR
 # Checks for header files.
 AC_HEADER_STDC
 AC_CHECK_HEADERS(stdlib.h stdio.h,, AC_MSG_ERROR([some C header files not found do you even have 'gcc'?]))
+
+
+# Check if -Wfatal-errors compiler flag is supported
+CPPFLAGS="$CPPFLAGS -pipe"
+DEVFLAGS="-Wall -Werror"
+# -Wfatal-errors"
+AC_MSG_CHECKING([if -Wfatal-errors is supported])
+saved_CPPFLAGS=$CPPFLAGS
+CPPFLAGS="$CPPFLAGS -Wfatal-errors"
+AC_TRY_COMPILE(,, 
+ AC_MSG_RESULT([yes])
+ DEVFLAGS="$DEVFLAGS -Wfatal-errors"
+ ,
+ AC_MSG_RESULT([no])
+)
+AC_SUBST(DEVFLAGS)
+CPPFLAGS="$saved_CPPFLAGS"
+
+
+
 dnl AC_CHECK_HEADER(allegro.h,, AC_MSG_ERROR([ALLEGRO header files not found is ALLEGRO installed?]))
 AM_PATH_ALLEGRO(4.2.0,, AC_MSG_ERROR([You must have allegro installed minimum version is 4.2.0]))
 #CFLAGS=$CFLAGS $allegro_CFLAGS
 CPPFLAGS="$CPPFLAGS $allegro_CPPFLAGS"
 LIBS="$LIBS $allegro_LIBS"
 
-# Hack for atkaaz's bdb stuff
-CPPFLAGS="$CPPFLAGS -pipe -Wall -Werror -Wfatal-errors"
+
 #CPPFLAGS="-I/usr/local/BerkeleyDB.4.4/include $CPPFLAGS"
 #LIBS="-L/usr/local/BerkeleyDB.4.4/lib $LIBS"
 

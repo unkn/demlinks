@@ -25,12 +25,11 @@
 *
 ****************************************************************************/
 
-#include "config-inc.h"
 #ifndef DMLENV_H__
 #define DMLENV_H__
 
-
-// #include DB_HEADER //using Berkeley DB
+#include <demlinks-config.h>
+#include DML_DB_HEADER //using Berkeley DB
 #include "pnotetrk.h"
 
 /*************debug vars*/

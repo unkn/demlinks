@@ -27,7 +27,7 @@ noinst_HEADERS = 	notetrk.h	\
 			actionsreplay.h \
 			threadslock.h	\
 			macros.h \
-			additional.h
+			portability.h
 
 dml_imagine_SOURCES = 	notetrk.cpp	\
 			pnotetrk.cpp	\
@@ -49,21 +49,24 @@ dml_imagine_SOURCES = 	notetrk.cpp	\
 			flags.cpp \
 			activefunx.cpp \
 			actionsreplay.cpp \
-			additional.cpp
+			portability.cpp
 
 setup_inputs_SOURCES = 	notetrk.cpp	\
 			pnotetrk.cpp	\
 			setup_inputs.cpp \
 			dmlenv.cpp	\
 			polishform.cpp \
-			additional.cpp
+			portability.cpp
 
+INCLUDES = -I$(top_builddir)
 #setup_inputs_LDFLAGS  = -ldb_cxx
 #setup_inputs_CXXFLAGS = -pipe -Wall -Werror -Wfatal-errors
+setup_inputs_CXXFLAGS = @DEVFLAGS@
 
 #dml_imagine_LDFLAGS =  -ldb_cxx
 ##dml_imagine_LDFLAGS += `allegro-config --libs`
 #dml_imagine_CXXFLAGS = -pipe -Wall -Werror -Wfatal-errors
+dml_imagine_CXXFLAGS = @DEVFLAGS@
 
 
 

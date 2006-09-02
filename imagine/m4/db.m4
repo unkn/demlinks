@@ -75,12 +75,12 @@ AC_DEFUN([AX_BERKELEY_DB],
     ifelse([$3], , :, [$3])
   else
     ##AC_DEFINE(db_HDR, ["$db_HDR"])
-    AC_DEFINE_UNQUOTED(DB_HEADER, ["$db_hdr"], [What db one should use])
-    echo "#ifndef HAVE_BERKELEY_DB" > config-inc.h
-    echo "#define HAVE_BERKELEY_DB" >> config-inc.h
-    echo "#include <$db_hdr>" >> config-inc.h
-    echo "#endif" >> config-inc.h
-    #AC_SUBST(db_HDR)
+    AC_DEFINE_UNQUOTED(DB_HEADER, [<$db_hdr>], [What db one should use])
+##    echo "#ifndef HAVE_BERKELEY_DB" > config-inc.h
+##    echo "#define HAVE_BERKELEY_DB" >> config-inc.h
+##    echo "#include <$db_hdr>" >> config-inc.h
+##    echo "#endif" >> config-inc.h
+    ##AC_SUBST(DB_HEADER)
     AC_SUBST(db_LIBS)
 
     ifelse([$2], , :, [$2])

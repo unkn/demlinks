@@ -1,4 +1,4 @@
-#include "additional.h"
+#include "portability.h"
 
 #ifndef HAVE_STRNLEN
 #include <sys/types.h>

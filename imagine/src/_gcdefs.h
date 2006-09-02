@@ -38,6 +38,7 @@
 #define _GCDEFS__H__
 
 //#include "../config.h" conflicts with defs from allegro.h
+#include <demlinks-config.h>
 
 //#define ENABLE_TIMED_INPUT //enable time capab based on gTimer of all input events OBSOLETE
 //#define TRACKABLE_RETURNS //_hret _ret _hreterr

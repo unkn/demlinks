@@ -31,7 +31,7 @@
 #include "pnotetrk.h"
 #include "dmlenv.h"
 #include "polishform.h"
-#include "additional.h"
+#include "portability.h"
 
 using namespace std;
 
