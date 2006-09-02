@@ -27,10 +27,11 @@
 *
 ****************************************************************************/
 
-
+#include <iostream>
 #include "pnotetrk.h"
 #include "dmlenv.h"
 #include "polishform.h"
+#include "aditional.h"
 
 using namespace std;
 

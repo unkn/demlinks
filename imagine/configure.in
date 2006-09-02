@@ -49,13 +49,27 @@ AC_LANG_WERROR
 # Checks for header files.
 AC_HEADER_STDC
 AC_CHECK_HEADERS(stdlib.h stdio.h,, AC_MSG_ERROR([some C header files not found do u even have 'gcc'?]))
-AC_CHECK_HEADER(allegro.h,, AC_MSG_ERROR([ALLEGRO header files not found is ALLEGRO installed?]))
+dnl AC_CHECK_HEADER(allegro.h,, AC_MSG_ERROR([ALLEGRO header files not found is ALLEGRO installed?]))
+AM_PATH_ALLEGRO(4.2.0,, AC_MSG_ERROR([You must have allegro installed minimum version is 4.0.0]))
+#CFLAGS=$CFLAGS $allegro_CFLAGS
+CPPFLAGS="$CPPFLAGS $allegro_CPPFLAGS"
+LIBS="$LIBS $allegro_LIBS"
 
+# Hack for atkaaz's bdb stuff
+CPPFLAGS="-I/usr/local/BerkeleyDB.4.4/include $CPPFLAGS"
+LIBS="-L/usr/local/BerkeleyDB.4.4/lib $LIBS"
+
+# BDB
+AX_BERKELEY_DB(4.3.0,,AC_MSG_ERROR([No usable Berkeley db found. Fu.]))
+
+AC_CHECK_HEADERS($db_HDR,,AC_MSG_ERROR([You obvioulsly have some twisted configuration. Suicide.]))
+LIBS="$db_LIBS $LIBS"
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
 
 # Checks for library functions.
+AC_CHECK_FUNCS(strncpy)
 
 AC_CONFIG_FILES([Makefile
                  src/Makefile])

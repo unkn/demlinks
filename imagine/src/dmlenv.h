@@ -25,10 +25,12 @@
 *
 ****************************************************************************/
 
+#include "config-inc.h"
 #ifndef CLASSHIT_H__
 #define CLASSHIT_H__
 
-#include <db_cxx.h> //using Berkeley DB
+
+// #include DB_HEADER //using Berkeley DB
 #include "pnotetrk.h"
 
 /*************debug vars*/

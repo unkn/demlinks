@@ -26,7 +26,9 @@ noinst_HEADERS = 	notetrk.h	\
 			SLL.h \
 			actionsreplay.h \
 			threadslock.h	\
-			macros.h
+			macros.h \
+			aditional.h
+##			combifile.h
 
 dml_imagine_SOURCES = 	notetrk.cpp	\
 			pnotetrk.cpp	\
@@ -47,20 +49,23 @@ dml_imagine_SOURCES = 	notetrk.cpp	\
 			square.cpp \
 			flags.cpp \
 			activefunx.cpp \
-			actionsreplay.cpp
+			actionsreplay.cpp \
+			aditional.cpp
+##			combifile.cpp \
 
 setup_inputs_SOURCES = 	notetrk.cpp	\
 			pnotetrk.cpp	\
 			setup_inputs.cpp \
 			dmlenv.cpp	\
-			polishform.cpp	
+			polishform.cpp \
+			aditional.cpp
 
-setup_inputs_LDFLAGS = -L/usr/local/BerkeleyDB.4.4/lib -ldb_cxx `allegro-config --libs`
-setup_inputs_CXXFLAGS = `allegro-config --cppflags` -pipe -Wall -Werror -Wfatal-errors -I/usr/local/BerkeleyDB.4.4/include/
+#setup_inputs_LDFLAGS  = -ldb_cxx
+setup_inputs_CXXFLAGS = -pipe -Wall -Werror
 
-dml_imagine_LDFLAGS = -L/usr/local/BerkeleyDB.4.4/lib -ldb_cxx
-dml_imagine_LDFLAGS += `allegro-config --libs`
-dml_imagine_CXXFLAGS = `allegro-config --cppflags` -pipe -Wall -Werror -Wfatal-errors -I/usr/local/BerkeleyDB.4.4/include/
+#dml_imagine_LDFLAGS =  -ldb_cxx
+##dml_imagine_LDFLAGS += `allegro-config --libs`
+##dml_imagine_CXXFLAGS = `allegro-config --cppflags` -pipe -Wall -Werror -I/usr/local/BerkeleyDB.4.4/include/
 
 
 
