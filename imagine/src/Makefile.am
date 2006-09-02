@@ -20,7 +20,6 @@ noinst_HEADERS = 	notetrk.h	\
 			fps.h \
 			init.h \
 			square.h \
-			combifile.h \
 			activefunx.h \
 			flags.h \
 			DLL.h \
@@ -46,7 +45,6 @@ dml_imagine_SOURCES = 	notetrk.cpp	\
 			excamera.cpp \
 			fps.cpp \
 			square.cpp \
-			combifile.cpp \
 			flags.cpp \
 			activefunx.cpp \
 			actionsreplay.cpp

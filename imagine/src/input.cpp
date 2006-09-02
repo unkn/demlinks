@@ -41,7 +41,6 @@
 #include "pnotetrk.h"
 #include "timedinput.h"//both mouse and keyboard united
 //#include "genericinput.h"
-#include "combifile.h"
 #include "activefunx.h"
 //#include "actionsreplay.h"
 #include "actionsinput.h"
