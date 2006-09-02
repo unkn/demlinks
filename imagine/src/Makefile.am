@@ -27,7 +27,7 @@ noinst_HEADERS = 	notetrk.h	\
 			actionsreplay.h \
 			threadslock.h	\
 			macros.h \
-			aditional.h
+			additional.h
 
 dml_imagine_SOURCES = 	notetrk.cpp	\
 			pnotetrk.cpp	\
@@ -49,14 +49,14 @@ dml_imagine_SOURCES = 	notetrk.cpp	\
 			flags.cpp \
 			activefunx.cpp \
 			actionsreplay.cpp \
-			aditional.cpp
+			additional.cpp
 
 setup_inputs_SOURCES = 	notetrk.cpp	\
 			pnotetrk.cpp	\
 			setup_inputs.cpp \
 			dmlenv.cpp	\
 			polishform.cpp \
-			aditional.cpp
+			additional.cpp
 
 #setup_inputs_LDFLAGS  = -ldb_cxx
 #setup_inputs_CXXFLAGS = -pipe -Wall -Werror -Wfatal-errors

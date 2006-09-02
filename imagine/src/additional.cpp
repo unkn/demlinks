@@ -1,4 +1,4 @@
-#include "aditional.h"
+#include "additional.h"
 
 #ifndef HAVE_STRNLEN
 #include <sys/types.h>
