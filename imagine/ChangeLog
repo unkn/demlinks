@@ -109,10 +109,10 @@ because of this we had to make cams[i] a pointer to an array otherwise they
 would initialize(by constructors) before the notif.sys.
 * mutex locked interrupt handler (timed*.cpp)
 * base idea from '../babyplan/txt' implemented using berkeley db
-(classhit.cpp)
+(dmlenv.cpp)
 * arithmetic expression(s) as binary trees will be used for key combination
 detection (ie. cheat codes used in games) [polishform.cpp]
-$ need to insert the inputs into berkeley db (classhit.cpp) and then get them
+$ need to insert the inputs into berkeley db (dmlenv.cpp) and then get them
 from those trees/lists
 $ eventually insert variables and code from C++ into the 3D world so they can
 be viewed/modified by the running program or by another similar program in

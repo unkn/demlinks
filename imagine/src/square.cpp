@@ -264,33 +264,33 @@ draw_squareS(BITMAP *bmp, CAMERA_CLASS *mycam)
                      &tempex[ofs].x,//2dx
                      &tempex[ofs].y);//2dy
 
-#define easy2(_cond_,_shit_,...)  {\
+#define easy2(_cond_,_smth_,...)  {\
         if ((_cond_)&&(ofs>=(initial)*GRID_SIZEX)         \
                 &&(ofs<(initial+1)*GRID_SIZEX)) {       \
                         textprintf_centre_ex(bmp,font, \
                         (int)tempex[ofs].x, \
                         (int)tempex[ofs].y, \
                         makecol(255,255,255),makecol(0,0,0), \
-                        _shit_,__VA_ARGS__ ); \
+                        _smth_,__VA_ARGS__ ); \
         } \
         initial++; \
 }
 
-#define easy(_shit_,...)  {\
+#define easy(_smth_,...)  {\
         if ((ofs>=(initial)*GRID_SIZEX)         \
                 &&(ofs<(initial+1)*GRID_SIZEX)) {       \
                         textprintf_centre_ex(bmp,font, \
                         (int)tempex[ofs].x, \
                         (int)tempex[ofs].y, \
                         makecol(255,255,255),makecol(0,0,0), \
-                        _shit_,__VA_ARGS__ ); \
+                        _smth_,__VA_ARGS__ ); \
         } \
         initial++; \
 }
 
-#define easy3(_shit_,...) { \
+#define easy3(_smth_,...) { \
                 now++;initial--; \
-                easy2(ofs==now,_shit_,__VA_ARGS__); \
+                easy2(ofs==now,_smth_,__VA_ARGS__); \
 }
 
         if (tempex[ofs].z>0.1) {//in our view not behind us

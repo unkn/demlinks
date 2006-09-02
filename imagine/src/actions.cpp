@@ -203,8 +203,7 @@ function
 InitActions()
 {
         __tIFnok(InitFunctions());
-        //typedef ACTIONS_TYPE some_odd_shit[kMaxAIs];//one_of nasty workaround
-        Actions=new ACTIONS_TYPE[kMaxAIs];//some_odd_shit[kMaxAIs];//alloc the entire array
+        Actions=new ACTIONS_TYPE[kMaxAIs];
         __tIF(NULL==Actions);
 
         for (int i=1;i<kMaxAIs;i++) {

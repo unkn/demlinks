@@ -1,9 +1,9 @@
 #ifndef ADITIONAL_H
 #define ADITIONAL_H
 
-/* #if HAVE_CONFIG_H
+#if HAVE_CONFIG_H
 #include "config.h"
-#endif */
+#endif
 
 
 #ifndef HAVE_STRNLEN

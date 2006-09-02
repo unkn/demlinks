@@ -48,28 +48,30 @@ AC_LANG_WERROR
 
 # Checks for header files.
 AC_HEADER_STDC
-AC_CHECK_HEADERS(stdlib.h stdio.h,, AC_MSG_ERROR([some C header files not found do u even have 'gcc'?]))
+AC_CHECK_HEADERS(stdlib.h stdio.h,, AC_MSG_ERROR([some C header files not found do you even have 'gcc'?]))
 dnl AC_CHECK_HEADER(allegro.h,, AC_MSG_ERROR([ALLEGRO header files not found is ALLEGRO installed?]))
-AM_PATH_ALLEGRO(4.2.0,, AC_MSG_ERROR([You must have allegro installed minimum version is 4.0.0]))
+AM_PATH_ALLEGRO(4.2.0,, AC_MSG_ERROR([You must have allegro installed minimum version is 4.2.0]))
 #CFLAGS=$CFLAGS $allegro_CFLAGS
 CPPFLAGS="$CPPFLAGS $allegro_CPPFLAGS"
 LIBS="$LIBS $allegro_LIBS"
 
 # Hack for atkaaz's bdb stuff
-CPPFLAGS="-I/usr/local/BerkeleyDB.4.4/include $CPPFLAGS"
-LIBS="-L/usr/local/BerkeleyDB.4.4/lib $LIBS"
+CPPFLAGS="$CPPFLAGS -pipe -Wall -Werror -Wfatal-errors"
+#CPPFLAGS="-I/usr/local/BerkeleyDB.4.4/include $CPPFLAGS"
+#LIBS="-L/usr/local/BerkeleyDB.4.4/lib $LIBS"
 
 # BDB
-AX_BERKELEY_DB(4.3.0,,AC_MSG_ERROR([No usable Berkeley db found. Fu.]))
+AX_BERKELEY_DB(4.3.0,,AC_MSG_ERROR([No usable Berkeley db found. However you may have it installed in a non-standard location(as it is normal if you do ./configure without any --prefix params) such as /usr/local/BerkeleyDB.4.4/ in which case you may try the following workaround which requires the creation of some symlinks from your root account(ie. sudo): ln -s /usr/local/BerkeleyDB.4.4/include /usr/local/include/db44 ; ln -s /usr/local/BerkeleyDB.4.4/lib/libdb_cxx-4.4.so /usr/local/lib/libdb_cxx-4.4.so]))
 
-AC_CHECK_HEADERS($db_HDR,,AC_MSG_ERROR([You obvioulsly have some twisted configuration. Suicide.]))
+AC_CHECK_HEADERS($db_HDR,,AC_MSG_ERROR([You obviously have some twisted configuration.]))
 LIBS="$db_LIBS $LIBS"
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
 
 # Checks for library functions.
-AC_CHECK_FUNCS(strncpy)
+AC_CHECK_FUNC(strnlen,[AC_DEFINE(HAVE_STRNLEN,1,[This is linux])])
+
 
 AC_CONFIG_FILES([Makefile
                  src/Makefile])

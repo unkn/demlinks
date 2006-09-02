@@ -26,8 +26,8 @@
 ****************************************************************************/
 
 #include "config-inc.h"
-#ifndef CLASSHIT_H__
-#define CLASSHIT_H__
+#ifndef DMLENV_H__
+#define DMLENV_H__
 
 
 // #include DB_HEADER //using Berkeley DB

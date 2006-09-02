@@ -41,7 +41,7 @@ typedef enum {//avoiding to use the value zero
         ,kFuncNoLowLevelInputs
         ,kFuncNoGenericInputs
         ,kFuncNoActions
-        ,kFuncAlreadyExists //some element already exists(used in classhit.cpp)
+        ,kFuncAlreadyExists //some element already exists(used in dmlenv.cpp)
         ,kFuncNotFound //some element wasn't found (-//-)
 
 //last

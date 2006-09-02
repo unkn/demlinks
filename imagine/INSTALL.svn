@@ -10,7 +10,7 @@ if [ "$?" -ne "0" ]; then
 else
         gmake=gmake
 fi
-(cd "`pwd`/obj/" && $gmake clean)
+(cd "`pwd`/obj/" 2>&1 >/dev/null && $gmake clean 2>&1 >/dev/null)
 $gmake -f Makefile.svn || exit $?
 
 function do_ {

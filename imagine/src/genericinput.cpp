@@ -178,7 +178,7 @@ InitGenericInput()
         for (int i=0; i<kMaxInputTypes; i++) {
                 __tIF(AllLowLevelInputs[i]==NULL);
         }
-        void *damnbugs=NULL;
+        void *tempWordAround=NULL;
 
 #define NEWTRANSITION(_typ_,_stuff_,_wha_,...)                             \
         newtrans=NULL;                                          \
@@ -195,10 +195,10 @@ InitGenericInput()
         NEWTRANSITION(Keyboard,_stuff_,_wha_,__VA_ARGS__);
 
 #define NEWK(_a_)                                             \
-        damnbugs=NULL;                                          \
+        tempWordAround=NULL;                                          \
         __tIFnok(                                        \
-                AllLowLevelInputs[kKeyboardInputType]->Alloc(damnbugs));\
-        newkey=(KEY_TYPE *)damnbugs;                                \
+                AllLowLevelInputs[kKeyboardInputType]->Alloc(tempWordAround));\
+        newkey=(KEY_TYPE *)tempWordAround;                                \
         __tIF(newkey==NULL);                                    \
                 newkey->ScanCode=_a_;                           \
                 __tIFnok( newtrans->Append(newkey) );
@@ -207,10 +207,10 @@ InitGenericInput()
         NEWTRANSITION(Mouse,_stuff_,_wha_,__VA_ARGS__);
 
 #define NEWMF(_a_)                                             \
-        damnbugs=NULL;                                          \
+        tempWordAround=NULL;                                          \
         __tIFnok(                                        \
-                AllLowLevelInputs[kMouseInputType]->Alloc(damnbugs));\
-        newmouse=(MOUSE_TYPE *)damnbugs;                                \
+                AllLowLevelInputs[kMouseInputType]->Alloc(tempWordAround));\
+        newmouse=(MOUSE_TYPE *)tempWordAround;                                \
         __tIF(newmouse==NULL);                                    \
         newmouse->Flags=_a_;                           \
         __tIFnok( newtrans->Append(newmouse) );
