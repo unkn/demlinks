@@ -1238,13 +1238,16 @@ TDMLCursor :: InitFor(
                 default:
                                 _ht("more than kGroup or kSubGroup specified!");
         }//switch
-        //fFlags=a_Flags;
+        fFlags=a_Flags;
 /*        if (kCursorWriteLocks == (fFlags & kCursorWriteLocks)) {
                 fFlags|=DB_WRITECURSOR;
 #ifdef SHOWKEYVAL
                 std::cout<<"\tTDMLCursor::Init:flags|=DB_WRITECURSOR"<<endl;
 #endif
         }*/
+        if (fFlags != 0) {//no flags supported at this time
+                _ht(no flags supported at this time);
+        }
         _htIF( 0 != fDb->cursor(thisTxn,&fCursor, fFlags) );
         _htIF(NULL == fCursor);//feeling paranoid?
 #undef ERR_HOOK
