@@ -1,6 +1,6 @@
 #include "portability.h"
 
-#ifndef HAVE_STRNLEN
+#ifndef DML_HAVE_STRNLEN
 #include <sys/types.h>
 #include <string.h>
 extern "C" {

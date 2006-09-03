@@ -4,7 +4,7 @@
 #include <demlinks-config.h>
 
 
-#ifndef HAVE_STRNLEN
+#ifndef DML_HAVE_STRNLEN
 #include <sys/types.h>
 extern "C" {
 size_t strnlen (const char *string, size_t maxlen);

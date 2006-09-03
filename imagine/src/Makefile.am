@@ -5,6 +5,7 @@ noinst_HEADERS = 	notetrk.h	\
 			_cppdefs.h	\
 			_gcdefs.h	\
 			dmlenv.h	\
+			polishform.h 	\
 			globaltimer.h \
 			genericinput.h \
 			timedinput.h \
