@@ -1281,6 +1281,21 @@ TDMLCursor :: DeInit()
 }
 /*******************************/
 function
+TDMLCursor :: Find(
+                NodeId_t &m_Node,
+                const int a_Flags
+                )
+{
+#define THROW_HOOK \
+        CURSOR_CLOSE_HOOK \
+        CURSOR_ABORT_HOOK
+        _htIF( (a_Flags != kNone) && (a_Flags - kCursorWriteLocks != 0) );//allowing only DB_RMW flag
+#undef THROW_HOOK
+        __fIFnok( this->Get(m_Node, kPinPoint | a_Flags) ); //no hooks throw
+        _OK;
+}
+/*******************************/
+function
 TDMLCursor :: Get(
                 NodeId_t &m_Node,
                 const int a_Flags
@@ -1511,7 +1526,7 @@ TDMLCursor :: Put(
 {
         if ( (a_Flags == kBeforeNode) || (a_Flags == kAfterNode) || (a_Flags==kThisNode) ) {
                 NodeId_t temp=a_Node2;
-                __fIFnok( this->Get(temp, kPinPoint | kCursorWriteLocks) );
+                __fIFnok( this->Find(temp, kCursorWriteLocks) );
                 __tIF(temp != a_Node2);
         } else __t(useless combination of flags);
         __fIFnok( this->Put(a_Node1, a_Flags) );

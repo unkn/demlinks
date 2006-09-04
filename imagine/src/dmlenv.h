@@ -100,6 +100,12 @@ public:
                         );
 
         function
+        Find(//autopositions if found
+                        NodeId_t &m_Node,
+                        const int a_Flags=kNone //here, allowing perhaps kCursorWriteLocks
+                        );
+
+        function
         Get(
                         NodeId_t &m_Node,
                         const int a_Flags
