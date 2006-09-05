@@ -68,19 +68,43 @@ typedef enum{
 } ECursorFlags_t;
 /****************************/
 /*forward*/class TLink;
+/****************************/
+class TDMLPointer {//is a kGroup pointing to a kSubGroup where kGroup is the pointer identifier and kSubGroup it the pointed element (and not the other way around!) thus the pointer is kGroup and the pointee is kSubGroup
+private:
+        TLink*          fLink;
+        Dbt             fGroupKey;
+        NodeId_t        fGroupStr;
+        DbTxn*          fParentTxn;
+        bool            fInited;
+
+        TDMLPointer();//unusable constructor; purposely made private
+public:
+        TDMLPointer(TLink *m_WorkingOnThisTLink);
+        ~TDMLPointer();
+        function
+        Init(
+                const NodeId_t a_GroupId,//must have 0 or 1 kSubGroup
+                DbTxn *a_ParentTxn=NULL
+                );
+
+        bool
+        IsInited();
+
+        function
+        DeInit();
+
+};
+/****************************/
 class TDMLCursor {
 private:
         ENodeType_t fNodeType;
         Dbc *fCursor;
         TLink *fLink;
         DbTxn *thisTxn;
-        //Dbt fCurVal;
         Dbt fCurKey;
         NodeId_t fCurKeyStr;
-        //Dbt fOriginalKey;//lame workaround FIXME: if u can parse with a cursor all data of key 'X' only! w/o getting get() to modify the key_value('X') in the process
         Db *fDb;
         u_int32_t fFlags;//of the cursor when inited Db->cursor()
-        //int fOKMaxLen;//strnlen ceil
         bool fFirstTimeGet;
 
         TDMLCursor();//unusable constructor; purposely
@@ -95,8 +119,8 @@ public:
         InitFor(
                         const ENodeType_t a_NodeType,
                         const NodeId_t a_NodeId,
-                        DbTxn *a_ParentTxn,
-                        const ECursorFlags_t a_Flags
+                        DbTxn *a_ParentTxn=NULL,
+                        const ECursorFlags_t a_Flags=kNone
                         );
 
         function
@@ -190,6 +214,7 @@ private:
 public:
 /****************************PUBLIC**********/
         friend class TDMLCursor;
+        friend class TDMLPointer;
         TLink(
                 const std::string a_EnvHomePath="dbhome",
                 const std::string a_DBFileName="implied arrows.db",

@@ -51,6 +51,7 @@ using namespace std;
 #define CURSOR_ABORT_HOOK \
         __(fLink->Abort(&thisTxn)); \
         thisTxn=NULL;
+
 #define CURSOR_CLOSE_HOOK \
         if (fCursor) { \
                 __tIF(0 != fCursor->close()); \
@@ -1163,6 +1164,76 @@ TLink::Abort(DbTxn **a_Txn)
 
 /*******************************/
 //constructor
+TDMLPointer :: TDMLPointer(TLink *m_WorkingOnThisTLink):
+        fInited(false)
+{
+        fLink=m_WorkingOnThisTLink;
+        __tIF(NULL == fLink);
+        fParentTxn=NULL;
+}
+/*******************************/
+//destructor
+TDMLPointer :: ~TDMLPointer()
+{
+        __tIF(IsInited());
+        __tIF(NULL == fLink);//cannot be
+        __tIF(NULL != fParentTxn);
+        __tIF(fInited);
+}
+/*******************************/
+bool
+TDMLPointer :: IsInited()
+{
+        return (fInited);
+}
+/*******************************/
+function
+TDMLPointer :: Init(
+                const NodeId_t a_GroupId,
+                DbTxn *a_ParentTxn//can be NULL
+                )
+{
+#ifdef SHOWKEYVAL
+                std::cout<<"\tTDMLPointer::Init:begin"<<endl;
+#endif
+        __tIF(this->IsInited());
+        __tIF(a_GroupId.empty());
+
+        fGroupStr=a_GroupId;//yeah let's hope this makes a copy; it does
+        __( fGroupKey.set_data((void *)fGroupStr.c_str()) );//points to that, so don't kill fGroupStr!!
+        __( fGroupKey.set_size((u_int32_t)fGroupStr.length() + 1) );
+#ifdef SHOWKEYVAL
+                std::cout<<"\tTDMLCursor::Init:SetKey="<<
+                (char *)fGroupKey.get_data()<<endl;
+#endif
+        //FIXME:
+
+        fInited=true;
+#ifdef SHOWKEYVAL
+                std::cout<<"\tTDMLPointer::Init:end."<<endl;
+#endif
+        _OK;
+}
+/*******************************/
+function
+TDMLPointer :: DeInit()
+{
+#ifdef SHOWKEYVAL
+                std::cout<<"\tTDMLPointer::DeInit:begin"<<endl;
+#endif
+        if (NULL != fParentTxn){
+                fParentTxn=NULL;
+        }
+        fInited=false;
+#ifdef SHOWKEYVAL
+                std::cout<<"\tTDMLPointer::DeInit:end."<<endl;
+#endif
+        _OK;
+}
+/*******************************/
+/*******************************/
+/*******************************/
+//constructor
 TDMLCursor :: TDMLCursor(TLink *m_WorkingOnThisTLink):
         fCursor(NULL)
 {
@@ -1175,9 +1246,11 @@ TDMLCursor :: TDMLCursor(TLink *m_WorkingOnThisTLink):
 //destructor
 TDMLCursor :: ~TDMLCursor()
 {
+        __tIF(IsInited());
         __tIF(NULL == fLink);//cannot be
         __tIF(fCursor != NULL);//forgot to call DeInit() ?
         __tIF(NULL != fDb);//DeInit() must be called!
+        __tIF(NULL != thisTxn);
 }
 /*******************************/
 bool
@@ -1199,12 +1272,14 @@ TDMLCursor :: InitFor(
                 std::cout<<"\tTDMLCursor::Init:begin"<<endl;
 #endif
 #define THROW_HOOK \
-        CURSOR_CLOSE_HOOK
-        _htIF(a_NodeId.empty());
+        CURSOR_CLOSE_HOOK \
+        CURSOR_ABORT_HOOK
         _htIF(NULL != thisTxn);//cannot call InitFor() twice, not before DeInit(); however if called twice we need to close the cursor prior to aborting the current transaction!
-        _htIF(kNone != a_Flags);//no flags supported yet
-        fFlags=0;//FIXME: currently unused
+        _htIF(this->IsInited());
 #undef THROW_HOOK
+        __tIF(a_NodeId.empty());
+        __tIF(kNone != a_Flags);//no flags supported yet
+        fFlags=0;//FIXME: currently unused
 
         __tIFnok(fLink->NewTransaction(a_ParentTxn,&thisTxn));
 
@@ -1214,12 +1289,9 @@ TDMLCursor :: InitFor(
 #define ERR_HOOK \
         THROW_HOOK
 
-        //fOKMaxLen=a_NodeId.length() + 1;
         fCurKeyStr=a_NodeId;//yeah let's hope this makes a copy
         _h( fCurKey.set_data((void *)fCurKeyStr.c_str()) );//points to that, so don't kill fCurKeyStr!!
         _h( fCurKey.set_size((u_int32_t)fCurKeyStr.length() + 1) );
-        //_h( fCurKey.set_data((void *)a_NodeId.c_str()) );//points to that, so don't kill fCurKeyStr!!
-        //_h( fCurKey.set_size((u_int32_t)a_NodeId.length() + 1) );
 #ifdef SHOWKEYVAL
                 std::cout<<"\tTDMLCursor::Init:SetKey="<<
                 (char *)fCurKey.get_data()<<endl;
@@ -1239,7 +1311,7 @@ TDMLCursor :: InitFor(
                                 _ht("more than kGroup or kSubGroup specified!");
         }//switch
         fFlags=a_Flags;
-/*        if (kCursorWriteLocks == (fFlags & kCursorWriteLocks)) {
+/*        if (kCursorWriteLocks == (fFlags & kCursorWriteLocks)) {//this doesn't work because dbase needs to be opened with DB_INITCDB(if memory serves me right)
                 fFlags|=DB_WRITECURSOR;
 #ifdef SHOWKEYVAL
                 std::cout<<"\tTDMLCursor::Init:flags|=DB_WRITECURSOR"<<endl;
@@ -1272,6 +1344,7 @@ TDMLCursor :: DeInit()
         _htIF(0 != fCursor->close());
         fCursor=NULL;
         __tIFnok( fLink->Commit(&thisTxn) );
+        thisTxn=NULL;
 #undef THROW_HOOK
         fDb=NULL;
 #ifdef SHOWKEYVAL
@@ -1306,8 +1379,6 @@ TDMLCursor :: Get(
         CURSOR_CLOSE_HOOK \
         CURSOR_ABORT_HOOK
 
-        //_htIF(!m_Node.empty());
-
 #ifdef SHOWKEYVAL
                 std::cout<<"\tTDMLCursor::Get:begin:Key="<<
                 (char *)fCurKey.get_data()<<endl;
@@ -1327,7 +1398,6 @@ if ( (kNextNode == (a_Flags & kNextNode)) || (kPrevNode == (a_Flags & kPrevNode)
 #ifdef SHOWKEYVAL
                 std::cout<<"\tTDMLCursor::Get:flags|=DB_SET"<<endl;
 #endif
-                //cout << "first";
         } else {
                 if (kNextNode == (a_Flags & kNextNode)) {
                                 flags|=DB_NEXT_DUP;
@@ -1342,7 +1412,6 @@ if ( (kNextNode == (a_Flags & kNextNode)) || (kPrevNode == (a_Flags & kPrevNode)
 #endif
                         }
                 }
-                //cout <<"not";
         }
 } else {
         /*if (kFirstNode == (a_Flags & kFirstNode)) {
@@ -1450,12 +1519,6 @@ TDMLCursor :: Put(
                 (char *)fCurKey.get_data()<< " val=" << a_Node << endl;
 #endif
         u_int32_t flags=0;//FIXME:
-        //if ( /*(DB_WRITECURSOR == (fFlags & DB_WRITECURSOR))||*/(kCursorWriteLocks == (a_Flags & kCursorWriteLocks))) {
-/*                flags|=DB_RMW;
-#ifdef SHOWKEYVAL
-                std::cout<<"\tTDMLCursor::Put:flags|=DB_RMW"<<endl;
-#endif
-        //}*/
         if (kCurrentNode == (a_Flags & kCurrentNode)) {
                 flags|=DB_CURRENT;//overwrite current, FIXME: 2nd db must be updated also
 #ifdef SHOWKEYVAL
@@ -1492,14 +1555,6 @@ TDMLCursor :: Put(
         }
         __tIF(0==flags);
 
-        /*Dbt curVal;//temp
-        //_h( curVal.set_flags(DB_DBT_MALLOC) );
-        _h( curVal.set_flags(0) );
-        _h( curVal.set_data((void *)a_Node.c_str()) );
-        _h( curVal.set_size((u_int32_t)a_Node.length() + 1) );
-&*/
-        //int err;
-        //_htIF( 0 != fCursor->put( &fCurKey, &curVal, flags));//FIXME: must put in both dbases
         function err;
         _hif ( kFuncAlreadyExists == (err=fLink->NewCursorLink(fCursor, flags, fNodeType, fCurKeyStr, a_Node, thisTxn)) ) {
                 _fret(err);
@@ -1541,7 +1596,6 @@ TDMLCursor :: Count(
 #define THROW_HOOK \
         CURSOR_CLOSE_HOOK \
         CURSOR_ABORT_HOOK
-        //db_recno_t countp;
         _htIF( 0 != fCursor->count( &m_Into, 0) );
         _OK;
 #undef THROW_HOOK
