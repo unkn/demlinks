@@ -117,7 +117,7 @@ ShowAllNodesOfNode(
         bool wasInited;
         __( wasInited=m_Curs->IsInited() );//std call, i know it doesn't throw but when it could who will add __() ?!
         if (! wasInited) {
-                __tIFnok( m_Curs->InitFor(a_NodeType,a_NodeId, a_ParentTxn/*parent txn*/) );//prepare to parse kSubGroups of kGroup with id "A1"; create "A1" if not exists;
+                __tIFnok( m_Curs->InitFor(a_NodeType,a_NodeId, kNone, a_ParentTxn/*parent txn*/) );//prepare to parse kSubGroups of kGroup with id "A1"; create "A1" if not exists;
         }
         bool once=false;
         while (true) {

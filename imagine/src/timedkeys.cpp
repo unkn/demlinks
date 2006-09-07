@@ -292,6 +292,8 @@ MKeyboardInputInterface::UnInstall()
         }//for
 
 
+        clear_keybuf();
+
         _OK;
 }
 

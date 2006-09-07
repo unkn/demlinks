@@ -46,6 +46,14 @@ typedef enum {
         kGroup
 } ENodeType_t; //a Node is either a kGroup or a kSubGroup; however it can be both depending on p.o.v.
 
+typedef enum {
+        kLink=1, //A->B & B<-A
+        kForwardLink, //A->B
+        kReverseLink, //B<-A
+        kSelfLink, //A->A & A<-A
+        kComplementaryLink, //if FL then CL=RL; else if RL then CL=FL; else fail;
+} ELinkType_t;
+
 /****************************/
 typedef std::string NodeId_t;
 /****************************/
@@ -53,9 +61,10 @@ typedef enum{
         kNone=0,//first
         kCreateNodeIfNotExists=1 //DB_WRITECURSOR on init, and DB_RMW on get()
         ,kCursorWriteLocks=2 //only used with Get() not with Put()
+        ,kKeepPrevValue=4 //used with TDMLPointer
         ,kCurrentNode=4
         ,kThisNode=4 //alias
-        ,kOverwriteNode=4 //alias
+        ,kOverwriteNode=4 //alias; TDMLPointer also;
         ,kBeforeNode=8
         ,kPrevNode=8//alias
         ,kAfterNode=16 //after current or specified node
@@ -65,14 +74,14 @@ typedef enum{
         ,kPinPoint=128 //ie. DB_GET_BOTH key/data pair -> makes the cursor position on this
 //last:
         ,kCursorMax
-} ECursorFlags_t;
+} ETDMLFlags_t;
 /****************************/
 /*forward*/class TLink;
 /****************************/
 class TDMLPointer {//is a kGroup pointing to a kSubGroup where kGroup is the pointer identifier and kSubGroup it the pointed element (and not the other way around!) thus the pointer is kGroup and the pointee is kSubGroup
 private:
         TLink*          fLink;
-        Dbt             fGroupKey;
+        //Dbt             fGroupKey;
         NodeId_t        fGroupStr;
         DbTxn*          fParentTxn;
         bool            fInited;
@@ -84,7 +93,8 @@ public:
         function
         Init(
                 const NodeId_t a_GroupId,//must have 0 or 1 kSubGroup
-                DbTxn *a_ParentTxn=NULL
+                DbTxn *a_ParentTxn=NULL,
+                const ETDMLFlags_t a_Flags=kNone
                 );
 
         bool
@@ -100,7 +110,7 @@ private:
         ENodeType_t fNodeType;
         Dbc *fCursor;
         TLink *fLink;
-        DbTxn *thisTxn;
+        DbTxn *fThisTxn;
         Dbt fCurKey;
         NodeId_t fCurKeyStr;
         Db *fDb;
@@ -119,8 +129,8 @@ public:
         InitFor(
                         const ENodeType_t a_NodeType,
                         const NodeId_t a_NodeId,
-                        DbTxn *a_ParentTxn=NULL,
-                        const ECursorFlags_t a_Flags=kNone
+                        const ETDMLFlags_t a_Flags=kNone,
+                        DbTxn *a_ParentTxn=NULL
                         );
 
         function
@@ -138,13 +148,13 @@ public:
         function
         Put(
                         const NodeId_t a_Node,
-                        const ECursorFlags_t a_Flags
+                        const ETDMLFlags_t a_Flags
                         );
 
         function
         TDMLCursor :: Put(
                         const NodeId_t a_Node1,
-                        const ECursorFlags_t a_Flags,
+                        const ETDMLFlags_t a_Flags,
                         const NodeId_t a_Node2
                         );
 
