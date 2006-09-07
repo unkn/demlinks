@@ -167,8 +167,6 @@ int main(const int argc, const char **argv)
 
 //        for (int i=0;i<1;i++) {
 //***************************************** from polishform to graph
-
-//default string, if not specified
         char *str="*-^*2x+*3yza-*4t3";
         __(Process(kPolishForm, str));
         __(Process(kPolishForm, "+-*3*^x2y*5*^x2^y2*2*^y3x"));
@@ -258,7 +256,7 @@ int main(const int argc, const char **argv)
 
         TDMLPointer *mePoints;
         __( mePoints=new TDMLPointer(gLink) );
-        __tIFnok( mePoints->Init("ptrA",NULL) );
+        __tIFnok( mePoints->Init("ptrA", kCreateNodeIfNotExists) );
         __tIFnok( mePoints->DeInit() );
 
         TDMLCursor *meCurs;

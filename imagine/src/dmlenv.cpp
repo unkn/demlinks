@@ -55,11 +55,21 @@ using namespace std;
 //FL    |       RL
 //a complementary link(CL) is the opposite of a FL/RL ie. complementary link of a forward link is the reverse link; complementary link of a reverse link is a forward link
 //a self link(SL) is a FL&RL that points to self ie. A->A | A<-A  => usually regarded as a NULL pointer
+//a pointer is that which points to something; is the part on the left ie. A from A->B ; OR B from B<-A
+//a pointee is that which is being pointed by a pointer; the part on the right ie. B from A->B; OR A from B<-A
+//<- or -> doesn't indicate which is the pointer(usually) it means that the part on the '-' side ie. A from A->B is the kGroup and the part on the '>' or '<' side is the kSubGroup ie. B of B<-A is the kSubGroup and this link denotes a reverse link representation
+//in our system if a RL exists then a FL counterpart must also exist (unless a bug is present) also if a FL exists the RL complement must be present also; this is what we call a (consistent) link within our lowest level system of demlinks; if you go lower than that you're here in C++ code
+//a node can be any of kGroup(pointer) or kSubGroup(pointee)
 
 /****************************/
 /*****************************************************************/
 /*****************************************************************/
 /********************************************************/
+#define _makeFLAG(whatFlag ) \
+        bool fl_##whatFlag=whatFlag == (tmpFlags & whatFlag); \
+        if (fl_##whatFlag) { \
+                tmpFlags -= whatFlag; /*substract this flag*/\
+        } /* tmpFlags is a variable that supposedly is already defined */
 
 #define CURSOR_ABORT_HOOK \
         __(fLink->Abort(&fThisTxn)); \
@@ -1264,8 +1274,8 @@ TDMLPointer :: IsInited()
 function
 TDMLPointer :: Init(
                 const NodeId_t a_GroupId,
-                DbTxn *a_ParentTxn,//can be NULL
-                const ETDMLFlags_t a_Flags
+                const ETDMLFlags_t a_Flags,
+                DbTxn *a_ParentTxn//can be NULL, if by default
                 )
 {
 #ifdef SHOWKEYVAL
@@ -1281,7 +1291,13 @@ TDMLPointer :: Init(
         //__( fGroupKey.set_data((void *)fGroupStr.c_str()) );//points to that, so don't kill fGroupStr!!
         //__( fGroupKey.set_size((u_int32_t)fGroupStr.length() + 1) );
         fParentTxn=a_ParentTxn;
-//---------- 
+//---------- setting flags
+        int tmpFlags=a_Flags;
+
+        _makeFLAG(kOverwriteNode);
+        _makeFLAG(kCreateNodeIfNotExists);
+
+//---------- begin
 #ifdef SHOWKEYVAL
                 std::cout<<"\tTDMLCursor::Init:PointerName="<<
                 fGroupStr<<endl;
@@ -1289,6 +1305,7 @@ TDMLPointer :: Init(
         //FIXME:
         //checking if group exists, if not we make it point to itself which mean the pointer is NULL;
         //if yes we check to see if it contains more than one element; if so we fail; if only one then we remove it only if flag is kKeepPrevValue
+        //all above only if certain flags are present
 
 //---------- new transaction
         DbTxn *thisTxn;
@@ -1299,7 +1316,7 @@ TDMLPointer :: Init(
 #define THROW_HOOK \
         PTR_ABORT_HOOK
 
-        //#1 check if kGroup exists
+        //#1 check if kGroup exists aka if there's a forward link with that pointer(key) [pointer=node]
 //---------- new cursor; temporary
         TDMLCursor *meCurs;
         _h( meCurs=new TDMLCursor(fLink) );//done after DBs are inited!!!
@@ -1323,10 +1340,10 @@ TDMLPointer :: Init(
         function err;
 //---------- check if pointer has any pointees or simply doesn't yet exists
         _h( err=meCurs->Get(nod, kFirstNode) );//rethrow
-        if (kFuncNotFound==err) {
+        if ( ( ! fl_kCreateNodeIfNotExists) && (kFuncNotFound==err) ) {
                 _fret(err);
         }
-        _htIF(kFuncOK != err);//unhandled
+        _htIF( (kFuncOK != err) && (kFuncNotFound != err) );//unhandled
 
 //---------- deinit cursor
         _htIFnok( meCurs->DeInit() );
@@ -1440,6 +1457,7 @@ TDMLCursor :: InitFor(
         fCurKeyStr=a_NodeId;//yeah let's hope this makes a copy
         _h( fCurKey.set_data((void *)fCurKeyStr.c_str()) );//points to that, so don't kill fCurKeyStr!!
         _h( fCurKey.set_size((u_int32_t)fCurKeyStr.length() + 1) );
+        fFlags=a_Flags;
 //---------- show debug
 #ifdef SHOWKEYVAL
                 std::cout<<"\tTDMLCursor::Init:SetKey="<<
@@ -1461,13 +1479,8 @@ TDMLCursor :: InitFor(
                                 _ht("more than kGroup or kSubGroup specified!");
         }//switch
 //---------- handling flags
-        fFlags=a_Flags;
-/*        if (kCursorWriteLocks == (fFlags & kCursorWriteLocks)) {//this doesn't work because dbase needs to be opened with DB_INITCDB(if memory serves me right)
-                fFlags|=DB_WRITECURSOR;
-#ifdef SHOWKEYVAL
-                std::cout<<"\tTDMLCursor::Init:flags|=DB_WRITECURSOR"<<endl;
-#endif
-        }*/
+        //note that DB_WRITECURSOR doesn't work because the dbase is not opened with DB_INITCDB
+
         if (fFlags != 0) {//no flags supported at this time
                 _ht(no flags supported at this time);
         }
@@ -1546,64 +1559,70 @@ TDMLCursor :: Get(
                 __( std::cout<<"\tTDMLCursor::Get:begin:Key="<<
                 (char *)fCurKey.get_data()<<endl; );
 #endif
+//---------- setting flags
+        int tmpFlags=a_Flags;
+
+        _makeFLAG(kCursorWriteLocks);
+        _makeFLAG(kNextNode);
+        _makeFLAG(kPrevNode);
+        _makeFLAG(kFirstNode);
+        _makeFLAG(kLastNode);
+        _makeFLAG(kCurrentNode);
+        _makeFLAG(kPinPoint);
+
 //---------- handling flags
-        u_int32_t flags=0;//FIXME:
-        if ( /*(DB_WRITECURSOR == (fFlags & DB_WRITECURSOR))||*/(kCursorWriteLocks == (a_Flags & kCursorWriteLocks)) ) {
-                flags|=DB_RMW;
+        u_int32_t dbFlags=0;
+
+        if (fl_kCursorWriteLocks) {
+                dbFlags|=DB_RMW;
         }
 
         //---------- setting this which is used in 2 places
         Dbt curVal;
         _h( curVal.set_flags(DB_DBT_MALLOC) );
 
-if ( (kNextNode == (a_Flags & kNextNode)) || (kPrevNode == (a_Flags & kPrevNode)) || (kFirstNode == (a_Flags & kFirstNode)) ){
+if ( (fl_kNextNode) || (fl_kPrevNode) || (fl_kFirstNode) ){
         if (fFirstTimeGet) {
                 fFirstTimeGet=false;
-                flags|=DB_SET;
+                dbFlags|=DB_SET;
 #ifdef SHOWKEYVAL
-                std::cout<<"\tTDMLCursor::Get:flags|=DB_SET"<<endl;
+                std::cout<<"\tTDMLCursor::Get:dbFlags|=DB_SET"<<endl;
 #endif
         } else {
-                if (kNextNode == (a_Flags & kNextNode)) {
-                                flags|=DB_NEXT_DUP;
+                if (fl_kNextNode) {
+                                dbFlags|=DB_NEXT_DUP;
 #ifdef SHOWKEYVAL
-                std::cout<<"\tTDMLCursor::Get:flags|=DB_NEXT_DUP"<<endl;
+                std::cout<<"\tTDMLCursor::Get:dbFlags|=DB_NEXT_DUP"<<endl;
 #endif
                 } else {
-                        if (kPrevNode == (a_Flags & kPrevNode)) {
-                                flags|=DB_PREV;
+                        if (fl_kPrevNode) {
+                                dbFlags|=DB_PREV;
 #ifdef SHOWKEYVAL
-                std::cout<<"\tTDMLCursor::Get:flags|=DB_PREV"<<endl;
+                std::cout<<"\tTDMLCursor::Get:dbFlags|=DB_PREV"<<endl;
 #endif
                         }
                 }
         }
 } else {
-        /*if (kFirstNode == (a_Flags & kFirstNode)) {
-                flags|=DB_FIRST;//first of dbase not of key
-                #ifdef SHOWKEYVAL
-                        std::cout<<"\tTDMLCursor::Get:flags|=DB_FIRST"<<endl;
-                #endif
-        } else {*/
-                if (kLastNode == (a_Flags & kLastNode)) {
+                if (fl_kLastNode) {
                         //FIXME: somehow! ie. parse all until not found, return last found;
                         _ht(bdb apparently doesnt support returning the last datum of a given key if this key has more than one datum associated with it ie. A - B and A - D  cannot return A - D with DB_LAST refers to last of dbase not of key and key is ignored)
                                 /*
-                        flags|=DB_KEYLAST;//Dbc::get: Invalid argument
+                        dbFlags|=DB_KEYLAST;//Dbc::get: Invalid argument
                                 //DB_LAST not working either, gets the last datum of the dbase not of the key
                         #ifdef SHOWKEYVAL
-                                std::cout<<"\tTDMLCursor::Get:flags|=DB_KEYLAST"<<endl;
+                                std::cout<<"\tTDMLCursor::Get:dbFlags|=DB_KEYLAST"<<endl;
                         #endif
                         */
                 } else {
-                        if (kCurrentNode == (a_Flags & kCurrentNode)) {
-                                flags|=DB_CURRENT;
+                        if (fl_kCurrentNode) {
+                                dbFlags|=DB_CURRENT;
 #ifdef SHOWKEYVAL
-                std::cout<<"\tTDMLCursor::Get:flags|=DB_CURRENT"<<endl;
+                std::cout<<"\tTDMLCursor::Get:dbFlags|=DB_CURRENT"<<endl;
 #endif
                         } else {
-                                if (kPinPoint == (a_Flags & kPinPoint)) {
-                                        flags|=DB_GET_BOTH;
+                                if (fl_kPinPoint) {
+                                        dbFlags|=DB_GET_BOTH;
                                         _h( curVal.set_flags(0) );
                                         _h( curVal.set_data((void *)m_Node.c_str()) );
                                         _h( curVal.set_size((u_int32_t)m_Node.length() + 1) );
@@ -1617,10 +1636,12 @@ if ( (kNextNode == (a_Flags & kNextNode)) || (kPrevNode == (a_Flags & kPrevNode)
                 }
         //}
 }
+//---------- trapping illegal flags, or unhandled flags
+        __tIF(0 != tmpFlags);
 
 //---------- attempting to fetch key/data pair
 #define FREE_VAL \
-        if ((DB_GET_BOTH != (flags & DB_GET_BOTH)) && (curVal.get_data())) \
+        if ((DB_GET_BOTH != (dbFlags & DB_GET_BOTH)) && (curVal.get_data())) \
                 __( free(curVal.get_data()) );
 #undef THROW_HOOK
 #define THROW_HOOK \
@@ -1630,13 +1651,13 @@ if ( (kNextNode == (a_Flags & kNextNode)) || (kPrevNode == (a_Flags & kPrevNode)
 
         int err;
 /*        try {
-                (err=fCursor->get( &fCurKey, &curVal, flags));
+                (err=fCursor->get( &fCurKey, &curVal, dbFlags));
         } catch (DbException &e) {
                 cout << e.what()<<endl;
                 throw;
         }*/
         //_hif ( DB_NOTFOUND == err) {
-        _hif( DB_NOTFOUND == (err=fCursor->get( &fCurKey, &curVal, flags)) ) {
+        _hif( DB_NOTFOUND == (err=fCursor->get( &fCurKey, &curVal, dbFlags)) ) {
 #ifdef SHOWKEYVAL
                 __( std::cout<<"\tTDMLCursor::Get:fail:Key="<<
                 (char *)fCurKey.get_data()<<endl;
@@ -1693,47 +1714,57 @@ TDMLCursor :: Put(
                 std::cout<<"\tTDMLCursor::Put:begin:"<< (fNodeType==kGroup?"Group":"SubGroup") <<"Key="<<
                 (char *)fCurKey.get_data()<< " val=" << a_Node << endl;
 #endif
+//---------- setting flags
+        int tmpFlags=a_Flags;
+        _makeFLAG(kCurrentNode);
+        _makeFLAG(kAfterNode);
+        _makeFLAG(kNextNode);
+        _makeFLAG(kBeforeNode);
+        _makeFLAG(kFirstNode);
+        _makeFLAG(kLastNode);
+
 //---------- handling flags
-        u_int32_t flags=0;//FIXME:
-        if (kCurrentNode == (a_Flags & kCurrentNode)) {
-                flags|=DB_CURRENT;//overwrite current, FIXME: 2nd db must be updated also
+        u_int32_t dbFlags=0;//FIXME:
+        if (fl_kCurrentNode) {
+                dbFlags|=DB_CURRENT;//overwrite current, FIXME: 2nd db must be updated also
 #ifdef SHOWKEYVAL
-                std::cout<<"\tTDMLCursor::Put:flags|=DB_CURRENT"<<endl;
+                std::cout<<"\tTDMLCursor::Put:dbFlags|=DB_CURRENT"<<endl;
 #endif
         } else {
-                if ( (kAfterNode == (a_Flags & kAfterNode)) || (kNextNode == (a_Flags & kNextNode)) ) {
-                        flags|=DB_AFTER; //after current
+                if ( (fl_kAfterNode) || (fl_kNextNode) ) {
+                        dbFlags|=DB_AFTER; //after current
 #ifdef SHOWKEYVAL
-                std::cout<<"\tTDMLCursor::Put:flags|=DB_AFTER"<<endl;
+                std::cout<<"\tTDMLCursor::Put:dbFlags|=DB_AFTER"<<endl;
 #endif
                 } else {
-                        if (kBeforeNode == (a_Flags & kBeforeNode)) {
-                                flags|=DB_BEFORE;//before current
+                        if (fl_kBeforeNode) {
+                                dbFlags|=DB_BEFORE;//before current
 #ifdef SHOWKEYVAL
-                std::cout<<"\tTDMLCursor::Put:flags|=DB_BEFORE"<<endl;
+                std::cout<<"\tTDMLCursor::Put:dbFlags|=DB_BEFORE"<<endl;
 #endif
                         } else {
-                                if (kFirstNode == (a_Flags & kFirstNode)) {
-                                        flags|=DB_KEYFIRST;
+                                if (fl_kFirstNode) {
+                                        dbFlags|=DB_KEYFIRST;
 #ifdef SHOWKEYVAL
-                std::cout<<"\tTDMLCursor::Put:flags|=DB_FIRST"<<endl;
+                std::cout<<"\tTDMLCursor::Put:dbFlags|=DB_FIRST"<<endl;
 #endif
                                 } else {
-                                        if (kLastNode == (a_Flags & kLastNode)) {
-                                                flags|=DB_KEYLAST;
+                                        if (fl_kLastNode) {
+                                                dbFlags|=DB_KEYLAST;
 #ifdef SHOWKEYVAL
-                std::cout<<"\tTDMLCursor::Put:flags|=DB_LAST"<<endl;
+                std::cout<<"\tTDMLCursor::Put:dbFlags|=DB_LAST"<<endl;
 #endif
                                         }
                                 }
                         }
                 }
         }
-        __tIF(0==flags);
+//---------- validating dbFlags
+        __tIF(0==dbFlags);
 
 //---------- ok, creating the specified link (both FL & RL)
         function err;
-        _hif ( kFuncAlreadyExists == (err=fLink->NewCursorLink(fCursor, flags, fNodeType, fCurKeyStr, a_Node, fThisTxn)) ) {
+        _hif ( kFuncAlreadyExists == (err=fLink->NewCursorLink(fCursor, dbFlags, fNodeType, fCurKeyStr, a_Node, fThisTxn)) ) {
                 _fret(err);
         }_fih
         _htIFnok(err);//other unhandled error is bad for us
@@ -1758,7 +1789,8 @@ TDMLCursor :: Put(
                 const NodeId_t a_Node2
                 )
 {
-        if ( (a_Flags == kBeforeNode) || (a_Flags == kAfterNode) || (a_Flags==kThisNode) ) {
+//---------- handling flags
+        if ( (a_Flags == kBeforeNode) || (a_Flags == kAfterNode) || (a_Flags==kThisNode) ) {//only one of these allowed!
                 //---------- pinpoint prior to put
                 NodeId_t temp=a_Node2;
                 __fIFnok( this->Find(temp, kCursorWriteLocks) );

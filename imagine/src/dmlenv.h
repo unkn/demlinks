@@ -59,7 +59,7 @@ typedef std::string NodeId_t;
 /****************************/
 typedef enum{
         kNone=0,//first
-        kCreateNodeIfNotExists=1 //DB_WRITECURSOR on init, and DB_RMW on get()
+        kCreateNodeIfNotExists=1 //DB_WRITECURSOR on init, and DB_RMW on get(); also used with TDMLPointer
         ,kCursorWriteLocks=2 //only used with Get() not with Put()
         ,kKeepPrevValue=4 //used with TDMLPointer
         ,kCurrentNode=4
@@ -93,8 +93,8 @@ public:
         function
         Init(
                 const NodeId_t a_GroupId,//must have 0 or 1 kSubGroup
-                DbTxn *a_ParentTxn=NULL,
-                const ETDMLFlags_t a_Flags=kNone
+                const ETDMLFlags_t a_Flags=kNone,
+                DbTxn *a_ParentTxn=NULL
                 );
 
         bool
@@ -178,8 +178,9 @@ private:
 
     // Initialize our handles
 
-        Db *g_DBGroupToSubGroup ;//GroupToSubGroup (primary)
-        Db *g_DBSubGroupFromGroup ;//SubGroupFromGroup (secondary)
+        //we use two tables for performance ie. if we use only table A->B then searching for all pointees B would be timeconsuming and harddisk stressing not to mention other things; we can safely assume (at this point) that space is not gonna be a problem; not even optimisation is supposed to be one; but understanding the things via the way brain works is the main goal ie. everything should be linked on the computer as it is in the brain(but not at the neuron level *doh*; at a higher level);
+        Db *g_DBGroupToSubGroup ;//GroupToSubGroup (primary) forward links table
+        Db *g_DBSubGroupFromGroup ;//SubGroupFromGroup (secondary) reverse links table
 
 
         TLink(){};/*inaccessible constructor*/
