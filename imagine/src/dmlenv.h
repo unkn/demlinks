@@ -64,13 +64,14 @@ typedef enum{
         ,kKeepPrevValue=4 //used with TDMLPointer
         ,kCurrentNode=4
         ,kThisNode=4 //alias
-        ,kOverwriteNode=4 //alias; TDMLPointer also;
+        ,kOverwriteNode=4 //alias; TDMLPointer: if just one node exists then it get overwritten; if more nodes exit we fail;
         ,kBeforeNode=8
         ,kPrevNode=8//alias
         ,kAfterNode=16 //after current or specified node
         ,kNextNode=16 //first time when used, kNextNode is kFirstNode just like DB_NEXT
         ,kFirstNode=32
         ,kLastNode=64
+        ,kTruncateIfMoreThanOneNode=64 //TDMLPointer;if more than one, remove the others first; otherwise fail
         ,kPinPoint=128 //ie. DB_GET_BOTH key/data pair -> makes the cursor position on this
 //last:
         ,kCursorMax
@@ -93,7 +94,7 @@ public:
         function
         Init(
                 const NodeId_t a_GroupId,//must have 0 or 1 kSubGroup
-                const ETDMLFlags_t a_Flags=kNone,
+                const int a_Flags=kNone,
                 DbTxn *a_ParentTxn=NULL
                 );
 
@@ -140,9 +141,14 @@ public:
                         );
 
         function
+        Del( //deletes current item
+                        const ETDMLFlags_t a_Flags
+                        );
+
+        function
         Get(
                         NodeId_t &m_Node,
-                        const int a_Flags
+                        const int a_Flags//combination of flags
                         );
 
         function

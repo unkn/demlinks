@@ -258,6 +258,8 @@ int main(const int argc, const char **argv)
         __( mePoints=new TDMLPointer(gLink) );
         __tIFnok( mePoints->Init("ptrA", kCreateNodeIfNotExists) );
         __tIFnok( mePoints->DeInit() );
+        __tIFnok( mePoints->Init("ComposedOperand", kCreateNodeIfNotExists | kTruncateIfMoreThanOneNode | kKeepPrevValue) );
+        __tIFnok( mePoints->DeInit() );
 
         TDMLCursor *meCurs;
         __( meCurs=new TDMLCursor(gLink) );//done after DBs are inited!!!

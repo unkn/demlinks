@@ -37,9 +37,9 @@ using namespace std;
 
 /*************debug vars*/
 //show debug statistics such as key+value
-#define SHOWKEYVAL
-#define SHOWCONTENTS //if disabled, the consistency check is still performed, just no records are displayed on console
-#define SHOWTXNS
+//#define SHOWKEYVAL
+//#define SHOWCONTENTS //if disabled, the consistency check is still performed, just no records are displayed on console
+//#define SHOWTXNS
 /*************/
 
 /****************************/
@@ -1274,7 +1274,7 @@ TDMLPointer :: IsInited()
 function
 TDMLPointer :: Init(
                 const NodeId_t a_GroupId,
-                const ETDMLFlags_t a_Flags,
+                const int a_Flags,//combination of flags
                 DbTxn *a_ParentTxn//can be NULL, if by default
                 )
 {
@@ -1294,8 +1294,15 @@ TDMLPointer :: Init(
 //---------- setting flags
         int tmpFlags=a_Flags;
 
-        _makeFLAG(kOverwriteNode);
-        _makeFLAG(kCreateNodeIfNotExists);
+        _makeFLAG(kOverwriteNode);//if only one node, we overwrite it(internally we just wipe it out by making the pointer be NULL)
+        _makeFLAG(kKeepPrevValue);//if only one node, we keep its value
+        _makeFLAG(kCreateNodeIfNotExists);//if pointer is already NULL, we don't fail, we keep it NULL however, but this is here to make sure the reader knows the programmer's intentions
+        _makeFLAG(kTruncateIfMoreThanOneNode);
+
+//---------- validate flags
+        __tIF(0 != tmpFlags);//illegal flags
+        __tIF(kNone == a_Flags);//no flags?!
+        __tIF( fl_kOverwriteNode && fl_kKeepPrevValue );//mutually exclusive flags
 
 //---------- begin
 #ifdef SHOWKEYVAL
@@ -1303,8 +1310,7 @@ TDMLPointer :: Init(
                 fGroupStr<<endl;
 #endif
         //FIXME:
-        //checking if group exists, if not we make it point to itself which mean the pointer is NULL;
-        //if yes we check to see if it contains more than one element; if so we fail; if only one then we remove it only if flag is kKeepPrevValue
+        //checking if group exists, if not we make it point to itself which mean the pointer is NULL no! read below! seach RECTIF
         //all above only if certain flags are present
 
 //---------- new transaction
@@ -1325,7 +1331,7 @@ TDMLPointer :: Init(
         __( delete meCurs ); \
         PTR_ABORT_HOOK
 //---------- initialize cursor
-        _htIFnok( meCurs->InitFor(kGroup,a_GroupId) );
+        _htIFnok( meCurs->InitFor(kGroup,a_GroupId, kNone, thisTxn) );
 #undef THROW_HOOK
 #define THROW_HOOK \
         __( meCurs->DeInit() ); \
@@ -1335,15 +1341,54 @@ TDMLPointer :: Init(
 #define ERR_HOOK \
         THROW_HOOK
 
-//---------- tmp vars
+        //---------- tmp vars
         NodeId_t nod;
         function err;
 //---------- check if pointer has any pointees or simply doesn't yet exists
         _h( err=meCurs->Get(nod, kFirstNode) );//rethrow
-        if ( ( ! fl_kCreateNodeIfNotExists) && (kFuncNotFound==err) ) {
-                _fret(err);
+        if (kFuncOK != err) {//error!
+                //---------- has no pointees
+                if (kFuncNotFound == err) {
+                        if ( ! fl_kCreateNodeIfNotExists) {//if it doesn't exit we fail unless the flag is present;of course this is what this func is suppose to do by default but by using this each time we make sure the reader understands; besides defaults are the enemy of portability
+                                _fret(kFuncInexistentNodeNotCreated);
+                        }
+                        //---------- at this point we're supposing the pointer has no pointees and we must create one
+                        //we'll set it to point to self and thus being NULL(no!read below); if the pointee doesn't exist(at any point while using this pointer we should throw OR consider it NULL ?!) RECTIFICATION: a pointer is NULL only if it doesn't point to anything ie. it has no kSubGroups; pointing to self should be allowed! like ie. if we wanna flag any Node of this system as being _somehow_ we could use a pointer, and if this Node is the pointer itself it should be allowed! ie. parse the list of all pointers, obv. with a pointer that will eventually point to itself!
+                        //so if u read above -> u know we already have this pointer=NULL if we're here; so we don't do anything
+                } else {
+                        _ht(unhandled return error);
+                }
+                //... by here our pointer is null
+        } else {//no error;it has at least one pointee(aka kSubGroup)
+                //---------- check if more than one is present!
+                _h( err=meCurs->Get(nod, kNextNode) );
+                if (kFuncOK == err) {
+                        //-------- more than one present!
+                        if (! fl_kTruncateIfMoreThanOneNode) {//no flag?
+                                _fret(kFuncMoreThanOneNodeNotTruncated);
+                        }
+                        //------- if we're here we have permission to truncate, so we delete the current and then parse until the end with deleting
+                                NodeId_t nod;
+                                err=kFuncOK;//allow deletion of current node, it definitely exists! (this is the 2nd node)
+                        while (kFuncOK == err) {
+                                _htIFnok( meCurs->Del(kCurrentNode) );
+                                _h( err=meCurs->Get(nod, kNextNode) );//try next node (3rd,4th...etc)
+                                //can u even imagine what will happen on deadlock? if two or more threads are accessing these same records
+                        }
+                        //------- by the time we're here only one node(pointee) is left
+                }
+                //---------- by the time we're here there'll be only ONE pointee present!
+
+                //-------- we remove it only if flag is NOT kKeepPrevValue && NOT kOverwriteNode
+                if (! fl_kKeepPrevValue) {
+                        //do not keep value
+                        if (! fl_kOverwriteNode) {//no overwrite flag and no keepval flag
+                                _fret(kFuncExistentSingleNodeNotOverwritten);
+                        }
+                }//else
+                //...by here we have one pointee which we keep
         }
-        _htIF( (kFuncOK != err) && (kFuncNotFound != err) );//unhandled
+//-------- by here we either have NULL pointer or a pointer that points to the same pointee it used to point to before init(except that maybe other elements present after the pointee were wiped out)
 
 //---------- deinit cursor
         _htIFnok( meCurs->DeInit() );
@@ -1425,7 +1470,7 @@ function
 TDMLCursor :: InitFor(
                 const ENodeType_t a_NodeType,
                 const NodeId_t a_NodeId,
-                const ETDMLFlags_t a_Flags,
+                const ETDMLFlags_t a_Flags,//no flags supported yet!
                 DbTxn *a_ParentTxn//can be NULL, no problem
                 )
 {
@@ -1694,6 +1739,58 @@ if ( (fl_kNextNode) || (fl_kPrevNode) || (fl_kFirstNode) ){
 #undef FREE_VAL
 }
 /*******************************/
+function
+TDMLCursor :: Del(
+                const ETDMLFlags_t a_Flags
+                )
+{
+
+
+//---------- validating params
+#define THROW_HOOK \
+        CURSOR_CLOSE_HOOK \
+        CURSOR_ABORT_HOOK
+
+//---------- good to go
+#ifdef SHOWKEYVAL
+                std::cout<<"\tTDMLCursor::Del:begin:"<< (fNodeType==kGroup?"Group":"SubGroup") <<": DB_CURRENT of <Key="<<
+                (char *)fCurKey.get_data()<<">"<<endl;
+#endif
+//---------- setting flags
+        int tmpFlags=a_Flags;
+        _makeFLAG(kCurrentNode);
+//---------- validating dbFlags
+        _htIF(!fl_kCurrentNode);//the only one supported at this time
+        __tIF(0 != tmpFlags);//illegal flags
+
+//---------- getting current item key/val pair and lock it for write
+        NodeId_t nod;
+        _hfIFnok(this->Get(nod, kCurrentNode | kCursorWriteLocks) );
+        Dbt val;
+        _h( val.set_flags(0) );
+        _h( val.set_data((void *)nod.c_str()) );
+        _h( val.set_size((u_int32_t)nod.length() + 1) );
+//---------- consistend delete (from both dbases!)
+        //---------- ok, deleting current from the other dbase first becouse this is the one that doesn't have a lock yet!
+        if (kSubGroup == fNodeType) {
+                //we consider the other dbase: primary
+                _htIFnok( fLink->delFrom(fLink->g_DBGroupToSubGroup, fThisTxn, &fCurKey, &val) );
+        } else { //kGroup, thus the other dbase is secondary
+                _htIFnok( fLink->delFrom(fLink->g_DBSubGroupFromGroup, fThisTxn, &val, &fCurKey) );
+        }
+        //---------- deleting from the cursor's dbase
+        _htIF(0 != fCursor->del(0) );
+
+//---------- done
+#undef THROW_HOOK
+
+#ifdef SHOWKEYVAL
+                std::cout<<"\tTDMLCursor::Del:done:"<<
+                (char *)fCurKey.get_data()<<endl;
+#endif
+//---------- end
+        _OK;
+}
 /*******************************/
 function
 TDMLCursor :: Put(
@@ -1760,7 +1857,8 @@ TDMLCursor :: Put(
                 }
         }
 //---------- validating dbFlags
-        __tIF(0==dbFlags);
+        __tIF(0 != tmpFlags);//illegal flags
+        _htIF(0==dbFlags);
 
 //---------- ok, creating the specified link (both FL & RL)
         function err;

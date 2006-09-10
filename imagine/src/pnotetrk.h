@@ -43,6 +43,9 @@ typedef enum {//avoiding to use the value zero
         ,kFuncNoActions
         ,kFuncAlreadyExists //some element already exists(used in dmlenv.cpp)
         ,kFuncNotFound //some element wasn't found (-//-)
+        ,kFuncInexistentNodeNotCreated //because the flag wasn't specified!
+        ,kFuncExistentSingleNodeNotOverwritten //the overwrite flag wasn't specified!
+        ,kFuncMoreThanOneNodeNotTruncated //because the flag that says truncate wasn't present
 
 //last
         ,kMaxFuncErrors
