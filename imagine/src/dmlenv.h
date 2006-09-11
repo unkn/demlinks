@@ -82,7 +82,6 @@ typedef enum{
 class TDMLPointer {//is a kGroup pointing to a kSubGroup where kGroup is the pointer identifier and kSubGroup it the pointed element (and not the other way around!) thus the pointer is kGroup and the pointee is kSubGroup
 private:
         TLink*          fLink;
-        //Dbt             fGroupKey;
         NodeId_t        fGroupStr;
         DbTxn*          fParentTxn;
         bool            fInited;
@@ -92,14 +91,24 @@ public:
         TDMLPointer(TLink *m_WorkingOnThisTLink);
         ~TDMLPointer();
         function
-        Init(
-                const NodeId_t a_GroupId,//must have 0 or 1 kSubGroup
+        InitPtr(
+                const NodeId_t a_GroupId,//must have 0 or 1 nodes of type kSubGroup
                 const int a_Flags=kNone,
                 DbTxn *a_ParentTxn=NULL
                 );
 
         bool
         IsInited();
+
+        function
+        GetPointee(
+                NodeId_t &m_SubGroupId
+                );
+
+        function
+        SetPointee(
+                const NodeId_t a_SubGroupId
+                );
 
         function
         DeInit();
@@ -159,7 +168,7 @@ public:
                         );
 
         function
-        TDMLCursor :: Put(
+        Put(
                         const NodeId_t a_Node1,
                         const ETDMLFlags_t a_Flags,
                         const NodeId_t a_Node2
@@ -241,16 +250,16 @@ public:
 
         ~TLink();
 
-        function
+        /*function
         TLink::ModLink(
                 const NodeId_t a_GroupId,
                 const NodeId_t a_SubGroupId,
                 const NodeId_t a_NewLinkName,
                 DbTxn *a_ParentTxn=NULL
                 );
+*/
 
-
-        function
+        function //uses TDMLCursor::Get()
         TLink::IsLinkConsistent( //checks both dbases for this link to be consistent ie. A -> B must have B <- A
                 const ENodeType_t a_NodeType,
                 const NodeId_t a_NodeId1,
@@ -259,28 +268,15 @@ public:
                 );
 
         function
-        TLink::IsGroup(
-                const ENodeType_t a_NodeType,
-                const NodeId_t a_GroupId,
-                DbTxn *a_ParentTxn=NULL
-                );
-
-        function
-        TLink::IsLink(
+        TLink::IsSemiLink(
                 const ENodeType_t a_NodeType,
                 const NodeId_t a_NodeId1,
-                const NodeId_t a_NodeId2,
-                DbTxn *a_ParentTxn=NULL
-                );
-        function
-        TLink::IsLink(
-                const NodeId_t a_GroupId,
-                const NodeId_t a_SubGroupId,
+                NodeId_t &m_NodeId2,//if empty then returns first complementary node of a_NodeId1; DB_SET acts like old IsNode() [or IsGroup()]
                 DbTxn *a_ParentTxn=NULL
                 );
 
         function
-        TLink::NewCursorLink(
+        TLink::NewCursorLink( //uses TDMLCursor::Put()
                 Dbc * const m_Cursor,
                 const u_int32_t a_CursorPutFlags,
                 const ENodeType_t a_NodeType,
@@ -305,7 +301,7 @@ public:
                 const NodeId_t a_SubGroupId,
                 DbTxn *a_ParentTxn=NULL
                 );
-//FIXME: need to add iterator (aka cursor) which parses a Group's kTo connections(this group pointing to many subgroups) or a SubGroup's kFrom(many groups pointing to this subgroup) connections
+
         function
         TLink::ShowContents(
                 DbTxn *a_ParentTxn=NULL

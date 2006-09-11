@@ -13,7 +13,10 @@ Legend:
 	LU means last update on ... date
 
 =demlinks-0.0.23
-LU: 11 September 2006
+LU: 12 September 2006
+* added TDMLPointer
+$ Count() is broken; Dbc->count() needs the cursor to be initialized otherwise
+it throws EINVAL
 * added group comments ie. to avoid using some functions of macros for that to
 be obvious like that; imagine a tree with root starting at main() ... u get
 the picture!

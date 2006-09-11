@@ -148,6 +148,24 @@ ShowAllNodesOfNode(
 }
 
 /*****************************************************************/
+function
+NewPoint(TDMLPointer *m_Points, NodeId_t a_Pointee)
+{
+        __tIF(NULL == m_Points);
+        NodeId_t pointee;
+        __if( kFuncOK == m_Points->GetPointee(pointee) ) {
+                cout<<"Previous pointee:"<<pointee<<endl;
+        }__fi
+
+        __tIFnok( m_Points->SetPointee(a_Pointee) );
+
+        __if( kFuncOK == m_Points->GetPointee(pointee) ) {
+                cout<<"Current pointee:"<<pointee<<endl;
+        }__fi
+
+        _OK;
+}
+
 /*****************************************************************/
 /*****************************************************************/
 int main(const int argc, const char **argv)
@@ -257,10 +275,15 @@ int main(const int argc, const char **argv)
         cout << "---Pointer"<<endl;
         TDMLPointer *mePoints;
         __( mePoints=new TDMLPointer(gLink) );
-        __tIFnok( mePoints->Init("ptrA", kCreateNodeIfNotExists) );
+        __tIFnok( mePoints->InitPtr("ptrA", kCreateNodeIfNotExists) );
         __tIFnok( mePoints->DeInit() );
         cout << "---Ptr part 2"<<endl;
-        __tIFnok( mePoints->Init("LeftOperand", kCreateNodeIfNotExists | kTruncateIfMoreThanOneNode | kOverwriteNode) );
+        __tIFnok( mePoints->InitPtr("LeftOperand", kCreateNodeIfNotExists | kTruncateIfMoreThanOneNode | kOverwriteNode) );
+
+        __tIFnok( NewPoint(mePoints,"Z") );
+        __tIFnok( NewPoint(mePoints,"G") );
+        __tIFnok( NewPoint(mePoints,"B") );
+
         __tIFnok( mePoints->DeInit() );
 
         cout << "---Cursor"<<endl;

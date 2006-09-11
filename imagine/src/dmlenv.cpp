@@ -38,7 +38,7 @@ using namespace std;
 /*************debug vars*/
 //show debug statistics such as key+value
 //#define SHOWKEYVAL
-#define SHOWCONTENTS //if disabled, the consistency check is still performed, just no records are displayed on console
+//#define SHOWCONTENTS //if disabled, the consistency check is still performed, just no records are displayed on console
 //#define SHOWTXNS
 /*************/
 
@@ -54,6 +54,7 @@ using namespace std;
 //G->sG |      sG<-G
 //FL    |       RL
 //a complementary link(CL) is the opposite of a FL/RL ie. complementary link of a forward link is the reverse link; complementary link of a reverse link is a forward link
+//a semi link is half of a link ie. either A->B , OR, B<-A .  HALF!
 //a self link(SL) is a FL&RL that points to self ie. A->A | A<-A  => usually regarded as a NULL pointer
 //a pointer is that which points to something; is the part on the left ie. A from A->B ; OR B from B<-A
 //a pointee is that which is being pointed by a pointer; the part on the right ie. B from A->B; OR A from B<-A
@@ -313,6 +314,7 @@ TLink :: putInto(
 /****************************/
 //ie.a->b =>a->c ~ pri:A-B, sec:B-A => pri: A-C(changed from A-B), sec:C-A(new)(B-A deleted)
 //the connection MUST already exist! or fails(not throws)
+/*
 function
 TLink::ModLink(
                 const NodeId_t a_GroupId,
@@ -389,7 +391,7 @@ TLink::ModLink(
         _OK;
 
 }
-
+*/
 /*************************/
 function
 TLink::IsLinkConsistent(
@@ -410,7 +412,9 @@ TLink::IsLinkConsistent(
         ABORT_HOOK
 
 //------------ check if link exists on one of the dbases
-        _htIFnok( IsLink(a_NodeType, a_NodeId1, a_NodeId2, thisTxn) );
+        NodeId_t nod;
+        __( nod=a_NodeId2 );
+        _htIFnok( IsSemiLink(a_NodeType, a_NodeId1, nod, thisTxn) );
 
 //------------ check if link exists on the other dbase
         ENodeType_t otherNodeType=a_NodeType;
@@ -419,7 +423,9 @@ TLink::IsLinkConsistent(
         } else {//assumed kSubGroup; we're in trouble if there will be three types
                 otherNodeType = kGroup;
         }
-        _htIFnok( IsLink(otherNodeType, a_NodeId2, a_NodeId1, thisTxn) );
+
+        __( nod=a_NodeId1 );
+        _htIFnok( IsSemiLink(otherNodeType, a_NodeId2, nod, thisTxn) );
 
 //------------ commit transaction
 #undef THROW_HOOK
@@ -429,202 +435,79 @@ TLink::IsLinkConsistent(
         _OK;
 }
 /*************************/
-function
-TLink::IsGroup(
-                const ENodeType_t a_NodeType,
-                const NodeId_t a_GroupId,
-                DbTxn *a_ParentTxn
-                )
-{
-
-//------------ validate param
-        __tIF(a_GroupId.empty());
-
-//------------ new transaction
-        DbTxn *thisTxn;
-        __tIFnok(NewTransaction(a_ParentTxn,&thisTxn ));
-
-#define THROW_HOOK \
-        ABORT_HOOK
-#define ERR_HOOK \
-        THROW_HOOK
-
-//------------ set values
-        Dbt value;
-        Dbt key;
-
-        _h( key.set_data((void *)a_GroupId.c_str()) );
-        _h( key.set_size((u_int32_t)a_GroupId.length() + 1) );
-        _h( value.set_flags(DB_DBT_MALLOC) );
-
-#ifdef SHOWKEYVAL
-        _h(
-                std::cout<<"\tIsGroup:begin:"<<
-                (char *)key.get_data()<<endl;
-          );
-#endif
-
-//------------ select proper database
-        Db *db;
-        switch (a_NodeType) {
-                case kGroup: {
-                                     db=g_DBGroupToSubGroup;
-                                     break;
-                             }
-                case kSubGroup: {
-                                     db=g_DBSubGroupFromGroup;
-                                     break;
-                             }
-                default:
-                                _ht("more than kGroup or kSubGroup specified!");
-        }//switch
-
-//------------ open new cursor
-        Dbc *cursor1=NULL;
-        _htIF( 0 != db->cursor(thisTxn,&cursor1, 0) );
-
-#undef ERR_HOOK
-#undef THROW_HOOK
-#define THROW_HOOK \
-                __( cursor1->close() );/*done prior to Abort()*/\
-                ABORT_HOOK;
-#define FREE_VAL \
-        if (value.get_data()) \
-                __( free(value.get_data()) );
-#define ERR_HOOK \
-        FREE_VAL \
-        THROW_HOOK
-
-
-//------------ try to get first item of key with DB_SET and return it in value ie. a->b a->c returnc "b"
-        int err;
-        _hif( DB_NOTFOUND == (err=cursor1->get( &key, &value, DB_SET)) ) {
-#ifdef SHOWKEYVAL
-                std::cout<<"\tIsGroup: is not!."<<endl;
-#endif
-                _hreterr(kFuncNotFound);
-        }_fih
-        //else throws! just in case it doesn't we check for err==0 => ok, below
-        _htIF(err!=0);
-        FREE_VAL;
-
-//------------ close cursor
-#undef THROW_HOOK
-#define THROW_HOOK \
-        ABORT_HOOK
-#undef ERR_HOOK
-
-        _htIF(0 != cursor1->close());
-
-//------------ commit transaction
-#undef THROW_HOOK
-#undef FREE_VAL
-        __tIFnok( Commit(&thisTxn) );
-
-//------------ after done
-#ifdef SHOWKEYVAL
-                std::cout<<"\tIsGroup:true."<<endl;
-#endif
-
-
-//------------ end
-        _OK;//found
-}
 /*************************/
 function
-TLink::IsLink(
+TLink::IsSemiLink(
                 const ENodeType_t a_NodeType,
-                const NodeId_t a_NodeId1,//may or may not exist
-                const NodeId_t a_NodeId2,//same
+                const NodeId_t a_NodeId1,//may or may not exist, but must be set
+                NodeId_t &m_NodeId2,//can be: not set ie. "" case in which we try to find the first
                 DbTxn *a_ParentTxn
                 )
 {
 //------------ validate params
         __tIF(a_NodeId1.empty());
-        __tIF(a_NodeId2.empty());
 
-//------------ create new transaction for us
-        DbTxn *thisTxn;
-        __tIFnok(NewTransaction(a_ParentTxn,&thisTxn ));
-
-#undef THROW_HOOK
-#define THROW_HOOK \
-        ABORT_HOOK
-#define ERR_HOOK \
-        THROW_HOOK
-
-//------------ choose proper dbase
-        Db *db;
-        switch (a_NodeType) {
-                case kGroup: {
-                                     db=g_DBGroupToSubGroup;
-                                     break;
-                             }
-                case kSubGroup: {
-                                     db=g_DBSubGroupFromGroup;
-                                     break;
-                             }
-                default:
-                                _ht("more than kGroup or kSubGroup specified!");
-        }//switch
-
-//------------ set values for later calls
-        Dbt value;
-        Dbt key;
-
-        _h( key.set_data((void *)a_NodeId1.c_str()) );
-        _h( key.set_size((u_int32_t)a_NodeId1.length() + 1) );
-        _h( value.set_data((void *)a_NodeId2.c_str()) );
-        _h( value.set_size((u_int32_t)a_NodeId2.length() + 1) );
-
-#ifdef SHOWKEYVAL
-                std::cout<<"\tIsLink:begin:"<<
-                (char *)key.get_data()<<
-                "->" <<
-                (char *)value.get_data()<<endl;
-#endif
-
+//------------ begin
 //------------ open new cursor
-        Dbc *cursor1=NULL;
-        _htIF( 0 != db->cursor(thisTxn,&cursor1, 0) );//for duplicate key values(as it is our case) we must use a cursor instead of Db::get()
-
-#undef ERR_HOOK
+        TDMLCursor *meCurs;
+        __( meCurs=new TDMLCursor(this) );//done after DBs are inited!!!
+#define DONE_CURSOR \
+        __( delete meCurs );
+#define THROW_HOOK \
+        DONE_CURSOR
+//---------- initialize cursor
+        _htIFnok( meCurs->InitFor(a_NodeType, a_NodeId1, kNone, a_ParentTxn) );
 #undef THROW_HOOK
 #define THROW_HOOK \
-                __tIF( 0 != cursor1->close() );/*done prior to Abort()*/\
-                ABORT_HOOK;
+        __( meCurs->DeInit() ); \
+        DONE_CURSOR
+
 #define ERR_HOOK \
         THROW_HOOK
+        //---------- check for a complementary link of a_NodeId1
+        ETDMLFlags_t flags;
+                //------- debug
+                #ifdef SHOWKEYVAL
+                        std::cout<<"\tIsSemiLink:begin:"<<
+                        a_NodeId1;
+                #endif
 
+        //------- continuing
+        __if (m_NodeId2.empty()) {
+                flags=kFirstNode;
+                #ifdef SHOWKEYVAL
+                        cout<<endl;
+                #endif
+        } __fielse {
+                flags=kPinPoint;
+                #ifdef SHOWKEYVAL
+                        cout<<"->" <<a_NodeId2<<endl;
+                #endif
+        }__fi
 
-//------------ try to get the key/data pari (both)
-        int err;
-        _hif( DB_NOTFOUND == (err=cursor1->get( &key, &value, DB_GET_BOTH)) ) {
+        //------- finally checking
+        function err;
+        _h( err=meCurs->Get(m_NodeId2, flags) );//return value in m_NodeId2
+        if (kFuncNotFound == err) {
 #ifdef SHOWKEYVAL
-                std::cout<<"\tIsLink: is not!."<<endl;
+                std::cout<<"\tIsSemiLink: is not!."<<endl;
 #endif
-                _hreterr(kFuncNotFound);
-        }_fih
-        //else throws! just in case it doesn't we check for err==0 => ok, below
-        _htIF(err!=0);
+                _hreterr(err);
+        }
+        _htIF(kFuncOK != err); //no other error is handled
+//---------- deinit cursor
+        _htIFnok( meCurs->DeInit() );
 
-//------------ close the cursor
+//---------- close cursor
 #undef THROW_HOOK
-#define THROW_HOOK \
-        ABORT_HOOK
 #undef ERR_HOOK
 
-        _htIF( 0 != cursor1->close());
-
-//------------ commit transaction
-#undef THROW_HOOK
-        __tIFnok( Commit(&thisTxn) );
-
+        DONE_CURSOR;
+//---------- done
 //------------ after done
 #ifdef SHOWKEYVAL
-        std::cout<<"\tIsLink:true."<<endl;
+        std::cout<<"\tIsSemiLink:true:"<<a_NodeId1<<" - "<<m_NodeId2<<endl;
 #endif
-
 
 //------------ end
         _OK;
@@ -814,9 +697,10 @@ TLink::NewLink(
 }
 /*************************/
 /*************
- * creates a connection between a_GroupId TO/FROM a_SubGroupId
+ * creates a connection between a_GroupId TO/FROM a_SubGroupId; both a FL and a RL is created!
  * if any group doesn't aready exist it is created
- * if connection exists the function fails (doesnt' throw)
+ * if connection exists the function fails (doesn't throw)
+ * doesn't use a cursor
  * ***************/
 function
 TLink::NewLink(//creates a consistent link by passing forward link based params to this function
@@ -1280,7 +1164,109 @@ TDMLPointer :: IsInited()
 }
 /*******************************/
 function
-TDMLPointer :: Init(
+TDMLPointer :: GetPointee(
+        NodeId_t &m_SubGroupId
+)
+{
+//FIXME: make it use a new temporary TDMLCursor
+//---------- was inited?
+        __tIF(! this->IsInited());
+//------------ begin
+#ifdef SHOWKEYVAL
+        std::cout<<"\tGetPointee:begin:"<<fGroupStr<<endl;
+#endif
+//---------- get first item of key
+        __( m_SubGroupId="" );
+        function err;
+        __if( kFuncOK != (err=fLink->IsSemiLink(kGroup, fGroupStr, m_SubGroupId, fParentTxn)) ) {
+                if (kFuncNotFound == err) {
+                        _fret(kFuncNULLPointer);
+                }
+                __t(unhandled error);
+        }__fi
+//------- done
+#ifdef SHOWKEYVAL
+        std::cout<<"\tGetPointee:done:"<<fGroupStr<<" -> "<<m_SubGroupId<<endl;
+#endif
+//---------- end
+        _OK;
+}
+/*******************************/
+function
+TDMLPointer :: SetPointee(
+                        const NodeId_t a_SubGroupId
+)
+{
+//---------- was inited?
+        __tIF(! this->IsInited());
+//---------- validate params
+        __tIF( a_SubGroupId.empty() );
+//------------ begin
+#ifdef SHOWKEYVAL
+        std::cout<<"\tSetPointee:begin:"<<fGroupStr<<" -> "<<a_SubGroupId<<endl;
+#endif
+//------------ open new cursor
+        TDMLCursor *meCurs;
+        __( meCurs=new TDMLCursor(fLink) );//done after DBs are inited!!!
+#define DONE_CURSOR \
+        __( delete meCurs );
+#define THROW_HOOK \
+        DONE_CURSOR
+//---------- initialize cursor
+        _htIFnok( meCurs->InitFor(kGroup, fGroupStr, kNone, fParentTxn) );
+#undef THROW_HOOK
+#define THROW_HOOK \
+        __( meCurs->DeInit() ); \
+        DONE_CURSOR
+
+#define ERR_HOOK \
+        THROW_HOOK
+//---------- pinpoint the previous pointee, if any
+        db_recno_t countPointees;
+        ETDMLFlags_t flag;
+        NodeId_t temp;
+        function err;
+        _h( err=meCurs->Get(temp, kFirstNode) );
+        if (kFuncNotFound == err) { //then pinpoint the firstnode
+                flag=kFirstNode;
+        } else {
+                if (kFuncOK == err) {
+                        flag=kCurrentNode;
+                        //---------- pointer integrity check, before change
+                        _htIFnok( meCurs->Count(countPointees) );
+                        cout << countPointees <<endl;
+                        _htIF(countPointees > 1); //cannot have more than one
+                } else {
+                        _ht(unhandled return error from Get)
+                }
+        }
+//---------- change pointee now ie. overwrite
+        _htIFnok( meCurs->Put(a_SubGroupId, flag) );//return value in m_NodeId2
+
+//---------- pointer integrity check, after change
+        _htIFnok( meCurs->Count(countPointees) );
+        cout << countPointees <<endl;
+        _htIF(1 < countPointees); //cannot have more than one
+//---------- deinit cursor
+        _htIFnok( meCurs->DeInit() );
+
+//---------- close cursor
+#undef THROW_HOOK
+#undef ERR_HOOK
+
+        DONE_CURSOR;
+//---------- done
+//------------ after done
+#ifdef SHOWKEYVAL
+        std::cout<<"\tSetPointee:done:"<<fGroupStr<<" -> "<<a_SubGroupId<<endl;
+#endif
+
+//---------- end
+        _OK;
+}
+/*******************************/
+function
+TDMLPointer :: InitPtr(
                 const NodeId_t a_GroupId,
                 const int a_Flags,//combination of flags
                 DbTxn *a_ParentTxn//can be NULL, if by default
@@ -1321,30 +1307,21 @@ TDMLPointer :: Init(
         //checking if group exists, if not we make it point to itself which mean the pointer is NULL no! read below! seach RECTIF
         //all above only if certain flags are present
 
-//---------- new transaction
-        DbTxn *thisTxn;
-        __tIFnok(fLink->NewTransaction(a_ParentTxn,&thisTxn));
-#define PTR_ABORT_HOOK \
-        __(fLink->Abort(&thisTxn)); \
-        thisTxn=NULL;
-#define THROW_HOOK \
-        PTR_ABORT_HOOK
-
-        //#1 check if kGroup exists aka if there's a forward link with that pointer(key) [pointer=node]
+//#1 check if kGroup exists aka if there's a forward link with that pointer(key) [pointer=node]
 //---------- new cursor; temporary
         TDMLCursor *meCurs;
-        _h( meCurs=new TDMLCursor(fLink) );//done after DBs are inited!!!
+        __( meCurs=new TDMLCursor(fLink) );//done after DBs are inited!!!
 #undef THROW_HOOK
+#define DEL_CURSOR \
+        __( delete meCurs );
 #define THROW_HOOK \
-        __( delete meCurs ); \
-        PTR_ABORT_HOOK
+        DEL_CURSOR
 //---------- initialize cursor
-        _htIFnok( meCurs->InitFor(kGroup,a_GroupId, kNone, thisTxn) );
+        _htIFnok( meCurs->InitFor(kGroup,a_GroupId, kNone, a_ParentTxn) );
 #undef THROW_HOOK
 #define THROW_HOOK \
         __( meCurs->DeInit() ); \
-        __( delete meCurs ); \
-        PTR_ABORT_HOOK
+        DEL_CURSOR
 
 #define ERR_HOOK \
         THROW_HOOK
@@ -1402,18 +1379,16 @@ TDMLPointer :: Init(
 //-------- by here we either have NULL pointer or a pointer that points to the same pointee it used to point to before init(except that maybe other elements present after the pointee were wiped out)
 
 //---------- deinit cursor
+#undef THROW_HOOK
+#define THROW_HOOK \
+        DEL_CURSOR
+
         _htIFnok( meCurs->DeInit() );
 
 //---------- close cursor
 #undef THROW_HOOK
-#define THROW_HOOK \
-        PTR_ABORT_HOOK
-        _h( delete meCurs );
 
-
-//---------- commit transaction
-#undef THROW_HOOK
-        __tIFnok( fLink->Commit(&thisTxn) );
+        DEL_CURSOR
 
 //---------- make sure we don't get here before a DeInit(); signal that we inited once
         fInited=true;
@@ -1431,6 +1406,8 @@ TDMLPointer :: DeInit()
 #ifdef SHOWKEYVAL
                 std::cout<<"\tTDMLPointer::DeInit:begin"<<endl;
 #endif
+//---------- was inited?
+        __tIF(! this->IsInited());
 //---------- cleanup
         if (NULL != fParentTxn){
                 fParentTxn=NULL;
@@ -1504,10 +1481,7 @@ TDMLCursor :: InitFor(
         __tIFnok(fLink->NewTransaction(a_ParentTxn,&fThisTxn));
 
 #define THROW_HOOK \
-        CURSOR_CLOSE_HOOK \
         CURSOR_ABORT_HOOK
-#define ERR_HOOK \
-        THROW_HOOK
 
 //---------- set values for later use
         fCurKeyStr=a_NodeId;//yeah let's hope this makes a copy
@@ -1542,10 +1516,21 @@ TDMLCursor :: InitFor(
         }
 //---------- open new berkeley db cursor
         _htIF( 0 != fDb->cursor(fThisTxn,&fCursor, fFlags) );
-        _htIF(NULL == fCursor);//feeling paranoid?
-#undef ERR_HOOK
 #undef THROW_HOOK
+#define THROW_HOOK \
+        CURSOR_CLOSE_HOOK \
+        CURSOR_ABORT_HOOK
+        _htIF(NULL == fCursor);//feeling paranoid?
+/*//---------- WORKAROUND: we need to init the cursor for Count() otherwise it throws EINVAL
+        Dbt curVal;
+        _h( curVal.set_flags(DB_DBT_MALLOC) );
+        int err;
+        _h( err=fCursor->get( &fCurKey, &curVal, DB_SET) );//get first, don't change key; note that there may be none!
+        if (curVal.get_data())
+                __( free(curVal.get_data()) );
+        */
 //---------- setting such that the next time we use Get it's gonna be the first time so we use DB_SET there
+#undef THROW_HOOK
         fFirstTimeGet=true;
 
 //---------- done
@@ -1562,6 +1547,8 @@ TDMLCursor :: DeInit()
 #ifdef SHOWKEYVAL
                 std::cout<<"\tTDMLCursor::DeInit:begin"<<endl;
 #endif
+//---------- was inited?
+        __tIF(! this->IsInited());
 //---------- trying to catch some inconsistencies; and setting defaults for next use of InitFor()
 #define THROW_HOOK \
         CURSOR_ABORT_HOOK
@@ -1588,6 +1575,8 @@ TDMLCursor :: Find(
                 const int a_Flags
                 )
 {
+//---------- was inited?
+        __tIF(! this->IsInited());
 //---------- checking validity of params
 #define THROW_HOOK \
         CURSOR_CLOSE_HOOK \
@@ -1606,7 +1595,9 @@ TDMLCursor :: Get(
                 const int a_Flags
                 )
 {
-
+//---------- was inited?
+        __tIF(! this->IsInited());
+//----------
 #define THROW_HOOK \
         CURSOR_CLOSE_HOOK \
         CURSOR_ABORT_HOOK
@@ -1734,7 +1725,7 @@ if ( (fl_kNextNode) || (fl_kPrevNode) || (fl_kFirstNode) ){
 
 //---------- checking if link is consistent (optional)
 //follows: consistency check, if A -> B exist so must B <- A in the other database; otherwise something happened prior to calling this function and we catched it here
-        _htIFnok( fLink->IsLinkConsistent(fNodeType, fCurKeyStr, m_Node, fThisTxn) );
+        //_htIFnok( fLink->IsLinkConsistent(fNodeType, fCurKeyStr, m_Node, fThisTxn) ); disabled because of looping
 
 //---------- free value returned by get()
         FREE_VAL;//maybe we should call this in DeInit(); watch the HOOK!
@@ -1757,6 +1748,8 @@ TDMLCursor :: Del(
                 )
 {
 
+//---------- was inited?
+        __tIF(! this->IsInited());
 
 //---------- validating params
 #define THROW_HOOK \
@@ -1820,6 +1813,8 @@ TDMLCursor :: Put(
                 )
 {
 
+//---------- was inited?
+        __tIF(! this->IsInited());
 //---------- validating params
 #define THROW_HOOK \
         CURSOR_CLOSE_HOOK \
@@ -1908,6 +1903,8 @@ TDMLCursor :: Put(
                 const NodeId_t a_Node2
                 )
 {
+//---------- was inited?
+        __tIF(! this->IsInited());
 //---------- handling flags
         if ( (a_Flags == kBeforeNode) || (a_Flags == kAfterNode) || (a_Flags==kThisNode) ) {//only one of these allowed!
                 //---------- pinpoint prior to put
@@ -1926,10 +1923,33 @@ TDMLCursor :: Count(
                 db_recno_t &m_Into
                 )
 {
+//---------- was inited?
+        __tIF(! this->IsInited());
+//----------
 #define THROW_HOOK \
         CURSOR_CLOSE_HOOK \
         CURSOR_ABORT_HOOK
-        _htIF( 0 != fCursor->count( &m_Into, 0) );
+
+/*        try {
+                _htIF( 0 != fCursor->count( &m_Into, 0) );
+        } catch (DbException &e) {
+                cout<<"TDMLCursor :: Count :#"<<e.get_errno()<<e.what()<<endl;
+                cout<<EINVAL<<endl;
+        } */
+        //NodeId_t nod;
+        //_TRY( Get(nod, kCurrentNode) );//this should reinit the cursor as needed for Dbc->count() - doesn't work
+        int err=0;
+        try {
+                err=fCursor->count( &m_Into, 0);
+        } catch (DbException &e) {
+                //apparently 22=="Invalid argument" and happens when most likely the cursor wasn't initialized ie. key is unknown
+                __if (22 != e.get_errno()) {
+                        cout<<"TDMLCursor :: Count :#"<<e.get_errno()<<e.what()<<endl;
+                        _ht(some other error);//throw;
+                }__fi
+                m_Into=0;//FIXME: Count() is broken; sometimes the count is more than 0 but we still get here because somehow the Dbc cursor must be initialized by ie. a Get or Put, otherwise it doesn't know the key to return the dups for. (lame!)
+        }
+        _htIF(0 != err);
 //---------- done
         _OK;
 #undef THROW_HOOK

@@ -46,6 +46,7 @@ typedef enum {//avoiding to use the value zero
         ,kFuncInexistentNodeNotCreated //because the flag wasn't specified!
         ,kFuncExistentSingleNodeNotOverwritten //the overwrite flag wasn't specified!
         ,kFuncMoreThanOneNodeNotTruncated //because the flag that says truncate wasn't present
+        ,kFuncNULLPointer //ie. no pointee found
 
 //last
         ,kMaxFuncErrors
