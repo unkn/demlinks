@@ -254,13 +254,16 @@ int main(const int argc, const char **argv)
         __(delete g_Expr);//gLink should still be open and available after this!
 //***************************************** END
 
+        cout << "---Pointer"<<endl;
         TDMLPointer *mePoints;
         __( mePoints=new TDMLPointer(gLink) );
         __tIFnok( mePoints->Init("ptrA", kCreateNodeIfNotExists) );
         __tIFnok( mePoints->DeInit() );
-        __tIFnok( mePoints->Init("ComposedOperand", kCreateNodeIfNotExists | kTruncateIfMoreThanOneNode | kKeepPrevValue) );
+        cout << "---Ptr part 2"<<endl;
+        __tIFnok( mePoints->Init("LeftOperand", kCreateNodeIfNotExists | kTruncateIfMoreThanOneNode | kOverwriteNode) );
         __tIFnok( mePoints->DeInit() );
 
+        cout << "---Cursor"<<endl;
         TDMLCursor *meCurs;
         __( meCurs=new TDMLCursor(gLink) );//done after DBs are inited!!!
 

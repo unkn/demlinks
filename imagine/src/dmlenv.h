@@ -142,7 +142,8 @@ public:
 
         function
         Del( //deletes current item
-                        const ETDMLFlags_t a_Flags
+                        const ETDMLFlags_t a_Flags,
+                        const NodeId_t a_Node=""
                         );
 
         function

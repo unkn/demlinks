@@ -38,7 +38,7 @@ using namespace std;
 /*************debug vars*/
 //show debug statistics such as key+value
 //#define SHOWKEYVAL
-//#define SHOWCONTENTS //if disabled, the consistency check is still performed, just no records are displayed on console
+#define SHOWCONTENTS //if disabled, the consistency check is still performed, just no records are displayed on console
 //#define SHOWTXNS
 /*************/
 
@@ -69,6 +69,14 @@ using namespace std;
         bool fl_##whatFlag=whatFlag == (tmpFlags & whatFlag); \
         if (fl_##whatFlag) { \
                 tmpFlags -= whatFlag; /*substract this flag*/\
+        } /* tmpFlags is a variable that supposedly is already defined */
+#define _makeUniqueFLAG(whatFlag ) \
+        bool fl_##whatFlag=whatFlag == (tmpFlags & whatFlag); \
+        if (fl_##whatFlag) { \
+                tmpFlags -= whatFlag; /*substract this flag*/\
+                if (0 != tmpFlags) { \
+                        _ht(this flag is present but not uniquely present: ie. there are more others); \
+                }\
         } /* tmpFlags is a variable that supposedly is already defined */
 
 #define CURSOR_ABORT_HOOK \
@@ -1385,8 +1393,11 @@ TDMLPointer :: Init(
                         if (! fl_kOverwriteNode) {//no overwrite flag and no keepval flag
                                 _fret(kFuncExistentSingleNodeNotOverwritten);
                         }
-                }//else
-                //...by here we have one pointee which we keep
+                        //------ we're here to not keep and overwrite the previous value, we need to remove it(the prev node)
+                        //------ we're here also only if kOverwriteNode is specified (and of course NOT kKeepPrevValue)
+                        _htIFnok( meCurs->Del(kFirstNode) );
+                }//else we have kKeepPrevValue which also implies kOverwriteNode, but we don't remove it(the prev node)
+                //...by here we have one pointee which we keep and obv. overwrite later ie. when we set the pointer to some other pointee
         }
 //-------- by here we either have NULL pointer or a pointer that points to the same pointee it used to point to before init(except that maybe other elements present after the pointee were wiped out)
 
@@ -1627,7 +1638,7 @@ TDMLCursor :: Get(
         _h( curVal.set_flags(DB_DBT_MALLOC) );
 
 if ( (fl_kNextNode) || (fl_kPrevNode) || (fl_kFirstNode) ){
-        if (fFirstTimeGet) {
+        if ( (fFirstTimeGet)||(fl_kFirstNode) ) {
                 fFirstTimeGet=false;
                 dbFlags|=DB_SET;
 #ifdef SHOWKEYVAL
@@ -1741,7 +1752,8 @@ if ( (fl_kNextNode) || (fl_kPrevNode) || (fl_kFirstNode) ){
 /*******************************/
 function
 TDMLCursor :: Del(
-                const ETDMLFlags_t a_Flags
+                const ETDMLFlags_t a_Flags,
+                const NodeId_t a_Node
                 )
 {
 
@@ -1753,19 +1765,28 @@ TDMLCursor :: Del(
 
 //---------- good to go
 #ifdef SHOWKEYVAL
-                std::cout<<"\tTDMLCursor::Del:begin:"<< (fNodeType==kGroup?"Group":"SubGroup") <<": DB_CURRENT of <Key="<<
-                (char *)fCurKey.get_data()<<">"<<endl;
+                std::cout<<"\tTDMLCursor::Del:begin:"<< (fNodeType==kGroup?"Group":"SubGroup") <<": <Key="<<
+                (char *)fCurKey.get_data()<<"> flags="<<a_Flags<<endl;
 #endif
-//---------- setting flags
+//---------- setting flags and checking for unicity
         int tmpFlags=a_Flags;
-        _makeFLAG(kCurrentNode);
+        _makeUniqueFLAG(kCurrentNode);
+        _makeUniqueFLAG(kFirstNode);
+        _makeUniqueFLAG(kLastNode);
+        _makeUniqueFLAG(kNextNode);
+        _makeUniqueFLAG(kPrevNode);
+        _makeUniqueFLAG(kPinPoint);
 //---------- validating dbFlags
-        _htIF(!fl_kCurrentNode);//the only one supported at this time
+        _htIF( (a_Node.empty())&&( (!fl_kCurrentNode)&&(!fl_kFirstNode)&&(!fl_kLastNode) ) );//these accept empty, others not!
         __tIF(0 != tmpFlags);//illegal flags
 
 //---------- getting current item key/val pair and lock it for write
-        NodeId_t nod;
-        _hfIFnok(this->Get(nod, kCurrentNode | kCursorWriteLocks) );
+        NodeId_t nod=a_Node;
+        _hfIFnok(this->Get(nod, a_Flags | kCursorWriteLocks) );
+#ifdef SHOWKEYVAL
+                std::cout<<"\tTDMLCursor::Del:found:"<< (fNodeType==kGroup?"Group":"SubGroup") <<": Key="<<
+                (char *)fCurKey.get_data()<<" val="<<nod<<endl;
+#endif
         Dbt val;
         _h( val.set_flags(0) );
         _h( val.set_data((void *)nod.c_str()) );
@@ -1786,7 +1807,7 @@ TDMLCursor :: Del(
 
 #ifdef SHOWKEYVAL
                 std::cout<<"\tTDMLCursor::Del:done:"<<
-                (char *)fCurKey.get_data()<<endl;
+                (char *)fCurKey.get_data()<<"="<<nod<<endl;
 #endif
 //---------- end
         _OK;
