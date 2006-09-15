@@ -45,7 +45,7 @@ struct GenericDoubleLinkedElement_st {
         };
         ~GenericDoubleLinkedElement_st() {
                 //however, WE DO DEALLOC Data
-                delete Data;//no need for Data=NULL because this is the destructor
+                delete(Data);//no need for Data=NULL because this is the destructor
         }
 };
 
@@ -76,7 +76,7 @@ struct GenericDoubleLinkedList_st {
                 while (tmp!=NULL) {
                         GenericDoubleLinkedElement_st<T> *next;
                         __( next=tmp->Next; );
-                        delete tmp;
+                        delete(tmp);
                         tmp=next;
                 }
         };//destructor
@@ -141,7 +141,7 @@ struct GenericDoubleLinkedList_st {
                         }
                 }//else
 
-                delete elem;
+                delete(elem);
                 elem=NULL;
                 _OK;
         };

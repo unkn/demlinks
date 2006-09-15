@@ -92,6 +92,16 @@ public:
 void ShowAllNotifications();
 
 
+//the trouble is that using delete var; without parantheses will use the old delete so you should call delete(var); to use this one! the three dots are for casting ie. int *var; void *c=var; delete(c, (int *) ); parantheses to the second argument are mandatory!
+#define delete(_smth_ , ...) { \
+        if (_smth_) { \
+                delete __VA_ARGS__ _smth_;   \
+                _smth_ = NULL; \
+        } else { \
+                WARN(attempted to delete a NULL variable); \
+        }\
+}
+
 /* displays all notifications prior to executing and after execution of the
  * passed statements */
 #define TRAP(a_BunchOfStatements)               \

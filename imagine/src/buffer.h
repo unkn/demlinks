@@ -78,7 +78,7 @@ TBuffer<_data_>::TBuffer(int a_Size)//constructor
 template <class _data_>
 TBuffer<_data_>::~TBuffer()//destructor
 {
-        __( delete [] Buffer );
+        __( delete ( Buffer, [] ) );
 }
 /*****************************************************************************/
 template <class _data_>

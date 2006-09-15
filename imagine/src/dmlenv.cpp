@@ -452,7 +452,7 @@ TLink::IsSemiLink(
         TDMLCursor *meCurs;
         __( meCurs=new TDMLCursor(this) );//done after DBs are inited!!!
 #define DONE_CURSOR \
-        __( delete meCurs );
+        __( delete(meCurs) );
 #define THROW_HOOK \
         DONE_CURSOR
 //---------- initialize cursor
@@ -1137,14 +1137,14 @@ TLink::Abort(DbTxn **a_Txn)
 
 /*******************************/
 //constructor
-TDMLPointer :: TDMLPointer(TLink *m_WorkingOnThisTLink):
-        fInited(false)
+TDMLPointer :: TDMLPointer(TLink *m_WorkingOnThisTLink)
 {
 //---------- validating params
         fLink=m_WorkingOnThisTLink;
         __tIF(NULL == fLink);
 //---------- setting defaults
         fParentTxn=NULL;
+        fInited=false;
 }
 /*******************************/
 //destructor
@@ -1154,7 +1154,6 @@ TDMLPointer :: ~TDMLPointer()
         __tIF(IsInited());
         __tIF(NULL == fLink);//cannot be
         __tIF(NULL != fParentTxn);
-        __tIF(fInited);
 }
 /*******************************/
 bool
@@ -1209,7 +1208,7 @@ TDMLPointer :: SetPointee(
         TDMLCursor *meCurs;
         __( meCurs=new TDMLCursor(fLink) );//done after DBs are inited!!!
 #define DONE_CURSOR \
-        __( delete meCurs );
+        __( delete(meCurs) );
 #define THROW_HOOK \
         DONE_CURSOR
 //---------- initialize cursor
@@ -1313,7 +1312,7 @@ TDMLPointer :: InitPtr(
         __( meCurs=new TDMLCursor(fLink) );//done after DBs are inited!!!
 #undef THROW_HOOK
 #define DEL_CURSOR \
-        __( delete meCurs );
+        __( delete(meCurs) );
 #define THROW_HOOK \
         DEL_CURSOR
 //---------- initialize cursor

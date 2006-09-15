@@ -159,7 +159,7 @@ UnInstallAllInputs()
         for (int i=0;i<kMaxInputTypes;i++) {
                 __tIFnok(AllLowLevelInputs[i]->UnInstall());
                 __tIF(NULL==AllLowLevelInputs[i]);
-                delete AllLowLevelInputs[i];
+                delete(AllLowLevelInputs[i]);
                 AllLowLevelInputs[i]=NULL;
         }//for
         _OK;

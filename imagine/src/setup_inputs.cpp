@@ -269,7 +269,7 @@ int main(const int argc, const char **argv)
         __(Process(kArithmeticForm,"a+(b+c)+d"););
 
         __tIFnok( g_Expr->ShowContents() );
-        __(delete g_Expr);//gLink should still be open and available after this!
+        __( delete(g_Expr) );//gLink should still be open and available after this!
 //***************************************** END
 
         cout << "---Pointer"<<endl;
@@ -285,6 +285,13 @@ int main(const int argc, const char **argv)
         __tIFnok( NewPoint(mePoints,"B") );
 
         __tIFnok( mePoints->DeInit() );
+        __( delete(mePoints) );
+
+        cout << "---FIFO Buffer"<<endl;
+
+        MDMLFIFOBuffer *meBuf;
+        __( meBuf= new MDMLFIFOBuffer(gLink) );
+        __( delete meBuf );
 
         cout << "---Cursor"<<endl;
         TDMLCursor *meCurs;
@@ -325,13 +332,13 @@ int main(const int argc, const char **argv)
         //__tIFnok( ShowAllNodesOfNode(meCurs, kGroup,"F",NULL) );
         //__sIFnok( ShowAllNodesOfNode(meCurs, kGroup,"J",NULL) );//obv. none!
 
-        __( delete meCurs );//gLink should still be open and available after this!
-        __( delete mePoints );
+        __( delete(meCurs) );//gLink should still be open and available after this!
+        __( delete(mePoints) );
         mePoints=NULL;
         meCurs=NULL;
 
         __tIFnok( gLink->ShowContents() );
-        __( delete gLink );
+        __( delete(gLink) );
 
 //***
         printf("All ok.\n");

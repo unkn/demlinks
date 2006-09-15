@@ -271,7 +271,7 @@ function
 MKeyboardInputInterface::DeAlloc(void *&dest)//freemem
 {
         __tIF(dest==NULL);
-        delete (KEY_TYPE *)dest;
+        delete (dest, (KEY_TYPE *) );
         dest=NULL;
         _OK;
 }

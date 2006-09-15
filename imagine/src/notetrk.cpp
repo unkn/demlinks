@@ -58,7 +58,7 @@ TNotify::PurgeThemAll()
                 NotifyItem_st *tmp=fHead;
                 fHead=fHead->Next;
                 /* FIXME: not deallocating pointers contained inside */
-                delete tmp;
+                delete(tmp);
         }
         fTail=NULL;//fHead is NULL already
         SetNoNotes();
@@ -75,7 +75,7 @@ TNotify::ClearLastNote()
                 fHead=fHead->Next;
 
                 /* FIXME: not deallocating PChar_t types from within */
-                delete tmp;
+                delete(tmp);
                 if (!fHead)
                         fTail=NULL;
         }

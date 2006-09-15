@@ -27,7 +27,6 @@ noinst_HEADERS = 	notetrk.h	\
 			SLL.h \
 			actionsreplay.h \
 			threadslock.h	\
-			macros.h \
 			portability.h
 
 dml_imagine_SOURCES = 	notetrk.cpp	\

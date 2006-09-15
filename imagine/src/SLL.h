@@ -50,7 +50,7 @@ struct GenericSingleLinkedList_st {
                 //the WARN line is not working since at_exit goes first and.
                 //deinits the notif. system WARN_IF(Data!=NULL,);
                 if (Next != NULL)
-                        delete Next;
+                        delete(Next);
                 //Next=NULL;
         };//destructor
         EFunctionReturnTypes_t New(const T*a_Data){

@@ -220,7 +220,7 @@ function
 DoneActions()
 {
         __tIF(NULL==Actions);
-        __(delete [] Actions);
+        __(delete (Actions, []) );
         Actions=NULL;
         _OK;
 }

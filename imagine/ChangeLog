@@ -13,7 +13,13 @@ Legend:
 	LU means last update on ... date
 
 =demlinks-0.0.23
-LU: 12 September 2006
+LU: 15 September 2006
+* created a delete macro; if used without parentheses surrounding the
+parameter(s) then it will call the original delete
+* added ./src/cs script to update the cscope dbase; check
+http://cscope.sourceforge.net/cscope_vim_tutorial.html you'll need to download
+http://cscope.sourceforge.net/cscope_maps.vim and put it in ~/.vim/plugin/
+then you could use ie. vim -t main  to go to one of the main() functions;
 * added TDMLPointer
 $ Count() is broken; Dbc->count() needs the cursor to be initialized otherwise
 it throws EINVAL

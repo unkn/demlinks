@@ -328,14 +328,24 @@ public:
         function
         Abort(DbTxn **a_Txn);
 
+};/*class*/
 /*******************************/
+class MDMLFIFOBuffer: private TDMLCursor, TDMLPointer {
+private:
+        MDMLFIFOBuffer();//constructor
+public:
+        MDMLFIFOBuffer(TLink *m_WorkingOnThisTLink):
+                TDMLCursor(m_WorkingOnThisTLink),
+                TDMLPointer(m_WorkingOnThisTLink)
+                {};//constructor
+        ~MDMLFIFOBuffer(){};
+};//MDMLFIFOBuffer
 /****************************/
 /****************************/
 
 /****************************/
 /****************************/
 /****************************/
-};/*class*/
 
 
 

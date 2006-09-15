@@ -26,7 +26,6 @@
 ****************************************************************************/
 
 #include "actionsinput.h"
-#include "macros.h"
 
 TBuffer<ACTIONSINPUT_TYPE> ActionsInputBuffer(10);
 #ifdef ENABLE_TIMED_INPUT
@@ -109,7 +108,7 @@ AI_SLLTransducersArray_st::AI_SLLTransducersArray_st()
 AI_SLLTransducersArray_st::~AI_SLLTransducersArray_st()
 {//destructor
         if (Head!=NULL)
-                delete Head;/*Tail is done automagically*/
+                delete(Head);/*Tail is done automagically*/
 }
 /*****************************************************************************/
 EFunctionReturnTypes_t
@@ -254,7 +253,7 @@ DisposeAISLLArray(AI_SLLTransducersArray_st *which)
                 for (int a=0;a<transd->HowManySoFar;a++) {
                         __tIF(trElem==NULL);
                         if (trElem->Data!=NULL) {
-                                SAFE_delete(trElem->Data);
+                                delete(trElem->Data);
                         }//fi
                         trElem=trElem->Next;
                 }//for3
@@ -287,7 +286,7 @@ OneActionsInputTransducer_st::OneActionsInputTransducer_st()
 OneActionsInputTransducer_st::~OneActionsInputTransducer_st()
 {
         if (Head!=NULL) {
-                delete Head;/*Tail is done automagically*/
+                delete(Head);/*Tail is done automagically*/
         }
 }
 /*****************************************************************************/

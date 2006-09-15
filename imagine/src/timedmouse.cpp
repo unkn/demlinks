@@ -302,7 +302,7 @@ function
 MMouseInputInterface::DeAlloc(void *&dest)//freemem
 {
         __tIF(dest==NULL);
-        delete (MOUSE_TYPE *)dest;
+        delete (dest, (MOUSE_TYPE *) );
         dest=NULL;
         _OK;
 }

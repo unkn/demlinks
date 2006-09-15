@@ -33,7 +33,6 @@
 #include "pnotetrk.h"
 #include "genericinput.h"
 #include "buffer.h"
-#include "macros.h"
 
 /*****************************************************************************/
 //here the order of recomposing the combination of inputs matters
@@ -359,7 +358,7 @@ OneGenericInputTransducer_st::OneGenericInputTransducer_st()
 OneGenericInputTransducer_st::~OneGenericInputTransducer_st()
 {
         if (Head!=NULL) {
-                delete Head;/*Tail is done automagically*/
+                delete(Head);/*Tail is done automagically*/
                 //Head=NULL; this is the destructor you know ;)
         }
 }
@@ -479,7 +478,7 @@ GI_SLLTransducersArray_st::GI_SLLTransducersArray_st()
 GI_SLLTransducersArray_st::~GI_SLLTransducersArray_st()
 {//destructor me
         if (Head!=NULL) {
-                delete Head;/*Tail is done automagically*/
+                delete(Head);/*Tail is done automagically*/
         }
 }
 /*****************************************************************************/
