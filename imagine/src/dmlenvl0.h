@@ -30,268 +30,67 @@
 
 #include "dmlenv.h"
 
-/****************************/
-/*forward*/class TLink;
-/****************************/
-class TDMLPointer {//is a kGroup pointing to a kSubGroup where kGroup is the pointer identifier and kSubGroup it the pointed element (and not the other way around!) thus the pointer is kGroup and the pointee is kSubGroup
-        //can also be a kSubGroup pointing to a kGroup where kSubGroup is the pointer id and kGroup is the pointed element
-private:
-        TLink*          fLink;
-        NodeId_t        fNodeIdStr;
-        ENodeType_t        fNodeType;
-        DbTxn*          fParentTxn;
-        bool            fInited;
-
-        TDMLPointer();//unusable constructor; purposely made private
-public:
-        TDMLPointer(TLink *m_WorkingOnThisTLink);
-        virtual ~TDMLPointer();
-        function
-        virtual InitPtr(
-                const ENodeType_t a_NodeType,
-                const NodeId_t a_NodeId,
-                const int a_Flags=kNone,
-                DbTxn *a_ParentTxn=NULL
-                );
-
-        bool
-        IsInited();
-
-        function
-        GetPointee(
-                NodeId_t &m_NodeId
-                );
-
-        function
-        SetPointee(
-                const NodeId_t a_NodeId
-                );
-
-        function
-        DeInit();
-
-};
-/****************************/
-/****************************/
-class TDMLCursor {
-private:
-        ENodeType_t fNodeType;
-        Dbc *fCursor;
-        TLink *fLink;
-        DbTxn *fThisTxn;
-        Dbt fCurKey;
-        NodeId_t fCurKeyStr;
-        Db *fDb;
-        u_int32_t fFlags;//of the cursor when inited Db->cursor()
-        bool fFirstTimeGet;
-
-        TDMLCursor();//unusable constructor; purposely
-public:
-        TDMLCursor(TLink *m_WorkingOnThisTLink);
-        ~TDMLCursor();
-
-        bool
-        TDMLCursor :: IsInited();
-
-        function
-        InitCurs(
-                        const ENodeType_t a_NodeType,
-                        const NodeId_t a_NodeId,
-                        const ETDMLFlags_t a_Flags=kNone,
-                        DbTxn *a_ParentTxn=NULL
+/*******************************/
+function
+_commit(DbTxn **a_Txn, int *m_StackVar=NULL);
+/*******************************/
+function
+_abort(DbTxn **a_Txn, int *m_StackVar=NULL);
+/*******************************/
+function
+_newTransaction(
+                DbEnv *m_DBEnviron,
+                        DbTxn * a_ParentTxn, //can be NULL
+                        DbTxn ** a_NewTxn,
+                        int *m_StackVar=NULL,
+                        const u_int32_t a_Flags=TRANSACTION_FLAGS
                         );
-
-        function
-        Find(//autopositions if found
-                        NodeId_t &m_Node,
-                        const int a_Flags=kNone //here, allowing perhaps kCursorWriteLocks
-                        );
-
-        function
-        Del( //deletes current item
-                        const ETDMLFlags_t a_Flags,
-                        const NodeId_t a_Node=""
-                        );
-
-        function
-        Get(
-                        NodeId_t &m_Node,
-                        const int a_Flags//combination of flags
-                        );
-
-        function
-        Put(
-                        const NodeId_t a_Node,
-                        const ETDMLFlags_t a_Flags
-                        );
-
-        function
-        Put(
-                        const NodeId_t a_Node1,
-                        const ETDMLFlags_t a_Flags,
-                        const NodeId_t a_Node2
-                        );
-
-        function
-        TDMLCursor :: Count(
-                        db_recno_t &m_Into
-                        );
-
-        function
-        DeInit();
-};
-/*************************/
-class TLink {
-private:
-        int fStackLevel;
-
-        std::string fEnvHomePath;
-        std::string fDBFileName;//implied arrows
-
-        DbEnv *fDBEnviron ;
-
-    // Initialize our handles
-
-        //we use two tables for performance ie. if we use only table A->B then searching for all pointees B would be timeconsuming and harddisk stressing not to mention other things; we can safely assume (at this point) that space is not gonna be a problem; not even optimisation is supposed to be one; but understanding the things via the way brain works is the main goal ie. everything should be linked on the computer as it is in the brain(but not at the neuron level *doh*; at a higher level);
-        Db *g_DBGroupToSubGroup ;//GroupToSubGroup (primary) forward links table
-        Db *g_DBSubGroupFromGroup ;//SubGroupFromGroup (secondary) reverse links table
-
-
-        TLink(){};/*inaccessible constructor*/
-
-        function
-        OpenDB(
-                Db **a_DBpp,
-                const std::string * const a_DBName);
-
-
-        function
-        showRecords(
-                DbTxn *a_ParentTxn,
-                ENodeType_t a_NodeType,
-                char *a_Sep="==");
-
-        function
-        putInto(
-                Db *a_DBInto,
-                DbTxn *a_ParentTxn,
-                Dbt *a_Key,
-                Dbt *a_Value,
-                const u_int32_t a_CursorPutFlags=0,//mandatory if m_Cursor is used below
-                Dbc * const m_Cursor=NULL
-               );
-
-        function
-        delFrom(
-                Db *a_DBInto,
-                DbTxn *a_ParentTxn,
-                Dbt *a_Key,
-                Dbt *a_Value);
-
-        function
-        TLink::findAndChange(
+/*******************************/
+function
+_findAndChange( //affecting only the value of the a_Key, aka the key cannot be changed anyways(u must do del then put for that)
+                DbEnv *m_DBEnviron,
                 Db *a_DBWhich,
                 DbTxn *a_ParentTxn,
                 Dbt *a_Key,
                 Dbt *a_Value,
-                Dbt *a_NewValue);
-
-public:
-/****************************PUBLIC**********/
-        friend class TDMLCursor;
-        friend class TDMLPointer;
-        TLink(
-                const std::string a_EnvHomePath="dbhome",
-                const std::string a_DBFileName="implied arrows.db",
-                bool a_PreKill=true//delete dbase each time program runs(aprox.)
+                Dbt *a_NewValue,
+                int *m_StackVar=NULL);
+                //we fail(not throw) if newval already exists
+/****************************/
+function
+_delFrom(
+                DbEnv *m_DBEnviron,
+                Db *a_DBInto,
+                DbTxn *a_ParentTxn,//can be NULL
+                Dbt *a_Key,
+                Dbt *a_Value,
+                int *m_StackVar=NULL);
+/****************************/
+function
+_putInto(
+                DbEnv *m_DBEnviron,
+                Db *a_DBInto,
+                DbTxn *a_ParentTxn,//can be null
+                Dbt *a_Key,
+                Dbt *a_Value,
+                int *m_StackVar=NULL,
+                const u_int32_t a_CursorPutFlags=0,
+                Dbc *const m_Cursor=NULL //can be NULL, then put() is used thus appended to the list of data of that key(ie. order of insertion)
                 );
-
-        ~TLink();
-
-        /*function
-        TLink::ModLink(
-                const NodeId_t a_GroupId,
-                const NodeId_t a_SubGroupId,
-                const NodeId_t a_NewLinkName,
-                DbTxn *a_ParentTxn=NULL
-                );
-*/
-
-        function //uses TDMLCursor::Get()
-        TLink::IsLinkConsistent( //checks both dbases for this link to be consistent ie. A -> B must have B <- A
-                const ENodeType_t a_NodeType,
-                const NodeId_t a_NodeId1,
-                const NodeId_t a_NodeId2,
-                DbTxn *a_ParentTxn=NULL
-                );
-
-        function
-        TLink::IsSemiLink(
-                const ENodeType_t a_NodeType,
-                const NodeId_t a_NodeId1,
-                NodeId_t &m_NodeId2,//if empty then returns first complementary node of a_NodeId1; DB_SET acts like old IsNode() [or IsGroup()]
-                DbTxn *a_ParentTxn=NULL
-                );
-
-        function
-        TLink::NewCursorLink( //uses TDMLCursor::Put()
+/****************************/
+function
+_newCursorLink(//creates a consistent link between two nodes in the sense selected by a_NodeType below
+                DbEnv *m_DBEnviron,
+                Db * m_G2sGDb,
+                Db * m_sG2GDb,
                 Dbc * const m_Cursor,
                 const u_int32_t a_CursorPutFlags,
                 const ENodeType_t a_NodeType,
-                const NodeId_t a_NodeId1,
-                const NodeId_t a_NodeId2,
-                DbTxn *a_ParentTxn=NULL
-                );
-
-        //ie. NewLink(kSubGroup,"sub1","grp1") // => grp1 -> sub1
-        function
-        TLink::NewLink(
-                const ENodeType_t a_NodeType,
                 const NodeId_t a_NodeId1,//may or may not exist
                 const NodeId_t a_NodeId2,//same
-                DbTxn *a_ParentTxn=NULL
+                int *m_StackVar=NULL,
+                DbTxn *a_ParentTxn=NULL //no child transaction created except with putInto(); apparently the cursor may not span transactions RTFM;
                 );
-
-        //links are created, groups are just there as part of links, they don't have to already exist(and if they do they're part of the links only)
-        function
-        TLink::NewLink(
-                const NodeId_t a_GroupId,
-                const NodeId_t a_SubGroupId,
-                DbTxn *a_ParentTxn=NULL
-                );
-
-        function
-        TLink::ShowContents(
-                DbTxn *a_ParentTxn=NULL
-                );
-
-        function
-        KillDB(
-                const std::string * const a_PathFN,
-                const std::string * const a_FName
-                );
-
-
-        function
-        NewTransaction(DbTxn * a_ParentTxn,
-                        DbTxn ** a_NewTxn,
-                        const u_int32_t a_Flags=TRANSACTION_FLAGS
-                        );
-
-
-/****************************/
-        function
-        Commit(DbTxn **a_Txn);
-
-        function
-        Abort(DbTxn **a_Txn);
-
-};/*class*/
-/*******************************/
-/****************************/
-/****************************/
-
-/****************************/
 /****************************/
 /****************************/
 
