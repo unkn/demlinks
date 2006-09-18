@@ -38,12 +38,12 @@
 
 #undef ABORT_HOOK
 #define ABORT_HOOK \
-        __(_abort(&thisTxn, m_StackVar));
+        __( l0_abort(&thisTxn, m_StackVar) );
 
 /****************************/
 /*******************************/
 function
-_commit(DbTxn **a_Txn, int *m_StackVar)
+l0_commit(DbTxn **a_Txn, int *m_StackVar)
 {//one cannot&shouldnot call Abort after calling this function: is in the Berkeley DB docs that cannot call abort after a failed(or successful) DbTxn->commit()
 //---------- validate params
         __tIF(NULL==a_Txn);
@@ -73,7 +73,7 @@ _commit(DbTxn **a_Txn, int *m_StackVar)
 
 /*******************************/
 function
-_abort(DbTxn **a_Txn, int *m_StackVar)
+l0_abort(DbTxn **a_Txn, int *m_StackVar)
 {
 //---------- validating params
         __tIF(NULL==a_Txn);
@@ -106,7 +106,7 @@ _abort(DbTxn **a_Txn, int *m_StackVar)
 }
 /****************************/
 function
-_newTransaction(
+l0_newTransaction(
                 DbEnv *m_DBEnviron,
                         DbTxn * a_ParentTxn, //can be NULL
                         DbTxn ** a_NewTxn,
@@ -146,7 +146,7 @@ DbTxn::commit -- while it has active child transactions (child transactions that
 
 /****************************/
 function
-_findAndChange( //affecting only the value of the a_Key, aka the key cannot be changed anyways(u must do del then put for that)
+l0_findAndChange( //affecting only the value of the a_Key, aka the key cannot be changed anyways(u must do del then put for that)
                 DbEnv *m_DBEnviron,
                 Db *a_DBWhich,
                 DbTxn *a_ParentTxn,
@@ -165,7 +165,7 @@ _findAndChange( //affecting only the value of the a_Key, aka the key cannot be c
 
 //------------ create a new transaction
         DbTxn *thisTxn;
-        __tIFnok(_newTransaction(m_DBEnviron,a_ParentTxn,&thisTxn, m_StackVar));
+        __tIFnok( l0_newTransaction(m_DBEnviron,a_ParentTxn,&thisTxn, m_StackVar));
 
 #define THROW_HOOK \
         ABORT_HOOK
@@ -205,15 +205,15 @@ _findAndChange( //affecting only the value of the a_Key, aka the key cannot be c
 //------------ commit transaction
 #undef THROW_HOOK
 #undef ERR_HOOK
-        __tIFnok( _commit(&thisTxn) );
+        __tIFnok( l0_commit(&thisTxn) );
 
 //------------ end
         _OK;
 }
 /*************************/
-//performes unsynced delete from one of the databases (unsynced means the other db is left inconsistent ie. A->B in primary, and B->A in secondary, _delFrom deletes one but leaves untouched the other so you're left with either A->B or B->A thus inconsistent)
+//performes unsynced delete from one of the databases (unsynced means the other db is left inconsistent ie. A->B in primary, and B->A in secondary, l0_delFrom deletes one but leaves untouched the other so you're left with either A->B or B->A thus inconsistent)
 function
-__delFrom(
+l0_delFrom(
                 DbEnv *m_DBEnviron,
                 Db *a_DBInto,
                 DbTxn *a_ParentTxn,//can be NULL
@@ -232,7 +232,7 @@ __delFrom(
 
 //------------ new transaction
         DbTxn *thisTxn;
-        __tIFnok(_newTransaction(m_DBEnviron,a_ParentTxn,&thisTxn, m_StackVar));
+        __tIFnok(l0_newTransaction(m_DBEnviron,a_ParentTxn,&thisTxn, m_StackVar));
 
 #define THROW_HOOK \
         ABORT_HOOK
@@ -262,7 +262,7 @@ __delFrom(
 
 //------------ commit transaction
 #undef THROW_HOOK
-        __tIFnok( _commit(&thisTxn) );
+        __tIFnok( l0_commit(&thisTxn) );
 
 //------------ end
         _OK;
@@ -271,7 +271,7 @@ __delFrom(
 
 /*************************/
 function
-_putInto(
+l0_putInto(
                                 DbEnv *m_DBEnviron,
                 Db *a_DBInto,
                 DbTxn *a_ParentTxn,//can be null
@@ -290,7 +290,7 @@ _putInto(
 
 //------------ ready to start
 #ifdef SHOWKEYVAL
-        __( cout << "_putInto: begin:"<<(NULL!=m_Cursor?"Cursor:":":")<< (char *)a_Key->get_data() << " = " << (char *)a_Value->get_data() <<endl; );
+        __( cout << "l0_putInto: begin:"<<(NULL!=m_Cursor?"Cursor:":":")<< (char *)a_Key->get_data() << " = " << (char *)a_Value->get_data() <<endl; );
 #endif
 
 //------------ open a new cursor
@@ -321,7 +321,7 @@ _putInto(
         if (NULL == m_Cursor) { //only using a new child transaction if there's no cursor specified
         //------------ new transaction
                 DbTxn *thisTxn;
-                __tIFnok(_newTransaction(m_DBEnviron,a_ParentTxn,&thisTxn, m_StackVar));
+                __tIFnok(l0_newTransaction(m_DBEnviron,a_ParentTxn,&thisTxn, m_StackVar));
 #define THROW_HOOK \
         ABORT_HOOK
         //------------ create the key/data pair
@@ -331,7 +331,7 @@ _putInto(
                          * disallowed, or adding a duplicate data item if duplicates are allowed. (from berkeley db docs)*/
         //------------ commit transaction
 #undef THROW_HOOK
-                __tIFnok( _commit(&thisTxn) );
+                __tIFnok( l0_commit(&thisTxn) );
         } else {
         //------------ use the passed cursor to create the key/data pair as specified in the params of this func.
                 __tIF( m_Cursor->put(a_Key, a_Value, a_CursorPutFlags) );//even if DB_CURRENT and a_Value exist in this same place, it'll return kFuncAlreadyExists above! there's no use to overwrite with the same value!
@@ -339,7 +339,7 @@ _putInto(
 
 //------------ after done
 #ifdef SHOWKEYVAL
-        __( cout << "_putInto: done:"<<(NULL!=m_Cursor?"Cursor:":":")<< (char *)a_Key->get_data() << " = " << (char *)a_Value->get_data() <<endl; );
+        __( cout << "l0_putInto: done:"<<(NULL!=m_Cursor?"Cursor:":":")<< (char *)a_Key->get_data() << " = " << (char *)a_Value->get_data() <<endl; );
 #endif
 
 //------------ end
@@ -368,7 +368,7 @@ ModLink(
 
 //--------- new encapsulating transactions (the outter transaction)
         DbTxn *thisTxn;
-        __tIFnok(_newTransaction(m_DBEnviron,a_ParentTxn,&thisTxn, m_StackVar));
+        __tIFnok(l0_newTransaction(m_DBEnviron,a_ParentTxn,&thisTxn, m_StackVar));
 
 #define THROW_HOOK \
         ABORT_HOOK
@@ -406,9 +406,9 @@ ModLink(
         _hfIFnok( findAndChange(g_DBGroupToSubGroup,thisTxn,&key,&value,&newValue) );//from A->B changed to A->C(only if A->C didn't exist already)
 
 //--------- modify in secondary dbase
-        _htIFnok( _delFrom(g_DBSubGroupFromGroup,thisTxn,&value,&key) );//del B<-A from SECondary
+        _htIFnok( l0_delFrom(g_DBSubGroupFromGroup,thisTxn,&value,&key) );//del B<-A from SECondary
         //must not return kFuncAlreadyExists otherwise a bug is present somewhere
-        _htIFnok( _putInto(g_DBSubGroupFromGroup,thisTxn,&newValue,&key) );//create C<-A in secondary
+        _htIFnok( l0_putInto(g_DBSubGroupFromGroup,thisTxn,&newValue,&key) );//create C<-A in secondary
 
 //--------- consistency check
         _htIFnok( IsLinkConsistent(kGroup, a_GroupId, a_NewLinkName, thisTxn) );
@@ -416,7 +416,7 @@ ModLink(
 //--------- commit transaction
 #undef THROW_HOOK
 #undef ERR_HOOK
-        __tIFnok( _commit(&thisTxn) );
+        __tIFnok( l0_commit(&thisTxn) );
 
 //--------- after done
 #ifdef SHOWKEYVAL
@@ -431,7 +431,7 @@ ModLink(
 */
 /*************************/
 function
-_newCursorLink(//creates a consistent link between two nodes in the sense selected by a_NodeType below
+l0_newCursorLink(//creates a consistent link between two nodes in the sense selected by a_NodeType below
                 DbEnv *m_DBEnviron,
                 Db * m_G2sGDb,
                 Db * m_sG2GDb,
@@ -440,7 +440,7 @@ _newCursorLink(//creates a consistent link between two nodes in the sense select
                 const ENodeType_t a_NodeType,
                 const NodeId_t a_NodeId1,//may or may not exist
                 const NodeId_t a_NodeId2,//same
-                DbTxn *a_ParentTxn, //no child transaction created except with _putInto(); apparently the cursor may not span transactions RTFM;
+                DbTxn *a_ParentTxn, //no child transaction created except with l0_putInto(); apparently the cursor may not span transactions RTFM;
                 int *m_StackVar=NULL
                 )
 {
@@ -479,13 +479,13 @@ _newCursorLink(//creates a consistent link between two nodes in the sense select
                 );
 #endif
                 //---------- if DB_CURRENT save old value(sG) of forward link for later
-                if (a_CursorPutFlags - DB_CURRENT == 0) {//must read current value for later to _delFrom()
+                if (a_CursorPutFlags - DB_CURRENT == 0) {//must read current value for later to l0_delFrom()
                                 __tIF(0 != m_Cursor->get(&key, &curvalue, DB_CURRENT | DB_RMW) );//flagged for later deletion
                 }
 
                 //---------- overwrite old value; insert/overwrite forward link
                         //insert or overwrite in primary
-                        __fIFnok( _putInto(m_DBEnviron, m_G2sGDb, a_ParentTxn, &key,&value, m_StackVar, a_CursorPutFlags, m_Cursor) );
+                        __fIFnok( l0_putInto(m_DBEnviron, m_G2sGDb, a_ParentTxn, &key,&value, m_StackVar, a_CursorPutFlags, m_Cursor) );
 
                 //---------- if DB_CURRENT delete key/oldvalue from the other database
                 // if DB_CURRENT then we must pre-delete the old value to make dbase consistent within it's own system (our defined system)
@@ -500,7 +500,7 @@ _newCursorLink(//creates a consistent link between two nodes in the sense select
                         );
 #endif
                         //---------- delete saved_old_value reverse link from secondary
-                        __tIFnok( _delFrom(m_DBEnviron, m_sG2GDb, a_ParentTxn, &curvalue,&key, m_StackVar) );//order of insertion(appended)
+                        __tIFnok( l0_delFrom(m_DBEnviron, m_sG2GDb, a_ParentTxn, &curvalue,&key, m_StackVar) );//order of insertion(appended)
                         if (curvalue.get_data()) {
                                         __( free(curvalue.get_data()) );
                         }
@@ -508,7 +508,7 @@ _newCursorLink(//creates a consistent link between two nodes in the sense select
                 //---------- insert reverse link in secondary
                         //just insert in secondary
                         //if we're here, means we successfuly entered the record in primary, so the record must be successfully entered in secondary, ie. cannot return kFuncAlreadyExists; so it must be clean, otherwise we throw (up;)
-                        __tIFnok( _putInto(m_DBEnviron, m_sG2GDb, a_ParentTxn, &value,&key, m_StackVar) );//appended at end of list
+                        __tIFnok( l0_putInto(m_DBEnviron, m_sG2GDb, a_ParentTxn, &value,&key, m_StackVar) );//appended at end of list
                                 break;
                 }//case
                 case kSubGroup: {//reverse link case
@@ -530,13 +530,13 @@ _newCursorLink(//creates a consistent link between two nodes in the sense select
                 //FIXed: must delete or replace the other connection if DB_CURRENT overwritten something just in one dbase ie. previous B <- J becomes B <- F (in secondary dbase) but remains J -> B and is added F -> B in primary; solution is to replace J -> B to F -> B or if not possible, delete then add; yes DB_CURRENT ignores the key so we can't change the key only the data, thus we will delete J -> B and insert a new F -> B key/data pair with put() w/o cursor
                                 //if (a_CursorPutFlags & DB_CURRENT) {
                                 //---------- if DB_CURRENT save old pointee
-                                if (a_CursorPutFlags - DB_CURRENT == 0) {//must read current value for later to _delFrom()
+                                if (a_CursorPutFlags - DB_CURRENT == 0) {//must read current value for later to l0_delFrom()
                                         __tIF(0 != m_Cursor->get(&key, &curvalue, DB_CURRENT | DB_RMW) );//flagged for later deletion
                                 }
                                 //---------- ins/overwrite the reverse link with the new pointee
                                 //insert or overwrite in secondary
                                 //if we're here, means we successfuly entered the record in primary, so the record must be successfully entered in secondary, ie. cannot return kFuncAlreadyExists; so it must be clean, otherwise we throw (up;)
-                                __fIFnok( _putInto(m_DBEnviron, m_sG2GDb, a_ParentTxn, &key,&value, m_StackVar, a_CursorPutFlags,m_Cursor) );
+                                __fIFnok( l0_putInto(m_DBEnviron, m_sG2GDb, a_ParentTxn, &key,&value, m_StackVar, a_CursorPutFlags,m_Cursor) );
                 //---------- taking care of the forward link
 #ifdef SHOWKEYVAL
                 std::cout<<"\tNewCursorLink(sG-G =RL):part2:primary db"<<endl;
@@ -556,14 +556,14 @@ _newCursorLink(//creates a consistent link between two nodes in the sense select
                 );
 #endif
                                         //---------- del forwardlink pointing to old saved pointee
-                                       __tIFnok( _delFrom(m_DBEnviron, m_G2sGDb, a_ParentTxn, &curvalue,&key, m_StackVar) );//order of insertion(appended)
+                                       __tIFnok( l0_delFrom(m_DBEnviron, m_G2sGDb, a_ParentTxn, &curvalue,&key, m_StackVar) );//order of insertion(appended)
                                        if (curvalue.get_data()) {
                                                __( free(curvalue.get_data()) );
                                        }
                                 }
                         //---------- create new forward link
                         //just insert in primary
-                        __tIFnok( _putInto(m_DBEnviron, m_G2sGDb, a_ParentTxn, &value,&key, m_StackVar) );//order of insertion(appended)
+                        __tIFnok( l0_putInto(m_DBEnviron, m_G2sGDb, a_ParentTxn, &value,&key, m_StackVar) );//order of insertion(appended)
                                 break;
                              }
                 default:
@@ -581,7 +581,5 @@ _newCursorLink(//creates a consistent link between two nodes in the sense select
         _OK;
 
 }
-/*******************************/
-/*******************************/
 /*******************************/
 /*******************************/

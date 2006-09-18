@@ -280,7 +280,7 @@ TLink :: NewTransaction(DbTxn * a_ParentTxn,
                         DbTxn ** a_NewTxn,
                         const u_int32_t a_Flags)
 {
-        return _newTransaction(fDBEnviron, a_ParentTxn, a_NewTxn, &fStackLevel, a_Flags);
+        return l0_newTransaction(fDBEnviron, a_ParentTxn, a_NewTxn, &fStackLevel, a_Flags);
 }
 /****************************/
 //destructor
@@ -558,14 +558,14 @@ TLink::showRecords(
 function
 TLink::Commit(DbTxn **a_Txn)
 {//one cannot&shouldnot call Abort after calling this function: is in the Berkeley DB docs that cannot call abort after a failed(or successful) DbTxn->commit()
-        return _commit(a_Txn, &fStackLevel);
+        return l0_commit(a_Txn, &fStackLevel);
 }
 
 /*******************************/
 function
 TLink::Abort(DbTxn **a_Txn)
 {
-        return _abort(a_Txn, &fStackLevel);
+        return l0_abort(a_Txn, &fStackLevel);
 }
 
 
@@ -1388,6 +1388,61 @@ TDMLCursor :: Count(
         _OK;
 #undef THROW_HOOK
 }
+/*******************************/
+        function
+        TLink::NewCursorLink( //uses TDMLCursor::Put()
+                Dbc * const m_Cursor,
+                const u_int32_t a_CursorPutFlags,
+                const ENodeType_t a_NodeType,
+                const NodeId_t a_NodeId1,
+                const NodeId_t a_NodeId2,
+                DbTxn *a_ParentTxn
+                )
+        {
+                __fIFnok( l0_newCursorLink(fDBEnviron, g_DBGroupToSubGroup, g_DBSubGroupFromGroup, m_Cursor, a_CursorPutFlags, a_NodeType, a_NodeId1, a_NodeId2, &fStackLevel, a_ParentTxn) );
+                _OK;
+        }
+
+/*******************************/
+        function
+        TLink::putInto(
+                Db *a_DBInto,
+                DbTxn *a_ParentTxn,
+                Dbt *a_Key,
+                Dbt *a_Value,
+                const u_int32_t a_CursorPutFlags,//mandatory if m_Cursor is used below
+                Dbc * const m_Cursor)
+        {
+                __fIFnok( l0_putInto( fDBEnviron, a_DBInto, a_ParentTxn, a_Key, a_Value, &fStackLevel, a_CursorPutFlags, m_Cursor) );
+                _OK;
+        }
+
+/*******************************/
+        function
+        TLink::delFrom(
+                Db *a_DBInto,
+                DbTxn *a_ParentTxn,
+                Dbt *a_Key,
+                Dbt *a_Value)
+        {
+                __fIFnok( l0_delFrom( fDBEnviron, a_DBInto, a_ParentTxn, a_Key, a_Value, &fStackLevel) );
+                _OK;
+        }
+
+/*******************************/
+        function
+        TLink::findAndChange(
+                Db *a_DBWhich,
+                DbTxn *a_ParentTxn,
+                Dbt *a_Key,
+                Dbt *a_Value,
+                Dbt *a_NewValue)
+        {
+                __fIFnok( l0_findAndChange(fDBEnviron, a_DBWhich, a_ParentTxn, a_Key, a_Value, a_NewValue, &fStackLevel) );
+                _OK;
+        }
+
+
 /*******************************/
 /*******************************/
 /*******************************/

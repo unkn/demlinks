@@ -32,13 +32,13 @@
 
 /*******************************/
 function
-_commit(DbTxn **a_Txn, int *m_StackVar=NULL);
+l0_commit(DbTxn **a_Txn, int *m_StackVar=NULL);
 /*******************************/
 function
-_abort(DbTxn **a_Txn, int *m_StackVar=NULL);
+l0_abort(DbTxn **a_Txn, int *m_StackVar=NULL);
 /*******************************/
 function
-_newTransaction(
+l0_newTransaction(
                 DbEnv *m_DBEnviron,
                         DbTxn * a_ParentTxn, //can be NULL
                         DbTxn ** a_NewTxn,
@@ -47,7 +47,7 @@ _newTransaction(
                         );
 /*******************************/
 function
-_findAndChange( //affecting only the value of the a_Key, aka the key cannot be changed anyways(u must do del then put for that)
+l0_findAndChange( //affecting only the value of the a_Key, aka the key cannot be changed anyways(u must do del then put for that)
                 DbEnv *m_DBEnviron,
                 Db *a_DBWhich,
                 DbTxn *a_ParentTxn,
@@ -58,7 +58,7 @@ _findAndChange( //affecting only the value of the a_Key, aka the key cannot be c
                 //we fail(not throw) if newval already exists
 /****************************/
 function
-_delFrom(
+l0_delFrom(
                 DbEnv *m_DBEnviron,
                 Db *a_DBInto,
                 DbTxn *a_ParentTxn,//can be NULL
@@ -67,7 +67,7 @@ _delFrom(
                 int *m_StackVar=NULL);
 /****************************/
 function
-_putInto(
+l0_putInto(
                 DbEnv *m_DBEnviron,
                 Db *a_DBInto,
                 DbTxn *a_ParentTxn,//can be null
@@ -79,7 +79,7 @@ _putInto(
                 );
 /****************************/
 function
-_newCursorLink(//creates a consistent link between two nodes in the sense selected by a_NodeType below
+l0_newCursorLink(//creates a consistent link between two nodes in the sense selected by a_NodeType below
                 DbEnv *m_DBEnviron,
                 Db * m_G2sGDb,
                 Db * m_sG2GDb,

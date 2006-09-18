@@ -179,22 +179,14 @@ private:
                 Dbt *a_Key,
                 Dbt *a_Value,
                 const u_int32_t a_CursorPutFlags=0,//mandatory if m_Cursor is used below
-                Dbc * const m_Cursor=NULL)
-        {
-                __fIFnok( _putInto( fDBEnviron, a_DBInto, a_ParentTxn, a_Key, a_Value, &fStackLevel, a_CursorPutFlags, m_Cursor) );
-                _OK;
-        };
+                Dbc * const m_Cursor=NULL);
 
         function
         delFrom(
                 Db *a_DBInto,
                 DbTxn *a_ParentTxn,
                 Dbt *a_Key,
-                Dbt *a_Value)
-        {
-                __fIFnok( _delFrom( fDBEnviron, a_DBInto, a_ParentTxn, a_Key, a_Value, &fStackLevel) );
-                _OK;
-        };
+                Dbt *a_Value);
 
         function
         TLink::findAndChange(
@@ -202,11 +194,7 @@ private:
                 DbTxn *a_ParentTxn,
                 Dbt *a_Key,
                 Dbt *a_Value,
-                Dbt *a_NewValue)
-        {
-                __fIFnok( _findAndChange(fDBEnviron, a_DBWhich, a_ParentTxn, a_Key, a_Value, a_NewValue, &fStackLevel) );
-                _OK;
-        };
+                Dbt *a_NewValue);
 
 public:
 /****************************PUBLIC**********/
@@ -253,11 +241,7 @@ public:
                 const NodeId_t a_NodeId1,
                 const NodeId_t a_NodeId2,
                 DbTxn *a_ParentTxn=NULL
-                )
-        {
-                __fIFnok( _newCursorLink(fDBEnviron, g_DBGroupToSubGroup, g_DBSubGroupFromGroup, m_Cursor, a_CursorPutFlags, a_NodeType, a_NodeId1, a_NodeId2, &fStackLevel, a_ParentTxn) );
-                _OK;
-        };
+                );
 
         //ie. NewLink(kSubGroup,"sub1","grp1") // => grp1 -> sub1
         function
