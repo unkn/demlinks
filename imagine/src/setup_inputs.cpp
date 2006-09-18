@@ -117,7 +117,7 @@ ShowAllNodesOfNode(
         bool wasInited;
         __( wasInited=m_Curs->IsInited() );//std call, i know it doesn't throw but when it could who will add __() ?!
         if (! wasInited) {
-                __tIFnok( m_Curs->InitFor(a_NodeType,a_NodeId, kNone, a_ParentTxn/*parent txn*/) );//prepare to parse kSubGroups of kGroup with id "A1"; create "A1" if not exists;
+                __tIFnok( m_Curs->InitCurs(a_NodeType,a_NodeId, kNone, a_ParentTxn/*parent txn*/) );//prepare to parse kSubGroups of kGroup with id "A1"; create "A1" if not exists;
         }
         bool once=false;
         while (true) {
@@ -275,15 +275,19 @@ int main(const int argc, const char **argv)
         cout << "---Pointer"<<endl;
         TDMLPointer *mePoints;
         __( mePoints=new TDMLPointer(gLink) );
-        __tIFnok( mePoints->InitPtr("ptrA", kCreateNodeIfNotExists) );
+        __tIFnok( mePoints->InitPtr(kGroup, "ptrA", kCreateNodeIfNotExists) );
         __tIFnok( mePoints->DeInit() );
         cout << "---Ptr part 2"<<endl;
-        __tIFnok( mePoints->InitPtr("LeftOperand", kCreateNodeIfNotExists | kTruncateIfMoreThanOneNode | kOverwriteNode) );
+        __tIFnok( mePoints->InitPtr(kGroup, "LeftOperand", kCreateNodeIfNotExists | kTruncateIfMoreThanOneNode | kOverwriteNode) );
 
         __tIFnok( NewPoint(mePoints,"Z") );
         __tIFnok( NewPoint(mePoints,"G") );
         __tIFnok( NewPoint(mePoints,"B") );
 
+        __tIFnok( mePoints->DeInit() );
+        cout << "---Ptr part 3(sub)"<<endl;
+        __tIFnok( mePoints->InitPtr(kSubGroup, "sub_B", kCreateNodeIfNotExists | kTruncateIfMoreThanOneNode | kOverwriteNode) );
+        __tIFnok( NewPoint(mePoints,"A") );
         __tIFnok( mePoints->DeInit() );
         __( delete(mePoints) );
 
@@ -306,7 +310,7 @@ int main(const int argc, const char **argv)
 
         NodeId_t nod,nod2;
         nod2="B";
-        __tIFnok( meCurs->InitFor(kSubGroup,nod2) );//prepare to parse kSubGroups of kGroup with id "A1"; create "A1" if not exists; DB_WRITECURSOR acquire write locks with this cursor
+        __tIFnok( meCurs->InitCurs(kSubGroup,nod2) );//prepare to parse kSubGroups of kGroup with id "A1"; create "A1" if not exists; DB_WRITECURSOR acquire write locks with this cursor
         //__tIFnok( meCurs->Put("J", kBeforeNode, "C") );
         //__tIFnok( meCurs->Put("F", kThisNode, "J") );
         __tIFnok( meCurs->Put("G", kLastNode) );
@@ -330,12 +334,12 @@ int main(const int argc, const char **argv)
 
         __tIFnok( ShowAllNodesOfNode(meCurs, kSubGroup,nod2) );
         //__tIFnok( ShowAllNodesOfNode(meCurs, kGroup,"F",NULL) );
-        //__sIFnok( ShowAllNodesOfNode(meCurs, kGroup,"J",NULL) );//obv. none!
+        __sIFnok( ShowAllNodesOfNode(meCurs, kGroup,"Z",NULL) );//obv. none!
+        __sIFnok( ShowAllNodesOfNode(meCurs, kGroup,"F",NULL) );//obv. none!
+        __sIFnok( ShowAllNodesOfNode(meCurs, kGroup,"A",NULL) );//obv. none!
+        __sIFnok( ShowAllNodesOfNode(meCurs, kSubGroup,"sub_B",NULL) );//obv. none!
 
         __( delete(meCurs) );//gLink should still be open and available after this!
-        __( delete(mePoints) );
-        mePoints=NULL;
-        meCurs=NULL;
 
         __tIFnok( gLink->ShowContents() );
         __( delete(gLink) );

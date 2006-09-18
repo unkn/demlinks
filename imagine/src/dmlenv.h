@@ -80,9 +80,11 @@ typedef enum{
 /*forward*/class TLink;
 /****************************/
 class TDMLPointer {//is a kGroup pointing to a kSubGroup where kGroup is the pointer identifier and kSubGroup it the pointed element (and not the other way around!) thus the pointer is kGroup and the pointee is kSubGroup
+        //can also be a kSubGroup pointing to a kGroup where kSubGroup is the pointer id and kGroup is the pointed element
 private:
         TLink*          fLink;
-        NodeId_t        fGroupStr;
+        NodeId_t        fNodeIdStr;
+        ENodeType_t        fNodeType;
         DbTxn*          fParentTxn;
         bool            fInited;
 
@@ -92,7 +94,8 @@ public:
         ~TDMLPointer();
         function
         InitPtr(
-                const NodeId_t a_GroupId,//must have 0 or 1 nodes of type kSubGroup
+                const ENodeType_t a_NodeType,
+                const NodeId_t a_NodeId,
                 const int a_Flags=kNone,
                 DbTxn *a_ParentTxn=NULL
                 );
@@ -102,18 +105,51 @@ public:
 
         function
         GetPointee(
-                NodeId_t &m_SubGroupId
+                NodeId_t &m_NodeId
                 );
 
         function
         SetPointee(
-                const NodeId_t a_SubGroupId
+                const NodeId_t a_NodeId
                 );
 
         function
         DeInit();
 
 };
+/****************************/
+/****************************/
+class MDMLDomainPointer:private TDMLPointer { //can be NULL or only values from  either a kGroup or a kSubGroup Node;
+private:
+        MDMLDomainPointer();//unusable constructor; purposely made private
+public:
+        MDMLDomainPointer(TLink *m_WorkingOnThisTLink);
+        ~MDMLDomainPointer();
+        function
+        InitPtr(
+                const NodeId_t a_Domain,
+                const int a_Flags=kNone,
+                DbTxn *a_ParentTxn=NULL
+                );
+
+        bool
+        IsInited();
+
+        function
+        GetPointee(
+                NodeId_t &m_NodeId
+                );
+
+        function
+        SetPointee(
+                const NodeId_t a_NodeId
+                );
+
+        function
+        DeInit();
+
+};
+/****************************/
 /****************************/
 class TDMLCursor {
 private:
@@ -136,7 +172,7 @@ public:
         TDMLCursor :: IsInited();
 
         function
-        InitFor(
+        InitCurs(
                         const ENodeType_t a_NodeType,
                         const NodeId_t a_NodeId,
                         const ETDMLFlags_t a_Flags=kNone,
@@ -334,11 +370,8 @@ class MDMLFIFOBuffer: private TDMLCursor, TDMLPointer {
 private:
         MDMLFIFOBuffer();//constructor
 public:
-        MDMLFIFOBuffer(TLink *m_WorkingOnThisTLink):
-                TDMLCursor(m_WorkingOnThisTLink),
-                TDMLPointer(m_WorkingOnThisTLink)
-                {};//constructor
-        ~MDMLFIFOBuffer(){};
+        MDMLFIFOBuffer(TLink *m_WorkingOnThisTLink);
+        ~MDMLFIFOBuffer();
 };//MDMLFIFOBuffer
 /****************************/
 /****************************/

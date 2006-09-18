@@ -456,7 +456,7 @@ TLink::IsSemiLink(
 #define THROW_HOOK \
         DONE_CURSOR
 //---------- initialize cursor
-        _htIFnok( meCurs->InitFor(a_NodeType, a_NodeId1, kNone, a_ParentTxn) );
+        _htIFnok( meCurs->InitCurs(a_NodeType, a_NodeId1, kNone, a_ParentTxn) );
 #undef THROW_HOOK
 #define THROW_HOOK \
         __( meCurs->DeInit() ); \
@@ -481,7 +481,7 @@ TLink::IsSemiLink(
         } __fielse {
                 flags=kPinPoint;
                 #ifdef SHOWKEYVAL
-                        cout<<"->" <<a_NodeId2<<endl;
+                        cout<<"->" <<m_NodeId2<<endl;
                 #endif
         }__fi
 
@@ -1164,7 +1164,7 @@ TDMLPointer :: IsInited()
 /*******************************/
 function
 TDMLPointer :: GetPointee(
-        NodeId_t &m_SubGroupId
+        NodeId_t &m_NodeId
 )
 {
 //FIXME: make it use a new temporary TDMLCursor
@@ -1172,12 +1172,12 @@ TDMLPointer :: GetPointee(
         __tIF(! this->IsInited());
 //------------ begin
 #ifdef SHOWKEYVAL
-        std::cout<<"\tGetPointee:begin:"<<fGroupStr<<endl;
+        std::cout<<"\tGetPointee:begin:"<<fNodeIdStr<<endl;
 #endif
 //---------- get first item of key
-        __( m_SubGroupId="" );
+        __( m_NodeId="" );
         function err;
-        __if( kFuncOK != (err=fLink->IsSemiLink(kGroup, fGroupStr, m_SubGroupId, fParentTxn)) ) {
+        __if( kFuncOK != (err=fLink->IsSemiLink(fNodeType, fNodeIdStr, m_NodeId, fParentTxn)) ) {
                 if (kFuncNotFound == err) {
                         _fret(kFuncNULLPointer);
                 }
@@ -1185,7 +1185,7 @@ TDMLPointer :: GetPointee(
         }__fi
 //------- done
 #ifdef SHOWKEYVAL
-        std::cout<<"\tGetPointee:done:"<<fGroupStr<<" -> "<<m_SubGroupId<<endl;
+        std::cout<<"\tGetPointee:done:"<<fNodeIdStr<<" -> "<<m_NodeId<<endl;
 #endif
 //---------- end
         _OK;
@@ -1193,16 +1193,16 @@ TDMLPointer :: GetPointee(
 /*******************************/
 function
 TDMLPointer :: SetPointee(
-                        const NodeId_t a_SubGroupId
+                        const NodeId_t a_NodeId
 )
 {
 //---------- was inited?
         __tIF(! this->IsInited());
 //---------- validate params
-        __tIF( a_SubGroupId.empty() );
+        __tIF( a_NodeId.empty() );
 //------------ begin
 #ifdef SHOWKEYVAL
-        std::cout<<"\tSetPointee:begin:"<<fGroupStr<<" -> "<<a_SubGroupId<<endl;
+        std::cout<<"\tSetPointee:begin:"<<fNodeIdStr<<" -> "<<a_NodeId<<endl;
 #endif
 //------------ open new cursor
         TDMLCursor *meCurs;
@@ -1212,7 +1212,7 @@ TDMLPointer :: SetPointee(
 #define THROW_HOOK \
         DONE_CURSOR
 //---------- initialize cursor
-        _htIFnok( meCurs->InitFor(kGroup, fGroupStr, kNone, fParentTxn) );
+        _htIFnok( meCurs->InitCurs(fNodeType, fNodeIdStr, kNone, fParentTxn) );
 #undef THROW_HOOK
 #define THROW_HOOK \
         __( meCurs->DeInit() ); \
@@ -1240,11 +1240,11 @@ TDMLPointer :: SetPointee(
                 }
         }
 //---------- change pointee now ie. overwrite
-        _htIFnok( meCurs->Put(a_SubGroupId, flag) );//return value in m_NodeId2
+        _htIFnok( meCurs->Put(a_NodeId, flag) );//return value in m_NodeId2
 
 //---------- pointer integrity check, after change
         _htIFnok( meCurs->Count(countPointees) );
-        cout << countPointees <<endl;
+//        cout << countPointees <<endl;
         _htIF(1 < countPointees); //cannot have more than one
 //---------- deinit cursor
         _htIFnok( meCurs->DeInit() );
@@ -1257,7 +1257,7 @@ TDMLPointer :: SetPointee(
 //---------- done
 //------------ after done
 #ifdef SHOWKEYVAL
-        std::cout<<"\tSetPointee:done:"<<fGroupStr<<" -> "<<a_SubGroupId<<endl;
+        std::cout<<"\tSetPointee:done:"<<fNodeIdStr<<" -> "<<a_NodeId<<endl;
 #endif
 
 //---------- end
@@ -1266,7 +1266,8 @@ TDMLPointer :: SetPointee(
 /*******************************/
 function
 TDMLPointer :: InitPtr(
-                const NodeId_t a_GroupId,
+                const ENodeType_t a_NodeType,
+                const NodeId_t a_NodeId,
                 const int a_Flags,//combination of flags
                 DbTxn *a_ParentTxn//can be NULL, if by default
                 )
@@ -1277,12 +1278,11 @@ TDMLPointer :: InitPtr(
 //---------- checking if called before and before DeInit()
         __tIF(this->IsInited());
 //---------- validity of params
-        __tIF(a_GroupId.empty());
+        __tIF(a_NodeId.empty());
 
 //---------- saving values for later use
-        fGroupStr=a_GroupId;//yeah let's hope this makes a copy; it does
-        //__( fGroupKey.set_data((void *)fGroupStr.c_str()) );//points to that, so don't kill fGroupStr!!
-        //__( fGroupKey.set_size((u_int32_t)fGroupStr.length() + 1) );
+        fNodeIdStr=a_NodeId;//yeah let's hope this makes a copy; it does!
+        fNodeType=a_NodeType;
         fParentTxn=a_ParentTxn;
 //---------- setting flags
         int tmpFlags=a_Flags;
@@ -1299,8 +1299,8 @@ TDMLPointer :: InitPtr(
 
 //---------- begin
 #ifdef SHOWKEYVAL
-                std::cout<<"\tTDMLCursor::Init:PointerName="<<
-                fGroupStr<<endl;
+                std::cout<<"\tTDMLPointer::Init:PointerName="<<
+                fNodeIdStr<<endl;
 #endif
         //FIXME:
         //checking if group exists, if not we make it point to itself which mean the pointer is NULL no! read below! seach RECTIF
@@ -1316,7 +1316,7 @@ TDMLPointer :: InitPtr(
 #define THROW_HOOK \
         DEL_CURSOR
 //---------- initialize cursor
-        _htIFnok( meCurs->InitFor(kGroup,a_GroupId, kNone, a_ParentTxn) );
+        _htIFnok( meCurs->InitCurs(fNodeType, fNodeIdStr, kNone, a_ParentTxn) );
 #undef THROW_HOOK
 #define THROW_HOOK \
         __( meCurs->DeInit() ); \
@@ -1454,7 +1454,7 @@ TDMLCursor :: IsInited()
 /*******************************/
 //opens the cursor
 function
-TDMLCursor :: InitFor(
+TDMLCursor :: InitCurs(
                 const ENodeType_t a_NodeType,
                 const NodeId_t a_NodeId,
                 const ETDMLFlags_t a_Flags,//no flags supported yet!
@@ -1468,7 +1468,7 @@ TDMLCursor :: InitFor(
 #define THROW_HOOK \
         CURSOR_CLOSE_HOOK \
         CURSOR_ABORT_HOOK
-        _htIF(NULL != fThisTxn);//cannot call InitFor() twice, not before DeInit(); however if called twice we need to close the cursor prior to aborting the current transaction!
+        _htIF(NULL != fThisTxn);//cannot call InitCurs() twice, not before DeInit(); however if called twice we need to close the cursor prior to aborting the current transaction!
 //---------- check if called before; before DeInit()
         _htIF(this->IsInited());
 #undef THROW_HOOK
@@ -1548,14 +1548,14 @@ TDMLCursor :: DeInit()
 #endif
 //---------- was inited?
         __tIF(! this->IsInited());
-//---------- trying to catch some inconsistencies; and setting defaults for next use of InitFor()
+//---------- trying to catch some inconsistencies; and setting defaults for next use of InitCurs()
 #define THROW_HOOK \
         CURSOR_ABORT_HOOK
-        _htIF(NULL == fCursor);//called DeInit() before InitFor() ? or smth happened inbetween
+        _htIF(NULL == fCursor);//called DeInit() before InitCurs() ? or smth happened inbetween
         //---------- close cursor
         _htIF(0 != fCursor->close());
         fCursor=NULL;
-        //---------- commit the transaction (started with InitFor()
+        //---------- commit the transaction (started with InitCurs()
         __tIFnok( fLink->Commit(&fThisTxn) );
         fThisTxn=NULL;
 #undef THROW_HOOK
@@ -1954,7 +1954,15 @@ TDMLCursor :: Count(
 #undef THROW_HOOK
 }
 /*******************************/
+MDMLFIFOBuffer :: MDMLFIFOBuffer(TLink *m_WorkingOnThisTLink):
+                TDMLCursor(m_WorkingOnThisTLink),
+                TDMLPointer(m_WorkingOnThisTLink)
+{//constructor
+}
 /*******************************/
+MDMLFIFOBuffer :: ~MDMLFIFOBuffer()
+{ //destructor
+}
 /*******************************/
 /*******************************/
 /*******************************/
