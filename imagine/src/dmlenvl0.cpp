@@ -272,14 +272,14 @@ l0_delFrom(
 /*************************/
 function
 l0_putInto(
-                                DbEnv *m_DBEnviron,
+                DbEnv *m_DBEnviron,
                 Db *a_DBInto,
                 DbTxn *a_ParentTxn,//can be null
                 Dbt *a_Key,
                 Dbt *a_Value,
+                int *m_StackVar,
                 const u_int32_t a_CursorPutFlags,
-                Dbc *const m_Cursor,//can be NULL, then put() is used thus appended to the list of data of that key(ie. order of insertion)
-                int *m_StackVar
+                Dbc *const m_Cursor//can be NULL, then put() is used thus appended to the list of data of that key(ie. order of insertion)
                 )
 {
 //------------ validate params
@@ -440,8 +440,8 @@ l0_newCursorLink(//creates a consistent link between two nodes in the sense sele
                 const ENodeType_t a_NodeType,
                 const NodeId_t a_NodeId1,//may or may not exist
                 const NodeId_t a_NodeId2,//same
-                DbTxn *a_ParentTxn, //no child transaction created except with l0_putInto(); apparently the cursor may not span transactions RTFM;
-                int *m_StackVar=NULL
+                int *m_StackVar,
+                DbTxn *a_ParentTxn //no child transaction created except with l0_putInto(); apparently the cursor may not span transactions RTFM;
                 )
 {
 
