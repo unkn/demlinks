@@ -40,7 +40,8 @@ ie.     a+b                     => +ab
 #include <allegro.h>
 #include "pnotetrk.h"
 #include "polishform.h"
-#include "dmlenv.h"
+#include "dmlenvl0.h"
+#include "dmlenvl1.h"
 
 using namespace std;
 

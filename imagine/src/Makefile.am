@@ -5,6 +5,9 @@ noinst_HEADERS = 	notetrk.h	\
 			_cppdefs.h	\
 			_gcdefs.h	\
 			dmlenv.h	\
+			dmlenv.hpp	\
+			dmlenvl0.h	\
+			dmlenvl1.h	\
 			polishform.h 	\
 			globaltimer.h \
 			genericinput.h \
@@ -31,7 +34,8 @@ noinst_HEADERS = 	notetrk.h	\
 
 dml_imagine_SOURCES = 	notetrk.cpp	\
 			pnotetrk.cpp	\
-			dmlenv.cpp	\
+			dmlenvl0.cpp	\
+			dmlenvl1.cpp	\
 			globaltimer.cpp \
 			timedinput.cpp  \
 			timedmouse.cpp \
@@ -54,7 +58,8 @@ dml_imagine_SOURCES = 	notetrk.cpp	\
 setup_inputs_SOURCES = 	notetrk.cpp	\
 			pnotetrk.cpp	\
 			setup_inputs.cpp \
-			dmlenv.cpp	\
+			dmlenvl0.cpp	\
+			dmlenvl1.cpp	\
 			polishform.cpp \
 			portability.cpp
 

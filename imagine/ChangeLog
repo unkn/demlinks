@@ -13,7 +13,8 @@ Legend:
 	LU means last update on ... date
 
 =demlinks-0.0.23
-LU: 15 September 2006
+LU: 18 September 2006
+* arranged dmlenv into levels
 * created a delete macro; if used without parentheses surrounding the
 parameter(s) then it will call the original delete
 * added ./src/cs script to update the cscope dbase; check
@@ -43,7 +44,7 @@ with (DB_CURRENT == (DB_CURRENT & flags)) you'll get it even if it's only the
 latter; ok, if this wasn't clear enough former=DB_CURRENT; latter=DB_KEYFIRST
 * Put() should work now; also note putInfo() is consistently modified to
 handle itself with or without cursor.
-* colour enabled error reporting with ^[3Xm (X=0..9) ^[ is \x1B or C-v,C-[ in
+* colour enabled error reporting with ^[[3Xm (X=0..9) ^[ is \x1B or C-v,C-[ in
 vim
 ~ so far there's no sensible way to view the contents of the database(s);
 planning on doing that with 3D
