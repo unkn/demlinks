@@ -21,14 +21,14 @@
 *
 *  ========================================================================
 *
-* Description: demlinks environment level 1
+* Description: demlinks environment level 2
 *
 ****************************************************************************/
 
-#ifndef DMLENVL1_H__
-#define DMLENVL1_H__
+#ifndef DMLENVL2_H__
+#define DMLENVL2_H__
 
-#include "dmlenvl0.h"
+#include "dmlenvl1.h"
 
 /****************************/
 class MDMLDomainPointer:private TDMLPointer { //can be NULL or only values from  either a kGroup or a kSubGroup Node;
