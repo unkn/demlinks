@@ -41,7 +41,7 @@ mkdir -p -- "$HOMESYNTAXDIR"
 #the following will add cscope support for vim
         #fetch the vim plugin from the internet if it doesn't already exist
         if [ ! -r "$HOMECSCOPEMAPS" ]; then
-                wget --output-document "$HOMECSCOPEMAPS" -- "INETCSCOPEMAPS"
+                wget --output-document "$HOMECSCOPEMAPS" -- "$INETCSCOPEMAPS"
         fi
 
 #the following will add extra highlighting for cpp files with vim
