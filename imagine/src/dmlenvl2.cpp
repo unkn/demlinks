@@ -82,7 +82,7 @@ MDMLDomainPointer :: GetPointee(
         )
 {
 //-------- get the pointee
-        __fIFnok( TDMLPointer :: GetPointee(m_NodeId) );
+        __fIFnok( TDMLPointer :: GetPointee(m_NodeId) ); //if NULL then it fails here, aka returns kFuncNULLPointer
 //-------- verify that it is from domain
         __fIFnok( this->verify(m_NodeId) );
 //-------- end
@@ -91,13 +91,13 @@ MDMLDomainPointer :: GetPointee(
 /*******************************/
 function
 MDMLDomainPointer :: SetPointee(
-        const NodeId_t a_NodeId
+        const NodeId_t a_NodeId //empty is allowed => sets pointer to NULL
         )
 {
-//-------- validate param
-        __tIF(a_NodeId.empty());
 //-------- verify that it is from domain
-        __fIFnok( this->verify(a_NodeId) );
+        __if (! a_NodeId.empty() ) {
+                __fIFnok( this->verify(a_NodeId) );
+        }__fi
 //-------- get the pointee
         __fIFnok( TDMLPointer :: SetPointee(a_NodeId) );
 //-------- end

@@ -65,7 +65,7 @@ public:
 
         function
         SetPointee(
-                const NodeId_t a_NodeId
+                const NodeId_t a_NodeId //if empty then pointer will be set to NULL
                 );
 };
 /****************************/

@@ -653,13 +653,11 @@ TDMLPointer :: GetPointee(
 /*******************************/
 function
 TDMLPointer :: SetPointee(
-                        const NodeId_t a_NodeId
+                        const NodeId_t a_NodeId //an empty param means that the caller wants us to set the pointer to NULL
 )
 {
 //---------- was inited?
         __tIF(! this->IsInited());
-//---------- validate params
-        __tIF( a_NodeId.empty() );
 //------------ begin
 //------------ get our pointer name
         NodeId_t pointerId;
@@ -698,12 +696,18 @@ TDMLPointer :: SetPointee(
                         _htIFnok( meCurs->Count(countPointees) );
                         //cout << countPointees <<endl;
                         _htIF(countPointees > 1); //cannot have more than one
+                        //---------- set it to NULL if param is empty
+                        __if ( a_NodeId.empty() ) {
+                                _htIFnok( meCurs->Del(flag) );//delete the pointee thus the pointer is now NULL
+                        }__fi
                 } else {
                         _ht(unhandled return error from Get)
                 }
         }
 //---------- change pointee now ie. overwrite
-        _htIFnok( meCurs->Put(a_NodeId, flag) );//return value in m_NodeId2
+        __if (! a_NodeId.empty()) {
+                _htIFnok( meCurs->Put(a_NodeId, flag) );//return value in m_NodeId2
+        }__fi
 
 //---------- pointer integrity check, after change
         _htIFnok( meCurs->Count(countPointees) );

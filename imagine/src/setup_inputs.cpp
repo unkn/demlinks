@@ -317,6 +317,8 @@ int main(const int argc, const char **argv)
         __( NewPoint(meDom,"A") );//it's gonna fail because A is not from domain
         gTrackFRETs=false;
 
+        __( NewPoint(meDom,"") );//set pointer to NULL
+
         __tIFnok( meDom->DeInit() );
         __( cout << "after deinit, IsInited="<< meDom->IsInited() <<endl; );
         __( delete(meDom) );
@@ -370,8 +372,8 @@ int main(const int argc, const char **argv)
         __sIFnok( ShowAllNodesOfNode(meCurs, kGroup,"F",NULL) );//obv. none!
         __sIFnok( ShowAllNodesOfNode(meCurs, kGroup,"A",NULL) );//obv. none!
         __sIFnok( ShowAllNodesOfNode(meCurs, kSubGroup,"sub_B",NULL) );//obv. none!
-        __tIFnok( ShowAllNodesOfNode(meCurs, kGroup,"domptr") );
-        __tIFnok( ShowAllNodesOfNode(meCurs, kGroup,"LeftOperand") );
+        __sIFnok( ShowAllNodesOfNode(meCurs, kGroup,"domptr") );
+        __sIFnok( ShowAllNodesOfNode(meCurs, kGroup,"LeftOperand") );
 
         __( delete(meCurs) );//gLink should still be open and available after this!
 
