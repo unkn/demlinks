@@ -47,6 +47,8 @@ EOF
 
 cscope
 
+./vimaddon.sh
+
 echo "OR you may run ./1 OR ./2 anytime u modify some src files"
 
 

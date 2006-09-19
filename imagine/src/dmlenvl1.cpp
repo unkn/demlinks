@@ -635,7 +635,7 @@ TDMLPointer :: GetPointee(
         std::cout<<"\tGetPointee:begin:"<<pointerId<<endl;
 #endif
 //---------- get first item of key
-        __( m_NodeId="" );
+        __( m_NodeId="" ); //if "" then IsSemiLink() will find the first
         function err;
         __if( kFuncOK != (err=fLink->IsSemiLink(fNodeType, pointerId, m_NodeId, fParentTxn)) ) {
                 if (kFuncNotFound == err) {
