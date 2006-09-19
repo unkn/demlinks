@@ -41,11 +41,14 @@
 #include <demlinks-config.h>
 
 //#define ENABLE_TIMED_INPUT //enable time capab based on gTimer of all input events OBSOLETE
-//#define TRACKABLE_RETURNS //_hret _ret _hreterr
+//#define TRACKABLE_RETURNS //_hret _ret _hreterr _fret all are defined
+//#define TRACKABLE_FRET //only _fret is tracked! do not define TRACKABLE_RETURNS if you define this; on the other hand if TRACKABLE_RETURNS is defined then _cppdefs.h below will define TRACKABLE_FRET automaticly
 
 //#define CONTINUE_IF_NOTINITED //continue even if notification subsystem is not initialized, this could happen if some classes are instantiated before executing anything from main() 04aug2006
 
-//#define PARANOIA_DEBUG defined in config.h
+#ifdef DML_PARANOIA_DEBUG
+        #define PARANOIA_DEBUG
+#endif
 
 #include "_cppdefs.h" /* last */
 

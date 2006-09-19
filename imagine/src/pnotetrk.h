@@ -35,6 +35,8 @@
 #include "notetrk.h"
 #include "_gcdefs.h"
 
+extern bool gTrackFRETs;
+
 typedef enum {//avoiding to use the value zero
         kFuncOK=110
         ,kFuncFailed//can't use this if throwing. ie. _tIF(true)
@@ -264,7 +266,7 @@ void ShowAllNotifications();
         EFunctionReturnTypes_t __EFunctionReturnTypes_t__FuncReturn;\
         _TRY( __EFunctionReturnTypes_t__FuncReturn = (a_Func),  throw ) \
         if (kFuncOK != __EFunctionReturnTypes_t__FuncReturn) { \
-                _fret(__EFunctionReturnTypes_t__FuncReturn);/*returns same error*/\
+                _fret(__EFunctionReturnTypes_t__FuncReturn, a_Func);/*returns same error*/\
         }       \
 } //endblock
 
@@ -301,22 +303,27 @@ void ShowAllNotifications();
 /***************************************/
 //no hook OK ret!
 #ifdef TRACKABLE_RETURNS
-        #define _ret(...) \
+        #define _ret(...) { \
                 INFO(_ret(__VA_ARGS__));\
-                return __VA_ARGS__;
+                return __VA_ARGS__; \
+        }
 #else
-        #define _ret(...) \
-                return __VA_ARGS__;
+        #define _ret(...) { \
+                return __VA_ARGS__; \
+        }
 #endif
 /***************************************/
 //no hook FAIL ret!
-#ifdef TRACKABLE_RETURNS
-        #define _fret(...) \
-                INFO(_fret(__VA_ARGS__));\
-                return __VA_ARGS__;
+#ifdef TRACKABLE_FRET
+        #define _fret(retnum,...) { \
+                INFO(_fret(__VA_ARGS__ , retnum));\
+                return retnum; \
+        }
 #else
-        #define _fret(...) \
-                return __VA_ARGS__;
+        #define _fret(retnum,...) { \
+                if (gTrackFRETs) { INFO(_fret(__VA_ARGS__ , retnum)); } \
+                return retnum; \
+        }
 #endif
 /***************************************/
 //fail from a function
@@ -327,7 +334,7 @@ void ShowAllNotifications();
 }
 
 #define _F { \
-        _fret(kFuncFailed); \
+        _fret(kFuncFailed, kFuncFailed); \
 }
 
 #define _OK {\
@@ -350,12 +357,14 @@ void ShowAllNotifications();
 #define _ht(a_ThrowMessage) {\
         THROW_HOOK;/*prior to throw*/\
         ADD_NOTE(kNotify_Exception,#a_ThrowMessage); \
-        throw std::logic_error(#a_ThrowMessage);}
+        throw std::logic_error(#a_ThrowMessage); \
+}
 
 //the 'no hook' version of _t()
 #define __t(a_ThrowMessage) {\
         ADD_NOTE(kNotify_Exception,#a_ThrowMessage); \
-        throw std::logic_error(#a_ThrowMessage); }
+        throw std::logic_error(#a_ThrowMessage); \
+}
 
 //wrapper for 'if' that catches the evaluation if it throws exceptions(and rethrows!); don't forget the '}_fi' endblock which puts '}}' at end, because we don't want __bool_ifexpr that we declared temporary to be accessed outside _if()
 //or use _if(expr) { do_this(); } else { do_that; }_fi
@@ -414,37 +423,43 @@ void ShowAllNotifications();
 /***************************************/
 //uses ERR_HOOK hook no the same as _() which uses THROW_HOOK
 #ifdef TRACKABLE_RETURNS
-        #define _hreterr(...) \
+        #define _hreterr(...) { \
                 INFO(_hreterr(__VA_ARGS__));\
                 ERR_HOOK;\
-                return __VA_ARGS__;
+                return __VA_ARGS__; \
+        }
 #else
-        #define _hreterr(...) \
+        #define _hreterr(...) { \
                 ERR_HOOK;\
-                return __VA_ARGS__;
+                return __VA_ARGS__; \
+        }
 #endif
 /***************************************/
 //uses the same hook and the MACROS that (re)throw exceptions
 #ifdef TRACKABLE_RETURNS
-        #define _hret(...) \
+        #define _hret(...) { \
                 INFO(_hret(__VA_ARGS__));\
                 THROW_HOOK;\
-                return __VA_ARGS__;
+                return __VA_ARGS__; \
+        }
 #else
-        #define _hret(...) \
+        #define _hret(...) { \
                 THROW_HOOK;\
-                return __VA_ARGS__;
+                return __VA_ARGS__; \
+        }
 #endif
 /***************************************/
 #ifdef TRACKABLE_RETURNS
-        #define _hokret(...) \
+        #define _hokret(...) { \
                 INFO(_hokret(__VA_ARGS__));\
                 OK_HOOK;\
-                return __VA_ARGS__;
+                return __VA_ARGS__; \
+        }
 #else
-        #define _hokret(...) \
+        #define _hokret(...) { \
                 OK_HOOK;\
-                return __VA_ARGS__;
+                return __VA_ARGS__; \
+        }
 #endif
 /***************************************/
 

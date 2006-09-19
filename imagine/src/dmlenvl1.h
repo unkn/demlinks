@@ -38,8 +38,8 @@ class TDMLPointer {//is a kGroup pointing to a kSubGroup where kGroup is the poi
         //can also be a kSubGroup pointing to a kGroup where kSubGroup is the pointer id and kGroup is the pointed element
 private:
         TLink*          fLink;
-        NodeId_t        fNodeIdStr;
-        ENodeType_t        fNodeType;
+        NodeId_t        fPointerId;
+        ENodeType_t     fNodeType;
         DbTxn*          fParentTxn;
         bool            fInited;
 
@@ -47,28 +47,39 @@ private:
 public:
         TDMLPointer(TLink *m_WorkingOnThisTLink);
         virtual ~TDMLPointer();
-        function
-        virtual InitPtr(
+//forgetting to use virtual to functions defined in the derived class will make the program use the base functions(these) instead of those that are defined in derrived class (apparently :)
+        virtual function
+        InitPtr(
                 const ENodeType_t a_NodeType,
                 const NodeId_t a_NodeId,
                 const int a_Flags=kNone,
                 DbTxn *a_ParentTxn=NULL
                 );
 
-        bool
+        virtual bool
         IsInited();
 
-        function
+        virtual function
+        GetPointerId(
+                NodeId_t &m_NodeId
+                );
+
+        virtual function
+        GetEnvironment(
+                TLink * &m_TLink
+        );
+
+        virtual function
         GetPointee(
                 NodeId_t &m_NodeId
                 );
 
-        function
+        virtual function
         SetPointee(
                 const NodeId_t a_NodeId
                 );
 
-        function
+        virtual function
         DeInit();
 
 };

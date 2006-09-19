@@ -158,7 +158,7 @@ NewPoint(TDMLPointer *m_Points, NodeId_t a_Pointee)
                 cout<<"Previous pointee:"<<pointee<<endl;
         }__fi
 
-        __tIFnok( m_Points->SetPointee(a_Pointee) );
+        __fIFnok( m_Points->SetPointee(a_Pointee) );
 
         __if( kFuncOK == m_Points->GetPointee(pointee) ) {
                 cout<<"Current pointee:"<<pointee<<endl;
@@ -281,6 +281,12 @@ int main(const int argc, const char **argv)
         cout << "---Ptr part 2"<<endl;
         __tIFnok( mePoints->InitPtr(kGroup, "LeftOperand", kCreateNodeIfNotExists | kTruncateIfMoreThanOneNode | kOverwriteNode) );
 
+        {
+                NodeId_t nod3;
+                function err;
+                __( err=mePoints->GetPointee(nod3) ); //is NULL
+                cout << "nod3=" << nod3 << " " << err <<endl;
+        }
         __tIFnok( NewPoint(mePoints,"Z") );
         __tIFnok( NewPoint(mePoints,"G") );
         __tIFnok( NewPoint(mePoints,"B") );
@@ -291,6 +297,31 @@ int main(const int argc, const char **argv)
         __tIFnok( NewPoint(mePoints,"A") );
         __tIFnok( mePoints->DeInit() );
         __( delete(mePoints) );
+
+        cout << "---MDMLDomainPointer"<<endl;
+        MDMLDomainPointer *meDom;
+        __( meDom = new MDMLDomainPointer(gLink) );
+        __tIFnok( meDom->InitDomPtr(kGroup, "domptr", kGroup, "LeftOperand", kCreateNodeIfNotExists) );
+
+        __( cout << "after init, IsInited="<< meDom->IsInited() <<endl; );
+        {
+                NodeId_t nod3;
+                function err;
+                __( err=meDom->GetPointee(nod3) );//NULL
+                cout << "nod3=" << nod3 << " " << err <<endl;
+        }
+
+        //__tIFnok( NewPoint(meDom,"Aaajaj") );
+        __tIFnok( NewPoint(meDom,"B") );
+        gTrackFRETs=true;
+        __( NewPoint(meDom,"A") );//it's gonna fail because A is not from domain
+        gTrackFRETs=false;
+
+        __tIFnok( meDom->DeInit() );
+        __( cout << "after deinit, IsInited="<< meDom->IsInited() <<endl; );
+        __( delete(meDom) );
+        ShowAllNotifications();
+        sleep(5);
 
         cout << "---FIFO Buffer"<<endl;
 
@@ -339,6 +370,8 @@ int main(const int argc, const char **argv)
         __sIFnok( ShowAllNodesOfNode(meCurs, kGroup,"F",NULL) );//obv. none!
         __sIFnok( ShowAllNodesOfNode(meCurs, kGroup,"A",NULL) );//obv. none!
         __sIFnok( ShowAllNodesOfNode(meCurs, kSubGroup,"sub_B",NULL) );//obv. none!
+        __tIFnok( ShowAllNodesOfNode(meCurs, kGroup,"domptr") );
+        __tIFnok( ShowAllNodesOfNode(meCurs, kGroup,"LeftOperand") );
 
         __( delete(meCurs) );//gLink should still be open and available after this!
 

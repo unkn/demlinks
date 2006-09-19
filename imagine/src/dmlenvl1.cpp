@@ -58,7 +58,7 @@ TLink::IsLinkConsistent(
 //------------ check if link exists on one of the dbases
         NodeId_t nod;
         __( nod=a_NodeId2 );
-        _htIFnok( IsSemiLink(a_NodeType, a_NodeId1, nod, thisTxn) );
+        _hfIFnok( IsSemiLink(a_NodeType, a_NodeId1, nod, thisTxn) );
 
 //------------ check if link exists on the other dbase
         ENodeType_t otherNodeType=a_NodeType;
@@ -69,7 +69,7 @@ TLink::IsLinkConsistent(
         }
 
         __( nod=a_NodeId1 );
-        _htIFnok( IsSemiLink(otherNodeType, a_NodeId2, nod, thisTxn) );
+        _hfIFnok( IsSemiLink(otherNodeType, a_NodeId2, nod, thisTxn) );
 
 //------------ commit transaction
 #undef THROW_HOOK
@@ -598,6 +598,28 @@ TDMLPointer :: IsInited()
 }
 /*******************************/
 function
+TDMLPointer :: GetEnvironment(
+        TLink * &m_TLink
+)
+{
+//-------- return the pointer name (not the pointee name)
+        m_TLink=fLink;
+//-------- end
+        _OK;
+}
+/*******************************/
+function
+TDMLPointer :: GetPointerId(
+        NodeId_t &m_NodeId
+)
+{
+//-------- return the pointer name (not the pointee name)
+        m_NodeId=fPointerId;
+//-------- end
+        _OK;
+}
+/*******************************/
+function
 TDMLPointer :: GetPointee(
         NodeId_t &m_NodeId
 )
@@ -606,13 +628,16 @@ TDMLPointer :: GetPointee(
 //---------- was inited?
         __tIF(! this->IsInited());
 //------------ begin
+//------------ get our pointer name
+        NodeId_t pointerId;
+        __tIFnok( GetPointerId( pointerId ) );
 #ifdef SHOWKEYVAL
-        std::cout<<"\tGetPointee:begin:"<<fNodeIdStr<<endl;
+        std::cout<<"\tGetPointee:begin:"<<pointerId<<endl;
 #endif
 //---------- get first item of key
         __( m_NodeId="" );
         function err;
-        __if( kFuncOK != (err=fLink->IsSemiLink(fNodeType, fNodeIdStr, m_NodeId, fParentTxn)) ) {
+        __if( kFuncOK != (err=fLink->IsSemiLink(fNodeType, pointerId, m_NodeId, fParentTxn)) ) {
                 if (kFuncNotFound == err) {
                         _fret(kFuncNULLPointer);
                 }
@@ -620,7 +645,7 @@ TDMLPointer :: GetPointee(
         }__fi
 //------- done
 #ifdef SHOWKEYVAL
-        std::cout<<"\tGetPointee:done:"<<fNodeIdStr<<" -> "<<m_NodeId<<endl;
+        std::cout<<"\tGetPointee:done:"<<pointerId<<" -> "<<m_NodeId<<endl;
 #endif
 //---------- end
         _OK;
@@ -636,8 +661,11 @@ TDMLPointer :: SetPointee(
 //---------- validate params
         __tIF( a_NodeId.empty() );
 //------------ begin
+//------------ get our pointer name
+        NodeId_t pointerId;
+        __tIFnok( GetPointerId( pointerId ) );
 #ifdef SHOWKEYVAL
-        std::cout<<"\tSetPointee:begin:"<<fNodeIdStr<<" -> "<<a_NodeId<<endl;
+        std::cout<<"\tSetPointee:begin:"<<pointerId<<" -> "<<a_NodeId<<endl;
 #endif
 //------------ open new cursor
         TDMLCursor *meCurs;
@@ -647,7 +675,7 @@ TDMLPointer :: SetPointee(
 #define THROW_HOOK \
         DONE_CURSOR
 //---------- initialize cursor
-        _htIFnok( meCurs->InitCurs(fNodeType, fNodeIdStr, kNone, fParentTxn) );
+        _htIFnok( meCurs->InitCurs(fNodeType, pointerId, kNone, fParentTxn) );
 #undef THROW_HOOK
 #define THROW_HOOK \
         __( meCurs->DeInit() ); \
@@ -668,7 +696,7 @@ TDMLPointer :: SetPointee(
                         flag=kCurrentNode;
                         //---------- pointer integrity check, before change
                         _htIFnok( meCurs->Count(countPointees) );
-                        cout << countPointees <<endl;
+                        //cout << countPointees <<endl;
                         _htIF(countPointees > 1); //cannot have more than one
                 } else {
                         _ht(unhandled return error from Get)
@@ -692,7 +720,7 @@ TDMLPointer :: SetPointee(
 //---------- done
 //------------ after done
 #ifdef SHOWKEYVAL
-        std::cout<<"\tSetPointee:done:"<<fNodeIdStr<<" -> "<<a_NodeId<<endl;
+        std::cout<<"\tSetPointee:done:"<<pointerId<<" -> "<<a_NodeId<<endl;
 #endif
 
 //---------- end
@@ -716,7 +744,7 @@ TDMLPointer :: InitPtr(
         __tIF(a_NodeId.empty());
 
 //---------- saving values for later use
-        fNodeIdStr=a_NodeId;//yeah let's hope this makes a copy; it does!
+        fPointerId=a_NodeId;//yeah let's hope this makes a copy; it does!
         fNodeType=a_NodeType;
         fParentTxn=a_ParentTxn;
 //---------- setting flags
@@ -733,9 +761,12 @@ TDMLPointer :: InitPtr(
         __tIF( fl_kOverwriteNode && fl_kKeepPrevValue );//mutually exclusive flags
 
 //---------- begin
+//------------ get our pointer name
+        NodeId_t pointerId;
+        __tIFnok( GetPointerId( pointerId ) );
 #ifdef SHOWKEYVAL
                 std::cout<<"\tTDMLPointer::Init:PointerName="<<
-                fNodeIdStr<<endl;
+                pointerId<<endl;
 #endif
         //FIXME:
         //checking if group exists, if not we make it point to itself which mean the pointer is NULL no! read below! seach RECTIF
@@ -751,7 +782,7 @@ TDMLPointer :: InitPtr(
 #define THROW_HOOK \
         DEL_CURSOR
 //---------- initialize cursor
-        _htIFnok( meCurs->InitCurs(fNodeType, fNodeIdStr, kNone, a_ParentTxn) );
+        _htIFnok( meCurs->InitCurs(fNodeType, pointerId, kNone, a_ParentTxn) );
 #undef THROW_HOOK
 #define THROW_HOOK \
         __( meCurs->DeInit() ); \

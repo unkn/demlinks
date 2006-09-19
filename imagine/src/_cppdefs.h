@@ -34,6 +34,9 @@
 #ifndef _CPPDEFS_H__
 #define _CPPDEFS_H__
 
+#ifdef TRACKABLE_RETURNS
+        #define TRACKABLE_FRET
+#endif
 
 
 /* internal stuff follows, please don't change (or smth) */

@@ -35,6 +35,7 @@
 /* global uniq variable, this is where we keep all errors
  * this is used in almost all source files */
 MNotifyTracker gNotifyTracker;
+bool gTrackFRETs=false; //if this is true then it will track _fret() even if TRACKABLE_FRET is not defined
 
 /*  the textual descriptions of notification types
  *  ie. "WARN" */

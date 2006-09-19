@@ -31,21 +31,32 @@
 #include "dmlenvl1.h"
 
 /****************************/
-class MDMLDomainPointer:private TDMLPointer { //can be NULL or only values from  either a kGroup or a kSubGroup Node;
+                        /* we need that ":public TDMLPointer {"(below) if we want to use it like in NewPoint() in setup_inputs.cpp currently lines 153 and 317 */
+class MDMLDomainPointer:public TDMLPointer { //can be NULL or only values from  either a kGroup or a kSubGroup Node;
 private:
+        ENodeType_t fDomainType;
+        NodeId_t fDomainId;
+
         MDMLDomainPointer();//unusable constructor; purposely made private
+
+        function
+        verify(const NodeId_t a_Pointee);
 public:
         MDMLDomainPointer(TLink *m_WorkingOnThisTLink);
         ~MDMLDomainPointer();
+
         function
-        InitPtr(
-                const NodeId_t a_Domain,
+        InitDomPtr(
+                const ENodeType_t a_NodeType, //this should always be kGroup! otherwise you will poison the pointees which you will force them to point to you as a kSubGroup (in other words the pointee is a kGroup which will point to you as a kSubGroup, and maybe that pointee is in turn a kGroup pointer to something else and it having two kSubGroups will invalidate the pointer because a kGroup pointer is supposed to have only one kSubGroup - the pointee) anyways you could totally reverse the kSubGroup and kGroup in all items and thus this param will be useful; or for any other reason.
+                const NodeId_t a_Name, //pointer name
+                const ENodeType_t a_DomainType,
+                const NodeId_t a_DomainId, //domain in which pointer can be assigned values from.
                 const int a_Flags=kNone,
                 DbTxn *a_ParentTxn=NULL
                 );
 
-        bool
-        IsInited();
+/*        bool
+        IsInited();*/
 
         function
         GetPointee(
@@ -56,10 +67,6 @@ public:
         SetPointee(
                 const NodeId_t a_NodeId
                 );
-
-        function
-        DeInit();
-
 };
 /****************************/
 class MDMLFIFOBuffer: private TDMLCursor, MDMLDomainPointer {
