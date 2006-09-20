@@ -12,7 +12,7 @@ if [ "${0##*/}" == "si" ]; then
 else
         unset mi
 fi
-export GREP_OPTIONS="--binary-files=without-match --exclude=\*\.svn\* --exclude=cscope.\* --exclude=s"
+export GREP_OPTIONS="--binary-files=without-match --exclude=\*\.svn\* --exclude=cscope.\* --exclude=\*\.[01] --exclude=requests --exclude=s --exclude=\*\.o"
 menu="$( grep $mi -n -R -e "$*" * | awk 'BEGIN{FS=":";} { printf("'"$thething"'%s +%s\" %s ",$1,$2,substr($0,1+length($1 FS $2 FS)));}' )"
 #menu="${menu//\)/ }"
 #menu="${menu//\(/ }"
