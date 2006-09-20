@@ -45,13 +45,14 @@ mkdir -p -- "$HOMESYNTAXDIR"
         fi
 
 #the following will add extra highlighting for cpp files with vim
-grep -q "${OURFULLPATHFILE}$" "$HOMESYNTAXFILE"
+zline="  source $OURFULLPATHFILE"
+grep -q "^${zline}$" "$HOMESYNTAXFILE"
 if [ ! "$?" -eq "0" -o ! -r "$HOMESYNTAXFILE" ]; then
 cat >"$HOMESYNTAXFILE" <<EOF
 if version >= 600
   source $FULLPATH2SYNTAXFILE
   unlet b:current_syntax
-  source $OURFULLPATHFILE
+$zline
   let b:current_syntax = "cpp"
 endif
 EOF

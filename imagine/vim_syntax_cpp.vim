@@ -52,6 +52,10 @@ hi cppDerivedClass ctermfg=darkcyan
 syn match cppBaseClass     /\<T[_A-Za-z0-9]*/
 hi cppBaseClass ctermfg=darkgreen
 
+hi Search ctermfg=white
 hi Comment ctermfg=darkgray ctermbg=black
-"hi def link cppDefine NonText
+"cterm=reverse
+"ctermfg=bg ctermbg=fg
+hi Todo ctermfg=white ctermbg=green
+"hi Normal ctermfg=white ctermbg=black
 " End Of Add

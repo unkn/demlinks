@@ -132,9 +132,9 @@ MNotifyTracker::ShowAllNotes()
 if (IsOn()) {
         NotifyItem_st *tmp=MoveOutLastNote();
         while (tmp){
-                //so you'll have to tripple click on the 'zvim' line
+                //so you'll have to tripple click on the './zvim' line
                 fprintf(stderr,
-                        "%s\x1B[39m#\x1B[33m%d\x1B[39m: func(\x1B[32m%s\x1B[39m)\n\t`\x1B[36m%s\x1B[39m'\n\t\x1B[38mzvim %s +%u\x1B[39m\n",
+                        "%s\x1B[39m#\x1B[33m%d\x1B[39m: func(\x1B[32m%s\x1B[39m)\n\t`\x1B[36m%s\x1B[39m'\n\t\x1B[38m./zvim %s +%u\x1B[39m\n",
                         kNotifyDescriptions[tmp->Contents.Type],
                         tmp->Contents.Depth,
                         tmp->Contents.Func,

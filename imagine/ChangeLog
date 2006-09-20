@@ -13,7 +13,9 @@ Legend:
 	LU means last update on ... date
 
 =demlinks-0.0.23
-LU: 19 September 2006
+LU: 20 September 2006
+* added search script "./s" and symlinks; this script uses grep, whiptail and
+vim to simplify searching for the given text ie. ./s main
 * MDMLDomainPointer - a pointer that can be either NULL or it's pointee can be
 only from a certain domain (=a list of items to choose from)
 * trackable _fret() just by setting gTrackFRETs to true before the block that
