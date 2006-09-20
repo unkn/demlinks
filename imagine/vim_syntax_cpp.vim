@@ -52,6 +52,6 @@ hi cppDerivedClass ctermfg=darkcyan
 syn match cppBaseClass     /\<T[_A-Za-z0-9]*/
 hi cppBaseClass ctermfg=darkgreen
 
-hi Comment ctermfg=darkgray
+hi Comment ctermfg=darkgray ctermbg=black
 "hi def link cppDefine NonText
 " End Of Add

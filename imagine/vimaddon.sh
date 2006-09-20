@@ -7,7 +7,7 @@ if [ -z "$HOME" ]; then
 fi
 
 #setable constants
-OURFILE="vim_syntax_cpp.vim.inc"
+OURFILE="vim_syntax_cpp.vim"
 HOMEPLUGINDIR="$HOME/.vim/plugin"
 SYNTAXFILE="cpp.vim"
 SYNTAXDIR="syntax"
@@ -45,11 +45,9 @@ mkdir -p -- "$HOMESYNTAXDIR"
         fi
 
 #the following will add extra highlighting for cpp files with vim
-if [ ! -r "$HOMESYNTAXFILE" ]; then
-        #cp -- "$FULLPATH2SYNTAXFILE" "$HOMESYNTAXFILE"
-        #       ln -s destlink  sourcefile
-        #ln -s -- "$HOMEDEMFILE" "$OURFULLPATHFILE"
-cat >>"$HOMESYNTAXFILE" <<EOF
+grep -q "${OURFULLPATHFILE}$" "$HOMESYNTAXFILE"
+if [ ! "$?" -eq "0" -o ! -r "$HOMESYNTAXFILE" ]; then
+cat >"$HOMESYNTAXFILE" <<EOF
 if version >= 600
   source $FULLPATH2SYNTAXFILE
   unlet b:current_syntax
@@ -57,5 +55,6 @@ if version >= 600
   let b:current_syntax = "cpp"
 endif
 EOF
+        echo "updated $HOMESYNTAXFILE"
 fi
 
