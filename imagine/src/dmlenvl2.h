@@ -47,16 +47,13 @@ public:
 
         function
         InitDomPtr(
-                const ENodeType_t a_NodeType, //this should always be kGroup! otherwise you will poison the pointees which you will force them to point to you as a kSubGroup (in other words the pointee is a kGroup which will point to you as a kSubGroup, and maybe that pointee is in turn a kGroup pointer to something else and it having two kSubGroups will invalidate the pointer because a kGroup pointer is supposed to have only one kSubGroup - the pointee) anyways you could totally reverse the kSubGroup and kGroup in all items and thus this param will be useful; or for any other reason.
-                const NodeId_t a_Name, //pointer name
+                const ENodeType_t a_PtrNodeType, //this should always be kGroup! otherwise you will poison the pointees which you will force them to point to you as a kSubGroup (in other words the pointee is a kGroup which will point to you as a kSubGroup, and maybe that pointee is in turn a kGroup pointer to something else and it having two kSubGroups will invalidate the pointer because a kGroup pointer is supposed to have only one kSubGroup - the pointee) anyways you could totally reverse the kSubGroup and kGroup in all items and thus this param will be useful; or for any other reason.
+                const NodeId_t a_PtrId, //pointer name
                 const ENodeType_t a_DomainType,
                 const NodeId_t a_DomainId, //domain in which pointer can be assigned values from.
-                const int a_Flags=kNone,
+                const int a_PtrFlags=kNone,
                 DbTxn *a_ParentTxn=NULL
                 );
-
-/*        bool
-        IsInited();*/
 
         function
         GetPointee(
@@ -70,11 +67,27 @@ public:
 };
 /****************************/
 class MDMLFIFOBuffer: private TDMLCursor, MDMLDomainPointer {
+//the pointer will point to the next that will be returned by Pull(); this just to workaround the fact the Dbc::get() cannot handle the DB_KEYLAST flag
+//the pointer is NULL only when the Domain has no elements... and maybe when MDMLFIFOBuffer is inited
+//ie. Domain is kGroup "A"
+//elements are kSubGroups of "A"
+//A->B, A->C, A->D
+//when pointer points to the last element of Domain, then Pull() will have to return kFuncNotFound to signal that there are no more items left to return
 private:
         MDMLFIFOBuffer();//constructor
 public:
         MDMLFIFOBuffer(TLink *m_WorkingOnThisTLink);
         ~MDMLFIFOBuffer();
+        function
+        InitFIFO(
+                const ENodeType_t a_PtrNodeType, //this should always be kGroup! otherwise you will poison the pointees which you will force them to point to you as a kSubGroup (in other words the pointee is a kGroup which will point to you as a kSubGroup, and maybe that pointee is in turn a kGroup pointer to something else and it having two kSubGroups will invalidate the pointer because a kGroup pointer is supposed to have only one kSubGroup - the pointee) anyways you could totally reverse the kSubGroup and kGroup in all items and thus this param will be useful; or for any other reason.
+                const NodeId_t a_PtrId, //pointer name
+                const ENodeType_t a_DomainType,
+                const NodeId_t a_DomainId, //domain in which pointer can be assigned values from.
+                const int a_PtrFlags=kNone,
+                DbTxn *a_ParentTxn=NULL
+                );
+
 };//MDMLFIFOBuffer
 /****************************/
 /****************************/

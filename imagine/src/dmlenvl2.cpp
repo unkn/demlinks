@@ -53,24 +53,24 @@ MDMLDomainPointer :: ~MDMLDomainPointer()
 /*******************************/
 function
 MDMLDomainPointer :: InitDomPtr(
-                const ENodeType_t a_NodeType,
-                const NodeId_t a_Name, //pointer name
+                const ENodeType_t a_PtrNodeType,
+                const NodeId_t a_PtrId, //pointer name
                 const ENodeType_t a_DomainType,
                 const NodeId_t a_DomainId, //domain in which pointer can be assigned values from.
-                const int a_Flags,
+                const int a_PtrFlags,
                 DbTxn *a_ParentTxn
                 )
 {
 //-------- check if already inited
         __tIF( IsInited() );
 //-------- validate params
-        __tIF(a_Name.empty());
+        __tIF(a_PtrId.empty());
         __tIF(a_DomainId.empty());
 //-------- save these
         fDomainId=a_DomainId;
         fDomainType=a_DomainType;
 //-------- init pointer
-        __tIFnok( TDMLPointer::InitPtr(a_NodeType, a_Name, a_Flags, a_ParentTxn) );
+        __tIFnok( TDMLPointer::InitPtr(a_PtrNodeType, a_PtrId, a_PtrFlags, a_ParentTxn) );
 //-------- end
         _OK;
 }

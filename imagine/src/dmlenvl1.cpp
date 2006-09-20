@@ -733,7 +733,7 @@ TDMLPointer :: SetPointee(
 /*******************************/
 function
 TDMLPointer :: InitPtr(
-                const ENodeType_t a_NodeType,
+                const ENodeType_t a_NodeType, //use kGroup here (see InitDomPtr for explanation)
                 const NodeId_t a_NodeId,
                 const int a_Flags,//combination of flags
                 DbTxn *a_ParentTxn//can be NULL, if by default

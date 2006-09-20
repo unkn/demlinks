@@ -35,9 +35,6 @@ noinst_HEADERS = 	notetrk.h	\
 
 dml_imagine_SOURCES = 	notetrk.cpp	\
 			pnotetrk.cpp	\
-			dmlenvl0.cpp	\
-			dmlenvl1.cpp	\
-			dmlenvl2.cpp	\
 			globaltimer.cpp \
 			timedinput.cpp  \
 			timedmouse.cpp \
@@ -56,6 +53,11 @@ dml_imagine_SOURCES = 	notetrk.cpp	\
 			activefunx.cpp \
 			actionsreplay.cpp \
 			portability.cpp
+
+#			dmlenvl0.cpp	\
+#			dmlenvl1.cpp	\
+#			dmlenvl2.cpp	\
+#			
 
 setup_inputs_SOURCES = 	notetrk.cpp	\
 			pnotetrk.cpp	\

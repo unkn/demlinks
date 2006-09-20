@@ -1,6 +1,6 @@
-* just run ./INSTALL.svn
+* just run ./autogen.sh
 * all binary files should be in ./obj, however right now the ./obj/src/dml_imagine uses ../../ini/*.ini file as an allegro.cfg replacer
-* you cannot install it anywhere yet! it remains within this directory just run ./1 whenever u want it ran or recompiled (after u've ran ./INSTALL.svn at least once since u got the package)
+* you cannot install it anywhere yet! it remains within this directory just run ./1 whenever u want it ran or recompiled (after u've ran ./autogen.sh at least once since u got the package)
 
 Copyright (C) 1994, 1995, 1996, 1999, 2000, 2001, 2002 Free Software
 Foundation, Inc.

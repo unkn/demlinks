@@ -14,6 +14,8 @@ Legend:
 
 =demlinks-0.0.23
 LU: 20 September 2006
+* renamed INSTALL.svn to autogen.sh  (because it doesn't really install, just
+makes compile+link)
 * added search script "./s" and symlinks; this script uses grep, whiptail and
 vim to simplify searching for the given text ie. ./s main
 * MDMLDomainPointer - a pointer that can be either NULL or it's pointee can be
