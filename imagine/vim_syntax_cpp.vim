@@ -18,7 +18,7 @@ syn keyword cppType		function EFunctionReturnTypes_t
 syn match   cppType		"::"
 hi Type ctermfg=lightgreen
 
-syn match   cppUserType		/[_A-Za-z]\+[_A-Za-z0-9]*_t/
+syn match   cppUserType		/[_A-Za-z]\+[_A-Za-z0-9]*[A-Za-z0-9]_t/
 syn keyword cppUserType         this
 hi cppUserType ctermfg=darkgreen
 
@@ -39,6 +39,7 @@ syn match cppOperator		","
 syn match cppOperator		"&\+"
 syn match cppOperator		"("
 syn match cppOperator		")"
+syn match cppOperator		"!"
 hi cppOperator ctermfg=red
 
 syn match cppBlockBegin		"{"

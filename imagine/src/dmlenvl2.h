@@ -78,15 +78,20 @@ private:
 public:
         MDMLFIFOBuffer(TLink *m_WorkingOnThisTLink);
         ~MDMLFIFOBuffer();
+
         function
         InitFIFO(
-                const ENodeType_t a_PtrNodeType, //this should always be kGroup! otherwise you will poison the pointees which you will force them to point to you as a kSubGroup (in other words the pointee is a kGroup which will point to you as a kSubGroup, and maybe that pointee is in turn a kGroup pointer to something else and it having two kSubGroups will invalidate the pointer because a kGroup pointer is supposed to have only one kSubGroup - the pointee) anyways you could totally reverse the kSubGroup and kGroup in all items and thus this param will be useful; or for any other reason.
+                const ENodeType_t a_PtrNodeType, //use kGroup here
                 const NodeId_t a_PtrId, //pointer name
                 const ENodeType_t a_DomainType,
                 const NodeId_t a_DomainId, //domain in which pointer can be assigned values from.
-                const int a_PtrFlags=kNone,
+                const int a_PtrFlags=kNone,//pointer flags
+                const int a_DomFlags=kNone,//domain flags
                 DbTxn *a_ParentTxn=NULL
-                );
+                ); //the Domain is a synonim for TDMLCursor here
+
+        function
+        DeInit();
 
 };//MDMLFIFOBuffer
 /****************************/

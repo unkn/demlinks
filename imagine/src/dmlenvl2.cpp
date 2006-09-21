@@ -39,6 +39,40 @@ MDMLFIFOBuffer :: ~MDMLFIFOBuffer()
 { //destructor
 }
 /*******************************/
+function
+MDMLFIFOBuffer :: InitFIFO(
+                const ENodeType_t a_PtrNodeType, //use kGroup here
+                const NodeId_t a_PtrId, //pointer name
+                const ENodeType_t a_DomainType,
+                const NodeId_t a_DomainId, //domain in which pointer can be assigned values from.
+                const int a_PtrFlags,//pointer flags
+                const int a_DomFlags,//domain flags
+                DbTxn *a_ParentTxn
+        )//the Domain is a synonim for TDMLCursor here
+{
+//------ validate params
+        __tIF( a_PtrId.empty() );
+        __tIF( a_DomainId.empty() );
+        __tIF( kNone != a_DomFlags ); //at the time of creation, TDMLCursor didn't support any flags thus this is here to make any necessary checks in case some flags were added
+//------ init cursor
+        __tIFnok( TDMLCursor :: InitCurs(a_DomainType, a_DomainId, a_DomFlags, a_ParentTxn) );
+//------ init pointer
+        __tIFnok( MDMLDomainPointer :: InitDomPtr(a_PtrNodeType, a_PtrId, a_DomainType, a_DomainId, a_PtrFlags, a_ParentTxn) );
+//------ done
+        _OK;
+}
+/*******************************/
+function
+MDMLFIFOBuffer :: DeInit()
+{
+//------- deinit pointer
+        __tIFnok( MDMLDomainPointer :: DeInit() );
+//------- deinit cursor
+        __tIFnok( TDMLCursor :: DeInit() );
+//------- done
+        _OK;
+}
+/*******************************/
 /*******************************/
 /*******************************/
 MDMLDomainPointer :: MDMLDomainPointer (TLink *m_WorkingOnThisTLink):

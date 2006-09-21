@@ -927,7 +927,7 @@ function
 TDMLCursor :: InitCurs(
                 const ENodeType_t a_NodeType,
                 const NodeId_t a_NodeId,
-                const ETDMLFlags_t a_Flags,//no flags supported yet!
+                const int a_Flags,//no flags supported yet!
                 DbTxn *a_ParentTxn//can be NULL, no problem
                 )
 {

@@ -14,6 +14,9 @@ Legend:
 
 =demlinks-0.0.23
 LU: 20 September 2006
+$ running ./2 and pressing ctrl+c when sleep(5) acts, doesn't act as we'd
+expect, the sigint signal is trapped and deinits the notify tracker but the
+program doesn't stop there... apparently.
 * renamed INSTALL.svn to autogen.sh  (because it doesn't really install, just
 makes compile+link)
 * added search script "./s" and symlinks; this script uses grep, whiptail and

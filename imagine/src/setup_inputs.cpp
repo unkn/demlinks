@@ -273,7 +273,7 @@ int main(const int argc, const char **argv)
         __( delete(g_Expr) );//gLink should still be open and available after this!
 //***************************************** END
 
-        cout << "---Pointer"<<endl;
+cout << "---Pointer"<<endl;
         TDMLPointer *mePoints;
         __( mePoints=new TDMLPointer(gLink) );
         __tIFnok( mePoints->InitPtr(kGroup, "ptrA", kCreateNodeIfNotExists) );
@@ -298,7 +298,7 @@ int main(const int argc, const char **argv)
         __tIFnok( mePoints->DeInit() );
         __( delete(mePoints) );
 
-        cout << "---MDMLDomainPointer"<<endl;
+cout << "---MDMLDomainPointer"<<endl;
         MDMLDomainPointer *meDom;
         __( meDom = new MDMLDomainPointer(gLink) );
         __tIFnok( meDom->InitDomPtr(kGroup, "domptr", kGroup, "LeftOperand", kCreateNodeIfNotExists) );
@@ -323,15 +323,21 @@ int main(const int argc, const char **argv)
         __( cout << "after deinit, IsInited="<< meDom->IsInited() <<endl; );
         __( delete(meDom) );
         ShowAllNotifications();
-        sleep(5);
 
-        cout << "---FIFO Buffer"<<endl;
+cout << "---FIFO Buffer"<<endl;
 
         MDMLFIFOBuffer *meBuf;
         __( meBuf= new MDMLFIFOBuffer(gLink) );
+
+        __tIFnok( meBuf->InitFIFO(kGroup, "PointerP", kGroup, "RightOperand", kCreateNodeIfNotExists | kTruncateIfMoreThanOneNode | kOverwriteNode) ); //no Domain flags and no transaction (2 params ommited)
+
+        __tIFnok( meBuf->DeInit() );
+
         __( delete meBuf );
 
-        cout << "---Cursor"<<endl;
+        sleep(5);
+
+cout << "---Cursor"<<endl;
         TDMLCursor *meCurs;
         __( meCurs=new TDMLCursor(gLink) );//done after DBs are inited!!!
 
@@ -374,6 +380,7 @@ int main(const int argc, const char **argv)
         __sIFnok( ShowAllNodesOfNode(meCurs, kSubGroup,"sub_B",NULL) );//obv. none!
         __sIFnok( ShowAllNodesOfNode(meCurs, kGroup,"domptr") );
         __sIFnok( ShowAllNodesOfNode(meCurs, kGroup,"LeftOperand") );
+        __sIFnok( ShowAllNodesOfNode(meCurs, kGroup,"RightOperand") );
 
         __( delete(meCurs) );//gLink should still be open and available after this!
 
