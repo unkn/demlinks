@@ -1308,7 +1308,7 @@ TDMLCursor :: Put(
 //---------- handling flags
         u_int32_t dbFlags=0;//FIXME:
         if (fl_kCurrentNode) {
-                dbFlags|=DB_CURRENT;//overwrite current, FIXME: 2nd db must be updated also
+                dbFlags|=DB_CURRENT;//overwrite current
 #ifdef SHOWKEYVAL
                 std::cout<<"\tTDMLCursor::Put:dbFlags|=DB_CURRENT"<<endl;
 #endif

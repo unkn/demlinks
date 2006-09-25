@@ -54,14 +54,14 @@ l0_commit(DbTxn **a_Txn, int *m_StackVar)
                 if (m_StackVar) {
 #ifdef SHOWTXNS
                         //---------- show info on screen
-                        for (int i=1;i<m_StackVar;i++) {
+                        for (int i=1;i<*m_StackVar;i++) {
                                 std::cout << " ";
                         }
-                        __( std::cout << "commitd "<<*a_Txn<<"("<<m_StackVar<<")"
+                        __( std::cout << "commitd "<<*a_Txn<<"("<<*m_StackVar<<")"
                                         <<std::endl; );
 #endif
 //---------- clean up
-                        m_StackVar--;
+                        (*m_StackVar)--;
                 }//fi
                 *a_Txn=NULL;
         } else {
@@ -81,9 +81,9 @@ l0_abort(DbTxn **a_Txn, int *m_StackVar)
         if (NULL != *a_Txn) {
                 if (m_StackVar) {
 #ifdef SHOWTXNS
-                        for (int i=1;i<m_StackVar;i++)
+                        for (int i=1;i<*m_StackVar;i++)
                                 std::cout << " ";
-                        std::cout << "abortin "<<*a_Txn<<"("<<m_StackVar<<")"<<std::endl;
+                        std::cout << "abortin "<<*a_Txn<<"("<<*m_StackVar<<")"<<std::endl;
 #endif
                 }//fi
 
@@ -91,11 +91,11 @@ l0_abort(DbTxn **a_Txn, int *m_StackVar)
 
                 if (m_StackVar) {
 #ifdef SHOWTXNS
-                for (int i=1;i < m_StackVar;i++)
+                for (int i=1;i < *m_StackVar;i++)
                         std::cout << " ";
-                std::cout << "aborted "<<*a_Txn<<"("<<m_StackVar<<")"<<std::endl;
+                std::cout << "aborted "<<*a_Txn<<"("<<*m_StackVar<<")"<<std::endl;
 #endif
-                        m_StackVar--;
+                        (*m_StackVar)--;
                 }//fi
                         *a_Txn=NULL;
         } else {
@@ -123,19 +123,19 @@ DbTxn::commit -- while it has active child transactions (child transactions that
         __(m_DBEnviron->txn_begin(a_ParentTxn, a_NewTxn, a_Flags ););
 //---------- set depth level to reflect depth of tree
         if (m_StackVar) {
-                m_StackVar++;
+                (*m_StackVar)++;
         }
 //---------- done
 //---------- show depth level on console(text)
 #ifdef SHOWTXNS
         if (m_StackVar) {
-                for (int i=1;i<m_StackVar;i++)
+                for (int i=1;i<*m_StackVar;i++)
                         std::cout << " ";
 
 #define THROW_HOOK \
-        __(Abort(a_NewTxn));
+        __(l0_abort(a_NewTxn, m_StackVar));
 
-                _h( std::cout << "through "<<*a_NewTxn<<"("<<m_StackVar<<")"<<std::endl;);
+                _h( std::cout << "through "<<*a_NewTxn<<"("<<*m_StackVar<<")"<<std::endl;);
         }
 #undef THROW_HOOK
 #endif
@@ -205,7 +205,7 @@ l0_findAndChange( //affecting only the value of the a_Key, aka the key cannot be
 //------------ commit transaction
 #undef THROW_HOOK
 #undef ERR_HOOK
-        __tIFnok( l0_commit(&thisTxn) );
+        __tIFnok( l0_commit(&thisTxn, m_StackVar) );
 
 //------------ end
         _OK;
@@ -262,7 +262,7 @@ l0_delFrom(
 
 //------------ commit transaction
 #undef THROW_HOOK
-        __tIFnok( l0_commit(&thisTxn) );
+        __tIFnok( l0_commit(&thisTxn, m_StackVar) );
 
 //------------ end
         _OK;
@@ -294,6 +294,9 @@ l0_putInto(
 #endif
 
 //------------ open a new cursor
+#ifdef SHOWKEYVAL
+        __( cout << "l0_putInto: newcursor;"<<endl );
+#endif
         //since dbase is opened DB_DUP it will allow dup key+data pairs; but we won't!
 //no DUPS! fail(not throw!) if already exists
         //the value we're about to put() must not already exist within this key!! this isn't allowed in our system
@@ -307,11 +310,19 @@ l0_putInto(
         THROW_HOOK
 
 //------------ if key/data pair exists we fail since our purpose is fulfilled
+#ifdef SHOWKEYVAL
+        __( cout << "l0_putInto: get:"<<(NULL!=m_Cursor?"Cursor:":":")<< (char *)a_Key->get_data() << " = " << (char *)a_Value->get_data() <<endl; );
+#endif
+
         _hif (0 == cursor1->get(a_Key, a_Value, DB_GET_BOTH)) {
                 _hreterr(kFuncAlreadyExists);
         }_fih
 
 //------------ close cursor
+#ifdef SHOWKEYVAL
+        __( cout << "l0_putInto: closecursor;"<<endl );
+#endif
+
 #undef THROW_HOOK
 #undef ERR_HOOK
         __tIF(0 != cursor1->close());
@@ -331,9 +342,12 @@ l0_putInto(
                          * disallowed, or adding a duplicate data item if duplicates are allowed. (from berkeley db docs)*/
         //------------ commit transaction
 #undef THROW_HOOK
-                __tIFnok( l0_commit(&thisTxn) );
+                __tIFnok( l0_commit(&thisTxn, m_StackVar) );
         } else {
         //------------ use the passed cursor to create the key/data pair as specified in the params of this func.
+#ifdef SHOWKEYVAL
+        __( cout << "l0_putInto: put:"<<(NULL!=m_Cursor?"Cursor:":":")<< (char *)a_Key->get_data() << " = " << (char *)a_Value->get_data() <<endl; );
+#endif
                 __tIF( m_Cursor->put(a_Key, a_Value, a_CursorPutFlags) );//even if DB_CURRENT and a_Value exist in this same place, it'll return kFuncAlreadyExists above! there's no use to overwrite with the same value!
         }
 
@@ -416,7 +430,7 @@ ModLink(
 //--------- commit transaction
 #undef THROW_HOOK
 #undef ERR_HOOK
-        __tIFnok( l0_commit(&thisTxn) );
+        __tIFnok( l0_commit(&thisTxn, m_StackVar) );
 
 //--------- after done
 #ifdef SHOWKEYVAL

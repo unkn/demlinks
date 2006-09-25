@@ -326,14 +326,24 @@ cout << "---MDMLDomainPointer"<<endl;
 
 cout << "---FIFO Buffer"<<endl;
 
+        /*DbTxn *mainTrans;
+        __tIFnok( gLink->NewTransaction( NULL, &mainTrans) );*/
+
         MDMLFIFOBuffer *meBuf;
         __( meBuf= new MDMLFIFOBuffer(gLink) );
 
-        __tIFnok( meBuf->InitFIFO(kGroup, "PointerP", kGroup, "RightOperand", kCreateNodeIfNotExists | kTruncateIfMoreThanOneNode | kOverwriteNode) ); //no Domain flags and no transaction (2 params ommited)
+        __tIFnok( meBuf->InitFIFO(kGroup, "PointerP", kGroup, "RightOperand", kCreateNodeIfNotExists | kTruncateIfMoreThanOneNode | kOverwriteNode/*, kNone, mainTrans*/) ); //no Domain flags and no transaction (2 params ommited)
+
+        while (true) {
+                NodeId_t nod;
+                __tIFnok( meBuf->Pull(nod) );
+                cout << "Pulled: "<<nod <<endl;
+        }
 
         __tIFnok( meBuf->DeInit() );
 
         __( delete meBuf );
+        //__tIFnok( gLink->Commit(&mainTrans));
 
         sleep(5);
 

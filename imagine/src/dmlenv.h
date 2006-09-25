@@ -61,17 +61,18 @@ typedef enum{
         kNone=0,//first
         kCreateNodeIfNotExists=1 //DB_WRITECURSOR on init, and DB_RMW on get(); also used with TDMLPointer
         ,kCursorWriteLocks=2 //only used with Get() not with Put()
-        ,kKeepPrevValue=4 //used with TDMLPointer
         ,kCurrentNode=4
-        ,kThisNode=4 //alias
-        ,kOverwriteNode=4 //alias; TDMLPointer: if just one node exists then it get overwritten; if more nodes exit we fail;
+        ,kKeepPrevValue=kCurrentNode //used with TDMLPointer
+        ,kThisNode=kCurrentNode //alias
+        ,kOverwriteNode=kCurrentNode //alias; TDMLPointer: if just one node exists then it get overwritten; if more nodes exit we fail;
+        ,kMoveNode=kCurrentNode //used with MDMLFIFOBuffer
         ,kBeforeNode=8
-        ,kPrevNode=8//alias
+        ,kPrevNode=kBeforeNode //alias
         ,kAfterNode=16 //after current or specified node
-        ,kNextNode=16 //first time when used, kNextNode is kFirstNode just like DB_NEXT
+        ,kNextNode=kAfterNode //first time when used, kNextNode is kFirstNode just like DB_NEXT
         ,kFirstNode=32
         ,kLastNode=64
-        ,kTruncateIfMoreThanOneNode=64 //TDMLPointer;if more than one, remove the others first; otherwise fail
+        ,kTruncateIfMoreThanOneNode=kLastNode //TDMLPointer;if more than one, remove the others first; otherwise fail
         ,kPinPoint=128 //ie. DB_GET_BOTH key/data pair -> makes the cursor position on this
 //last:
         ,kCursorMax

@@ -73,6 +73,63 @@ MDMLFIFOBuffer :: DeInit()
         _OK;
 }
 /*******************************/
+function
+MDMLFIFOBuffer :: Push(
+                const NodeId_t a_NodeId)
+{
+//-------- check if not inited
+        __tIF( ! TDMLCursor :: IsInited() );//assuming if the TDMLCursor is inited then so is the MDMLDomainPointer
+//------- check if empty param
+        __tIF( a_NodeId.empty() );
+//------- do append
+        __tIFnok( TDMLCursor :: Put(a_NodeId, kLastNode) );
+//------- done
+        _OK;
+}
+/*******************************/
+function
+MDMLFIFOBuffer :: Pull(
+                        NodeId_t &m_NodeId
+        //                ,const ETDMLFlags_t a_Flags //current implementation doesn't allow kMoveNode because the pointer points to the last pulled node and thus it must still exist; maybe when we can make Get(kLastNode) work (it's a berkeley db limitation)
+)
+{
+//---------- setting flags
+        //int tmpFlags=a_Flags;
+        //_makeFLAG(kMoveNode);
+//---------- validating flags
+        //__tIF(0 != tmpFlags);//illegal flags
+//---------- get pointee
+        NodeId_t pointee;
+        function err;
+        __( err=( MDMLDomainPointer :: GetPointee(pointee) ) );
+        __tIF( (kFuncOK != err) && (kFuncNULLPointer != err) );//unhandled new error;
+//------- we position the cursor on the last pulled element
+        //------- if pointer was not initialized then we need to get the first item of Domain
+        int flags=kNone;
+        if (kFuncNULLPointer == err) {
+                flags=kFirstNode;
+        } else if (kFuncOK == err) {
+                //we got the pointee
+                __tIFnok( TDMLCursor :: Find(pointee, kNone) ); //position on the current
+                flags=kNextNode; //prepare to fetch the next
+        }
+        cout <<"got1"<<endl;
+//---------- attempting to fetch next item in list, if any
+        NodeId_t next;
+        __( err=( TDMLCursor :: Get(next, flags) ) );
+        __tIF( (kFuncOK != err) && (kFuncNotFound != err) );//unhandled new error;
+        if (kFuncOK != err) {//prolly no items in list OR no more items after current
+                _fret(err);//returning "not found"
+        }
+        cout <<"got2"<<endl;
+//---------- if we're here we have the item, we must point to it
+        __tIFnok( MDMLDomainPointer :: SetPointee(next) );//this must not fail
+//---------- return the data to the caller only if full success
+        m_NodeId=next;
+//------- done
+        _OK;
+}
+
 /*******************************/
 /*******************************/
 MDMLDomainPointer :: MDMLDomainPointer (TLink *m_WorkingOnThisTLink):
@@ -115,6 +172,8 @@ MDMLDomainPointer :: GetPointee(
         NodeId_t &m_NodeId
         )
 {
+//-------- check if not inited
+        __tIF( ! IsInited() );
 //-------- get the pointee
         __fIFnok( TDMLPointer :: GetPointee(m_NodeId) ); //if NULL then it fails here, aka returns kFuncNULLPointer
 //-------- verify that it is from domain
@@ -128,12 +187,16 @@ MDMLDomainPointer :: SetPointee(
         const NodeId_t a_NodeId //empty is allowed => sets pointer to NULL
         )
 {
+//-------- check if not inited
+        __tIF( ! IsInited() );
 //-------- verify that it is from domain
         __if (! a_NodeId.empty() ) {
                 __fIFnok( this->verify(a_NodeId) );
         }__fi
 //-------- get the pointee
+        cout << "got3"<<endl;
         __fIFnok( TDMLPointer :: SetPointee(a_NodeId) );
+        cout << "got4"<<endl;
 //-------- end
         _OK;
 }

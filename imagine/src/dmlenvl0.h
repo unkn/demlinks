@@ -42,7 +42,7 @@ l0_newTransaction(
                 DbEnv *m_DBEnviron,
                         DbTxn * a_ParentTxn, //can be NULL
                         DbTxn ** a_NewTxn,
-                        int *m_StackVar=NULL,
+                        int *m_StackVar,//=NULL,
                         const u_int32_t a_Flags=TRANSACTION_FLAGS
                         );
 /*******************************/
@@ -54,7 +54,7 @@ l0_findAndChange( //affecting only the value of the a_Key, aka the key cannot be
                 Dbt *a_Key,
                 Dbt *a_Value,
                 Dbt *a_NewValue,
-                int *m_StackVar=NULL);
+                int *m_StackVar);//=NULL);
                 //we fail(not throw) if newval already exists
 /****************************/
 function
@@ -64,7 +64,7 @@ l0_delFrom(
                 DbTxn *a_ParentTxn,//can be NULL
                 Dbt *a_Key,
                 Dbt *a_Value,
-                int *m_StackVar=NULL);
+                int *m_StackVar);//=NULL);
 /****************************/
 function
 l0_putInto(
@@ -73,7 +73,7 @@ l0_putInto(
                 DbTxn *a_ParentTxn,//can be null
                 Dbt *a_Key,
                 Dbt *a_Value,
-                int *m_StackVar=NULL,
+                int *m_StackVar,//=NULL,
                 const u_int32_t a_CursorPutFlags=0,
                 Dbc *const m_Cursor=NULL //can be NULL, then put() is used thus appended to the list of data of that key(ie. order of insertion)
                 );
@@ -88,7 +88,7 @@ l0_newCursorLink(//creates a consistent link between two nodes in the sense sele
                 const ENodeType_t a_NodeType,
                 const NodeId_t a_NodeId1,//may or may not exist
                 const NodeId_t a_NodeId2,//same
-                int *m_StackVar=NULL,
+                int *m_StackVar,//=NULL,
                 DbTxn *a_ParentTxn=NULL //no child transaction created except with putInto(); apparently the cursor may not span transactions RTFM;
                 );
 /****************************/

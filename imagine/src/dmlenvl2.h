@@ -67,24 +67,25 @@ public:
 };
 /****************************/
 class MDMLFIFOBuffer: private TDMLCursor, MDMLDomainPointer {
-//the pointer will point to the next that will be returned by Pull(); this just to workaround the fact the Dbc::get() cannot handle the DB_KEYLAST flag
+//the pointer will point to the last item pulled, ie. you'll have to (internally done of course) try to position the pointer to next element in list and return that, is no more items then return NULL to signal that; the pointer remains on last item pulled; it is null only when there are no elements in Domain or Pull was never used(so, 2 cases).
 //the pointer is NULL only when the Domain has no elements... and maybe when MDMLFIFOBuffer is inited
 //ie. Domain is kGroup "A"
 //elements are kSubGroups of "A"
 //A->B, A->C, A->D
 //when pointer points to the last element of Domain, then Pull() will have to return kFuncNotFound to signal that there are no more items left to return
+//the Domain obv. contains unique elements!
 private:
         MDMLFIFOBuffer();//constructor
 public:
         MDMLFIFOBuffer(TLink *m_WorkingOnThisTLink);
         ~MDMLFIFOBuffer();
-
+//FIFO(first in first out) is ie. 1,2,3 get in, 1,2,3 get out in this order
         function
         InitFIFO(
                 const ENodeType_t a_PtrNodeType, //use kGroup here
                 const NodeId_t a_PtrId, //pointer name
                 const ENodeType_t a_DomainType,
-                const NodeId_t a_DomainId, //domain in which pointer can be assigned values from.
+                const NodeId_t a_DomainId, //domain in which the pointer can be assigned values from.
                 const int a_PtrFlags=kNone,//pointer flags
                 const int a_DomFlags=kNone,//domain flags
                 DbTxn *a_ParentTxn=NULL
@@ -92,6 +93,15 @@ public:
 
         function
         DeInit();
+
+        function
+        Pull(
+                        NodeId_t &m_NodeId
+                        //,const ETDMLFlags_t a_Flags
+                        );
+
+        function
+        Push(const NodeId_t a_NodeId);//append node to list ie. insert last; doesn't touch the pointer (MDMLDomainPointer)
 
 };//MDMLFIFOBuffer
 /****************************/
