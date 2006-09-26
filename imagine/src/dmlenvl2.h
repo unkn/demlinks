@@ -66,7 +66,7 @@ public:
                 );
 };
 /****************************/
-class MDMLFIFOBuffer: private TDMLCursor, MDMLDomainPointer {
+class MDMLFIFOBuffer: private TDMLCursor, public MDMLDomainPointer {
 //the pointer will point to the last item pulled, ie. you'll have to (internally done of course) try to position the pointer to next element in list and return that, is no more items then return NULL to signal that; the pointer remains on last item pulled; it is null only when there are no elements in Domain or Pull was never used(so, 2 cases).
 //the pointer is NULL only when the Domain has no elements... and maybe when MDMLFIFOBuffer is inited
 //ie. Domain is kGroup "A"

@@ -204,9 +204,7 @@ MDMLDomainPointer :: SetPointee(
                 __fIFnok( this->verify(a_NodeId) );
         }__fi
 //-------- get the pointee
-        cout << "got3"<<endl;
         __fIFnok( TDMLPointer :: SetPointee(a_NodeId) );
-        cout << "got4"<<endl;
 //-------- end
         _OK;
 }

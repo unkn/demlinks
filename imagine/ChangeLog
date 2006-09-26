@@ -13,7 +13,8 @@ Legend:
 	LU means last update on ... date
 
 =demlinks-0.0.23
-LU: 20 September 2006
+LU: 25 September 2006
+$ need to work with locks, ie. unset DISABLE_LOCK and make it not deadlock!
 $ running ./2 and pressing ctrl+c when sleep(5) acts, doesn't act as we'd
 expect, the sigint signal is trapped and deinits the notify tracker but the
 program doesn't stop there... apparently.

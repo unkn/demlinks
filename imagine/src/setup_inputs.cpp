@@ -334,17 +334,27 @@ cout << "---FIFO Buffer"<<endl;
 
         __tIFnok( meBuf->InitFIFO(kGroup, "PointerP", kGroup, "RightOperand", kCreateNodeIfNotExists | kTruncateIfMoreThanOneNode | kOverwriteNode/*, kNone, mainTrans*/) ); //no Domain flags and no transaction (2 params ommited)
 
-        /*while (true) {
+        while (true) {
                 NodeId_t nod;
-                __tIFnok( meBuf->Pull(nod) );
-                cout << "Pulled: "<<nod <<endl;
-        }*/
+                function err;
+                __( err=meBuf->Pull(nod) );
+                if (kFuncOK == err) {
+                        cout << "Pulled: "<<nod;
+                        __tIFnok( meBuf->GetPointee(nod) );
+                        cout << " pointer currently points to: "<<nod <<endl;
+                } else {
+                        __tIF( kFuncNotFound != err ); //unhandled error at this point
+                        cout << "No more!" <<endl;
+                        break;
+                }
+        }
 
         __tIFnok( meBuf->DeInit() );
 
         __( delete meBuf );
         //__tIFnok( gLink->Commit(&mainTrans));
 
+        cout << "sleep 5"<<endl;
         sleep(5);
 
 cout << "---Cursor"<<endl;
