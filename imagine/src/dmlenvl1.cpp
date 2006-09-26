@@ -366,12 +366,12 @@ TLink::KillDB(
 {
                 if (file_exists(a_PathFN->c_str(),0,NULL)) {
 //---------- remove database of this environment
-                        try {
-                                fDBEnviron->dbremove(NULL,a_FName->c_str(),NULL,0);
-                        } catch (exception &e) {
+  //                      try {
+                                __s( fDBEnviron->dbremove(NULL,a_FName->c_str(),NULL,0) );
+/*                        } catch (exception &e) {
                                 cout << e.what() <<endl;
                                 __(throw e);
-                        }
+                        } */
 //---------- done
                         _OK;//killed
                 } else {
@@ -438,12 +438,12 @@ TLink::TLink(
         __(fDBEnviron->set_lk_detect(DB_LOCK_MINWRITE););
 
 
-        try {
-                fDBEnviron->open(fEnvHomePath.c_str(), fDBEnvironFlags, 0);
-        } catch (DbException &e) {
+        //try {
+                __s( fDBEnviron->open(fEnvHomePath.c_str(), fDBEnvironFlags, 0) );
+        /*} catch (DbException &e) {
                 cout << e.what() <<endl;
                 __(throw e);
-        }
+        }*/
 
 #undef THROW_HOOK
 #define THROW_HOOK ENVCLOSE_HOOK

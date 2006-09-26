@@ -228,6 +228,23 @@ void ShowAllNotifications();
                 ADD_NOTE(kNotify_Exception,a_DOCmds); \
                 __VA_ARGS__; }
 
+//does NOT throw, shows error if known
+#define _sTRY(a_DOCmds,...) { \
+        try { a_DOCmds; } \
+        catch (DbException &e) { \
+                ADD_NOTE(kNotify_Exception,a_DOCmds); \
+                        cout << e.what() <<endl; \
+                __VA_ARGS__; \
+        } catch (exception &e) { \
+                ADD_NOTE(kNotify_Exception,a_DOCmds); \
+                        cout << e.what() <<endl; \
+                __VA_ARGS__; \
+        } catch (...) { \
+                ADD_NOTE(kNotify_Exception,a_DOCmds); \
+                        cout << "unknown exception" <<endl; \
+                __VA_ARGS__; \
+        } \
+}
 /***************************************/
 //tries a_DOCmds and catches any exceptions thrown, if any does (re)throw after executing __VA_ARGS__
 //WARNING: can't use things that use THROW_HOOK within a definition of THROW_HOOK ie. #define THROW_HOOK TRY(This()); because when This() throws it'll run TRY(This()) and so on ... until infinity use __() instead of TRY() which throws without using THROW_HOOK at all
@@ -238,6 +255,10 @@ void ShowAllNotifications();
 #define _h(a_DOcmds) TRY(a_DOcmds)
 //throw w/o THROW_HOOK, to use within #define THROW_HOOK
 #define __(a_DOcmds) _TRY(a_DOcmds, throw)
+
+//attempts to show DbException and exception and maybe others, before rethrowing
+#define __s(a_DOcmds) _sTRY(a_DOcmds, throw)
+
 //no throw, no hook, just a catch
 #define ___(a_DOcmds) _TRY(a_DOcmds)
 /***************************************/

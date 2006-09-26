@@ -339,12 +339,12 @@ cout << "---FIFO Buffer"<<endl;
                 function err;
                 __( err=meBuf->Pull(nod) );
                 if (kFuncOK == err) {
-                        cout << "Pulled: "<<nod;
-                        __tIFnok( meBuf->GetPointee(nod) );
-                        cout << " pointer currently points to: "<<nod <<endl;
+                        cout << "Pulled: "<<nod<<endl;
+                        //__tIFnok( meBuf->GetPointee(nod) );
+                        //cout << " pointer currently points to: "<<nod <<endl;
                 } else {
                         __tIF( kFuncNotFound != err ); //unhandled error at this point
-                        cout << "No more!" <<endl;
+                        //cout << "No more!" <<endl;
                         break;
                 }
         }
