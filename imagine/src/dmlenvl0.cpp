@@ -43,13 +43,18 @@
 /****************************/
 /*******************************/
 function
-l0_commit(DbTxn **a_Txn, int *m_StackVar)
+l0_commit(DbTxn **m_Txn, int *m_StackVar)
 {//one cannot&shouldnot call Abort after calling this function: is in the Berkeley DB docs that cannot call abort after a failed(or successful) DbTxn->commit()
 //---------- validate params
-        __tIF(NULL==a_Txn);
+        __tIF(NULL==m_Txn);
+//---------- totally disable?
+#ifdef DISABLE_TRANSACTIONS
+        *m_Txn=NULL;
+        _OK;
+#endif
 //---------- commit only if valid
-        if (NULL != *a_Txn) {
-                __((*a_Txn)->commit(0));
+        if (NULL != *m_Txn) {
+                __((*m_Txn)->commit(0));
 //---------- almost done
                 if (m_StackVar) {
 #ifdef SHOWTXNS
@@ -57,15 +62,15 @@ l0_commit(DbTxn **a_Txn, int *m_StackVar)
                         for (int i=1;i<*m_StackVar;i++) {
                                 std::cout << " ";
                         }
-                        __( std::cout << "commitd "<<*a_Txn<<"("<<*m_StackVar<<")"
+                        __( std::cout << "commitd "<<*m_Txn<<"("<<*m_StackVar<<")"
                                         <<std::endl; );
 #endif
 //---------- clean up
                         (*m_StackVar)--;
                 }//fi
-                *a_Txn=NULL;
+                *m_Txn=NULL;
         } else {
-                _FA(*a_Txn is NULL);
+                _FA(*m_Txn is NULL);
         }
 //---------- done
         _OK;
@@ -73,33 +78,38 @@ l0_commit(DbTxn **a_Txn, int *m_StackVar)
 
 /*******************************/
 function
-l0_abort(DbTxn **a_Txn, int *m_StackVar)
+l0_abort(DbTxn **m_Txn, int *m_StackVar)
 {
 //---------- validating params
-        __tIF(NULL==a_Txn);
+        __tIF(NULL==m_Txn);
+//---------- totally disable?
+#ifdef DISABLE_TRANSACTIONS
+        *m_Txn=NULL;
+        _OK;
+#endif
 //---------- abort only if valid transaction
-        if (NULL != *a_Txn) {
+        if (NULL != *m_Txn) {
                 if (m_StackVar) {
 #ifdef SHOWTXNS
                         for (int i=1;i<*m_StackVar;i++)
                                 std::cout << " ";
-                        std::cout << "abortin "<<*a_Txn<<"("<<*m_StackVar<<")"<<std::endl;
+                        std::cout << "abortin "<<*m_Txn<<"("<<*m_StackVar<<")"<<std::endl;
 #endif
                 }//fi
 
-                __((void)(*a_Txn)->abort()); //---------------------
+                __((void)(*m_Txn)->abort()); //---------------------
 
                 if (m_StackVar) {
 #ifdef SHOWTXNS
                 for (int i=1;i < *m_StackVar;i++)
                         std::cout << " ";
-                std::cout << "aborted "<<*a_Txn<<"("<<*m_StackVar<<")"<<std::endl;
+                std::cout << "aborted "<<*m_Txn<<"("<<*m_StackVar<<")"<<std::endl;
 #endif
                         (*m_StackVar)--;
                 }//fi
-                        *a_Txn=NULL;
+                        *m_Txn=NULL;
         } else {
-                _FA(*a_Txn is NULL);
+                _FA(*m_Txn is NULL);
         }
 //---------- done
         _OK;
@@ -107,9 +117,9 @@ l0_abort(DbTxn **a_Txn, int *m_StackVar)
 /****************************/
 function
 l0_newTransaction(
-                DbEnv *m_DBEnviron,
+                DbEnv *a_DBEnviron,
                         DbTxn * a_ParentTxn, //can be NULL
-                        DbTxn ** a_NewTxn,
+                        DbTxn ** m_NewTxn,
                         int *m_StackVar,
                         const u_int32_t a_Flags)
 {
@@ -117,27 +127,32 @@ l0_newTransaction(
         /*"Note: A parent transaction may not issue any Berkeley DB operations -- except for DbEnv::txn_begin, DbTxn::abort and
 DbTxn::commit -- while it has active child transactions (child transactions that have not yet been committed or aborted)" Berkeley DB docs*/
 //---------- validate params
-        __tIF(m_DBEnviron==NULL);
-        __tIF(a_NewTxn==NULL);
+        __tIF(a_DBEnviron==NULL);
+        __tIF(m_NewTxn==NULL);
+#ifndef DISABLE_TRANSACTIONS
 //---------- create a new transaction within this environment
-        __(m_DBEnviron->txn_begin(a_ParentTxn, a_NewTxn, a_Flags ););
+        __(a_DBEnviron->txn_begin(a_ParentTxn, m_NewTxn, a_Flags ););
 //---------- set depth level to reflect depth of tree
         if (m_StackVar) {
                 (*m_StackVar)++;
         }
 //---------- done
 //---------- show depth level on console(text)
-#ifdef SHOWTXNS
+        #ifdef SHOWTXNS
         if (m_StackVar) {
                 for (int i=1;i<*m_StackVar;i++)
                         std::cout << " ";
 
 #define THROW_HOOK \
-        __(l0_abort(a_NewTxn, m_StackVar));
+        __(l0_abort(m_NewTxn, m_StackVar));
 
-                _h( std::cout << "through "<<*a_NewTxn<<"("<<*m_StackVar<<")"<<std::endl;);
+                _h( std::cout << "through "<<*m_NewTxn<<"("<<*m_StackVar<<")"<<std::endl;);
         }
 #undef THROW_HOOK
+        #endif
+
+#else //when disabled
+        *m_NewTxn=NULL;
 #endif
 //---------- end
         _OK;
@@ -147,7 +162,7 @@ DbTxn::commit -- while it has active child transactions (child transactions that
 /****************************/
 function
 l0_findAndChange( //affecting only the value of the a_Key, aka the key cannot be changed anyways(u must do del then put for that)
-                DbEnv *m_DBEnviron,
+                DbEnv *a_DBEnviron,
                 Db *a_DBWhich,
                 DbTxn *a_ParentTxn,
                 Dbt *a_Key,
@@ -157,7 +172,7 @@ l0_findAndChange( //affecting only the value of the a_Key, aka the key cannot be
                 )//we fail(not throw) if newval already exists
 {
 //------------ validate params
-        __tIF(NULL == m_DBEnviron);
+        __tIF(NULL == a_DBEnviron);
         __tIF(NULL == a_Key);
         __tIF(NULL == a_Value);
         __tIF(NULL == a_NewValue);
@@ -165,7 +180,7 @@ l0_findAndChange( //affecting only the value of the a_Key, aka the key cannot be
 
 //------------ create a new transaction
         DbTxn *thisTxn;
-        __tIFnok( l0_newTransaction(m_DBEnviron,a_ParentTxn,&thisTxn, m_StackVar));
+        __tIFnok( l0_newTransaction(a_DBEnviron,a_ParentTxn,&thisTxn, m_StackVar));
 
 #define THROW_HOOK \
         ABORT_HOOK
@@ -187,11 +202,19 @@ l0_findAndChange( //affecting only the value of the a_Key, aka the key cannot be
 
 //------------ check and fail if the key/newval pair already exists
         //a_Key/a_NewValue must not already exist!
-        _hif( DB_NOTFOUND != cursor1->get( a_Key, a_NewValue, DB_GET_BOTH|DB_RMW) ) {
+        _hif( DB_NOTFOUND != cursor1->get( a_Key, a_NewValue, DB_GET_BOTH
+#ifndef DISABLE_LOCK
+                                |DB_RMW
+#endif
+                                ) ) {
                 _hreterr(kFuncAlreadyExists);//doesn't throw if already exists but instead it reports it
         }_fih
 //------------ find current key/data pair, position on it and aquire a write lock -ie. others cannot write to it
-        _htIF(0!=cursor1->get( a_Key, a_Value, DB_GET_BOTH|DB_RMW));
+        _htIF(0!=cursor1->get( a_Key, a_Value, DB_GET_BOTH
+#ifndef DISABLE_LOCK
+                                |DB_RMW
+#endif
+                                ));
 //------------ change it to new key/newval
         _htIF(0!=cursor1->put( a_Key/*ignored*/, a_NewValue, DB_CURRENT));
 
@@ -214,7 +237,7 @@ l0_findAndChange( //affecting only the value of the a_Key, aka the key cannot be
 //performes unsynced delete from one of the databases (unsynced means the other db is left inconsistent ie. A->B in primary, and B->A in secondary, l0_delFrom deletes one but leaves untouched the other so you're left with either A->B or B->A thus inconsistent)
 function
 l0_delFrom(
-                DbEnv *m_DBEnviron,
+                DbEnv *a_DBEnviron,
                 Db *a_DBInto,
                 DbTxn *a_ParentTxn,//can be NULL
                 Dbt *a_Key,
@@ -224,7 +247,7 @@ l0_delFrom(
 {
 
 //------------ validating params
-        __tIF(NULL == m_DBEnviron);
+        __tIF(NULL == a_DBEnviron);
         __tIF(NULL == a_Key);
         __tIF(NULL == a_Value);
         __tIF(NULL == a_DBInto);
@@ -232,7 +255,7 @@ l0_delFrom(
 
 //------------ new transaction
         DbTxn *thisTxn;
-        __tIFnok(l0_newTransaction(m_DBEnviron,a_ParentTxn,&thisTxn, m_StackVar));
+        __tIFnok(l0_newTransaction(a_DBEnviron,a_ParentTxn,&thisTxn, m_StackVar));
 
 #define THROW_HOOK \
         ABORT_HOOK
@@ -248,7 +271,11 @@ l0_delFrom(
 
 //------------ aquire a write lock on this specific key/data pair and position the cursor on it
         //position on the item
-        _htIF(0 != cursor1->get(a_Key, a_Value, DB_GET_BOTH|DB_RMW) );//apparently fails if not found!
+        _htIF(0 != cursor1->get(a_Key, a_Value, DB_GET_BOTH
+#ifndef DISABLE_LOCK
+                                |DB_RMW
+#endif
+                                ) );//apparently fails if not found!
 
 //------------ delete current item
         _htIF( 0 != cursor1->del(0) );
@@ -272,7 +299,7 @@ l0_delFrom(
 /*************************/
 function
 l0_putInto(
-                DbEnv *m_DBEnviron,
+                DbEnv *a_DBEnviron,
                 Db *a_DBInto,
                 DbTxn *a_ParentTxn,//can be null
                 Dbt *a_Key,
@@ -283,7 +310,7 @@ l0_putInto(
                 )
 {
 //------------ validate params
-        __tIF(NULL == m_DBEnviron);
+        __tIF(NULL == a_DBEnviron);
         __tIF(NULL == a_DBInto);
         __tIF(NULL == a_Key);
         __tIF(NULL == a_Value);
@@ -295,7 +322,7 @@ l0_putInto(
 
 //------------ open a new cursor
 #ifdef SHOWKEYVAL
-        __( cout << "l0_putInto: newcursor;"<<endl );
+        __( cout << "l0_putInto: newcursor;"<<a_ParentTxn<<endl );
 #endif
         //since dbase is opened DB_DUP it will allow dup key+data pairs; but we won't!
 //no DUPS! fail(not throw!) if already exists
@@ -332,7 +359,7 @@ l0_putInto(
         if (NULL == m_Cursor) { //only using a new child transaction if there's no cursor specified
         //------------ new transaction
                 DbTxn *thisTxn;
-                __tIFnok(l0_newTransaction(m_DBEnviron,a_ParentTxn,&thisTxn, m_StackVar));
+                __tIFnok(l0_newTransaction(a_DBEnviron,a_ParentTxn,&thisTxn, m_StackVar));
 #define THROW_HOOK \
         ABORT_HOOK
         //------------ create the key/data pair
@@ -382,7 +409,7 @@ ModLink(
 
 //--------- new encapsulating transactions (the outter transaction)
         DbTxn *thisTxn;
-        __tIFnok(l0_newTransaction(m_DBEnviron,a_ParentTxn,&thisTxn, m_StackVar));
+        __tIFnok(l0_newTransaction(a_DBEnviron,a_ParentTxn,&thisTxn, m_StackVar));
 
 #define THROW_HOOK \
         ABORT_HOOK
@@ -446,7 +473,7 @@ ModLink(
 /*************************/
 function
 l0_newCursorLink(//creates a consistent link between two nodes in the sense selected by a_NodeType below
-                DbEnv *m_DBEnviron,
+                DbEnv *a_DBEnviron,
                 Db * m_G2sGDb,
                 Db * m_sG2GDb,
                 Dbc * const m_Cursor,
@@ -462,7 +489,7 @@ l0_newCursorLink(//creates a consistent link between two nodes in the sense sele
 //---------- validating params
         __tIF(NULL == m_G2sGDb);
         __tIF(NULL == m_sG2GDb);
-        __tIF(NULL == m_DBEnviron);
+        __tIF(NULL == a_DBEnviron);
         __tIF(a_NodeId1.empty());
         __tIF(a_NodeId2.empty());
 
@@ -494,12 +521,16 @@ l0_newCursorLink(//creates a consistent link between two nodes in the sense sele
 #endif
                 //---------- if DB_CURRENT save old value(sG) of forward link for later
                 if (a_CursorPutFlags - DB_CURRENT == 0) {//must read current value for later to l0_delFrom()
-                                __tIF(0 != m_Cursor->get(&key, &curvalue, DB_CURRENT | DB_RMW) );//flagged for later deletion
+                                __tIF(0 != m_Cursor->get(&key, &curvalue, DB_CURRENT 
+#ifndef DISABLE_LOCK
+                                                        | DB_RMW
+#endif
+                                                        ) );//flagged for later deletion
                 }
 
                 //---------- overwrite old value; insert/overwrite forward link
                         //insert or overwrite in primary
-                        __fIFnok( l0_putInto(m_DBEnviron, m_G2sGDb, a_ParentTxn, &key,&value, m_StackVar, a_CursorPutFlags, m_Cursor) );
+                        __fIFnok( l0_putInto(a_DBEnviron, m_G2sGDb, a_ParentTxn, &key,&value, m_StackVar, a_CursorPutFlags, m_Cursor) );
 
                 //---------- if DB_CURRENT delete key/oldvalue from the other database
                 // if DB_CURRENT then we must pre-delete the old value to make dbase consistent within it's own system (our defined system)
@@ -514,7 +545,7 @@ l0_newCursorLink(//creates a consistent link between two nodes in the sense sele
                         );
 #endif
                         //---------- delete saved_old_value reverse link from secondary
-                        __tIFnok( l0_delFrom(m_DBEnviron, m_sG2GDb, a_ParentTxn, &curvalue,&key, m_StackVar) );//order of insertion(appended)
+                        __tIFnok( l0_delFrom(a_DBEnviron, m_sG2GDb, a_ParentTxn, &curvalue,&key, m_StackVar) );//order of insertion(appended)
                         if (curvalue.get_data()) {
                                         __( free(curvalue.get_data()) );
                         }
@@ -522,7 +553,7 @@ l0_newCursorLink(//creates a consistent link between two nodes in the sense sele
                 //---------- insert reverse link in secondary
                         //just insert in secondary
                         //if we're here, means we successfuly entered the record in primary, so the record must be successfully entered in secondary, ie. cannot return kFuncAlreadyExists; so it must be clean, otherwise we throw (up;)
-                        __tIFnok( l0_putInto(m_DBEnviron, m_sG2GDb, a_ParentTxn, &value,&key, m_StackVar) );//appended at end of list
+                        __tIFnok( l0_putInto(a_DBEnviron, m_sG2GDb, a_ParentTxn, &value,&key, m_StackVar) );//appended at end of list
                                 break;
                 }//case
                 case kSubGroup: {//reverse link case
@@ -545,12 +576,16 @@ l0_newCursorLink(//creates a consistent link between two nodes in the sense sele
                                 //if (a_CursorPutFlags & DB_CURRENT) {
                                 //---------- if DB_CURRENT save old pointee
                                 if (a_CursorPutFlags - DB_CURRENT == 0) {//must read current value for later to l0_delFrom()
-                                        __tIF(0 != m_Cursor->get(&key, &curvalue, DB_CURRENT | DB_RMW) );//flagged for later deletion
+                                        __tIF(0 != m_Cursor->get(&key, &curvalue, DB_CURRENT
+#ifndef DISABLE_LOCK
+                                                                | DB_RMW
+#endif
+                                                                ) );//flagged for later deletion
                                 }
                                 //---------- ins/overwrite the reverse link with the new pointee
                                 //insert or overwrite in secondary
                                 //if we're here, means we successfuly entered the record in primary, so the record must be successfully entered in secondary, ie. cannot return kFuncAlreadyExists; so it must be clean, otherwise we throw (up;)
-                                __fIFnok( l0_putInto(m_DBEnviron, m_sG2GDb, a_ParentTxn, &key,&value, m_StackVar, a_CursorPutFlags,m_Cursor) );
+                                __fIFnok( l0_putInto(a_DBEnviron, m_sG2GDb, a_ParentTxn, &key,&value, m_StackVar, a_CursorPutFlags,m_Cursor) );
                 //---------- taking care of the forward link
 #ifdef SHOWKEYVAL
                 std::cout<<"\tNewCursorLink(sG-G =RL):part2:primary db"<<endl;
@@ -570,14 +605,14 @@ l0_newCursorLink(//creates a consistent link between two nodes in the sense sele
                 );
 #endif
                                         //---------- del forwardlink pointing to old saved pointee
-                                       __tIFnok( l0_delFrom(m_DBEnviron, m_G2sGDb, a_ParentTxn, &curvalue,&key, m_StackVar) );//order of insertion(appended)
+                                       __tIFnok( l0_delFrom(a_DBEnviron, m_G2sGDb, a_ParentTxn, &curvalue,&key, m_StackVar) );//order of insertion(appended)
                                        if (curvalue.get_data()) {
                                                __( free(curvalue.get_data()) );
                                        }
                                 }
                         //---------- create new forward link
                         //just insert in primary
-                        __tIFnok( l0_putInto(m_DBEnviron, m_G2sGDb, a_ParentTxn, &value,&key, m_StackVar) );//order of insertion(appended)
+                        __tIFnok( l0_putInto(a_DBEnviron, m_G2sGDb, a_ParentTxn, &value,&key, m_StackVar) );//order of insertion(appended)
                                 break;
                              }
                 default:

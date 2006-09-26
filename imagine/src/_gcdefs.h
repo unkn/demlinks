@@ -46,6 +46,10 @@
 
 //#define CONTINUE_IF_NOTINITED //continue even if notification subsystem is not initialized, this could happen if some classes are instantiated before executing anything from main() 04aug2006
 
+//#define DISABLE_TRANSACTIONS
+#define DISABLE_LOCK
+//#define DISABLE_LOG
+
 #ifdef DML_PARANOIA_DEBUG
         #define PARANOIA_DEBUG
 #endif

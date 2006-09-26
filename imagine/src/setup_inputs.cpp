@@ -334,11 +334,11 @@ cout << "---FIFO Buffer"<<endl;
 
         __tIFnok( meBuf->InitFIFO(kGroup, "PointerP", kGroup, "RightOperand", kCreateNodeIfNotExists | kTruncateIfMoreThanOneNode | kOverwriteNode/*, kNone, mainTrans*/) ); //no Domain flags and no transaction (2 params ommited)
 
-        while (true) {
+        /*while (true) {
                 NodeId_t nod;
                 __tIFnok( meBuf->Pull(nod) );
                 cout << "Pulled: "<<nod <<endl;
-        }
+        }*/
 
         __tIFnok( meBuf->DeInit() );
 

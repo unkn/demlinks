@@ -77,6 +77,9 @@ function
 MDMLFIFOBuffer :: Push(
                 const NodeId_t a_NodeId)
 {
+#ifdef SHOWKEYVAL
+        cout << "MDMLFIFOBuffer :: Push:begin"<<endl;
+#endif
 //-------- check if not inited
         __tIF( ! TDMLCursor :: IsInited() );//assuming if the TDMLCursor is inited then so is the MDMLDomainPointer
 //------- check if empty param
@@ -84,6 +87,9 @@ MDMLFIFOBuffer :: Push(
 //------- do append
         __tIFnok( TDMLCursor :: Put(a_NodeId, kLastNode) );
 //------- done
+#ifdef SHOWKEYVAL
+        cout << "MDMLFIFOBuffer :: Push:done"<<endl;
+#endif
         _OK;
 }
 /*******************************/
@@ -93,6 +99,9 @@ MDMLFIFOBuffer :: Pull(
         //                ,const ETDMLFlags_t a_Flags //current implementation doesn't allow kMoveNode because the pointer points to the last pulled node and thus it must still exist; maybe when we can make Get(kLastNode) work (it's a berkeley db limitation)
 )
 {
+#ifdef SHOWKEYVAL
+        cout << "MDMLFIFOBuffer :: Pull:begin"<<endl;
+#endif
 //---------- setting flags
         //int tmpFlags=a_Flags;
         //_makeFLAG(kMoveNode);
@@ -113,7 +122,6 @@ MDMLFIFOBuffer :: Pull(
                 __tIFnok( TDMLCursor :: Find(pointee, kNone) ); //position on the current
                 flags=kNextNode; //prepare to fetch the next
         }
-        cout <<"got1"<<endl;
 //---------- attempting to fetch next item in list, if any
         NodeId_t next;
         __( err=( TDMLCursor :: Get(next, flags) ) );
@@ -121,12 +129,14 @@ MDMLFIFOBuffer :: Pull(
         if (kFuncOK != err) {//prolly no items in list OR no more items after current
                 _fret(err);//returning "not found"
         }
-        cout <<"got2"<<endl;
 //---------- if we're here we have the item, we must point to it
         __tIFnok( MDMLDomainPointer :: SetPointee(next) );//this must not fail
 //---------- return the data to the caller only if full success
         m_NodeId=next;
 //------- done
+#ifdef SHOWKEYVAL
+        cout << "MDMLFIFOBuffer :: Pull:done"<<endl;
+#endif
         _OK;
 }
 

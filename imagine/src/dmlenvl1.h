@@ -283,19 +283,19 @@ public:
                 );
 
 
+/****************************/
         function
         NewTransaction(DbTxn * a_ParentTxn,
-                        DbTxn ** a_NewTxn,
+                        DbTxn ** m_NewTxn,
                         const u_int32_t a_Flags=TRANSACTION_FLAGS
                         );
 
 
-/****************************/
         function
-        Commit(DbTxn **a_Txn);
+        Commit(DbTxn **m_Txn);
 
         function
-        Abort(DbTxn **a_Txn);
+        Abort(DbTxn **m_Txn);
 
 };/*class*/
 /*******************************/

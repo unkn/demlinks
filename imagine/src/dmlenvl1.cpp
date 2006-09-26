@@ -277,10 +277,11 @@ TLink::ShowContents(
 /****************************/
 function
 TLink :: NewTransaction(DbTxn * a_ParentTxn,
-                        DbTxn ** a_NewTxn,
+                        DbTxn ** m_NewTxn,
                         const u_int32_t a_Flags)
 {
-        return l0_newTransaction(fDBEnviron, a_ParentTxn, a_NewTxn, &fStackLevel, a_Flags);
+        __fIFnok( l0_newTransaction(fDBEnviron, a_ParentTxn, m_NewTxn, &fStackLevel, a_Flags) );
+        _OK;
 }
 /****************************/
 //destructor
@@ -336,9 +337,12 @@ TLink::openDB(
         __( (void )dbp->set_flags(DB_DUP) );//allow duplicate keys; order is order of insertion unless cursor puts;
 
         // Now open the database */
-        openFlags = DB_CREATE              |// Allow database creation
-                    //DB_READ_UNCOMMITTED    | // Allow uncommitted reads
-                    DB_AUTO_COMMIT ;          // Allow autocommit
+        openFlags = DB_CREATE              // Allow database creation
+                    //|DB_READ_UNCOMMITTED    // Allow uncommitted reads
+#ifndef DISABLE_TRANSACTIONS
+                    |DB_AUTO_COMMIT           // Allow autocommit
+#endif
+                    ;
 
         __( dbp->open(NULL,       // Txn pointer
                   fDBFileName.c_str(),   // File name
@@ -362,7 +366,12 @@ TLink::KillDB(
 {
                 if (file_exists(a_PathFN->c_str(),0,NULL)) {
 //---------- remove database of this environment
-                        __(fDBEnviron->dbremove(NULL,a_FName->c_str(),NULL,0));
+                        try {
+                                fDBEnviron->dbremove(NULL,a_FName->c_str(),NULL,0);
+                        } catch (exception &e) {
+                                cout << e.what() <<endl;
+                                __(throw e);
+                        }
 //---------- done
                         _OK;//killed
                 } else {
@@ -398,10 +407,16 @@ TLink::TLink(
     u_int32_t fDBEnvironFlags =
       DB_CREATE     |  // Create the environment if it does not exist
       DB_RECOVER    |  // Run normal recovery.
-      DB_INIT_LOCK  |  // Initialize the locking subsystem
+#ifndef DISABLE_LOG
       DB_INIT_LOG   |  // Initialize the logging subsystem
+#endif
+#ifndef DISABLE_LOCK
+      DB_INIT_LOCK  |  // Initialize the locking subsystem
+#endif
+#ifndef DISABLE_TRANSACTIONS
       DB_INIT_TXN   |  // Initialize the transactional subsystem. This
                        // also turns on logging.
+#endif
       DB_INIT_MPOOL |  // Initialize the memory pool (in-memory cache)
       DB_THREAD;       // Cause the environment to be free-threaded, that is, concurrently usable by multiple threads in the address space.
 
@@ -423,7 +438,12 @@ TLink::TLink(
         __(fDBEnviron->set_lk_detect(DB_LOCK_MINWRITE););
 
 
-        __(fDBEnviron->open(fEnvHomePath.c_str(), fDBEnvironFlags, 0););
+        try {
+                fDBEnviron->open(fEnvHomePath.c_str(), fDBEnvironFlags, 0);
+        } catch (DbException &e) {
+                cout << e.what() <<endl;
+                __(throw e);
+        }
 
 #undef THROW_HOOK
 #define THROW_HOOK ENVCLOSE_HOOK
@@ -556,16 +576,18 @@ TLink::showRecords(
 /****************************/
 /*******************************/
 function
-TLink::Commit(DbTxn **a_Txn)
+TLink::Commit(DbTxn **m_Txn)
 {//one cannot&shouldnot call Abort after calling this function: is in the Berkeley DB docs that cannot call abort after a failed(or successful) DbTxn->commit()
-        return l0_commit(a_Txn, &fStackLevel);
+        __fIFnok(l0_commit(m_Txn, &fStackLevel));
+        _OK;
 }
 
 /*******************************/
 function
-TLink::Abort(DbTxn **a_Txn)
+TLink::Abort(DbTxn **m_Txn)
 {
-        return l0_abort(a_Txn, &fStackLevel);
+        __fIFnok(l0_abort(m_Txn, &fStackLevel) );
+        _OK;
 }
 
 
@@ -1090,7 +1112,9 @@ TDMLCursor :: Get(
         u_int32_t dbFlags=0;
 
         if (fl_kCursorWriteLocks) {
+#ifndef DISABLE_LOCK
                 dbFlags|=DB_RMW;
+#endif
         }
 
         //---------- setting this which is used in 2 places
