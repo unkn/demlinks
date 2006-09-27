@@ -66,7 +66,7 @@ public:
                 );
 };
 /****************************/
-class MDMLFIFOBuffer: private TDMLCursor, public MDMLDomainPointer {
+class MDMLFIFOBuffer: private TDMLCursor, public MDMLDomainPointer { //FIFO contains only unique elements (cannot be dups)
 //the pointer will point to the last item pulled, ie. you'll have to (internally done of course) try to position the pointer to next element in list and return that, is no more items then return NULL to signal that; the pointer remains on last item pulled; it is null only when there are no elements in Domain or Pull was never used(so, 2 cases).
 //the pointer is NULL only when the Domain has no elements... and maybe when MDMLFIFOBuffer is inited
 //ie. Domain is kGroup "A"
@@ -78,7 +78,7 @@ private:
         MDMLFIFOBuffer();//constructor
 public:
         MDMLFIFOBuffer(TLink *m_WorkingOnThisTLink);
-        ~MDMLFIFOBuffer();
+        virtual ~MDMLFIFOBuffer();
 //FIFO(first in first out) is ie. 1,2,3 get in, 1,2,3 get out in this order
         function
         InitFIFO(
@@ -89,22 +89,42 @@ public:
                 const int a_PtrFlags=kNone,//pointer flags
                 const int a_DomFlags=kNone,//domain flags
                 DbTxn *a_ParentTxn=NULL
-                ); //the Domain is a synonim for TDMLCursor here
+                ); //the Domain is a synonym for TDMLCursor here
 
-        function
+        virtual function
         DeInit();
 
-        function
+        virtual function
         Pull(
                         NodeId_t &m_NodeId
                         //,const ETDMLFlags_t a_Flags
                         );
 
-        function
+        virtual function
         Push(const NodeId_t a_NodeId);//append node to list ie. insert last; doesn't touch the pointer (MDMLDomainPointer)
 
 };//MDMLFIFOBuffer
 /****************************/
+/****************************/
+class MDMLFIFOBufferWithDUPs: private MDMLFIFOBuffer { //contains dups at the next tree level ie. A->B->C where B is irrelevant only A->C is seen ; and A->D->C is the A->C dup, the pointer really points to B or C to keep track of which dup is really pointed; so you actually see A->C and A->C when in reality you have A->B->C and A->D->C where B&D are temporary IDs not normally used anywhere else.
+private:
+        MDMLFIFOBufferWithDUPs();//constructor
+public:
+        MDMLFIFOBufferWithDUPs(TLink *m_WorkingOnThisTLink);
+        ~MDMLFIFOBufferWithDUPs();
+
+        function
+        InitFIFOWithDUPs(
+                const ENodeType_t a_PtrNodeType, //use kGroup here
+                const NodeId_t a_PtrId, //pointer name
+                const ENodeType_t a_DomainType,
+                const NodeId_t a_DomainId, //domain in which the pointer can be assigned values from.
+                const int a_PtrFlags=kNone,//pointer flags
+                const int a_DomFlags=kNone,//domain flags
+                DbTxn *a_ParentTxn=NULL
+                ); //the Domain is a synonym for TDMLCursor here
+
+};
 /****************************/
 
 /****************************/

@@ -14,6 +14,9 @@ Legend:
 
 =demlinks-0.0.23
 LU: 25 September 2006
+* let there be noted that both TDMLCursor and MDMLFIFOBuffer are using Domains
+of unique elements, that is key/data pairs where key is the same and data are
+elements that are unique within that key.
 $ need to work with locks, ie. unset DISABLE_LOCK and make it not deadlock!
 $ running ./2 and pressing ctrl+c when sleep(5) acts, doesn't act as we'd
 expect, the sigint signal is trapped and deinits the notify tracker but the

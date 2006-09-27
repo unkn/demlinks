@@ -334,6 +334,8 @@ cout << "---FIFO Buffer"<<endl;
 
         __tIFnok( meBuf->InitFIFO(kGroup, "PointerP", kGroup, "RightOperand", kCreateNodeIfNotExists | kTruncateIfMoreThanOneNode | kOverwriteNode/*, kNone, mainTrans*/) ); //no Domain flags and no transaction (2 params ommited)
 
+        __tIFnok( meBuf->Push("dood") );
+        __tIFnok( meBuf->Push("doodad") );
         while (true) {
                 NodeId_t nod;
                 function err;

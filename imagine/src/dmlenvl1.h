@@ -108,7 +108,7 @@ public:
         function
         InitCurs(
                         const ENodeType_t a_NodeType,
-                        const NodeId_t a_NodeId,
+                        const NodeId_t a_NodeId, //key
                         const int a_Flags=kNone,
                         DbTxn *a_ParentTxn=NULL
                         );

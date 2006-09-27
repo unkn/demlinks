@@ -48,7 +48,7 @@ MDMLFIFOBuffer :: InitFIFO(
                 const int a_PtrFlags,//pointer flags
                 const int a_DomFlags,//domain flags
                 DbTxn *a_ParentTxn
-        )//the Domain is a synonim for TDMLCursor here
+        )//the Domain is a synonym for TDMLCursor here
 {
 //------ validate params
         __tIF( a_PtrId.empty() );
