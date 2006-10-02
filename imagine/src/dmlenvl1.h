@@ -80,7 +80,8 @@ public:
                 );
 
         virtual function
-        DeInit();
+        DeInit();//just unlinks this class instance with the demlinks environment pointer and related stuff (so the dmlenv pointer is not destroyed within the demlinks environment, only the class instance link to it; in other words the instance of this class lives in the C++ enviroment(runtime) and the dmlenv pointer lives in the demlinks environment AND DeInit here destroys the class instance only). All DeInit() funx should do this!
+
 
 };
 /****************************/
@@ -271,6 +272,7 @@ public:
                 DbTxn *a_ParentTxn=NULL
                 );
 
+/****************************/
         function
         TLink::ShowContents(
                 DbTxn *a_ParentTxn=NULL

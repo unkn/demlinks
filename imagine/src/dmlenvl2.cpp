@@ -50,14 +50,17 @@ MDMLFIFOBuffer :: InitFIFO(
                 DbTxn *a_ParentTxn
         )//the Domain is a synonym for TDMLCursor here
 {
+#ifdef SHOWKEYVAL
+        cout << "MDMLFIFOBuffer :: InitFIFO"<<endl;
+#endif
 //------ validate params
         __tIF( a_PtrId.empty() );
         __tIF( a_DomainId.empty() );
         __tIF( kNone != a_DomFlags ); //at the time of creation, TDMLCursor didn't support any flags thus this is here to make any necessary checks in case some flags were added
 //------ init cursor
-        __tIFnok( TDMLCursor :: InitCurs(a_DomainType, a_DomainId, a_DomFlags, a_ParentTxn) );
+        __fIFnok( TDMLCursor :: InitCurs(a_DomainType, a_DomainId, a_DomFlags, a_ParentTxn) );
 //------ init pointer
-        __tIFnok( MDMLDomainPointer :: InitDomPtr(a_PtrNodeType, a_PtrId, a_DomainType, a_DomainId, a_PtrFlags, a_ParentTxn) );
+        __fIFnok( MDMLDomainPointer :: InitDomPtr(a_PtrNodeType, a_PtrId, a_DomainType, a_DomainId, a_PtrFlags, a_ParentTxn) );
 //------ done
         _OK;
 }
@@ -65,10 +68,13 @@ MDMLFIFOBuffer :: InitFIFO(
 function
 MDMLFIFOBuffer :: DeInit()
 {
+#ifdef SHOWKEYVAL
+        cout << "MDMLFIFOBuffer :: DeInit"<<endl;
+#endif
 //------- deinit pointer
-        __tIFnok( MDMLDomainPointer :: DeInit() );
+        __fIFnok( MDMLDomainPointer :: DeInit() );
 //------- deinit cursor
-        __tIFnok( TDMLCursor :: DeInit() );
+        __fIFnok( TDMLCursor :: DeInit() );
 //------- done
         _OK;
 }
@@ -85,7 +91,7 @@ MDMLFIFOBuffer :: Push(
 //------- check if empty param
         __tIF( a_NodeId.empty() );
 //------- do append
-        __tIFnok( TDMLCursor :: Put(a_NodeId, kLastNode) );
+        __fIFnok( TDMLCursor :: Put(a_NodeId, kLastNode) );
 //------- done
 #ifdef SHOWKEYVAL
         cout << "MDMLFIFOBuffer :: Push:done"<<endl;
@@ -225,5 +231,96 @@ MDMLDomainPointer :: verify(const NodeId_t a_Pointee)
 }
 /*******************************/
 /*******************************/
+/*******************************/
+MDMLFIFOBufferWithDUPs :: ~MDMLFIFOBufferWithDUPs()
+{//destructor
+}
+/*******************************/
+MDMLFIFOBufferWithDUPs :: MDMLFIFOBufferWithDUPs(
+                TLink *m_WorkingOnThisTLink): MDMLFIFOBuffer(m_WorkingOnThisTLink)
+{//constructor
+}
+/*******************************/
+function
+MDMLFIFOBufferWithDUPs :: InitFIFOWithDUPs(
+                const ENodeType_t a_PtrNodeType, //use kGroup here
+                const NodeId_t a_PtrId, //pointer name
+                const ENodeType_t a_DomainType,
+                const NodeId_t a_DomainId, //domain in which the pointer can be assigned values from.
+                const int a_PtrFlags,//pointer flags
+                const int a_DomFlags,//domain flags
+                DbTxn *a_ParentTxn
+                ) //the Domain is a synonym for TDMLCursor here
+{
+//------ validate params
+        __tIF( a_PtrId.empty() );
+        __tIF( a_DomainId.empty() );
+        __tIF( kNone != a_DomFlags ); //at the time of creation, TDMLCursor didn't support any flags thus this is here to make any necessary checks in case some flags were added
+
+//------ save some for later use
+        fDomainType=a_DomainType;
+        fDomainId=a_DomainId;
+        fParentTxn=a_ParentTxn;
+
+//------ inherit
+        __fIFnok( MDMLFIFOBuffer :: InitFIFO( a_PtrNodeType, a_PtrId, fDomainType, fDomainId, a_PtrFlags, a_DomFlags, fParentTxn) );
+//------ done
+        _OK;
+}
+
+/*******************************/
+function
+MDMLFIFOBufferWithDUPs :: DeInit()
+{
+//------- inherit
+        __fIFnok( MDMLFIFOBuffer :: DeInit() );
+//------- done
+        _OK;
+}
+/*******************************/
+function
+MDMLFIFOBufferWithDUPs :: Push(
+                const NodeId_t a_NodeId)
+{
+#ifdef SHOWKEYVAL
+        cout << "MDMLFIFOBufferWithDUPs :: Push:begin"<<endl;
+#endif
+//------- begin
+//------- create a unique Id in the entire environment
+/*        NodeId_t unique;
+        __fIFnok( createUniqueId(unique) );
+//------- make a pointer with that unique Id
+        MDMLDomainPointer uniqPtr;
+        __tIFnok( uniqPtr->InitDomPtr(fDomainType, unique, fDomainType, fDomainId, kCreateNodeIfNotExists | kTruncateIfMoreThanOneNode | kOverwriteNode, fParentTxn) );
+        //------- make pointer point to that unique node
+        __fIFnok( uniqPtr->DeInit() );
+//------- inherit
+        __fIFnok( MDMLFIFOBuffer :: Push( unique ) );
+        */
+        //FIXME:
+//------- done
+#ifdef SHOWKEYVAL
+        cout << "MDMLFIFOBufferWithDUPs :: Push:done"<<endl;
+#endif
+        _OK;
+}
+/*******************************/
+function
+MDMLFIFOBufferWithDUPs :: Pull(
+                        NodeId_t &m_NodeId
+                )
+{
+#ifdef SHOWKEYVAL
+        cout << "MDMLFIFOBufferWithDUPs :: Pull:begin"<<endl;
+#endif
+//------- begin
+        __fIFnok( MDMLFIFOBuffer :: Pull( m_NodeId ) );
+        //FIXME:
+//------- done
+#ifdef SHOWKEYVAL
+        cout << "MDMLFIFOBufferWithDUPs :: Pull:done"<<endl;
+#endif
+        _OK;
+}
 /*******************************/
 /*******************************/

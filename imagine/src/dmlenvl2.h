@@ -67,7 +67,8 @@ public:
 };
 /****************************/
 class MDMLFIFOBuffer: private TDMLCursor, public MDMLDomainPointer { //FIFO contains only unique elements (cannot be dups)
-//the pointer will point to the last item pulled, ie. you'll have to (internally done of course) try to position the pointer to next element in list and return that, is no more items then return NULL to signal that; the pointer remains on last item pulled; it is null only when there are no elements in Domain or Pull was never used(so, 2 cases).
+//the pointer will point to the last item pulled, ie. you'll have to (internally done of course) try to position the pointer to next element in list and return that, if no more items then return NULL to signal that; the pointer remains on last item pulled; it is null only when there are no elements in Domain or Pull was never used(so, 2 cases).
+//this workaround is accepted because berkeley db (afaik) cannot return with cursor->Get() the DB_KEYLAST element of a given key
 //the pointer is NULL only when the Domain has no elements... and maybe when MDMLFIFOBuffer is inited
 //ie. Domain is kGroup "A"
 //elements are kSubGroups of "A"
@@ -108,6 +109,10 @@ public:
 /****************************/
 class MDMLFIFOBufferWithDUPs: private MDMLFIFOBuffer { //contains dups at the next tree level ie. A->B->C where B is irrelevant only A->C is seen ; and A->D->C is the A->C dup, the pointer really points to B or C to keep track of which dup is really pointed; so you actually see A->C and A->C when in reality you have A->B->C and A->D->C where B&D are temporary IDs not normally used anywhere else.
 private:
+        ENodeType_t fDomainType;
+        NodeId_t fDomainId;
+        DbTxn *fParentTxn;
+
         MDMLFIFOBufferWithDUPs();//constructor
 public:
         MDMLFIFOBufferWithDUPs(TLink *m_WorkingOnThisTLink);
@@ -124,9 +129,18 @@ public:
                 DbTxn *a_ParentTxn=NULL
                 ); //the Domain is a synonym for TDMLCursor here
 
+        function
+        DeInit();
+
+        function
+        Pull(
+                        NodeId_t &m_NodeId
+                        );
+
+        function
+        Push(const NodeId_t a_NodeId);//append node to list ie. insert last; doesn't touch the pointer (MDMLDomainPointer)
 };
 /****************************/
-
 /****************************/
 /****************************/
 /****************************/

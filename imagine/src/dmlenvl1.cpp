@@ -794,9 +794,6 @@ TDMLPointer :: InitPtr(
                 std::cout<<"\tTDMLPointer::Init:PointerName="<<
                 pointerId<<endl;
 #endif
-        //FIXME:
-        //checking if group exists, if not we make it point to itself which mean the pointer is NULL no! read below! seach RECTIF
-        //all above only if certain flags are present
 
 //#1 check if kGroup exists aka if there's a forward link with that pointer(key) [pointer=node]
 //---------- new cursor; temporary

@@ -8,161 +8,132 @@
 
 Legend:
 	* means DONE
-	$ means TODO
-	~ means NOTE
 	LU means last update on ... date
 
-=demlinks-0.0.23
+===========demlinks-0.0.23
 LU: 25 September 2006
+
 * let there be noted that both TDMLCursor and MDMLFIFOBuffer are using Domains
 of unique elements, that is key/data pairs where key is the same and data are
 elements that are unique within that key.
-$ need to work with locks, ie. unset DISABLE_LOCK and make it not deadlock!
-$ running ./2 and pressing ctrl+c when sleep(5) acts, doesn't act as we'd
-expect, the sigint signal is trapped and deinits the notify tracker but the
-program doesn't stop there... apparently.
+
 * renamed INSTALL.svn to autogen.sh  (because it doesn't really install, just
 makes compile+link)
+
 * added search script "./s" and symlinks; this script uses grep, whiptail and
 vim to simplify searching for the given text ie. ./s main
+
 * MDMLDomainPointer - a pointer that can be either NULL or it's pointee can be
 only from a certain domain (=a list of items to choose from)
+
 * trackable _fret() just by setting gTrackFRETs to true before the block that
 needs to be tracked (no need to define any defs/macros) and after the block
 set it to false
+
 * arranged dmlenv into levels
+
 * created a delete macro; if used without parentheses surrounding the
 parameter(s) then it will call the original delete
+
 * added ./src/cs script to update the cscope dbase; check
 http://cscope.sourceforge.net/cscope_vim_tutorial.html you'll need to download
 http://cscope.sourceforge.net/cscope_maps.vim and put it in ~/.vim/plugin/
 then you could use ie. vim -t main  to go to one of the main() functions;
+
 * added TDMLPointer
-$ Count() is broken; Dbc->count() needs the cursor to be initialized otherwise
-it throws EINVAL
+
 * added group comments ie. to avoid using some functions of macros for that to
 be obvious like that; imagine a tree with root starting at main() ... u get
 the picture!
+
 * added TDMLCursor::Count()
-~ this may be just apparent but seems to me that berkeley db cannot return the
-last datum of a give dup key with DB_LAST; the latter refers to the last item
-of the database thus the key param to get()[cursor] is ignored!
-* added IsLinkConsisten() consistency checks in a few points (dmlenv.cpp) that
+
+* added IsLinkConsistent() consistency checks in a few points (dmlenv.cpp) that
 does check if the link is consistent in both dbases; ie. Put(), Get(),
 showRecords(), ShowContents(), NewLink(), ModLink() they've all been
 protected; however this IsLinkConsistent() seems rather barbaric where it is
 called, because some actions will be repeated ie. key=val may already exist in
 primary but it is still checked again within IsLinkConsistent()
-$ rewrite all bdb funx from dmlenv.cpp they're ugly!
-~ bewarned that DB_XXX flags passed to ie. Db->put() or Dbc->put() are not
-binary ie. DB_CURRENT=7 and DB_KEYFIRST=15 thus if you're expecting the former
-with (DB_CURRENT == (DB_CURRENT & flags)) you'll get it even if it's only the
-latter; ok, if this wasn't clear enough former=DB_CURRENT; latter=DB_KEYFIRST
+
 * Put() should work now; also note putInfo() is consistently modified to
 handle itself with or without cursor.
+
 * colour enabled error reporting with ^[[3Xm (X=0..9) ^[ is \x1B or C-v,C-[ in
 vim
-~ so far there's no sensible way to view the contents of the database(s);
-planning on doing that with 3D
+
 * added Put() and: NewLink() override
+
 * made TRACKABLE_RETURNS display their param also
+
 * weird acting TDMLCursor Get() with DB_SET and DB_NEXT but i guess this is
 normal.
+
 * unified new_transaction flags to macro TRANSACTION_FLAGS
-~ we'll have to fix stuff when situations like throwing while db is open will
-have to close it before throwin from main() otherwise who knows what's
-happening with the data; so far we're recreating the dbase on each run.
+
 * fixed string initialization from fUniq with std::string newstr(fUniq);
-~ for some weird reason, 800x600 and 1024x768 resolutions don't work with
-nvidiafb (console framebuffer) thus we use 1024x766
+
 * fixed missing 'zvim' script
-~ for some unknown reason while running ./1 from within 'mc'(Midnight Commander 4.6.1)
-allegro fails to init keyboard at line 348 in file timedkeys.cpp; so exit 'mc'
-this with framebuffer in mind(not in X.org) also note declare -x SHLVL="2" from
-within 'mc' and the fact that ./1 is running the executable with root rights(sudo)
-also /usr/lib/mc/cons.saver has suid root (chmod u+s cons.saver)
+
 * if TERM="linux" then we automaticly invoke executable thru 'sudo': assumed
 we're running from console and afaik root rights are needed then.
-~ running on console with nvidiafb framebuffer using allegro 4.3.1 from svn
-7475
-~ kGroup or kSubGroup are called Node(s); A node can be paradoxally any or
-both of kGroup and kSubGroup, depending on the point of view;
+
 * when running ./1 if exitcode is 134 then most prolly you're running it from
 console and mouse initialization fails, needs root, thus we do run the
 executable thru sudo but even this doesn't work on ubuntu "Can't open
 framebuffer /dev/fb0" (guess it depends on ubuntu setting and how u've
 compiled allegro)
-~ yes, graphics mode, doesn't work in console (at least not in ubuntu afaik),
-could work on slackware with svgalib.
+
 * added keys 1,2,3 and 4 to toggle those respective cams(views) thus all
 active cams will act(move) at once (there was an earlier svn rev that could do
 that but underlaying has changed since then)
-~ we won't try to make a unit standalone (ie. timedkeys.cpp: we'll make
-MoveFirstFromBuffer() to create elemens using dmlenv.cpp therefore the former
-will depend on the latter so timedkey.cpp is not standalone); we won't care
-about making standalone units anymore: they'll be irrelevant considering
-demlinks can do what they do better;
 
-=demlinks-0.0.22
+
+==============demlinks-0.0.22
 LU: 10 August 2006
+
 * easier to pinpoint the errors by tripple clicking the output line with
 'zvim' and then middle mouse button press to paste it(ie. in konsole) => opens
 vim on the file&line with the error. (to test just put __tIF(test); somewhere
 in the code then run it)
-~ alot of inconsistencies projected to exist (ie. outdated comments)
-~ ./2 ; the root expression doesn't get assigned neither as left nor as right
-operand - this was/is the intended behaviour
-~ there are two patches (still not present in svn 7457) that fix the issue
-with keeping a key pressed (in X) while in our program causes random release
-then keypress again events (allegro's way of getting inputs from X)
+
 * fixed macros like _hif() that can get a semicolon after them and totally
 ignore the block after that semicolon, now they don't the block until _fih is
 still executed (if true) and the developer has to use _fihelse instead of else
+
 * going windowed again; allegro 4.3.1 svn 7454 goes full screen by default
-$ and yes the text indeed doesn't keep the same square as when using only q/e
-keys
+
 * pressing undefined keys now refreshes the camera's screen to show the
 keyboard buffer in action(also remember there's the "`" key to press twice)
-$ lemme restate that performance(aka optimization/speed) is highly irrelevant
-considering (one of) the main goal(s): accesibility (&flexibility) that is why
-things are how they are in the code part.
+
 * standardizing most functions to return type of 'function' instead of other
 types like bool or int
-$ reduce CPU consumption even further by making the main loop wait for a
-signal which maybe a refresh signal or a timer signal
+
 * fixed some stuff with the notification tracking system such as made auto
 initialization by not using a pointer thus it is done pre main() entry(so only
 #include "pnotetrk.h" is needed - actually g++ by includint pnotetrk.o should
 do the trick); and
 because of this we had to make cams[i] a pointer to an array otherwise they
 would initialize(by constructors) before the notif.sys.
+
 * mutex locked interrupt handler (timed*.cpp)
+
 * base idea from '../babyplan/txt' implemented using berkeley db
 (dmlenv.cpp)
+
 * arithmetic expression(s) as binary trees will be used for key combination
 detection (ie. cheat codes used in games) [polishform.cpp]
-$ need to insert the inputs into berkeley db (dmlenv.cpp) and then get them
-from those trees/lists
-$ eventually insert variables and code from C++ into the 3D world so they can
-be viewed/modified by the running program or by another similar program in
-another thread; if an exception occurs in the first program, the second
-program could debug and fix it and then have the first program continue; this
-may seem similar to contemporary practices but at least the connections
-between the items are not implied only in the viewer's brain and only exist at
-the moment of execution by the processor, instead they are properly defined...
-~ just a note: does compile with alleg.sf.net from svn revision 7392
-~ only the first cammera is accessible (since some time now)
 
-=demlinks-0.0.21
+============demlinks-0.0.21
 LU: 23 Aug 2005
-$ need to be able to pass values of lowlevel input(ie. mouse MickeyX) to
-function that gets executed as action
+
 * can't remember
 
-=demlinks-0.0.20
+===========demlinks-0.0.20
 LU: 23 Aug 2005
+
 * ifdef-ed, default to disabled, Time in input events. As secondary effect,
 less overhead.
+
 * disabled the unsatisfactory delay-on-playing actions, that is the piece of
 code which tries to queue to actions only after the TimeDiff between prev and
 current has elapsed; done that in favour of a faster response time based on
@@ -170,81 +141,90 @@ the fact that the user would react to what it sees on screen anyway so ie. if
 he releases the key we wouldn't wanna keep the action executing for more 300ms
 after that just to keep the diff between the key events.
 
-=demlinks-0.0.19
+===============demlinks-0.0.19
 LU: 23 Aug 2005
-$ TODO: crc on last x keys could launch a GI(generic input) [aka CRC-enabled
-GenericInput]
+
 * fixed smth like this, if you hold Q,E,A,D all together at the same time(same
 time=when they cancel eachother out thus no motion is being performed on the
 'chess' board) and then release them again at the same time, it succedes in
 that the 'chess' board's position remains the same.(search for "recheck:" in
 input.cpp)
+
 * fixed regulation of executing actions by compromising the global timer to
 increment at the same rate which the execution of actions needs.
-$ some flaws with regulating execution, while ie. key pressed
+
 * regulated execution timing
+
 * continuity done
+
 * added DDL.h generic double linked list, differs from SLL.h
+
 * removed config.h from _gcdefs.h
-$ fails PARANOIA_DEBUG set in config.h since cannot include it while conflicts
-with some defs already included from allegro.h
-$ have to do continuity of actions, play and replay of them acording to
-timer(TimeDiff)
+
 * made sure playing actions is depending on game cycles
 
-=demlinks-0.0.18
+==============demlinks-0.0.18
 LU: 22 Aug 2005
+
 * trying to get rid of _gcdefs.h by making use of ../config.h
+
 * cleanups in timed*.*
+
 * made TimeDiff for generic and actions input
+
 * and some things I don't remember
 
-=demlinks-0.0.17
+===========demlinks-0.0.17
 LU: 21 Aug 2005
+
 * added new global timer gTimer
+
 * made key &mouse use same timer: gTimer
+
 * changed timer of inputs(mouse&key) to keep the time difference between them inputs
+
 * made granularity of gTimer (and all its descendants) = 1000 miliseconds / second.
-$ the goal is to execute the actions depending on the diff between the inputs,
-that long to be the pause between the executed actions, same as the diff
-between the inputs. Hmm....
 
-=demlinks-0.0.16
+
+============demlinks-0.0.16
 LU: 19 Aug 2005
-* done some cleanups
-$ must do smooth motion while holding key down, but not with flags since we need replay of input/actions; we need smth like speed of game in its time, speed regulation; hmm ON/OFF type actions, OR CONTINOUS type actions...
 
-=demlinks-0.0.15
+* done some cleanups
+
+=============demlinks-0.0.15
 LU: 19 Aug 2005
 * introduced flags
 
 =demlinks-0.0.14
 LU: 18 Aug 2005
 * at least the keys work somehow even tho there's some stray effect when turning the data displayed is no longer in line... oh yeah you can move if u repeatedly press keys
-$ need to do Flags array but with a counter incrementing and decrementing on each set, now we have 2 shift keys on a bool which doesn't work like an 'is key held?'
 
-=demlinks-0.0.13
+===========demlinks-0.0.13
 * made actions and functions ... thing
 * if the src seems hard to read/understand remember that the text doesn't matter at all, really. It's the relations which imply connection, that matter ... hence this program.
 
-=demlinks-0.0.12
+============demlinks-0.0.12
 LU: 17.Aug.2005
 * removed KEYDEBUG from main
-=demlinks-0.0.7
+
+==========demlinks-0.0.7
 * temporary display of variables, on squares, use TAB to switch screens
-=demlinks-0.0.5
-* LU: 09 August 2005.
-* TODO: transform any kind of input into generic input, then generic input into actions; an action means: on activation execute a function, on deactivation execute a(nother) function, if no deactivation function then the action gets deactivated after one (func) execution (while active). Like this:
+
+==========demlinks-0.0.5
+LU: 09 August 2005.
+
+* transform any kind of input into generic input, then generic input into actions; an action means: on activation execute a function, on deactivation execute a(nother) function, if no deactivation function then the action gets deactivated after one (func) execution (while active). Like this:
         key   -\
          mouse-->-----> generic input ----> actions
         serial-/
- this means that take any one of key,mouse or serial(don't mix), many or one inputs of that type will be converted into one input of 'generic input' type; then take many or one inputs of 'generic input' type and they will be converted into one action; an actions consists of one procedure(function) that gets executed. Any of those five items are serial meaning they push items into a FIFO buffer. The buffer may be read at any time by executing software even if the necessary combinations aren't complete yet to fulfill the next stage(ie. incomplete key combination, thus generic input isn't triggered this time). Action can be of type: once OR continous. Once type, gets executed only once. Continous type, gets executed until the deactivation combination is received(that is, some generic input triggers the deactivate part of this action). This type of actions only trigger active if they previously were inactive, likewise only trigger deactivation if they were previously active. Actions may be triggered by user in any part of the program, also they can be disabled to stop checking if they occur but keeping their previous state. Actions are taken one at once and executed, thus u cannot cumulate actions to sum-up to another action, use generic input type cumulation instead.
+this means that take any one of key,mouse or serial(don't mix), many or one inputs of that type will be converted into one input of 'generic input' type; then take many or one inputs of 'generic input' type and they will be converted into one action; an actions consists of one procedure(function) that gets executed. Any of those five items are serial meaning they push items into a FIFO buffer. The buffer may be read at any time by executing software even if the necessary combinations aren't complete yet to fulfill the next stage(ie. incomplete key combination, thus generic input isn't triggered this time). Action can be of type: once OR continous. Once type, gets executed only once. Continous type, gets executed until the deactivation combination is received(that is, some generic input triggers the deactivate part of this action). This type of actions only trigger active if they previously were inactive, likewise only trigger deactivation if they were previously active. Actions may be triggered by user in any part of the program, also they can be disabled to stop checking if they occur but keeping their previous state. Actions are taken one at once and executed, thus u cannot cumulate actions to sum-up to another action, use generic input type cumulation instead.
 
-=demlinks-0.0.4
+==========demlinks-0.0.4
 LU: 09 August 2005
+
 * modified lower level timedinput& key&mouse ones for future supporting of...
 
-=demlinks-0.0.1
-* LastUpdate: 02 August 2005
+==========demlinks-0.0.1
+LastUpdate: 02 August 2005
 * descent alike camera motion succeded on 5 July 2005
 

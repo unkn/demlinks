@@ -324,7 +324,8 @@ cout << "---MDMLDomainPointer"<<endl;
         __( delete(meDom) );
         ShowAllNotifications();
 
-cout << "---FIFO Buffer"<<endl;
+{
+        cout << "---FIFO Buffer with unique nodes"<<endl;
 
         /*DbTxn *mainTrans;
         __tIFnok( gLink->NewTransaction( NULL, &mainTrans) );*/
@@ -336,6 +337,10 @@ cout << "---FIFO Buffer"<<endl;
 
         __tIFnok( meBuf->Push("dood") );
         __tIFnok( meBuf->Push("doodad") );
+        /*gTrackFRETs=true;
+        __tIFnok( meBuf->Push("dood") );
+        gTrackFRETs=false; */
+
         while (true) {
                 NodeId_t nod;
                 function err;
@@ -358,6 +363,41 @@ cout << "---FIFO Buffer"<<endl;
 
         cout << "sleep 5"<<endl;
         sleep(5);
+}
+
+{
+cout << "---FIFO Buffer with DUP nodes"<<endl; //DUPlicates
+
+        MDMLFIFOBufferWithDUPs *meBuf;
+        __( meBuf= new MDMLFIFOBufferWithDUPs(gLink) );
+
+        __tIFnok( meBuf->InitFIFOWithDUPs(kGroup, "PointerP2", kGroup, "LeftOperand", kCreateNodeIfNotExists | kTruncateIfMoreThanOneNode | kOverwriteNode/*, kNone, mainTrans*/) ); //no Domain flags and no transaction (2 params ommited)
+
+        __tIFnok( meBuf->Push("dood") );
+        __tIFnok( meBuf->Push("doodad") );
+
+        while (true) {
+                NodeId_t nod;
+                function err;
+                __( err=meBuf->Pull(nod) );
+                if (kFuncOK == err) {
+                        cout << "Pulled: "<<nod<<endl;
+                        //__tIFnok( meBuf->GetPointee(nod) );
+                        //cout << " pointer currently points to: "<<nod <<endl;
+                } else {
+                        __tIF( kFuncNotFound != err ); //unhandled error at this point
+                        //cout << "No more!" <<endl;
+                        break;
+                }
+        }
+
+        __tIFnok( meBuf->DeInit() );
+
+        __( delete meBuf );
+
+        cout << "sleep 5"<<endl;
+        sleep(5);
+}
 
 cout << "---Cursor"<<endl;
         TDMLCursor *meCurs;

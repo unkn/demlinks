@@ -12,6 +12,12 @@ hi cppMacroSpecials ctermfg=red ctermbg=magenta
 
 syn match   cppMethodOrField    /\.[_A-Za-z]\+[_A-Za-z0-9]*/
 syn match   cppMethodOrField    /->[_A-Za-z]\+[_A-Za-z0-9]*/
+
+syn match   cppkConsts    /\<k[A-Z0-9]\+/ " [_A-Za-z0-9]*\>/
+syn match   cppgGlobalVar    /\<g[_A-Z0-9]\+[_A-Za-z0-9]*\>/
+
+syn match   cppFieldOfClassOrStruc    /\<f[A-Z0-9]\+[_A-Za-z0-9]*\>/
+
 hi cppMethodOrField ctermfg=cyan
 
 syn keyword cppType		function EFunctionReturnTypes_t
@@ -27,9 +33,9 @@ hi cppDefine ctermfg=lightmagenta
 
 "syn keyword cppIdent		TDMLPointer MDMLDomainPointer MDMLFIFOBuffer TDMLCursor TLink
 
-syn match cppReadOnlyParam		/a_[_A-Za-z0-9]*/
+syn match cppReadOnlyParam		/a_[A-Z0-9]\+[_A-Za-z0-9]*/
 hi cppReadOnlyParam ctermfg=yellow
-syn match cppReadWriteParam		/m_[_A-Za-z0-9]*/
+syn match cppReadWriteParam		/m_[A-Z0-9]\+[_A-Za-z0-9]*/
 hi cppReadWriteParam ctermfg=lightblue
 
 syn match cppOperator		"=\+"
@@ -40,6 +46,7 @@ syn match cppOperator		"&\+"
 syn match cppOperator		"("
 syn match cppOperator		")"
 syn match cppOperator		"!"
+syn match cppOperator		"|"
 hi cppOperator ctermfg=red
 
 syn match cppBlockBegin		"{"
@@ -47,11 +54,17 @@ hi cppBlockBegin ctermfg=white ctermbg=magenta
 syn match cppBlockEnd		"}"
 hi cppBlockEnd ctermfg=cyan ctermbg=blue
 
-syn match cppDerivedClass     /\<M[_A-Za-z0-9]*/
+syn match cppDerivedClass     /\<M[A-Z0-9]\+[_A-Za-z0-9]*/
 hi cppDerivedClass ctermfg=darkcyan
 
-syn match cppBaseClass     /\<T[_A-Za-z0-9]*/
+syn match cppBaseClass     /\<T[A-Z0-9]\+[_A-Za-z0-9]*/
 hi cppBaseClass ctermfg=darkgreen
+
+hi cppFieldOfClassOrStruc ctermfg=darkblue
+
+hi cppkConsts ctermbg=black ctermfg=darkred
+
+hi cppgGlobalVar ctermbg=cyan ctermfg=black
 
 hi Search ctermfg=white
 hi Comment ctermfg=darkgray ctermbg=black
