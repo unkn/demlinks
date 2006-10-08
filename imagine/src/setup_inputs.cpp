@@ -42,6 +42,7 @@ ie.     a+b                     => +ab
 #include "polishform.h"
 #include "dmlenvl1.h"
 #include "dmlenvl2.h"
+#include "uniqstr.h"
 
 using namespace std;
 
@@ -375,12 +376,15 @@ cout << "---FIFO Buffer with DUP nodes"<<endl; //DUPlicates
 
         __tIFnok( meBuf->InitFIFOWithDUPs(kGroup, "PointerP2", kGroup, "newONE", kCreateNodeIfNotExists | kTruncateIfMoreThanOneNode | kOverwriteNode/*, kNone, mainTrans*/) ); //no Domain flags and no transaction (2 params ommited)
 
-/*        gTrackFRETs=true;
-        gTrackHRETs=true;*/
-        __tIFnok( meBuf->Push("random121831", kCreateNodeIfNotExists | kTruncateIfMoreThanOneNode ,"emdo0") );
-/*        gTrackFRETs=false;
-        gTrackFRETs=false; */
-        __tIFnok( meBuf->Push("random14",kCreateNodeIfNotExists | kTruncateIfMoreThanOneNode, "emdo1") );
+        {
+                __tIFnok( MakeSureUniqueStringIsInited() );
+
+                NodeId_t nod;
+                __tIFnok( GetUniqueString(nod) );
+                __tIFnok( meBuf->Push(nod, kCreateNodeIfNotExists | kTruncateIfMoreThanOneNode ,"boo0") );
+                __tIFnok( GetUniqueString(nod) );
+                __tIFnok( meBuf->Push(nod,kCreateNodeIfNotExists | kTruncateIfMoreThanOneNode, "emdo1") );
+        }
 
 //TRAP(
         while (true) {
@@ -450,11 +454,9 @@ cout << "---Cursor"<<endl;
         __sIFnok( ShowAllNodesOfNode(meCurs, kSubGroup,"sub_B",NULL) );//obv. none!
         __sIFnok( ShowAllNodesOfNode(meCurs, kGroup,"domptr") );
         __sIFnok( ShowAllNodesOfNode(meCurs, kGroup,"LeftOperand") );
-        //__sIFnok( ShowAllNodesOfNode(meCurs, kGroup,"RightOperand") );
-        __sIFnok( ShowAllNodesOfNode(meCurs, kGroup,"random121831") );
-        __sIFnok( ShowAllNodesOfNode(meCurs, kGroup,"random14") );
-        __sIFnok( ShowAllNodesOfNode(meCurs, kSubGroup,"random121831") );
-        __sIFnok( ShowAllNodesOfNode(meCurs, kSubGroup,"random14") );
+        __sIFnok( ShowAllNodesOfNode(meCurs, kGroup,"PointerP") );
+        __sIFnok( ShowAllNodesOfNode(meCurs, kGroup,"PointerP2") );
+        __sIFnok( ShowAllNodesOfNode(meCurs, kGroup,"newONE") );
 
         __( delete(meCurs) );//gLink should still be open and available after this!
 

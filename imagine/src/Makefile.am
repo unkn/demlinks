@@ -9,6 +9,7 @@ noinst_HEADERS = 	notetrk.h	\
 			dmlenvl0.h	\
 			dmlenvl1.h	\
 			dmlenvl2.h	\
+			uniqstr.h	\
 			polishform.h 	\
 			globaltimer.h \
 			genericinput.h \
@@ -65,6 +66,7 @@ setup_inputs_SOURCES = 	notetrk.cpp	\
 			dmlenvl0.cpp	\
 			dmlenvl1.cpp	\
 			dmlenvl2.cpp	\
+			uniqstr.cpp	\
 			polishform.cpp \
 			portability.cpp
 

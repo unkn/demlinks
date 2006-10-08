@@ -19,7 +19,15 @@ function doexe() {
 alias doexec=doexe
 
 function dolink() {
-        ln -s "../$1" "./src/$1" >/dev/null 2>&1
+        local src="$1"
+        local dest="$2"
+        if [ -z "$dest" ]; then
+                dest="$src"
+        else
+                src="$dest"
+                dest="$1"
+        fi
+        ln -s "../$src" "./src/$dest" >/dev/null 2>&1
 }
 
 function do_ {
@@ -69,6 +77,8 @@ cscope
 # search script smacking
 
 dolink "s"
+pwd
+dolink "si" "s"
 
 echo -e '\033[37m...or you may want run "\033[32m./1\033[37m" OR "\033[32m./2\033[37m" anytime u modify some src files - this will compile and run the specific demlinks exe programs'
 echo -e 'Also, "\033[32m./s \033[34m<\033[35mtext pattern with spaces\033[34m>\033[37m" will recursively search starting from current dir all important files for "text pattern with spaces" and show a menu with results (do not include the \033[34m<\033[37m and \033[34m>\033[37m with pattern)'
