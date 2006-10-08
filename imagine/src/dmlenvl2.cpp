@@ -110,6 +110,7 @@ MDMLFIFOBuffer :: Pull(
 #endif
 //---------- setting flags
         //int tmpFlags=a_Flags;
+        //int tmpSafeFlags=0;
         //_makeFLAG(kMoveNode);
 //---------- validating flags
         //__tIF(0 != tmpFlags);//illegal flags
@@ -237,7 +238,8 @@ MDMLFIFOBufferWithDUPs :: ~MDMLFIFOBufferWithDUPs()
 }
 /*******************************/
 MDMLFIFOBufferWithDUPs :: MDMLFIFOBufferWithDUPs(
-                TLink *m_WorkingOnThisTLink): MDMLFIFOBuffer(m_WorkingOnThisTLink)
+                TLink *m_WorkingOnThisTLink): MDMLFIFOBuffer(m_WorkingOnThisTLink),
+                                              fWorkingOnThisTLink(m_WorkingOnThisTLink)
 {//constructor
 }
 /*******************************/
@@ -280,24 +282,31 @@ MDMLFIFOBufferWithDUPs :: DeInit()
 /*******************************/
 function
 MDMLFIFOBufferWithDUPs :: Push(
-                const NodeId_t a_NodeId)
-{
+                const NodeId_t a_Intermediary_UniqueId,
+                const int a_PtrFlags,
+                const NodeId_t a_NodeId
+                )
+{ //the FIFO pointer stays unchanged!
 #ifdef SHOWKEYVAL
         cout << "MDMLFIFOBufferWithDUPs :: Push:begin"<<endl;
 #endif
 //------- begin
-//------- create a unique Id in the entire environment
-/*        NodeId_t unique;
-        __fIFnok( createUniqueId(unique) );
-//------- make a pointer with that unique Id
-        MDMLDomainPointer uniqPtr;
-        __tIFnok( uniqPtr->InitDomPtr(fDomainType, unique, fDomainType, fDomainId, kCreateNodeIfNotExists | kTruncateIfMoreThanOneNode | kOverwriteNode, fParentTxn) );
-        //------- make pointer point to that unique node
-        __fIFnok( uniqPtr->DeInit() );
+        __tIF( a_Intermediary_UniqueId.empty() ); //no NULL ptr assignements
+        __tIF( a_NodeId.empty() ); //no NULL ptr assignements
+//------- make a pointer with that unique Id, intermediary will point in the same sense as the Domain
+        TDMLPointer uniqPtr(fWorkingOnThisTLink);
+        __fIFnok( uniqPtr.InitPtr(fDomainType, a_Intermediary_UniqueId, a_PtrFlags /*kCreateNodeIfNotExists | kTruncateIfMoreThanOneNode*/ , fParentTxn) );
+#define THROW_HOOK \
+        __( uniqPtr.DeInit() );
+
+//------- make this temp pointer point to a_NodeId
+        _htIFnok( uniqPtr.SetPointee( a_NodeId ) );
+//------- sever the link from this system to the pointer
+        _hfIFnok( uniqPtr.DeInit() );
+#undef THROW_HOOK
+
 //------- inherit
-        __fIFnok( MDMLFIFOBuffer :: Push( unique ) );
-        */
-        //FIXME:
+        __fIFnok( MDMLFIFOBuffer :: Push( a_Intermediary_UniqueId ) );
 //------- done
 #ifdef SHOWKEYVAL
         cout << "MDMLFIFOBufferWithDUPs :: Push:done"<<endl;
@@ -314,8 +323,21 @@ MDMLFIFOBufferWithDUPs :: Pull(
         cout << "MDMLFIFOBufferWithDUPs :: Pull:begin"<<endl;
 #endif
 //------- begin
-        __fIFnok( MDMLFIFOBuffer :: Pull( m_NodeId ) );
-        //FIXME:
+//------- get the unique intermediary ID
+        NodeId_t tempNode;
+        __fIFnok( MDMLFIFOBuffer :: Pull( tempNode ) );
+        TDMLPointer uniqPtr(fWorkingOnThisTLink);
+        __fIFnok( uniqPtr.InitPtr(fDomainType, tempNode, kKeepPrevValue , fParentTxn) );
+#define THROW_HOOK \
+        __( uniqPtr.DeInit() );
+
+//------- get read ID
+        _hfIFnok( uniqPtr.GetPointee( m_NodeId ) );
+
+//------- done with temp pointer
+        _hfIFnok( uniqPtr.DeInit() );
+#undef THROW_HOOK
+
 //------- done
 #ifdef SHOWKEYVAL
         cout << "MDMLFIFOBufferWithDUPs :: Pull:done"<<endl;

@@ -2,7 +2,7 @@
 syn keyword cppExceptions	__s _sTRY TRY _TRY __ __fIFnok __tIF __tIFnok __if _fret _hret _OK _htIF __fielse __fi _hdoIFnok
 syn keyword cppExceptions	_konfiodhelse _konfiodh __doIFok __kofiod _hreterr _hokret ERR_IF ERR FAIL ADD_NOTE
 syn keyword cppExceptions	THROW_HOOK logic_error _ht _ret _F _FA INFO _htIFnok __sIFnok _h ___ __t EXIT AEXIT EXIT_IF exit
-syn keyword cppExceptions	WARN WARN_IF BUG BUG_IF INFO_IF PARANOID_IF PARANOID TRAP gTrackFRETs abort atexit
+syn keyword cppExceptions	WARN WARN_IF BUG BUG_IF INFO_IF PARANOID_IF PARANOID TRAP gTrackFRETs abort atexit _hfIFnok
 
 syn keyword cppBoolean		kFuncOK __VA_ARGS__ kFuncFailed kFuncNoLowLevelInputs kFuncNoGenericInputs  kFuncNoActions
 syn keyword cppBoolean          kFuncAlreadyExists kFuncNotFound kFuncInexistentNodeNotCreated kFuncExistentSingleNodeNotOverwritten kFuncMoreThanOneNodeNotTruncated kFuncNULLPointer kMaxFuncErrors

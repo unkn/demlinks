@@ -108,10 +108,12 @@ public:
 /****************************/
 /****************************/
 class MDMLFIFOBufferWithDUPs: private MDMLFIFOBuffer { //contains dups at the next tree level ie. A->B->C where B is irrelevant only A->C is seen ; and A->D->C is the A->C dup, the pointer really points to B or C to keep track of which dup is really pointed; so you actually see A->C and A->C when in reality you have A->B->C and A->D->C where B&D are temporary IDs not normally used anywhere else.
+//due to lock issues(cannot create a new ID w/o making a link containing it + some other Id) we cannot seem to keep that newly created id unique, thus we let the human pass us a parameter with the intermediary ID which is supposedly have to be unique[aka inexistent already](or we fail). This affect only Push()
 private:
         ENodeType_t fDomainType;
         NodeId_t fDomainId;
         DbTxn *fParentTxn;
+        TLink *fWorkingOnThisTLink;
 
         MDMLFIFOBufferWithDUPs();//constructor
 public:
@@ -138,7 +140,11 @@ public:
                         );
 
         function
-        Push(const NodeId_t a_NodeId);//append node to list ie. insert last; doesn't touch the pointer (MDMLDomainPointer)
+        Push(
+                        const NodeId_t a_Intermediary_UniqueId, //pointer->intermediary->a_NodeId
+                        const int a_PtrFlags, //kCreateNodeIfNotExists | kTruncateIfMoreThanOneNode
+                        const NodeId_t a_NodeId
+                        );//append node to list ie. insert last; doesn't touch the pointer (MDMLDomainPointer)
 };
 /****************************/
 /****************************/

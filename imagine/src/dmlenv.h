@@ -61,8 +61,8 @@ typedef enum{
         kNone=0,//first
         kCreateNodeIfNotExists=1 //DB_WRITECURSOR on init, and DB_RMW on get(); also used with TDMLPointer
         ,kCursorWriteLocks=2 //only used with Get() not with Put()
+        ,kKeepPrevValue=kCursorWriteLocks //used with TDMLPointer
         ,kCurrentNode=4
-        ,kKeepPrevValue=kCurrentNode //used with TDMLPointer
         ,kThisNode=kCurrentNode //alias
         ,kOverwriteNode=kCurrentNode //alias; TDMLPointer: if just one node exists then it get overwritten; if more nodes exit we fail;
         ,kMoveNode=kCurrentNode //used with MDMLFIFOBuffer

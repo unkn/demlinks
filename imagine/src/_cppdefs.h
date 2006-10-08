@@ -36,6 +36,7 @@
 
 #ifdef TRACKABLE_RETURNS
         #define TRACKABLE_FRET
+        #define TRACKABLE_HRET
 #endif
 
 

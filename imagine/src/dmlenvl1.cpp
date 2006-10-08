@@ -710,9 +710,15 @@ TDMLPointer :: SetPointee(
         function err;
         _h( err=meCurs->Get(temp, kFirstNode) );
         if (kFuncNotFound == err) { //then pinpoint the firstnode
+                #ifdef SHOWKEYVAL
+                        std::cout<<"\tSetPointee:flag: kFirstNode" << endl;
+                #endif
                 flag=kFirstNode;
         } else {
                 if (kFuncOK == err) {
+                        #ifdef SHOWKEYVAL
+                                std::cout<<"\tSetPointee:flag: kCurrentNode" << endl;
+                        #endif
                         flag=kCurrentNode;
                         //---------- pointer integrity check, before change
                         _htIFnok( meCurs->Count(countPointees) );
@@ -729,6 +735,8 @@ TDMLPointer :: SetPointee(
 //---------- change pointee now ie. overwrite
         __if (! a_NodeId.empty()) {
                 _htIFnok( meCurs->Put(a_NodeId, flag) );//return value in m_NodeId2
+                //------- small integrity check
+                _htIFnok( fLink->IsLinkConsistent( fNodeType, pointerId, a_NodeId, fParentTxn ) );
         }__fi
 
 //---------- pointer integrity check, after change
@@ -775,16 +783,18 @@ TDMLPointer :: InitPtr(
         fParentTxn=a_ParentTxn;
 //---------- setting flags
         int tmpFlags=a_Flags;
+        int tmpSafeFlags=0;
 
         _makeFLAG(kOverwriteNode);//if only one node, we overwrite it(internally we just wipe it out by making the pointer be NULL)
         _makeFLAG(kKeepPrevValue);//if only one node, we keep its value
         _makeFLAG(kCreateNodeIfNotExists);//if pointer is already NULL, we don't fail, we keep it NULL however, but this is here to make sure the reader knows the programmer's intentions
-        _makeFLAG(kTruncateIfMoreThanOneNode);
+        _makeFLAG(kTruncateIfMoreThanOneNode);//only to state the obvious!
 
 //---------- validate flags
         __tIF(0 != tmpFlags);//illegal flags
         __tIF(kNone == a_Flags);//no flags?!
-        __tIF( fl_kOverwriteNode && fl_kKeepPrevValue );//mutually exclusive flags
+        __tIF( (fl_kOverwriteNode) && (fl_kKeepPrevValue) );//mutually exclusive flags
+        //__tIF(kOverwriteNode == kKeepPrevValue);//dumb but it happened!
 
 //---------- begin
 //------------ get our pointer name
@@ -861,6 +871,7 @@ TDMLPointer :: InitPtr(
                         //------ we're here to not keep and overwrite the previous value, we need to remove it(the prev node)
                         //------ we're here also only if kOverwriteNode is specified (and of course NOT kKeepPrevValue)
                         _htIFnok( meCurs->Del(kFirstNode) );
+                        cout << "wiping out " << nod << endl;
                 }//else we have kKeepPrevValue which also implies kOverwriteNode, but we don't remove it(the prev node)
                 //...by here we have one pointee which we keep and obv. overwrite later ie. when we set the pointer to some other pointee
         }
@@ -1096,6 +1107,7 @@ TDMLCursor :: Get(
 #endif
 //---------- setting flags
         int tmpFlags=a_Flags;
+        int tmpSafeFlags=0;
 
         _makeFLAG(kCursorWriteLocks);
         _makeFLAG(kNextNode);
@@ -1253,6 +1265,7 @@ TDMLCursor :: Del(
 #endif
 //---------- setting flags and checking for unicity
         int tmpFlags=a_Flags;
+        //int tmpSafeFlags=0;
         _makeUniqueFLAG(kCurrentNode);
         _makeUniqueFLAG(kFirstNode);
         _makeUniqueFLAG(kLastNode);
@@ -1319,6 +1332,7 @@ TDMLCursor :: Put(
 #endif
 //---------- setting flags
         int tmpFlags=a_Flags;
+        int tmpSafeFlags=0;
         _makeFLAG(kCurrentNode);
         _makeFLAG(kAfterNode);
         _makeFLAG(kNextNode);

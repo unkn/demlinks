@@ -313,9 +313,11 @@ cout << "---MDMLDomainPointer"<<endl;
 
         //__tIFnok( NewPoint(meDom,"Aaajaj") );
         __tIFnok( NewPoint(meDom,"B") );
-        gTrackFRETs=true;
-        __( NewPoint(meDom,"A") );//it's gonna fail because A is not from domain
-        gTrackFRETs=false;
+        //gTrackFRETs=true;
+        TRAP(
+                        __( NewPoint(meDom,"A") );//it's gonna fail because A is not from domain
+            );
+        //gTrackFRETs=false;
 
         __( NewPoint(meDom,"") );//set pointer to NULL
 
@@ -361,8 +363,8 @@ cout << "---MDMLDomainPointer"<<endl;
         __( delete meBuf );
         //__tIFnok( gLink->Commit(&mainTrans));
 
-        cout << "sleep 5"<<endl;
-        sleep(5);
+        cout << "sleep 1"<<endl;
+        sleep(1);
 }
 
 {
@@ -371,11 +373,16 @@ cout << "---FIFO Buffer with DUP nodes"<<endl; //DUPlicates
         MDMLFIFOBufferWithDUPs *meBuf;
         __( meBuf= new MDMLFIFOBufferWithDUPs(gLink) );
 
-        __tIFnok( meBuf->InitFIFOWithDUPs(kGroup, "PointerP2", kGroup, "LeftOperand", kCreateNodeIfNotExists | kTruncateIfMoreThanOneNode | kOverwriteNode/*, kNone, mainTrans*/) ); //no Domain flags and no transaction (2 params ommited)
+        __tIFnok( meBuf->InitFIFOWithDUPs(kGroup, "PointerP2", kGroup, "newONE", kCreateNodeIfNotExists | kTruncateIfMoreThanOneNode | kOverwriteNode/*, kNone, mainTrans*/) ); //no Domain flags and no transaction (2 params ommited)
 
-        __tIFnok( meBuf->Push("dood") );
-        __tIFnok( meBuf->Push("doodad") );
+/*        gTrackFRETs=true;
+        gTrackHRETs=true;*/
+        __tIFnok( meBuf->Push("random121831", kCreateNodeIfNotExists | kTruncateIfMoreThanOneNode ,"emdo0") );
+/*        gTrackFRETs=false;
+        gTrackFRETs=false; */
+        __tIFnok( meBuf->Push("random14",kCreateNodeIfNotExists | kTruncateIfMoreThanOneNode, "emdo1") );
 
+//TRAP(
         while (true) {
                 NodeId_t nod;
                 function err;
@@ -390,6 +397,7 @@ cout << "---FIFO Buffer with DUP nodes"<<endl; //DUPlicates
                         break;
                 }
         }
+//);
 
         __tIFnok( meBuf->DeInit() );
 
@@ -442,7 +450,11 @@ cout << "---Cursor"<<endl;
         __sIFnok( ShowAllNodesOfNode(meCurs, kSubGroup,"sub_B",NULL) );//obv. none!
         __sIFnok( ShowAllNodesOfNode(meCurs, kGroup,"domptr") );
         __sIFnok( ShowAllNodesOfNode(meCurs, kGroup,"LeftOperand") );
-        __sIFnok( ShowAllNodesOfNode(meCurs, kGroup,"RightOperand") );
+        //__sIFnok( ShowAllNodesOfNode(meCurs, kGroup,"RightOperand") );
+        __sIFnok( ShowAllNodesOfNode(meCurs, kGroup,"random121831") );
+        __sIFnok( ShowAllNodesOfNode(meCurs, kGroup,"random14") );
+        __sIFnok( ShowAllNodesOfNode(meCurs, kSubGroup,"random121831") );
+        __sIFnok( ShowAllNodesOfNode(meCurs, kSubGroup,"random14") );
 
         __( delete(meCurs) );//gLink should still be open and available after this!
 

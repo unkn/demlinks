@@ -35,7 +35,10 @@
 #include "notetrk.h"
 #include "_gcdefs.h"
 
+
 extern bool gTrackFRETs;
+extern bool gTrackHRETs;
+extern bool gTrackFlags;
 
 typedef enum {//avoiding to use the value zero
         kFuncOK=110
@@ -91,6 +94,8 @@ public:
         void PurgeAllNotifications();
 };
 
+extern MNotifyTracker gNotifyTracker;
+
 void ShowAllNotifications();
 
 
@@ -110,7 +115,13 @@ void ShowAllNotifications();
 {                                               \
         gNotifyTracker.ShowAllNotes();         \
         {                                       \
+                gTrackFRETs=true;               \
+                gTrackHRETs=true;               \
+                gTrackFlags=true;\
                 a_BunchOfStatements;            \
+                gTrackFRETs=false;               \
+                gTrackHRETs=false;               \
+                gTrackFlags=false;\
         }                                       \
         gNotifyTracker.ShowAllNotes();         \
 }
@@ -443,7 +454,7 @@ void ShowAllNotifications();
 // do this if (true) { _reterr 1; } but if u use _if u can ommit { and } (it has it's own)
 /***************************************/
 //uses ERR_HOOK hook no the same as _() which uses THROW_HOOK
-#ifdef TRACKABLE_RETURNS
+#ifdef TRACKABLE_HRET
         #define _hreterr(...) { \
                 INFO(_hreterr(__VA_ARGS__));\
                 ERR_HOOK;\
@@ -451,13 +462,14 @@ void ShowAllNotifications();
         }
 #else
         #define _hreterr(...) { \
+                if (gTrackHRETs && gTrackFRETs) { INFO(_hreterr(__VA_ARGS__)); }\
                 ERR_HOOK;\
                 return __VA_ARGS__; \
         }
 #endif
 /***************************************/
 //uses the same hook and the MACROS that (re)throw exceptions
-#ifdef TRACKABLE_RETURNS
+#ifdef TRACKABLE_HRET
         #define _hret(...) { \
                 INFO(_hret(__VA_ARGS__));\
                 THROW_HOOK;\
@@ -465,6 +477,7 @@ void ShowAllNotifications();
         }
 #else
         #define _hret(...) { \
+                if (gTrackHRETs) { INFO(_hret(__VA_ARGS__)); }\
                 THROW_HOOK;\
                 return __VA_ARGS__; \
         }

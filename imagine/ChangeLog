@@ -11,7 +11,9 @@ Legend:
 	LU means last update on ... date
 
 ===========demlinks-0.0.23
-LU: 25 September 2006
+LU: 08 October 2006
+
+* MDMLFIFOBufferWithDUPs done.
 
 * let there be noted that both TDMLCursor and MDMLFIFOBuffer are using Domains
 of unique elements, that is key/data pairs where key is the same and data are

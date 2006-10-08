@@ -64,10 +64,14 @@ using namespace std;
 /*****************************************************************/
 /********************************************************/
 #define _makeFLAG(whatFlag ) \
+        __tIF(whatFlag == (tmpSafeFlags & whatFlag) );/*already happened! this could mean there are two flags ANDing gt 0, or even worse, equal */ \
         bool fl_##whatFlag=whatFlag == (tmpFlags & whatFlag); \
         if (fl_##whatFlag) { \
+                if (gTrackFlags) { cout << "detected flag "#whatFlag<< endl; }\
                 tmpFlags -= whatFlag; /*substract this flag*/\
+                tmpSafeFlags += whatFlag; /*substract this flag*/\
         } /* tmpFlags is a variable that supposedly is already defined */
+
 #define _makeUniqueFLAG(whatFlag ) \
         bool fl_##whatFlag=whatFlag == (tmpFlags & whatFlag); \
         if (fl_##whatFlag) { \
