@@ -27,6 +27,7 @@
 
 #include "dmlenvl2.h"
 #include "dmlenv.hpp"
+#include "uniqstr.h"
 
 /*******************************/
 MDMLFIFOBuffer :: MDMLFIFOBuffer(TLink *m_WorkingOnThisTLink):
@@ -345,4 +346,27 @@ MDMLFIFOBufferWithDUPs :: Pull(
         _OK;
 }
 /*******************************/
+MDMLFIFOBufferWithDUPsAndAI :: MDMLFIFOBufferWithDUPsAndAI(TLink *m_WorkingOnThisTLink) :
+        MDMLFIFOBufferWithDUPs(m_WorkingOnThisTLink)
+{ //constructor
+        __( MakeSureUniqueStringIsInited() );
+}
+/*******************************/
+MDMLFIFOBufferWithDUPsAndAI :: ~MDMLFIFOBufferWithDUPsAndAI()
+{ //destructor
+}
+/*******************************/
+function
+MDMLFIFOBufferWithDUPsAndAI :: Push(
+                const NodeId_t a_NodeId
+                )
+{
+//------ get a fresh uniq ID
+        NodeId_t randNod;
+        __tIFnok( GetUniqueString(randNod) );
+//------ derrived push
+        __fIFnok( MDMLFIFOBufferWithDUPs :: Push(randNod, kCreateNodeIfNotExists, a_NodeId ) );
+//------ done
+        _OK;
+}
 /*******************************/

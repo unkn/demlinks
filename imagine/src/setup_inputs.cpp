@@ -381,9 +381,11 @@ cout << "---FIFO Buffer with DUP nodes"<<endl; //DUPlicates
 
                 NodeId_t nod;
                 __tIFnok( GetUniqueString(nod) );
-                __tIFnok( meBuf->Push(nod, kCreateNodeIfNotExists | kTruncateIfMoreThanOneNode ,"boo0") );
+                //TRAP( 
+                                __tIFnok( meBuf->Push(nod, kCreateNodeIfNotExists | kTruncateIfMoreThanOneNode/* | kOverwriteNode*/,"boo0") );
+                 //   );
                 __tIFnok( GetUniqueString(nod) );
-                __tIFnok( meBuf->Push(nod,kCreateNodeIfNotExists | kTruncateIfMoreThanOneNode, "emdo1") );
+                //__tIFnok( meBuf->Push(nod,kCreateNodeIfNotExists | kTruncateIfMoreThanOneNode, "emdo1") );
         }
 
 //TRAP(
@@ -407,8 +409,47 @@ cout << "---FIFO Buffer with DUP nodes"<<endl; //DUPlicates
 
         __( delete meBuf );
 
-        cout << "sleep 5"<<endl;
-        sleep(5);
+        cout << "sleep 1"<<endl;
+        sleep(1);
+}
+
+{
+cout << "---FIFO Buffer with DUP nodes and automatic intermediaries"<<endl; //DUPlicates
+
+        MDMLFIFOBufferWithDUPsAndAI *meBuf;
+        __( meBuf= new MDMLFIFOBufferWithDUPsAndAI(gLink) );
+
+        __tIFnok( meBuf->InitFIFOWithDUPs(kGroup, "PointerP3", kGroup, "newTWO", kCreateNodeIfNotExists | kTruncateIfMoreThanOneNode | kOverwriteNode/*, kNone, mainTrans*/) ); //no Domain flags and no transaction (2 params ommited)
+
+        {
+                NodeId_t nod;
+                __tIFnok( meBuf->Push("mumu") );
+                __tIFnok( meBuf->Push(".reg") );
+        }
+
+//TRAP(
+        while (true) {
+                NodeId_t nod;
+                function err;
+                __( err=meBuf->Pull(nod) );
+                if (kFuncOK == err) {
+                        cout << "Pulled: "<<nod<<endl;
+                        //__tIFnok( meBuf->GetPointee(nod) );
+                        //cout << " pointer currently points to: "<<nod <<endl;
+                } else {
+                        __tIF( kFuncNotFound != err ); //unhandled error at this point
+                        //cout << "No more!" <<endl;
+                        break;
+                }
+        }
+//);
+
+        __tIFnok( meBuf->DeInit() );
+
+        __( delete meBuf );
+
+        cout << "sleep 1"<<endl;
+        sleep(1);
 }
 
 cout << "---Cursor"<<endl;
@@ -457,6 +498,8 @@ cout << "---Cursor"<<endl;
         __sIFnok( ShowAllNodesOfNode(meCurs, kGroup,"PointerP") );
         __sIFnok( ShowAllNodesOfNode(meCurs, kGroup,"PointerP2") );
         __sIFnok( ShowAllNodesOfNode(meCurs, kGroup,"newONE") );
+        __sIFnok( ShowAllNodesOfNode(meCurs, kGroup,"PointerP3") );
+        __sIFnok( ShowAllNodesOfNode(meCurs, kGroup,"newTWO") );
 
         __( delete(meCurs) );//gLink should still be open and available after this!
 

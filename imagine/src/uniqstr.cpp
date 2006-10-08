@@ -63,9 +63,10 @@ GetUniqueString(NodeId_t &m_Ret)//on each call a different string is returned
 function
 UnconditionallyInitUniqueString()
 {
-        for (int i=0; i<_MAX_UNIQCHARS; i++)
-                gUniqStr[i]=_UNIQLEADING_CHAR;
-        gUniqStr[_MAX_UNIQCHARS]='\0';
+//------ initialize string: fill it with _UNIQLEADING_CHAR
+        for (int i=0; i < _MAX_UNIQCHARS; i++)
+                gUniqStr[i] = _UNIQLEADING_CHAR;
+        gUniqStr[_MAX_UNIQCHARS] = '\0';
 //------ register as inited already
         if (!gInitedUniqStr) {
                 gInitedUniqStr=true;

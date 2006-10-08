@@ -118,7 +118,7 @@ private:
         MDMLFIFOBufferWithDUPs();//constructor
 public:
         MDMLFIFOBufferWithDUPs(TLink *m_WorkingOnThisTLink);
-        ~MDMLFIFOBufferWithDUPs();
+        virtual ~MDMLFIFOBufferWithDUPs();
 
         function
         InitFIFOWithDUPs(
@@ -147,6 +147,17 @@ public:
                         );//append node to list ie. insert last; doesn't touch the pointer (MDMLDomainPointer)
 };
 /****************************/
+class MDMLFIFOBufferWithDUPsAndAI: public MDMLFIFOBufferWithDUPs { //AI=auto intermediaries
+private:
+        MDMLFIFOBufferWithDUPsAndAI();//constructor
+public:
+        MDMLFIFOBufferWithDUPsAndAI(TLink *m_WorkingOnThisTLink);
+        ~MDMLFIFOBufferWithDUPsAndAI();
+        function
+        Push(
+                        const NodeId_t a_NodeId
+                        );//append node to list ie. insert last; doesn't touch the pointer (MDMLDomainPointer)
+};
 /****************************/
 /****************************/
 /****************************/

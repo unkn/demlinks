@@ -13,7 +13,17 @@ Legend:
 ===========demlinks-0.0.23
 LU: 08 October 2006
 
-* MDMLFIFOBufferWithDUPs done.
+* MDMLFIFOBufferWithDUPsAndAI done. AI=auto intermediaries => unique IDs
+within te environment that didn't exist before(or the program would
+fail/throw); these intermediaries are used between the group and the children
+nodes such that the group can now support duplicates. A group originally
+cannot support duplicates directly linked to it because it would then be
+unable to pinpoint an exact element within the group since we're using their
+IDs to locate them within the group, thus a search of a duplicate within a
+group would stop at the first encountered node even if it was supposed to
+refer to another(dup).
+
+* MDMLFIFOBufferWithDUPs done. Manually chosen intermediary IDs.
 
 * let there be noted that both TDMLCursor and MDMLFIFOBuffer are using Domains
 of unique elements, that is key/data pairs where key is the same and data are
