@@ -12,7 +12,9 @@ Legend:
 	LU means last update on ... date
 
 ==============demlinks-0.0.23
-LU: 29 September 2006
+LU: 10 October 2006
+
+/ prefix+suffix random string; uniqstr.h
 
 $ check all berkeley db (and not only those) functions and see if any error is caused within them, they cleanup successfully and leave not leftover parts; ie. make sure they undo properly without disrupting the database
 

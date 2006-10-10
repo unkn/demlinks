@@ -54,7 +54,7 @@ GetUniqueString(NodeId_t &m_Ret)//on each call a different string is returned
         while ((tmp.length()>1)&&(tmp.at(0)==_UNIQLEADING_CHAR)) {
                 __( tmp.erase(0,1); );
         };
-        m_Ret = tmp;
+        m_Ret = _UNIQPREFIX + tmp + _UNIQSUFFIX;
 
 //------ done
         _OK;

@@ -47,6 +47,8 @@ syn match cppOperator		"("
 syn match cppOperator		")"
 syn match cppOperator		"!"
 syn match cppOperator		"|"
+syn match cppOperator		"++"
+syn match cppOperator		"--"
 hi cppOperator ctermfg=red
 
 syn match cppBlockBegin		"{"

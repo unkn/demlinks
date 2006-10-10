@@ -34,6 +34,8 @@
 #define _MAX_UNIQCHARS 30
 #define _UNIQLEADING_CHAR '0'
 #define _UNIQENDING_CHAR '9'
+#define _UNIQPREFIX "$RANDOM_"
+#define _UNIQSUFFIX "_END$"
 
 
 function
