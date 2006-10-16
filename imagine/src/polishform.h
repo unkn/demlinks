@@ -156,7 +156,7 @@ public:
         ~TOperator(){};//destructor
 
         TOperator&
-        TOperator::operator=(const TOperator & source) {
+        operator=(const TOperator & source) {
                 if (&source==this)
                         return *this;
                 fId=source.fId;
@@ -226,7 +226,7 @@ public:
         ~TOperand(){};//destructor
 
         TOperand&
-        TOperand::operator=(const TOperand & source)
+        operator=(const TOperand & source)
         {
                 if (&source==this)
                         return *this;
@@ -364,7 +364,7 @@ class TPolishForm {
                                 );
 
 EPFErrors_t
-TPolishForm::eatDelimiter(
+eatDelimiter(
                 );
 
                 EPFErrors_t
@@ -446,7 +446,7 @@ public:
                 ~TPolishForm();
 //those that DO
 void
-TPolishForm::Init();
+Init();
 
 
 /*

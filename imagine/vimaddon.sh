@@ -1,6 +1,7 @@
 #!/bin/sh
 
 set +f
+#set -vx
 
 if [ -z "$HOME" ]; then
         HOME=~
@@ -14,7 +15,7 @@ SYNTAXDIR="syntax"
 HOMESYNTAXDIR="$HOME/.vim/$SYNTAXDIR"
 HOMESYNTAXFILE="$HOMESYNTAXDIR/$SYNTAXFILE"
 HOMEDEMFILE="$HOMESYNTAXDIR/$OURFILE"
-POSSIBLELOCATIONS="/usr/share/vim/"*"/$SYNTAXDIR /usr/local/share/vim/"*"/$SYNTAXDIR"
+POSSIBLELOCATIONS="/usr/share/vim/"*"/$SYNTAXDIR /usr/local/share/vim/"*"/$SYNTAXDIR /usr/local/share/vim70/"*"/$SYNTAXDIR /usr/local/share/vim64/"*"/$SYNTAXDIR"
 HOMECSCOPEMAPS="$HOMEPLUGINDIR/cscope_maps.vim"
 INETCSCOPEMAPS="http://cscope.sourceforge.net/cscope_maps.vim"
 #done vars
@@ -22,7 +23,7 @@ INETCSCOPEMAPS="http://cscope.sourceforge.net/cscope_maps.vim"
         current_script_runname="$0"
         current_script_filename="${current_script_runname##*/}"
         current_script_dirname="${current_script_runname%%/*}"
-        if [ "$current_script_dirname" == "." ]; then
+        if [ "x$current_script_dirname" = "x." ]; then
                 current_script_dirname="`pwd`"
         fi
         current_script_fullname="${current_script_dirname}/${current_script_filename}"

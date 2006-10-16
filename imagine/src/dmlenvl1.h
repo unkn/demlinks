@@ -104,7 +104,7 @@ public:
         ~TDMLCursor();
 
         bool
-        TDMLCursor :: IsInited();
+        IsInited();
 
         function
         InitCurs(
@@ -146,7 +146,7 @@ public:
                         );
 
         function
-        TDMLCursor :: Count(
+        Count(
                         db_recno_t &m_Into
                         );
 
@@ -201,7 +201,7 @@ private:
                 Dbt *a_Value);
 
         function
-        TLink::findAndChange(
+        findAndChange(
                 Db *a_DBWhich,
                 DbTxn *a_ParentTxn,
                 Dbt *a_Key,
@@ -230,7 +230,7 @@ public:
 */
 
         function //uses TDMLCursor::Get()
-        TLink::IsLinkConsistent( //checks both dbases for this link to be consistent ie. A -> B must have B <- A
+        IsLinkConsistent( //checks both dbases for this link to be consistent ie. A -> B must have B <- A
                 const ENodeType_t a_NodeType,
                 const NodeId_t a_NodeId1,
                 const NodeId_t a_NodeId2,
@@ -238,7 +238,7 @@ public:
                 );
 
         function
-        TLink::IsSemiLink(
+        IsSemiLink(
                 const ENodeType_t a_NodeType,
                 const NodeId_t a_NodeId1,
                 NodeId_t &m_NodeId2,//if empty then returns first complementary node of a_NodeId1; DB_SET acts like old IsNode() [or IsGroup()]
@@ -246,7 +246,7 @@ public:
                 );
 
         function
-        TLink::NewCursorLink( //uses TDMLCursor::Put()
+        NewCursorLink( //uses TDMLCursor::Put()
                 Dbc * const m_Cursor,
                 const u_int32_t a_CursorPutFlags,
                 const ENodeType_t a_NodeType,
@@ -257,7 +257,7 @@ public:
 
         //ie. NewLink(kSubGroup,"sub1","grp1") // => grp1 -> sub1
         function
-        TLink::NewLink(
+        NewLink(
                 const ENodeType_t a_NodeType,
                 const NodeId_t a_NodeId1,//may or may not exist
                 const NodeId_t a_NodeId2,//same
@@ -266,7 +266,7 @@ public:
 
         //links are created, groups are just there as part of links, they don't have to already exist(and if they do they're part of the links only)
         function
-        TLink::NewLink(
+        NewLink(
                 const NodeId_t a_GroupId,
                 const NodeId_t a_SubGroupId,
                 DbTxn *a_ParentTxn=NULL
@@ -274,7 +274,7 @@ public:
 
 /****************************/
         function
-        TLink::ShowContents(
+        ShowContents(
                 DbTxn *a_ParentTxn=NULL
                 );
 
