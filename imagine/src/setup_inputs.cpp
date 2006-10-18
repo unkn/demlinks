@@ -42,6 +42,7 @@ ie.     a+b                     => +ab
 #include "polishform.h"
 #include "dmlenvl1.h"
 #include "dmlenvl2.h"
+#include "dmlenvl3.h"
 #include "uniqstr.h"
 
 using namespace std;
