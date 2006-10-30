@@ -1,5 +1,6 @@
 #!/bin/sh
 
+#              +f      enable pathname expansion.
 set +f
 #set -vx
 
