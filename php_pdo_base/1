@@ -1,0 +1,8 @@
+#!/bin/sh
+
+#used to edit main file
+
+. head.sh
+
+vim "$src"
+

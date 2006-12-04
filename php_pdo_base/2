@@ -1,0 +1,13 @@
+#!/bin/sh
+
+#used to execute main file
+
+. head.sh
+
+rm -f "$dbase"
+
+echo "<?php" >"$phpfile"
+cpp $cppparams "$src">>"$phpfile"
+php "$phpfile"
+#-B "<?php"
+
