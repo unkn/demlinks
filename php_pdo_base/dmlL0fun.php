@@ -19,9 +19,9 @@ class dmlL0
         private $fParamNewNode;//string param of prepared statement handler for NewNode
         public $dbh;
 
-        private $sqlIsNode;
-        private $fParamIsNode;
-        private $fPrepIsNode;
+        private $sqlGetNodeArray;
+        private $fParamNodeName;
+        private $fPrepGetNodeArray;
 
         private $sqlDelNode;
         private $fParamDelNode;
@@ -71,10 +71,10 @@ class dmlL0
                 _t( $this->fPrepNewNode = $this->fDBHandle->prepare($this->sqlNewNode) );//can't prepare unless the table already exists!
                 _t( $this->fPrepNewNode->bindParam(paramNodeName, $this->fParamNewNode, PDO::PARAM_STR) ); //, PDO::PARAM_INT);
                 //---------
-                $this->sqlIsNode = 'SELECT * FROM '.$this->qNodeNames.' WHERE '.$this->qNodeName.' = '.paramNodeName;
-                //echo $this->sqlIsNode;die();
-                _t( $this->fPrepIsNode = $this->fDBHandle->prepare($this->sqlIsNode) );
-                _t( $this->fPrepIsNode->bindParam(paramNodeName, $this->fParamIsNode, PDO::PARAM_STR) ); //, PDO::PARAM_INT);
+                $this->sqlGetNodeArray = 'SELECT * FROM '.$this->qNodeNames.' WHERE '.$this->qNodeName.' = '.paramNodeName;
+                //echo $this->sqlGetNodeArray;die();
+                _t( $this->fPrepGetNodeArray = $this->fDBHandle->prepare($this->sqlGetNodeArray) );
+                _t( $this->fPrepGetNodeArray->bindParam(paramNodeName, $this->fParamNodeName, PDO::PARAM_STR) ); //, PDO::PARAM_INT);
                 //---------
                 $this->sqlDelNode = 'DELETE FROM '.$this->qNodeNames.' WHERE '.$this->qNodeName.' = '.paramNodeName;
                 //echo $this->sqlDelNode;
@@ -133,22 +133,29 @@ class dmlL0
         }
 //------------------------
 
-        func (AddNode($what),dadd)
+        func (AddNode($nodename),dadd)
         {
-                deb(dbeg,"AddNode('".$what."'):begin:");
-                _t( evalgood($what) );//must not be empty or so; it it is then maybe's a bug outside this func provided user shall never call this func with an empty param value
-                $this->fParamNewNode=$what;
+                deb(dbeg,"AddNode('".$nodename."'):begin:");
+                _t( evalgood($nodename) );//must not be empty or so; it it is then maybe's a bug outside this func provided user shall never call this func with an empty param value
+                $this->fParamNewNode=$nodename;
                 _c( $ret=evalgood( $this->fPrepNewNode->execute() ) );
         }endfunc($ret,dadd)
 
-        func (IsNode($which), dis)
+        func (IsNode($nodename), dis)
         {
-                _t(evalgood($which));
-                $this->fParamIsNode=$which;
-                _t( $this->fPrepIsNode->execute() );//not sure why isn't _c() here instead of _t(); execute() does return bool
-                $ar=$this->fPrepIsNode->FetchAll();
+                _t(evalgood($nodename));
+                _c( $ar=$this->GetNodeArray($nodename) );
                 $ret= (1==count($ar)?yes:no);
         }endfunc($ret,dis)
+
+        func (GetNodeArray($nodename),dget)
+        {
+                _t(evalgood($nodename));
+                $this->fParamNodeName = $nodename;
+                _t( $this->fPrepGetNodeArray->execute() );
+                $ar=$this->fPrepGetNodeArray->FetchAll();
+                //print_r($ar);
+        }endfunc($ar,dget)
 
         func (DelNode($which), ddel)
         {
@@ -165,6 +172,8 @@ class dmlL0
                 deb(dend,"end Show()");
                 return $result;
         }
+//------------------------
+        //func (SetRelation
 //------------------------
 } //class
 

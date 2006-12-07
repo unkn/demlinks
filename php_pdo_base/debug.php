@@ -34,6 +34,7 @@ adef(ddel);//show deletes
 adef(dis);//show IsStuff()
 adef(dadd);//show additions ie. AddNode()
 adef(dcrea);
+adef(dget);
 
 //enabling specific debug levels
 dseton(dlowlevel);
@@ -45,6 +46,7 @@ dseton(ddel);
 dseton(dcrea);
 //dseton(dis);
 //dseton(dadd);
+//dseton(dget);
 
 function dseton($what)
 {
