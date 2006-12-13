@@ -1,0 +1,18 @@
+configuration for ubuntu:
+
+to get php5:
+* sudo apt-get install php5
+
+to get pecl:
+* sudo apt-get install php-db
+
+to get sqlite3 cmd line tool:
+* sudo apt-get install sqlite3
+
+* sudo pecl install pdo
+* vim /etc/php5/cli/php.ini append "extension=pdo.so" at eof
+* sudo pecl install pdo_sqlite
+* vim /etc/php5/cli/php.ini append "extension=pdo_sqlite.so" at eof
+
+
+ps: there might be some apt-get packages which i forgot, maybe php5-sqlite ...

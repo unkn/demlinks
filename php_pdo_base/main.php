@@ -1,5 +1,5 @@
-//run with (echo "<?php";cat ztest6.php |cpp)|php
-//" this is for vim
+//run with ./2
+//<?php this is for vim
 
 #include "shortdef.php"
 #include "debug.php"
