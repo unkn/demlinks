@@ -173,7 +173,9 @@ class dmlL0
                 return $result;
         }
 //------------------------
-        //func (SetRelation
+        func (SetRelation($direction, $nodename1, $nodename2))
+        {
+        }endfunc($ret,dset)
 //------------------------
 } //class
 

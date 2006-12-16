@@ -60,10 +60,7 @@
         deb(dnormal, "$count times.");
 
         _c( $res=$dc->DelNode("if") );
-        //print_r(errorInfo());
         _c( $res=$dc->IsNode("if") );
-        //echo $res.nl;
-        //debug_zval_dump($dc);
 
         _t( $result=$dc->Show() );
         _t( $arr=$result->fetchAll() );
