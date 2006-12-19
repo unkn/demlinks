@@ -21,7 +21,7 @@
 
         //$fp = fopen("debug.php","r");
         _t( $contents=file_get_contents("debug.php") );
-        _t( $dc->OpenTransaction() );
+        //_t( $dc->OpenTransaction() );
         //do {
                 //$line = fgets($fp, 1024);//or EOF,EOLN; aka a line not longer than 1024 bytes
                 //echo $line;
@@ -29,7 +29,11 @@
                 $res=split("[ .,/\\\"\?\<\>&!;|\#\$\*\+\{\}=\(\)'`\n\-]",trim($line));
                 //$res=split("[ \)\(]",trim($line));
                 $i=2;
+                $cnt=0;
                 foreach ($res as $val) {
+                        if ($cnt % 15 == 0) {
+                                _t( $dc->OpenTransaction() );
+                        }
                         if (evalgood($val)) {
                                 _ifnot( $dc->IsNode($val) ) {
                                         _t( $dc->AddNode($val) );
@@ -44,11 +48,15 @@
                                 echo setcol($i).$val." ";
                         usleep(100000);
                         }
+                        $cnt++;
+                        if ($cnt % 15 == 0) {
+                                _t( $dc->CloseTransaction() );
+                        }
                 }
         //} while (evalgood($line) && !feof($fp));
         echo nocol.nl;
 
-        _t( $dc->CloseTransaction() );
+        //_t( $dc->CloseTransaction() );
         //fclose($fp);
 
 
