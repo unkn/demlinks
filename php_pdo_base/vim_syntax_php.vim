@@ -81,4 +81,9 @@ hi Comment ctermfg=darkgray ctermbg=black
 "ctermfg=bg ctermbg=fg
 hi Todo ctermfg=white ctermbg=green
 "hi Normal ctermfg=white ctermbg=black
+
+
+hi Folded term=standout ctermfg=blue ctermbg=0 guifg=Black guibg=#e3c1a5
+
+
 " End Of Add
