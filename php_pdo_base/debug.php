@@ -78,7 +78,9 @@ for ($i=debugstartfrom; $i <= $maxdebuglevel; $i++) {
 
 #define dropmsg(_a) nl.greencol."vim ".getfile." +".getline.nl.tab.purplecol._a.nocol.nl
 
-#define _c(__a) { try { __a; } catch(PDOException $e) { except(quitmsg); } catch(Exception $e) { except(quitmsg) }}
+#define _try(thiscode, exec_this_if_fail) { try { thiscode; } catch(PDOException $e) { exec_this_if_fail; } catch(Exception $e) { exec_this_if_fail; }}
+
+#define _c(thiscode) { _try(thiscode, except(quitmsg) ) }
 
 //FIXME: try to catch "PHP Fatal error: " too!
 

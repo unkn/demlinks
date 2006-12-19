@@ -31,11 +31,14 @@
         $i=2;
         $cnt=0;
         foreach ($res as $val) {
-                if ($cnt % 15 == 0) {
-                        _t( $dc->OpenTransaction() );
-                }
-            try {
+                     $val=trim($val);
                 if (evalgood($val)) {
+                        if ($cnt % 15 == 0) {
+                                _t( $dc->OpenTransaction() );
+                        }
+
+                   _try(
+
                         _ifnot( $dc->IsNode($val) ) {
                                 if ($i<6) {
                                         $i++;
@@ -50,13 +53,13 @@
                         }
                         usleep(100000);
                         $cnt++;
-                }
-               } catch (Exception $e) {
-                       _t( $dc->AbortTransaction() );
-               }
-                if ($cnt % 15 == 0) {
-                        _t( $dc->CloseTransaction() );
-                }
+
+                   , _t( $dc->AbortTransaction() ) );//_try
+
+                        if ($cnt % 15 == 0) {
+                                _t( $dc->CloseTransaction() );
+                        }
+                } //fi
         }
         if ( $cnd % 15 != 0) {
                 _t( $dc->CloseTransaction() );
