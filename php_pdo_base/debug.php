@@ -68,15 +68,15 @@ for ($i=debugstartfrom; $i <= $maxdebuglevel; $i++) {
 
 #define except(_a) throw new Exception(_a);
 
-#define quitmsg nl."line:".getline."(".getfile.")".space.greencol.$e->getmessage().nocol.nl
+#define quitmsg nl.redcol."vim ".getfile." +".getline.nl.tab.greencol.$e->getmessage().nocol.nl
 
-#define dropmsg(_a) nl."line:".getline."(".getfile.")".space.purplecol._a.nocol.nl
+#define dropmsg(_a) nl.greencol."vim ".getfile." +".getline.nl.tab.purplecol._a.nocol.nl
 
 #define _c(__a) { try { __a; } catch(PDOException $e) { except(quitmsg); } catch(Exception $e) { except(quitmsg) }}
 
 //FIXME: try to catch "PHP Fatal error: " too!
 
-#define _t(__a) { _ifnot( __a ) { except( dropmsg("failed on return === emptystr") ) } }
+#define _t(__a) { _ifnot( __a ) { except( dropmsg("failed: empty(return)") ) } }
 
 #define _if(boolfunc) _c( $_this_var_accessible_in_caller_func = boolfunc ); if (evalgood($_this_var_accessible_in_caller_func))
 

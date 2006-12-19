@@ -4,7 +4,7 @@
 
 . head.sh
 
-rm -f "$dbase"
+#rm -f "$dbase"
 
 echo "<?php" >"$phpfile"
 cpp $cppparams "$src">>"$phpfile"

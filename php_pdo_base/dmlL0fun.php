@@ -145,7 +145,7 @@ class dmlL0
                 deb(dbeg,"AddNode('".$nodename."'):begin:");
                 _t( evalgood($nodename) );//must not be empty or so; it it is then maybe's a bug outside this func provided user shall never call this func with an empty param value
                 $this->fParamNewNode=$nodename;
-                _c( $ret=evalgood( $this->fPrepNewNode->execute() ) );
+                _t( $ret=evalgood( $this->fPrepNewNode->execute() ) );
         }endfunc($ret,dadd)/*}}}*/
 
         func (IsNode($nodename), dis)/*{{{*/

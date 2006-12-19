@@ -5,6 +5,7 @@
 #include "color.php"
 
         define(nl,"\n");
+        define(tab,"\t");
         define(space," ");
         define(emptystr,"");
         define(yes,TRUE);
@@ -19,8 +20,8 @@ function showbool($bo)
 
 function evalgood($var,$allowemptystr=no)
 {
-        if (is_string($var)) {
-                if ((yes==$allowemptystr) || (emptystr !== "$var" )) { //non empty
+        if (is_string($var) or is_array($var)) {
+                if ((yes==$allowemptystr) || (! empty($var) )) { //non empty
                         return TRUE;
                 } else {
                         return FALSE;

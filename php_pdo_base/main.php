@@ -32,7 +32,7 @@
                 foreach ($res as $val) {
                         if (evalgood($val)) {
                                 _ifnot( $dc->IsNode($val) ) {
-                                        _c( $dc->AddNode($val) );
+                                        _t( $dc->AddNode($val) );
                                         if ($i<6) {
                                                 $i++;
                                         } else {
@@ -42,6 +42,7 @@
                                         $i=1;
                                 }
                                 echo setcol($i).$val." ";
+                        usleep(100000);
                         }
                 }
         //} while (evalgood($line) && !feof($fp));
