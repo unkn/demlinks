@@ -1,5 +1,6 @@
 //<?php
 //dmlL0functions
+//header starts
 #ifndef DMLL0FUN_PHP
 #define DMLL0FUN_PHP
 
@@ -27,21 +28,24 @@ class dmlL0
         private $fParamDelNode;
         private $fPrepDelNode;
 
+        /* quote functions {{{*/
         function fieldquote($whatfield)
         {
                 //since we're in sqlite we're gonna quote the field with "" and the value with ''
                 return '"'.$whatfield.'"';
         }
+
         function valquote($whatval)
         {
                 return $this->fDBHandle->quote($whatval);
         }
+
         function tablequote($whattable)
         {
                 return $this->valquote($whattable);
-        }
+        }/*}}}*/
 
-        function __construct()
+        function __construct()/*{{{*/
         {
                 deb(dbeg,"dmlL0:construct:begin");
 
@@ -82,9 +86,16 @@ class dmlL0
                 _t( $this->fPrepDelNode->bindParam(paramNodeName, $this->fParamDelNode, PDO::PARAM_STR) );
                 //---------
                 deb(dend,"dmlL0:construct:done.");
-        }
+        }/*}}}*/
 
-        func (CreateDB(),dcrea)
+        function __destruct()/*{{{*/
+        {
+                deb(dbeg,"destruct:begin");
+                $fDBHandle=null;
+                deb(dend,"destruct:done.");
+        }/*}}}*/
+
+        func (CreateDB(),dcrea)/*{{{*/
         {
 
                 $sqlNodeNames = 'CREATE TABLE '.$this->qNodeNames.
@@ -104,80 +115,77 @@ class dmlL0
                         _t( $this->AbortTransaction() );
                         $ret= FALSE;
                 }
-        } endfunc($ret,dcrea)
-        function __destruct()
-        {
-                deb(dbeg,"destruct:begin");
-                $fDBHandle=null;
-                deb(dend,"destruct:done.");
-        }
+        } endfunc($ret,dcrea)/*}}}*/
 
-//------------------------
-        function OpenTransaction() //only one active transaction at a time; PDO limitation?!
+//------------------------ transactions/*{{{*/
+        function OpenTransaction() //only one active transaction at a time; PDO limitation?!/*{{{*/
         {
                 _t( $bt=$this->fDBHandle->beginTransaction() );
                 deb(dend,"OpenTransaction():$bt");
                 return $bt;
-        }
-        function CloseTransaction()
+        }/*}}}*/
+
+        function CloseTransaction()/*{{{*/
         {
                 _t( $ci=$this->fDBHandle->commit() );
                 deb(dend,"CloseTransaction():$ci!");
                 return $ci;
-        }
-        function AbortTransaction()
+        }/*}}}*/
+
+        function AbortTransaction()/*{{{*/
         {
                 _t( $rb=$this->fDBHandle->rollBack() );
                 deb(dend,"AbortTransaction():$rb!");
                 return $rb;
-        }
-//------------------------
+        }/*}}}*/
+//------------------------/*}}}*/
 
-        func (AddNode($nodename),dadd)
+        func (AddNode($nodename),dadd)/*{{{*/
         {
                 deb(dbeg,"AddNode('".$nodename."'):begin:");
                 _t( evalgood($nodename) );//must not be empty or so; it it is then maybe's a bug outside this func provided user shall never call this func with an empty param value
                 $this->fParamNewNode=$nodename;
                 _c( $ret=evalgood( $this->fPrepNewNode->execute() ) );
-        }endfunc($ret,dadd)
+        }endfunc($ret,dadd)/*}}}*/
 
-        func (IsNode($nodename), dis)
+        func (IsNode($nodename), dis)/*{{{*/
         {
                 _t(evalgood($nodename));
                 _c( $ar=$this->GetNodeArray($nodename) );
                 $ret= (1==count($ar)?yes:no);
-        }endfunc($ret,dis)
+        }endfunc($ret,dis)/*}}}*/
 
-        func (GetNodeArray($nodename),dget)
+        func (GetNodeArray($nodename),dget)/*{{{*/
         {
                 _t(evalgood($nodename));
                 $this->fParamNodeName = $nodename;
                 _t( $this->fPrepGetNodeArray->execute() );
                 $ar=$this->fPrepGetNodeArray->FetchAll();
                 //print_r($ar);
-        }endfunc($ar,dget)
+        }endfunc($ar,dget)/*}}}*/
 
-        func (DelNode($which), ddel)
+        func (DelNode($which), ddel)/*{{{*/
         {
                 _t(evalgood($which));
                 $this->fParamDelNode = $which;
                 _c( $ret=evalgood( $mod=$this->fPrepDelNode->execute() ) );
-        }endfunc($ret,ddel)
+        }endfunc($ret,ddel)/*}}}*/
 
-        function Show()//temp
+        function Show()//temp/*{{{*/
         {
                 deb(dbeg,"Show()");
                 $sqlGetView = 'SELECT * FROM '.$this->qNodeNames;//.' WHERE page = '.$pageVisit;
                 _t( $result=$this->fDBHandle->query($sqlGetView) );
                 deb(dend,"end Show()");
                 return $result;
-        }
+        }/*}}}*/
 //------------------------
-        func (SetRelation($direction, $nodename1, $nodename2))
+        func (SetRelation($direction, $nodename1, $nodename2))/*{{{*/
         {
-        }endfunc($ret,dset)
+        }endfunc($ret,dset)/*}}}*/
 //------------------------
 } //class
 
-#endif //header
+#endif //header ends
+// vim: fdm=marker
 //?>
