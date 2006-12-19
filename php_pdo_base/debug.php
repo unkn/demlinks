@@ -112,7 +112,7 @@ for ($i=debugstartfrom; $i <= $maxdebuglevel; $i++) {
                 }\
         }
 
-#else //to bad we gotta repeat implementation for both
+#else //to bad we gotta repeat interface(?) for both
         #define deb(level,text)
 #endif
 
