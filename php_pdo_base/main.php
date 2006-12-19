@@ -25,34 +25,42 @@
         //do {
                 //$line = fgets($fp, 1024);//or EOF,EOLN; aka a line not longer than 1024 bytes
                 //echo $line;
-                $line=$contents;
-                $res=split("[ .,/\\\"\?\<\>&!;|\#\$\*\+\{\}=\(\)'`\n\-]",trim($line));
-                //$res=split("[ \)\(]",trim($line));
-                $i=2;
-                $cnt=0;
-                foreach ($res as $val) {
-                        if ($cnt % 15 == 0) {
-                                _t( $dc->OpenTransaction() );
-                        }
-                        if (evalgood($val)) {
-                                _ifnot( $dc->IsNode($val) ) {
-                                        _t( $dc->AddNode($val) );
-                                        if ($i<6) {
-                                                $i++;
-                                        } else {
-                                                $i=2;
-                                        }
+        $line=$contents;
+        $res=split("[ .,/\\\"\?\<\>&!;|\#\$\*\+\{\}=\(\)'`\n\-]",trim($line));
+        //$res=split("[ \)\(]",trim($line));
+        $i=2;
+        $cnt=0;
+        foreach ($res as $val) {
+            try {
+                if ($cnt % 15 == 0) {
+                        _t( $dc->OpenTransaction() );
+                }
+                if (evalgood($val)) {
+                        _ifnot( $dc->IsNode($val) ) {
+                                if ($i<6) {
+                                        $i++;
                                 } else {
-                                        $i=1;
+                                        $i=2;
                                 }
                                 echo setcol($i).$val." ";
+                                _t( $dc->AddNode($val) );
+                        } else {
+                                $i=1;
+                                echo setcol($i).$val." ";
+                        }
                         usleep(100000);
-                        }
                         $cnt++;
-                        if ($cnt % 15 == 0) {
-                                _t( $dc->CloseTransaction() );
-                        }
                 }
+               } catch (Exception $e) {
+                       _t( $dc->AbortTransaction() );
+               }
+                if ($cnt % 15 == 0) {
+                        _t( $dc->CloseTransaction() );
+                }
+        }
+        if ( $cnd % 15 != 0) {
+                _t( $dc->CloseTransaction() );
+        }
         //} while (evalgood($line) && !feof($fp));
         echo nocol.nl;
 

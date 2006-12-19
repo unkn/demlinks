@@ -118,26 +118,23 @@ class dmlL0
         } endfunc($ret,dcrea)/*}}}*/
 
 //------------------------ transactions/*{{{*/
-        function OpenTransaction() //only one active transaction at a time; PDO limitation?!/*{{{*/
+        func (OpenTransaction(), dbegtr) //only one active transaction at a time; PDO limitation?!/*{{{*/
         {
                 _t( $bt=$this->fDBHandle->beginTransaction() );
                 deb(dend,"OpenTransaction():$bt");
-                return $bt;
-        }/*}}}*/
+        }endfunc($bt, dbegtr)/*}}}*/
 
-        function CloseTransaction()/*{{{*/
+        func (CloseTransaction(),dendtr)/*{{{*/
         {
                 _t( $ci=$this->fDBHandle->commit() );
                 deb(dend,"CloseTransaction():$ci!");
-                return $ci;
-        }/*}}}*/
+        }endfunc($ci, dendtr)/*}}}*/
 
-        function AbortTransaction()/*{{{*/
+        func (AbortTransaction(), dabtr)/*{{{*/
         {
                 _t( $rb=$this->fDBHandle->rollBack() );
                 deb(dend,"AbortTransaction():$rb!");
-                return $rb;
-        }/*}}}*/
+        }endfunc($rb, dabtr)/*}}}*/
 //------------------------/*}}}*/
 
         func (AddNode($nodename),dadd)/*{{{*/

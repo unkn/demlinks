@@ -35,6 +35,9 @@ adef(dis);//show IsStuff()
 adef(dadd);//show additions ie. AddNode()
 adef(dcrea);
 adef(dget);
+adef(dbegtr);//begin
+adef(dabtr);//abort
+adef(dendtr);//close transaction
 
 //enabling specific debug levels
 dseton(dlowlevel);
@@ -47,6 +50,9 @@ dseton(dcrea);
 //dseton(dis);
 //dseton(dadd);
 //dseton(dget);
+dseton(dbegtr);//transaction
+dseton(dabtr);
+dseton(dendtr);
 
 function dseton($what)
 {
@@ -86,7 +92,7 @@ for ($i=debugstartfrom; $i <= $maxdebuglevel; $i++) {
 #define endprogram deb(dend,"Ending program..."); } catch (Exception $e) { die(quitmsg); }
 
 #ifdef debugon
-        #define debshow(level,text) echo bluecol."debLev".greencol.level.nocol." ".text." (".getline."-".getfile.")".nl;
+        #define debshow(level,text) echo nl.bluecol."debLev".greencol.level.nocol." ".text." (vim ".getfile." +".getline.")";
         #define deb(level,text) { \
                 global $debugar; \
                 $levelar=level; \
