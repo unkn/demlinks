@@ -31,10 +31,10 @@
         $i=2;
         $cnt=0;
         foreach ($res as $val) {
-            try {
                 if ($cnt % 15 == 0) {
                         _t( $dc->OpenTransaction() );
                 }
+            try {
                 if (evalgood($val)) {
                         _ifnot( $dc->IsNode($val) ) {
                                 if ($i<6) {
