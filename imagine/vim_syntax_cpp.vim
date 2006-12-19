@@ -40,7 +40,7 @@ hi cppReadWriteParam ctermfg=lightblue
 
 syn match cppOperator		"=\+"
 syn match cppOperator		"*\+"
-"syn match cppOperator		"\.\+" don't defined this or cppMethodOrField won't work
+"syn match cppOperator		"\.\+" don't define this or cppMethodOrField won't work
 syn match cppOperator		","
 syn match cppOperator		"&\+"
 syn match cppOperator		"("
