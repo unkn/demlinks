@@ -61,18 +61,14 @@
                         }
                 } //fi
         }
-        if ( $cnt % 15 != 0) {
+        if ( $cnt % 15 != 0) { //left it open? if so close it
                 _t( $dc->CloseTransaction() );
         }
-        //} while (evalgood($line) && !feof($fp));
         echo nocol.nl;
 
-        //_t( $dc->CloseTransaction() );
-        //fclose($fp);
 
 
         _c( $res=$dc->IsNode("if") );
-        //echo $res.nl;
 
         _t( $result=$dc->Show() );
         _t( $arr=$result->fetchAll() );
@@ -86,14 +82,10 @@
         _t( $arr=$result->fetchAll() );
         $count=count($arr);
         deb(dnormal, "$count times.");
-        /*$count=0;
-        while ($row = $result->fetch()) {
-                //print_r($row[dNodeName].nl);
-                //echo $row['NodeName'].nl;
-                $count++;
-        }*/
 
         $dc=null;//ie. dispose()
+
+        echo nl;
 
         endprogram
 ?>

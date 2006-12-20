@@ -4,7 +4,7 @@ syn case match
 syn keyword phpException	_c _t _try _ifnot exit deb
 syn match   phpException    /\<d[_A-Za-z0-9]\+[_A-Za-z0-9]*/
 
-syn keyword phpBoolean		yes no __VA_ARGS__
+syn keyword phpBoolean		yes no __VA_ARGS__ __construct __destruct
 
 "syn match   cppMethodOrField    /\.[_A-Za-z]\+[_A-Za-z0-9]*/
 "syn match   cppMethodOrField    /->[_A-Za-z]\+[_A-Za-z0-9]*/
@@ -25,6 +25,7 @@ hi phpIdentifier ctermfg=yellow
 hi Type ctermfg=lightgreen
 hi Repeat ctermfg=blue
 
+syn keyword phpDefine func
 "syn match phpCoreConstant     /\<T[A-Z0-9]\+[_A-Za-z0-9]*/
 "hi phpCoreConstant ctermfg=6
 syn match phpCoreConstant     /\<[_a-zA-Z]*L[0-9]\+/

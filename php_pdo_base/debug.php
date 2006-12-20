@@ -38,6 +38,8 @@ adef(dget);
 adef(dbegtr);//begin
 adef(dabtr);//abort
 adef(dendtr);//close transaction
+adef(dconstr);//contructor
+adef(ddestr);//destructor
 
 //enabling specific debug levels
 dseton(dlowlevel);
@@ -53,6 +55,8 @@ dseton(dcrea);
 //dseton(dbegtr);//transaction
 dseton(dabtr);
 //dseton(dendtr);
+dseton(dconstr);
+dseton(ddestr);
 
 function dseton($what)
 {

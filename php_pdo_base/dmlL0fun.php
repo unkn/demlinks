@@ -45,10 +45,8 @@ class dmlL0
                 return $this->valquote($whattable);
         }/*}}}*/
 
-        function __construct()/*{{{*/
+        func (__construct(), dconstr)/*{{{*/
         {
-                deb(dbeg,"dmlL0:construct:begin");
-
                 // create a SQLite3 database file with PDO and return a database handle (Object Oriented)
                 _c( $this->fDBHandle = new PDO('sqlite:'.dbasename,''/*user*/,''/*pwd*/,
                                 array(PDO::ATTR_PERSISTENT => true)) );//singleton?
@@ -83,15 +81,12 @@ class dmlL0
                 _t( $this->fPrepDelNode = $this->fDBHandle->prepare($this->sqlDelNode) );
                 _t( $this->fPrepDelNode->bindParam(paramNodeName, $this->fParamDelNode, PDO::PARAM_STR) );
                 //---------
-                deb(dend,"dmlL0:construct:done.");
-        }/*}}}*/
+        }endfunc(yes,dconstr)/*}}}*/
 
-        function __destruct()/*{{{*/
+        func (__destruct(), ddestr)/*{{{*/
         {
-                deb(dbeg,"destruct:begin");
                 $fDBHandle=null;
-                deb(dend,"destruct:done.");
-        }/*}}}*/
+        }endfunc(yes,ddestr)/*}}}*/
 
         func (CreateDB(),dcrea)/*{{{*/
         {
@@ -119,25 +114,21 @@ class dmlL0
         func (OpenTransaction(), dbegtr) //only one active transaction at a time; PDO limitation?!/*{{{*/
         {
                 _t( $bt=$this->fDBHandle->beginTransaction() );
-                deb(dend,"OpenTransaction():$bt");
         }endfunc($bt, dbegtr)/*}}}*/
 
         func (CloseTransaction(),dendtr)/*{{{*/
         {
                 _t( $ci=$this->fDBHandle->commit() );
-                deb(dend,"CloseTransaction():$ci!");
         }endfunc($ci, dendtr)/*}}}*/
 
         func (AbortTransaction(), dabtr)/*{{{*/
         {
                 _t( $rb=$this->fDBHandle->rollBack() );
-                deb(dend,"AbortTransaction():$rb!");
         }endfunc($rb, dabtr)/*}}}*/
 //------------------------/*}}}*/
 
         func (AddNode($nodename),dadd)/*{{{*/
         {
-                deb(dbeg,"AddNode('".$nodename."'):begin:");
                 _t( evalgood($nodename) );//must not be empty or so; it it is then maybe's a bug outside this func provided user shall never call this func with an empty param value
                 $this->fParamNewNode=$nodename;
                 _t( $ret=evalgood( $this->fPrepNewNode->execute() ) );
@@ -156,7 +147,6 @@ class dmlL0
                 $this->fParamNodeName = $nodename;
                 _t( $this->fPrepGetNodeArray->execute() );
                 $ar=$this->fPrepGetNodeArray->FetchAll();
-                //print_r($ar);
         }endfunc($ar,dget)/*}}}*/
 
         func (DelNode($which), ddel)/*{{{*/
@@ -166,14 +156,11 @@ class dmlL0
                 _c( $ret=evalgood( $mod=$this->fPrepDelNode->execute() ) );
         }endfunc($ret,ddel)/*}}}*/
 
-        function Show()//temp/*{{{*/
+        func (Show(),dshow)//temp/*{{{*/
         {
-                deb(dbeg,"Show()");
                 $sqlGetView = 'SELECT * FROM '.$this->qNodeNames;//.' WHERE page = '.$pageVisit;
                 _t( $result=$this->fDBHandle->query($sqlGetView) );
-                deb(dend,"end Show()");
-                return $result;
-        }/*}}}*/
+        }endfunc($result, dshow)/*}}}*/
 //------------------------
         func (SetRelation($direction, $nodename1, $nodename2))/*{{{*/
         {
