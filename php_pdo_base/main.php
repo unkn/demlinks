@@ -51,7 +51,7 @@
                                 $i=1;
                                 echo setcol($i).$val." ";
                         }
-                        usleep(100000);
+                        //usleep(100000);
                         $cnt++;
 
                    , _t( $dc->AbortTransaction() ) );//_try
@@ -61,7 +61,7 @@
                         }
                 } //fi
         }
-        if ( $cnd % 15 != 0) {
+        if ( $cnt % 15 != 0) {
                 _t( $dc->CloseTransaction() );
         }
         //} while (evalgood($line) && !feof($fp));

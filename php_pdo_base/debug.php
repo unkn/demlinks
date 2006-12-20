@@ -50,9 +50,9 @@ dseton(dcrea);
 //dseton(dis);
 //dseton(dadd);
 //dseton(dget);
-dseton(dbegtr);//transaction
+//dseton(dbegtr);//transaction
 dseton(dabtr);
-dseton(dendtr);
+//dseton(dendtr);
 
 function dseton($what)
 {

@@ -63,10 +63,8 @@ class dmlL0
 
                 _if( $this->CreateDB() ) {
                         $this->fFirstTime=TRUE;
-                        //echo "First time run!".nl;
                 }else{
                         $this->fFirstTime=FALSE;
-                        //echo "...using prev. defined table".nl;
                 }
 
                 //---------
