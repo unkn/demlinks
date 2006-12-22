@@ -49,17 +49,17 @@ dseton(dinfo);
 //dseton(dbeg);
 //dseton(dend);
 dseton(dnormal);
-dseton(ddel);
+//dseton(ddel);
 dseton(dcrea);
-dseton(dis);
-dseton(dadd);
-dseton(dget);
-dseton(dbegtr);//transaction
+//dseton(dis);
+//dseton(dadd);
+//dseton(dget);
+//dseton(dbegtr);//transaction
 dseton(dabtr);
-dseton(dendtr);
+//dseton(dendtr);
 dseton(dconstr);
 dseton(ddestr);
-dseton(ddbadd);
+//dseton(ddbadd);
 
 function dseton($what)
 {

@@ -79,7 +79,7 @@
         deb(dnormal, "$count times.");
 
         _TRY( $dc->DelName("if") );
-        _tIFnot( $dc->IsName("if") );
+        __( $dc->IsName("if") );
 
         _tIFnot( $dc->Show($result) );
         __( $arr=$result->fetchAll() );

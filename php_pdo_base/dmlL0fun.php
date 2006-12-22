@@ -67,7 +67,7 @@ class dmlL0
                 //--------- del by ID
                 $this->sqlDelID = 'DELETE FROM '.$this->qNodeNames.' WHERE '.$this->qNodeID.' = '.paramNodeID;
                 _tIFnot( $this->fPrepDelID = $this->fDBHandle->prepare($this->sqlDelID) );
-                _tIFnot( $this->fPrepDelID->bindParam(paramNodeName, $this->fParamNodeID, PDO::PARAM_STR) );
+                _tIFnot( $this->fPrepDelID->bindParam(paramNodeID, $this->fParamNodeID, PDO::PARAM_STR) );
                 //---------
         }endfunc(yes)/*}}}*/
 
