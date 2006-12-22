@@ -5,5 +5,5 @@
 
 line="$1"
 #(echo "<?php";cat "$prefer" |cpp) 
-cpp $cppparams "$phpfile" | grep -n ""|grep "^${line}:"
+cat "$phpfile" | grep -n ""|grep "^${line}:"
 

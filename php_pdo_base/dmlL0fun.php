@@ -12,21 +12,17 @@
 
 class dmlL0
 {
-        private $qNodeNames,$qRelations,$qNodeName,$qParentNodeID,$qChildNodeID,$qNodeID;//q from quote
-        private $sqlNewNode;
-        private static $fDBHandle=null;
+        protected $qNodeNames,$qRelations,$qNodeName,$qParentNodeID,$qChildNodeID,$qNodeID;//q from quote
+        protected static $fDBHandle=null;
         public $fFirstTime;//created table
-        private $fPrepNewNode;//prepared statement handler
-        private $fParamNewNode;//string param of prepared statement handler for NewNode
-        public $dbh;
 
-        private $sqlGetNodeArray;
-        private $fParamNodeName;
-        private $fPrepGetNodeArray;
+        private $fParamNodeID;
 
-        private $sqlDelNode;
-        private $fParamDelNode;
-        private $fPrepDelNode;
+        private $sqlGetNodeName;
+        private $fPrepGetNodeName;
+
+        private $sqlDelID;
+        private $fPrepDelID;
 
         /* quote functions {{{*/
         function fieldquote($whatfield)
@@ -48,7 +44,7 @@ class dmlL0
         func (__construct(), dconstr)/*{{{*/
         {
                 // create a SQLite3 database file with PDO and return a database handle (Object Oriented)
-                _c( $this->fDBHandle = new PDO('sqlite:'.dbasename,''/*user*/,''/*pwd*/,
+                __( $this->fDBHandle = new PDO('sqlite:'.dbasename,''/*user*/,''/*pwd*/,
                                 array(PDO::ATTR_PERSISTENT => true)) );//singleton?
 
                 $this->qNodeNames = $this->tablequote(dNodeNames);
@@ -57,36 +53,28 @@ class dmlL0
                 $this->qParentNodeID = $this->fieldquote(dParentNodeID);
                 $this->qChildNodeID = $this->fieldquote(dChildNodeID);
                 $this->qNodeID = $this->fieldquote(dNodeID);
-                define(paramNodeName,paramprefix.dNodeName);
 
                 _if( $this->CreateDB() ) {
-                        $this->fFirstTime=TRUE;
+                        $this->fFirstTime=yes;
                 }else{
-                        $this->fFirstTime=FALSE;
+                        $this->fFirstTime=no;
                 }
 
+                //--------- get Name by ID
+                $this->sqlGetNodeName = 'SELECT * FROM '.$this->qNodeNames.' WHERE '.$this->qNodeID.' = '.paramNodeID;
+                _tIFnot( $this->fPrepGetNodeName = $this->fDBHandle->prepare($this->sqlGetNodeName) );
+                _tIFnot( $this->fPrepGetNodeName->bindParam(paramNodeID, $this->fParamNodeID, PDO::PARAM_STR) ); //, PDO::PARAM_INT);
+                //--------- del by ID
+                $this->sqlDelID = 'DELETE FROM '.$this->qNodeNames.' WHERE '.$this->qNodeID.' = '.paramNodeID;
+                _tIFnot( $this->fPrepDelID = $this->fDBHandle->prepare($this->sqlDelID) );
+                _tIFnot( $this->fPrepDelID->bindParam(paramNodeName, $this->fParamNodeID, PDO::PARAM_STR) );
                 //---------
-                $this->sqlNewNode = 'INSERT INTO '.$this->qNodeNames.' ('.$this->qNodeName.') VALUES ('.paramNodeName.')';//table name needs to be quoted
-
-                _t( $this->fPrepNewNode = $this->fDBHandle->prepare($this->sqlNewNode) );//can't prepare unless the table already exists!
-                _t( $this->fPrepNewNode->bindParam(paramNodeName, $this->fParamNewNode, PDO::PARAM_STR) ); //, PDO::PARAM_INT);
-                //---------
-                $this->sqlGetNodeArray = 'SELECT * FROM '.$this->qNodeNames.' WHERE '.$this->qNodeName.' = '.paramNodeName;
-                //echo $this->sqlGetNodeArray;die();
-                _t( $this->fPrepGetNodeArray = $this->fDBHandle->prepare($this->sqlGetNodeArray) );
-                _t( $this->fPrepGetNodeArray->bindParam(paramNodeName, $this->fParamNodeName, PDO::PARAM_STR) ); //, PDO::PARAM_INT);
-                //---------
-                $this->sqlDelNode = 'DELETE FROM '.$this->qNodeNames.' WHERE '.$this->qNodeName.' = '.paramNodeName;
-                //echo $this->sqlDelNode;
-                _t( $this->fPrepDelNode = $this->fDBHandle->prepare($this->sqlDelNode) );
-                _t( $this->fPrepDelNode->bindParam(paramNodeName, $this->fParamDelNode, PDO::PARAM_STR) );
-                //---------
-        }endfunc(yes,dconstr)/*}}}*/
+        }endfunc(yes)/*}}}*/
 
         func (__destruct(), ddestr)/*{{{*/
         {
                 $fDBHandle=null;
-        }endfunc(yes,ddestr)/*}}}*/
+        }endfunc(yes)/*}}}*/
 
         func (CreateDB(),dcrea)/*{{{*/
         {
@@ -95,76 +83,69 @@ class dmlL0
                             ' ('.$this->qNodeID.' INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE, '.$this->qNodeName.' VARCHAR(256) UNIQUE NOT NULL)';
                 $sqlRelations = 'CREATE TABLE '.$this->qRelations.
                             ' ('.$this->qParentNodeID.' INTEGER PRIMARY KEY , '.$this->qChildNodeID.' INTEGER SECONDARY KEY)';
-                _t( $this->OpenTransaction());
-                _c( $res = $this->fDBHandle->exec($sqlNodeNames) );
-                if (evalgood($res)) {
-                        _c( $res = $this->fDBHandle->exec($sqlRelations) );
-                }
+                _tIFnot( $this->OpenTransaction());
 
-                if (evalgood($res)) {
-                        _t( $this->CloseTransaction() );
-                        $ret= TRUE;
-                }else{
-                        _t( $this->AbortTransaction() );
-                        $ret= FALSE;
+                _if ( $res= $this->fDBHandle->exec($sqlNodeNames) ) {
+                        __( $res = $this->fDBHandle->exec($sqlRelations) );
                 }
-        } endfunc($ret,dcrea)/*}}}*/
+                _if ($res) {
+                        _tIFnot( $this->CloseTransaction() );
+                }else{
+                        _tIFnot( $this->AbortTransaction() );
+                }
+        } endfunc($res)/*}}}*/
 
 //------------------------ transactions/*{{{*/
         func (OpenTransaction(), dbegtr) //only one active transaction at a time; PDO limitation?!/*{{{*/
         {
-                _t( $bt=$this->fDBHandle->beginTransaction() );
-        }endfunc($bt, dbegtr)/*}}}*/
+                _tIFnot( $this->fDBHandle->beginTransaction() );
+        }endfunc(ok)/*}}}*/
 
         func (CloseTransaction(),dendtr)/*{{{*/
         {
-                _t( $ci=$this->fDBHandle->commit() );
-        }endfunc($ci, dendtr)/*}}}*/
+                _tIFnot( $this->fDBHandle->commit() );
+        }endfunc(ok)/*}}}*/
 
         func (AbortTransaction(), dabtr)/*{{{*/
         {
-                _t( $rb=$this->fDBHandle->rollBack() );
-        }endfunc($rb, dabtr)/*}}}*/
+                _tIFnot( $this->fDBHandle->rollBack() );
+        }endfunc(ok)/*}}}*/
 //------------------------/*}}}*/
 
-        func (AddNode($nodename),dadd)/*{{{*/
-        {
-                _t( evalgood($nodename) );//must not be empty or so; it it is then maybe's a bug outside this func provided user shall never call this func with an empty param value
-                $this->fParamNewNode=$nodename;
-                _t( $ret=evalgood( $this->fPrepNewNode->execute() ) );
-        }endfunc($ret,dadd)/*}}}*/
 
-        func (IsNode($nodename), dis)/*{{{*/
+        func (IsID($id), dis)/*{{{*/
         {
-                _t(evalgood($nodename));
-                _c( $ar=$this->GetNodeArray($nodename) );
-                $ret= (1==count($ar)?yes:no);
-        }endfunc($ret,dis)/*}}}*/
+                _tIF(isNotGood($id));
+                __( $exists=$this->GetName($name,$id) );
+                _tIF(isGood($exists) && isNotGood($name) );
+        }endfunc($exists)/*}}}*/
 
-        func (GetNodeArray($nodename),dget)/*{{{*/
+        func (GetName(&$name,$id),dget)// returns Name by ID /*{{{*/
         {
-                _t(evalgood($nodename));
-                $this->fParamNodeName = $nodename;
-                _t( $this->fPrepGetNodeArray->execute() );
-                $ar=$this->fPrepGetNodeArray->FetchAll();
-        }endfunc($ar,dget)/*}}}*/
+                _tIFnot(isGood($id));
+                $this->fParamNodeID = $id;
+                _tIFnot( $this->fPrepGetNodeName->execute() );
+                __( $ar=$this->fPrepGetNodeName->FetchAll() );
+                $name=(string)$ar[dNodeName];
+        }endfunc($name)/*}}}*/
 
-        func (DelNode($which), ddel)/*{{{*/
-        {
-                _t(evalgood($which));
-                $this->fParamDelNode = $which;
-                _c( $ret=evalgood( $mod=$this->fPrepDelNode->execute() ) );
-        }endfunc($ret,ddel)/*}}}*/
 
-        func (Show(),dshow)//temp/*{{{*/
+        func (DelID($id), ddel)/*{{{*/
         {
-                $sqlGetView = 'SELECT * FROM '.$this->qNodeNames;//.' WHERE page = '.$pageVisit;
-                _t( $result=$this->fDBHandle->query($sqlGetView) );
-        }endfunc($result, dshow)/*}}}*/
+                _tIF(isNotGood($id));
+                $this->fParamNodeID = $id;
+                _tIFnot( $this->fPrepDelID->execute() );
+        }endfunc(ok)/*}}}*/
+
+        func (Show(&$result),dshow)//temp/*{{{*/
+        {
+                $sqlGetView = 'SELECT * FROM '.$this->qNodeNames;
+                _tIFnot( $result=$this->fDBHandle->query($sqlGetView) );
+        }endfunc(ok)/*}}}*/
 //------------------------
         func (SetRelation($direction, $nodename1, $nodename2))/*{{{*/
         {
-        }endfunc($ret,dset)/*}}}*/
+        }endfunc($ret)/*}}}*/
 //------------------------
 } //class
 

@@ -3,25 +3,25 @@
 
 #include "shortdef.php"
 #include "debug.php"
-#include "dmlL0def.php"
+//#include "dmlL0def.php"
 #include "color.php"
-#include "dmlL0fun.php"
+#include "dmlL1fun.php"
 
 
         beginprogram
-        _c( $dc=new dmlL0 );
+        __( $dc=new dmlL1 );
         //debug_zval_dump($dc);
 
 
-        if ($dc->fFirstTime) {
+        _if ($dc->fFirstTime) {
                 deb(dinfo,"First time run!");
         } else {
                 deb(dinfo,"...using prev. defined table");
         }
 
         //$fp = fopen("debug.php","r");
-        _t( $contents=file_get_contents("debug.php") );
-        //_t( $dc->OpenTransaction() );
+        _tIFnot( $contents=file_get_contents("debug.php") );
+        //_tIFnot( $dc->OpenTransaction() );
         //do {
                 //$line = fgets($fp, 1024);//or EOF,EOLN; aka a line not longer than 1024 bytes
                 //echo $line;
@@ -32,54 +32,57 @@
         $cnt=0;
         foreach ($res as $val) {
                      $val=trim($val);
-                if (evalgood($val)) {
+                _if ($val) {
                         if ($cnt % 15 == 0) {
-                                _t( $dc->OpenTransaction() );
+                                _tIFnot( $dc->OpenTransaction() );
                         }
 
-                   _try(
+                   _TRY(
 
-                        _ifnot( $dc->IsNode($val) ) {
+                        _ifnot( $dc->IsName($val) ) {
                                 if ($i<6) {
                                         $i++;
                                 } else {
                                         $i=2;
                                 }
                                 echo setcol($i).$val." ";
-                                _t( $dc->AddNode($val) );
+                                _tIFnot( $dc->AddName($val) );
                         } else {
                                 $i=1;
                                 echo setcol($i).$val." ";
                         }
                         //usleep(100000);
-                        $cnt++;
-
-                   , _t( $dc->AbortTransaction() ) );//_try
+                        $cnt++;//echo "cnt=".$cnt.nl;
 
                         if ($cnt % 15 == 0) {
-                                _t( $dc->CloseTransaction() );
+                                _tIFnot( $dc->CloseTransaction() );
                         }
+
+                   , _tIFnot( $dc->AbortTransaction());$aborted=yes ;break );//_TRY
+
                 } //fi
         }
         if ( $cnt % 15 != 0) { //left it open? if so close it
-                _t( $dc->CloseTransaction() );
+                _ifnot($aborted) {
+                        _tIFnot( $dc->CloseTransaction() );
+                }
         }
         echo nocol.nl;
 
 
 
-        _c( $res=$dc->IsNode("if") );
+        _tIFnot( $dc->IsName("if") );
 
-        _t( $result=$dc->Show() );
-        _t( $arr=$result->fetchAll() );
+        _tIFnot( $dc->Show($result) );
+        __( $arr=$result->fetchAll() );
         $count=count($arr);
         deb(dnormal, "$count times.");
 
-        _c( $res=$dc->DelNode("if") );
-        _c( $res=$dc->IsNode("if") );
+        _TRY( $dc->DelName("if") );
+        _tIFnot( $dc->IsName("if") );
 
-        _t( $result=$dc->Show() );
-        _t( $arr=$result->fetchAll() );
+        _tIFnot( $dc->Show($result) );
+        __( $arr=$result->fetchAll() );
         $count=count($arr);
         deb(dnormal, "$count times.");
 

@@ -11,6 +11,9 @@ define(dChildNodeID,"ChildNodeID");//table name
 define(dNodeID,"NodeID");//table name
 
 define(paramprefix,":");
+define(paramNodeName,paramprefix.dNodeName);
+define(paramNodeID,paramprefix.dNodeID);
+
 
 #endif //header
 //?>

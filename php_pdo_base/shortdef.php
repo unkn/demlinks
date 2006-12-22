@@ -8,34 +8,12 @@
         define(tab,"\t");
         define(space," ");
         define(emptystr,"");
-        define(yes,TRUE);
-        define(no,FALSE);
+        define(yes,greencol."yes".nocol);
+        define(no,redcol."no".nocol);
+        define(ok,yes);//these must be equivalent:  ok~yes and bad~no   where yes="yes" and no="no" or wtw
+        define(bad,no);//certain operations interchange ok with yes, that's why!
 
-#define many(...) array(__VA_ARGS__)
-
-function showbool($bo)
-{
-        return ($bo==TRUE?greencol."OK".nocol:redcol."FAIL".nocol);
-}
-
-function evalgood($var,$allowemptystr=no)
-{
-        if (is_string($var) or is_array($var)) {
-                if ((yes==$allowemptystr) || (! empty($var) )) { //non empty
-                        return TRUE;
-                } else {
-                        return FALSE;
-                }
-        }
-        if (is_numeric($var)) { //numeric
-                return TRUE;
-        }
-        if ( is_bool($var)) {
-                return $var;
-        }
-        return TRUE; //any other object
-} //func
-
+//#define many(...) array(__VA_ARGS__)
 
 #endif //header
 //?>

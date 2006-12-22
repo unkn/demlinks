@@ -1,10 +1,10 @@
 " added on 19-20 December 2006 by AtKaaZ for demlinks
 syn case match
 
-syn keyword phpException	_c _t _try _ifnot exit deb
+syn keyword phpException	__ _tIF _tIFnot _TRY _ifnot exit deb _if
 syn match   phpException    /\<d[_A-Za-z0-9]\+[_A-Za-z0-9]*/
 
-syn keyword phpBoolean		yes no __VA_ARGS__ __construct __destruct
+syn keyword phpBoolean		yes no ok bad __VA_ARGS__ __construct __destruct
 
 "syn match   cppMethodOrField    /\.[_A-Za-z]\+[_A-Za-z0-9]*/
 "syn match   cppMethodOrField    /->[_A-Za-z]\+[_A-Za-z0-9]*/
