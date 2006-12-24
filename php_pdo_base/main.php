@@ -57,21 +57,22 @@
         $cnt=0;
         foreach ($res as $val) {
                      $val=trim($val);
-                _if ($val) {
+                _if ($val) {//ie. non-empty
                         if ($cnt % 15 == 0) {
                                 _tIFnot( $dc->OpenTransaction() );
                         }
 
                    _TRY(
 
-                        _ifnot( $dc->IsName($val) ) {
+                        _tIFnot( $ret=$dc->AddName($val) );
+                        _if (yes===isvalue(kPhysicallyAdded,$ret)) {
                                 if ($i<6) {
                                         $i++;
                                 } else {
                                         $i=2;
                                 }
                                 echo setcol($i).$val." ";
-                                _tIFnot( $ret=$dc->AddName($val) );
+                                //_tIFnot( $ret=$dc->AddName($val) );
                                 //print_r($ret);
                                 //echo isflag(kAlreadyExists, $ret);
                         } else {
@@ -89,7 +90,7 @@
 
                 } //fi
         }
-        if ( $cnt % 15 != 0) { //left it open? if so close it
+        if ( $cnt % 15 !== 0) { //left it open? if so close it
                 _ifnot($aborted) {
                         _tIFnot( $dc->CloseTransaction() );
                 }

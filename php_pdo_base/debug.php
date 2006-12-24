@@ -47,7 +47,7 @@ $maxdebuglevel=0;//don't need to change this
 function adef($what)
 {
         global $maxdebuglevel;
-        if (defined($what)) {
+        if (TRUE===defined($what)) {
                 die("already defined $what".nl);
         }
         define($what,++$maxdebuglevel);
@@ -182,7 +182,7 @@ for ($i=debugstartfrom; $i <= $maxdebuglevel; $i++) {
                 global $debugar; \
                 $levelar=level; \
                 $text=text; \
-                if (is_array($levelar)) { \
+                if (TRUE===is_array($levelar)) { \
                         foreach ($levelar as $key) { \
                                 if (TRUE === $debugar[$key]) { \
                                         debshow($key,$text,textappend);\
@@ -228,14 +228,15 @@ function array_append_values(&$towhatarray, $listofvalues)/*{{{*/
                 prependtolist($TheReturnStateList, __VA_ARGS__);
 
 //returns yes or no
-#define isflag(whatflag) \
-                isvalue(whatflag, $AllReturnLists)
+//#define isflag(whatflag) \
+//                isvalue(whatflag, $AllReturnLists)
+
 #define isvalue(whatflag,inwhatlist) \
                 (TRUE===in_array(whatflag, inwhatlist, FALSE/*check types?=no*/)?yes:no)
 
 function showvalue($var)
 {
-        if (is_array($var)) {
+        if (TRUE===is_array($var)) {
                 $ret='';
                 foreach ($var as $v) {
                         $ret.="'$v' ";
@@ -274,7 +275,7 @@ function &funcname \
 //never do if (isGood($var)) => always true, instead do _if ($var)  OR if (yes===isGood($var))
 function isGood($var,$allowemptystr=no)
 {
-        if (is_null($var)) {
+        if (TRUE===is_null($var)) {
                 return no;
         }
         if (FALSE===isset($var)){
@@ -287,9 +288,9 @@ function isGood($var,$allowemptystr=no)
 //eof
 
 
-        if (is_string($var) || is_array($var)) {
+        if (TRUE===is_string($var) || TRUE===is_array($var)) {
                 if ((yes===$allowemptystr) || ( FALSE===empty($var) )) { //non empty
-                        if (is_array($var) && yes===isvalue(kReturnStateList_type, $var)) {
+                        if (TRUE===is_array($var) && yes===isvalue(kReturnStateList_type, $var)) {
                                 global $AllReturnLists;
                                 //print_r($var);
                                 _tIF(yes===isvalue(yes,$var) && yes===isvalue(no, $var) );
@@ -307,13 +308,13 @@ function isGood($var,$allowemptystr=no)
                         return no;
                 }
         }
-        if (is_numeric($var)) { //numeric
+        if (TRUE===is_numeric($var)) { //numeric
                 return yes;
         }
-        if ( is_bool($var)) {
+        if (TRUE===is_bool($var)) {
                 return (TRUE===$var?yes:no);
         }
-        if ( is_object($var) ){
+        if (TRUE===is_object($var) ){
                 return yes;
         }
 
@@ -332,14 +333,14 @@ $maxDifferentReturnItems=0;//don't need to change this
 function rdef($what)
 {
         global $maxDifferentReturnItems;
-        if (defined($what)) {
+        if (TRUE===defined($what)) {
                 die("already defined $what".nl);
         }
         define($what,"$what");
         ++$maxDifferentReturnItems;
 }
 
-define(kReturnStateList_type,"this array is a ReturnStateList type; this element is a way for isGood() to determine that");
+define(kReturnStateList_type,"kReturnStateList_type"/*this array is a ReturnStateList type; this element is a way for isGood() to determine that"*/);
 //this is the kind that flags the return array from the function so that isGoods know it's a return value instead of a normal array returned by ie. fetchAll()
 
 //define kConsts aka return types here:

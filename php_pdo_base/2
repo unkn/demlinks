@@ -8,6 +8,8 @@
 
 echo "<?php" >"$phpfile"
 cpp $cppparams "$src">>"$phpfile"
-php "$phpfile"
+if [ "$?" -eq "0" ]; then
+        php "$phpfile"
 #-B "<?php"
+fi
 
