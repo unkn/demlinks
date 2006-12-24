@@ -204,13 +204,16 @@ for ($i=debugstartfrom; $i <= $maxdebuglevel; $i++) {
 #endif
 
 function array_append_values(&$towhatarray, $listofvalues)/*{{{*/
-//all appended elements are references to real values
+//all values are copied, not referenced! because, in my view, references are too subtle in php to be used consistently
 {
         _tIFnot(is_array($towhatarray));
         _tIFnot(is_array($listofvalues));
-        foreach ( $listofvalues as &$val ) {
-                _tIF(isNotGood($val));
-                $towhatarray[]=&$val;
+        foreach ( $listofvalues as $val ) {
+                //print_r($val);
+                if (no!=$val) {
+                        _tIF(isNotGood($val));
+                }
+                $towhatarray[]=$val;
         }
 }/*}}}*/
 
@@ -228,7 +231,20 @@ function array_append_values(&$towhatarray, $listofvalues)/*{{{*/
 #define isflag(whatflag) \
                 isvalue(whatflag, $AllReturnLists)
 #define isvalue(whatflag,inwhatlist) \
-                (TRUE===in_array(whatflag, inwhatlist)?yes:no)
+                (TRUE===in_array(whatflag, inwhatlist, FALSE/*check types?=no*/)?yes:no)
+
+function showvalue($var)
+{
+        if (is_array($var)) {
+                $ret='';
+                foreach ($var as $v) {
+                        $ret.="'$v' ";
+                }
+        } else {
+                $ret="'$var'";
+        }
+        return $ret;
+}
 
 //supposed to return either yes or no ONLY!, if u need to return something use a &$var as a parameter
 #define func(funcname,...) /*{{{*/ \
@@ -245,34 +261,14 @@ function &funcname \
                         global $AllReturnLists;\
                         $theKey="vim ".getfile." +".getline;\
                         $AllReturnLists[$theKey]=$TheReturnStateList;\
-                        debnl(getalist($otherlevelsRFZAHJ, dend) , $funcnameRFZAHJ.":done:FunkOK(".$TheReturnStateList.")===".FuncOK(&$AllReturnLists[$theKey]));\
-                        return $AllReturnLists[$theKey];/*returns a reference to this*/ \
+                        debnl(getalist($otherlevelsRFZAHJ, dend) , $funcnameRFZAHJ.":done:isGood(".showvalue($TheReturnStateList).")===".isGood($TheReturnStateList));\
+                        return $TheReturnStateList; \
                 }/*}}}*/
 
 // DO NOT append ";" to endfunc!!!
 #define endfunc(.../* more elements */) /*{{{*/ \
                 endnow(__VA_ARGS__) \
         }/*}}}*/
-
-function FuncOK($retval) //to be used only on return values of those functions defined with "func" and "endfunc"
-{ //usage: _if (FuncOK($ret)) {}
-        _tIFnot(is_array($retval));
-        if (is_array($retval) && isvalue(kReturnStateList_type, $retval)) {
-                //print_r($retval);
-                global $AllReturnLists;
-                //print_r(isflag(&$retval,$AllReturnLists));
-                if (isvalue(yes, $retval)) {
-                        return yes;
-                } else { 
-                        if (isvalue(no, $retval)) {
-                                return no;
-                        }
-                        return no;
-                }
-        }
-        _tIF(true);
-        //return isflag(ok,$retval);//yes or no
-}
 
 
 //never do if (isGood($var)) => always true, instead do _if ($var)  OR if (yes===isGood($var))
@@ -290,12 +286,23 @@ function isGood($var,$allowemptystr=no)
         }
 //eof
 
-        /*if (is_array($var) && isflag(kReturnStateList_type, $var)) {
-                return FuncOK($var);
-}*/
+
         if (is_string($var) || is_array($var)) {
                 if ((yes===$allowemptystr) || ( FALSE===empty($var) )) { //non empty
-                        return yes;
+                        if (is_array($var) && yes===isvalue(kReturnStateList_type, $var)) {
+                                global $AllReturnLists;
+                                //print_r($var);
+                                _tIF(yes===isvalue(yes,$var) && yes===isvalue(no, $var) );
+                                _if (isvalue(yes, $var)) {
+                                        return yes;
+                                } else { 
+                                        _if (isvalue(no, $var)) {
+                                                return no;
+                                        }
+                                        _tIF("invalid kReturnStateList_type! neither yes, nor no");
+                                }
+                        }
+                        return yes; //a non kReturnStateList_type
                 } else {
                         return no;
                 }
@@ -337,20 +344,10 @@ define(kReturnStateList_type,"this array is a ReturnStateList type; this element
 
 //define kConsts aka return types here:
 rdef(kAlreadyExists);
-
-   /**
-    * @return int
-    * @param $array array
-    * @param $value mixed
-    * @desc Prepend a reference to an element to the beginning of an array. Renumbers numeric keys, so $value is always
-   inserted to $array[0]
-    */
-   function array_unshift_ref(&$array, &$value)
-   {
-      $return = array_unshift($array,'');
-      $array[0] =& $value;
-      return $return;
-   }
+rdef(kPhysicallyAdded);
+rdef(kCreatedDBNodeNames);
+rdef(kCreatedDBRelations);
+rdef(kEmpty);
 
 
 // vim: fdm=marker

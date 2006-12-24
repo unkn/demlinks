@@ -82,6 +82,10 @@ class dmlL0
                 $this->qChildNodeID = $this->fieldquote(dChildNodeID);
                 $this->qNodeID = $this->fieldquote(dNodeID);
 
+                __( $rret=$this->CreateDB() );
+                print_r($rret);
+                echo "!".$rret."!".nl;
+
                 _if( $this->CreateDB() ) {
                         $this->fFirstTime=yes;
                 }else{
@@ -114,14 +118,22 @@ class dmlL0
                 _tIFnot( $this->OpenTransaction());
 
                 _if ( $res= $this->fDBHandle->exec($sqlNodeNames) ) {
-                        __( $res = $this->fDBHandle->exec($sqlRelations) );
+                        retflag(kCreatedDBNodeNames);
+                        $wecommit=yes;
                 }
-                _if ($res) {
+                _if( $res = $this->fDBHandle->exec($sqlRelations) ) {
+                        retflag(kCreatedDBRelations);
+                        $wecommit=yes;
+                }
+
+                _if ($wecommit) { //at least one dbase was created, the other one could already exist perhaps.
                         _tIFnot( $this->CloseTransaction() );
+                        retflag(ok);
                 }else{
                         _tIFnot( $this->AbortTransaction() );
+                        retflag(bad);
                 }
-        } endfunc($res)/*}}}*/
+        } endfunc()/*}}}*/
 
 //------------------------ transactions/*{{{*/
         func (OpenTransaction(), dbegtr) //only one active transaction at a time; PDO limitation?!/*{{{*/

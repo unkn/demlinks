@@ -77,6 +77,7 @@ class dmlL1 extends dmlL0
                         $this->fParamNodeName=$nodename;
                         _tIFnot( $this->fPrepNewNode->execute() );//error here? it probably already exists! error in GetID maybe
                         deb(ddbadd,greencol."succeded".nocol." physical addition: ".$nodename);
+                        retflag(kPhysicallyAdded);
                 } else {
                         retflag(kAlreadyExists);
                 }//fielse
@@ -84,23 +85,29 @@ class dmlL1 extends dmlL0
 
         func (GetID(&$id,$nodename),dget)// returns ID by Name /*{{{*/
         {
-                _tIFnot($nodename);
+                _tIFnot($nodename);//_tIFnot() uses isGood($nodename) to evaluate the params instead of plain 'if'
                 $this->fParamNodeName = $nodename;
                 _if ( $this->fPrepGetNodeID->execute() ) {
-                        __( $ar=$this->fPrepGetNodeID->FetchAll() );
-                        //print_r($ar);
-                        $id=(string)$ar[0][dNodeID];
-                        //print_r($ar);
-                        //echo $ar[0][dNodeID]."!".$id;
+                        _if( $ar=$this->fPrepGetNodeID->FetchAll() ) {
+                                $id=(string)$ar[0][dNodeID];
+                                retflag(yes);
+                        } else {
+                                retflag(no,kEmpty);
+                        }
+                } else {
+                        //$id='';
+                        retflag(no);
                 }
-        }endfunc($id)/*}}}*/
+        }endfunc()/*}}}*/
 
         func (IsName($nodename), dis)/*{{{*/
         {
                 _tIFnot($nodename);
-                __( $exists=$this->GetID($id,$nodename) );
-                _tIF(isGood($exists) && isNotGood($id) );
-        }endfunc($exists)/*}}}*/
+                _if( $this->GetID($id,$nodename) ) {
+                        _tIF( isNotGood($id) );
+                        endnow(yes);
+                }
+        }endfunc(no)/*}}}*/
 
         func (DelName($nodename), ddel)/*{{{*/
         {

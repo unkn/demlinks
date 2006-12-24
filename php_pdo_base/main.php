@@ -117,7 +117,7 @@
 
         echo nl;
 
-        print_r($AllReturnLists);
+        //print_r($AllReturnLists);
 
         endprogram
 // vim: fdm=marker
