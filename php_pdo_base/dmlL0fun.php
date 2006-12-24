@@ -4,7 +4,7 @@
 #ifndef DMLL0FUN_PHP
 #define DMLL0FUN_PHP
 
-/****************************************************************************
+/*LICENSE*GNU*GPL************************************************************{{{
 *
 *                             dmental links
 *    Copyright (C) 2006 AtKaaZ, AtKaaZ at users.sourceforge.net
@@ -29,9 +29,7 @@
 *
 * Description: demlinks level 0 (lowest level)
 *
-****************************************************************************/
-
-
+***************************************************************************}}}*/
 
 
 #include "shortdef.php"
@@ -173,9 +171,9 @@ class dmlL0
                 _tIFnot( $result=$this->fDBHandle->query($sqlGetView) );
         }endfunc(ok)/*}}}*/
 //------------------------
-        func (SetRelation($direction, $nodename1, $nodename2))/*{{{*/
+        func (SetRelation($parentName, $childName))/*{{{*/
         {
-        }endfunc($ret)/*}}}*/
+        }endfunc(ok)/*}}}*/
 //------------------------
 } //class
 

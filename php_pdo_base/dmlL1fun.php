@@ -4,7 +4,7 @@
 #ifndef DMLL1FUN_PHP
 #define DMLL1FUN_PHP
 
-/****************************************************************************
+/*LICENSE*GNU*GPL************************************************************{{{
 *
 *                             dmental links
 *    Copyright (C) 2006 AtKaaZ, AtKaaZ at users.sourceforge.net
@@ -29,9 +29,7 @@
 *
 * Description: demlinks level 1 (based on level 0)
 *
-****************************************************************************/
-
-
+***************************************************************************}}}*/
 
 
 #include "shortdef.php"
@@ -79,7 +77,9 @@ class dmlL1 extends dmlL0
                         $this->fParamNodeName=$nodename;
                         _tIFnot( $this->fPrepNewNode->execute() );//error here? it probably already exists! error in GetID maybe
                         deb(ddbadd,greencol."succeded".nocol." physical addition: ".$nodename);
-                }
+                } else {
+                        retflag(kAlreadyExists);
+                }//fielse
         }endfunc(ok)/*}}}*/
 
         func (GetID(&$id,$nodename),dget)// returns ID by Name /*{{{*/

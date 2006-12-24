@@ -1,6 +1,6 @@
 //run with ./2
 //<?php this is for vim
-/****************************************************************************
+/*LICENSE*GNU*GPL************************************************************{{{
 *
 *                             dmental links
 *    Copyright (C) 2006 AtKaaZ, AtKaaZ at users.sourceforge.net
@@ -25,12 +25,10 @@
 *
 * Description: main program
 *
-****************************************************************************/
-
+***************************************************************************}}}*/
 
 #include "shortdef.php"
 #include "debug.php"
-//#include "dmlL0def.php"
 #include "color.php"
 #include "dmlL1fun.php"
 
@@ -73,7 +71,9 @@
                                         $i=2;
                                 }
                                 echo setcol($i).$val." ";
-                                _tIFnot( $dc->AddName($val) );
+                                _tIFnot( $ret=$dc->AddName($val) );
+                                //print_r($ret);
+                                //echo isflag(kAlreadyExists, $ret);
                         } else {
                                 $i=1;
                                 echo setcol($i).$val." ";
@@ -117,6 +117,8 @@
 
         echo nl;
 
-        endprogram
-?>
+        print_r($AllReturnLists);
 
+        endprogram
+// vim: fdm=marker
+?>

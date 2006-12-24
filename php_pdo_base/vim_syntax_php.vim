@@ -1,7 +1,7 @@
 " added on 19-20 December 2006 by AtKaaZ for demlinks
 syn case match
 
-syn keyword phpException	__ _tIF _tIFnot _TRY _ifnot exit deb _if
+syn keyword phpException	__ _tIF _tIFnot _TRY _ifnot exit deb _if beginprogram endprogram
 syn match   phpException    /\<d[_A-Za-z0-9]\+[_A-Za-z0-9]*/
 
 syn keyword phpBoolean		yes no ok bad __VA_ARGS__ __construct __destruct
@@ -9,7 +9,7 @@ syn keyword phpBoolean		yes no ok bad __VA_ARGS__ __construct __destruct
 "syn match   cppMethodOrField    /\.[_A-Za-z]\+[_A-Za-z0-9]*/
 "syn match   cppMethodOrField    /->[_A-Za-z]\+[_A-Za-z0-9]*/
 
-syn match   cppkConsts    /\<k[A-Z0-9]\+/ " [_A-Za-z0-9]*\>/
+syn match   phpBoolean    /\<k[A-Z]\+/ " [_A-Za-z0-9]*\>/
 syn match   cppgGlobalVar    /\<g[_A-Z0-9]\+[_A-Za-z0-9]*\>/
 
 syn match   cppFieldOfClassOrStruc    /\<$f[A-Z0-9]\+[_A-Za-z0-9]*\>/
@@ -25,7 +25,8 @@ hi phpIdentifier ctermfg=yellow
 hi Type ctermfg=lightgreen
 hi Repeat ctermfg=blue
 
-syn keyword phpDefine func
+syn keyword phpDefine func getalist endnow endfunc prependtolist quitmsg dropmsg nl nocol greencol redcol getline getfile tab
+syn keyword phpDefine purplecol except throw_exception bluecol retflag adef rdef isflag isvalue
 "syn match phpCoreConstant     /\<T[A-Z0-9]\+[_A-Za-z0-9]*/
 "hi phpCoreConstant ctermfg=6
 syn match phpCoreConstant     /\<[_a-zA-Z]*L[0-9]\+/

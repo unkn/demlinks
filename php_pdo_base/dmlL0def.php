@@ -2,7 +2,7 @@
 #ifndef DMLL0DEF_PHP
 #define DMLL0DEF_PHP
 
-/****************************************************************************
+/*LICENSE*GNU*GPL************************************************************{{{
 *
 *                             dmental links
 *    Copyright (C) 2006 AtKaaZ, AtKaaZ at users.sourceforge.net
@@ -27,9 +27,7 @@
 *
 * Description: demlinks level 0 defines, also used by level 1
 *
-****************************************************************************/
-
-
+***************************************************************************}}}*/
 
 
 define(dbasename,"demlinks6.3sql");
@@ -44,6 +42,6 @@ define(paramprefix,":");
 define(paramNodeName,paramprefix.dNodeName);
 define(paramNodeID,paramprefix.dNodeID);
 
-
+// vim: fdm=marker
 #endif //header
 //?>

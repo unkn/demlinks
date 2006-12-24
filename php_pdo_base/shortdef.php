@@ -2,7 +2,7 @@
 #ifndef SHORTDEF_PHP
 #define SHORTDEF_PHP
 
-/****************************************************************************
+/*LICENSE*GNU*GPL************************************************************{{{
 *
 *                             dmental links
 *    Copyright (C) 2006 AtKaaZ, AtKaaZ at users.sourceforge.net
@@ -27,9 +27,7 @@
 *
 * Description: common defines to be used in php sources
 *
-****************************************************************************/
-
-
+***************************************************************************}}}*/
 
 
 #include "color.php"
@@ -42,6 +40,6 @@
         define(no,redcol."no".nocol);
         define(ok,yes);//these must be equivalent:  ok~yes and bad~no   where yes="yes" and no="no" or wtw
         define(bad,no);//certain operations interchange ok with yes, that's why!
-
+// vim: fdm=marker
 #endif //header
 //?>

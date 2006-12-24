@@ -2,7 +2,7 @@
 #ifndef COLOR_PHP
 #define COLOR_PHP
 
-/****************************************************************************
+/*LICENSE*GNU*GPL************************************************************{{{
 *
 *                             dmental links
 *    Copyright (C) 2006 AtKaaZ, AtKaaZ at users.sourceforge.net
@@ -27,10 +27,7 @@
 *
 * Description: linux console colors
 *
-****************************************************************************/
-
-
-
+***************************************************************************}}}*/
 
 #define setcol(col) "\x1B[3".#col."m"
 define(nocol,setcol(9));
@@ -41,5 +38,6 @@ define(bluecol,setcol(4));
 define(greencol,setcol(2));
 define(purplecol,setcol(5));
 
+// vim: fdm=marker
 #endif //header
 //?>
