@@ -106,19 +106,13 @@ class dmlenvL0 {
                 _if (yes===isvalue(kAlreadyExists, $ar)) {
                         retflag(kAlreadyExists);
                 }
-
                 _tIFnot( $ar=$this->addParent($child, $parent) );
         }endfunc(yes)/*}}}*/
 
         func (IsRel($parent,$child), dis)/*{{{*/
         {
-                //well, no transaction... too bad
-                _if( $this->GetChildren($parent, $tmpch) ) {
-                        _if (TRUE===is_array($tmpch) && TRUE===in_array($child, $tmpch)) {
-                                retflag(yes);
-                        } else {
-                                retflag(no);
-                        }
+                _if( TRUE===is_array($this->AllElements[$parent][kChildren]) && TRUE===in_array($child, $this->AllElements[$parent][kChildren])) {
+                        retflag(yes);
                 } else {
                         retflag(no);
                 }

@@ -126,6 +126,7 @@
         _tIFnot( $denv->GetParents("if",$arc) );
         print_r($arc);
         __( print_r($denv->IsRel("text","if")) );
+        __( print_r($denv->IsRel("if","yes")) );
         $denv=null;//ie. dispose()
 
         echo nl;
