@@ -44,23 +44,17 @@
                 deb(dinfo,"...using prev. defined table");
         }
 
-        //$fp = fopen("debug.php","r");
-        _tIFnot( $contents=file_get_contents("debug.php") );
-        //_tIFnot( $dc->OpenTransaction() );
-        //do {
-                //$line = fgets($fp, 1024);//or EOF,EOLN; aka a line not longer than 1024 bytes
-                //echo $line;
-        $line=$contents;
-        $res=split("[ .,/\\\"\?\<\>&!;|\#\$\*\+\{\}=\(\)'`\n\-]",trim($line));
-        //$res=split("[ \)\(]",trim($line));
+        //_tIFnot( $contents=file_get_contents("/home/emacs/phpnet.php") );
+        __( $res=split("[ .,/\\\"\?\<\>&!;|\#\$\*\+\{\}=\(\)'`\n\-]",file_get_contents("debug.php")) );
+        _tIF(1===count($res));
         $i=2;
         $cnt=0;
+        _tIFnot( $dc->OpenTransaction() );
         foreach ($res as $val) {
                      $val=trim($val);
                 _if ($val) {//ie. non-empty
-                        if ($cnt % 15 == 0) {
-                                _tIFnot( $dc->OpenTransaction() );
-                        }
+                        //if ($cnt % 15 == 0) {
+                       // }
 
                    _TRY(
 
@@ -82,19 +76,19 @@
                         //usleep(100000);
                         $cnt++;//echo "cnt=".$cnt.nl;
 
-                        if ($cnt % 15 == 0) {
-                                _tIFnot( $dc->CloseTransaction() );
-                        }
+                        //if ($cnt % 15 == 0) {
+                                //_tIFnot( $dc->CloseTransaction() );
+                        //}
 
                    , _tIFnot( $dc->AbortTransaction());$aborted=yes ;break );//_TRY
 
                 } //fi
         }
-        if ( $cnt % 15 !== 0) { //left it open? if so close it
+        //if ( $cnt % 15 !== 0) { //left it open? if so close it
                 _ifnot($aborted) {
                         _tIFnot( $dc->CloseTransaction() );
                 }
-        }
+        //}
         echo nocol.nl;
 
 

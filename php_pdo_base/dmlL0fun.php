@@ -113,11 +113,16 @@ class dmlL0
 
                 $sqlNodeNames = 'CREATE TABLE '.$this->qNodeNames.
                             ' ('.$this->qNodeID.' INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE, '.$this->qNodeName.' VARCHAR(256) UNIQUE NOT NULL)';
+                $sqlNodeNamesIndex12 = 'CREATE INDEX indexname12 ON '.$this->qNodeNames.'('.$this->qNodeID./*",".$this->qNodeName.*/")";
+                $sqlNodeNamesIndex21 = 'CREATE INDEX indexname21 ON '.$this->qNodeNames.'('.$this->qNodeName./*",".$this->qNodeID.*/")";
+
                 $sqlRelations = 'CREATE TABLE '.$this->qRelations.
                             ' ('.$this->qParentNodeID.' INTEGER PRIMARY KEY , '.$this->qChildNodeID.' INTEGER SECONDARY KEY)';
                 _tIFnot( $this->OpenTransaction());
 
                 _if ( $res= $this->fDBHandle->exec($sqlNodeNames) ) {
+                        _tIFnot( $this->fDBHandle->exec($sqlNodeNamesIndex12) );
+                        _tIFnot( $this->fDBHandle->exec($sqlNodeNamesIndex21) );
                         retflag(kCreatedDBNodeNames);
                         $wecommit=yes;
                 }
