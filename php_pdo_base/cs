@@ -1,6 +1,6 @@
 #!/bin/sh
 
-. head.sh
+. ./head.sh
 
 find . -name '*.php' -a ! -name "$phpfile" > cscope.files
 cscope -b

@@ -53,8 +53,8 @@ class dmlphpL1 extends dmlphpL0 {
         {
                 //well, no transaction... too bad
                 _tIFnot( $ar=$this->addChild($parent, $child) );
-                _if (yes===isvalue(kAlreadyExists, $ar)) {
-                        retflag(kAlreadyExists);
+                _if (yes===isvalue(kAlready, $ar)) {
+                        retflag(kAlready);
                 }
                 _tIFnot( $ar=$this->addParent($child, $parent) );
         }endfunc(yes)/*}}}*/

@@ -347,9 +347,8 @@ define(kReturnStateList_type,"kReturnStateList_type"/*this array is a ReturnStat
 //this is the kind that flags the return array from the function so that isGoods know it's a return value instead of a normal array returned by ie. fetchAll()
 
 //define kConsts aka return types here:
-rdef(kAlreadyExists);
-rdef(kPhysicallyAdded);//in db
-rdef(kAdded);//in array
+rdef(kAlready);
+rdef(kAdded);
 rdef(kCreatedDBNodeNames);
 rdef(kCreatedDBRelations);
 rdef(kEmpty);

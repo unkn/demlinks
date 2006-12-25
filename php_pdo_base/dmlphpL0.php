@@ -39,7 +39,7 @@
 func (UniqAppendToList($elem,&$list), dadd)/*{{{*/
 {
         _if (TRUE===is_array(&$list) && TRUE===in_array($elem, &$list, TRUE/*strict type check*/)) {
-                retflag(kAlreadyExists);
+                retflag(kAlready);
         } else { //attempting to append
                 $list[]=$elem;//auto numbered index, appending to end
                 retflag(kAdded);

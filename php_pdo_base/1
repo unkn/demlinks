@@ -2,7 +2,7 @@
 
 #used to edit main file
 
-. head.sh
+. ./head.sh
 
 vim "$src"
 

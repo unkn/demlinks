@@ -66,8 +66,8 @@
                         _tIFnot( $ret=$dphp->SetRel($prevval, $val) );
                         $prevval=$val;
                         //_tIFnot( $ret=$dc->AddName($val) );
-                        //_if (yes===isvalue(kPhysicallyAdded,$ret)) {
-                        _if (no===isvalue(kAlreadyExists,$ret)) {
+                        //_if (yes===isvalue(kAdded,$ret)) {
+                        _if (no===isvalue(kAlready,$ret)) {
                                 if ($i<6) {
                                         $i++;
                                 } else {
@@ -76,7 +76,7 @@
                                 echo setcol($i).$val." ";
                                 //_tIFnot( $ret=$dc->AddName($val) );
                                 //print_r($ret);
-                                //echo isflag(kAlreadyExists, $ret);
+                                //echo isflag(kAlready, $ret);
                         } else {
                                 $i=1;
                                 echo setcol($i).$val." ";

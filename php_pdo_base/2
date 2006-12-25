@@ -2,7 +2,7 @@
 
 #used to execute main file
 
-. head.sh
+. ./head.sh
 
 #rm -f "$dbase"
 

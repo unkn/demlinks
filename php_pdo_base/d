@@ -2,7 +2,7 @@
 
 #used to delete the database
 
-. head.sh
+. ./head.sh
 
 rm -f "$dbase"
 

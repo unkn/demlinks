@@ -2,7 +2,7 @@
 
 #used to display the lines near the entire source
 
-. head.sh
+. ./head.sh
 
 #(echo "<?php";cat "$prefer" |cpp) | grep -n ""
 cpp $cppparams "$phpfile"|grep -n ""

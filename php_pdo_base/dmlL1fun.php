@@ -77,9 +77,9 @@ class dmlL1 extends dmlL0
                         $this->fParamNodeName=$nodename;
                         _tIFnot( $this->fPrepNewNode->execute() );//error here? it probably already exists! error in GetID maybe
                         deb(ddbadd,greencol."succeded".nocol." physical addition: ".$nodename);
-                        retflag(kPhysicallyAdded);
+                        retflag(kAdded);
                 } else {
-                        retflag(kAlreadyExists);
+                        retflag(kAlready);
                 }//fielse
         }endfunc(ok)/*}}}*/
 
