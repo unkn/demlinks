@@ -50,7 +50,7 @@ class dmlL1 extends dmlL0
 
         func (__construct(), dconstr)/*{{{*/
         {
-                parent::__construct();
+                __( parent::__construct() );
                 //--------- get ID by Name
                 $this->sqlGetNodeID = 'SELECT '.$this->qNodeID.' FROM '.$this->qNodeNames.' WHERE '.$this->qNodeName.' = '.paramNodeName;
                 _tIFnot( $this->fPrepGetNodeID = $this->fDBHandle->prepare($this->sqlGetNodeID) );
@@ -66,7 +66,7 @@ class dmlL1 extends dmlL0
 
         func (__destruct(), ddestr)/*{{{*/
         {
-                parent::__destruct();
+                __( parent::__destruct() );
         }endfunc(yes)/*}}}*/
 
         func (AddName($nodename),dadd)/*{{{*/

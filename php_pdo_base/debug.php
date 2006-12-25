@@ -87,8 +87,8 @@ dseton(dcrea);
 //dseton(dbegtr);//transaction
 //dseton(dabtr);
 //dseton(dendtr);
-dseton(dconstr);
-dseton(ddestr);
+//dseton(dconstr);
+//dseton(ddestr);
 //dseton(ddbadd);
 
 function dseton($what)
@@ -237,7 +237,7 @@ function array_append_values(&$towhatarray, $listofvalues)/*{{{*/
 #define isvalue(whatflag,inwhatlist) \
                 (TRUE===in_array(whatflag, inwhatlist, FALSE/*check types?=no*/)?yes:no)
 
-function showvalue($var)
+function getvalue($var)
 {
         if (TRUE===is_array($var)) {
                 $ret='';
@@ -265,7 +265,7 @@ function &funcname \
                         global $AllReturnLists;\
                         $theKey="vim ".getfile." +".getline;\
                         $AllReturnLists[$theKey]=$TheReturnStateList;\
-                        debnl(getalist($otherlevelsRFZAHJ, dend) , $funcnameRFZAHJ.":done:isGood(".showvalue($TheReturnStateList).")===".isGood($TheReturnStateList));\
+                        debnl(getalist($otherlevelsRFZAHJ, dend) , $funcnameRFZAHJ.":done:isGood(".getvalue($TheReturnStateList).")===".isGood($TheReturnStateList));\
                         return $TheReturnStateList; \
                 }/*}}}*/
 

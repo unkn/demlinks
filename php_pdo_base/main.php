@@ -31,13 +31,13 @@
 #include "debug.php"
 #include "color.php"
 //#include "dmlL1fun.php"
-#include "dmlenvL0.php"
+#include "dmlphpL1.php"
 
 
         beginprogram
-        __( $denv=new dmlenvL0 );
-        __( $denv->SetRel("A","B") );
-        __( $denv->SetRel("A","B") );
+        __( $dphp=new dmlphpL1 );
+        __( $dphp->SetRel("A","B") );
+        __( $dphp->SetRel("A","B") );
 /*        __( $dc=new dmlL1 );
         //debug_zval_dump($dc);
 
@@ -63,7 +63,7 @@
 
                    //_TRY(
 
-                        _tIFnot( $ret=$denv->SetRel($prevval, $val) );
+                        _tIFnot( $ret=$dphp->SetRel($prevval, $val) );
                         $prevval=$val;
                         //_tIFnot( $ret=$dc->AddName($val) );
                         //_if (yes===isvalue(kPhysicallyAdded,$ret)) {
@@ -121,13 +121,13 @@
         $dc=null;//ie. dispose()
  */
         //$arc=array();
-        _tIFnot( $denv->GetChildren("if",$arc) );
-        print_r($arc);
-        _tIFnot( $denv->GetParents("if",$arc) );
-        print_r($arc);
-        __( print_r($denv->IsRel("text","if")) );
-        __( print_r($denv->IsRel("if","yes")) );
-        $denv=null;//ie. dispose()
+        _tIFnot( $dphp->GetParents("if",$arc) );
+        echo "Parents: ".getvalue($arc).nl;
+        _tIFnot( $dphp->GetChildren("if",$arc) );
+        echo "Children: ".getvalue($arc).nl;
+        __( echo isGood($dphp->IsRel("text","if")).nl );
+        __( echo isGood($dphp->IsRel("if","yes")).nl );
+        $dphp=null;//ie. dispose()
 
         echo nl;
 

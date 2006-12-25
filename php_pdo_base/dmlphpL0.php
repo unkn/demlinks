@@ -1,7 +1,7 @@
 //<?php
 //header starts
-#ifndef DMLENVL0_PHP
-#define DMLENVL0_PHP
+#ifndef DMLPHPL0_PHP
+#define DMLPHPL0_PHP
 
 /*LICENSE*GNU*GPL************************************************************{{{
 *
@@ -36,7 +36,17 @@
 #include "debug.php"
 #include "color.php"
 
-class dmlenvL0 {
+func (UniqAppendToList($elem,&$list), dadd)/*{{{*/
+{
+        _if (TRUE===is_array(&$list) && TRUE===in_array($elem, &$list, TRUE/*strict type check*/)) {
+                retflag(kAlreadyExists);
+        } else { //attempting to append
+                $list[]=$elem;//auto numbered index, appending to end
+                retflag(kAdded);
+        }
+}endfunc(yes)/*}}}*/
+
+class dmlphpL0 {
         protected $AllElements;
         //if an element doesn't have a relation whatsoever then it doesn't exist ie. cannot exist and be null
 
@@ -51,23 +61,14 @@ class dmlenvL0 {
 
         func (__destruct(), ddestr)/*{{{*/
         {
-                print_r($this->AllElements);
+                //print_r($this->AllElements);
                 $this->AllElements=null;
         }endfunc(yes)/*}}}*/
 
-        func (UniqAppendToList($elem,&$list), dadd)/*{{{*/
-        {
-                _if (is_array(&$list) && in_array($elem, &$list, TRUE/*strict type check*/)) {
-                        retflag(kAlreadyExists);
-                } else { //attempting to append
-                        $list[]=$elem;//auto numbered index, appending to end
-                        retflag(kAdded);
-                }
-        }endfunc(yes)/*}}}*/
 
         func (addChild($parent,$child), dadd)/*{{{*/
         {
-                _tIFnot( $ar=$this->UniqAppendToList($child, kChildren[$parent] /*$this->AllElements[$parent][kChildren]*/) );
+                _tIFnot( $ar=UniqAppendToList($child, kChildren[$parent] /*$this->AllElements[$parent][kChildren]*/) );
                 foreach ($ar as $val) {
                         retflag($val);
                 }
@@ -75,7 +76,7 @@ class dmlenvL0 {
 
         func (addParent($child,$parent), dadd)/*{{{*/
         {
-                _tIFnot( $ar=$this->UniqAppendToList($parent, kParents[$child]/*$this->AllElements[$child][kParents]*/) );
+                _tIFnot( $ar=UniqAppendToList($parent, kParents[$child]/*$this->AllElements[$child][kParents]*/) );
                 foreach ($ar as $val) {
                         retflag($val);
                 }
@@ -95,25 +96,6 @@ class dmlenvL0 {
         {
                 $parents=kParents[$child];//$this->AllElements[$child][kParents];
                 if (is_array($parents)) {
-                        retflag(yes);
-                } else {
-                        retflag(no);
-                }
-        }endfunc()/*}}}*/
-
-        func (SetRel($parent,$child), dset)/*{{{*/
-        {
-                //well, no transaction... too bad
-                _tIFnot( $ar=$this->addChild($parent, $child) );
-                _if (yes===isvalue(kAlreadyExists, $ar)) {
-                        retflag(kAlreadyExists);
-                }
-                _tIFnot( $ar=$this->addParent($child, $parent) );
-        }endfunc(yes)/*}}}*/
-
-        func (IsRel($parent,$child), dis)/*{{{*/
-        {
-                _if( TRUE===is_array(kChildren[$parent]/*$this->AllElements[$parent][kChildren]*/) && TRUE===in_array($child, kChildren[$parent]/*$this->AllElements[$parent][kChildren]*/)) {
                         retflag(yes);
                 } else {
                         retflag(no);
