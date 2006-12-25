@@ -105,7 +105,7 @@ class dmlphpL0 {
                 keepflags($ar);
         }endfunc()/*}}}*/
 
-        func (GetChildren($parent,&$children), dget)/*{{{*/
+        func (GetAllChildren($parent,&$children), dget)/*{{{*/
         {
                 $children=kChildren[$parent];
                 if (is_array($children)) {
@@ -115,7 +115,19 @@ class dmlphpL0 {
                 }
         }endfunc()/*}}}*/
 
-        func (GetParents($child,&$parents), dget)/*{{{*/
+        func (DelAllChildren($parent), ddel)/*{{{*/
+        {
+                $children=&kChildren[$parent];// get all children of the $parent
+                if (is_array($children)) {
+                        foreach ($children as $child) {
+                                // del all $parent from these $children
+                                _tIFnot( $this->delParent($child, $parent) );
+                        }
+                        $children=null;//empty the array of children of the $parent
+                }
+        }endfunc(yes)/*}}}*/
+
+        func (GetAllParents($child,&$parents), dget)/*{{{*/
         {
                 $parents=kParents[$child];
                 if (is_array($parents)) {
@@ -124,6 +136,19 @@ class dmlphpL0 {
                         retflag(no);
                 }
         }endfunc()/*}}}*/
+
+        func (DelAllParents($child), ddel)/*{{{*/
+        {
+                $parents=&kParents[$child];
+                if (is_array($parents)) {
+                        foreach ($parents as $parent) {
+                                // del all $parent from these $children
+                                _tIFnot( $this->delChild($parent, $child) );
+                        }
+                        $parents=null;//empty the array of children of the $parent
+                }
+        }endfunc(yes)/*}}}*/
+
 
 }//endclass
 

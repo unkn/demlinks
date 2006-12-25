@@ -253,13 +253,15 @@ function array_append_unique_values(&$towhatarray, $listofvalues)/*{{{*/
 
 function getvalue($var)
 {
+        $ret='';
         if (TRUE===is_array($var)) {
-                $ret='';
                 foreach ($var as $v) {
                         $ret.="'$v' ";
                 }
         } else {
-                $ret="'$var'";
+                if (!empty($var)) {
+                        $ret="'$var'";
+                }
         }
         return $ret;
 }

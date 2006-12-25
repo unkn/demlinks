@@ -121,22 +121,57 @@
         $dc=null;//ie. dispose()
  */
         //$arc=array();
-        _tIFnot( $dphp->GetParents("if",$arc) );
-        echo "Parents: ".getvalue($arc).nl;
-        _tIFnot( $dphp->GetChildren("if",$arc) );
-        echo "Children: ".getvalue($arc).nl;
+        echo redcol.nl;
+        _tIFnot( $dphp->GetAllParents("if",$arc) );
+        echo "Parents of 'if': ".getvalue($arc).nl;
+
+        _tIFnot( $dphp->GetAllChildren("if",$arc) );
+        echo "Children of 'if': ".getvalue($arc).nl;
+
         __( echo isGood($dphp->IsRel("text","if")).nl );
         __( echo getvalue($dphp->DelRel("if","yes")).nl );
         __( echo isGood($dphp->IsRel("if","yes")).nl );
-        _tIFnot( $dphp->GetChildren("if",$arc) );
-        echo "Children: ".getvalue($arc).nl;
-        __( echo getvalue($dphp->DelRel("text","if")).nl );
-        _tIFnot( $dphp->GetParents("if",$arc) );
-        echo "Parents: ".getvalue($arc).nl;
+
+        echo greencol.nl;
+        _tIFnot( $dphp->GetAllChildren("if",$arc) );
+        echo "Children of 'if' after del child 'yes': ".getvalue($arc).nl;
+
+        __( echo getvalue($dphp->DelRel("text","if")).nl );echo greencol;
+        _tIFnot( $dphp->GetAllParents("if",$arc) );
+        echo "Parents of 'if' after parent 'text' del: ".getvalue($arc).nl;
+
+
+        echo purplecol.nl;
+        _tIFnot( $dphp->GetAllParents("not",$arc) );
+        echo "Parents of 'not': ".getvalue($arc).nl;
+
+        _tIFnot( $dphp->DelAllChildren("if") );
+
+        __( $dphp->GetAllChildren("if",$arc) );
+        echo "Children after del all children of 'if': ".getvalue($arc).nl;
+
+        _tIFnot( $dphp->GetAllParents("not",$arc) );
+        echo "Parents of 'not', not 'if'; after del: ".getvalue($arc).nl;
+
+
+        echo greencol.nl;
+        __( $dphp->GetAllChildren("program",$arc) );
+        echo "Children of 'program', before del 'if': ".getvalue($arc).nl;
+
+        _tIFnot( $dphp->GetAllParents("if",$arc) );
+        echo "Parents of 'if', before del: ".getvalue($arc).nl;
+
+        _tIFnot( $dphp->DelAllParents("if") );
+
+        __( $dphp->GetAllParents("if",$arc) );
+        echo "Parents of 'if', after del: ".getvalue($arc).nl;
+
+        __( $dphp->GetAllChildren("program",$arc) );
+        echo "Children of 'program', after del 'if': ".getvalue($arc).nl;
 
         $dphp=null;//ie. dispose()
 
-        echo nl;
+        echo nocol.nl;
 
         //print_r($AllReturnLists);
 
