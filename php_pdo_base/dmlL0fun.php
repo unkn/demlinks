@@ -83,8 +83,6 @@ class dmlL0
                 $this->qNodeID = $this->fieldquote(dNodeID);
 
                 __( $rret=$this->CreateDB() );
-                print_r($rret);
-                echo "!".$rret."!".nl;
 
                 _if( $this->CreateDB() ) {
                         $this->fFirstTime=yes;
