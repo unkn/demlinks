@@ -70,10 +70,12 @@ adef(dendtr);//close transaction
 adef(dconstr);//contructor
 adef(ddestr);//destructor
 adef(ddbadd);//database add, physical addition into the database is executed
+adef(dset);
 
 //enabling specific debug levels
 dseton(dlowlevel);
 dseton(dinfo);
+//dseton(dset); // 1 2 3 1 2 3
 //dseton(dbeg);
 //dseton(dend);
 dseton(dnormal);
@@ -83,7 +85,7 @@ dseton(dcrea);
 //dseton(dadd);
 //dseton(dget);
 //dseton(dbegtr);//transaction
-dseton(dabtr);
+//dseton(dabtr);
 //dseton(dendtr);
 dseton(dconstr);
 dseton(ddestr);
@@ -211,6 +213,7 @@ function array_append_values(&$towhatarray, $listofvalues)/*{{{*/
         foreach ( $listofvalues as $val ) {
                 //print_r($val);
                 if (no!=$val) {
+                        //print_r($val);
                         _tIF(isNotGood($val));
                 }
                 $towhatarray[]=$val;
@@ -345,7 +348,8 @@ define(kReturnStateList_type,"kReturnStateList_type"/*this array is a ReturnStat
 
 //define kConsts aka return types here:
 rdef(kAlreadyExists);
-rdef(kPhysicallyAdded);
+rdef(kPhysicallyAdded);//in db
+rdef(kAdded);//in array
 rdef(kCreatedDBNodeNames);
 rdef(kCreatedDBRelations);
 rdef(kEmpty);

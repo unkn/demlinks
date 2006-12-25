@@ -160,7 +160,8 @@ class dmlL0
         {
                 _tIF(isNotGood($id));
                 __( $exists=$this->GetName($name,$id) );
-                _tIF(isGood($exists) && isNotGood($name) );
+                _tIF(yes===isGood($exists) && yes===isNotGood($name) );
+                //print_r($exists);
         }endfunc($exists)/*}}}*/
 
         func (GetName(&$name,$id),dget)// returns Name by ID /*{{{*/
@@ -170,7 +171,10 @@ class dmlL0
                 _tIFnot( $this->fPrepGetNodeName->execute() );
                 __( $ar=$this->fPrepGetNodeName->FetchAll() );
                 $name=(string)$ar[dNodeName];
-        }endfunc($name)/*}}}*/
+                if (empty($ar) || empty($name)) {
+                        retflag(no);
+                }
+        }endfunc()/*}}}*/
 
 
         func (DelID($id), ddel)/*{{{*/

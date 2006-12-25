@@ -30,11 +30,15 @@
 #include "shortdef.php"
 #include "debug.php"
 #include "color.php"
-#include "dmlL1fun.php"
+//#include "dmlL1fun.php"
+#include "dmlenvL0.php"
 
 
         beginprogram
-        __( $dc=new dmlL1 );
+        __( $denv=new dmlenvL0 );
+        __( $denv->SetRel("A","B") );
+        __( $denv->SetRel("A","B") );
+/*        __( $dc=new dmlL1 );
         //debug_zval_dump($dc);
 
 
@@ -43,23 +47,27 @@
         } else {
                 deb(dinfo,"...using prev. defined table");
         }
-
+ */
         //_tIFnot( $contents=file_get_contents("/home/emacs/phpnet.php") );
         __( $res=split("[ .,/\\\"\?\<\>&!;|\#\$\*\+\{\}=\(\)'`\n\-]",file_get_contents("debug.php")) );
         _tIF(1===count($res));
         $i=2;
         $cnt=0;
-        _tIFnot( $dc->OpenTransaction() );
+        $prevval="";
+//        _tIFnot( $dc->OpenTransaction() );
         foreach ($res as $val) {
                      $val=trim($val);
                 _if ($val) {//ie. non-empty
                         //if ($cnt % 15 == 0) {
                        // }
 
-                   _TRY(
+                   //_TRY(
 
-                        _tIFnot( $ret=$dc->AddName($val) );
-                        _if (yes===isvalue(kPhysicallyAdded,$ret)) {
+                        _tIFnot( $ret=$denv->SetRel($prevval, $val) );
+                        $prevval=$val;
+                        //_tIFnot( $ret=$dc->AddName($val) );
+                        //_if (yes===isvalue(kPhysicallyAdded,$ret)) {
+                        _if (no===isvalue(kAlreadyExists,$ret)) {
                                 if ($i<6) {
                                         $i++;
                                 } else {
@@ -80,16 +88,17 @@
                                 //_tIFnot( $dc->CloseTransaction() );
                         //}
 
-                   , _tIFnot( $dc->AbortTransaction());$aborted=yes ;break );//_TRY
+                   //, _tIFnot( $dc->AbortTransaction());$aborted=yes ;break );//_TRY
 
                 } //fi
         }
-        //if ( $cnt % 15 !== 0) { //left it open? if so close it
+       echo nocol.nl;
+/*        //if ( $cnt % 15 !== 0) { //left it open? if so close it
                 _ifnot($aborted) {
                         _tIFnot( $dc->CloseTransaction() );
                 }
         //}
-        echo nocol.nl;
+       echo nocol.nl;
 
 
 
@@ -107,8 +116,17 @@
         __( $arr=$result->fetchAll() );
         $count=count($arr);
         deb(dnormal, "$count times.");
+        print_r($dc->IsID("1"));
 
         $dc=null;//ie. dispose()
+ */
+        //$arc=array();
+        _tIFnot( $denv->GetChildren("if",$arc) );
+        print_r($arc);
+        _tIFnot( $denv->GetParents("if",$arc) );
+        print_r($arc);
+        __( print_r($denv->IsRel("text","if")) );
+        $denv=null;//ie. dispose()
 
         echo nl;
 
