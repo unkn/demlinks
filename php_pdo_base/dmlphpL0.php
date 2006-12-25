@@ -73,50 +73,41 @@ class dmlphpL0 {
                 define(dChildren,"Children");
 #define kParents $this->AllElements[dParents]
 #define kChildren $this->AllElements[dChildren]
-        }endfunc(yes)/*}}}*/
+        }endfunc(ok)/*}}}*/
 
         func (__destruct(), ddestr)/*{{{*/
         {
-                //print_r($this->AllElements);
                 $this->AllElements=null;
-        }endfunc(yes)/*}}}*/
+        }endfunc(ok)/*}}}*/
 
 
         protected func (addChild($parent,$child), dadd)/*{{{*/
         {
-                _tIFnot( $ar=UniqAppendToList($child, kChildren[$parent] /*$this->AllElements[$parent][kChildren]*/) );
-                foreach ($ar as $val) {
-                        retflag($val);
-                }
+                _tIFnot( $ar=UniqAppendToList($child, kChildren[$parent] ) );
+                keepflags($ar);
         }endfunc()/*}}}*/
 
         protected func (addParent($child,$parent), dadd)/*{{{*/
         {
-                _tIFnot( $ar=UniqAppendToList($parent, kParents[$child]/*$this->AllElements[$child][kParents]*/) );
-                foreach ($ar as $val) {
-                        retflag($val);
-                }
+                _tIFnot( $ar=UniqAppendToList($parent, kParents[$child]) );
+                keepflags($ar);
         }endfunc()/*}}}*/
 
         protected func (delChild($parent,$child), ddel)/*{{{*/
         {
                 _tIFnot( $ar=DelFromList($child, kChildren[$parent] ) );
-                foreach ($ar as $val) {
-                        retflag($val);
-                }
+                keepflags($ar);
         }endfunc()/*}}}*/
 
         protected func (delParent($child,$parent), ddel)/*{{{*/
         {
                 _tIFnot( $ar=DelFromList($parent, kParents[$child] ) );
-                foreach ($ar as $val) {
-                        retflag($val);
-                }
+                keepflags($ar);
         }endfunc()/*}}}*/
 
         func (GetChildren($parent,&$children), dget)/*{{{*/
         {
-                $children=kChildren[$parent];//$this->AllElements[$parent][kChildren];
+                $children=kChildren[$parent];
                 if (is_array($children)) {
                         retflag(yes);
                 } else {
@@ -126,7 +117,7 @@ class dmlphpL0 {
 
         func (GetParents($child,&$parents), dget)/*{{{*/
         {
-                $parents=kParents[$child];//$this->AllElements[$child][kParents];
+                $parents=kParents[$child];
                 if (is_array($parents)) {
                         retflag(yes);
                 } else {

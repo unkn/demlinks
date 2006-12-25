@@ -41,37 +41,37 @@ class dmlphpL1 extends dmlphpL0 {
 
         func (__construct(), dconstr)/*{{{*/
         {
-                __( parent::__construct() );
-        }endfunc(yes)/*}}}*/
+                __( $ar=parent::__construct() );
+                keepflags($ar);
+        }endfunc()/*}}}*/
 
         func (__destruct(), ddestr)/*{{{*/
         {
-                __( parent::__destruct() );
-        }endfunc(yes)/*}}}*/
+                __( $ar=parent::__destruct() );
+                keepflags($ar);
+        }endfunc()/*}}}*/
 
         func (SetRel($parent,$child), dset)/*{{{*/
         {
                 //well, no transaction... too bad
                 _tIFnot( $ar=$this->addChild($parent, $child) );
-                _if (yes===isvalue(kAlready, $ar)) {
-                        retflag(kAlready);
-                }
+                keepflags($ar);
                 _tIFnot( $ar=$this->addParent($child, $parent) );
-        }endfunc(yes)/*}}}*/
+                keepflags($ar);
+        }endfunc()/*}}}*/
 
         func (DelRel($parent,$child), dset)/*{{{*/
         {
                 //well, no transaction... too bad
                 _tIFnot( $ar=$this->delChild($parent, $child) );
-                _if (yes===isvalue(kAlready, $ar)) {
-                        retflag(kAlready);
-                }
+                keepflags($ar);
                 _tIFnot( $ar=$this->delParent($child, $parent) );
-        }endfunc(yes)/*}}}*/
+                keepflags($ar);
+        }endfunc()/*}}}*/
 
         func (IsRel($parent,$child), dis)/*{{{*/
         {
-                _if( TRUE===is_array(kChildren[$parent]/*$this->AllElements[$parent][kChildren]*/) && TRUE===in_array($child, kChildren[$parent]/*$this->AllElements[$parent][kChildren]*/)) {
+                _if( TRUE===is_array(kChildren[$parent]) && TRUE===in_array($child, kChildren[$parent])) {
                         retflag(yes);
                 } else {
                         retflag(no);

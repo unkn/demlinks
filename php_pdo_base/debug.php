@@ -205,7 +205,7 @@ for ($i=debugstartfrom; $i <= $maxdebuglevel; $i++) {
         #define deb(level,text)
 #endif
 
-function array_append_values(&$towhatarray, $listofvalues)/*{{{*/
+function array_append_unique_values(&$towhatarray, $listofvalues)/*{{{*/
 //all values are copied, not referenced! because, in my view, references are too subtle in php to be used consistently
 {
         _tIFnot(is_array($towhatarray));
@@ -216,19 +216,33 @@ function array_append_values(&$towhatarray, $listofvalues)/*{{{*/
                         //print_r($val);
                         _tIF(isNotGood($val));
                 }
-                $towhatarray[]=$val;
+                if (! in_array($val, $towhatarray) ) {
+                        $towhatarray[]=$val;
+                }
         }
 }/*}}}*/
 
 #define prependtolist(tolist,...) \
-                array_append_values( tolist, array(__VA_ARGS__ /*many elements here*/) );
+                array_append_unique_values( tolist, array(__VA_ARGS__ /*many elements here*/) );
 
 #define getalist(oflist,...) \
                 array_merge(oflist,array(__VA_ARGS__))
 
 
+//called within func() and endfunc()
 #define retflag(/*what flags*/...) \
                 prependtolist($TheReturnStateList, __VA_ARGS__);
+
+#define keepflags(var) \
+{ \
+        $RSL_var=&var; \
+        _tIFnot( TRUE===boolIsReturnStateList(&$RSL_var) ); \
+        foreach ($RSL_var as $val) { \
+                if (kReturnStateList_type!==$val) { \
+                        retflag($val); \
+                } \
+        } \
+}
 
 //returns yes or no
 //#define isflag(whatflag) \
@@ -274,6 +288,14 @@ function &funcname \
                 endnow(__VA_ARGS__) \
         }/*}}}*/
 
+function boolIsReturnStateList($var)
+{
+        if (TRUE===is_array($var) && yes===isvalue(kReturnStateList_type, $var)) {
+                return TRUE;
+        } else {
+                return FALSE;
+        }
+}
 
 //never do if (isGood($var)) => always true, instead do _if ($var)  OR if (yes===isGood($var))
 function isGood($var,$allowemptystr=no)
@@ -293,7 +315,7 @@ function isGood($var,$allowemptystr=no)
 
         if (TRUE===is_string($var) || TRUE===is_array($var)) {
                 if ((yes===$allowemptystr) || ( FALSE===empty($var) )) { //non empty
-                        if (TRUE===is_array($var) && yes===isvalue(kReturnStateList_type, $var)) {
+                        if ( TRUE===boolIsReturnStateList($var) ) {
                                 global $AllReturnLists;
                                 //print_r($var);
                                 _tIF(yes===isvalue(yes,$var) && yes===isvalue(no, $var) );
