@@ -46,6 +46,22 @@ func (UniqAppendToList($elem,&$list), dadd)/*{{{*/
         }
 }endfunc(yes)/*}}}*/
 
+func (DelFromList($elem,&$list), dadd)/*{{{*/
+{
+        _tIFnot(is_array(&$list) );
+        _if (TRUE===is_array(&$list)) {
+                //&& TRUE===in_array($elem, &$list, TRUE/*strict type check*/)) {
+                _if ($key=array_search($elem, &$list, TRUE)) {//can return either null or FALSE
+                        unset($list[$key]);
+                        retflag(yes, kDeleted);
+                } else {
+                        retflag(yes, kAlready);
+                }
+        } else {
+                retflag(no);//maybe we could throw, to catch bugs outside, in caller
+        }
+}endfunc()/*}}}*/
+
 class dmlphpL0 {
         protected $AllElements;
         //if an element doesn't have a relation whatsoever then it doesn't exist ie. cannot exist and be null
@@ -77,6 +93,22 @@ class dmlphpL0 {
         func (addParent($child,$parent), dadd)/*{{{*/
         {
                 _tIFnot( $ar=UniqAppendToList($parent, kParents[$child]/*$this->AllElements[$child][kParents]*/) );
+                foreach ($ar as $val) {
+                        retflag($val);
+                }
+        }endfunc()/*}}}*/
+
+        func (delChild($parent,$child), ddel)/*{{{*/
+        {
+                _tIFnot( $ar=DelFromList($child, kChildren[$parent] ) );
+                foreach ($ar as $val) {
+                        retflag($val);
+                }
+        }endfunc()/*}}}*/
+
+        func (delParent($child,$parent), ddel)/*{{{*/
+        {
+                _tIFnot( $ar=DelFromList($parent, kParents[$child] ) );
                 foreach ($ar as $val) {
                         retflag($val);
                 }

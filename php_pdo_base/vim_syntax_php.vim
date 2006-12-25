@@ -2,7 +2,7 @@
 syn case match
 
 syn keyword phpException	__ _tIF _tIFnot _TRY _ifnot exit deb _if beginprogram endprogram
-syn match   phpException    /\<d[_A-Za-z0-9]\+[_A-Za-z0-9]*/
+syn match   phpException    /\<d[_a-z0-9]\+[_a-z0-9]*/
 
 syn keyword phpBoolean		yes no ok bad __VA_ARGS__ __construct __destruct
 

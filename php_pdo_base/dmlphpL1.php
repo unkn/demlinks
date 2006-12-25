@@ -59,6 +59,16 @@ class dmlphpL1 extends dmlphpL0 {
                 _tIFnot( $ar=$this->addParent($child, $parent) );
         }endfunc(yes)/*}}}*/
 
+        func (DelRel($parent,$child), dset)/*{{{*/
+        {
+                //well, no transaction... too bad
+                _tIFnot( $ar=$this->delChild($parent, $child) );
+                _if (yes===isvalue(kAlready, $ar)) {
+                        retflag(kAlready);
+                }
+                _tIFnot( $ar=$this->delParent($child, $parent) );
+        }endfunc(yes)/*}}}*/
+
         func (IsRel($parent,$child), dis)/*{{{*/
         {
                 _if( TRUE===is_array(kChildren[$parent]/*$this->AllElements[$parent][kChildren]*/) && TRUE===in_array($child, kChildren[$parent]/*$this->AllElements[$parent][kChildren]*/)) {
@@ -67,6 +77,7 @@ class dmlphpL1 extends dmlphpL0 {
                         retflag(no);
                 }
         }endfunc()/*}}}*/
+
 
 }//endclass
 

@@ -126,7 +126,14 @@
         _tIFnot( $dphp->GetChildren("if",$arc) );
         echo "Children: ".getvalue($arc).nl;
         __( echo isGood($dphp->IsRel("text","if")).nl );
+        __( echo getvalue($dphp->DelRel("if","yes")).nl );
         __( echo isGood($dphp->IsRel("if","yes")).nl );
+        _tIFnot( $dphp->GetChildren("if",$arc) );
+        echo "Children: ".getvalue($arc).nl;
+        __( echo getvalue($dphp->DelRel("text","if")).nl );
+        _tIFnot( $dphp->GetParents("if",$arc) );
+        echo "Parents: ".getvalue($arc).nl;
+
         $dphp=null;//ie. dispose()
 
         echo nl;
