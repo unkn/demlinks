@@ -43,13 +43,15 @@ class dmlenvL0 {
         func (__construct(), dconstr)/*{{{*/
         {
                 $this->AllElements=array();
-                define(kParents,"P");
-                define(kChildren,"C");
+                define(dParents,"Parents");
+                define(dChildren,"Children");
+#define kParents $this->AllElements[dParents]
+#define kChildren $this->AllElements[dChildren]
         }endfunc(yes)/*}}}*/
 
         func (__destruct(), ddestr)/*{{{*/
         {
-                //print_r($this->AllElements);
+                print_r($this->AllElements);
                 $this->AllElements=null;
         }endfunc(yes)/*}}}*/
 
@@ -65,7 +67,7 @@ class dmlenvL0 {
 
         func (addChild($parent,$child), dadd)/*{{{*/
         {
-                _tIFnot( $ar=$this->UniqAppendToList($child, $this->AllElements[$parent][kChildren]) );
+                _tIFnot( $ar=$this->UniqAppendToList($child, kChildren[$parent] /*$this->AllElements[$parent][kChildren]*/) );
                 foreach ($ar as $val) {
                         retflag($val);
                 }
@@ -73,7 +75,7 @@ class dmlenvL0 {
 
         func (addParent($child,$parent), dadd)/*{{{*/
         {
-                _tIFnot( $ar=$this->UniqAppendToList($parent, $this->AllElements[$child][kParents]) );
+                _tIFnot( $ar=$this->UniqAppendToList($parent, kParents[$child]/*$this->AllElements[$child][kParents]*/) );
                 foreach ($ar as $val) {
                         retflag($val);
                 }
@@ -81,7 +83,7 @@ class dmlenvL0 {
 
         func (GetChildren($parent,&$children), dget)/*{{{*/
         {
-                $children=$this->AllElements[$parent][kChildren];
+                $children=kChildren[$parent];//$this->AllElements[$parent][kChildren];
                 if (is_array($children)) {
                         retflag(yes);
                 } else {
@@ -91,7 +93,7 @@ class dmlenvL0 {
 
         func (GetParents($child,&$parents), dget)/*{{{*/
         {
-                $parents=$this->AllElements[$child][kParents];
+                $parents=kParents[$child];//$this->AllElements[$child][kParents];
                 if (is_array($parents)) {
                         retflag(yes);
                 } else {
@@ -111,7 +113,7 @@ class dmlenvL0 {
 
         func (IsRel($parent,$child), dis)/*{{{*/
         {
-                _if( TRUE===is_array($this->AllElements[$parent][kChildren]) && TRUE===in_array($child, $this->AllElements[$parent][kChildren])) {
+                _if( TRUE===is_array(kChildren[$parent]/*$this->AllElements[$parent][kChildren]*/) && TRUE===in_array($child, kChildren[$parent]/*$this->AllElements[$parent][kChildren]*/)) {
                         retflag(yes);
                 } else {
                         retflag(no);
