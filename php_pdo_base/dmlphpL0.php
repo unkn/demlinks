@@ -82,7 +82,7 @@ class dmlphpL0 {
         }endfunc(yes)/*}}}*/
 
 
-        func (addChild($parent,$child), dadd)/*{{{*/
+        protected func (addChild($parent,$child), dadd)/*{{{*/
         {
                 _tIFnot( $ar=UniqAppendToList($child, kChildren[$parent] /*$this->AllElements[$parent][kChildren]*/) );
                 foreach ($ar as $val) {
@@ -90,7 +90,7 @@ class dmlphpL0 {
                 }
         }endfunc()/*}}}*/
 
-        func (addParent($child,$parent), dadd)/*{{{*/
+        protected func (addParent($child,$parent), dadd)/*{{{*/
         {
                 _tIFnot( $ar=UniqAppendToList($parent, kParents[$child]/*$this->AllElements[$child][kParents]*/) );
                 foreach ($ar as $val) {
@@ -98,7 +98,7 @@ class dmlphpL0 {
                 }
         }endfunc()/*}}}*/
 
-        func (delChild($parent,$child), ddel)/*{{{*/
+        protected func (delChild($parent,$child), ddel)/*{{{*/
         {
                 _tIFnot( $ar=DelFromList($child, kChildren[$parent] ) );
                 foreach ($ar as $val) {
@@ -106,7 +106,7 @@ class dmlphpL0 {
                 }
         }endfunc()/*}}}*/
 
-        func (delParent($child,$parent), ddel)/*{{{*/
+        protected func (delParent($child,$parent), ddel)/*{{{*/
         {
                 _tIFnot( $ar=DelFromList($parent, kParents[$child] ) );
                 foreach ($ar as $val) {
