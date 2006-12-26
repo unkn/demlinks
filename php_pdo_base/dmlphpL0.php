@@ -46,21 +46,24 @@ func (UniqAppendElemToList($elem,&$list), dadd)/*{{{*/
         }
 }endfunc(yes)/*}}}*/
 
+func (ArrayCount(&$list, &$count), dadd)/*{{{*/
+{
+        _if (TRUE===is_array(&$list)) {
+                $count=count(&$list);
+        } else { //attempting to append
+                $count=0;
+        }
+}endfunc(yes)/*}}}*/
+
 func (DelElemFromList($elem,&$list), dadd)/*{{{*/
 {
-        _tIFnot(is_array(&$list) );
-        _if (TRUE===is_array(&$list)) {
-                //&& TRUE===in_array($elem, &$list, TRUE/*strict type check*/)) {
-                _if ($key=array_search($elem, &$list, TRUE)) {//can return either null or FALSE
+        _if (TRUE===is_array(&$list) && $key=array_search($elem, &$list, TRUE) ) {
                         unset($list[$key]);
-                        retflag(yes, kDeleted);
-                } else {
-                        retflag(yes, kAlready);
-                }
+                        retflag(kDeleted);
         } else {
-                retflag(no);//maybe we could throw, to catch bugs outside, in caller
+                retflag(kAlready);
         }
-}endfunc()/*}}}*/
+}endfunc(yes)/*}}}*/
 
 class dmlphpL0 {
         protected $AllElements;
@@ -105,7 +108,7 @@ class dmlphpL0 {
                 keepflags($ar);
         }endfunc()/*}}}*/
 
-        func (GetAllChildren($parent,&$children), dget)/*{{{*/
+        func (GetOfParent_AllChildren($parent,&$children), dget)/*{{{*/
         {
                 $children=kChildrenOf[$parent];
                 if (is_array($children)) {

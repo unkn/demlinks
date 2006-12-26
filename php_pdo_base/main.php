@@ -32,12 +32,13 @@
 #include "color.php"
 //#include "dmlL1fun.php"
 #include "dmlphpL1.php"
+#include "debugL1.php"
 
 
         beginprogram
         __( $dphp=new dmlphpL1 );
-        __( $dphp->SetRel("A","B") );
-        __( $dphp->SetRel("A","B") );
+        __( $dphp->AddRel("A","B") );
+        __( $dphp->AddRel("A","B") );
 /*        __( $dc=new dmlL1 );
         //debug_zval_dump($dc);
 
@@ -63,7 +64,7 @@
 
                    //_TRY(
 
-                        _tIFnot( $ret=$dphp->SetRel($prevval, $val) );
+                        _tIFnot( $ret=$dphp->AddRel($prevval, $val) );
                         $prevval=$val;
                         //_tIFnot( $ret=$dc->AddName($val) );
                         //_if (yes===isvalue(kAdded,$ret)) {
@@ -125,7 +126,7 @@
         _tIFnot( $dphp->GetAllParents("if",$arc) );
         echo "Parents of 'if': ".getvalue($arc).nl;
 
-        _tIFnot( $dphp->GetAllChildren("if",$arc) );
+        _tIFnot( $dphp->GetOfParent_AllChildren("if",$arc) );
         echo "Children of 'if': ".getvalue($arc).nl;
 
         __( echo isGood($dphp->IsRel("text","if")).nl );
@@ -133,7 +134,7 @@
         __( echo isGood($dphp->IsRel("if","yes")).nl );
 
         echo greencol.nl;
-        _tIFnot( $dphp->GetAllChildren("if",$arc) );
+        _tIFnot( $dphp->GetOfParent_AllChildren("if",$arc) );
         echo "Children of 'if' after del child 'yes': ".getvalue($arc).nl;
 
         __( echo getvalue($dphp->DelRel("text","if")).nl );echo greencol;
@@ -147,7 +148,7 @@
 
         _tIFnot( $dphp->DelAllChildrenOf("if") );
 
-        __( $dphp->GetAllChildren("if",$arc) );
+        __( $dphp->GetOfParent_AllChildren("if",$arc) );
         echo "Children after del all children of 'if': ".getvalue($arc).nl;
 
         _tIFnot( $dphp->GetAllParents("not",$arc) );
@@ -155,7 +156,7 @@
 
 
         echo greencol.nl;
-        __( $dphp->GetAllChildren("program",$arc) );
+        __( $dphp->GetOfParent_AllChildren("program",$arc) );
         echo "Children of 'program', before del 'if': ".getvalue($arc).nl;
 
         _tIFnot( $dphp->GetAllParents("if",$arc) );
@@ -166,12 +167,45 @@
         __( $dphp->GetAllParents("if",$arc) );
         echo "Parents of 'if', after del: ".getvalue($arc).nl;
 
-        __( $dphp->GetAllChildren("program",$arc) );
+        __( $dphp->GetOfParent_AllChildren("program",$arc) );
         echo "Children of 'program', after del 'if': ".getvalue($arc).nl;
 
         $dphp=null;//ie. dispose()
 
         echo nocol.nl;
+
+
+        funcl1 (GetName,(&$name, $id))
+        {
+                print_r($name);
+                print_r($id);
+                echo nl;
+                if ($id==1) {
+                        addretflagl1(yes,no,kAdded);
+                }
+                if ($id==2) {
+                        delretflagl1(no);
+                        addretflagl1("a");
+                }
+                if ($id==3) {
+                        setretflagl1(no);
+                }
+                countretflags;
+                if (retflags <= 0) {
+                        setretflagl1("other");
+                }
+        }endfuncl1
+
+        $a="a";
+        GetName($a,"b");
+        GetName($a,"1");
+        GetName($a,"3");
+        GetName($a,"2");
+        GetName($a,"c");
+        global $debugL1;
+        _tIFnot( $debugL1->ShowTreeForParent(kAllFunctions) );
+
+
 
         //print_r($AllReturnLists);
 

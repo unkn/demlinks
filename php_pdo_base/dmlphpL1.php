@@ -51,8 +51,8 @@ class dmlphpL1 extends dmlphpL0 {
                 keepflags($ar);
         }endfunc()/*}}}*/
 
-        func (SetRel($parent,$child), dset)/*{{{*/
-        {
+        func (AddRel($parent,$child), dadd)/*{{{*/
+        {//a relation will only exist once
                 //well, no transaction... too bad
                 _tIFnot( $ar=$this->addChild($parent, $child) );
                 keepflags($ar);
@@ -62,6 +62,9 @@ class dmlphpL1 extends dmlphpL0 {
 
         func (DelRel($parent,$child), dset)/*{{{*/
         {
+                /*_ifnot ($this->IsRel($parent,$child) ) {
+                        endnow(yes, kAlready);
+                }*/
                 //well, no transaction... too bad
                 _tIFnot( $ar=$this->delChild($parent, $child) );
                 keepflags($ar);
@@ -90,7 +93,7 @@ class dmlphpL1 extends dmlphpL0 {
                         $children=array($children);
                 }
                 foreach ($children as $child) {
-                        _tIFnot( $this->SetRel($parent, $child) );
+                        _tIFnot( $this->AddRel($parent, $child) );
                 }
         }endfunc(yes)/*}}}*/
 
@@ -104,6 +107,29 @@ class dmlphpL1 extends dmlphpL0 {
                 }
         }endfunc(yes)/*}}}*/
 
+        func (GetCountOfChildren_OfParent(&$count,$parent), dget)/*{{{*/
+        {
+                _tIFnot( ArrayCount(&kChildrenOf[$parent], $count) );
+        }endfunc(yes)/*}}}*/
+
+        func (GetCountOfParents_OfChild(&$count,$child), dget)/*{{{*/
+        {
+                _tIFnot( ArrayCount(&kParentsOf[$child], $count) );
+        }endfunc(yes)/*}}}*/
+
+        func (ShowTreeForParent($parent, $startlevel=0), dshow)/*{{{*/
+        {
+                for ($i=0; $i<$startlevel; $i++) {
+                        echo "-";
+                }
+                echo "$parent".nl;
+
+                _if ( $this->GetOfParent_AllChildren($parent,$children) ) {
+                        foreach ($children as $val) {
+                                _tIFnot( $this->ShowTreeForParent($val, 1+$startlevel) );
+                        }
+                }
+        }endfunc(yes)/*}}}*/
 
 
 }//endclass

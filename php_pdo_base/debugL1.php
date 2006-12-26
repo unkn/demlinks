@@ -42,25 +42,37 @@ if (!is_a($debugL1,"dmlphpL1")) {
 }
 
 define(kAllFunctions,"kAllFunctions");
+define(kAllReturns,"kAllReturns");
 
 #define addretflagl1(...) \
-        _tIFnot( $debugL1->AppendToParent_Children($funcnameALKSD, array(__VA_ARGS__) ) );
+        _tIFnot( $debugL1->AppendToParent_Children($TheReturnOfThisTime_forThisFunction, array(__VA_ARGS__) ) );
 
 #define delretflagl1(...) \
-        _tIFnot( $debugL1->DeleteFromParent_Children($funcnameALKSD, array(__VA_ARGS__) ) );
+        _tIFnot( $debugL1->DeleteFromParent_Children($TheReturnOfThisTime_forThisFunction, array(__VA_ARGS__) ) );
 
 #define setretflagl1(...) \
-        _tIFnot( $debugL1->SetOfParent_Children($funcnameALKSD, array(__VA_ARGS__) ) );
+        _tIFnot( $debugL1->SetOfParent_Children($TheReturnOfThisTime_forThisFunction, array(__VA_ARGS__) ) );
+
+#define countretflags \
+        _tIFnot( $debugL1->GetCountOfChildren_OfParent($countASADJLKa, $TheReturnOfThisTime_forThisFunction) );
+
+#define retflags $countASADJLKa
 
 #define funcl1(funcname, funcparams,...) \
         function funcname funcparams \
         { \
                 $funcnameALKSD=#funcname." (vim ".getfile." +".getline.")"; \
+                $returnIDForThisFunction="AllReturnsForFunction: ".$funcnameALKSD; \
                 global $debugL1; \
-                _tIFnot( $debugL1->SetRel(kAllFunctions, $funcnameALKSD) );
+                _tIFnot( $debugL1->AddRel(kAllFunctions, $funcnameALKSD) ); \
+                _tIFnot( $debugL1->AddRel(kAllReturns, $returnIDForThisFunction) ); \
+                _tIFnot( $debugL1->AddRel($funcnameALKSD, $returnIDForThisFunction) ); \
+                _tIFnot( $debugL1->GetCountOfChildren_OfParent($TheReturnOfThisTime_forThisFunction, $returnIDForThisFunction) ); \
+                $TheReturnOfThisTime_forThisFunction++; \
+                _tIFnot( $debugL1->AddRel($returnIDForThisFunction, $TheReturnOfThisTime_forThisFunction) ); \
 
 #define endfuncl1 \
-                _tIFnot( $debugL1->GetAllChildren($funcnameALKSD, $tmpASKD) );/*must have at least one return flag*/ \
+                _tIFnot( $debugL1->GetOfParent_AllChildren($TheReturnOfThisTime_forThisFunction, $tmpASKD) );/*must have at least one return flag*/ \
         }
 
 // vim: fdm=marker

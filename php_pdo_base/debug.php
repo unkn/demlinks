@@ -148,7 +148,7 @@ for ($i=debugstartfrom; $i <= $maxdebuglevel; $i++) {
 #define _tIFnot(__a) \
                 { \
                         _ifnot( isGood(__a) ) { \
-                        except( dropmsg("_tIFnot( ".#__a." )") ) \
+                                except( dropmsg("_tIFnot( ".#__a." )") ) \
                         } \
                 }
 
