@@ -56,7 +56,7 @@ define(kAllReturns,"kAllReturns");
 #define countretflags \
         _tIFnot( $debugL1->GetCountOfChildren_OfParent($countASADJLKa, $TheReturnOfThisTime_forThisFunction) );
 
-#define retflags $countASADJLKa
+#define numretflags $countASADJLKa
 
 #define funcl1(funcname, funcparams,...) \
         function funcname funcparams \
@@ -70,22 +70,39 @@ define(kAllReturns,"kAllReturns");
                 _tIFnot( $debugL1->GetCountOfChildren_OfParent($TheReturnOfThisTime_forThisFunction, $returnIDForThisFunction) ); \
                 $TheReturnOfThisTime_forThisFunction++; \
                 $TheReturnOfThisTime_forThisFunction=#funcname.$TheReturnOfThisTime_forThisFunction; \
-                _tIFnot( $debugL1->AddRel($returnIDForThisFunction, $TheReturnOfThisTime_forThisFunction) ); \
+                _tIFnot( $debugL1->AddRel($returnIDForThisFunction, $TheReturnOfThisTime_forThisFunction) );
 
-#define endfuncl1 \
+#define endnowl1(...) \
+                addretflagl1(__VA_ARGS__); \
                 _tIFnot( $debugL1->GetOfParent_AllChildren($TheReturnOfThisTime_forThisFunction, $tmpASKD) );/*must have at least one return flag*/ \
-                return $TheReturnOfThisTime_forThisFunction;\
+                return $TheReturnOfThisTime_forThisFunction;
+
+#define endfuncl1(...) \
+                endnowl1(__VA_ARGS__); \
         }
 
-func (isValidReturn($val), dis)
+function isValidReturn($val)
 {
         global $debugL1;
         //kAllReturns -> $returnIDForThisFunction -> $TheReturnOfThisTime_forThisFunction(aka $val)
         //find parent $X for the child $val, where $X has the parent kAllReturns
         //in other words: kAllReturns -> $X -> $val    ... find $X, if any
         //but, what we do wanna know is whether $val is a child of kAllReturns, thus it would be a valid return from a function
-        //_if ( $debugL1->GetThird(
-}endfunc();
+        _if (yes===isGood($debugL1->TestElementInvariants($val)) && yes===isGood($debugL1->GetOfChild_AllParents($val, $parents))) {
+                foreach ($parents as $p) {
+                        _if ($debugL1->GetOfChild_AllParents($p, $parentsofP) ) {
+                                foreach ($parentsofP as $pp) {
+                                        if ($pp === kAllReturns) {
+                                                _tIFnot( $debugL1->GetCountOfChildren_OfParent($count, $val) );
+                                                _tIFnot($count > 0);//bug in the program
+                                                return TRUE;
+                                        }
+                                }
+                        }
+                }
+        }
+        return FALSE;
+}
 
 
 // vim: fdm=marker

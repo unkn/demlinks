@@ -71,6 +71,8 @@ adef(dconstr);//contructor
 adef(ddestr);//destructor
 adef(ddbadd);//database add, physical addition into the database is executed
 adef(dset);
+adef(dtest);
+adef(dtestcrit);//shows the value of the var that failed test
 
 //enabling specific debug levels
 dseton(dlowlevel);
@@ -90,6 +92,7 @@ dseton(dcrea);
 //dseton(dconstr);
 //dseton(ddestr);
 //dseton(ddbadd);
+dseton(dtestcrit);
 
 function dseton($what)
 {
@@ -300,6 +303,7 @@ function boolIsReturnStateList($var)
 }
 
 //never do if (isGood($var)) => always true, instead do _if ($var)  OR if (yes===isGood($var))
+//careful with _if (isGood(x) && isGood(y))  always is true, try instead _if (isGood(x)===yes && isGood(y)===yes)
 function isGood($var,$allowemptystr=no)
 {
         if (TRUE===is_null($var)) {
@@ -320,7 +324,7 @@ function isGood($var,$allowemptystr=no)
                         if ( TRUE===boolIsReturnStateList($var) ) {
                                 global $AllReturnLists;
                                 //print_r($var);
-                                _tIF(yes===isvalue(yes,$var) && yes===isvalue(no, $var) );
+                                _tIF(yes===isvalue(yes,$var) && yes===isvalue(no, $var) );//both yes and no present, bug!
                                 _if (isvalue(yes, $var)) {
                                         return yes;
                                 } else { 

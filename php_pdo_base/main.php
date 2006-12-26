@@ -188,23 +188,25 @@
                         setretflagl1(no);
                 }
                 countretflags;
-                if (retflags <= 0) {
+                if (numretflags <= 0) {
                         setretflagl1("other");
                 }
-        }endfuncl1
+        }endfuncl1("ReachedEndNormally")
 
         $a="a";
-        _tIFnot( $debugL1->ShowTreeOfParentsForChild( GetName($a,"a") ) );
-        echo GetName($a,"b");
-        echo GetName($a,"1");
-        echo GetName($a,"3");
-        echo GetName($a,"2");
-        echo GetName($a,"c");
+        _tIFnot( $c=$debugL1->ShowTreeOfParentsForChild( GetName($a,"a") ) );
+        echo isValidReturn($c);
+        print_r( isValidReturn( GetName($a,"b") ));
+        echo isValidReturn( GetName($a,"1") );
+        echo isValidReturn( GetName($a,"3") );
+        echo isValidReturn( GetName($a,"2") );
+        echo isValidReturn( GetName($a,"c") );
         global $debugL1;
         _tIFnot( $debugL1->ShowTreeOfChildrenForParent(kAllFunctions) );
         _tIFnot( $debugL1->ShowTreeOfChildrenForParent(kAllReturns) );
         _tIFnot( $debugL1->ShowTreeOfParentsForChild("a") );
         _tIFnot( $debugL1->ShowTreeOfParentsForChild(yes) );
+
 
 
 
