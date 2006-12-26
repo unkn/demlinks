@@ -194,11 +194,12 @@
         }endfuncl1
 
         $a="a";
-        GetName($a,"b");
-        GetName($a,"1");
-        GetName($a,"3");
-        GetName($a,"2");
-        GetName($a,"c");
+        _tIFnot( $debugL1->ShowTreeOfParentsForChild( GetName($a,"a") ) );
+        echo GetName($a,"b");
+        echo GetName($a,"1");
+        echo GetName($a,"3");
+        echo GetName($a,"2");
+        echo GetName($a,"c");
         global $debugL1;
         _tIFnot( $debugL1->ShowTreeOfChildrenForParent(kAllFunctions) );
         _tIFnot( $debugL1->ShowTreeOfChildrenForParent(kAllReturns) );

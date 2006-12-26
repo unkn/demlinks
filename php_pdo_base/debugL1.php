@@ -69,11 +69,24 @@ define(kAllReturns,"kAllReturns");
                 _tIFnot( $debugL1->AddRel($funcnameALKSD, $returnIDForThisFunction) ); \
                 _tIFnot( $debugL1->GetCountOfChildren_OfParent($TheReturnOfThisTime_forThisFunction, $returnIDForThisFunction) ); \
                 $TheReturnOfThisTime_forThisFunction++; \
+                $TheReturnOfThisTime_forThisFunction=#funcname.$TheReturnOfThisTime_forThisFunction; \
                 _tIFnot( $debugL1->AddRel($returnIDForThisFunction, $TheReturnOfThisTime_forThisFunction) ); \
 
 #define endfuncl1 \
                 _tIFnot( $debugL1->GetOfParent_AllChildren($TheReturnOfThisTime_forThisFunction, $tmpASKD) );/*must have at least one return flag*/ \
+                return $TheReturnOfThisTime_forThisFunction;\
         }
+
+func (isValidReturn($val), dis)
+{
+        global $debugL1;
+        //kAllReturns -> $returnIDForThisFunction -> $TheReturnOfThisTime_forThisFunction(aka $val)
+        //find parent $X for the child $val, where $X has the parent kAllReturns
+        //in other words: kAllReturns -> $X -> $val    ... find $X, if any
+        //but, what we do wanna know is whether $val is a child of kAllReturns, thus it would be a valid return from a function
+        //_if ( $debugL1->GetThird(
+}endfunc();
+
 
 // vim: fdm=marker
 
