@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 #used to execute main file
 
@@ -6,10 +6,9 @@
 
 #rm -f "$dbase"
 
-echo "<?php" >"$phpfile"
-cpp $cppparams "$src">>"$phpfile"
-if [ "$?" -eq "0" ]; then
-        time -p -- php "$phpfile"
-#-B "<?php"
+if [ -n "$1" ]; then
+        src="$1"
 fi
+
+cpphp "$src"
 

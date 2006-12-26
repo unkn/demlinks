@@ -65,18 +65,45 @@ class dmlphpL1 extends dmlphpL0 {
                 //well, no transaction... too bad
                 _tIFnot( $ar=$this->delChild($parent, $child) );
                 keepflags($ar);
-                _tIFnot( $ar=$this->delParent($child, $parent) );
+                _tIFnot( $ar=$this->delParentFromChild($parent, $child) );
                 keepflags($ar);
         }endfunc()/*}}}*/
 
         func (IsRel($parent,$child), dis)/*{{{*/
         {
-                _if( TRUE===is_array(kChildren[$parent]) && TRUE===in_array($child, kChildren[$parent])) {
+                _if( TRUE===is_array(kChildrenOf[$parent]) && TRUE===in_array($child, kChildrenOf[$parent])) {
                         retflag(yes);
                 } else {
                         retflag(no);
                 }
         }endfunc()/*}}}*/
+
+        func (SetOfParent_Children($parent,$children), dset)/*{{{*/
+        {//overwrites all children
+                _tIFnot( $this->DelAllChildrenOf($parent) );
+                _tIFnot( $this->AppendToParent_Children($parent, $children) );
+        }endfunc(yes)/*}}}*/
+
+        func (AppendToParent_Children($parent,$children), dadd)/*{{{*/
+        {//addition
+                _ifnot( is_array($children) ) {
+                        $children=array($children);
+                }
+                foreach ($children as $child) {
+                        _tIFnot( $this->SetRel($parent, $child) );
+                }
+        }endfunc(yes)/*}}}*/
+
+        func (DeleteFromParent_Children($parent,$children), dadd)/*{{{*/
+        {//substraction
+                _ifnot( is_array($children) ) {
+                        $children=array($children);
+                }
+                foreach ($children as $child) {
+                        _tIFnot( $this->DelRel($parent, $child) );
+                }
+        }endfunc(yes)/*}}}*/
+
 
 
 }//endclass

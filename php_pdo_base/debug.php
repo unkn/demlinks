@@ -267,10 +267,10 @@ function getvalue($var)
 }
 
 //supposed to return either yes or no ONLY!, if u need to return something use a &$var as a parameter
-#define func(funcname,...) /*{{{*/ \
-function &funcname \
+#define func(funcdef,...) /*{{{*/ \
+function &funcdef \
         { \
-                $funcnameRFZAHJ=#funcname; \
+                $funcnameRFZAHJ=#funcdef; \
                 $otherlevelsRFZAHJ=array(__VA_ARGS__); \
                 deb(getalist($otherlevelsRFZAHJ, dbeg), $funcnameRFZAHJ.":begin..."); \
                 $TheReturnStateList=array(kReturnStateList_type);//this sets this to array type and also flags this array as being a return type, needed on isGood() to make the diff between our array and system returned arrays

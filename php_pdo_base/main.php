@@ -145,7 +145,7 @@
         _tIFnot( $dphp->GetAllParents("not",$arc) );
         echo "Parents of 'not': ".getvalue($arc).nl;
 
-        _tIFnot( $dphp->DelAllChildren("if") );
+        _tIFnot( $dphp->DelAllChildrenOf("if") );
 
         __( $dphp->GetAllChildren("if",$arc) );
         echo "Children after del all children of 'if': ".getvalue($arc).nl;

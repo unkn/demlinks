@@ -36,7 +36,7 @@
 #include "debug.php"
 #include "color.php"
 
-func (UniqAppendToList($elem,&$list), dadd)/*{{{*/
+func (UniqAppendElemToList($elem,&$list), dadd)/*{{{*/
 {
         _if (TRUE===is_array(&$list) && TRUE===in_array($elem, &$list, TRUE/*strict type check*/)) {
                 retflag(kAlready);
@@ -46,7 +46,7 @@ func (UniqAppendToList($elem,&$list), dadd)/*{{{*/
         }
 }endfunc(yes)/*}}}*/
 
-func (DelFromList($elem,&$list), dadd)/*{{{*/
+func (DelElemFromList($elem,&$list), dadd)/*{{{*/
 {
         _tIFnot(is_array(&$list) );
         _if (TRUE===is_array(&$list)) {
@@ -71,8 +71,8 @@ class dmlphpL0 {
                 $this->AllElements=array();
                 define(dParents,"Parents");
                 define(dChildren,"Children");
-#define kParents $this->AllElements[dParents]
-#define kChildren $this->AllElements[dChildren]
+#define kParentsOf $this->AllElements[dParents]
+#define kChildrenOf $this->AllElements[dChildren]
         }endfunc(ok)/*}}}*/
 
         func (__destruct(), ddestr)/*{{{*/
@@ -83,31 +83,31 @@ class dmlphpL0 {
 
         protected func (addChild($parent,$child), dadd)/*{{{*/
         {
-                _tIFnot( $ar=UniqAppendToList($child, kChildren[$parent] ) );
+                _tIFnot( $ar=UniqAppendElemToList($child, kChildrenOf[$parent] ) );
                 keepflags($ar);
         }endfunc()/*}}}*/
 
         protected func (addParent($child,$parent), dadd)/*{{{*/
         {
-                _tIFnot( $ar=UniqAppendToList($parent, kParents[$child]) );
+                _tIFnot( $ar=UniqAppendElemToList($parent, kParentsOf[$child]) );
                 keepflags($ar);
         }endfunc()/*}}}*/
 
         protected func (delChild($parent,$child), ddel)/*{{{*/
         {
-                _tIFnot( $ar=DelFromList($child, kChildren[$parent] ) );
+                _tIFnot( $ar=DelElemFromList($child, kChildrenOf[$parent] ) );
                 keepflags($ar);
         }endfunc()/*}}}*/
 
-        protected func (delParent($child,$parent), ddel)/*{{{*/
+        protected func (delParentFromChild($parent,$child), ddel)/*{{{*/
         {
-                _tIFnot( $ar=DelFromList($parent, kParents[$child] ) );
+                _tIFnot( $ar=DelElemFromList($parent, kParentsOf[$child] ) );
                 keepflags($ar);
         }endfunc()/*}}}*/
 
         func (GetAllChildren($parent,&$children), dget)/*{{{*/
         {
-                $children=kChildren[$parent];
+                $children=kChildrenOf[$parent];
                 if (is_array($children)) {
                         retflag(yes);
                 } else {
@@ -115,13 +115,13 @@ class dmlphpL0 {
                 }
         }endfunc()/*}}}*/
 
-        func (DelAllChildren($parent), ddel)/*{{{*/
+        func (DelAllChildrenOf($parent), ddel)/*{{{*/
         {
-                $children=&kChildren[$parent];// get all children of the $parent
+                $children=&kChildrenOf[$parent];// get all children of the $parent
                 if (is_array($children)) {
                         foreach ($children as $child) {
                                 // del all $parent from these $children
-                                _tIFnot( $this->delParent($child, $parent) );
+                                _tIFnot( $this->delParentFromChild($parent, $child) );
                         }
                         $children=null;//empty the array of children of the $parent
                 }
@@ -129,7 +129,7 @@ class dmlphpL0 {
 
         func (GetAllParents($child,&$parents), dget)/*{{{*/
         {
-                $parents=kParents[$child];
+                $parents=kParentsOf[$child];
                 if (is_array($parents)) {
                         retflag(yes);
                 } else {
@@ -139,7 +139,7 @@ class dmlphpL0 {
 
         func (DelAllParents($child), ddel)/*{{{*/
         {
-                $parents=&kParents[$child];
+                $parents=&kParentsOf[$child];
                 if (is_array($parents)) {
                         foreach ($parents as $parent) {
                                 // del all $parent from these $children
