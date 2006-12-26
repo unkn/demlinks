@@ -122,7 +122,12 @@ class dmlphpL1 extends dmlphpL0 {
                 for ($i=0; $i<$startlevel; $i++) {
                         echo "-";
                 }
-                echo ">$parent".nl;
+                if ($startlevel>0) {
+                        echo ">";
+                } else {
+                        echo "Children of:";
+                }
+                echo " \"$parent\"".nl;
 
                 _if ( $this->GetOfParent_AllChildren($parent,$children) ) {
                         foreach ($children as $val) {
@@ -136,7 +141,12 @@ class dmlphpL1 extends dmlphpL0 {
                 for ($i=0; $i<$startlevel; $i++) {
                         echo "-";
                 }
-                echo "<$child".nl;
+                if ($startlevel>0) {
+                        echo "<";
+                } else {
+                        echo "Parents of:";
+                }
+                echo " \"$child\"".nl;
 
                 _if ( $this->GetOfChild_AllParents($child,$parents) ) {
                         foreach ($parents as $val) {

@@ -75,9 +75,6 @@
                                         $i=2;
                                 }
                                 echo setcol($i).$val." ";
-                                //_tIFnot( $ret=$dc->AddName($val) );
-                                //print_r($ret);
-                                //echo isflag(kAlready, $ret);
                         } else {
                                 $i=1;
                                 echo setcol($i).$val." ";
