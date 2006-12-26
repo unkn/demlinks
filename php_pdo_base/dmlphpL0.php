@@ -130,7 +130,7 @@ class dmlphpL0 {
                 }
         }endfunc(yes)/*}}}*/
 
-        func (GetAllParents($child,&$parents), dget)/*{{{*/
+        func (GetOfChild_AllParents($child,&$parents), dget)/*{{{*/
         {
                 $parents=kParentsOf[$child];
                 if (is_array($parents)) {

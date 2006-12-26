@@ -123,7 +123,7 @@
  */
         //$arc=array();
         echo redcol.nl;
-        _tIFnot( $dphp->GetAllParents("if",$arc) );
+        _tIFnot( $dphp->GetOfChild_AllParents("if",$arc) );
         echo "Parents of 'if': ".getvalue($arc).nl;
 
         _tIFnot( $dphp->GetOfParent_AllChildren("if",$arc) );
@@ -138,12 +138,12 @@
         echo "Children of 'if' after del child 'yes': ".getvalue($arc).nl;
 
         __( echo getvalue($dphp->DelRel("text","if")).nl );echo greencol;
-        _tIFnot( $dphp->GetAllParents("if",$arc) );
+        _tIFnot( $dphp->GetOfChild_AllParents("if",$arc) );
         echo "Parents of 'if' after parent 'text' del: ".getvalue($arc).nl;
 
 
         echo purplecol.nl;
-        _tIFnot( $dphp->GetAllParents("not",$arc) );
+        _tIFnot( $dphp->GetOfChild_AllParents("not",$arc) );
         echo "Parents of 'not': ".getvalue($arc).nl;
 
         _tIFnot( $dphp->DelAllChildrenOf("if") );
@@ -151,7 +151,7 @@
         __( $dphp->GetOfParent_AllChildren("if",$arc) );
         echo "Children after del all children of 'if': ".getvalue($arc).nl;
 
-        _tIFnot( $dphp->GetAllParents("not",$arc) );
+        _tIFnot( $dphp->GetOfChild_AllParents("not",$arc) );
         echo "Parents of 'not', not 'if'; after del: ".getvalue($arc).nl;
 
 
@@ -159,12 +159,12 @@
         __( $dphp->GetOfParent_AllChildren("program",$arc) );
         echo "Children of 'program', before del 'if': ".getvalue($arc).nl;
 
-        _tIFnot( $dphp->GetAllParents("if",$arc) );
+        _tIFnot( $dphp->GetOfChild_AllParents("if",$arc) );
         echo "Parents of 'if', before del: ".getvalue($arc).nl;
 
         _tIFnot( $dphp->DelAllParents("if") );
 
-        __( $dphp->GetAllParents("if",$arc) );
+        __( $dphp->GetOfChild_AllParents("if",$arc) );
         echo "Parents of 'if', after del: ".getvalue($arc).nl;
 
         __( $dphp->GetOfParent_AllChildren("program",$arc) );
@@ -203,7 +203,10 @@
         GetName($a,"2");
         GetName($a,"c");
         global $debugL1;
-        _tIFnot( $debugL1->ShowTreeForParent(kAllFunctions) );
+        _tIFnot( $debugL1->ShowTreeOfChildrenForParent(kAllFunctions) );
+        _tIFnot( $debugL1->ShowTreeOfChildrenForParent(kAllReturns) );
+        _tIFnot( $debugL1->ShowTreeOfParentsForChild("a") );
+        _tIFnot( $debugL1->ShowTreeOfParentsForChild(yes) );
 
 
 

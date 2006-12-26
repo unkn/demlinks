@@ -117,19 +117,34 @@ class dmlphpL1 extends dmlphpL0 {
                 _tIFnot( ArrayCount(&kParentsOf[$child], $count) );
         }endfunc(yes)/*}}}*/
 
-        func (ShowTreeForParent($parent, $startlevel=0), dshow)/*{{{*/
+        func (ShowTreeOfChildrenForParent($parent, $startlevel=0), dshow)/*{{{*/
         {
                 for ($i=0; $i<$startlevel; $i++) {
                         echo "-";
                 }
-                echo "$parent".nl;
+                echo ">$parent".nl;
 
                 _if ( $this->GetOfParent_AllChildren($parent,$children) ) {
                         foreach ($children as $val) {
-                                _tIFnot( $this->ShowTreeForParent($val, 1+$startlevel) );
+                                _tIFnot( $this->ShowTreeOfChildrenForParent($val, 1+$startlevel) );
                         }
                 }
         }endfunc(yes)/*}}}*/
+
+        func (ShowTreeOfParentsForChild($child, $startlevel=0), dshow)/*{{{*/
+        {
+                for ($i=0; $i<$startlevel; $i++) {
+                        echo "-";
+                }
+                echo "<$child".nl;
+
+                _if ( $this->GetOfChild_AllParents($child,$parents) ) {
+                        foreach ($parents as $val) {
+                                _tIFnot( $this->ShowTreeOfParentsForChild($val, 1+$startlevel) );
+                        }
+                }
+        }endfunc(yes)/*}}}*/
+
 
 
 }//endclass
