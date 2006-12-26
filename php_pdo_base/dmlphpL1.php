@@ -120,10 +120,10 @@ class dmlphpL1 extends dmlphpL0 {
         func (ShowTreeOfChildrenForParent($parent, $startlevel=0), dshow)/*{{{*/
         {
                 for ($i=0; $i<$startlevel; $i++) {
-                        echo "-";
+                        echo " ";
                 }
                 if ($startlevel>0) {
-                        echo ">";
+                        echo "|>";
                 } else {
                         echo "Children of:";
                 }
@@ -139,10 +139,10 @@ class dmlphpL1 extends dmlphpL0 {
         func (ShowTreeOfParentsForChild($child, $startlevel=0), dshow)/*{{{*/
         {
                 for ($i=0; $i<$startlevel; $i++) {
-                        echo "-";
+                        echo " ";
                 }
                 if ($startlevel>0) {
-                        echo "<";
+                        echo "|<";
                 } else {
                         echo "Parents of:";
                 }
