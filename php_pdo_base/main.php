@@ -34,11 +34,13 @@
 #include "dmlphpL1.php"
 #include "debugL1.php"
 
+#define _r(...) \
+        __( echo retValue( __VA_ARGS__ ).nl );
 
         beginprogram
         __( $dphp=new dmlphpL1 );
-        __( $dphp->AddRel("A","B") );
-        __( $dphp->AddRel("A","B") );
+        _r( $dphp->AddRel("A","B") );
+        _r( $dphp->AddRel("A","B") );
 /*        __( $dc=new dmlL1 );
         //debug_zval_dump($dc);
 
@@ -126,16 +128,18 @@
         _yntIFnot( $dphp->GetOfParent_AllChildren("if",$arc) );
         echo "Children of 'if': ".retValue($arc).nl;
 
-        __( echo ynIsGood($dphp->IsRel("text","if")).nl );
-        __( echo retValue($dphp->DelRel("if","yes")).nl );
-        __( echo retValue($dphp->DelRel("if","yes")).nl );
-        __( echo ynIsGood($dphp->IsRel("if","yes")).nl );
+        _r( $dphp->IsRel("text","if") );
+        _r( $dphp->DelRel("if","yes") );
+        _r( $dphp->DelRel("if","yes") );
+        _r( $dphp->IsRel("if","yes") );
 
         echo greencol.nl;
         _yntIFnot( $dphp->GetOfParent_AllChildren("if",$arc) );
         echo "Children of 'if' after del child 'yes': ".retValue($arc).nl;
 
-        __( echo retValue($dphp->DelRel("text","if")).nl );echo greencol;
+        _r( $dphp->DelRel("text","if") );
+        echo greencol;
+
         _yntIFnot( $dphp->GetOfChild_AllParents("if",$arc) );
         echo "Parents of 'if' after parent 'text' del: ".retValue($arc).nl;
 

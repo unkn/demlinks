@@ -40,6 +40,7 @@
         define(no,redcol."no".nocol);
         define(ok,yes);//these must be equivalent:  ok~yes and bad~no   where yes="yes" and no="no" or wtw
         define(bad,no);//certain operations interchange ok with yes, that's why!
+
 // vim: fdm=marker
 #endif //header
 //?>
