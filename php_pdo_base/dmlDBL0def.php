@@ -1,6 +1,6 @@
 //<?php
-#ifndef DMLL0DEF_PHP
-#define DMLL0DEF_PHP
+#ifndef DMLDBL0DEF_PHP
+#define DMLDBL0DEF_PHP
 
 /*LICENSE*GNU*GPL************************************************************{{{
 *

@@ -30,7 +30,7 @@
 #include "shortdef.php"
 #include "debugL0.php"
 #include "color.php"
-//#include "dmlL1fun.php"
+//#include "dmlDBL1.php"
 #include "dmlphpL1.php"
 #include "debugL1.php"
 
@@ -128,6 +128,7 @@
 
         __( echo ynIsGood($dphp->IsRel("text","if")).nl );
         __( echo retValue($dphp->DelRel("if","yes")).nl );
+        __( echo retValue($dphp->DelRel("if","yes")).nl );
         __( echo ynIsGood($dphp->IsRel("if","yes")).nl );
 
         echo greencol.nl;
@@ -172,16 +173,16 @@
         echo nocol.nl;
 
 
-        funcl1 (AnotherFunc,($someparam))
+        funcL1 (AnotherFunc,($someparam))
         {
                 if (is_string($someparam)) {
-                        setretflagl1($someparam);
+                        setretflagL1($someparam);
                 } else {
-                        setretflagl1("not a string");
+                        setretflagL1("not a string");
                 }
-        }endfuncl1("done")
+        }endfuncL1("done")
 
-        funcl1 (GetName,(&$name, $id))
+        funcL1 (GetName,(&$name, $id))
         {
                 print_r($name);
                 print_r($id);
@@ -190,17 +191,17 @@
                         addretflagL1(yes,no,kAdded);
                 }
                 if ($id==2) {
-                        delretflagl1(no);
+                        delretflagL1(no);
                         addretflagL1("a");
                 }
                 if ($id==3) {
-                        setretflagl1(no);
+                        setretflagL1(no);
                 }
-                countretflags($numretflags);
+                countretflagsL1($numretflags);
                 if ($numretflags <= 0) {
-                        setretflagl1("other");
+                        setretflagL1("other");
                 }
-        }endfuncl1("ReachedEndNormally")
+        }endfuncL1("ReachedEndNormally")
 
         AnotherFunc("return1");
         AnotherFunc(1);
@@ -208,12 +209,12 @@
 
         $a="a";
         _yntIFnot( $c=$debugL1->ShowTreeOfParentsForChild( GetName($a,"a") ) );
-        echo isValidReturn($c);
-        print_r( isValidReturn( GetName($a,"b") ));
-        echo isValidReturn( GetName($a,"1") );
-        echo isValidReturn( GetName($a,"3") );
-        echo isValidReturn( GetName($a,"2") );
-        echo isValidReturn( GetName($a,"c") );
+        echo isValidReturnL1($c);
+        print_r( isValidReturnL1( GetName($a,"b") ));
+        echo isValidReturnL1( GetName($a,"1") );
+        echo isValidReturnL1( GetName($a,"3") );
+        echo isValidReturnL1( GetName($a,"2") );
+        echo isValidReturnL1( GetName($a,"c") );
         global $debugL1;
         _yntIFnot( $debugL1->ShowTreeOfChildrenForParent(kAllFunctions) );
         _yntIFnot( $debugL1->ShowTreeOfChildrenForParent(kAllReturns) );

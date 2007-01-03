@@ -47,16 +47,16 @@ define(kAllReturns,"kAllReturns");
 #define addretflagL1(...) \
         _yntIFnot( $debugL1->AppendToParent_Children($TheReturnOfThisTime_forThisFunction, array(__VA_ARGS__) ) );
 
-#define delretflagl1(...) \
+#define delretflagL1(...) \
         _yntIFnot( $debugL1->DeleteFromParent_Children($TheReturnOfThisTime_forThisFunction, array(__VA_ARGS__) ) );
 
-#define setretflagl1(...) \
+#define setretflagL1(...) \
         _yntIFnot( $debugL1->SetOfParent_Children($TheReturnOfThisTime_forThisFunction, array(__VA_ARGS__) ) );
 
-#define countretflags(_into) \
+#define countretflagsL1(_into) \
         _yntIFnot( $debugL1->GetCountOfChildren_OfParent(_into, $TheReturnOfThisTime_forThisFunction) );
 
-#define funcl1(funcname, funcparams,...) \
+#define funcL1(funcname, funcparams,...) /*{{{*/ \
         function funcname funcparams \
         { \
                 $funcnameALKSD=#funcname." (vim ".getfile." +".getline.")"; \
@@ -69,30 +69,33 @@ define(kAllReturns,"kAllReturns");
                 $TheReturnOfThisTime_forThisFunction++; \
                 $TheReturnOfThisTime_forThisFunction=#funcname.$TheReturnOfThisTime_forThisFunction; \
                 _yntIFnot( $debugL1->AddRel($returnIDForThisFunction, $TheReturnOfThisTime_forThisFunction) );
+/*}}}*/
 
-#define endnowl1(...) \
+#define endnowL1(...) /*{{{*/ \
                 addretflagL1(__VA_ARGS__); \
                 _yntIFnot( $debugL1->GetOfParent_AllChildren($TheReturnOfThisTime_forThisFunction, $tmpASKD) );/*must have at least one return flag*/ \
                 return $TheReturnOfThisTime_forThisFunction;
+/*}}}*/
 
-#define endfuncl1(...) \
-                endnowl1(__VA_ARGS__); \
+#define endfuncL1(...) /*{{{*/ \
+                endnowL1(__VA_ARGS__); \
         }
+/*}}}*/
 
-function isValidReturn($val)
+boolfunc isValidReturnL1($val)/*{{{*/
 {
         global $debugL1;
         //kAllReturns -> $returnIDForThisFunction -> $TheReturnOfThisTime_forThisFunction(aka $val)
         //find parent $X for the child $val, where $X has the parent kAllReturns
         //in other words: kAllReturns -> $X -> $val    ... find $X, if any
         //but, what we do wanna know is whether $val is a child of kAllReturns, thus it would be a valid return from a function
-        _ynif (yes===ynIsGood($debugL1->TestElementInvariants($val)) && yes===ynIsGood($debugL1->GetOfChild_AllParents($val, $parents))) {
+        _if (yes===ynIsGood($debugL1->TestElementInvariants($val)) && yes===ynIsGood($debugL1->GetOfChild_AllParents($val, $parents))) {
                 foreach ($parents as $p) {
                         _ynif ($debugL1->GetOfChild_AllParents($p, $parentsofP) ) {
                                 foreach ($parentsofP as $pp) {
                                         if ($pp === kAllReturns) {
                                                 _yntIFnot( $debugL1->GetCountOfChildren_OfParent($count, $val) );
-                                                _yntIFnot($count > 0);//bug in the program
+                                                _tIFnot($count > 0);//bug in the program
                                                 return TRUE;
                                         }
                                 }
@@ -100,7 +103,7 @@ function isValidReturn($val)
                 }
         }
         return FALSE;
-}
+}/*}}}*/
 
 
 // vim: fdm=marker

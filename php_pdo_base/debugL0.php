@@ -275,7 +275,7 @@ procedure array_append_unique_values(&$towhatarray, $listofvalues)/*{{{*/
                 array_merge(oflist,array(__VA_ARGS__))
 
 
-//called within funcL0() and endfunc()
+//called within funcL0() and endfuncL0()
 #define addretflagL0(/*what flags*/...) \
                 appendtolist($TheReturnStateList, __VA_ARGS__);
 
@@ -318,7 +318,7 @@ ynfunc &funcdef \
                 deb(getalist($otherlevelsRFZAHJ, dbeg), $funcnameRFZAHJ.":begin..."); \
                 $TheReturnStateList=array(kReturnStateList_type);//this sets this to array type and also flags this array as being a return type, needed on ynIsGood() to make the diff between our array and system returned arrays
 
-#define endnow(.../*more elements to add here*/) \
+#define endnowL0(.../*more elements to add here*/) \
                 { \
                         __( addretflagL0(__VA_ARGS__) ); \
                         global $AllReturnLists;\
@@ -328,9 +328,9 @@ ynfunc &funcdef \
                         return $TheReturnStateList; \
                 }/*}}}*/
 
-// DO NOT append ";" to endfunc!!!
-#define endfunc(.../* more elements */) /*{{{*/ \
-                endnow(__VA_ARGS__) \
+// DO NOT append ";" to endfuncL0!!!
+#define endfuncL0(.../* more elements */) /*{{{*/ \
+                endnowL0(__VA_ARGS__) \
         }/*}}}*/
 
 #define isReturnStateList(_flag) \

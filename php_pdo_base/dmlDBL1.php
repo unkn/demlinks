@@ -1,8 +1,8 @@
 //<?php
 //dmlL1functions
 //header starts
-#ifndef DMLL1FUN_PHP
-#define DMLL1FUN_PHP
+#ifndef DMLDBL1FUN_PHP
+#define DMLDBL1FUN_PHP
 
 /*LICENSE*GNU*GPL************************************************************{{{
 *
@@ -34,12 +34,12 @@
 
 #include "shortdef.php"
 #include "debugL0.php"
-//#include "dmlL0def.php"
-#include "dmlL0fun.php"
+//#include "dmlDBL0def.php"
+#include "dmlDBL0.php"
 #include "color.php"
 
 
-class dmlL1 extends dmlL0
+class dmlDBL1 extends dmlDBL0
 {
         private $fParamNodeName;
         private $sqlGetNodeID;
@@ -62,12 +62,12 @@ class dmlL1 extends dmlL0
                 _yntIFnot( $this->fPrepNewNode->bindParam(paramNodeName, $this->fParamNodeName, PDO::PARAM_STR) ); //, PDO::PARAM_INT);
                 //---------
 
-        }endfunc(yes)/*}}}*/
+        }endfuncL0(yes)/*}}}*/
 
         funcL0 (__destruct(), ddestr)/*{{{*/
         {
                 __( parent::__destruct() );
-        }endfunc(yes)/*}}}*/
+        }endfuncL0(yes)/*}}}*/
 
         funcL0 (AddName($nodename),dadd)/*{{{*/
         {
@@ -81,7 +81,7 @@ class dmlL1 extends dmlL0
                 } else {
                         addretflagL0(kAlready);
                 }//fielse
-        }endfunc(ok)/*}}}*/
+        }endfuncL0(ok)/*}}}*/
 
         funcL0 (GetID(&$id,$nodename),dget)// returns ID by Name /*{{{*/
         {
@@ -98,16 +98,16 @@ class dmlL1 extends dmlL0
                         //$id='';
                         addretflagL0(no);
                 }
-        }endfunc()/*}}}*/
+        }endfuncL0()/*}}}*/
 
         funcL0 (IsName($nodename), dis)/*{{{*/
         {
                 _yntIFnot($nodename);
                 _ynif( $this->GetID($id,$nodename) ) {
                         _yntIF( ynIsNotGood($id) );
-                        endnow(yes);
+                        endnowL0(yes);
                 }
-        }endfunc(no)/*}}}*/
+        }endfuncL0(no)/*}}}*/
 
         funcL0 (DelName($nodename), ddel)/*{{{*/
         {
@@ -115,7 +115,7 @@ class dmlL1 extends dmlL0
                 _ynif ($this->GetID($id,$nodename)) {
                         _yntIFnot( $this->DelID($id) );
                 }
-        }endfunc(ok)/*}}}*/
+        }endfuncL0(ok)/*}}}*/
 
 } //class
 

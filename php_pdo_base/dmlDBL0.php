@@ -1,8 +1,8 @@
 //<?php
-//dmlL0functions
+//dmlDBL0functions
 //header starts
-#ifndef DMLL0FUN_PHP
-#define DMLL0FUN_PHP
+#ifndef DMLDBL0FUN_PHP
+#define DMLDBL0FUN_PHP
 
 /*LICENSE*GNU*GPL************************************************************{{{
 *
@@ -34,11 +34,11 @@
 
 #include "shortdef.php"
 #include "debugL0.php"
-#include "dmlL0def.php"
+#include "dmlDBL0def.php"
 #include "color.php"
 
 
-class dmlL0
+class dmlDBL0
 {
         protected $qNodeNames,$qRelations,$qNodeName,$qParentNodeID,$qChildNodeID,$qNodeID;//q from quote
         protected static $fDBHandle=null;
@@ -99,12 +99,12 @@ class dmlL0
                 _yntIFnot( $this->fPrepDelID = $this->fDBHandle->prepare($this->sqlDelID) );
                 _yntIFnot( $this->fPrepDelID->bindParam(paramNodeID, $this->fParamNodeID, PDO::PARAM_STR) );
                 //---------
-        }endfunc(yes)/*}}}*/
+        }endfuncL0(yes)/*}}}*/
 
         funcL0 (__destruct(), ddestr)/*{{{*/
         {
                 $fDBHandle=null;
-        }endfunc(yes)/*}}}*/
+        }endfuncL0(yes)/*}}}*/
 
         funcL0 (CreateDB(),dcrea)/*{{{*/
         {
@@ -136,23 +136,23 @@ class dmlL0
                         _yntIFnot( $this->AbortTransaction() );
                         addretflagL0(bad);
                 }
-        } endfunc()/*}}}*/
+        } endfuncL0()/*}}}*/
 
 //------------------------ transactions/*{{{*/
         funcL0 (OpenTransaction(), dbegtr) //only one active transaction at a time; PDO limitation?!/*{{{*/
         {
                 _yntIFnot( $this->fDBHandle->beginTransaction() );
-        }endfunc(ok)/*}}}*/
+        }endfuncL0(ok)/*}}}*/
 
         funcL0 (CloseTransaction(),dendtr)/*{{{*/
         {
                 _yntIFnot( $this->fDBHandle->commit() );
-        }endfunc(ok)/*}}}*/
+        }endfuncL0(ok)/*}}}*/
 
         funcL0 (AbortTransaction(), dabtr)/*{{{*/
         {
                 _yntIFnot( $this->fDBHandle->rollBack() );
-        }endfunc(ok)/*}}}*/
+        }endfuncL0(ok)/*}}}*/
 //------------------------/*}}}*/
 
 
@@ -162,7 +162,7 @@ class dmlL0
                 __( $exists=$this->GetName($name,$id) );
                 _yntIF(yes===ynIsGood($exists) && yes===ynIsNotGood($name) );
                 //print_r($exists);
-        }endfunc($exists)/*}}}*/
+        }endfuncL0($exists)/*}}}*/
 
         funcL0 (GetName(&$name,$id),dget)// returns Name by ID /*{{{*/
         {
@@ -174,7 +174,7 @@ class dmlL0
                 if (empty($ar) || empty($name)) {
                         addretflagL0(no);
                 }
-        }endfunc()/*}}}*/
+        }endfuncL0()/*}}}*/
 
 
         funcL0 (DelID($id), ddel)/*{{{*/
@@ -182,17 +182,17 @@ class dmlL0
                 _yntIF(ynIsNotGood($id));
                 $this->fParamNodeID = $id;
                 _yntIFnot( $this->fPrepDelID->execute() );
-        }endfunc(ok)/*}}}*/
+        }endfuncL0(ok)/*}}}*/
 
         funcL0 (Show(&$result),dshow)//temp/*{{{*/
         {
                 $sqlGetView = 'SELECT * FROM '.$this->qNodeNames;
                 _yntIFnot( $result=$this->fDBHandle->query($sqlGetView) );
-        }endfunc(ok)/*}}}*/
+        }endfuncL0(ok)/*}}}*/
 //------------------------
         funcL0 (SetRelation($parentName, $childName))/*{{{*/
         {
-        }endfunc(ok)/*}}}*/
+        }endfuncL0(ok)/*}}}*/
 //------------------------
 } //class
 
