@@ -95,7 +95,7 @@ class dmlphpL0 {
                 if (is_string(&$elem) ) {
                         retflag(yes);
                 } else {
-                        debnl(dtestcrit, "TestElementInvariants: var that failed test is \" ".getvalue(&$elem)."\"");
+                        debnl(dtestcrit, "TestElementInvariants: var that failed test is \" ".retValue(&$elem)."\"");
                         retflag(no);
                 }
         }endfunc()

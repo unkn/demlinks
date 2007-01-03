@@ -67,8 +67,8 @@
                         _yntIFnot( $ret=$dphp->AddRel($prevval, $val) );
                         $prevval=$val;
                         //_yntIFnot( $ret=$dc->AddName($val) );
-                        //_ynif (yes===isvalue(kAdded,$ret)) {
-                        _ynif (no===isvalue(kAlready,$ret)) {
+                        //_ynif (yes===isValue_InList(kAdded,$ret)) {
+                        _ynif (no===isValue_InList(kAlready,$ret)) {
                                 if ($i<6) {
                                         $i++;
                                 } else {
@@ -121,51 +121,51 @@
         //$arc=array();
         echo redcol.nl;
         _yntIFnot( $dphp->GetOfChild_AllParents("if",$arc) );
-        echo "Parents of 'if': ".getvalue($arc).nl;
+        echo "Parents of 'if': ".retValue($arc).nl;
 
         _yntIFnot( $dphp->GetOfParent_AllChildren("if",$arc) );
-        echo "Children of 'if': ".getvalue($arc).nl;
+        echo "Children of 'if': ".retValue($arc).nl;
 
         __( echo isGood($dphp->IsRel("text","if")).nl );
-        __( echo getvalue($dphp->DelRel("if","yes")).nl );
+        __( echo retValue($dphp->DelRel("if","yes")).nl );
         __( echo isGood($dphp->IsRel("if","yes")).nl );
 
         echo greencol.nl;
         _yntIFnot( $dphp->GetOfParent_AllChildren("if",$arc) );
-        echo "Children of 'if' after del child 'yes': ".getvalue($arc).nl;
+        echo "Children of 'if' after del child 'yes': ".retValue($arc).nl;
 
-        __( echo getvalue($dphp->DelRel("text","if")).nl );echo greencol;
+        __( echo retValue($dphp->DelRel("text","if")).nl );echo greencol;
         _yntIFnot( $dphp->GetOfChild_AllParents("if",$arc) );
-        echo "Parents of 'if' after parent 'text' del: ".getvalue($arc).nl;
+        echo "Parents of 'if' after parent 'text' del: ".retValue($arc).nl;
 
 
         echo purplecol.nl;
         _yntIFnot( $dphp->GetOfChild_AllParents("not",$arc) );
-        echo "Parents of 'not': ".getvalue($arc).nl;
+        echo "Parents of 'not': ".retValue($arc).nl;
 
         _yntIFnot( $dphp->DelAllChildrenOf("if") );
 
         __( $dphp->GetOfParent_AllChildren("if",$arc) );
-        echo "Children after del all children of 'if': ".getvalue($arc).nl;
+        echo "Children after del all children of 'if': ".retValue($arc).nl;
 
         _yntIFnot( $dphp->GetOfChild_AllParents("not",$arc) );
-        echo "Parents of 'not', not 'if'; after del: ".getvalue($arc).nl;
+        echo "Parents of 'not', not 'if'; after del: ".retValue($arc).nl;
 
 
         echo greencol.nl;
         __( $dphp->GetOfParent_AllChildren("program",$arc) );
-        echo "Children of 'program', before del 'if': ".getvalue($arc).nl;
+        echo "Children of 'program', before del 'if': ".retValue($arc).nl;
 
         _yntIFnot( $dphp->GetOfChild_AllParents("if",$arc) );
-        echo "Parents of 'if', before del: ".getvalue($arc).nl;
+        echo "Parents of 'if', before del: ".retValue($arc).nl;
 
         _yntIFnot( $dphp->DelAllParents("if") );
 
         __( $dphp->GetOfChild_AllParents("if",$arc) );
-        echo "Parents of 'if', after del: ".getvalue($arc).nl;
+        echo "Parents of 'if', after del: ".retValue($arc).nl;
 
         __( $dphp->GetOfParent_AllChildren("program",$arc) );
-        echo "Children of 'program', after del 'if': ".getvalue($arc).nl;
+        echo "Children of 'program', after del 'if': ".retValue($arc).nl;
 
         $dphp=null;//ie. dispose()
 

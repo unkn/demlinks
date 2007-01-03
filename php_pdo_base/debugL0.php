@@ -273,12 +273,12 @@ function array_append_unique_values(&$towhatarray, $listofvalues)/*{{{*/
 
 //returns yes or no
 //#define isflag(whatflag) \
-//                isvalue(whatflag, $AllReturnLists)
+//                isValue_InList(whatflag, $AllReturnLists)
 
-#define isvalue(whatflag,inwhatlist) \
+#define isValue_InList(whatflag,inwhatlist) \
                 (TRUE===in_array(whatflag, inwhatlist, FALSE/*check types?=no*/)?yes:no)
 
-function getvalue($var)
+function retValue($var)
 {
         $ret='';
         if (TRUE===is_array($var)) {
@@ -308,7 +308,7 @@ function &funcdef \
                         global $AllReturnLists;\
                         $theKey="vim ".getfile." +".getline;\
                         $AllReturnLists[$theKey]=$TheReturnStateList;\
-                        debnl(getalist($otherlevelsRFZAHJ, dend) , $funcnameRFZAHJ.":done:isGood(".getvalue($TheReturnStateList).")===".isGood($TheReturnStateList));\
+                        debnl(getalist($otherlevelsRFZAHJ, dend) , $funcnameRFZAHJ.":done:isGood(".retValue($TheReturnStateList).")===".isGood($TheReturnStateList));\
                         return $TheReturnStateList; \
                 }/*}}}*/
 
@@ -319,7 +319,7 @@ function &funcdef \
 
 function boolIsReturnStateList($var)
 {
-        if (TRUE===is_array($var) && yes===isvalue(kReturnStateList_type, $var)) {
+        if (TRUE===is_array($var) && yes===isValue_InList(kReturnStateList_type, $var)) {
                 return TRUE;
         } else {
                 return FALSE;
@@ -348,11 +348,11 @@ function isGood($var,$allowemptystr=no)
                         if ( TRUE===boolIsReturnStateList($var) ) {
                                 global $AllReturnLists;
                                 //print_r($var);
-                                _yntIF(yes===isvalue(yes,$var) && yes===isvalue(no, $var) );//both yes and no present, bug!
-                                _ynif (isvalue(yes, $var)) {
+                                _yntIF(yes===isValue_InList(yes,$var) && yes===isValue_InList(no, $var) );//both yes and no present, bug!
+                                _ynif (isValue_InList(yes, $var)) {
                                         return yes;
                                 } else { 
-                                        _ynif (isvalue(no, $var)) {
+                                        _ynif (isValue_InList(no, $var)) {
                                                 return no;
                                         }
                                         _yntIF("invalid kReturnStateList_type! neither yes, nor no");

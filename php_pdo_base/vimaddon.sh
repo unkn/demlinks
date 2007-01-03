@@ -40,15 +40,15 @@ fi
 
 #setable constants
 OURFILE="vim_syntax_php.vim"
-HOMEPLUGINDIR="$HOME/.vim/plugin"
+#HOMEPLUGINDIR="$HOME/.vim/plugin"
 SYNTAXFILE="php.vim"
 SYNTAXDIR="syntax"
 HOMESYNTAXDIR="$HOME/.vim/$SYNTAXDIR"
 HOMESYNTAXFILE="$HOMESYNTAXDIR/$SYNTAXFILE"
 HOMEDEMFILE="$HOMESYNTAXDIR/$OURFILE"
 POSSIBLELOCATIONS="/usr/share/vim/"*"/$SYNTAXDIR /usr/local/share/vim/"*"/$SYNTAXDIR /usr/local/share/vim70/"*"/$SYNTAXDIR /usr/local/share/vim64/"*"/$SYNTAXDIR"
-HOMECSCOPEMAPS="$HOMEPLUGINDIR/cscope_maps.vim"
-INETCSCOPEMAPS="http://cscope.sourceforge.net/cscope_maps.vim"
+#HOMECSCOPEMAPS="$HOMEPLUGINDIR/cscope_maps.vim"
+#INETCSCOPEMAPS="http://cscope.sourceforge.net/cscope_maps.vim"
 #done vars
 
         current_script_runname="$0"
@@ -67,14 +67,14 @@ if [ ! "$?" -eq "0" -o -z "$FULLPATH2SYNTAXFILE" ]; then
 fi
 
 #make sure directories exit
-mkdir -p -- "$HOMEPLUGINDIR"
+#mkdir -p -- "$HOMEPLUGINDIR"
 mkdir -p -- "$HOMESYNTAXDIR"
 
 #the following will add cscope support for vim
         #fetch the vim plugin from the internet if it doesn't already exist
-        if [ ! -r "$HOMECSCOPEMAPS" ]; then
-                wget --output-document "$HOMECSCOPEMAPS" -- "$INETCSCOPEMAPS"
-        fi
+#        if [ ! -r "$HOMECSCOPEMAPS" ]; then
+#                wget --output-document "$HOMECSCOPEMAPS" -- "$INETCSCOPEMAPS"
+#        fi
 
 #the following will add extra highlighting for php files with vim
 #these php files are supposed to be piped thru the cpp preprocessor
