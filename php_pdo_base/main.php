@@ -50,7 +50,7 @@
         }
  */
         //_yntIFnot( $contents=file_get_contents("/home/emacs/phpnet.php") );
-        __( $res=split("[ .,/\\\"\?\<\>&!;|\#\$\*\+\{\}=\(\)'`\n\-]",file_get_contents("debugL1.php")) );
+        __( $res=split("[ .,/\\\"\?\<\>&!;|\#\$\*\+\{\}=\(\)'`\n\-]",file_get_contents("debugL0.php")) );
         _yntIF(1===count($res));
         $i=2;
         $cnt=0;
@@ -67,8 +67,8 @@
                         _yntIFnot( $ret=$dphp->AddRel($prevval, $val) );
                         $prevval=$val;
                         //_yntIFnot( $ret=$dc->AddName($val) );
-                        //_ynif (yes===isValue_InList(kAdded,$ret)) {
-                        _ynif (no===isValue_InList(kAlready,$ret)) {
+                        //_ynif (isValue_InList(kAdded,$ret)) {
+                        _ynifnot (isValue_InList(kAlready,$ret)) {
                                 if ($i<6) {
                                         $i++;
                                 } else {
@@ -126,9 +126,9 @@
         _yntIFnot( $dphp->GetOfParent_AllChildren("if",$arc) );
         echo "Children of 'if': ".retValue($arc).nl;
 
-        __( echo isGood($dphp->IsRel("text","if")).nl );
+        __( echo ynIsGood($dphp->IsRel("text","if")).nl );
         __( echo retValue($dphp->DelRel("if","yes")).nl );
-        __( echo isGood($dphp->IsRel("if","yes")).nl );
+        __( echo ynIsGood($dphp->IsRel("if","yes")).nl );
 
         echo greencol.nl;
         _yntIFnot( $dphp->GetOfParent_AllChildren("if",$arc) );
@@ -187,11 +187,11 @@
                 print_r($id);
                 echo nl;
                 if ($id==1) {
-                        addretflagl1(yes,no,kAdded);
+                        addretflagL1(yes,no,kAdded);
                 }
                 if ($id==2) {
                         delretflagl1(no);
-                        addretflagl1("a");
+                        addretflagL1("a");
                 }
                 if ($id==3) {
                         setretflagl1(no);

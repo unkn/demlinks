@@ -49,6 +49,10 @@ $maxdebuglevel=0;//don't need to change this
 #define ynfunc function
 #define procedure function
 
+#define ynIsNotGood(_var,...) \
+        (yes===ynIsGood(_var,##__VA_ARGS__/*$allowemptystr*/)?no:yes)
+
+
 procedure adef($what)
 {
         global $maxdebuglevel;
@@ -79,6 +83,12 @@ adef(dset);
 adef(dtest);
 adef(dtestcrit);//shows the value of the var that failed test
 
+procedure dseton($what)
+{
+        global $debugar;
+        $debugar[$what]=TRUE;
+}
+
 //enabling specific debug levels
 dseton(dlowlevel);
 dseton(dinfo);
@@ -99,11 +109,6 @@ dseton(dcrea);
 //dseton(ddbadd);
 //dseton(dtestcrit);
 
-procedure dseton($what)
-{
-        global $debugar;
-        $debugar[$what]=TRUE;
-}
 
 #ifdef alldebugon
 for ($i=debugstartfrom; $i <= $maxdebuglevel; $i++) {
@@ -114,19 +119,21 @@ for ($i=debugstartfrom; $i <= $maxdebuglevel; $i++) {
 
 //now the line numbers match with those reported on error(s) when using __() and _yntIF()
 
-#define getline browncol.__LINE__.nocol
-#define getfile browncol.__FILE__.nocol
+#define getline \
+        browncol.__LINE__.nocol
+#define getfile \
+        browncol.__FILE__.nocol
 
-#define throw_exception(_a) \
-                throw new Exception(_a);
+#define throw_exception(_message) \
+                throw new Exception(_message);
 
 #ifdef IMMEDIATE_REPORTS
-        #define except(_a) \
-                echo _a; \
-                throw_exception(_a);
+        #define except(_message) \
+                echo _message; \
+                throw_exception(_message);
 #else
-        #define except(_a) \
-                throw_exception(_a);
+        #define except(_message) \
+                throw_exception(_message);
 #endif
 
 #define quitmsg \
@@ -135,7 +142,7 @@ for ($i=debugstartfrom; $i <= $maxdebuglevel; $i++) {
 #define dropmsg(_a) \
                 nl.greencol."vim ".getfile." +".getline.nl.tab.purplecol._a.nocol.nl
 
-#define _TRY(thiscode, ... /*exec_this_ynif_fail*/) \
+#define _TRY(thiscode, ... /*exec_this_if_fail*/) \
                 {\
                         try { \
                                 thiscode; \
@@ -146,6 +153,7 @@ for ($i=debugstartfrom; $i <= $maxdebuglevel; $i++) {
                         } \
                 }
 
+//wrapper call to catch and rethrow any exception
 #define __(thiscode) \
                 { \
                         _TRY(thiscode, except(quitmsg) ) \
@@ -153,52 +161,54 @@ for ($i=debugstartfrom; $i <= $maxdebuglevel; $i++) {
 
 //FIXME: try to catch "PHP Fatal error: " too! this is obv. unlikely to happen
 
-#define _tIFnot(__a) \
+#define _tIFnot(__bool) \
                 { \
-                        _ifnot( __a ) { \
-                                except( dropmsg("_tIFnot( ".#__a." )") ) \
+                        _ifnot( __bool ) { \
+                                except( dropmsg("_tIFnot( ".#__bool." )") ) \
                         } \
                 }
 
-#define _tIF(__a) \
+#define _tIF(__bool) \
                 { \
-                        _if( __a ) { \
-                                except( dropmsg("_tIF( ".#__a." )") ) \
+                        _if( __bool ) { \
+                                except( dropmsg("_tIF( ".#__bool." )") ) \
                         } \
                 }
 
-#define _yntIFnot(__a) \
+#define _yntIFnot(__ynbool) \
                 { \
-                        _ynifnot( __a ) { \
-                                except( dropmsg("_yntIFnot( ".#__a." )") ) \
+                        _ynifnot( __ynbool ) { \
+                                except( dropmsg("_yntIFnot( ".#__ynbool." )") ) \
                         } \
                 }
 
-#define _yntIF(__a) \
+#define _yntIF(__ynbool) \
                 { \
-                        _ynif( __a ) { \
-                                except( dropmsg("_yntIF( ".#__a." )") ) \
+                        _ynif( __ynbool ) { \
+                                except( dropmsg("_yntIF( ".#__ynbool." )") ) \
                         } \
                 }
 
-//boolfunc is a function that returns something, usually anything that can be tested by isGood() but mostly by convention just yes or no  || ok or bad (same thing)
+//boolfunc is a function that returns boolean or something that evaluates to boolean, ie. a non empty string
 #define _if(boolfunc) \
                 __( $_bool_this_var_accessible_in_caller = boolfunc ); \
-                if ($_bool_this_var_accessible_in_caller)
+                if (TRUE===$_bool_this_var_accessible_in_caller)
 
 #define _ifnot(boolfunc) \
                 __( $_bool_this_var_accessible_in_caller = boolfunc ); \
-                if ($_bool_this_var_accessible_in_caller)
+                if (FALSE===$_bool_this_var_accessible_in_caller)
 
-#define _ynif(boolfunc) \
-                __( $_bool_this_var_accessible_in_caller = boolfunc ); \
-                __( $_yn_this_var_accessible_in_caller = yes===isGood($_bool_this_var_accessible_in_caller) ); \
-                if (TRUE===$_yn_this_var_accessible_in_caller)
+//ynboolfunc is a function that returns something, usually anything that can be tested by ynIsGood() but mostly by convention just yes or no  || ok or bad (same thing)
+#define _ynifL0(ynboolfunc, _booltest) \
+                __( $_bool_this_var_accessible_in_caller = ynboolfunc ); \
+                __( $_yn_this_var_accessible_in_caller = yes===ynIsGood($_bool_this_var_accessible_in_caller) ); \
+                if (_booltest===$_yn_this_var_accessible_in_caller)
 
-#define _ynifnot(boolfunc) \
-                __( $_bool_this_var_accessible_in_caller = boolfunc ); \
-                __( $_yn_this_var_accessible_in_caller = yes===isGood($_bool_this_var_accessible_in_caller) ); \
-                if (FALSE===$_yn_this_var_accessible_in_caller)
+#define _ynif(ynboolfunc) \
+                _ynifL0(ynboolfunc,TRUE)
+
+#define _ynifnot(ynboolfunc) \
+                _ynifL0(ynboolfunc,FALSE)
 
 #define beginprogram \
                 try { \
@@ -212,6 +222,7 @@ for ($i=debugstartfrom; $i <= $maxdebuglevel; $i++) {
 #ifdef debugon
         #define debshow(level,text,textappend) \
                 echo nl.bluecol."debLev".greencol.level.nocol." ".#text." (vim ".getfile." +".getline.")" . textappend;
+
         #define dEbS(level,text,textappend) { \
                 global $debugar; \
                 $levelar=level; \
@@ -228,8 +239,10 @@ for ($i=debugstartfrom; $i <= $maxdebuglevel; $i++) {
                         } \
                 }\
         }
+                #
         #define deb(level,text) \
                 { dEbS(level,text,"") }
+
         #define debnl(level,text) \
                 { dEbS(level,text,nl) }
 
@@ -240,48 +253,45 @@ for ($i=debugstartfrom; $i <= $maxdebuglevel; $i++) {
 procedure array_append_unique_values(&$towhatarray, $listofvalues)/*{{{*/
 //all values are copied, not referenced! because, in my view, references are too subtle in php to be used consistently
 {
-        _yntIFnot(is_array($towhatarray));
-        _yntIFnot(is_array($listofvalues));
+        _tIFnot(is_array($towhatarray));
+        _tIFnot(is_array($listofvalues));
         foreach ( $listofvalues as $val ) {
                 //print_r($val);
-                if (no!=$val) {
+                if (no !== $val) {
                         //print_r($val);
-                        _yntIF(isNotGood($val));
+                        _yntIF(ynIsNotGood($val));
                 }
+
                 if (! in_array($val, $towhatarray) ) {
                         $towhatarray[]=$val;
                 }
         }
 }/*}}}*/
 
-#define prependtolist(tolist,...) \
+#define appendtolist(tolist,...) \
                 array_append_unique_values( tolist, array(__VA_ARGS__ /*many elements here*/) );
 
 #define getalist(oflist,...) \
                 array_merge(oflist,array(__VA_ARGS__))
 
 
-//called within func() and endfunc()
-#define retflag(/*what flags*/...) \
-                prependtolist($TheReturnStateList, __VA_ARGS__);
+//called within funcL0() and endfunc()
+#define addretflagL0(/*what flags*/...) \
+                appendtolist($TheReturnStateList, __VA_ARGS__);
 
-#define keepflags(var) \
+#define keepflagsL0(var) \
 { \
         $RSL_var=&var; \
-        _yntIFnot( TRUE===boolIsReturnStateList(&$RSL_var) ); \
+        _tIFnot( isReturnStateList(&$RSL_var) ); \
         foreach ($RSL_var as $val) { \
                 if (kReturnStateList_type!==$val) { \
-                        retflag($val); \
+                        addretflagL0($val); \
                 } \
         } \
 }
 
-//returns yes or no
-//#define isflag(whatflag) \
-//                isValue_InList(whatflag, $AllReturnLists)
-
 #define isValue_InList(whatflag,inwhatlist) \
-                (TRUE===in_array(whatflag, inwhatlist, FALSE/*check types?=no*/)?yes:no)
+                in_array(whatflag, inwhatlist, FALSE/*check types?=no*/)
 
 function retValue($var)
 {
@@ -300,21 +310,21 @@ function retValue($var)
 
 //supposed to return either yes or no ONLY!, if u need to return something use a &$var as a parameter
 //actually it returns an array where one of yes or no is present, and other flags,if any,to signal status ie. yes,kAlreadyExists
-#define func(funcdef,...) /*{{{*/ \
+#define funcL0(funcdef,...) /*{{{*/ \
 ynfunc &funcdef \
         { \
                 $funcnameRFZAHJ=#funcdef; \
                 $otherlevelsRFZAHJ=array(__VA_ARGS__); \
                 deb(getalist($otherlevelsRFZAHJ, dbeg), $funcnameRFZAHJ.":begin..."); \
-                $TheReturnStateList=array(kReturnStateList_type);//this sets this to array type and also flags this array as being a return type, needed on isGood() to make the diff between our array and system returned arrays
+                $TheReturnStateList=array(kReturnStateList_type);//this sets this to array type and also flags this array as being a return type, needed on ynIsGood() to make the diff between our array and system returned arrays
 
 #define endnow(.../*more elements to add here*/) \
                 { \
-                        __( retflag(__VA_ARGS__) ); \
+                        __( addretflagL0(__VA_ARGS__) ); \
                         global $AllReturnLists;\
                         $theKey="vim ".getfile." +".getline;\
                         $AllReturnLists[$theKey]=$TheReturnStateList;\
-                        debnl(getalist($otherlevelsRFZAHJ, dend) , $funcnameRFZAHJ.":done:isGood(".retValue($TheReturnStateList).")===".isGood($TheReturnStateList));\
+                        debnl(getalist($otherlevelsRFZAHJ, dend) , $funcnameRFZAHJ.":done:ynIsGood(".retValue($TheReturnStateList).")===".ynIsGood($TheReturnStateList));\
                         return $TheReturnStateList; \
                 }/*}}}*/
 
@@ -323,18 +333,12 @@ ynfunc &funcdef \
                 endnow(__VA_ARGS__) \
         }/*}}}*/
 
-boolfunc boolIsReturnStateList($var)
-{
-        if (TRUE===is_array($var) && yes===isValue_InList(kReturnStateList_type, $var)) {
-                return TRUE;
-        } else {
-                return FALSE;
-        }
-}
+#define isReturnStateList(_flag) \
+        (is_array(_flag) && isValue_InList(kReturnStateList_type, _flag))
 
-//never do if (isGood($var)) => always true, instead do _ynif ($var)  OR if (yes===isGood($var))
-//careful with _ynif (isGood(x) && isGood(y))  always is true, try instead _ynif (isGood(x)===yes && isGood(y)===yes)
-ynfunc isGood($var,$allowemptystr=no)
+//never do if (ynIsGood($var)) => always true, instead do _ynif ($var)  OR if (yes===ynIsGood($var))
+//careful with _ynif (ynIsGood(x) && ynIsGood(y))  it is always true, try instead _if (ynIsGood(x)===yes && ynIsGood(y)===yes)
+ynfunc ynIsGood($var,$allowemptystr=no)
 {
         if (TRUE===is_null($var)) {
                 return no;
@@ -348,20 +352,19 @@ ynfunc isGood($var,$allowemptystr=no)
         }
 //eof
 
-
         if (TRUE===is_string($var) || TRUE===is_array($var)) {
                 if ((yes===$allowemptystr) || ( FALSE===empty($var) )) { //non empty
-                        if ( TRUE===boolIsReturnStateList($var) ) {
+                        if ( isReturnStateList($var) ) {
                                 global $AllReturnLists;
                                 //print_r($var);
-                                _yntIF(yes===isValue_InList(yes,$var) && yes===isValue_InList(no, $var) );//both yes and no present, bug!
-                                _ynif (isValue_InList(yes, $var)) {
+                                _tIF(isValue_InList(yes,$var) && isValue_InList(no, $var) );//both yes and no present, bug!
+                                _if (isValue_InList(yes, $var)) {
                                         return yes;
-                                } else { 
-                                        _ynif (isValue_InList(no, $var)) {
+                                } else {
+                                        _if (isValue_InList(no, $var)) {
                                                 return no;
                                         }
-                                        _yntIF("invalid kReturnStateList_type! neither yes, nor no");
+                                        throw_exception("invalid kReturnStateList_type! neither yes, nor no");
                                 }
                         }
                         return yes; //a non kReturnStateList_type
@@ -380,12 +383,7 @@ ynfunc isGood($var,$allowemptystr=no)
         }
 
         return yes; //any other object
-} //func
-
-ynfunc isNotGood($var,$allowemptystr=no)
-{
-        return (yes===isGood($var,$allowemptystr)?no:yes);
-}
+} //funcL0
 
 
 
@@ -401,8 +399,8 @@ procedure rdef($what)
         ++$maxDifferentReturnItems;
 }
 
-define(kReturnStateList_type,"kReturnStateList_type"/*this array is a ReturnStateList type; this element is a way for isGood() to determine that"*/);
-//this is the kind that flags the return array from the function so that isGoods know it's a return value instead of a normal array returned by ie. fetchAll()
+define(kReturnStateList_type,"kReturnStateList_type"/*this array is a ReturnStateList type; this element is a way for ynIsGood() to determine that"*/);
+//this is the kind that flags the return array from the function so that ynIsGood knows it's a return value instead of a normal array returned by ie. fetchAll()
 
 //define kConsts aka return types here:
 rdef(kAlready);
@@ -410,6 +408,7 @@ rdef(kAdded);
 rdef(kCreatedDBNodeNames);
 rdef(kCreatedDBRelations);
 rdef(kEmpty);
+rdef(kOneElement);//one element detected, expected list; but it's ok even this way, we made that element into an one element list
 
 
 // vim: fdm=marker

@@ -2,6 +2,7 @@
 syn case match
 
 syn keyword phpException	__ _yntIF _yntIFnot _tIF _tIFnot _TRY _ifnot exit deb _if beginprogram endprogram _ynif _ynifnot
+syn keyword phpException	_ynifL0
 syn match   phpException    /\<d[_a-z0-9]\+[_a-z0-9]*/
 
 syn keyword phpBoolean		yes no ok bad __VA_ARGS__ __construct __destruct
@@ -25,9 +26,9 @@ hi phpIdentifier ctermfg=yellow
 hi Type ctermfg=lightgreen
 hi Repeat ctermfg=blue
 
-syn keyword phpDefine func getalist endnow endfunc prependtolist quitmsg dropmsg nl nocol greencol redcol getline getfile tab
-syn keyword phpDefine purplecol except throw_exception bluecol retflag adef rdef isflag isValue_InList keepflags 
-syn keyword phpDefine funcl1 endfuncl1 addretflagl1 delretflagl1 setretflagl1 countretflags endnowl1 boolfunc ynfunc procedure
+syn keyword phpDefine funcL0 getalist endnow endfunc appendtolist quitmsg dropmsg nl nocol greencol redcol getline getfile tab
+syn keyword phpDefine purplecol except throw_exception bluecol addretflagL0 adef rdef isflag isValue_InList keepflagsL0 
+syn keyword phpDefine funcl1 endfuncl1 addretflagL1 delretflagl1 setretflagl1 countretflags endnowl1 boolfunc ynboolfunc ynfunc procedure isReturnStateList ynIsNotGood
 "syn match phpCoreConstant     /\<T[A-Z0-9]\+[_A-Za-z0-9]*/
 "hi phpCoreConstant ctermfg=6
 syn match phpCoreConstant     /\<[_a-zA-Z]*L[0-9]\+/

@@ -69,7 +69,7 @@ class dmlL0
                 return $this->valquote($whattable);
         }/*}}}*/
 
-        func (__construct(), dconstr)/*{{{*/
+        funcL0 (__construct(), dconstr)/*{{{*/
         {
                 // create a SQLite3 database file with PDO and return a database handle (Object Oriented)
                 __( $this->fDBHandle = new PDO('sqlite:'.dbasename,''/*user*/,''/*pwd*/,
@@ -101,12 +101,12 @@ class dmlL0
                 //---------
         }endfunc(yes)/*}}}*/
 
-        func (__destruct(), ddestr)/*{{{*/
+        funcL0 (__destruct(), ddestr)/*{{{*/
         {
                 $fDBHandle=null;
         }endfunc(yes)/*}}}*/
 
-        func (CreateDB(),dcrea)/*{{{*/
+        funcL0 (CreateDB(),dcrea)/*{{{*/
         {
 
                 $sqlNodeNames = 'CREATE TABLE '.$this->qNodeNames.
@@ -121,76 +121,76 @@ class dmlL0
                 _ynif ( $res= $this->fDBHandle->exec($sqlNodeNames) ) {
                         _yntIFnot( $this->fDBHandle->exec($sqlNodeNamesIndex12) );
                         _yntIFnot( $this->fDBHandle->exec($sqlNodeNamesIndex21) );
-                        retflag(kCreatedDBNodeNames);
+                        addretflagL0(kCreatedDBNodeNames);
                         $wecommit=yes;
                 }
                 _ynif( $res = $this->fDBHandle->exec($sqlRelations) ) {
-                        retflag(kCreatedDBRelations);
+                        addretflagL0(kCreatedDBRelations);
                         $wecommit=yes;
                 }
 
                 _ynif ($wecommit) { //at least one dbase was created, the other one could already exist perhaps.
                         _yntIFnot( $this->CloseTransaction() );
-                        retflag(ok);
+                        addretflagL0(ok);
                 }else{
                         _yntIFnot( $this->AbortTransaction() );
-                        retflag(bad);
+                        addretflagL0(bad);
                 }
         } endfunc()/*}}}*/
 
 //------------------------ transactions/*{{{*/
-        func (OpenTransaction(), dbegtr) //only one active transaction at a time; PDO limitation?!/*{{{*/
+        funcL0 (OpenTransaction(), dbegtr) //only one active transaction at a time; PDO limitation?!/*{{{*/
         {
                 _yntIFnot( $this->fDBHandle->beginTransaction() );
         }endfunc(ok)/*}}}*/
 
-        func (CloseTransaction(),dendtr)/*{{{*/
+        funcL0 (CloseTransaction(),dendtr)/*{{{*/
         {
                 _yntIFnot( $this->fDBHandle->commit() );
         }endfunc(ok)/*}}}*/
 
-        func (AbortTransaction(), dabtr)/*{{{*/
+        funcL0 (AbortTransaction(), dabtr)/*{{{*/
         {
                 _yntIFnot( $this->fDBHandle->rollBack() );
         }endfunc(ok)/*}}}*/
 //------------------------/*}}}*/
 
 
-        func (IsID($id), dis)/*{{{*/
+        funcL0 (IsID($id), dis)/*{{{*/
         {
-                _yntIF(isNotGood($id));
+                _yntIF(ynIsNotGood($id));
                 __( $exists=$this->GetName($name,$id) );
-                _yntIF(yes===isGood($exists) && yes===isNotGood($name) );
+                _yntIF(yes===ynIsGood($exists) && yes===ynIsNotGood($name) );
                 //print_r($exists);
         }endfunc($exists)/*}}}*/
 
-        func (GetName(&$name,$id),dget)// returns Name by ID /*{{{*/
+        funcL0 (GetName(&$name,$id),dget)// returns Name by ID /*{{{*/
         {
-                _yntIFnot(isGood($id));
+                _yntIFnot(ynIsGood($id));
                 $this->fParamNodeID = $id;
                 _yntIFnot( $this->fPrepGetNodeName->execute() );
                 __( $ar=$this->fPrepGetNodeName->FetchAll() );
                 $name=(string)$ar[dNodeName];
                 if (empty($ar) || empty($name)) {
-                        retflag(no);
+                        addretflagL0(no);
                 }
         }endfunc()/*}}}*/
 
 
-        func (DelID($id), ddel)/*{{{*/
+        funcL0 (DelID($id), ddel)/*{{{*/
         {
-                _yntIF(isNotGood($id));
+                _yntIF(ynIsNotGood($id));
                 $this->fParamNodeID = $id;
                 _yntIFnot( $this->fPrepDelID->execute() );
         }endfunc(ok)/*}}}*/
 
-        func (Show(&$result),dshow)//temp/*{{{*/
+        funcL0 (Show(&$result),dshow)//temp/*{{{*/
         {
                 $sqlGetView = 'SELECT * FROM '.$this->qNodeNames;
                 _yntIFnot( $result=$this->fDBHandle->query($sqlGetView) );
         }endfunc(ok)/*}}}*/
 //------------------------
-        func (SetRelation($parentName, $childName))/*{{{*/
+        funcL0 (SetRelation($parentName, $childName))/*{{{*/
         {
         }endfunc(ok)/*}}}*/
 //------------------------

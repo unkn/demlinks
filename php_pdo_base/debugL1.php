@@ -44,7 +44,7 @@ if (!is_a($debugL1,"dmlphpL1")) {
 define(kAllFunctions,"kAllFunctions");
 define(kAllReturns,"kAllReturns");
 
-#define addretflagl1(...) \
+#define addretflagL1(...) \
         _yntIFnot( $debugL1->AppendToParent_Children($TheReturnOfThisTime_forThisFunction, array(__VA_ARGS__) ) );
 
 #define delretflagl1(...) \
@@ -71,7 +71,7 @@ define(kAllReturns,"kAllReturns");
                 _yntIFnot( $debugL1->AddRel($returnIDForThisFunction, $TheReturnOfThisTime_forThisFunction) );
 
 #define endnowl1(...) \
-                addretflagl1(__VA_ARGS__); \
+                addretflagL1(__VA_ARGS__); \
                 _yntIFnot( $debugL1->GetOfParent_AllChildren($TheReturnOfThisTime_forThisFunction, $tmpASKD) );/*must have at least one return flag*/ \
                 return $TheReturnOfThisTime_forThisFunction;
 
@@ -86,7 +86,7 @@ function isValidReturn($val)
         //find parent $X for the child $val, where $X has the parent kAllReturns
         //in other words: kAllReturns -> $X -> $val    ... find $X, if any
         //but, what we do wanna know is whether $val is a child of kAllReturns, thus it would be a valid return from a function
-        _ynif (yes===isGood($debugL1->TestElementInvariants($val)) && yes===isGood($debugL1->GetOfChild_AllParents($val, $parents))) {
+        _ynif (yes===ynIsGood($debugL1->TestElementInvariants($val)) && yes===ynIsGood($debugL1->GetOfChild_AllParents($val, $parents))) {
                 foreach ($parents as $p) {
                         _ynif ($debugL1->GetOfChild_AllParents($p, $parentsofP) ) {
                                 foreach ($parentsofP as $pp) {

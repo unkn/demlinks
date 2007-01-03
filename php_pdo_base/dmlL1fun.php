@@ -48,7 +48,7 @@ class dmlL1 extends dmlL0
         private $sqlNewNode;
         private $fPrepNewNode;//prepared statement handler
 
-        func (__construct(), dconstr)/*{{{*/
+        funcL0 (__construct(), dconstr)/*{{{*/
         {
                 __( parent::__construct() );
                 //--------- get ID by Name
@@ -64,54 +64,54 @@ class dmlL1 extends dmlL0
 
         }endfunc(yes)/*}}}*/
 
-        func (__destruct(), ddestr)/*{{{*/
+        funcL0 (__destruct(), ddestr)/*{{{*/
         {
                 __( parent::__destruct() );
         }endfunc(yes)/*}}}*/
 
-        func (AddName($nodename),dadd)/*{{{*/
+        funcL0 (AddName($nodename),dadd)/*{{{*/
         {
-                _yntIFnot( isGood($nodename) );//must not be empty or so; if it is then maybe's a bug outside this func provided user shall never call this func with an empty param value
+                _yntIFnot( ynIsGood($nodename) );//must not be empty or so; if it is then maybe's a bug outside this funcL0 provided user shall never call this funcL0 with an empty param value
                 _ynifnot ($this->GetID($id,$nodename)) {
                         deb(ddbadd,"attempting physical addition: ".$nodename);
                         $this->fParamNodeName=$nodename;
                         _yntIFnot( $this->fPrepNewNode->execute() );//error here? it probably already exists! error in GetID maybe
                         deb(ddbadd,greencol."succeded".nocol." physical addition: ".$nodename);
-                        retflag(kAdded);
+                        addretflagL0(kAdded);
                 } else {
-                        retflag(kAlready);
+                        addretflagL0(kAlready);
                 }//fielse
         }endfunc(ok)/*}}}*/
 
-        func (GetID(&$id,$nodename),dget)// returns ID by Name /*{{{*/
+        funcL0 (GetID(&$id,$nodename),dget)// returns ID by Name /*{{{*/
         {
-                _yntIFnot($nodename);//_yntIFnot() uses isGood($nodename) to evaluate the params instead of plain 'if'
+                _yntIFnot($nodename);//_yntIFnot() uses ynIsGood($nodename) to evaluate the params instead of plain 'if'
                 $this->fParamNodeName = $nodename;
                 _ynif ( $this->fPrepGetNodeID->execute() ) {
                         _ynif( $ar=$this->fPrepGetNodeID->FetchAll() ) {
                                 $id=(string)$ar[0][dNodeID];
-                                retflag(yes);
+                                addretflagL0(yes);
                         } else {
-                                retflag(no,kEmpty);
+                                addretflagL0(no,kEmpty);
                         }
                 } else {
                         //$id='';
-                        retflag(no);
+                        addretflagL0(no);
                 }
         }endfunc()/*}}}*/
 
-        func (IsName($nodename), dis)/*{{{*/
+        funcL0 (IsName($nodename), dis)/*{{{*/
         {
                 _yntIFnot($nodename);
                 _ynif( $this->GetID($id,$nodename) ) {
-                        _yntIF( isNotGood($id) );
+                        _yntIF( ynIsNotGood($id) );
                         endnow(yes);
                 }
         }endfunc(no)/*}}}*/
 
-        func (DelName($nodename), ddel)/*{{{*/
+        funcL0 (DelName($nodename), ddel)/*{{{*/
         {
-                _yntIF(isNotGood($nodename));
+                _yntIF(ynIsNotGood($nodename));
                 _ynif ($this->GetID($id,$nodename)) {
                         _yntIFnot( $this->DelID($id) );
                 }
