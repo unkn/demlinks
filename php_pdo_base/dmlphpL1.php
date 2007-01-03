@@ -33,7 +33,7 @@
 
 
 #include "shortdef.php"
-#include "debug.php"
+#include "debugL0.php"
 #include "color.php"
 #include "dmlphpL0.php"
 
@@ -53,34 +53,34 @@ class dmlphpL1 extends dmlphpL0 {
 
         func (AddRel($parent,$child), dadd)/*{{{*/
         {//a relation will only exist once
-                _tIFnot($this->TestElementInvariants($parent));
-                _tIFnot($this->TestElementInvariants($child));
+                _yntIFnot($this->TestElementInvariants($parent));
+                _yntIFnot($this->TestElementInvariants($child));
                 //well, no transaction... too bad
-                _tIFnot( $ar=$this->addChild($parent, $child) );
+                _yntIFnot( $ar=$this->addChild($parent, $child) );
                 keepflags($ar);
-                _tIFnot( $ar=$this->addParent($child, $parent) );
+                _yntIFnot( $ar=$this->addParent($child, $parent) );
                 keepflags($ar);
         }endfunc()/*}}}*/
 
         func (DelRel($parent,$child), dset)/*{{{*/
         {
-                _tIFnot($this->TestElementInvariants($parent));
-                _tIFnot($this->TestElementInvariants($child));
-                /*_ifnot ($this->IsRel($parent,$child) ) {
+                _yntIFnot($this->TestElementInvariants($parent));
+                _yntIFnot($this->TestElementInvariants($child));
+                /*_ynifnot ($this->IsRel($parent,$child) ) {
                         endnow(yes, kAlready);
                 }*/
                 //well, no transaction... too bad
-                _tIFnot( $ar=$this->delChild($parent, $child) );
+                _yntIFnot( $ar=$this->delChild($parent, $child) );
                 keepflags($ar);
-                _tIFnot( $ar=$this->delParentFromChild($parent, $child) );
+                _yntIFnot( $ar=$this->delParentFromChild($parent, $child) );
                 keepflags($ar);
         }endfunc()/*}}}*/
 
         func (IsRel($parent,$child), dis)/*{{{*/
         {
-                _tIFnot($this->TestElementInvariants($parent));
-                _tIFnot($this->TestElementInvariants($child));
-                _if( TRUE===is_array(kChildrenOf[$parent]) && TRUE===in_array($child, kChildrenOf[$parent])) {
+                _yntIFnot($this->TestElementInvariants($parent));
+                _yntIFnot($this->TestElementInvariants($child));
+                _ynif( TRUE===is_array(kChildrenOf[$parent]) && TRUE===in_array($child, kChildrenOf[$parent])) {
                         retflag(yes);
                 } else {
                         retflag(no);
@@ -89,49 +89,49 @@ class dmlphpL1 extends dmlphpL0 {
 
         func (SetOfParent_Children($parent,$children), dset)/*{{{*/
         {//overwrites all children
-                _tIFnot($this->TestElementInvariants($parent));
+                _yntIFnot($this->TestElementInvariants($parent));
 
-                _tIFnot( $this->DelAllChildrenOf($parent) );
-                _tIFnot( $this->AppendToParent_Children($parent, $children) );
+                _yntIFnot( $this->DelAllChildrenOf($parent) );
+                _yntIFnot( $this->AppendToParent_Children($parent, $children) );
         }endfunc(yes)/*}}}*/
 
         func (AppendToParent_Children($parent,$children), dadd)/*{{{*/
         {//addition
-                _tIFnot($this->TestElementInvariants($parent));
-                _ifnot( is_array($children) ) {
+                _yntIFnot($this->TestElementInvariants($parent));
+                _ynifnot( is_array($children) ) {
                         $children=array($children);
                 }
                 foreach ($children as $child) {
-                        _tIFnot( $this->AddRel($parent, $child) );
+                        _yntIFnot( $this->AddRel($parent, $child) );
                 }
         }endfunc(yes)/*}}}*/
 
         func (DeleteFromParent_Children($parent,$children), dadd)/*{{{*/
         {//substraction
-                _tIFnot($this->TestElementInvariants($parent));
-                _ifnot( is_array($children) ) {
+                _yntIFnot($this->TestElementInvariants($parent));
+                _ynifnot( is_array($children) ) {
                         $children=array($children);
                 }
                 foreach ($children as $child) {
-                        _tIFnot( $this->DelRel($parent, $child) );
+                        _yntIFnot( $this->DelRel($parent, $child) );
                 }
         }endfunc(yes)/*}}}*/
 
         func (GetCountOfChildren_OfParent(&$count,$parent), dget)/*{{{*/
         {
-                _tIFnot($this->TestElementInvariants($parent));
-                _tIFnot( ArrayCount(&kChildrenOf[$parent], $count) );
+                _yntIFnot($this->TestElementInvariants($parent));
+                _yntIFnot( ArrayCount(&kChildrenOf[$parent], $count) );
         }endfunc(yes)/*}}}*/
 
         func (GetCountOfParents_OfChild(&$count,$child), dget)/*{{{*/
         {
-                _tIFnot($this->TestElementInvariants($child));
-                _tIFnot( ArrayCount(&kParentsOf[$child], $count) );
+                _yntIFnot($this->TestElementInvariants($child));
+                _yntIFnot( ArrayCount(&kParentsOf[$child], $count) );
         }endfunc(yes)/*}}}*/
 
         func (ShowTreeOfChildrenForParent($parent, $startlevel=0), dshow)/*{{{*/
         {
-                _tIFnot($this->TestElementInvariants($parent));
+                _yntIFnot($this->TestElementInvariants($parent));
                 for ($i=0; $i<$startlevel; $i++) {
                         echo " ";
                 }
@@ -142,16 +142,16 @@ class dmlphpL1 extends dmlphpL0 {
                 }
                 echo " \"$parent\"".nl;
 
-                _if ( $this->GetOfParent_AllChildren($parent,$children) ) {
+                _ynif ( $this->GetOfParent_AllChildren($parent,$children) ) {
                         foreach ($children as $val) {
-                                _tIFnot( $this->ShowTreeOfChildrenForParent($val, 1+$startlevel) );
+                                _yntIFnot( $this->ShowTreeOfChildrenForParent($val, 1+$startlevel) );
                         }
                 }
         }endfunc(yes)/*}}}*/
 
         func (ShowTreeOfParentsForChild($child, $startlevel=0), dshow)/*{{{*/
         {
-                _tIFnot($this->TestElementInvariants($child));
+                _yntIFnot($this->TestElementInvariants($child));
                 for ($i=0; $i<$startlevel; $i++) {
                         echo " ";
                 }
@@ -162,9 +162,9 @@ class dmlphpL1 extends dmlphpL0 {
                 }
                 echo " \"$child\"".nl;
 
-                _if ( $this->GetOfChild_AllParents($child,$parents) ) {
+                _ynif ( $this->GetOfChild_AllParents($child,$parents) ) {
                         foreach ($parents as $val) {
-                                _tIFnot( $this->ShowTreeOfParentsForChild($val, 1+$startlevel) );
+                                _yntIFnot( $this->ShowTreeOfParentsForChild($val, 1+$startlevel) );
                         }
                 }
         }endfunc(yes)/*}}}*/

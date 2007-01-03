@@ -33,12 +33,11 @@
 
 
 #include "shortdef.php"
-#include "debug.php"
 #include "color.php"
 
 func (UniqAppendElemToList($elem,&$list), dadd)/*{{{*/
 {
-        _if (TRUE===is_array(&$list) && TRUE===in_array($elem, &$list, TRUE/*strict type check*/)) {
+        _ynif (TRUE===is_array(&$list) && TRUE===in_array($elem, &$list, TRUE/*strict type check*/)) {
                 retflag(kAlready);
         } else { //attempting to append
                 $list[]=$elem;//auto numbered index, appending to end
@@ -48,7 +47,7 @@ func (UniqAppendElemToList($elem,&$list), dadd)/*{{{*/
 
 func (ArrayCount(&$list, &$count), dadd)/*{{{*/
 {
-        _if (TRUE===is_array(&$list)) {
+        _ynif (TRUE===is_array(&$list)) {
                 $count=count(&$list);
         } else { //attempting to append
                 $count=0;
@@ -57,7 +56,7 @@ func (ArrayCount(&$list, &$count), dadd)/*{{{*/
 
 func (DelElemFromList($elem,&$list), dadd)/*{{{*/
 {
-        _if (TRUE===is_array(&$list) && $key=array_search($elem, &$list, TRUE) ) {
+        _ynif (TRUE===is_array(&$list) && $key=array_search($elem, &$list, TRUE) ) {
                         unset($list[$key]);
                         retflag(kDeleted);
         } else {
@@ -88,7 +87,7 @@ class dmlphpL0 {
                                 return $this->AllElements[dChildren];
                         }
                 }
-                _tIF("must choose one of dParents, dChildren; you chose: !".$type."!");
+                _yntIF("must choose one of dParents, dChildren; you chose: !".$type."!");
         }*/
 
         func (TestElementInvariants(&$elem) ,dtest)
@@ -106,42 +105,43 @@ class dmlphpL0 {
                 $this->AllElements=null;//i wonder if this destroys recursively; common sense tells me yes
         }endfunc(ok)/*}}}*/
 
+//TODO: we would add a next level to be able to add dup elements into a list; the list will hold transparent(to the level of dup elements) unique elements that point to the real elements, thus we got dup elements build on unique elements...
 
         protected func (addChild($parent,$child), dadd)/*{{{*/
-        {
-                _tIFnot($this->TestElementInvariants($parent));
-                _tIFnot($this->TestElementInvariants($child));
-                _tIFnot( $ar=UniqAppendElemToList($child, kChildrenOf[$parent]/* returnArray(dChildren)[$parent]*/ ) );
+        {//let me make smth str8: $parent and $child are ID names similar to pointer value of some pointer, not the actual data but the pointer to the data; these IDs are names/descriptions but they really are pointers; remember that the data is(are) rather irrelevant, the relations(/-ships) within the data are the relevant ones
+                _yntIFnot($this->TestElementInvariants($parent));
+                _yntIFnot($this->TestElementInvariants($child));
+                _yntIFnot( $ar=UniqAppendElemToList($child, kChildrenOf[$parent]/* returnArray(dChildren)[$parent]*/ ) );
                 keepflags($ar);
         }endfunc()/*}}}*/
 
         protected func (addParent($child,$parent), dadd)/*{{{*/
         {
-                _tIFnot($this->TestElementInvariants($parent));
-                _tIFnot($this->TestElementInvariants($child));
-                _tIFnot( $ar=UniqAppendElemToList($parent, kParentsOf[$child]) );
+                _yntIFnot($this->TestElementInvariants($parent));
+                _yntIFnot($this->TestElementInvariants($child));
+                _yntIFnot( $ar=UniqAppendElemToList($parent, kParentsOf[$child]) );
                 keepflags($ar);
         }endfunc()/*}}}*/
 
         protected func (delChild($parent,$child), ddel)/*{{{*/
         {
-                _tIFnot($this->TestElementInvariants($parent));
-                _tIFnot($this->TestElementInvariants($child));
-                _tIFnot( $ar=DelElemFromList($child, kChildrenOf[$parent] ) );
+                _yntIFnot($this->TestElementInvariants($parent));
+                _yntIFnot($this->TestElementInvariants($child));
+                _yntIFnot( $ar=DelElemFromList($child, kChildrenOf[$parent] ) );
                 keepflags($ar);
         }endfunc()/*}}}*/
 
         protected func (delParentFromChild($parent,$child), ddel)/*{{{*/
         {
-                _tIFnot($this->TestElementInvariants($parent));
-                _tIFnot($this->TestElementInvariants($child));
-                _tIFnot( $ar=DelElemFromList($parent, kParentsOf[$child] ) );
+                _yntIFnot($this->TestElementInvariants($parent));
+                _yntIFnot($this->TestElementInvariants($child));
+                _yntIFnot( $ar=DelElemFromList($parent, kParentsOf[$child] ) );
                 keepflags($ar);
         }endfunc()/*}}}*/
 
         func (GetOfParent_AllChildren($parent,&$children), dget)/*{{{*/
         {
-                _tIFnot($this->TestElementInvariants($parent));
+                _yntIFnot($this->TestElementInvariants($parent));
                 if (!is_array($parent)) {
                         $children=kChildrenOf[$parent];
                         if (is_array($children)) {
@@ -152,12 +152,12 @@ class dmlphpL0 {
 
         func (DelAllChildrenOf($parent), ddel)/*{{{*/
         {
-                _tIFnot($this->TestElementInvariants($parent));
+                _yntIFnot($this->TestElementInvariants($parent));
                 $children=&kChildrenOf[$parent];// get all children of the $parent
                 if (is_array($children)) {
                         foreach ($children as $child) {
                                 // del all $parent from these $children
-                                _tIFnot( $this->delParentFromChild($parent, $child) );
+                                _yntIFnot( $this->delParentFromChild($parent, $child) );
                         }
                         $children=null;//empty the array of children of the $parent
                 }
@@ -165,7 +165,7 @@ class dmlphpL0 {
 
         func (GetOfChild_AllParents($child,&$parents), dget)/*{{{*/
         {
-                _tIFnot($this->TestElementInvariants($child));
+                _yntIFnot($this->TestElementInvariants($child));
                 if (!is_array($child)) {
                         $parents=kParentsOf[$child];
                         if (is_array($parents)) {
@@ -176,12 +176,12 @@ class dmlphpL0 {
 
         func (DelAllParents($child), ddel)/*{{{*/
         {
-                _tIFnot($this->TestElementInvariants($child));
+                _yntIFnot($this->TestElementInvariants($child));
                 $parents=&kParentsOf[$child];
                 if (is_array($parents)) {
                         foreach ($parents as $parent) {
                                 // del all $parent from these $children
-                                _tIFnot( $this->delChild($parent, $child) );
+                                _yntIFnot( $this->delChild($parent, $child) );
                         }
                         $parents=null;//empty the array of children of the $parent
                 }

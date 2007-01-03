@@ -92,7 +92,7 @@ dseton(dcrea);
 //dseton(dconstr);
 //dseton(ddestr);
 //dseton(ddbadd);
-dseton(dtestcrit);
+//dseton(dtestcrit);
 
 function dseton($what)
 {
@@ -107,7 +107,7 @@ for ($i=debugstartfrom; $i <= $maxdebuglevel; $i++) {
 #endif
 
 
-//now the line numbers match with those reported on error(s) when using __() and _tIF()
+//now the line numbers match with those reported on error(s) when using __() and _yntIF()
 
 #define getline browncol.__LINE__.nocol
 #define getfile browncol.__FILE__.nocol
@@ -130,7 +130,7 @@ for ($i=debugstartfrom; $i <= $maxdebuglevel; $i++) {
 #define dropmsg(_a) \
                 nl.greencol."vim ".getfile." +".getline.nl.tab.purplecol._a.nocol.nl
 
-#define _TRY(thiscode, ... /*exec_this_if_fail*/) \
+#define _TRY(thiscode, ... /*exec_this_ynif_fail*/) \
                 {\
                         try { \
                                 thiscode; \
@@ -146,30 +146,54 @@ for ($i=debugstartfrom; $i <= $maxdebuglevel; $i++) {
                         _TRY(thiscode, except(quitmsg) ) \
                 }
 
-//FIXME: try to catch "PHP Fatal error: " too!
+//FIXME: try to catch "PHP Fatal error: " too! this is obv. unlikely to happen
 
 #define _tIFnot(__a) \
                 { \
-                        _ifnot( isGood(__a) ) { \
+                        _ifnot( __a ) { \
                                 except( dropmsg("_tIFnot( ".#__a." )") ) \
                         } \
                 }
 
 #define _tIF(__a) \
                 { \
-                        _if( isGood(__a) ) { \
+                        _if( __a ) { \
                                 except( dropmsg("_tIF( ".#__a." )") ) \
+                        } \
+                }
+
+#define _yntIFnot(__a) \
+                { \
+                        _ynifnot( __a ) { \
+                                except( dropmsg("_yntIFnot( ".#__a." )") ) \
+                        } \
+                }
+
+#define _yntIF(__a) \
+                { \
+                        _ynif( __a ) { \
+                                except( dropmsg("_yntIF( ".#__a." )") ) \
                         } \
                 }
 
 //boolfunc is a function that returns something, usually anything that can be tested by isGood() but mostly by convention just yes or no  || ok or bad (same thing)
 #define _if(boolfunc) \
-                __( $_this_var_accessible_in_caller = boolfunc ); \
-                if (yes===isGood($_this_var_accessible_in_caller))
+                __( $_bool_this_var_accessible_in_caller = boolfunc ); \
+                if ($_bool_this_var_accessible_in_caller)
 
 #define _ifnot(boolfunc) \
-                __( $_this_var_accessible_in_caller = boolfunc ); \
-                if (no===isGood($_this_var_accessible_in_caller))
+                __( $_bool_this_var_accessible_in_caller = boolfunc ); \
+                if ($_bool_this_var_accessible_in_caller)
+
+#define _ynif(boolfunc) \
+                __( $_bool_this_var_accessible_in_caller = boolfunc ); \
+                __( $_yn_this_var_accessible_in_caller = yes===isGood($_bool_this_var_accessible_in_caller) ); \
+                if (TRUE===$_yn_this_var_accessible_in_caller)
+
+#define _ynifnot(boolfunc) \
+                __( $_bool_this_var_accessible_in_caller = boolfunc ); \
+                __( $_yn_this_var_accessible_in_caller = yes===isGood($_bool_this_var_accessible_in_caller) ); \
+                if (FALSE===$_yn_this_var_accessible_in_caller)
 
 #define beginprogram \
                 try { \
@@ -211,13 +235,13 @@ for ($i=debugstartfrom; $i <= $maxdebuglevel; $i++) {
 function array_append_unique_values(&$towhatarray, $listofvalues)/*{{{*/
 //all values are copied, not referenced! because, in my view, references are too subtle in php to be used consistently
 {
-        _tIFnot(is_array($towhatarray));
-        _tIFnot(is_array($listofvalues));
+        _yntIFnot(is_array($towhatarray));
+        _yntIFnot(is_array($listofvalues));
         foreach ( $listofvalues as $val ) {
                 //print_r($val);
                 if (no!=$val) {
                         //print_r($val);
-                        _tIF(isNotGood($val));
+                        _yntIF(isNotGood($val));
                 }
                 if (! in_array($val, $towhatarray) ) {
                         $towhatarray[]=$val;
@@ -239,7 +263,7 @@ function array_append_unique_values(&$towhatarray, $listofvalues)/*{{{*/
 #define keepflags(var) \
 { \
         $RSL_var=&var; \
-        _tIFnot( TRUE===boolIsReturnStateList(&$RSL_var) ); \
+        _yntIFnot( TRUE===boolIsReturnStateList(&$RSL_var) ); \
         foreach ($RSL_var as $val) { \
                 if (kReturnStateList_type!==$val) { \
                         retflag($val); \
@@ -302,8 +326,8 @@ function boolIsReturnStateList($var)
         }
 }
 
-//never do if (isGood($var)) => always true, instead do _if ($var)  OR if (yes===isGood($var))
-//careful with _if (isGood(x) && isGood(y))  always is true, try instead _if (isGood(x)===yes && isGood(y)===yes)
+//never do if (isGood($var)) => always true, instead do _ynif ($var)  OR if (yes===isGood($var))
+//careful with _ynif (isGood(x) && isGood(y))  always is true, try instead _ynif (isGood(x)===yes && isGood(y)===yes)
 function isGood($var,$allowemptystr=no)
 {
         if (TRUE===is_null($var)) {
@@ -324,14 +348,14 @@ function isGood($var,$allowemptystr=no)
                         if ( TRUE===boolIsReturnStateList($var) ) {
                                 global $AllReturnLists;
                                 //print_r($var);
-                                _tIF(yes===isvalue(yes,$var) && yes===isvalue(no, $var) );//both yes and no present, bug!
-                                _if (isvalue(yes, $var)) {
+                                _yntIF(yes===isvalue(yes,$var) && yes===isvalue(no, $var) );//both yes and no present, bug!
+                                _ynif (isvalue(yes, $var)) {
                                         return yes;
                                 } else { 
-                                        _if (isvalue(no, $var)) {
+                                        _ynif (isvalue(no, $var)) {
                                                 return no;
                                         }
-                                        _tIF("invalid kReturnStateList_type! neither yes, nor no");
+                                        _yntIF("invalid kReturnStateList_type! neither yes, nor no");
                                 }
                         }
                         return yes; //a non kReturnStateList_type

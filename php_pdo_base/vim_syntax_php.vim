@@ -1,7 +1,7 @@
 " added on 19-20 December 2006 by AtKaaZ for demlinks
 syn case match
 
-syn keyword phpException	__ _tIF _tIFnot _TRY _ifnot exit deb _if beginprogram endprogram
+syn keyword phpException	__ _yntIF _yntIFnot _tIF _tIFnot _TRY _ifnot exit deb _if beginprogram endprogram _ynif _ynifnot
 syn match   phpException    /\<d[_a-z0-9]\+[_a-z0-9]*/
 
 syn keyword phpBoolean		yes no ok bad __VA_ARGS__ __construct __destruct
@@ -26,7 +26,7 @@ hi Type ctermfg=lightgreen
 hi Repeat ctermfg=blue
 
 syn keyword phpDefine func getalist endnow endfunc prependtolist quitmsg dropmsg nl nocol greencol redcol getline getfile tab
-syn keyword phpDefine purplecol except throw_exception bluecol retflag adef rdef isflag isvalue keepflags funcl1 endfuncl1 addretflagl1 delretflagl1 setretflagl1 countretflags numretflags endnowl1
+syn keyword phpDefine purplecol except throw_exception bluecol retflag adef rdef isflag isvalue keepflags funcl1 endfuncl1 addretflagl1 delretflagl1 setretflagl1 countretflags endnowl1
 "syn match phpCoreConstant     /\<T[A-Z0-9]\+[_A-Za-z0-9]*/
 "hi phpCoreConstant ctermfg=6
 syn match phpCoreConstant     /\<[_a-zA-Z]*L[0-9]\+/

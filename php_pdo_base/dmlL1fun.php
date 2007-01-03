@@ -33,7 +33,7 @@
 
 
 #include "shortdef.php"
-#include "debug.php"
+#include "debugL0.php"
 //#include "dmlL0def.php"
 #include "dmlL0fun.php"
 #include "color.php"
@@ -53,13 +53,13 @@ class dmlL1 extends dmlL0
                 __( parent::__construct() );
                 //--------- get ID by Name
                 $this->sqlGetNodeID = 'SELECT '.$this->qNodeID.' FROM '.$this->qNodeNames.' WHERE '.$this->qNodeName.' = '.paramNodeName;
-                _tIFnot( $this->fPrepGetNodeID = $this->fDBHandle->prepare($this->sqlGetNodeID) );
-                _tIFnot( $this->fPrepGetNodeID->bindParam(paramNodeName, $this->fParamNodeName, PDO::PARAM_STR) );
+                _yntIFnot( $this->fPrepGetNodeID = $this->fDBHandle->prepare($this->sqlGetNodeID) );
+                _yntIFnot( $this->fPrepGetNodeID->bindParam(paramNodeName, $this->fParamNodeName, PDO::PARAM_STR) );
                 //---------
                 $this->sqlNewNode = 'INSERT INTO '.$this->qNodeNames.' ('.$this->qNodeName.') VALUES ('.paramNodeName.')';//table name needs to be quoted
 
-                _tIFnot( $this->fPrepNewNode = $this->fDBHandle->prepare($this->sqlNewNode) );//can't prepare unless the table already exists!
-                _tIFnot( $this->fPrepNewNode->bindParam(paramNodeName, $this->fParamNodeName, PDO::PARAM_STR) ); //, PDO::PARAM_INT);
+                _yntIFnot( $this->fPrepNewNode = $this->fDBHandle->prepare($this->sqlNewNode) );//can't prepare unless the table already exists!
+                _yntIFnot( $this->fPrepNewNode->bindParam(paramNodeName, $this->fParamNodeName, PDO::PARAM_STR) ); //, PDO::PARAM_INT);
                 //---------
 
         }endfunc(yes)/*}}}*/
@@ -71,11 +71,11 @@ class dmlL1 extends dmlL0
 
         func (AddName($nodename),dadd)/*{{{*/
         {
-                _tIFnot( isGood($nodename) );//must not be empty or so; if it is then maybe's a bug outside this func provided user shall never call this func with an empty param value
-                _ifnot ($this->GetID($id,$nodename)) {
+                _yntIFnot( isGood($nodename) );//must not be empty or so; if it is then maybe's a bug outside this func provided user shall never call this func with an empty param value
+                _ynifnot ($this->GetID($id,$nodename)) {
                         deb(ddbadd,"attempting physical addition: ".$nodename);
                         $this->fParamNodeName=$nodename;
-                        _tIFnot( $this->fPrepNewNode->execute() );//error here? it probably already exists! error in GetID maybe
+                        _yntIFnot( $this->fPrepNewNode->execute() );//error here? it probably already exists! error in GetID maybe
                         deb(ddbadd,greencol."succeded".nocol." physical addition: ".$nodename);
                         retflag(kAdded);
                 } else {
@@ -85,10 +85,10 @@ class dmlL1 extends dmlL0
 
         func (GetID(&$id,$nodename),dget)// returns ID by Name /*{{{*/
         {
-                _tIFnot($nodename);//_tIFnot() uses isGood($nodename) to evaluate the params instead of plain 'if'
+                _yntIFnot($nodename);//_yntIFnot() uses isGood($nodename) to evaluate the params instead of plain 'if'
                 $this->fParamNodeName = $nodename;
-                _if ( $this->fPrepGetNodeID->execute() ) {
-                        _if( $ar=$this->fPrepGetNodeID->FetchAll() ) {
+                _ynif ( $this->fPrepGetNodeID->execute() ) {
+                        _ynif( $ar=$this->fPrepGetNodeID->FetchAll() ) {
                                 $id=(string)$ar[0][dNodeID];
                                 retflag(yes);
                         } else {
@@ -102,18 +102,18 @@ class dmlL1 extends dmlL0
 
         func (IsName($nodename), dis)/*{{{*/
         {
-                _tIFnot($nodename);
-                _if( $this->GetID($id,$nodename) ) {
-                        _tIF( isNotGood($id) );
+                _yntIFnot($nodename);
+                _ynif( $this->GetID($id,$nodename) ) {
+                        _yntIF( isNotGood($id) );
                         endnow(yes);
                 }
         }endfunc(no)/*}}}*/
 
         func (DelName($nodename), ddel)/*{{{*/
         {
-                _tIF(isNotGood($nodename));
-                _if ($this->GetID($id,$nodename)) {
-                        _tIFnot( $this->DelID($id) );
+                _yntIF(isNotGood($nodename));
+                _ynif ($this->GetID($id,$nodename)) {
+                        _yntIFnot( $this->DelID($id) );
                 }
         }endfunc(ok)/*}}}*/
 

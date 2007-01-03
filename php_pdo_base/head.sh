@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 src="main.php"
 src2="dmlphpL0.php"
 src3="dmlphpL1.php"
@@ -10,7 +10,7 @@ cppparams="-E -x c++"
 phpfile="${prepend}${src}.safety${append}"
 
 
-function cpphp()
+cpphp()
 {
         local src="$1"
         local tmpphpfile="${prepend}${src}.safety${append}"

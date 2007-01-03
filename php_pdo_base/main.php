@@ -28,7 +28,7 @@
 ***************************************************************************}}}*/
 
 #include "shortdef.php"
-#include "debug.php"
+#include "debugL0.php"
 #include "color.php"
 //#include "dmlL1fun.php"
 #include "dmlphpL1.php"
@@ -43,32 +43,32 @@
         //debug_zval_dump($dc);
 
 
-        _if ($dc->fFirstTime) {
+        _ynif ($dc->fFirstTime) {
                 deb(dinfo,"First time run!");
         } else {
                 deb(dinfo,"...using prev. defined table");
         }
  */
-        //_tIFnot( $contents=file_get_contents("/home/emacs/phpnet.php") );
-        __( $res=split("[ .,/\\\"\?\<\>&!;|\#\$\*\+\{\}=\(\)'`\n\-]",file_get_contents("debug.php")) );
-        _tIF(1===count($res));
+        //_yntIFnot( $contents=file_get_contents("/home/emacs/phpnet.php") );
+        __( $res=split("[ .,/\\\"\?\<\>&!;|\#\$\*\+\{\}=\(\)'`\n\-]",file_get_contents("debugL1.php")) );
+        _yntIF(1===count($res));
         $i=2;
         $cnt=0;
         $prevval="";
-//        _tIFnot( $dc->OpenTransaction() );
+//        _yntIFnot( $dc->OpenTransaction() );
         foreach ($res as $val) {
                      $val=trim($val);
-                _if ($val) {//ie. non-empty
+                _ynif ($val) {//ie. non-empty
                         //if ($cnt % 15 == 0) {
                        // }
 
                    //_TRY(
 
-                        _tIFnot( $ret=$dphp->AddRel($prevval, $val) );
+                        _yntIFnot( $ret=$dphp->AddRel($prevval, $val) );
                         $prevval=$val;
-                        //_tIFnot( $ret=$dc->AddName($val) );
-                        //_if (yes===isvalue(kAdded,$ret)) {
-                        _if (no===isvalue(kAlready,$ret)) {
+                        //_yntIFnot( $ret=$dc->AddName($val) );
+                        //_ynif (yes===isvalue(kAdded,$ret)) {
+                        _ynif (no===isvalue(kAlready,$ret)) {
                                 if ($i<6) {
                                         $i++;
                                 } else {
@@ -83,26 +83,26 @@
                         $cnt++;//echo "cnt=".$cnt.nl;
 
                         //if ($cnt % 15 == 0) {
-                                //_tIFnot( $dc->CloseTransaction() );
+                                //_yntIFnot( $dc->CloseTransaction() );
                         //}
 
-                   //, _tIFnot( $dc->AbortTransaction());$aborted=yes ;break );//_TRY
+                   //, _yntIFnot( $dc->AbortTransaction());$aborted=yes ;break );//_TRY
 
                 } //fi
         }
        echo nocol.nl;
 /*        //if ( $cnt % 15 !== 0) { //left it open? if so close it
-                _ifnot($aborted) {
-                        _tIFnot( $dc->CloseTransaction() );
+                _ynifnot($aborted) {
+                        _yntIFnot( $dc->CloseTransaction() );
                 }
         //}
        echo nocol.nl;
 
 
 
-        _tIFnot( $dc->IsName("if") );
+        _yntIFnot( $dc->IsName("if") );
 
-        _tIFnot( $dc->Show($result) );
+        _yntIFnot( $dc->Show($result) );
         __( $arr=$result->fetchAll() );
         $count=count($arr);
         deb(dnormal, "$count times.");
@@ -110,7 +110,7 @@
         _TRY( $dc->DelName("if") );
         __( $dc->IsName("if") );
 
-        _tIFnot( $dc->Show($result) );
+        _yntIFnot( $dc->Show($result) );
         __( $arr=$result->fetchAll() );
         $count=count($arr);
         deb(dnormal, "$count times.");
@@ -120,10 +120,10 @@
  */
         //$arc=array();
         echo redcol.nl;
-        _tIFnot( $dphp->GetOfChild_AllParents("if",$arc) );
+        _yntIFnot( $dphp->GetOfChild_AllParents("if",$arc) );
         echo "Parents of 'if': ".getvalue($arc).nl;
 
-        _tIFnot( $dphp->GetOfParent_AllChildren("if",$arc) );
+        _yntIFnot( $dphp->GetOfParent_AllChildren("if",$arc) );
         echo "Children of 'if': ".getvalue($arc).nl;
 
         __( echo isGood($dphp->IsRel("text","if")).nl );
@@ -131,24 +131,24 @@
         __( echo isGood($dphp->IsRel("if","yes")).nl );
 
         echo greencol.nl;
-        _tIFnot( $dphp->GetOfParent_AllChildren("if",$arc) );
+        _yntIFnot( $dphp->GetOfParent_AllChildren("if",$arc) );
         echo "Children of 'if' after del child 'yes': ".getvalue($arc).nl;
 
         __( echo getvalue($dphp->DelRel("text","if")).nl );echo greencol;
-        _tIFnot( $dphp->GetOfChild_AllParents("if",$arc) );
+        _yntIFnot( $dphp->GetOfChild_AllParents("if",$arc) );
         echo "Parents of 'if' after parent 'text' del: ".getvalue($arc).nl;
 
 
         echo purplecol.nl;
-        _tIFnot( $dphp->GetOfChild_AllParents("not",$arc) );
+        _yntIFnot( $dphp->GetOfChild_AllParents("not",$arc) );
         echo "Parents of 'not': ".getvalue($arc).nl;
 
-        _tIFnot( $dphp->DelAllChildrenOf("if") );
+        _yntIFnot( $dphp->DelAllChildrenOf("if") );
 
         __( $dphp->GetOfParent_AllChildren("if",$arc) );
         echo "Children after del all children of 'if': ".getvalue($arc).nl;
 
-        _tIFnot( $dphp->GetOfChild_AllParents("not",$arc) );
+        _yntIFnot( $dphp->GetOfChild_AllParents("not",$arc) );
         echo "Parents of 'not', not 'if'; after del: ".getvalue($arc).nl;
 
 
@@ -156,10 +156,10 @@
         __( $dphp->GetOfParent_AllChildren("program",$arc) );
         echo "Children of 'program', before del 'if': ".getvalue($arc).nl;
 
-        _tIFnot( $dphp->GetOfChild_AllParents("if",$arc) );
+        _yntIFnot( $dphp->GetOfChild_AllParents("if",$arc) );
         echo "Parents of 'if', before del: ".getvalue($arc).nl;
 
-        _tIFnot( $dphp->DelAllParents("if") );
+        _yntIFnot( $dphp->DelAllParents("if") );
 
         __( $dphp->GetOfChild_AllParents("if",$arc) );
         echo "Parents of 'if', after del: ".getvalue($arc).nl;
@@ -171,6 +171,15 @@
 
         echo nocol.nl;
 
+
+        funcl1 (AnotherFunc,($someparam))
+        {
+                if (is_string($someparam)) {
+                        setretflagl1($someparam);
+                } else {
+                        setretflagl1("not a string");
+                }
+        }endfuncl1("done")
 
         funcl1 (GetName,(&$name, $id))
         {
@@ -187,14 +196,18 @@
                 if ($id==3) {
                         setretflagl1(no);
                 }
-                countretflags;
-                if (numretflags <= 0) {
+                countretflags($numretflags);
+                if ($numretflags <= 0) {
                         setretflagl1("other");
                 }
         }endfuncl1("ReachedEndNormally")
 
+        AnotherFunc("return1");
+        AnotherFunc(1);
+        AnotherFunc(2);
+
         $a="a";
-        _tIFnot( $c=$debugL1->ShowTreeOfParentsForChild( GetName($a,"a") ) );
+        _yntIFnot( $c=$debugL1->ShowTreeOfParentsForChild( GetName($a,"a") ) );
         echo isValidReturn($c);
         print_r( isValidReturn( GetName($a,"b") ));
         echo isValidReturn( GetName($a,"1") );
@@ -202,11 +215,10 @@
         echo isValidReturn( GetName($a,"2") );
         echo isValidReturn( GetName($a,"c") );
         global $debugL1;
-        _tIFnot( $debugL1->ShowTreeOfChildrenForParent(kAllFunctions) );
-        _tIFnot( $debugL1->ShowTreeOfChildrenForParent(kAllReturns) );
-        _tIFnot( $debugL1->ShowTreeOfParentsForChild("a") );
-        _tIFnot( $debugL1->ShowTreeOfParentsForChild(yes) );
-
+        _yntIFnot( $debugL1->ShowTreeOfChildrenForParent(kAllFunctions) );
+        _yntIFnot( $debugL1->ShowTreeOfChildrenForParent(kAllReturns) );
+        _yntIFnot( $debugL1->ShowTreeOfParentsForChild("a") );
+        _yntIFnot( $debugL1->ShowTreeOfParentsForChild(yes) );
 
 
 

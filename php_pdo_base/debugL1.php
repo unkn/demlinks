@@ -34,7 +34,7 @@
 #include "shortdef.php"
 #include "color.php"
 #include "dmlphpL1.php"
-#include "debug.php"
+#include "debugL0.php"
 
 if (!is_a($debugL1,"dmlphpL1")) {
         echo "Initializing dmlphpL1".nl;
@@ -45,18 +45,16 @@ define(kAllFunctions,"kAllFunctions");
 define(kAllReturns,"kAllReturns");
 
 #define addretflagl1(...) \
-        _tIFnot( $debugL1->AppendToParent_Children($TheReturnOfThisTime_forThisFunction, array(__VA_ARGS__) ) );
+        _yntIFnot( $debugL1->AppendToParent_Children($TheReturnOfThisTime_forThisFunction, array(__VA_ARGS__) ) );
 
 #define delretflagl1(...) \
-        _tIFnot( $debugL1->DeleteFromParent_Children($TheReturnOfThisTime_forThisFunction, array(__VA_ARGS__) ) );
+        _yntIFnot( $debugL1->DeleteFromParent_Children($TheReturnOfThisTime_forThisFunction, array(__VA_ARGS__) ) );
 
 #define setretflagl1(...) \
-        _tIFnot( $debugL1->SetOfParent_Children($TheReturnOfThisTime_forThisFunction, array(__VA_ARGS__) ) );
+        _yntIFnot( $debugL1->SetOfParent_Children($TheReturnOfThisTime_forThisFunction, array(__VA_ARGS__) ) );
 
-#define countretflags \
-        _tIFnot( $debugL1->GetCountOfChildren_OfParent($countASADJLKa, $TheReturnOfThisTime_forThisFunction) );
-
-#define numretflags $countASADJLKa
+#define countretflags(_into) \
+        _yntIFnot( $debugL1->GetCountOfChildren_OfParent(_into, $TheReturnOfThisTime_forThisFunction) );
 
 #define funcl1(funcname, funcparams,...) \
         function funcname funcparams \
@@ -64,17 +62,17 @@ define(kAllReturns,"kAllReturns");
                 $funcnameALKSD=#funcname." (vim ".getfile." +".getline.")"; \
                 $returnIDForThisFunction="AllReturnsForFunction: ".$funcnameALKSD; \
                 global $debugL1; \
-                _tIFnot( $debugL1->AddRel(kAllFunctions, $funcnameALKSD) ); \
-                _tIFnot( $debugL1->AddRel(kAllReturns, $returnIDForThisFunction) ); \
-                _tIFnot( $debugL1->AddRel($funcnameALKSD, $returnIDForThisFunction) ); \
-                _tIFnot( $debugL1->GetCountOfChildren_OfParent($TheReturnOfThisTime_forThisFunction, $returnIDForThisFunction) ); \
+                _yntIFnot( $debugL1->AddRel(kAllFunctions, $funcnameALKSD) ); \
+                _yntIFnot( $debugL1->AddRel(kAllReturns, $returnIDForThisFunction) ); \
+                _yntIFnot( $debugL1->AddRel($funcnameALKSD, $returnIDForThisFunction) ); \
+                _yntIFnot( $debugL1->GetCountOfChildren_OfParent($TheReturnOfThisTime_forThisFunction, $returnIDForThisFunction) ); \
                 $TheReturnOfThisTime_forThisFunction++; \
                 $TheReturnOfThisTime_forThisFunction=#funcname.$TheReturnOfThisTime_forThisFunction; \
-                _tIFnot( $debugL1->AddRel($returnIDForThisFunction, $TheReturnOfThisTime_forThisFunction) );
+                _yntIFnot( $debugL1->AddRel($returnIDForThisFunction, $TheReturnOfThisTime_forThisFunction) );
 
 #define endnowl1(...) \
                 addretflagl1(__VA_ARGS__); \
-                _tIFnot( $debugL1->GetOfParent_AllChildren($TheReturnOfThisTime_forThisFunction, $tmpASKD) );/*must have at least one return flag*/ \
+                _yntIFnot( $debugL1->GetOfParent_AllChildren($TheReturnOfThisTime_forThisFunction, $tmpASKD) );/*must have at least one return flag*/ \
                 return $TheReturnOfThisTime_forThisFunction;
 
 #define endfuncl1(...) \
@@ -88,13 +86,13 @@ function isValidReturn($val)
         //find parent $X for the child $val, where $X has the parent kAllReturns
         //in other words: kAllReturns -> $X -> $val    ... find $X, if any
         //but, what we do wanna know is whether $val is a child of kAllReturns, thus it would be a valid return from a function
-        _if (yes===isGood($debugL1->TestElementInvariants($val)) && yes===isGood($debugL1->GetOfChild_AllParents($val, $parents))) {
+        _ynif (yes===isGood($debugL1->TestElementInvariants($val)) && yes===isGood($debugL1->GetOfChild_AllParents($val, $parents))) {
                 foreach ($parents as $p) {
-                        _if ($debugL1->GetOfChild_AllParents($p, $parentsofP) ) {
+                        _ynif ($debugL1->GetOfChild_AllParents($p, $parentsofP) ) {
                                 foreach ($parentsofP as $pp) {
                                         if ($pp === kAllReturns) {
-                                                _tIFnot( $debugL1->GetCountOfChildren_OfParent($count, $val) );
-                                                _tIFnot($count > 0);//bug in the program
+                                                _yntIFnot( $debugL1->GetCountOfChildren_OfParent($count, $val) );
+                                                _yntIFnot($count > 0);//bug in the program
                                                 return TRUE;
                                         }
                                 }
