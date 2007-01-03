@@ -59,7 +59,7 @@ procedure adef($what)
         if (TRUE===defined($what)) {
                 die("already defined $what".nl);
         }
-        define($what,"adef_".++$maxdebuglevel);
+        define($what,"".++$maxdebuglevel);
 }
 
 //defining specific debug levels
