@@ -26,7 +26,8 @@ hi Type ctermfg=lightgreen
 hi Repeat ctermfg=blue
 
 syn keyword phpDefine func getalist endnow endfunc prependtolist quitmsg dropmsg nl nocol greencol redcol getline getfile tab
-syn keyword phpDefine purplecol except throw_exception bluecol retflag adef rdef isflag isValue_InList keepflags funcl1 endfuncl1 addretflagl1 delretflagl1 setretflagl1 countretflags endnowl1
+syn keyword phpDefine purplecol except throw_exception bluecol retflag adef rdef isflag isValue_InList keepflags 
+syn keyword phpDefine funcl1 endfuncl1 addretflagl1 delretflagl1 setretflagl1 countretflags endnowl1 boolfunc ynfunc procedure
 "syn match phpCoreConstant     /\<T[A-Z0-9]\+[_A-Za-z0-9]*/
 "hi phpCoreConstant ctermfg=6
 syn match phpCoreConstant     /\<[_a-zA-Z]*L[0-9]\+/

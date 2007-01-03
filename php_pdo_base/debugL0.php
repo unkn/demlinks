@@ -44,7 +44,12 @@ $maxdebuglevel=0;//don't need to change this
         define(debugstartfrom,1 + $maxdebuglevel);
 #endif
 
-function adef($what)
+
+#define boolfunc function
+#define ynfunc function
+#define procedure function
+
+procedure adef($what)
 {
         global $maxdebuglevel;
         if (TRUE===defined($what)) {
@@ -94,7 +99,7 @@ dseton(dcrea);
 //dseton(ddbadd);
 //dseton(dtestcrit);
 
-function dseton($what)
+procedure dseton($what)
 {
         global $debugar;
         $debugar[$what]=TRUE;
@@ -232,7 +237,7 @@ for ($i=debugstartfrom; $i <= $maxdebuglevel; $i++) {
         #define deb(level,text)
 #endif
 
-function array_append_unique_values(&$towhatarray, $listofvalues)/*{{{*/
+procedure array_append_unique_values(&$towhatarray, $listofvalues)/*{{{*/
 //all values are copied, not referenced! because, in my view, references are too subtle in php to be used consistently
 {
         _yntIFnot(is_array($towhatarray));
@@ -294,8 +299,9 @@ function retValue($var)
 }
 
 //supposed to return either yes or no ONLY!, if u need to return something use a &$var as a parameter
+//actually it returns an array where one of yes or no is present, and other flags,if any,to signal status ie. yes,kAlreadyExists
 #define func(funcdef,...) /*{{{*/ \
-function &funcdef \
+ynfunc &funcdef \
         { \
                 $funcnameRFZAHJ=#funcdef; \
                 $otherlevelsRFZAHJ=array(__VA_ARGS__); \
@@ -317,7 +323,7 @@ function &funcdef \
                 endnow(__VA_ARGS__) \
         }/*}}}*/
 
-function boolIsReturnStateList($var)
+boolfunc boolIsReturnStateList($var)
 {
         if (TRUE===is_array($var) && yes===isValue_InList(kReturnStateList_type, $var)) {
                 return TRUE;
@@ -328,7 +334,7 @@ function boolIsReturnStateList($var)
 
 //never do if (isGood($var)) => always true, instead do _ynif ($var)  OR if (yes===isGood($var))
 //careful with _ynif (isGood(x) && isGood(y))  always is true, try instead _ynif (isGood(x)===yes && isGood(y)===yes)
-function isGood($var,$allowemptystr=no)
+ynfunc isGood($var,$allowemptystr=no)
 {
         if (TRUE===is_null($var)) {
                 return no;
@@ -376,7 +382,7 @@ function isGood($var,$allowemptystr=no)
         return yes; //any other object
 } //func
 
-function isNotGood($var,$allowemptystr=no)
+ynfunc isNotGood($var,$allowemptystr=no)
 {
         return (yes===isGood($var,$allowemptystr)?no:yes);
 }
@@ -385,7 +391,7 @@ function isNotGood($var,$allowemptystr=no)
 
 $maxDifferentReturnItems=0;//don't need to change this
 
-function rdef($what)
+procedure rdef($what)
 {
         global $maxDifferentReturnItems;
         if (TRUE===defined($what)) {
