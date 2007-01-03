@@ -43,6 +43,8 @@ if (!is_a($debugL1,"dmlphpL1")) {
 
 define(kAllFunctions,"kAllFunctions");
 define(kAllReturns,"kAllReturns");
+define(kAllDebugFlags,"kAllDebugFlags");
+define(kSetActedOnce,"kSetActedOnce");//to flag that setretflagL1() was executed once in the current function, thus executing it twice in the same serial_commands :-" is prone to detecting a bug
 
 #define addretflagL1(...) \
         _yntIFnot( $debugL1->AppendToParent_Children($TheReturnOfThisTime_forThisFunction, array(__VA_ARGS__) ) );
@@ -51,12 +53,13 @@ define(kAllReturns,"kAllReturns");
         _yntIFnot( $debugL1->DeleteFromParent_Children($TheReturnOfThisTime_forThisFunction, array(__VA_ARGS__) ) );
 
 #define setretflagL1(...) \
-        _yntIFnot( $debugL1->SetOfParent_Children($TheReturnOfThisTime_forThisFunction, array(__VA_ARGS__) ) );
+        _yntIF( $debugL1->IsRel($TheReturnOfThisTime_forThisFunction, kSetActedOnce ) );/*this Relation can only exist after this call, not before, otherwise this set was called twice, and prolly a bug is present in caller*/ \
+        _yntIFnot( $debugL1->SetOfParent_Children($TheReturnOfThisTime_forThisFunction, array(kSetActedOnce,##__VA_ARGS__) ) );
 
 #define countretflagsL1(_into) \
         _yntIFnot( $debugL1->GetCountOfChildren_OfParent(_into, $TheReturnOfThisTime_forThisFunction) );
 
-#define funcL1(funcname, funcparams,...) /*{{{*/ \
+#define funcL1(funcname, funcparams,.../*some or no debug flags here*/) /*{{{*/ \
         function funcname funcparams \
         { \
                 $funcnameALKSD=#funcname." (vim ".getfile." +".getline.")"; \
@@ -64,6 +67,7 @@ define(kAllReturns,"kAllReturns");
                 global $debugL1; \
                 _yntIFnot( $debugL1->AddRel(kAllFunctions, $funcnameALKSD) ); \
                 _yntIFnot( $debugL1->AddRel(kAllReturns, $returnIDForThisFunction) ); \
+                _yntIFnot( $debugL1->AppendToParent_Children(kAllDebugFlags, array(dbeg,##__VA_ARGS__)) ); \
                 _yntIFnot( $debugL1->AddRel($funcnameALKSD, $returnIDForThisFunction) ); \
                 _yntIFnot( $debugL1->GetCountOfChildren_OfParent($TheReturnOfThisTime_forThisFunction, $returnIDForThisFunction) ); \
                 $TheReturnOfThisTime_forThisFunction++; \

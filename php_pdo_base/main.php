@@ -177,7 +177,7 @@
         echo nocol.nl;
 
 
-        funcL1 (AnotherFunc,($someparam))
+        funcL1 (AnotherFunc,($someparam) )
         {
                 if (is_string($someparam)) {
                         setretflagL1($someparam);

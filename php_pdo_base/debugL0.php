@@ -59,7 +59,7 @@ procedure adef($what)
         if (TRUE===defined($what)) {
                 die("already defined $what".nl);
         }
-        define($what,++$maxdebuglevel);
+        define($what,"adef_".++$maxdebuglevel);
 }
 
 //defining specific debug levels
@@ -107,7 +107,7 @@ dseton(dcrea);
 //dseton(dconstr);
 //dseton(ddestr);
 //dseton(ddbadd);
-//dseton(dtestcrit);
+dseton(dtestcrit);
 
 
 #ifdef alldebugon
@@ -310,12 +310,12 @@ function retValue($var)
 
 //supposed to return either yes or no ONLY!, if u need to return something use a &$var as a parameter
 //actually it returns an array where one of yes or no is present, and other flags,if any,to signal status ie. yes,kAlreadyExists
-#define funcL0(funcdef,...) /*{{{*/ \
+#define funcL0(funcdef,.../*debug levels here*/) /*{{{*/ \
 ynfunc &funcdef \
         { \
                 $funcnameRFZAHJ=#funcdef; \
-                $otherlevelsRFZAHJ=array(__VA_ARGS__); \
-                deb(getalist($otherlevelsRFZAHJ, dbeg), $funcnameRFZAHJ.":begin..."); \
+                $other_debuglevelsRFZAHJ=array(__VA_ARGS__); \
+                deb(getalist($other_debuglevelsRFZAHJ, dbeg), $funcnameRFZAHJ.":begin..."); \
                 $TheReturnStateList=array(kReturnStateList_type);//this sets this to array type and also flags this array as being a return type, needed on ynIsGood() to make the diff between our array and system returned arrays
 
 #define endnowL0(.../*more elements to add here*/) \
@@ -324,7 +324,7 @@ ynfunc &funcdef \
                         global $AllReturnLists;\
                         $theKey="vim ".getfile." +".getline;\
                         $AllReturnLists[$theKey]=$TheReturnStateList;\
-                        debnl(getalist($otherlevelsRFZAHJ, dend) , $funcnameRFZAHJ.":done:ynIsGood(".retValue($TheReturnStateList).")===".ynIsGood($TheReturnStateList));\
+                        debnl(getalist($other_debuglevelsRFZAHJ, dend) , $funcnameRFZAHJ.":done:ynIsGood(".retValue($TheReturnStateList).")===".ynIsGood($TheReturnStateList));\
                         return $TheReturnStateList; \
                 }/*}}}*/
 

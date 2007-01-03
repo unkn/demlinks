@@ -89,8 +89,9 @@ class dmlphpL1 extends dmlphpL0 {
                 _yntIFnot($this->TestElementInvariants($parent));
 
                 _yntIFnot( $this->DelAllChildrenOf($parent) );
-                _yntIFnot( $this->AppendToParent_Children($parent, $children) );
-        }endfuncL0(yes)/*}}}*/
+                _yntIFnot( $ar=$this->AppendToParent_Children($parent, $children) );
+                keepflagsL0($ar);
+        }endfuncL0()/*}}}*/
 
         funcL0 (AppendToParent_Children($parent,$children), dadd)/*{{{*/
         {//addition
