@@ -59,7 +59,9 @@ procedure adef($what)
         if (TRUE===defined($what)) {
                 die("already defined $what".nl);
         }
-        define($what,"".++$maxdebuglevel);
+        define($what,"$what");
+        //define($what,"".++$maxdebuglevel);//that's to make it string or TestElementInvariants will throw
+        ++$maxdebuglevel;
 }
 
 //defining specific debug levels
@@ -221,7 +223,7 @@ for ($i=debugstartfrom; $i <= $maxdebuglevel; $i++) {
 
 #ifdef debugon
         #define debshow(level,text,textappend) \
-                echo nl.bluecol."debLev".greencol.level.nocol." ".#text." (vim ".getfile." +".getline.")" . textappend;
+                echo nl.bluecol."debflag(".greencol.level.bluecol.") ".nocol.#text." (vim ".getfile." +".getline.")" . textappend;
 
         #define dEbS(level,text,textappend) { \
                 global $debugar; \

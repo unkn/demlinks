@@ -224,6 +224,7 @@
         _yntIFnot( $debugL1->ShowTreeOfChildrenForParent(kAllReturns) );
         _yntIFnot( $debugL1->ShowTreeOfParentsForChild("a") );
         _yntIFnot( $debugL1->ShowTreeOfParentsForChild(yes) );
+        _yntIFnot( $debugL1->ShowTreeOfChildrenForParent(kAllDebugFlags) );
 
 
 

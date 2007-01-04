@@ -67,12 +67,12 @@ define(kSetActedOnce,"kSetActedOnce");//to flag that setretflagL1() was executed
                 global $debugL1; \
                 _yntIFnot( $debugL1->AddRel(kAllFunctions, $funcnameALKSD) ); \
                 _yntIFnot( $debugL1->AddRel(kAllReturns, $returnIDForThisFunction) ); \
-                _yntIFnot( $debugL1->AppendToParent_Children(kAllDebugFlags, array(dbeg,##__VA_ARGS__)) ); \
                 _yntIFnot( $debugL1->AddRel($funcnameALKSD, $returnIDForThisFunction) ); \
                 _yntIFnot( $debugL1->GetCountOfChildren_OfParent($TheReturnOfThisTime_forThisFunction, $returnIDForThisFunction) ); \
                 $TheReturnOfThisTime_forThisFunction++; \
                 $TheReturnOfThisTime_forThisFunction=#funcname.$TheReturnOfThisTime_forThisFunction; \
-                _yntIFnot( $debugL1->AddRel($returnIDForThisFunction, $TheReturnOfThisTime_forThisFunction) );
+                _yntIFnot( $debugL1->AddRel($returnIDForThisFunction, $TheReturnOfThisTime_forThisFunction) ); \
+                _yntIFnot( $debugL1->AppendToParent_Children(kAllDebugFlags, array(dbeg,dend,##__VA_ARGS__)) );
 /*}}}*/
 
 #define endnowL1(...) /*{{{*/ \
