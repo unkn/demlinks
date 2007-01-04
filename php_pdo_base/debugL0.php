@@ -73,6 +73,7 @@ adef(dnormal);
 adef(ddel);//show deletes
 adef(dis);//show IsStuff()
 adef(dadd);//show additions ie. AddNode()
+adef(densure);//show ensure functions ie. EnsurePCRel()
 adef(dcrea);
 adef(dget);
 adef(dbegtr);//begin
@@ -102,6 +103,7 @@ dseton(dnormal);
 dseton(dcrea);
 //dseton(dis);
 //dseton(dadd);
+//dseton(densure);
 //dseton(dget);
 //dseton(dbegtr);//transaction
 //dseton(dabtr);
@@ -295,6 +297,9 @@ procedure array_append_unique_values(&$towhatarray, $listofvalues)/*{{{*/
 #define isValue_InList(whatflag,inwhatlist) \
                 in_array(whatflag, inwhatlist, FALSE/*check types?=no*/)
 
+#define isFlagL0(_flag) \
+                isValue_InList(_flag, $TheReturnStateList)
+
 function retValue($var)
 {
         $ret='';
@@ -335,8 +340,8 @@ ynfunc &funcdef \
                 endnowL0(__VA_ARGS__) \
         }/*}}}*/
 
-#define isReturnStateList(_flag) \
-        (is_array(_flag) && isValue_InList(kReturnStateList_type, _flag))
+#define isReturnStateList(_list) \
+        (is_array(_list) && isValue_InList(kReturnStateList_type, _list))
 
 //never do if (ynIsGood($var)) => always true, instead do _ynif ($var)  OR if (yes===ynIsGood($var))
 //careful with _ynif (ynIsGood(x) && ynIsGood(y))  it is always true, try instead _if (ynIsGood(x)===yes && ynIsGood(y)===yes)

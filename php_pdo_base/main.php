@@ -39,8 +39,8 @@
 
         beginprogram
         __( $dphp=new dmlphpL1 );
-        _r( $dphp->AddRel("A","B") );
-        _r( $dphp->AddRel("A","B") );
+        _r( $dphp->EnsurePCRel("A","B") );
+        _r( $dphp->EnsurePCRel("A","B") );
 /*        __( $dc=new dmlL1 );
         //debug_zval_dump($dc);
 
@@ -66,7 +66,7 @@
 
                    //_TRY(
 
-                        _yntIFnot( $ret=$dphp->AddRel($prevval, $val) );
+                        _yntIFnot( $ret=$dphp->EnsurePCRel($prevval, $val) );
                         $prevval=$val;
                         //_yntIFnot( $ret=$dc->AddName($val) );
                         //_ynif (isValue_InList(kAdded,$ret)) {
@@ -128,16 +128,16 @@
         _yntIFnot( $dphp->GetOfParent_AllChildren("if",$arc) );
         echo "Children of 'if': ".retValue($arc).nl;
 
-        _r( $dphp->IsRel("text","if") );
-        _r( $dphp->DelRel("if","yes") );
-        _r( $dphp->DelRel("if","yes") );
-        _r( $dphp->IsRel("if","yes") );
+        _r( $dphp->ynIsPCRel("text","if") );
+        _r( $dphp->DelPCRel("if","yes") );
+        _r( $dphp->DelPCRel("if","yes") );
+        _r( $dphp->ynIsPCRel("if","yes") );
 
         echo greencol.nl;
         _yntIFnot( $dphp->GetOfParent_AllChildren("if",$arc) );
         echo "Children of 'if' after del child 'yes': ".retValue($arc).nl;
 
-        _r( $dphp->DelRel("text","if") );
+        _r( $dphp->DelPCRel("text","if") );
         echo greencol;
 
         _yntIFnot( $dphp->GetOfChild_AllParents("if",$arc) );
@@ -177,7 +177,7 @@
         echo nocol.nl;
 
 
-        funcL1 (AnotherFunc,($someparam) )
+        funcL1 (AnotherFunc,($someparam) , dshow)
         {
                 if (is_string($someparam)) {
                         setretflagL1($someparam);
@@ -186,7 +186,7 @@
                 }
         }endfuncL1("done")
 
-        funcL1 (GetName,(&$name, $id))
+        funcL1 (GetName,(&$name, $id), dget)
         {
                 print_r($name);
                 print_r($id);

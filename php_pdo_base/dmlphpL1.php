@@ -51,7 +51,8 @@ class dmlphpL1 extends dmlphpL0 {
                 keepflagsL0($ar);
         }endfuncL0()/*}}}*/
 
-        funcL0 (AddRel($parent,$child), dadd)/*{{{*/
+                //PC=parent, child (the parameters are in this order)
+        funcL0 (EnsurePCRel($parent,$child), densure)/*{{{*/
         {//a relation will only exist once
                 _yntIFnot($this->TestElementInvariants($parent));
                 _yntIFnot($this->TestElementInvariants($child));
@@ -62,7 +63,7 @@ class dmlphpL1 extends dmlphpL0 {
                 keepflagsL0($ar);
         }endfuncL0()/*}}}*/
 
-        funcL0 (DelRel($parent,$child), dset)/*{{{*/
+        funcL0 (DelPCRel($parent,$child), dset)/*{{{*/
         {
                 _yntIFnot($this->TestElementInvariants($parent));
                 _yntIFnot($this->TestElementInvariants($child));
@@ -73,7 +74,7 @@ class dmlphpL1 extends dmlphpL0 {
                 keepflagsL0($ar);
         }endfuncL0()/*}}}*/
 
-        funcL0 (IsRel($parent,$child), dis)/*{{{*/
+        funcL0 (ynIsPCRel($parent,$child), dis)/*{{{*/
         {
                 _yntIFnot($this->TestElementInvariants($parent));
                 _yntIFnot($this->TestElementInvariants($child));
@@ -101,7 +102,11 @@ class dmlphpL1 extends dmlphpL0 {
                         addretflagL0(kOneElement);
                 }
                 foreach ($children as $child) {
-                        _yntIFnot( $this->AddRel($parent, $child) );
+                        _yntIFnot( $ar=$this->EnsurePCRel($parent, $child) );
+                        keepflagsL0($ar);
+                        /*_if (isValue_InList(kAlready,$ar) ) {
+                                addretflagL0();
+                }*/
                 }
         }endfuncL0(yes)/*}}}*/
 
@@ -112,7 +117,7 @@ class dmlphpL1 extends dmlphpL0 {
                         $children=array($children);
                 }
                 foreach ($children as $child) {
-                        _yntIFnot( $this->DelRel($parent, $child) );
+                        _yntIFnot( $this->DelPCRel($parent, $child) );
                 }
         }endfuncL0(yes)/*}}}*/
 

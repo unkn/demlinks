@@ -53,7 +53,7 @@ define(kSetActedOnce,"kSetActedOnce");//to flag that setretflagL1() was executed
         _yntIFnot( $debugL1->DeleteFromParent_Children($TheReturnOfThisTime_forThisFunction, array(__VA_ARGS__) ) );
 
 #define setretflagL1(...) \
-        _yntIF( $debugL1->IsRel($TheReturnOfThisTime_forThisFunction, kSetActedOnce ) );/*this Relation can only exist after this call, not before, otherwise this set was called twice, and prolly a bug is present in caller*/ \
+        _yntIF( $debugL1->ynIsPCRel($TheReturnOfThisTime_forThisFunction, kSetActedOnce ) );/*this Relation can only exist after this call, not before, otherwise this set was called twice, and prolly a bug is present in caller*/ \
         _yntIFnot( $debugL1->SetOfParent_Children($TheReturnOfThisTime_forThisFunction, array(kSetActedOnce,##__VA_ARGS__) ) );
 
 #define countretflagsL1(_into) \
@@ -65,13 +65,13 @@ define(kSetActedOnce,"kSetActedOnce");//to flag that setretflagL1() was executed
                 $funcnameALKSD=#funcname." (vim ".getfile." +".getline.")"; \
                 $returnIDForThisFunction="AllReturnsForFunction: ".$funcnameALKSD; \
                 global $debugL1; \
-                _yntIFnot( $debugL1->AddRel(kAllFunctions, $funcnameALKSD) ); \
-                _yntIFnot( $debugL1->AddRel(kAllReturns, $returnIDForThisFunction) ); \
-                _yntIFnot( $debugL1->AddRel($funcnameALKSD, $returnIDForThisFunction) ); \
+                _yntIFnot( $debugL1->EnsurePCRel(kAllFunctions, $funcnameALKSD) ); \
+                _yntIFnot( $debugL1->EnsurePCRel(kAllReturns, $returnIDForThisFunction) ); \
+                _yntIFnot( $debugL1->EnsurePCRel($funcnameALKSD, $returnIDForThisFunction) ); \
                 _yntIFnot( $debugL1->GetCountOfChildren_OfParent($TheReturnOfThisTime_forThisFunction, $returnIDForThisFunction) ); \
                 $TheReturnOfThisTime_forThisFunction++; \
                 $TheReturnOfThisTime_forThisFunction=#funcname.$TheReturnOfThisTime_forThisFunction; \
-                _yntIFnot( $debugL1->AddRel($returnIDForThisFunction, $TheReturnOfThisTime_forThisFunction) ); \
+                _yntIFnot( $debugL1->EnsurePCRel($returnIDForThisFunction, $TheReturnOfThisTime_forThisFunction) ); \
                 _yntIFnot( $debugL1->AppendToParent_Children(kAllDebugFlags, array(dbeg,dend,##__VA_ARGS__)) );
 /*}}}*/
 
