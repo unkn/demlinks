@@ -31,7 +31,7 @@
 #include "debugL0.php"
 #include "color.php"
 //#include "dmlDBL1.php"
-#include "dmlphpL1.php"
+#include "dmlphpL2.php"
 #include "debugL1.php"
 
 #define _r(...) \
@@ -41,6 +41,29 @@
         __( $dphp=new dmlphpL1 );
         _r( $dphp->EnsurePCRel("A","B") );
         _r( $dphp->EnsurePCRel("A","B") );
+        /*$flags=array(kOverwrite,kKeepPrevValue,kCreateNodeIfNotExists,kTruncateIfMoreThanOneNode);
+        _r( $dphp->MakePointer($ptr,kParent,"P", $flags) );//kAlready, kInvalid(if kKeep...)
+        _r( $ptr->SetPointee("A") );//P->A also creates DMLPointers->Parents->P
+        _r( $dphp->MakePointer($ptr,kChild,"cP", $flags) );//kAlready, kInvalid(if kKeep...)
+        _r( $ptr->SetPointee("A") );//A->cP also creates DMLPointers->Children, cP->Children
+        _r( $ptr->GetPointee($val) );
+        echo $val;//A
+        _r( $ptr->GetEnvironment($dphpgot) );//===$dphp
+        _r( $ptr->GetPointer($val) ); //==="cP"
+
+        $flags=kNone;//so far
+        _r( $dphp->MakeCursor($curs, kParent,"CursP", $flags) );
+        _r( $curs->Find("A") );
+        $curs->Del("A");
+                Get
+
+        $flags=array(kCurrentNode, kAfterNode | kNextNode, kBeforeNode | kPrevNode, kFirstNode, kLastNode);
+        Put("A", $flags);
+        Put("B", array(kAfterNode|kNextNode, kBeforeNode|kPrevNode, kThisNode|kOverwriteThisNode), "A");
+        Count($result);
+        //a CURSOR should have 3 states, kExact, kBefore, kAfter   Node X, just in case Del() acts on node X, the cursor would be kAfter the element that was before X, or/and kBefore the element that was after X (ie. P->A, P->X, P->B)
+         */
+
 /*        __( $dc=new dmlL1 );
         //debug_zval_dump($dc);
 
@@ -225,6 +248,8 @@
         _yntIFnot( $debugL1->ShowTreeOfParentsForChild("a") );
         _yntIFnot( $debugL1->ShowTreeOfParentsForChild(yes) );
         _yntIFnot( $debugL1->ShowTreeOfChildrenForParent(kAllDebugFlags) );
+        _r( $debugL1->ynIsNode("a") );
+        _r( $debugL1->ynIsNode("if") );
 
 
 

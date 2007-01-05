@@ -60,8 +60,19 @@ define(kSetActedOnce,"kSetActedOnce");//to flag that setretflagL1() was executed
         _yntIFnot( $debugL1->GetCountOfChildren_OfParent(_into, $TheReturnOfThisTime_forThisFunction) );
 
 #define funcL1(funcname, funcparams,.../*some or no debug flags here*/) /*{{{*/ \
+        funcL1_part1of2(funcname, funcparams,##__VA_ARGS__) \
+        DisallowReentry(); \
+        funcL1_part2of2(funcname, funcparams,##__VA_ARGS__)
+
+#define funcL1re(funcname, funcparams,.../*some or no debug flags here*/) \
+        funcL1_part1of2(funcname, funcparams,##__VA_ARGS__) \
+        funcL1_part2of2(funcname, funcparams,##__VA_ARGS__)
+
+#define funcL1_part1of2(funcname, funcparams,.../*some or no debug flags here*/) \
         function funcname funcparams \
-        { \
+        {
+
+#define funcL1_part2of2(funcname, funcparams,.../*some or no debug flags here*/) \
                 $funcnameALKSD=#funcname." (vim ".getfile." +".getline.")"; \
                 $returnIDForThisFunction="AllReturnsForFunction: ".$funcnameALKSD; \
                 global $debugL1; \
@@ -73,15 +84,14 @@ define(kSetActedOnce,"kSetActedOnce");//to flag that setretflagL1() was executed
                 $TheReturnOfThisTime_forThisFunction=#funcname.$TheReturnOfThisTime_forThisFunction; \
                 _yntIFnot( $debugL1->EnsurePCRel($returnIDForThisFunction, $TheReturnOfThisTime_forThisFunction) ); \
                 _yntIFnot( $debugL1->AppendToParent_Children(kAllDebugFlags, array(dbeg,dend,##__VA_ARGS__)) );
-/*}}}*/
 
-#define endnowL1(...) /*{{{*/ \
+#define endnowL1(...) \
                 addretflagL1(__VA_ARGS__); \
                 _yntIFnot( $debugL1->GetOfParent_AllChildren($TheReturnOfThisTime_forThisFunction, $tmpASKD) );/*must have at least one return flag*/ \
+                AllowReentry();\
                 return $TheReturnOfThisTime_forThisFunction;
-/*}}}*/
 
-#define endfuncL1(...) /*{{{*/ \
+#define endfuncL1(...) \
                 endnowL1(__VA_ARGS__); \
         }
 /*}}}*/

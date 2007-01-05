@@ -31,6 +31,8 @@
 *
 ***************************************************************************}}}*/
 
+//using arrays to hold demlinks
+//this means they die at end of program AND they can only be used within this program, and I suppose php cannot spawn threads from this program, thus usage would be serial, non parallel; however we'd implement some defines that will make sure each function is non-reentrant, otherwise throws(why? because reentrying would be unexpected behaviour)
 
 #include "shortdef.php"
 #include "color.php"
@@ -144,6 +146,27 @@ class dmlphpL0 {
                 _yntIFnot($this->TestElementInvariants($child));
                 _yntIFnot( $ar=DelElemFromList($parent, kParentsOf[$child] ) );
                 keepflagsL0($ar);
+        }endfuncL0()/*}}}*/
+
+        funcL0 (ynIsNode($node), dis)/*{{{*/
+        {//let me remind you that a Node(be it parent of child) cannot exist unless it is a part of a relationship, ie. another node is somehow connected to it
+                _yntIFnot($this->TestElementInvariants($node));
+                _if( TRUE===is_array(kChildrenOf[$node]) || TRUE===is_array(kParentsOf[$node])) {
+                        addretflagL0(yes);
+                } else {
+                        addretflagL0(no);
+                }
+        }endfuncL0()/*}}}*/
+
+        funcL0 (ynIsPCRel($parent,$child), dis)/*{{{*/
+        {
+                _yntIFnot($this->TestElementInvariants($parent));
+                _yntIFnot($this->TestElementInvariants($child));
+                _if( TRUE===is_array(kChildrenOf[$parent]) && TRUE===in_array($child, kChildrenOf[$parent])) {
+                        addretflagL0(yes);
+                } else {
+                        addretflagL0(no);
+                }
         }endfuncL0()/*}}}*/
 
         funcL0 (GetOfParent_AllChildren($parent,&$children), dget)/*{{{*/

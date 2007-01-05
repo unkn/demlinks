@@ -74,17 +74,6 @@ class dmlphpL1 extends dmlphpL0 {
                 keepflagsL0($ar);
         }endfuncL0()/*}}}*/
 
-        funcL0 (ynIsPCRel($parent,$child), dis)/*{{{*/
-        {
-                _yntIFnot($this->TestElementInvariants($parent));
-                _yntIFnot($this->TestElementInvariants($child));
-                _if( TRUE===is_array(kChildrenOf[$parent]) && TRUE===in_array($child, kChildrenOf[$parent])) {
-                        addretflagL0(yes);
-                } else {
-                        addretflagL0(no);
-                }
-        }endfuncL0()/*}}}*/
-
         funcL0 (SetOfParent_Children($parent,$children), dset)/*{{{*/
         {//overwrites all children
                 _yntIFnot($this->TestElementInvariants($parent));
@@ -133,7 +122,7 @@ class dmlphpL1 extends dmlphpL0 {
                 _yntIFnot( RelaxedArrayCount(&kParentsOf[$child], $count) );
         }endfuncL0(yes)/*}}}*/
 
-        funcL0 (ShowTreeOfChildrenForParent($parent, $startlevel=0), dshow)/*{{{*/
+        funcL0re (ShowTreeOfChildrenForParent($parent, $startlevel=0), dshow)/*{{{*/
         {
                 _yntIFnot($this->TestElementInvariants($parent));
                 for ($i=0; $i<$startlevel; $i++) {
@@ -153,7 +142,7 @@ class dmlphpL1 extends dmlphpL0 {
                 }
         }endfuncL0(yes)/*}}}*/
 
-        funcL0 (ShowTreeOfParentsForChild($child, $startlevel=0), dshow)/*{{{*/
+        funcL0re (ShowTreeOfParentsForChild($child, $startlevel=0), dshow)/*{{{*/
         {
                 _yntIFnot($this->TestElementInvariants($child));
                 for ($i=0; $i<$startlevel; $i++) {

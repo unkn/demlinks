@@ -32,6 +32,8 @@
 
 #include "shortdef.php"
 #include "color.php"
+#include "reentry.php"
+
         /*require_once("shortdef.php");
         require_once("color.php");*/
 
@@ -315,11 +317,25 @@ function retValue($var)
         return $ret;
 }
 
+
 //supposed to return either yes or no ONLY!, if u need to return something use a &$var as a parameter
 //actually it returns an array where one of yes or no is present, and other flags,if any,to signal status ie. yes,kAlreadyExists
+//non reentrant version:
 #define funcL0(funcdef,.../*debug levels here*/) /*{{{*/ \
+                funcL0_part1of2(funcdef,##__VA_ARGS__) \
+                DisallowReentry(); \
+                funcL0_part2of2(funcdef,##__VA_ARGS__)
+
+//reentrant version:
+#define funcL0re(funcdef,.../*debug levels here*/) \
+                funcL0_part1of2(funcdef,##__VA_ARGS__) \
+                funcL0_part2of2(funcdef,##__VA_ARGS__)
+
+#define funcL0_part1of2(funcdef,.../*debug levels here*/) \
 ynfunc &funcdef \
-        { \
+        {
+
+#define funcL0_part2of2(funcdef,.../*debug levels here*/) \
                 $funcnameRFZAHJ=#funcdef; \
                 $other_debuglevelsRFZAHJ=array(__VA_ARGS__); \
                 deb(getalist($other_debuglevelsRFZAHJ, dbeg), $funcnameRFZAHJ.":begin..."); \
@@ -332,11 +348,12 @@ ynfunc &funcdef \
                         $theKey="vim ".getfile." +".getline;\
                         $AllReturnLists[$theKey]=$TheReturnStateList;\
                         debnl(getalist($other_debuglevelsRFZAHJ, dend) , $funcnameRFZAHJ.":done:ynIsGood(".retValue($TheReturnStateList).")===".ynIsGood($TheReturnStateList));\
+                        AllowReentry(); \
                         return $TheReturnStateList; \
-                }/*}}}*/
+                }
 
 // DO NOT append ";" to endfuncL0!!!
-#define endfuncL0(.../* more elements */) /*{{{*/ \
+#define endfuncL0(.../* more elements */) \
                 endnowL0(__VA_ARGS__) \
         }/*}}}*/
 

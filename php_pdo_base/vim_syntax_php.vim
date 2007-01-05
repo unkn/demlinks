@@ -29,6 +29,7 @@ hi Repeat ctermfg=blue
 syn keyword phpDefine funcL0 getalist endnowL0 endfuncL0 appendtolist quitmsg dropmsg nl nocol greencol redcol getline getfile tab
 syn keyword phpDefine purplecol except throw_exception bluecol addretflagL0 adef rdef isflag isValue_InList keepflagsL0 
 syn keyword phpDefine funcL1 endfuncL1 addretflagL1 delretflagL1 setretflagL1 countretflagsL1 endnowL1 boolfunc ynboolfunc ynfunc procedure isReturnStateList ynIsNotGood
+syn keyword phpDefine AllowReentry DisallowReentry funcL0re funcL0_part1of2 funcL0_part2of2 funcL1re funcL1_part1of2 funcL1_part2of2
 "syn match phpCoreConstant     /\<T[A-Z0-9]\+[_A-Za-z0-9]*/
 "hi phpCoreConstant ctermfg=6
 syn match phpCoreConstant     /\<[_a-zA-Z]*L[0-9]\+/
