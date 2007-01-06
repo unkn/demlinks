@@ -33,7 +33,7 @@
 
 
 #include "shortdef.php"
-#include "debugL0.php"
+#include "debugL1.php"
 #include "dmlDBL0def.php"
 #include "color.php"
 
@@ -69,10 +69,20 @@ class dmlDBL0
                 return $this->valquote($whattable);
         }/*}}}*/
 
-        funcL0 (__construct(), dconstr)/*{{{*/
+        funcL1 (TestElementInvariants,(&$elem) ,dtest)
+        {
+                _if (is_string($elem)) {//we allow empty string as a valid element id && !empty($elem) ) {
+                        addretflagL1(yes);
+                } else {
+                        debnl(dtestcrit, "TestElementInvariants: var that failed test is \" ".retValue($elem)."\"");
+                        addretflagL1(no);
+                }
+        }endfuncL1()
+
+        funcL1 (__construct,(), dconstr)/*{{{*/
         {
                 // create a SQLite3 database file with PDO and return a database handle (Object Oriented)
-                __( $this->fDBHandle = new PDO('sqlite:'.dbasename,''/*user*/,''/*pwd*/,
+                _yntIFnot( $this->fDBHandle = new PDO('sqlite:'.dbasename,''/*user*/,''/*pwd*/,
                                 array(PDO::ATTR_PERSISTENT => true)) );//singleton?
 
                 $this->qNodeNames = $this->tablequote(dNodeNames);
@@ -82,9 +92,7 @@ class dmlDBL0
                 $this->qChildNodeID = $this->fieldquote(dChildNodeID);
                 $this->qNodeID = $this->fieldquote(dNodeID);
 
-                __( $rret=$this->CreateDB() );
-
-                _ynif( $this->CreateDB() ) {
+                _arif( $this->CreateDB() ) {
                         $this->fFirstTime=yes;
                 }else{
                         $this->fFirstTime=no;
@@ -99,14 +107,14 @@ class dmlDBL0
                 _yntIFnot( $this->fPrepDelID = $this->fDBHandle->prepare($this->sqlDelID) );
                 _yntIFnot( $this->fPrepDelID->bindParam(paramNodeID, $this->fParamNodeID, PDO::PARAM_STR) );
                 //---------
-        }endfuncL0(yes)/*}}}*/
+        }endfuncL1(yes)/*the return is for the endfunc internal test that requeires either yes or no on return*/ /*}}}*/
 
-        funcL0 (__destruct(), ddestr)/*{{{*/
+        funcL1 (__destruct,(), ddestr)/*{{{*/
         {
                 $fDBHandle=null;
-        }endfuncL0(yes)/*}}}*/
+        }endfuncL1(yes)/*}}}*/
 
-        funcL0 (CreateDB(),dcrea)/*{{{*/
+        funcL1 (CreateDB,(),dcrea)/*{{{*/
         {
 
                 $sqlNodeNames = 'CREATE TABLE '.$this->qNodeNames.
@@ -116,83 +124,80 @@ class dmlDBL0
 
                 $sqlRelations = 'CREATE TABLE '.$this->qRelations.
                             ' ('.$this->qParentNodeID.' INTEGER PRIMARY KEY , '.$this->qChildNodeID.' INTEGER SECONDARY KEY)';
-                _yntIFnot( $this->OpenTransaction());
+                _artIFnot( $this->OpenTransaction());
 
                 _ynif ( $res= $this->fDBHandle->exec($sqlNodeNames) ) {
                         _yntIFnot( $this->fDBHandle->exec($sqlNodeNamesIndex12) );
                         _yntIFnot( $this->fDBHandle->exec($sqlNodeNamesIndex21) );
-                        addretflagL0(kCreatedDBNodeNames);
+                        addretflagL1(kCreatedDBNodeNames);
                         $wecommit=yes;
                 }
                 _ynif( $res = $this->fDBHandle->exec($sqlRelations) ) {
-                        addretflagL0(kCreatedDBRelations);
+                        addretflagL1(kCreatedDBRelations);
                         $wecommit=yes;
                 }
 
-                _ynif ($wecommit) { //at least one dbase was created, the other one could already exist perhaps.
-                        _yntIFnot( $this->CloseTransaction() );
-                        addretflagL0(ok);
+                _if (yes===$wecommit) { //at least one dbase was created, the other one could already exist perhaps.
+                        _artIFnot( $this->CloseTransaction() );
+                        addretflagL1(ok);//ok and yes point to the same "yes"
                 }else{
-                        _yntIFnot( $this->AbortTransaction() );
-                        addretflagL0(bad);
+                        _artIFnot( $this->AbortTransaction() );
+                        addretflagL1(bad);//bad~no
                 }
-        } endfuncL0()/*}}}*/
+        } endfuncL1()/*}}}*/
 
 //------------------------ transactions/*{{{*/
-        funcL0 (OpenTransaction(), dbegtr) //only one active transaction at a time; PDO limitation?!/*{{{*/
+        funcL1 (OpenTransaction,(), dbegtr) //only one active transaction at a time; PDO limitation?!/*{{{*/
         {
                 _yntIFnot( $this->fDBHandle->beginTransaction() );
-        }endfuncL0(ok)/*}}}*/
+        }endfuncL1(ok)/*}}}*/
 
-        funcL0 (CloseTransaction(),dendtr)/*{{{*/
+        funcL1 (CloseTransaction,(),dendtr)/*{{{*/
         {
                 _yntIFnot( $this->fDBHandle->commit() );
-        }endfuncL0(ok)/*}}}*/
+        }endfuncL1(ok)/*}}}*/
 
-        funcL0 (AbortTransaction(), dabtr)/*{{{*/
+        funcL1 (AbortTransaction,(), dabtr)/*{{{*/
         {
                 _yntIFnot( $this->fDBHandle->rollBack() );
-        }endfuncL0(ok)/*}}}*/
+        }endfuncL1(ok)/*}}}*/
 //------------------------/*}}}*/
 
 
-        funcL0 (IsID($id), dis)/*{{{*/
+        funcL1 (IsID,($id), dis)/*{{{*/
         {
-                _yntIF(ynIsNotGood($id));
+                _artIFnot($this->TestElementInvariants($id));
                 __( $exists=$this->GetName($name,$id) );
-                _yntIF(yes===ynIsGood($exists) && yes===ynIsNotGood($name) );
-                //print_r($exists);
-        }endfuncL0($exists)/*}}}*/
+                _tIF(isL1YesReturn($exists) && isL1NoReturn($this->TestElementInvariants($name)) );
+        }endfuncL1($exists)/*}}}*/
 
-        funcL0 (GetName(&$name,$id),dget)// returns Name by ID /*{{{*/
+        funcL1 (GetName,(&$name,$id),dget)// returns Name by ID /*{{{*/
         {
-                _yntIFnot(ynIsGood($id));
+                _artIFnot($this->TestElementInvariants($id));
                 $this->fParamNodeID = $id;
                 _yntIFnot( $this->fPrepGetNodeName->execute() );
                 __( $ar=$this->fPrepGetNodeName->FetchAll() );
                 $name=(string)$ar[dNodeName];
                 if (empty($ar) || empty($name)) {
-                        addretflagL0(no);
+                        addretflagL1(no);
+                } else {
+                        addretflagL1(yes);
                 }
-        }endfuncL0()/*}}}*/
+        }endfuncL1()/*}}}*/
 
 
-        funcL0 (DelID($id), ddel)/*{{{*/
+        funcL1 (DelID,($id), ddel)/*{{{*/
         {
-                _yntIF(ynIsNotGood($id));
+                _artIFnot($this->TestElementInvariants($id));
                 $this->fParamNodeID = $id;
                 _yntIFnot( $this->fPrepDelID->execute() );
-        }endfuncL0(ok)/*}}}*/
+        }endfuncL1(ok)/*}}}*/
 
-        funcL0 (Show(&$result),dshow)//temp/*{{{*/
+        funcL1 (Show,(&$result),dshow)//temp/*{{{*/
         {
                 $sqlGetView = 'SELECT * FROM '.$this->qNodeNames;
                 _yntIFnot( $result=$this->fDBHandle->query($sqlGetView) );
-        }endfuncL0(ok)/*}}}*/
-//------------------------
-        funcL0 (SetRelation($parentName, $childName))/*{{{*/
-        {
-        }endfuncL0(ok)/*}}}*/
+        }endfuncL1(ok)/*}}}*/
 //------------------------
 } //class
 

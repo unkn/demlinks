@@ -61,7 +61,7 @@ define(kSetActedOnce,"kSetActedOnce");//to flag that setretflagL1() was executed
 
 #define funcL1(funcname, funcparams,.../*some or no debug flags here*/) /*{{{*/ \
         funcL1_part1of2(funcname, funcparams,##__VA_ARGS__) \
-        DisallowReentry(); \
+        DisallowReentry(TRUE); /*reentring disallowed locally, ie. non-recursive!*/\
         funcL1_part2of2(funcname, funcparams,##__VA_ARGS__)
 
 #define funcL1re(funcname, funcparams,.../*some or no debug flags here*/) \
@@ -118,6 +118,71 @@ boolfunc isValidReturnL1($val)/*{{{*/
         }
         return FALSE;
 }/*}}}*/
+
+boolfunc isFlagInList_L1($flag, $list)
+{
+        global $debugL1;
+        _ynif( $debugL1->ynIsPCRel($list, $flag) ) {
+                return TRUE;
+        }
+        return FALSE;
+}
+
+#define isFlagL1(_flag) \
+        isFlagInList_L1(_flag, $TheReturnOfThisTime_forThisFunction)
+
+boolfunc isL1NoReturn($ar_return)
+{
+        return (! isL1YesReturn( $ar_return ) );
+}
+
+boolfunc isL1YesReturn($ar_return)
+{
+        _tIFnot( isValidReturnL1($ar_return) );//prolly put this(ie. _arif()) in a wrong place(where the return is not as expected)
+        //echo retValue($ar_return).nl;
+        $yes=isFlagInList_L1(yes, $ar_return);
+        $no=isFlagInList_L1(no, $ar_return);
+        _tIF( $yes && $no); //can't have both present!//both yes and no flags present in return, this is catching a late bug
+        if ($yes) {
+                return TRUE;
+        } else {
+                if ($no) {
+                        return FALSE;
+                } else {//neither yes nor no is present
+                        throw_exception("neither ".yes." nor ".no." is present in this return:".retValue($ar_return));
+                }
+        }
+        throw_exception("can't reach this");
+}
+
+#define _arifL0(arreturn, _booltest) \
+                __( $_arreturn_this_var_accessible_in_caller = arreturn ); \
+                _tIFnot( isValidReturnL1($_arreturn_this_var_accessible_in_caller) ); \
+                __( $_arbool_this_var_accessible_in_caller = isL1YesReturn($_arreturn_this_var_accessible_in_caller) ); \
+                if (_booltest===$_arbool_this_var_accessible_in_caller)
+
+#define _arif(arreturn) \
+                _arifL0(arreturn,TRUE)
+
+#define _arifnot(arreturn) \
+                _arifL0(arreturn,FALSE)
+
+
+#define _artIFnot(__return) \
+                { \
+                        $_artifnot_var_temp=__return; \
+                        _arifnot( $_artifnot_var_temp ) { \
+                                except( dropmsg("_artIFnot( ".$_artifnot_var_temp." )") ) \
+                        } \
+                }
+
+#define _artIF(__return) \
+                { \
+                        $_artif_var_temp=__return; \
+                        _if( $_artif_var_temp ) { \
+                                except( dropmsg("_artIF( ".$_artif_var_temp." )") ) \
+                        } \
+                }
 
 
 // vim: fdm=marker

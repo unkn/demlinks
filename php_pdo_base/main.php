@@ -30,7 +30,7 @@
 #include "shortdef.php"
 #include "debugL0.php"
 #include "color.php"
-//#include "dmlDBL1.php"
+#include "dmlDBL1.php"
 #include "dmlphpL2.php"
 #include "debugL1.php"
 
@@ -64,7 +64,7 @@
         //a CURSOR should have 3 states, kExact, kBefore, kAfter   Node X, just in case Del() acts on node X, the cursor would be kAfter the element that was before X, or/and kBefore the element that was after X (ie. P->A, P->X, P->B)
          */
 
-/*        __( $dc=new dmlL1 );
+        _yntIFnot( $dc=new dmlDBL1 );
         //debug_zval_dump($dc);
 
 
@@ -73,27 +73,29 @@
         } else {
                 deb(dinfo,"...using prev. defined table");
         }
- */
+
         //_yntIFnot( $contents=file_get_contents("/home/emacs/phpnet.php") );
         __( $res=split("[ .,/\\\"\?\<\>&!;|\#\$\*\+\{\}=\(\)'`\n\-]",file_get_contents("debugL0.php")) );
         _yntIF(1===count($res));
         $i=2;
         $cnt=0;
         $prevval="";
-//        _yntIFnot( $dc->OpenTransaction() );
+        _artIFnot( $dc->OpenTransaction() );
         foreach ($res as $val) {
                      $val=trim($val);
                 _ynif ($val) {//ie. non-empty
                         //if ($cnt % 15 == 0) {
                        // }
 
-                   //_TRY(
+                   _TRY(
 
                         _yntIFnot( $ret=$dphp->EnsurePCRel($prevval, $val) );
                         $prevval=$val;
-                        //_yntIFnot( $ret=$dc->AddName($val) );
-                        //_ynif (isValue_InList(kAdded,$ret)) {
-                        _ynifnot (isValue_InList(kAlready,$ret)) {
+                        _artIFnot( $ret=$dc->AddName($val) );
+                        //echo retValue($ret);
+                        //_if (isValue_InList(kAdded,$ret)) {
+                        //_ifnot (isValue_InList(kAlready,$ret)) {
+                        _ifnot (isFlagInList_L1(kAlready,$ret)) {
                                 if ($i<6) {
                                         $i++;
                                 } else {
@@ -111,23 +113,23 @@
                                 //_yntIFnot( $dc->CloseTransaction() );
                         //}
 
-                   //, _yntIFnot( $dc->AbortTransaction());$aborted=yes ;break );//_TRY
+                   , _yntIFnot( $dc->AbortTransaction());$aborted=yes ;break );//_TRY
 
                 } //fi
         }
        echo nocol.nl;
-/*        //if ( $cnt % 15 !== 0) { //left it open? if so close it
+        //if ( $cnt % 15 !== 0) { //left it open? if so close it
                 _ynifnot($aborted) {
-                        _yntIFnot( $dc->CloseTransaction() );
+                        _artIFnot( $dc->CloseTransaction() );
                 }
         //}
        echo nocol.nl;
 
 
 
-        _yntIFnot( $dc->IsName("if") );
+        _artIFnot( $dc->IsName("if") );
 
-        _yntIFnot( $dc->Show($result) );
+        _artIFnot( $dc->Show($result) );
         __( $arr=$result->fetchAll() );
         $count=count($arr);
         deb(dnormal, "$count times.");
@@ -135,14 +137,14 @@
         _TRY( $dc->DelName("if") );
         __( $dc->IsName("if") );
 
-        _yntIFnot( $dc->Show($result) );
+        _artIFnot( $dc->Show($result) );
         __( $arr=$result->fetchAll() );
         $count=count($arr);
         deb(dnormal, "$count times.");
         print_r($dc->IsID("1"));
 
         $dc=null;//ie. dispose()
- */
+
         //$arc=array();
         echo redcol.nl;
         _yntIFnot( $dphp->GetOfChild_AllParents("if",$arc) );
@@ -198,7 +200,6 @@
         $dphp=null;//ie. dispose()
 
         echo nocol.nl;
-
 
         funcL1 (AnotherFunc,($someparam) , dshow)
         {

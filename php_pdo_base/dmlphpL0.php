@@ -33,11 +33,40 @@
 
 //using arrays to hold demlinks
 //this means they die at end of program AND they can only be used within this program, and I suppose php cannot spawn threads from this program, thus usage would be serial, non parallel; however we'd implement some defines that will make sure each function is non-reentrant, otherwise throws(why? because reentrying would be unexpected behaviour)
+//thus since the functions are non-reentrant we won't have to worry about locks at this level <- actually this isn't quite true
+//one function would be executed at a time, except when calling recursively those functions defined with func0re()
 
 #include "shortdef.php"
 #include "color.php"
 
-funcL0 (UniqAppendElemToList($elem,&$list), dadd)/*{{{*/
+
+/*
+#define onentry_HOOK \
+                echo "E";\
+                DisallowGlobalReentry($GLOBAL_LOCKvar_for_dmlphpL1);
+
+#define onexit_HOOK \
+                echo 'X';\
+                AllowGlobalReentry();
+*/
+
+#define func0(funcdef, debuglevels) \
+        funcL0(funcdef, debuglevels/*, onentry_HOOK*/)
+
+#define endfunc0(...) \
+        endfuncL0(__VA_ARGS__/*, onexit_HOOK*/ )
+
+#define endnow0(...) \
+        endnowL0(__VA_ARGS__/*, onexit_HOOK*/)
+
+#define func0re(funcdef, debuglevels) \
+        funcL0re(funcdef, debuglevels)
+
+#define endfunc0re(...) \
+        endfuncL0re(__VA_ARGS__)
+
+
+func0 (UniqAppendElemToList($elem,&$list), dadd)/*{{{*/
 {
         _if (TRUE===is_array(&$list) && TRUE===in_array($elem, &$list, TRUE/*strict type check*/)) {
                 addretflagL0(kAlready);
@@ -45,25 +74,25 @@ funcL0 (UniqAppendElemToList($elem,&$list), dadd)/*{{{*/
                 $list[]=$elem;//auto numbered index, appending to end
                 addretflagL0(kAdded);
         }
-}endfuncL0(yes)/*}}}*/
+}endfunc0(yes)/*}}}*/
 
-funcL0 (RelaxedArrayCount(&$list, &$count), dadd)/*{{{*/
+func0 (RelaxedArrayCount(&$list, &$count), dadd)/*{{{*/
 {
         _if (TRUE===is_array(&$list)) {
                 $count=count(&$list);
         } else { //attempting to append
                 $count=0;
         }
-}endfuncL0(yes)/*}}}*/
+}endfunc0(yes)/*}}}*/
 
-funcL0 (ArrayCount(&$list, &$count), dadd)/*{{{*/
+func0 (ArrayCount(&$list, &$count), dadd)/*{{{*/
 {
         _tIFnot(is_array(&$list)); //catching some bug in the program
         _yntIFnot( $ar=RelaxedArrayCount(&$list, &$count) );
         keepflagsL0($ar);
-}endfuncL0()/*}}}*/
+}endfunc0()/*}}}*/
 
-funcL0 (DelElemFromList($elem,&$list), dadd)/*{{{*/
+func0 (DelElemFromList($elem,&$list), dadd)/*{{{*/
 {
         _if (TRUE===is_array(&$list) && $key=array_search($elem, &$list, TRUE) ) {
                         unset($list[$key]);
@@ -71,13 +100,13 @@ funcL0 (DelElemFromList($elem,&$list), dadd)/*{{{*/
         } else {
                 addretflagL0(kAlready);
         }
-}endfuncL0(yes)/*}}}*/
+}endfunc0(yes)/*}}}*/
 
 class dmlphpL0 {
         protected $AllElements;
         //if an element doesn't have a relation whatsoever then it doesn't exist ie. cannot exist and be null
 
-        funcL0 (__construct(), dconstr)/*{{{*/
+        func0 (__construct(), dconstr)/*{{{*/
         {
                 $this->AllElements=array();
                 define(dParents,"Parents");
@@ -85,7 +114,7 @@ class dmlphpL0 {
 //when accessing ie. kParentsOf[$elem] you must make sure that $elem is scalar! aka not array! or an error/warning php issues
 #define kParentsOf $this->AllElements[dParents]
 #define kChildrenOf $this->AllElements[dChildren]
-        }endfuncL0(ok)/*}}}*/
+        }endfunc0(ok)/*}}}*/
 
 /*yeah doesn't work        function &returnArray($type)
         {
@@ -99,56 +128,56 @@ class dmlphpL0 {
                 _yntIF("must choose one of dParents, dChildren; you chose: !".$type."!");
         }*/
 
-        funcL0 (TestElementInvariants(&$elem) ,dtest)
+        func0 (TestElementInvariants(&$elem) ,dtest)
         {
-                _if (is_string(&$elem) ) {
+                _if (is_string($elem)){ //we allow empty string as a valid element id && ! empty($elem)) {
                         addretflagL0(yes);
                 } else {
                         debnl(dtestcrit, "TestElementInvariants: var that failed test is \" ".retValue(&$elem)."\"");
                         addretflagL0(no);
                 }
-        }endfuncL0()
+        }endfunc0()
 
-        funcL0 (__destruct(), ddestr)/*{{{*/
+        func0 (__destruct(), ddestr)/*{{{*/
         {
                 $this->AllElements=null;//i wonder if this destroys recursively; common sense tells me yes
-        }endfuncL0(ok)/*}}}*/
+        }endfunc0(ok)/*}}}*/
 
 //TODO: we would add a next level to be able to add dup elements into a list; the list will hold transparent(to the level of dup elements) unique elements that point to the real elements, thus we got dup elements build on unique elements...
 
-        protected funcL0 (addChild($parent,$child), dadd)/*{{{*/
+        protected func0 (addChild($parent,$child), dadd)/*{{{*/
         {//let me make smth str8: $parent and $child are ID names similar to pointer value of some pointer, not the actual data but the pointer to the data; these IDs are names/descriptions but they really are pointers; remember that the data is(are) rather irrelevant, the relations(/-ships) within the data are the relevant ones
                 _yntIFnot($this->TestElementInvariants($parent));
                 _yntIFnot($this->TestElementInvariants($child));
                 _yntIFnot( $ar=UniqAppendElemToList($child, kChildrenOf[$parent]/* returnArray(dChildren)[$parent]*/ ) );
                 keepflagsL0($ar);
-        }endfuncL0()/*}}}*/
+        }endfunc0()/*}}}*/
 
-        protected funcL0 (addParent($child,$parent), dadd)/*{{{*/
+        protected func0 (addParent($child,$parent), dadd)/*{{{*/
         {
                 _yntIFnot($this->TestElementInvariants($parent));
                 _yntIFnot($this->TestElementInvariants($child));
                 _yntIFnot( $retlist=UniqAppendElemToList($parent, kParentsOf[$child]) );
                 keepflagsL0($retlist);
-        }endfuncL0()/*}}}*/
+        }endfunc0()/*}}}*/
 
-        protected funcL0 (delChild($parent,$child), ddel)/*{{{*/
+        protected func0 (delChild($parent,$child), ddel)/*{{{*/
         {
                 _yntIFnot($this->TestElementInvariants($parent));
                 _yntIFnot($this->TestElementInvariants($child));
                 _yntIFnot( $ar=DelElemFromList($child, kChildrenOf[$parent] ) );
                 keepflagsL0($ar);
-        }endfuncL0()/*}}}*/
+        }endfunc0()/*}}}*/
 
-        protected funcL0 (delParentFromChild($parent,$child), ddel)/*{{{*/
+        protected func0 (delParentFromChild($parent,$child), ddel)/*{{{*/
         {
                 _yntIFnot($this->TestElementInvariants($parent));
                 _yntIFnot($this->TestElementInvariants($child));
                 _yntIFnot( $ar=DelElemFromList($parent, kParentsOf[$child] ) );
                 keepflagsL0($ar);
-        }endfuncL0()/*}}}*/
+        }endfunc0()/*}}}*/
 
-        funcL0 (ynIsNode($node), dis)/*{{{*/
+        func0 (ynIsNode($node), dis)/*{{{*/
         {//let me remind you that a Node(be it parent of child) cannot exist unless it is a part of a relationship, ie. another node is somehow connected to it
                 _yntIFnot($this->TestElementInvariants($node));
                 _if( TRUE===is_array(kChildrenOf[$node]) || TRUE===is_array(kParentsOf[$node])) {
@@ -156,9 +185,9 @@ class dmlphpL0 {
                 } else {
                         addretflagL0(no);
                 }
-        }endfuncL0()/*}}}*/
+        }endfunc0()/*}}}*/
 
-        funcL0 (ynIsPCRel($parent,$child), dis)/*{{{*/
+        func0 (ynIsPCRel($parent,$child), dis)/*{{{*/
         {
                 _yntIFnot($this->TestElementInvariants($parent));
                 _yntIFnot($this->TestElementInvariants($child));
@@ -167,20 +196,20 @@ class dmlphpL0 {
                 } else {
                         addretflagL0(no);
                 }
-        }endfuncL0()/*}}}*/
+        }endfunc0()/*}}}*/
 
-        funcL0 (GetOfParent_AllChildren($parent,&$children), dget)/*{{{*/
+        func0 (GetOfParent_AllChildren($parent,&$children), dget)/*{{{*/
         {
                 _yntIFnot($this->TestElementInvariants($parent));
                 _ifnot (is_array($parent)) {
                         $children=kChildrenOf[$parent];
                         _if (is_array($children)) {
-                                endnowL0(yes);
+                                endnow0(yes);
                         }
                 }
-        }endfuncL0(no)/*}}}*/
+        }endfunc0(no)/*}}}*/
 
-        funcL0 (DelAllChildrenOf($parent), ddel)/*{{{*/
+        func0 (DelAllChildrenOf($parent), ddel)/*{{{*/
         {
                 _yntIFnot($this->TestElementInvariants($parent));
                 $children=&kChildrenOf[$parent];// get all children of the $parent
@@ -191,20 +220,20 @@ class dmlphpL0 {
                         }
                         $children=null;//empty the array of children of the $parent
                 }
-        }endfuncL0(yes)/*}}}*/
+        }endfunc0(yes)/*}}}*/
 
-        funcL0 (GetOfChild_AllParents($child,&$parents), dget)/*{{{*/
+        func0 (GetOfChild_AllParents($child,&$parents), dget)/*{{{*/
         {
                 _yntIFnot($this->TestElementInvariants($child));
                 _ifnot (is_array($child)) {
                         $parents=kParentsOf[$child];
                         _if (is_array($parents)) {
-                                endnowL0(yes);
+                                endnow0(yes);
                         }
                 }
-        }endfuncL0(no)/*}}}*/
+        }endfunc0(no)/*}}}*/
 
-        funcL0 (DelAllParents($child), ddel)/*{{{*/
+        func0 (DelAllParents($child), ddel)/*{{{*/
         {
                 _yntIFnot($this->TestElementInvariants($child));
                 $parents=&kParentsOf[$child];
@@ -215,7 +244,7 @@ class dmlphpL0 {
                         }
                         $parents=null;//empty the array of children of the $parent
                 }
-        }endfuncL0(yes)/*}}}*/
+        }endfunc0(yes)/*}}}*/
 
 
 }//endclass

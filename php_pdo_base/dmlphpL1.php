@@ -37,22 +37,37 @@
 #include "color.php"
 #include "dmlphpL0.php"
 
+#define func1(funcdef, debuglevels) \
+        func0(funcdef, debuglevels)
+
+#define endfunc1(...) \
+        endfunc0(__VA_ARGS__)
+
+#define endnow1(...) \
+        endnow0(__VA_ARGS__)
+
+#define func1re(funcdef, debuglevels) \
+        func0re(funcdef, debuglevels)
+
+#define endfunc1re(...) \
+        endfunc0re(__VA_ARGS__)
+
 class dmlphpL1 extends dmlphpL0 {
 
-        funcL0 (__construct(), dconstr)/*{{{*/
+        func1 (__construct(), dconstr)/*{{{*/
         {
                 __( $ar=parent::__construct() );
                 keepflagsL0($ar);
-        }endfuncL0()/*}}}*/
+        }endfunc1()/*}}}*/
 
-        funcL0 (__destruct(), ddestr)/*{{{*/
+        func1 (__destruct(), ddestr)/*{{{*/
         {
                 __( $ar=parent::__destruct() );
                 keepflagsL0($ar);
-        }endfuncL0()/*}}}*/
+        }endfunc1()/*}}}*/
 
                 //PC=parent, child (the parameters are in this order)
-        funcL0 (EnsurePCRel($parent,$child), densure)/*{{{*/
+        func1 (EnsurePCRel($parent,$child), densure)/*{{{*/
         {//a relation will only exist once
                 _yntIFnot($this->TestElementInvariants($parent));
                 _yntIFnot($this->TestElementInvariants($child));
@@ -61,9 +76,9 @@ class dmlphpL1 extends dmlphpL0 {
                 keepflagsL0($ar);
                 _yntIFnot( $ar=$this->addParent($child, $parent) );
                 keepflagsL0($ar);
-        }endfuncL0()/*}}}*/
+        }endfunc1()/*}}}*/
 
-        funcL0 (DelPCRel($parent,$child), dset)/*{{{*/
+        func1 (DelPCRel($parent,$child), dset)/*{{{*/
         {
                 _yntIFnot($this->TestElementInvariants($parent));
                 _yntIFnot($this->TestElementInvariants($child));
@@ -72,18 +87,18 @@ class dmlphpL1 extends dmlphpL0 {
                 keepflagsL0($ar);
                 _yntIFnot( $ar=$this->delParentFromChild($parent, $child) );
                 keepflagsL0($ar);
-        }endfuncL0()/*}}}*/
+        }endfunc1()/*}}}*/
 
-        funcL0 (SetOfParent_Children($parent,$children), dset)/*{{{*/
+        func1 (SetOfParent_Children($parent,$children), dset)/*{{{*/
         {//overwrites all children
                 _yntIFnot($this->TestElementInvariants($parent));
 
                 _yntIFnot( $this->DelAllChildrenOf($parent) );
                 _yntIFnot( $ar=$this->AppendToParent_Children($parent, $children) );
                 keepflagsL0($ar);
-        }endfuncL0()/*}}}*/
+        }endfunc1()/*}}}*/
 
-        funcL0 (AppendToParent_Children($parent,$children), dadd)/*{{{*/
+        func1 (AppendToParent_Children($parent,$children), dadd)/*{{{*/
         {//addition
                 _yntIFnot($this->TestElementInvariants($parent));
                 _ifnot( is_array($children) ) {
@@ -97,9 +112,9 @@ class dmlphpL1 extends dmlphpL0 {
                                 addretflagL0();
                 }*/
                 }
-        }endfuncL0(yes)/*}}}*/
+        }endfunc1(yes)/*}}}*/
 
-        funcL0 (DeleteFromParent_Children($parent,$children), dadd)/*{{{*/
+        func1 (DeleteFromParent_Children($parent,$children), dadd)/*{{{*/
         {//substraction
                 _yntIFnot($this->TestElementInvariants($parent));
                 _ifnot( is_array($children) ) {
@@ -108,21 +123,21 @@ class dmlphpL1 extends dmlphpL0 {
                 foreach ($children as $child) {
                         _yntIFnot( $this->DelPCRel($parent, $child) );
                 }
-        }endfuncL0(yes)/*}}}*/
+        }endfunc1(yes)/*}}}*/
 
-        funcL0 (GetCountOfChildren_OfParent(&$count,$parent), dget)/*{{{*/
+        func1 (GetCountOfChildren_OfParent(&$count,$parent), dget)/*{{{*/
         {
                 _yntIFnot($this->TestElementInvariants($parent));
                 _yntIFnot( RelaxedArrayCount(&kChildrenOf[$parent], $count) );
-        }endfuncL0(yes)/*}}}*/
+        }endfunc1(yes)/*}}}*/
 
-        funcL0 (GetCountOfParents_OfChild(&$count,$child), dget)/*{{{*/
+        func1 (GetCountOfParents_OfChild(&$count,$child), dget)/*{{{*/
         {
                 _yntIFnot($this->TestElementInvariants($child));
                 _yntIFnot( RelaxedArrayCount(&kParentsOf[$child], $count) );
-        }endfuncL0(yes)/*}}}*/
+        }endfunc1(yes)/*}}}*/
 
-        funcL0re (ShowTreeOfChildrenForParent($parent, $startlevel=0), dshow)/*{{{*/
+        func1re (ShowTreeOfChildrenForParent($parent, $startlevel=0), dshow)/*{{{*/
         {
                 _yntIFnot($this->TestElementInvariants($parent));
                 for ($i=0; $i<$startlevel; $i++) {
@@ -140,9 +155,9 @@ class dmlphpL1 extends dmlphpL0 {
                                 _yntIFnot( $this->ShowTreeOfChildrenForParent($val, 1+$startlevel) );
                         }
                 }
-        }endfuncL0(yes)/*}}}*/
+        }endfunc1re(yes)/*}}}*/
 
-        funcL0re (ShowTreeOfParentsForChild($child, $startlevel=0), dshow)/*{{{*/
+        func1re (ShowTreeOfParentsForChild($child, $startlevel=0), dshow)/*{{{*/
         {
                 _yntIFnot($this->TestElementInvariants($child));
                 for ($i=0; $i<$startlevel; $i++) {
@@ -160,7 +175,7 @@ class dmlphpL1 extends dmlphpL0 {
                                 _yntIFnot( $this->ShowTreeOfParentsForChild($val, 1+$startlevel) );
                         }
                 }
-        }endfuncL0(yes)/*}}}*/
+        }endfunc1re(yes)/*}}}*/
 
 
 

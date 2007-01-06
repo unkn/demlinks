@@ -169,29 +169,33 @@ for ($i=debugstartfrom; $i <= $maxdebuglevel; $i++) {
 
 #define _tIFnot(__bool) \
                 { \
-                        _ifnot( __bool ) { \
-                                except( dropmsg("_tIFnot( ".#__bool." )") ) \
+                        $tifnot_var_temp=__bool; \
+                        _ifnot( $tifnot_var_temp ) { \
+                                except( dropmsg("_tIFnot( ".$tifnot_var_temp." )") ) \
                         } \
                 }
 
 #define _tIF(__bool) \
                 { \
-                        _if( __bool ) { \
-                                except( dropmsg("_tIF( ".#__bool." )") ) \
+                        $tif_var_temp=__bool; \
+                        _if( $tif_var_temp ) { \
+                                except( dropmsg("_tIF( ".$tif_var_temp." )") ) \
                         } \
                 }
 
 #define _yntIFnot(__ynbool) \
                 { \
-                        _ynifnot( __ynbool ) { \
-                                except( dropmsg("_yntIFnot( ".#__ynbool." )") ) \
+                        $yntifnot_var_temp=__ynbool; \
+                        _ynifnot( $yntifnot_var_temp ) { \
+                                except( dropmsg("_yntIFnot( ".$yntifnot_var_temp." )") ) \
                         } \
                 }
 
 #define _yntIF(__ynbool) \
                 { \
-                        _ynif( __ynbool ) { \
-                                except( dropmsg("_yntIF( ".#__ynbool." )") ) \
+                        $yntif_var_temp=__ynbool; \
+                        _ynif( $yntif_var_temp ) { \
+                                except( dropmsg("_yntIF( ".$yntif_var_temp." )") ) \
                         } \
                 }
 
@@ -307,7 +311,10 @@ function retValue($var)
         $ret='';
         if (TRUE===is_array($var)) {
                 foreach ($var as $v) {
-                        $ret.="'$v' ";
+                        if (!empty($ret)) {
+                                $ret+=" ";
+                        }
+                        $ret.="'$v'";
                 }
         } else {
                 if (!empty($var)) {
@@ -321,40 +328,56 @@ function retValue($var)
 //supposed to return either yes or no ONLY!, if u need to return something use a &$var as a parameter
 //actually it returns an array where one of yes or no is present, and other flags,if any,to signal status ie. yes,kAlreadyExists
 //non reentrant version:
-#define funcL0(funcdef,.../*debug levels here*/) /*{{{*/ \
-                funcL0_part1of2(funcdef,##__VA_ARGS__) \
-                DisallowReentry(); \
-                funcL0_part2of2(funcdef,##__VA_ARGS__)
+#define funcL0(funcdef,debuglevels,.../*onentry_hook if any*/) /*{{{*/ \
+                funcL0_part1of2(funcdef) \
+                DisallowLocalReentry();\
+                funcL0_part2of2(funcdef,debuglevels,##__VA_ARGS__)
 
-//reentrant version:
-#define funcL0re(funcdef,.../*debug levels here*/) \
-                funcL0_part1of2(funcdef,##__VA_ARGS__) \
-                funcL0_part2of2(funcdef,##__VA_ARGS__)
+//reentrant version(ie. for recursing functions):
+#define funcL0re(funcdef,debuglevels,.../*onentry_hook if any*/) \
+                funcL0_part1of2(funcdef) \
+                funcL0_part2of2(funcdef,debuglevels,##__VA_ARGS__)
 
-#define funcL0_part1of2(funcdef,.../*debug levels here*/) \
+#define funcL0_part1of2(funcdef) \
 ynfunc &funcdef \
         {
 
-#define funcL0_part2of2(funcdef,.../*debug levels here*/) \
+#define funcL0_part2of2(funcdef,debuglevels,.../*onentry_hook*/) \
+                __VA_ARGS__; \
                 $funcnameRFZAHJ=#funcdef; \
-                $other_debuglevelsRFZAHJ=array(__VA_ARGS__); \
+                $other_debuglevelsRFZAHJ=array(debuglevels); \
                 deb(getalist($other_debuglevelsRFZAHJ, dbeg), $funcnameRFZAHJ.":begin..."); \
                 $TheReturnStateList=array(kReturnStateList_type);//this sets this to array type and also flags this array as being a return type, needed on ynIsGood() to make the diff between our array and system returned arrays
 
-#define endnowL0(.../*more elements to add here*/) \
+#define endnowL0_part1of2(debuglevels,.../*onexit_hook*/) \
                 { \
-                        __( addretflagL0(__VA_ARGS__) ); \
+                        __( addretflagL0(debuglevels) ); \
                         global $AllReturnLists;\
                         $theKey="vim ".getfile." +".getline;\
                         $AllReturnLists[$theKey]=$TheReturnStateList;\
                         debnl(getalist($other_debuglevelsRFZAHJ, dend) , $funcnameRFZAHJ.":done:ynIsGood(".retValue($TheReturnStateList).")===".ynIsGood($TheReturnStateList));\
-                        AllowReentry(); \
+                        __VA_ARGS__;
+
+#define endnowL0_part2of2 \
                         return $TheReturnStateList; \
                 }
 
+//the bad part is that on each endnowL0 you'll have to add the onexit_hook parameter just as you added it to endfuncL0, that is if you want to be consistent; the good part is that you can define a shortcut and call that... see dmlphpL1.php
+#define endnowL0(debuglevels,.../*onexit_hook*/) \
+                        endnowL0_part1of2(debuglevels,##__VA_ARGS__); \
+                        AllowLocalReentry(); \
+                        endnowL0_part2of2
+                        #
+#define endnowL0re(debuglevels,.../*onexit_hook*/) \
+                        endnowL0_part1of2(debuglevels,##__VA_ARGS__); \
+                        endnowL0_part2of2
+
 // DO NOT append ";" to endfuncL0!!!
-#define endfuncL0(.../* more elements */) \
-                endnowL0(__VA_ARGS__) \
+#define endfuncL0re(debuglevels,.../*onexit_hook*/) \
+                endnowL0re(debuglevels,##__VA_ARGS__) \
+        }
+#define endfuncL0(debuglevels,.../*onexit_hook*/) \
+                endnowL0(debuglevels,##__VA_ARGS__) \
         }/*}}}*/
 
 #define isReturnStateList(_list) \

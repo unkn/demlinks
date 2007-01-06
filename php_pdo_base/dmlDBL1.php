@@ -33,7 +33,7 @@
 
 
 #include "shortdef.php"
-#include "debugL0.php"
+//#include "debugL1.php"
 //#include "dmlDBL0def.php"
 #include "dmlDBL0.php"
 #include "color.php"
@@ -48,7 +48,7 @@ class dmlDBL1 extends dmlDBL0
         private $sqlNewNode;
         private $fPrepNewNode;//prepared statement handler
 
-        funcL0 (__construct(), dconstr)/*{{{*/
+        funcL1 (__construct,(), dconstr)/*{{{*/
         {
                 __( parent::__construct() );
                 //--------- get ID by Name
@@ -62,60 +62,59 @@ class dmlDBL1 extends dmlDBL0
                 _yntIFnot( $this->fPrepNewNode->bindParam(paramNodeName, $this->fParamNodeName, PDO::PARAM_STR) ); //, PDO::PARAM_INT);
                 //---------
 
-        }endfuncL0(yes)/*}}}*/
+        }endfuncL1(yes)/*}}}*/
 
-        funcL0 (__destruct(), ddestr)/*{{{*/
+        funcL1 (__destruct,(), ddestr)/*{{{*/
         {
                 __( parent::__destruct() );
-        }endfuncL0(yes)/*}}}*/
+        }endfuncL1(yes)/*}}}*/
 
-        funcL0 (AddName($nodename),dadd)/*{{{*/
+        funcL1 (AddName,($nodename),dadd)/*{{{*/
         {
-                _yntIFnot( ynIsGood($nodename) );//must not be empty or so; if it is then maybe's a bug outside this funcL0 provided user shall never call this funcL0 with an empty param value
-                _ynifnot ($this->GetID($id,$nodename)) {
+                _artIFnot( $this->TestElementInvariants($nodename) );//must not be empty or so; if it is then maybe's a bug outside this funcL1 provided user shall never call this funcL1 with an empty param value
+                _arifnot ($this->GetID($id,$nodename)) {
                         deb(ddbadd,"attempting physical addition: ".$nodename);
                         $this->fParamNodeName=$nodename;
                         _yntIFnot( $this->fPrepNewNode->execute() );//error here? it probably already exists! error in GetID maybe
                         deb(ddbadd,greencol."succeded".nocol." physical addition: ".$nodename);
-                        addretflagL0(kAdded);
+                        addretflagL1(kAdded);
                 } else {
-                        addretflagL0(kAlready);
+                        addretflagL1(kAlready);
                 }//fielse
-        }endfuncL0(ok)/*}}}*/
+        }endfuncL1(ok)/*}}}*/
 
-        funcL0 (GetID(&$id,$nodename),dget)// returns ID by Name /*{{{*/
+        funcL1 (GetID,(&$id,$nodename),dget)// returns ID by Name /*{{{*/
         {
-                _yntIFnot($nodename);//_yntIFnot() uses ynIsGood($nodename) to evaluate the params instead of plain 'if'
+                _artIFnot( $this->TestElementInvariants($nodename) );
                 $this->fParamNodeName = $nodename;
                 _ynif ( $this->fPrepGetNodeID->execute() ) {
                         _ynif( $ar=$this->fPrepGetNodeID->FetchAll() ) {
                                 $id=(string)$ar[0][dNodeID];
-                                addretflagL0(yes);
+                                addretflagL1(yes);
                         } else {
-                                addretflagL0(no,kEmpty);
+                                addretflagL1(no,kEmpty);
                         }
                 } else {
-                        //$id='';
-                        addretflagL0(no);
+                        addretflagL1(no);
                 }
-        }endfuncL0()/*}}}*/
+        }endfuncL1()/*}}}*/
 
-        funcL0 (IsName($nodename), dis)/*{{{*/
+        funcL1 (IsName,($nodename), dis)/*{{{*/
         {
-                _yntIFnot($nodename);
-                _ynif( $this->GetID($id,$nodename) ) {
-                        _yntIF( ynIsNotGood($id) );
-                        endnowL0(yes);
+                _artIFnot( $this->TestElementInvariants($nodename) );
+                _arif( $this->GetID($id,$nodename) ) {
+                        _artIFnot( $this->TestElementInvariants($id) );
+                        endnowL1(yes);
                 }
-        }endfuncL0(no)/*}}}*/
+        }endfuncL1(no)/*}}}*/
 
-        funcL0 (DelName($nodename), ddel)/*{{{*/
+        funcL1 (DelName,($nodename), ddel)/*{{{*/
         {
-                _yntIF(ynIsNotGood($nodename));
-                _ynif ($this->GetID($id,$nodename)) {
-                        _yntIFnot( $this->DelID($id) );
+                _artIFnot( $this->TestElementInvariants($nodename) );
+                _arif ($this->GetID($id,$nodename)) {
+                        _artIFnot( $this->DelID($id) );
                 }
-        }endfuncL0(ok)/*}}}*/
+        }endfuncL1(ok)/*}}}*/
 
 } //class
 
