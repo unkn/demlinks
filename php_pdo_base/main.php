@@ -28,7 +28,6 @@
 ***************************************************************************}}}*/
 
 #include "shortdef.php"
-#include "debugL0.php"
 #include "color.php"
 #include "dmlDBL1.php"
 #include "dmlphpL2.php"
@@ -69,9 +68,9 @@
 
 
         _ynif ($dc->fFirstTime) {
-                deb(dinfo,"First time run!");
+                echo "First time run!".nl;
         } else {
-                deb(dinfo,"...using prev. defined table");
+                echo "...using prev. defined table".nl;
         }
 
         //_yntIFnot( $contents=file_get_contents("/home/emacs/phpnet.php") );
@@ -132,7 +131,7 @@
         _artIFnot( $dc->Show($result) );
         __( $arr=$result->fetchAll() );
         $count=count($arr);
-        deb(dnormal, "$count times.");
+        echo "$count times.".nl;
 
         _TRY( $dc->DelName("if") );
         __( $dc->IsName("if") );
@@ -140,7 +139,8 @@
         _artIFnot( $dc->Show($result) );
         __( $arr=$result->fetchAll() );
         $count=count($arr);
-        deb(dnormal, "$count times.");
+        echo "$count times.".nl;
+
         print_r($dc->IsID("1"));
 
         $dc=null;//ie. dispose()
@@ -201,7 +201,7 @@
 
         echo nocol.nl;
 
-        funcL1 (AnotherFunc,($someparam) , dshow)
+        funcL1 (AnotherFunc,($someparam))
         {
                 if (is_string($someparam)) {
                         setretflagL1($someparam);
@@ -210,7 +210,7 @@
                 }
         }endfuncL1("done")
 
-        funcL1 (GetName,(&$name, $id), dget)
+        funcL1 (GetName,(&$name, $id))
         {
                 print_r($name);
                 print_r($id);
@@ -248,13 +248,10 @@
         _yntIFnot( $debugL1->ShowTreeOfChildrenForParent(kAllReturns) );
         _yntIFnot( $debugL1->ShowTreeOfParentsForChild("a") );
         _yntIFnot( $debugL1->ShowTreeOfParentsForChild(yes) );
-        _yntIFnot( $debugL1->ShowTreeOfChildrenForParent(kAllDebugFlags) );
         _r( $debugL1->ynIsNode("a") );
         _r( $debugL1->ynIsNode("if") );
 
 
-
-        //print_r($AllReturnLists);
 
         endprogram
 // vim: fdm=marker

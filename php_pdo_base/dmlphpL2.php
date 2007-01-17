@@ -39,13 +39,13 @@
 
 class dmlphpL2 extends dmlphpL1 {
 
-        funcL0 (__construct(), dconstr)/*{{{*/
+        funcL0 (__construct())/*{{{*/
         {
                 __( $ar=parent::__construct() );
                 keepflagsL0($ar);
         }endfuncL0()/*}}}*/
 
-        funcL0 (__destruct(), ddestr)/*{{{*/
+        funcL0 (__destruct())/*{{{*/
         {
                 __( $ar=parent::__destruct() );
                 keepflagsL0($ar);

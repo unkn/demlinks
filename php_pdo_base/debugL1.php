@@ -43,7 +43,6 @@ if (!is_a($debugL1,"dmlphpL1")) {
 
 define(kAllFunctions,"kAllFunctions");
 define(kAllReturns,"kAllReturns");
-define(kAllDebugFlags,"kAllDebugFlags");
 define(kSetActedOnce,"kSetActedOnce");//to flag that setretflagL1() was executed once in the current function, thus executing it twice in the same serial_commands :-" is prone to detecting a bug
 
 #define addretflagL1(...) \
@@ -59,31 +58,30 @@ define(kSetActedOnce,"kSetActedOnce");//to flag that setretflagL1() was executed
 #define countretflagsL1(_into) \
         _yntIFnot( $debugL1->GetCountOfChildren_OfParent(_into, $TheReturnOfThisTime_forThisFunction) );
 
-#define funcL1(funcname, funcparams,.../*some or no debug flags here*/) /*{{{*/ \
-        funcL1_part1of2(funcname, funcparams,##__VA_ARGS__) \
+#define funcL1(funcname, funcparams) /*{{{*/ \
+        funcL1_part1of2(funcname, funcparams) \
         DisallowReentry(TRUE); /*reentring disallowed locally, ie. non-recursive!*/\
-        funcL1_part2of2(funcname, funcparams,##__VA_ARGS__)
+        funcL1_part2of2(funcname, funcparams)
 
-#define funcL1re(funcname, funcparams,.../*some or no debug flags here*/) \
-        funcL1_part1of2(funcname, funcparams,##__VA_ARGS__) \
-        funcL1_part2of2(funcname, funcparams,##__VA_ARGS__)
+#define funcL1re(funcname, funcparams) \
+        funcL1_part1of2(funcname, funcparams) \
+        funcL1_part2of2(funcname, funcparams)
 
-#define funcL1_part1of2(funcname, funcparams,.../*some or no debug flags here*/) \
+#define funcL1_part1of2(funcname, funcparams) \
         function funcname funcparams \
         {
 
-#define funcL1_part2of2(funcname, funcparams,.../*some or no debug flags here*/) \
+#define funcL1_part2of2(funcname, funcparams) \
                 $funcnameALKSD=#funcname." (vim ".getfile." +".getline.")"; \
-                $returnIDForThisFunction="AllReturnsForFunction: ".$funcnameALKSD; \
+                $allReturnsForThisFunction="AllReturnsForFunction: ".$funcnameALKSD; \
                 global $debugL1; \
                 _yntIFnot( $debugL1->EnsurePCRel(kAllFunctions, $funcnameALKSD) ); \
-                _yntIFnot( $debugL1->EnsurePCRel(kAllReturns, $returnIDForThisFunction) ); \
-                _yntIFnot( $debugL1->EnsurePCRel($funcnameALKSD, $returnIDForThisFunction) ); \
-                _yntIFnot( $debugL1->GetCountOfChildren_OfParent($TheReturnOfThisTime_forThisFunction, $returnIDForThisFunction) ); \
+                _yntIFnot( $debugL1->EnsurePCRel(kAllReturns, $allReturnsForThisFunction) ); \
+                _yntIFnot( $debugL1->EnsurePCRel($funcnameALKSD, $allReturnsForThisFunction) ); \
+                _yntIFnot( $debugL1->GetCountOfChildren_OfParent($TheReturnOfThisTime_forThisFunction, $allReturnsForThisFunction) ); \
                 $TheReturnOfThisTime_forThisFunction++; \
                 $TheReturnOfThisTime_forThisFunction=#funcname.$TheReturnOfThisTime_forThisFunction; \
-                _yntIFnot( $debugL1->EnsurePCRel($returnIDForThisFunction, $TheReturnOfThisTime_forThisFunction) ); \
-                _yntIFnot( $debugL1->AppendToParent_Children(kAllDebugFlags, array(dbeg,dend,##__VA_ARGS__)) );
+                _yntIFnot( $debugL1->EnsurePCRel($allReturnsForThisFunction, $TheReturnOfThisTime_forThisFunction) ); \
 
 #define endnowL1(...) \
                 addretflagL1(__VA_ARGS__); \
@@ -99,7 +97,7 @@ define(kSetActedOnce,"kSetActedOnce");//to flag that setretflagL1() was executed
 boolfunc isValidReturnL1($val)/*{{{*/
 {
         global $debugL1;
-        //kAllReturns -> $returnIDForThisFunction -> $TheReturnOfThisTime_forThisFunction(aka $val)
+        //kAllReturns -> $allReturnsForThisFunction -> $TheReturnOfThisTime_forThisFunction(aka $val)
         //find parent $X for the child $val, where $X has the parent kAllReturns
         //in other words: kAllReturns -> $X -> $val    ... find $X, if any
         //but, what we do wanna know is whether $val is a child of kAllReturns, thus it would be a valid return from a function

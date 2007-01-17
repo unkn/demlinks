@@ -1,9 +1,9 @@
 " added on 19-20 December 2006 by AtKaaZ for demlinks
 syn case match
 
-syn keyword phpException	__ _r _yntIF _yntIFnot _tIF _tIFnot _TRY _ifnot exit deb _if beginprogram endprogram _ynif _ynifnot _artIFnot _artIF _arif _arifnot isFlagL1
+syn keyword phpException	__ _r _yntIF _yntIFnot _tIF _tIFnot _TRY _ifnot exit _if beginprogram endprogram _ynif _ynifnot _artIFnot _artIF _arif _arifnot isFlagL1
 syn keyword phpException	_ynifL0
-syn match   phpException    /\<d[_a-z0-9]\+[_a-z0-9]*/
+"syn match   phpException    /\<d[_a-z0-9]\+[_a-z0-9]*/
 
 syn keyword phpBoolean		yes no ok bad __VA_ARGS__ __construct __destruct
 

@@ -69,17 +69,17 @@ class dmlDBL0
                 return $this->valquote($whattable);
         }/*}}}*/
 
-        funcL1 (TestElementInvariants,(&$elem) ,dtest)
+        funcL1 (TestElementInvariants,(&$elem))
         {
                 _if (is_string($elem)) {//we allow empty string as a valid element id && !empty($elem) ) {
                         addretflagL1(yes);
                 } else {
-                        debnl(dtestcrit, "TestElementInvariants: var that failed test is \" ".retValue($elem)."\"");
+                        echo "TestElementInvariantsL1: var that failed test is \" ".retValue($elem)."\"".nl;
                         addretflagL1(no);
                 }
         }endfuncL1()
 
-        funcL1 (__construct,(), dconstr)/*{{{*/
+        funcL1 (__construct,())/*{{{*/
         {
                 // create a SQLite3 database file with PDO and return a database handle (Object Oriented)
                 _yntIFnot( $this->fDBHandle = new PDO('sqlite:'.dbasename,''/*user*/,''/*pwd*/,
@@ -109,12 +109,12 @@ class dmlDBL0
                 //---------
         }endfuncL1(yes)/*the return is for the endfunc internal test that requeires either yes or no on return*/ /*}}}*/
 
-        funcL1 (__destruct,(), ddestr)/*{{{*/
+        funcL1 (__destruct,())/*{{{*/
         {
                 $fDBHandle=null;
         }endfuncL1(yes)/*}}}*/
 
-        funcL1 (CreateDB,(),dcrea)/*{{{*/
+        funcL1 (CreateDB,())/*{{{*/
         {
 
                 $sqlNodeNames = 'CREATE TABLE '.$this->qNodeNames.
@@ -147,31 +147,31 @@ class dmlDBL0
         } endfuncL1()/*}}}*/
 
 //------------------------ transactions/*{{{*/
-        funcL1 (OpenTransaction,(), dbegtr) //only one active transaction at a time; PDO limitation?!/*{{{*/
+        funcL1 (OpenTransaction,()) //only one active transaction at a time; PDO limitation?!/*{{{*/
         {
                 _yntIFnot( $this->fDBHandle->beginTransaction() );
         }endfuncL1(ok)/*}}}*/
 
-        funcL1 (CloseTransaction,(),dendtr)/*{{{*/
+        funcL1 (CloseTransaction,())/*{{{*/
         {
                 _yntIFnot( $this->fDBHandle->commit() );
         }endfuncL1(ok)/*}}}*/
 
-        funcL1 (AbortTransaction,(), dabtr)/*{{{*/
+        funcL1 (AbortTransaction,())/*{{{*/
         {
                 _yntIFnot( $this->fDBHandle->rollBack() );
         }endfuncL1(ok)/*}}}*/
 //------------------------/*}}}*/
 
 
-        funcL1 (IsID,($id), dis)/*{{{*/
+        funcL1 (IsID,($id))/*{{{*/
         {
                 _artIFnot($this->TestElementInvariants($id));
                 __( $exists=$this->GetName($name,$id) );
                 _tIF(isL1YesReturn($exists) && isL1NoReturn($this->TestElementInvariants($name)) );
         }endfuncL1($exists)/*}}}*/
 
-        funcL1 (GetName,(&$name,$id),dget)// returns Name by ID /*{{{*/
+        funcL1 (GetName,(&$name,$id))// returns Name by ID /*{{{*/
         {
                 _artIFnot($this->TestElementInvariants($id));
                 $this->fParamNodeID = $id;
@@ -186,14 +186,14 @@ class dmlDBL0
         }endfuncL1()/*}}}*/
 
 
-        funcL1 (DelID,($id), ddel)/*{{{*/
+        funcL1 (DelID,($id))/*{{{*/
         {
                 _artIFnot($this->TestElementInvariants($id));
                 $this->fParamNodeID = $id;
                 _yntIFnot( $this->fPrepDelID->execute() );
         }endfuncL1(ok)/*}}}*/
 
-        funcL1 (Show,(&$result),dshow)//temp/*{{{*/
+        funcL1 (Show,(&$result))//temp/*{{{*/
         {
                 $sqlGetView = 'SELECT * FROM '.$this->qNodeNames;
                 _yntIFnot( $result=$this->fDBHandle->query($sqlGetView) );

@@ -48,7 +48,7 @@ class dmlDBL1 extends dmlDBL0
         private $sqlNewNode;
         private $fPrepNewNode;//prepared statement handler
 
-        funcL1 (__construct,(), dconstr)/*{{{*/
+        funcL1 (__construct,())/*{{{*/
         {
                 __( parent::__construct() );
                 //--------- get ID by Name
@@ -64,26 +64,24 @@ class dmlDBL1 extends dmlDBL0
 
         }endfuncL1(yes)/*}}}*/
 
-        funcL1 (__destruct,(), ddestr)/*{{{*/
+        funcL1 (__destruct,())/*{{{*/
         {
                 __( parent::__destruct() );
         }endfuncL1(yes)/*}}}*/
 
-        funcL1 (AddName,($nodename),dadd)/*{{{*/
+        funcL1 (AddName,($nodename))/*{{{*/
         {
                 _artIFnot( $this->TestElementInvariants($nodename) );//must not be empty or so; if it is then maybe's a bug outside this funcL1 provided user shall never call this funcL1 with an empty param value
                 _arifnot ($this->GetID($id,$nodename)) {
-                        deb(ddbadd,"attempting physical addition: ".$nodename);
                         $this->fParamNodeName=$nodename;
                         _yntIFnot( $this->fPrepNewNode->execute() );//error here? it probably already exists! error in GetID maybe
-                        deb(ddbadd,greencol."succeded".nocol." physical addition: ".$nodename);
                         addretflagL1(kAdded);
                 } else {
                         addretflagL1(kAlready);
                 }//fielse
         }endfuncL1(ok)/*}}}*/
 
-        funcL1 (GetID,(&$id,$nodename),dget)// returns ID by Name /*{{{*/
+        funcL1 (GetID,(&$id,$nodename))// returns ID by Name /*{{{*/
         {
                 _artIFnot( $this->TestElementInvariants($nodename) );
                 $this->fParamNodeName = $nodename;
@@ -99,7 +97,7 @@ class dmlDBL1 extends dmlDBL0
                 }
         }endfuncL1()/*}}}*/
 
-        funcL1 (IsName,($nodename), dis)/*{{{*/
+        funcL1 (IsName,($nodename))/*{{{*/
         {
                 _artIFnot( $this->TestElementInvariants($nodename) );
                 _arif( $this->GetID($id,$nodename) ) {
@@ -108,7 +106,7 @@ class dmlDBL1 extends dmlDBL0
                 }
         }endfuncL1(no)/*}}}*/
 
-        funcL1 (DelName,($nodename), ddel)/*{{{*/
+        funcL1 (DelName,($nodename))/*{{{*/
         {
                 _artIFnot( $this->TestElementInvariants($nodename) );
                 _arif ($this->GetID($id,$nodename)) {
