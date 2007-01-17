@@ -144,9 +144,9 @@
 
 #define beginprogram \
                 try { \
-                        echo "Program begins...".nl;
+                        show("Program begins...");
 #define endprogram \
-                        echo "Ending program...".nl;\
+                        show("Ending program...");\
                 } catch (Exception $e) { \
                         die(quitmsg); \
                 }
@@ -214,6 +214,10 @@ function retValue($var)
         }
         return $ret;
 }
+
+#define show(text) \
+                echo nocol.text." (vim ".getfile." +".getline.")" .nl;
+
 
 
 //supposed to return either yes or no ONLY!, if u need to return something use a &$var as a parameter

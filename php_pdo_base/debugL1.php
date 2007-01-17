@@ -37,7 +37,7 @@
 #include "debugL0.php"
 
 if (!is_a($debugL1,"dmlphpL1")) {
-        echo "Initializing dmlphpL1".nl;
+        show( "Initializing dmlphpL1");
         $debugL1=new dmlphpL1;
 }
 
@@ -81,7 +81,7 @@ define(kSetActedOnce,"kSetActedOnce");//to flag that setretflagL1() was executed
                 _yntIFnot( $debugL1->GetCountOfChildren_OfParent($TheReturnOfThisTime_forThisFunction, $allReturnsForThisFunction) ); \
                 $TheReturnOfThisTime_forThisFunction++; \
                 $TheReturnOfThisTime_forThisFunction=#funcname.$TheReturnOfThisTime_forThisFunction; \
-                _yntIFnot( $debugL1->EnsurePCRel($allReturnsForThisFunction, $TheReturnOfThisTime_forThisFunction) ); \
+                _yntIFnot( $debugL1->EnsurePCRel($allReturnsForThisFunction, $TheReturnOfThisTime_forThisFunction) );
 
 #define endnowL1(...) \
                 addretflagL1(__VA_ARGS__); \

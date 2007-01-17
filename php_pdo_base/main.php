@@ -34,7 +34,7 @@
 #include "debugL1.php"
 
 #define _r(...) \
-        __( echo retValue( __VA_ARGS__ ).nl );
+        __( show( retValue( __VA_ARGS__ )) );
 
         beginprogram
         __( $dphp=new dmlphpL1 );
@@ -68,13 +68,13 @@
 
 
         _ynif ($dc->fFirstTime) {
-                echo "First time run!".nl;
+                show("First time run!");
         } else {
-                echo "...using prev. defined table".nl;
+                show("...using prev. defined table");
         }
 
         //_yntIFnot( $contents=file_get_contents("/home/emacs/phpnet.php") );
-        __( $res=split("[ .,/\\\"\?\<\>&!;|\#\$\*\+\{\}=\(\)'`\n\-]",file_get_contents("debugL0.php")) );
+        __( $res=split("[ .,/\\\"\?\<\>&!;|\#\$\*\+\{\}=\(\)'`\n\-]",file_get_contents("dmlDBL0def.php")) );
         _yntIF(1===count($res));
         $i=2;
         $cnt=0;
@@ -131,7 +131,7 @@
         _artIFnot( $dc->Show($result) );
         __( $arr=$result->fetchAll() );
         $count=count($arr);
-        echo "$count times.".nl;
+        show( "$count times.");
 
         _TRY( $dc->DelName("if") );
         __( $dc->IsName("if") );
@@ -139,7 +139,7 @@
         _artIFnot( $dc->Show($result) );
         __( $arr=$result->fetchAll() );
         $count=count($arr);
-        echo "$count times.".nl;
+        show( "$count times.");
 
         print_r($dc->IsID("1"));
 
@@ -236,7 +236,7 @@
         AnotherFunc(2);
 
         $a="a";
-        _yntIFnot( $c=$debugL1->ShowTreeOfParentsForChild( GetName($a,"a") ) );
+        //_yntIFnot( $c=$debugL1->ShowTreeOfParentsForChild( GetName($a,"a") ) );
         echo isValidReturnL1($c);
         print_r( isValidReturnL1( GetName($a,"b") ));
         echo isValidReturnL1( GetName($a,"1") );
@@ -244,10 +244,10 @@
         echo isValidReturnL1( GetName($a,"2") );
         echo isValidReturnL1( GetName($a,"c") );
         global $debugL1;
-        _yntIFnot( $debugL1->ShowTreeOfChildrenForParent(kAllFunctions) );
+        /*_yntIFnot( $debugL1->ShowTreeOfChildrenForParent(kAllFunctions) );
         _yntIFnot( $debugL1->ShowTreeOfChildrenForParent(kAllReturns) );
         _yntIFnot( $debugL1->ShowTreeOfParentsForChild("a") );
-        _yntIFnot( $debugL1->ShowTreeOfParentsForChild(yes) );
+        _yntIFnot( $debugL1->ShowTreeOfParentsForChild(yes) );*/
         _r( $debugL1->ynIsNode("a") );
         _r( $debugL1->ynIsNode("if") );
 

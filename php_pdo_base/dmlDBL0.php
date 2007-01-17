@@ -74,7 +74,7 @@ class dmlDBL0
                 _if (is_string($elem)) {//we allow empty string as a valid element id && !empty($elem) ) {
                         addretflagL1(yes);
                 } else {
-                        echo "TestElementInvariantsL1: var that failed test is \" ".retValue($elem)."\"".nl;
+                        show( "TestElementInvariantsL1: var that failed test is \" ".retValue($elem)."\"");
                         addretflagL1(no);
                 }
         }endfuncL1()
