@@ -37,37 +37,37 @@
         __( show( retValue( __VA_ARGS__ )) );
 
         beginprogram
-        __( $dphp=new dmlphpL1 );
-        _r( $dphp->EnsurePCRel("A","B") );
-        _r( $dphp->EnsurePCRel("A","B") );
+        /*__( $dmlar=new dmlphpL1 );
+        _r( $dmlar->EnsurePCRel("A","B") );
+                _r( $dmlar->EnsurePCRel("A","B") );*/
         /*$flags=array(kOverwrite,kKeepPrevValue,kCreateNodeIfNotExists,kTruncateIfMoreThanOneNode);
-        _r( $dphp->MakePointer($ptr,kParent,"P", $flags) );//kAlready, kInvalid(if kKeep...)
+        _r( $dmlar->MakePointer($ptr,kParent,"P", $flags) );//kAlready, kInvalid(if kKeep...)
         _r( $ptr->SetPointee("A") );//P->A also creates DMLPointers->Parents->P
-        _r( $dphp->MakePointer($ptr,kChild,"cP", $flags) );//kAlready, kInvalid(if kKeep...)
+        _r( $dmlar->MakePointer($ptr,kChild,"cP", $flags) );//kAlready, kInvalid(if kKeep...)
         _r( $ptr->SetPointee("A") );//A->cP also creates DMLPointers->Children, cP->Children
         _r( $ptr->GetPointee($val) );
         echo $val;//A
-        _r( $ptr->GetEnvironment($dphpgot) );//===$dphp
+        _r( $ptr->GetEnvironment($dphpgot) );//===$dmlar
         _r( $ptr->GetPointer($val) ); //==="cP"
 
         $flags=kNone;//so far
-        _r( $dphp->MakeCursor($curs, kParent,"CursP", $flags) );
+        _r( $dmlar->MakeCursor($curs, kParent,"CursP", $flags) );
         _r( $curs->Find("A") );
         $curs->Del("A");
                 Get
 
         $flags=array(kCurrentNode, kAfterNode | kNextNode, kBeforeNode | kPrevNode, kFirstNode, kLastNode);
         Put("A", $flags);
-        Put("B", array(kAfterNode|kNextNode, kBeforeNode|kPrevNode, kThisNode|kOverwriteThisNode), "A");
+        Put("B", array(kAfterNode|kNextNode, kBeforeNode|kPrevNode, kPinPointNode|kOverwriteThisNode), "A");
         Count($result);
         //a CURSOR should have 3 states, kExact, kBefore, kAfter   Node X, just in case Del() acts on node X, the cursor would be kAfter the element that was before X, or/and kBefore the element that was after X (ie. P->A, P->X, P->B)
          */
 
-        _yntIFnot( $dc=new dmlDBL1 );
-        //debug_zval_dump($dc);
+        _yntIFnot( $dmlDB=new dmlDBL1 );
+        //debug_zval_dump($dmlDB);
 
 
-        _ynif ($dc->fFirstTime) {
+        _ynif ($dmlDB->fFirstTime) {
                 show("First time run!");
         } else {
                 show("...using prev. defined table");
@@ -79,7 +79,8 @@
         $i=2;
         $cnt=0;
         $prevval="";
-        _artIFnot( $dc->OpenTransaction() );
+        _artIFnot( $dmlDB->OpenTransaction() );
+        $aborted=no;
         foreach ($res as $val) {
                      $val=trim($val);
                 _ynif ($val) {//ie. non-empty
@@ -88,9 +89,9 @@
 
                    _TRY(
 
-                        _yntIFnot( $ret=$dphp->EnsurePCRel($prevval, $val) );
+                        //_yntIFnot( $ret=$dmlar->EnsurePCRel($prevval, $val) );
                         $prevval=$val;
-                        _artIFnot( $ret=$dc->AddName($val) );
+                        _artIFnot( $ret=$dmlDB->AddName($val) );
                         //echo retValue($ret);
                         //_if (isValue_InList(kAdded,$ret)) {
                         //_ifnot (isValue_InList(kAlready,$ret)) {
@@ -109,96 +110,96 @@
                         $cnt++;//echo "cnt=".$cnt.nl;
 
                         //if ($cnt % 15 == 0) {
-                                //_yntIFnot( $dc->CloseTransaction() );
+                                //_yntIFnot( $dmlDB->CloseTransaction() );
                         //}
 
-                   , _yntIFnot( $dc->AbortTransaction());$aborted=yes ;break );//_TRY
+                   , _yntIFnot( $dmlDB->AbortTransaction());$aborted=yes ;break );//_TRY
 
                 } //fi
         }
        echo nocol.nl;
         //if ( $cnt % 15 !== 0) { //left it open? if so close it
                 _ynifnot($aborted) {
-                        _artIFnot( $dc->CloseTransaction() );
+                        _artIFnot( $dmlDB->CloseTransaction() );
                 }
         //}
        echo nocol.nl;
 
 
 
-        _artIFnot( $dc->IsName("if") );
+        _artIFnot( $dmlDB->IsName("if") );
 
-        _artIFnot( $dc->Show($result) );
-        __( $arr=$result->fetchAll() );
+        _artIFnot( $dmlDB->Show($into) );
+        __( $arr=$into->fetchAll() );
         $count=count($arr);
-        show( "$count times.");
+        show( "Before del: $count times.");
 
-        _TRY( $dc->DelName("if") );
-        __( $dc->IsName("if") );
+        _TRY( $dmlDB->DelName("if") );
+        __( $dmlDB->IsName("if") );
 
-        _artIFnot( $dc->Show($result) );
-        __( $arr=$result->fetchAll() );
+        _artIFnot( $dmlDB->Show($into) );
+        __( $arr=$into->fetchAll() );
         $count=count($arr);
-        show( "$count times.");
+        show( "After del:  $count times.");
 
-        print_r($dc->IsID("1"));
+        //print_r($dmlDB->IsID("1"));
 
-        $dc=null;//ie. dispose()
-
+        $dmlDB=null;//ie. dispose()
+/*
         //$arc=array();
         echo redcol.nl;
-        _yntIFnot( $dphp->GetOfChild_AllParents("if",$arc) );
+        _yntIFnot( $dmlar->GetOfChild_AllParents("if",$arc) );
         echo "Parents of 'if': ".retValue($arc).nl;
 
-        _yntIFnot( $dphp->GetOfParent_AllChildren("if",$arc) );
+        _yntIFnot( $dmlar->GetOfParent_AllChildren("if",$arc) );
         echo "Children of 'if': ".retValue($arc).nl;
 
-        _r( $dphp->ynIsPCRel("text","if") );
-        _r( $dphp->DelPCRel("if","yes") );
-        _r( $dphp->DelPCRel("if","yes") );
-        _r( $dphp->ynIsPCRel("if","yes") );
+        _r( $dmlar->ynIsPCRel("text","if") );
+        _r( $dmlar->DelPCRel("if","yes") );
+        _r( $dmlar->DelPCRel("if","yes") );
+        _r( $dmlar->ynIsPCRel("if","yes") );
 
         echo greencol.nl;
-        _yntIFnot( $dphp->GetOfParent_AllChildren("if",$arc) );
+        _yntIFnot( $dmlar->GetOfParent_AllChildren("if",$arc) );
         echo "Children of 'if' after del child 'yes': ".retValue($arc).nl;
 
-        _r( $dphp->DelPCRel("text","if") );
+        _r( $dmlar->DelPCRel("text","if") );
         echo greencol;
 
-        _yntIFnot( $dphp->GetOfChild_AllParents("if",$arc) );
+        _yntIFnot( $dmlar->GetOfChild_AllParents("if",$arc) );
         echo "Parents of 'if' after parent 'text' del: ".retValue($arc).nl;
 
 
         echo purplecol.nl;
-        _yntIFnot( $dphp->GetOfChild_AllParents("not",$arc) );
+        _yntIFnot( $dmlar->GetOfChild_AllParents("not",$arc) );
         echo "Parents of 'not': ".retValue($arc).nl;
 
-        _yntIFnot( $dphp->DelAllChildrenOf("if") );
+        _yntIFnot( $dmlar->DelAllChildrenOf("if") );
 
-        __( $dphp->GetOfParent_AllChildren("if",$arc) );
+        __( $dmlar->GetOfParent_AllChildren("if",$arc) );
         echo "Children after del all children of 'if': ".retValue($arc).nl;
 
-        _yntIFnot( $dphp->GetOfChild_AllParents("not",$arc) );
+        _yntIFnot( $dmlar->GetOfChild_AllParents("not",$arc) );
         echo "Parents of 'not', not 'if'; after del: ".retValue($arc).nl;
 
 
         echo greencol.nl;
-        __( $dphp->GetOfParent_AllChildren("program",$arc) );
+        __( $dmlar->GetOfParent_AllChildren("program",$arc) );
         echo "Children of 'program', before del 'if': ".retValue($arc).nl;
 
-        _yntIFnot( $dphp->GetOfChild_AllParents("if",$arc) );
+        _yntIFnot( $dmlar->GetOfChild_AllParents("if",$arc) );
         echo "Parents of 'if', before del: ".retValue($arc).nl;
 
-        _yntIFnot( $dphp->DelAllParents("if") );
+        _yntIFnot( $dmlar->DelAllParents("if") );
 
-        __( $dphp->GetOfChild_AllParents("if",$arc) );
+        __( $dmlar->GetOfChild_AllParents("if",$arc) );
         echo "Parents of 'if', after del: ".retValue($arc).nl;
 
-        __( $dphp->GetOfParent_AllChildren("program",$arc) );
+        __( $dmlar->GetOfParent_AllChildren("program",$arc) );
         echo "Children of 'program', after del 'if': ".retValue($arc).nl;
-
-        $dphp=null;//ie. dispose()
-
+        $dmlar=null;//ie. dispose()
+ */
+/*
         echo nocol.nl;
 
         funcL1 (AnotherFunc,($someparam))
@@ -243,13 +244,61 @@
         echo isValidReturnL1( GetName($a,"3") );
         echo isValidReturnL1( GetName($a,"2") );
         echo isValidReturnL1( GetName($a,"c") );
+*/
         global $debugL1;
-        /*_yntIFnot( $debugL1->ShowTreeOfChildrenForParent(kAllFunctions) );
+/*        _yntIFnot( $debugL1->ShowTreeOfChildrenForParent(kAllFunctions) );
         _yntIFnot( $debugL1->ShowTreeOfChildrenForParent(kAllReturns) );
         _yntIFnot( $debugL1->ShowTreeOfParentsForChild("a") );
         _yntIFnot( $debugL1->ShowTreeOfParentsForChild(yes) );*/
-        _r( $debugL1->ynIsNode("a") );
-        _r( $debugL1->ynIsNode("if") );
+        //_r( $debugL1->ynIsNode("a") );
+        //_r( $debugL1->ynIsNode("if") );
+        //$debugL1->a();
+        __($debugL1->GetCursor_ofType_ofID($curs, kParent, kAllFunctions));
+        show($debugL1);
+        //$debugL1->b();
+        _yntIFnot($curs->GetEnvironment($somevar));
+        show($somevar);
+        exit;
+
+        __($ar=$curs->Get(kFirst, $id) );
+        while (ynIsGood($ar)) {
+                __($ar=$curs->Get(kNext, $id) );
+        }
+
+        __($curs->GetCursorTypeAndID($type,$id) );
+        show($type);//kParent
+        show($id);//'a'
+
+        _yntIFnot($curs->Get(kLast, $id) );
+        _yntIFnot($curs->Get(kPrev, $id) );
+        _yntIFnot($curs->Get(kCurrent, $id) );
+        _yntIFnot($curs->Get(kPinPoint, $id) );//aka Find
+        _yntIFnot($curs->Get(kBefore,$what,$id) );
+        _yntIFnot($curs->Get(kAfter,$what,$id) );
+
+        _yntIFnot($curs->Find($id) );//next level wrapper for Get kPinPoint
+        _yntIFnot($curs->Put(kFirst,$id) );
+        _yntIFnot($curs->Put(kLast,$id) );
+        _yntIFnot($curs->Put(kPrev,$id) );
+        _yntIFnot($curs->Put(kNext,$id) );
+        _yntIFnot($curs->Put(kCurrent,$id) );
+
+        _yntIFnot($curs->Put(kAfter,$what,$id) );
+        _yntIFnot($curs->Put(kBefore,$what,$id) );
+
+        _yntIFnot($curs->Del(kAfter,$what) );
+        _yntIFnot($curs->Del(kBefore,$what) );
+        _yntIFnot($curs->Del(kCurrent) );
+        _yntIFnot($curs->Del(kNext) );
+        _yntIFnot($curs->Del(kPrev) );
+        _yntIFnot($curs->Del(kFirst) );
+        _yntIFnot($curs->Del(kLast) );
+        _yntIFnot($curs->Del(kPinPoint, $id) );
+
+        _yntIFnot($curs->Count($howmany) );
+
+        __( $curs=null; );
+
 
 
 

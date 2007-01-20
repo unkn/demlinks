@@ -34,7 +34,7 @@
 #include "color.php"
 #include "reentry.php"
 
-#define IMMEDIATE_REPORTS   //echo the exception when it occurs!
+//#define IMMEDIATE_REPORTS   //echo the exception when it occurs!
 
 
 #define boolfunc function
@@ -93,7 +93,7 @@
                 { \
                         $tifnot_var_temp=__bool; \
                         _ifnot( $tifnot_var_temp ) { \
-                                except( dropmsg("_tIFnot( ".$tifnot_var_temp." )") ) \
+                                except( dropmsg("_tIFnot( ".#__bool." )") ) \
                         } \
                 }
 
@@ -101,7 +101,7 @@
                 { \
                         $tif_var_temp=__bool; \
                         _if( $tif_var_temp ) { \
-                                except( dropmsg("_tIF( ".$tif_var_temp." )") ) \
+                                except( dropmsg("_tIF( ".#__bool." )") ) \
                         } \
                 }
 
@@ -109,7 +109,7 @@
                 { \
                         $yntifnot_var_temp=__ynbool; \
                         _ynifnot( $yntifnot_var_temp ) { \
-                                except( dropmsg("_yntIFnot( ".$yntifnot_var_temp." )") ) \
+                                except( dropmsg("_yntIFnot( ".#__ynbool." )") ) \
                         } \
                 }
 
@@ -117,7 +117,7 @@
                 { \
                         $yntif_var_temp=__ynbool; \
                         _ynif( $yntif_var_temp ) { \
-                                except( dropmsg("_yntIF( ".$yntif_var_temp." )") ) \
+                                except( dropmsg("_yntIF( ".#__ynbool." )") ) \
                         } \
                 }
 
@@ -194,6 +194,9 @@ procedure array_append_unique_values(&$towhatarray, $listofvalues)/*{{{*/
 #define isValue_InList(whatflag,inwhatlist) \
                 in_array(whatflag, inwhatlist, FALSE/*check types?=no*/)
 
+#define isFlagL0_InReturn(_flag, _list) \
+                isValue_InList(_flag, _list)
+
 #define isFlagL0(_flag) \
                 isValue_InList(_flag, $TheReturnStateList)
 
@@ -249,6 +252,7 @@ ynfunc &funcdef \
                         __VA_ARGS__;
 
 #define endnowL0_part2of2 \
+                        _tIF(!isValue_InList(yes,$TheReturnStateList) && !isValue_InList(no, $TheReturnStateList) ); \
                         return $TheReturnStateList; \
                 }
 
@@ -330,20 +334,20 @@ procedure rdef($what)
         if (TRUE===defined($what)) {
                 die("already defined $what".nl);
         }
-        define($what,"$what");
+        define("$what","$what");
         ++$maxDifferentReturnItems;
 }
 
-define(kReturnStateList_type,"kReturnStateList_type"/*this array is a ReturnStateList type; this element is a way for ynIsGood() to determine that"*/);
+define('kReturnStateList_type',"flagged as ReturnState_List"/*this array is a ReturnStateList type; this element is a way for ynIsGood() to determine that"*/);
 //this is the kind that flags the return array from the function so that ynIsGood knows it's a return value instead of a normal array returned by ie. fetchAll()
 
 //define kConsts aka return types here:
-rdef(kAlready);
-rdef(kAdded);
-rdef(kCreatedDBNodeNames);
-rdef(kCreatedDBRelations);
-rdef(kEmpty);
-rdef(kOneElement);//one element detected, expected list; but it's ok even this way, we made that element into an one element list
+rdef('kAlready');
+rdef('kAdded');
+rdef('kCreatedDBNodeNames');
+rdef('kCreatedDBRelations');
+rdef('kEmpty');
+rdef('kOneElement');//one element detected, expected list; but it's ok even this way, we made that element into an one element list
 
 
 // vim: fdm=marker

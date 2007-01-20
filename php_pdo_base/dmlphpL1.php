@@ -52,71 +52,77 @@
 #define endfunc1re(...) \
         endfunc0re(__VA_ARGS__)
 
+#define addretflag1(...) \
+        addretflagL0(__VA_ARGS__)
+
+#define keepflags1(...) \
+        keepflagsL0(__VA_ARGS__)
+
 class dmlphpL1 extends dmlphpL0 {
 
         func1 (__construct())/*{{{*/
         {
                 __( $ar=parent::__construct() );
-                keepflagsL0($ar);
+                keepflags1($ar);
         }endfunc1()/*}}}*/
 
         func1 (__destruct())/*{{{*/
         {
                 __( $ar=parent::__destruct() );
-                keepflagsL0($ar);
+                keepflags1($ar);
         }endfunc1()/*}}}*/
 
                 //PC=parent, child (the parameters are in this order)
         func1 (EnsurePCRel($parent,$child))/*{{{*/
         {//a relation will only exist once
-                _yntIFnot($this->TestElementInvariants($parent));
-                _yntIFnot($this->TestElementInvariants($child));
+                _yntIFnot($this->ynTestElementInvariants($parent));
+                _yntIFnot($this->ynTestElementInvariants($child));
                 //well, no transaction... too bad
                 _yntIFnot( $ar=$this->addChild($parent, $child) );
-                keepflagsL0($ar);
+                keepflags1($ar);
                 _yntIFnot( $ar=$this->addParent($child, $parent) );
-                keepflagsL0($ar);
+                keepflags1($ar);
         }endfunc1()/*}}}*/
 
         func1 (DelPCRel($parent,$child))/*{{{*/
         {
-                _yntIFnot($this->TestElementInvariants($parent));
-                _yntIFnot($this->TestElementInvariants($child));
+                _yntIFnot($this->ynTestElementInvariants($parent));
+                _yntIFnot($this->ynTestElementInvariants($child));
                 //well, no transaction... too bad
                 _yntIFnot( $ar=$this->delChild($parent, $child) );
-                keepflagsL0($ar);
+                keepflags1($ar);
                 _yntIFnot( $ar=$this->delParentFromChild($parent, $child) );
-                keepflagsL0($ar);
+                keepflags1($ar);
         }endfunc1()/*}}}*/
 
         func1 (SetOfParent_Children($parent,$children))/*{{{*/
         {//overwrites all children
-                _yntIFnot($this->TestElementInvariants($parent));
+                _yntIFnot($this->ynTestElementInvariants($parent));
 
                 _yntIFnot( $this->DelAllChildrenOf($parent) );
                 _yntIFnot( $ar=$this->AppendToParent_Children($parent, $children) );
-                keepflagsL0($ar);
+                keepflags1($ar);
         }endfunc1()/*}}}*/
 
         func1 (AppendToParent_Children($parent,$children))/*{{{*/
         {//addition
-                _yntIFnot($this->TestElementInvariants($parent));
+                _yntIFnot($this->ynTestElementInvariants($parent));
                 _ifnot( is_array($children) ) {
                         $children=array($children);
-                        addretflagL0(kOneElement);
+                        addretflag1(kOneElement);
                 }
                 foreach ($children as $child) {
                         _yntIFnot( $ar=$this->EnsurePCRel($parent, $child) );
-                        keepflagsL0($ar);
+                        keepflags1($ar);
                         /*_if (isValue_InList(kAlready,$ar) ) {
-                                addretflagL0();
+                                addretflag1();
                 }*/
                 }
         }endfunc1(yes)/*}}}*/
 
         func1 (DeleteFromParent_Children($parent,$children))/*{{{*/
         {//substraction
-                _yntIFnot($this->TestElementInvariants($parent));
+                _yntIFnot($this->ynTestElementInvariants($parent));
                 _ifnot( is_array($children) ) {
                         $children=array($children);
                 }
@@ -127,19 +133,19 @@ class dmlphpL1 extends dmlphpL0 {
 
         func1 (GetCountOfChildren_OfParent(&$count,$parent))/*{{{*/
         {
-                _yntIFnot($this->TestElementInvariants($parent));
+                _yntIFnot($this->ynTestElementInvariants($parent));
                 _yntIFnot( RelaxedArrayCount(&kChildrenOf[$parent], $count) );
         }endfunc1(yes)/*}}}*/
 
         func1 (GetCountOfParents_OfChild(&$count,$child))/*{{{*/
         {
-                _yntIFnot($this->TestElementInvariants($child));
+                _yntIFnot($this->ynTestElementInvariants($child));
                 _yntIFnot( RelaxedArrayCount(&kParentsOf[$child], $count) );
         }endfunc1(yes)/*}}}*/
 
         func1re (ShowTreeOfChildrenForParent($parent, $startlevel=0))/*{{{*/
         {
-                _yntIFnot($this->TestElementInvariants($parent));
+                _yntIFnot($this->ynTestElementInvariants($parent));
                 for ($i=0; $i<$startlevel; $i++) {
                         echo " ";
                 }
@@ -159,7 +165,7 @@ class dmlphpL1 extends dmlphpL0 {
 
         func1re (ShowTreeOfParentsForChild($child, $startlevel=0))/*{{{*/
         {
-                _yntIFnot($this->TestElementInvariants($child));
+                _yntIFnot($this->ynTestElementInvariants($child));
                 for ($i=0; $i<$startlevel; $i++) {
                         echo " ";
                 }
@@ -180,6 +186,76 @@ class dmlphpL1 extends dmlphpL0 {
 
 
 }//endclass
+
+define('kNull','NullPtr');
+define('nil',emptystr);
+
+class dmlphpL1_Pointer {//random access pointer; can point to any ID, this makes connection between the php code(ie. a php var) and the demlinks environment which is held in php arrays; so it keeps a live link between php var and demlinks environment dmlphp; WTW!
+        protected $fPointee;//by convention empty() means NULL pointer
+        protected $fDMLEnv;
+        protected $fType;//kParent or kChild
+
+        func1 (__construct($dmlenv,$type,$pointee/*=nil*/))/*{{{*/
+        {
+                $this->fDMLEnv=&$dmlenv;
+                _tIFnot(is_object($this->fDMLEnv));
+                _yntIFnot( $this->fDMLEnv->ynTestTypeInvariants($type) );
+                $fType=$type;
+                _ynifnot($this->isNil($pointee)) {
+                        _yntIFnot($this->fDMLEnv->ynTestElementInvariants($pointee));
+                }
+                $this->fPointee=$pointee;//must be assigned prior to calling IsNull
+        }endfunc1(yes)/*}}}*/
+
+        func1 (__destruct())/*{{{*/
+        {
+        }endfunc1(yes)/*}}}*/
+
+        func1 (IsNull())/*{{{*/
+        {
+                _ynif($this->isNil($this->fPointee)) {
+                        addretflag1(yes);
+                } else {
+                        addretflag1(no);
+                }
+        }endfunc1()/*}}}*/
+
+        protected func1 (isNil($pointee))/*{{{*/
+        {
+                if (nil===$pointee) {
+                        addretflag1(yes);
+                } else {
+                        _tIF(empty($pointee));//something is wrong! because empty(nil)===TRUE
+                        addretflag1(no);
+                }
+        }endfunc1()/*}}}*/
+
+        func1 (SetNull())/*{{{*/
+        {
+                $this->SetPointee(nil);
+                //$this->fPointee=nil;
+        }endfunc1(yes)/*}}}*/
+
+        func1 (SetPointee($zpointee))/*{{{*/
+        {
+                _yntIFnot($this->fDMLEnv->ynTestElementInvariants($zpointee));
+                $this->fPointee=$zpointee;
+        }endfunc1(yes)/*}}}*/
+
+        func1 (GetPointee(&$zpointee))/*{{{*/
+        {
+                _ynif ($this->IsNull()) {
+                        endnow1(no, kNull);
+                }
+                $zpointee=$this->fPointee;
+        }endfunc1(yes)/*}}}*/
+
+        func1 (GetEnvironment(&$env))/*{{{*/
+        {
+                $env=&$this->fDMLEnv;
+        }endfunc1(yes)/*}}}*/
+}
+
 
 #endif //header ends
 // vim: fdm=marker

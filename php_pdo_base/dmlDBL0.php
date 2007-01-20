@@ -71,10 +71,10 @@ class dmlDBL0
 
         funcL1 (TestElementInvariants,(&$elem))
         {
-                _if (is_string($elem)) {//we allow empty string as a valid element id && !empty($elem) ) {
+                _if (is_string($elem) && !empty($elem)) {//we DO NOT allow empty string as a valid element id && !empty($elem) ) {
                         addretflagL1(yes);
                 } else {
-                        show( "TestElementInvariantsL1: var that failed test is \" ".retValue($elem)."\"");
+                        show( "DB, TestElementInvariants: var that failed test is \" ".retValue($elem)."\"");
                         addretflagL1(no);
                 }
         }endfuncL1()
@@ -126,6 +126,7 @@ class dmlDBL0
                             ' ('.$this->qParentNodeID.' INTEGER PRIMARY KEY , '.$this->qChildNodeID.' INTEGER SECONDARY KEY)';
                 _artIFnot( $this->OpenTransaction());
 
+                $wecommit=no;
                 _ynif ( $res= $this->fDBHandle->exec($sqlNodeNames) ) {
                         _yntIFnot( $this->fDBHandle->exec($sqlNodeNamesIndex12) );
                         _yntIFnot( $this->fDBHandle->exec($sqlNodeNamesIndex21) );

@@ -36,14 +36,14 @@
 #include "dmlphpL1.php"
 #include "debugL0.php"
 
-if (!is_a($debugL1,"dmlphpL1")) {
-        show( "Initializing dmlphpL1");
-        $debugL1=new dmlphpL1;
+if (!isset($debugL1) || !is_a($debugL1,"dmlphpL2")) {
+        show( "Initializing dmlphpL2");
+        __( $debugL1=new dmlphpL2; );
 }
 
-define(kAllFunctions,"kAllFunctions");
-define(kAllReturns,"kAllReturns");
-define(kSetActedOnce,"kSetActedOnce");//to flag that setretflagL1() was executed once in the current function, thus executing it twice in the same serial_commands :-" is prone to detecting a bug
+define('kAllFunctions', "All_Functions");
+define('kAllReturns',"All_Returns");
+define('kSetActedOnce',"Set_ActedOnce");//to flag that setretflagL1() was executed once in the current function, thus executing it twice in the same serial_commands :-" is prone to detecting a bug
 
 #define addretflagL1(...) \
         _yntIFnot( $debugL1->AppendToParent_Children($TheReturnOfThisTime_forThisFunction, array(__VA_ARGS__) ) );
@@ -101,7 +101,7 @@ boolfunc isValidReturnL1($val)/*{{{*/
         //find parent $X for the child $val, where $X has the parent kAllReturns
         //in other words: kAllReturns -> $X -> $val    ... find $X, if any
         //but, what we do wanna know is whether $val is a child of kAllReturns, thus it would be a valid return from a function
-        _if (yes===ynIsGood($debugL1->TestElementInvariants($val)) && yes===ynIsGood($debugL1->GetOfChild_AllParents($val, $parents))) {
+        _if (yes===ynIsGood($debugL1->ynTestElementInvariants($val)) && yes===ynIsGood($debugL1->GetOfChild_AllParents($val, $parents))) {
                 foreach ($parents as $p) {
                         _ynif ($debugL1->GetOfChild_AllParents($p, $parentsofP) ) {
                                 foreach ($parentsofP as $pp) {

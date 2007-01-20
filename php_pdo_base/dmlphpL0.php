@@ -109,8 +109,8 @@ class dmlphpL0 {
         func0 (__construct())/*{{{*/
         {
                 $this->AllElements=array();
-                define(dParents,"Parents");
-                define(dChildren,"Children");
+                define('dParents',"Parents");
+                define('dChildren',"Children");
 //when accessing ie. kParentsOf[$elem] you must make sure that $elem is scalar! aka not array! or an error/warning php issues
 #define kParentsOf $this->AllElements[dParents]
 #define kChildrenOf $this->AllElements[dChildren]
@@ -128,12 +128,12 @@ class dmlphpL0 {
                 _yntIF("must choose one of dParents, dChildren; you chose: !".$type."!");
         }*/
 
-        func0 (TestElementInvariants(&$elem) )
+        func0 (ynTestElementInvariants(&$elem) )
         {
-                _if (is_string($elem)){ //we allow empty string as a valid element id && ! empty($elem)) {
+                _if (is_string($elem) && !empty($elem)){ //we DON'T allow empty string as a valid element id && ! empty($elem)) {
                         addretflagL0(yes);
                 } else {
-                        show("TestElementInvariantsL0: var that failed test is \" ".retValue(&$elem)."\"");
+                        show("php, ynTestElementInvariants: var that failed test is \" ".retValue(&$elem)."\"");
                         addretflagL0(no);
                 }
         }endfunc0()
@@ -147,39 +147,39 @@ class dmlphpL0 {
 
         protected func0 (addChild($parent,$child))/*{{{*/
         {//let me make smth str8: $parent and $child are ID names similar to pointer value of some pointer, not the actual data but the pointer to the data; these IDs are names/descriptions but they really are pointers; remember that the data is(are) rather irrelevant, the relations(/-ships) within the data are the relevant ones
-                _yntIFnot($this->TestElementInvariants($parent));
-                _yntIFnot($this->TestElementInvariants($child));
+                _yntIFnot($this->ynTestElementInvariants($parent));
+                _yntIFnot($this->ynTestElementInvariants($child));
                 _yntIFnot( $ar=UniqAppendElemToList($child, kChildrenOf[$parent]/* returnArray(dChildren)[$parent]*/ ) );
                 keepflagsL0($ar);
         }endfunc0()/*}}}*/
 
         protected func0 (addParent($child,$parent))/*{{{*/
         {
-                _yntIFnot($this->TestElementInvariants($parent));
-                _yntIFnot($this->TestElementInvariants($child));
+                _yntIFnot($this->ynTestElementInvariants($parent));
+                _yntIFnot($this->ynTestElementInvariants($child));
                 _yntIFnot( $retlist=UniqAppendElemToList($parent, kParentsOf[$child]) );
                 keepflagsL0($retlist);
         }endfunc0()/*}}}*/
 
         protected func0 (delChild($parent,$child))/*{{{*/
         {
-                _yntIFnot($this->TestElementInvariants($parent));
-                _yntIFnot($this->TestElementInvariants($child));
+                _yntIFnot($this->ynTestElementInvariants($parent));
+                _yntIFnot($this->ynTestElementInvariants($child));
                 _yntIFnot( $ar=DelElemFromList($child, kChildrenOf[$parent] ) );
                 keepflagsL0($ar);
         }endfunc0()/*}}}*/
 
         protected func0 (delParentFromChild($parent,$child))/*{{{*/
         {
-                _yntIFnot($this->TestElementInvariants($parent));
-                _yntIFnot($this->TestElementInvariants($child));
+                _yntIFnot($this->ynTestElementInvariants($parent));
+                _yntIFnot($this->ynTestElementInvariants($child));
                 _yntIFnot( $ar=DelElemFromList($parent, kParentsOf[$child] ) );
                 keepflagsL0($ar);
         }endfunc0()/*}}}*/
 
         func0 (ynIsNode($node))/*{{{*/
         {//let me remind you that a Node(be it parent of child) cannot exist unless it is a part of a relationship, ie. another node is somehow connected to it
-                _yntIFnot($this->TestElementInvariants($node));
+                _yntIFnot($this->ynTestElementInvariants($node));
                 _if( TRUE===is_array(kChildrenOf[$node]) || TRUE===is_array(kParentsOf[$node])) {
                         addretflagL0(yes);
                 } else {
@@ -189,8 +189,8 @@ class dmlphpL0 {
 
         func0 (ynIsPCRel($parent,$child))/*{{{*/
         {
-                _yntIFnot($this->TestElementInvariants($parent));
-                _yntIFnot($this->TestElementInvariants($child));
+                _yntIFnot($this->ynTestElementInvariants($parent));
+                _yntIFnot($this->ynTestElementInvariants($child));
                 _if( TRUE===is_array(kChildrenOf[$parent]) && TRUE===in_array($child, kChildrenOf[$parent])) {
                         addretflagL0(yes);
                 } else {
@@ -200,7 +200,7 @@ class dmlphpL0 {
 
         func0 (GetOfParent_AllChildren($parent,&$children))/*{{{*/
         {
-                _yntIFnot($this->TestElementInvariants($parent));
+                _yntIFnot($this->ynTestElementInvariants($parent));
                 _ifnot (is_array($parent)) {
                         $children=kChildrenOf[$parent];
                         _if (is_array($children)) {
@@ -211,7 +211,7 @@ class dmlphpL0 {
 
         func0 (DelAllChildrenOf($parent))/*{{{*/
         {
-                _yntIFnot($this->TestElementInvariants($parent));
+                _yntIFnot($this->ynTestElementInvariants($parent));
                 $children=&kChildrenOf[$parent];// get all children of the $parent
                 _if (is_array($children)) {
                         foreach ($children as $child) {
@@ -224,7 +224,7 @@ class dmlphpL0 {
 
         func0 (GetOfChild_AllParents($child,&$parents))/*{{{*/
         {
-                _yntIFnot($this->TestElementInvariants($child));
+                _yntIFnot($this->ynTestElementInvariants($child));
                 _ifnot (is_array($child)) {
                         $parents=kParentsOf[$child];
                         _if (is_array($parents)) {
@@ -235,7 +235,7 @@ class dmlphpL0 {
 
         func0 (DelAllParents($child))/*{{{*/
         {
-                _yntIFnot($this->TestElementInvariants($child));
+                _yntIFnot($this->ynTestElementInvariants($child));
                 $parents=&kParentsOf[$child];
                 _if (is_array($parents)) {
                         foreach ($parents as $parent) {

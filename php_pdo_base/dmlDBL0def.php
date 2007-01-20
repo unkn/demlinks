@@ -30,17 +30,17 @@
 ***************************************************************************}}}*/
 
 
-define(dbasename,"demlinks6.3sql");
-define(dNodeNames,"NodeNames");//table name
-define(dRelations,"Relations");//table name
-define(dNodeName,"NodeName");//table name
-define(dParentNodeID,"ParentNodeID");//table name
-define(dChildNodeID,"ChildNodeID");//table name
-define(dNodeID,"NodeID");//table name
+define('dbasename',"demlinks6.3sql");
+define('dNodeNames',"NodeNames");//table name
+define('dRelations',"Relations");//table name
+define('dNodeName',"NodeName");//table name
+define('dParentNodeID',"ParentNodeID");//table name
+define('dChildNodeID',"ChildNodeID");//table name
+define('dNodeID',"NodeID");//table name
 
-define(paramprefix,":");
-define(paramNodeName,paramprefix.dNodeName);
-define(paramNodeID,paramprefix.dNodeID);
+define('paramprefix',":");
+define('paramNodeName',paramprefix.dNodeName);
+define('paramNodeID',paramprefix.dNodeID);
 
 // vim: fdm=marker
 #endif //header
