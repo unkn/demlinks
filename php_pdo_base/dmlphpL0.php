@@ -269,6 +269,16 @@ class dmlphpL0 {
                         }
         }endfunc0(no)/*}}}*/
 
+        func0 (GetOfChild_AllParents($child,&$parents))/*{{{*/
+        {
+                _yntIFnot($this->ynTestElementInvariants($child));
+                _yntIFnot($this->E_NOTICE_hide(dParents,$child));
+                $parents=dParentsOf($child);//copy?
+                _if (isNElist($parents)) {
+                        endnow0(yes);
+                }
+        }endfunc0(no)/*}}}*/
+
         func0 (DelAllChildrenOf($parent))/*{{{*/
         {
                 _yntIFnot($this->ynTestElementInvariants($parent));
@@ -282,16 +292,6 @@ class dmlphpL0 {
                         $children=null;//empty the array of children of the $parent
                 }
         }endfunc0(yes)/*}}}*/
-
-        func0 (GetOfChild_AllParents($child,&$parents))/*{{{*/
-        {
-                _yntIFnot($this->ynTestElementInvariants($child));
-                _yntIFnot($this->E_NOTICE_hide(dParents,$child));
-                $parents=dParentsOf($child);//copy?
-                _if (isNElist($parents)) {
-                        endnow0(yes);
-                }
-        }endfunc0(no)/*}}}*/
 
         func0 (DelAllParents($child))/*{{{*/
         {
