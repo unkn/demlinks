@@ -26,8 +26,8 @@ hi phpIdentifier ctermfg=yellow
 hi Type ctermfg=lightgreen
 hi Repeat ctermfg=blue
 
-syn keyword phpDefine funcL0 getalist endnowL0 endfuncL0 appendtolist quitmsg dropmsg nl br nocol greencol redcol getline getfile tab show dParentsOf dChildrenOf dGetAll
-syn keyword phpDefine purplecol except throw_exception bluecol addretflagL0 addretflag0 adef rdef isflag isValue_InList keepflagsL0 keepflags0 space
+syn keyword phpDefine funcL0 getalist endnowL0 endfuncL0 appendtolist quitmsg dropmsg nl rnl br nocol greencol redcol getline getfile tab show dParentsOf dChildrenOf dGetAll rtab
+syn keyword phpDefine purplecol except throw_exception bluecol addretflagL0 addretflag0 adef rdef isflag isValue_InList keepflagsL0 keepflags0 space rspace
 syn keyword phpDefine funcL1 endfuncL1 addretflagL1 delretflagL1 setretflagL1 countretflagsL1 endnowL1 boolfunc ynboolfunc ynfunc procedure isReturnStateList ynIsNotGood
 syn keyword phpDefine AllowReentry DisallowReentry funcL0re funcL0_part1of2 funcL0_part2of2 funcL1re funcL1_part1of2 funcL1_part2of2 DisallowLocalReentry DisallowGlobalReentry AllowLocalReentry AllowGlobalReentry func0 endfunc0 func0re endfunc0re endnowL0_part1of2 endnowL0_part2of2 endnowL0re endfuncL0re endnow0 func1 func1re endfunc1re _arifL0
 syn keyword phpDefine endfunc1 keepflags1 addretflag1 isFlagL0_InReturn emptystr endnow1 nil

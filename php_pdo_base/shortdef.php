@@ -34,13 +34,16 @@
 include_once("term.php");
 
         define('br',"<br />");
+        define('rnl',"\n");
+        define('rspace'," ");
+        define('rtab',"\t");
 
 if (terminal) {
-        define('nl',"\n");
-        define('tab',"\t");
-        define('space'," ");
+        define('nl',rnl);
+        define('space',rspace);
+        define('tab',rtab);
 } else {
-        define('nl',br."\n");
+        define('nl',br.rnl);
         define('space',"&nbsp;");
         define('tab',space.space.space.space.space.space.space.space);
 }

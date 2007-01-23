@@ -154,19 +154,58 @@ class dmlphpL1 extends dmlphpL0 {
         func1re (ShowTreeOfParentsForChild($child, $startlevel=0))/*{{{*/
         {
                 _yntIFnot($this->ynTestElementInvariants($child));
-                for ($i=0; $i<$startlevel; $i++) {
-                        echo space;
-                }
-                if ($startlevel>0) {
-                        echo "|<";
-                } else {
-                        echo "Parents of:";
-                }
-                echo " \"$child\"".nl;
+                        for ($i=0; $i<$startlevel; $i++) {
+                                if (terminal) {
+                                        echo rspace;
+                                } else {
+                                        echo rtab;
+                                }
+                        }
 
-                _ynif ( $this->GetOfChild_AllParents($child,$parents) ) {
+                if ($startlevel>0) {//non-root
+                        if (terminal) {
+                                echo "|<";
+                        }
+                } else { //root:
+                        if (terminal) {
+                                echo "Parents of:";
+                        } else {
+                                $treemenuid='TreeMenu for Parents of '.$child;
+                                echo '<a href="javascript:ddtreemenu.flatten(\''.$treemenuid.'\', \'expand\')">Expand All</a> | <a href="javascript:ddtreemenu.flatten(\''.$treemenuid.'\', \'contract\')">Contract All</a>'.rnl;
+
+                                echo '<ul id="'.$treemenuid.'" class="treeview">'.rnl;
+                        }
+                }
+
+                _ynif ( $this->GetOfChild_AllParents($child,$parents) ) { //folder
+                        if (terminal) {
+                                echo " \"$child\"".nl;
+                        } else {
+                                echo '<li id="'.$child.'" style="background-image: url(closed.gif);" class="submenu">'.$child.rnl;
+                                echo rtab.'<ul id="'.$child.'" style="display: none;" rel="closed">'.rnl;
+                        }
                         foreach ($parents as $val) {
                                 _yntIFnot( $this->ShowTreeOfParentsForChild($val, 1+$startlevel) );
+                        }
+                        if (!terminal) {
+                                echo rtab."</ul>".rnl;
+                                echo "</li>".rnl;
+                        }
+                } else {//not a folder  ==leaf!
+                        if (terminal) {
+                                echo " \"$child\"".nl;
+                        } else {
+                                echo '<li id="'.$child.'">'.$child.'</li>'.rnl;
+                        }
+                }
+
+                if (!terminal) {
+                        if ($startlevel<=0) {
+                                echo "</ul>".rnl;
+                                echo '<script type="text/javascript">'.rnl;
+                                echo '//ddtreemenu.createTree(treeid, enablepersist, opt_persist_in_days (default is 1))'.rnl;
+                                echo 'ddtreemenu.createTree("'.$treemenuid.'", true)'.rnl;
+                                echo '</script>'.rnl;
                         }
                 }
         }endfunc1re(yes)/*}}}*/

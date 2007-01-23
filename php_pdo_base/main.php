@@ -65,8 +65,6 @@ For full source code and Terms Of Use, visit http://www.dynamicdrive.com */
 
 <body>
 
-<a href="javascript:ddtreemenu.flatten('treemenu1', 'expand')">Expand All</a> | <a href="javascript:ddtreemenu.flatten('treemenu1', 'contract')">Contract All</a>
-
 <?
 
         } //endif terminal
@@ -286,7 +284,8 @@ For full source code and Terms Of Use, visit http://www.dynamicdrive.com */
         echo isValidReturnL1( GetName($a,"c") );
 */
         global $debugL1;
-        _yntIFnot( $debugL1->ShowTreeOfChildrenForParent(kAllFunctions) );
+        //_yntIFnot( $debugL1->ShowTreeOfChildrenForParent(kAllFunctions) );
+        _yntIFnot( $debugL1->ShowTreeOfParentsForChild(yes) );
 /*        _yntIFnot( $debugL1->ShowTreeOfChildrenForParent(kAllReturns) );
         _yntIFnot( $debugL1->ShowTreeOfParentsForChild("a") );
         _yntIFnot( $debugL1->ShowTreeOfParentsForChild(yes) );*/
