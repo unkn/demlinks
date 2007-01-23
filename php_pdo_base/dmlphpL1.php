@@ -131,18 +131,6 @@ class dmlphpL1 extends dmlphpL0 {
                 }
         }endfunc1(yes)/*}}}*/
 
-        func1 (GetCountOfChildren_OfParent(&$count,$parent))/*{{{*/
-        {
-                _yntIFnot($this->ynTestElementInvariants($parent));
-                _yntIFnot( RelaxedArrayCount(&kChildrenOf[$parent], $count) );
-        }endfunc1(yes)/*}}}*/
-
-        func1 (GetCountOfParents_OfChild(&$count,$child))/*{{{*/
-        {
-                _yntIFnot($this->ynTestElementInvariants($child));
-                _yntIFnot( RelaxedArrayCount(&kParentsOf[$child], $count) );
-        }endfunc1(yes)/*}}}*/
-
         func1re (ShowTreeOfChildrenForParent($parent, $startlevel=0))/*{{{*/
         {
                 _yntIFnot($this->ynTestElementInvariants($parent));

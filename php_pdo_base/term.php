@@ -1,6 +1,6 @@
 //<?php
-#ifndef COLOR_PHP
-#define COLOR_PHP
+#ifndef TERM_PHP
+#define TERM_PHP
 
 /*LICENSE*GNU*GPL************************************************************{{{
 *
@@ -25,28 +25,16 @@
 *
 *  ========================================================================
 *
-* Description: linux console colors
+* Description: detects if running inside a terminal or as a webpage
 *
 ***************************************************************************}}}*/
 
-include_once("term.php");
-
-#define setcol(col) "\x1B[3".#col."m"
-function defcol($str, $num)
-{
-        if (terminal) {
-                define($str,setcol($num));
-        } else {
-                define($str,'');
-        }
+if (isset($_SERVER['TERM'])) {
+        define('terminal',true);
+} else {
+        define('terminal',false);
 }
 
-defcol('nocol',9);
-defcol('browncol',3);
-defcol('redcol',1);
-defcol('bluecol',4);
-defcol('greencol',2);
-defcol('purplecol',5);
 
 // vim: fdm=marker
 #endif //header

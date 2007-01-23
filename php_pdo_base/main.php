@@ -36,7 +36,45 @@
 #define _r(...) \
         __( show( retValue( __VA_ARGS__ )) );
 
+        if (!terminal) {
+?>
+<html>
+
+<head>
+
+<script type="text/javascript" src="simpletreemenu.js">
+
+/***********************************************
+* Simple Tree Menu- © Dynamic Drive DHTML code library (www.dynamicdrive.com)
+* This notice MUST stay intact for legal use
+* Visit Dynamic Drive at http://www.dynamicdrive.com/ for full source code
+***********************************************/
+
+</script>
+
+<link rel="stylesheet" type="text/css" href="simpletree.css" />
+
+<!--
+/* Context menu Script- © Dynamic Drive (www.dynamicdrive.com) Last updated: 01/08/22
+For full source code and Terms Of Use, visit http://www.dynamicdrive.com */
+-->
+
+<link rel="stylesheet" type="text/css" href="cmenu.css" />
+
+</head>
+
+<body>
+
+<a href="javascript:ddtreemenu.flatten('treemenu1', 'expand')">Expand All</a> | <a href="javascript:ddtreemenu.flatten('treemenu1', 'contract')">Contract All</a>
+
+<?
+
+        } //endif terminal
+
         beginprogram
+        /*foreach($_SERVER as $key => $val) {
+                echo $key."=".$val.nl;
+        }*/
         /*__( $dmlar=new dmlphpL1 );
         _r( $dmlar->EnsurePCRel("A","B") );
                 _r( $dmlar->EnsurePCRel("A","B") );*/
@@ -81,6 +119,7 @@
         $prevval="";
         _artIFnot( $dmlDB->OpenTransaction() );
         $aborted=no;
+        show("list of additions:");
         foreach ($res as $val) {
                      $val=trim($val);
                 _ynif ($val) {//ie. non-empty
@@ -96,15 +135,16 @@
                         //_if (isValue_InList(kAdded,$ret)) {
                         //_ifnot (isValue_InList(kAlready,$ret)) {
                         _ifnot (isFlagInList_L1(kAlready,$ret)) {
-                                if ($i<6) {
+/*                                if ($i<6) {
                                         $i++;
                                 } else {
                                         $i=2;
                                 }
-                                echo setcol($i).$val." ";
+                                echo setcol($i).$val." ".br.nl;
                         } else {
                                 $i=1;
-                                echo setcol($i).$val." ";
+                                echo setcol($i).$val." ".br.nl;*/
+                                echo $val." ".nl;
                         }
                         //usleep(100000);
                         $cnt++;//echo "cnt=".$cnt.nl;
@@ -246,8 +286,8 @@
         echo isValidReturnL1( GetName($a,"c") );
 */
         global $debugL1;
-/*        _yntIFnot( $debugL1->ShowTreeOfChildrenForParent(kAllFunctions) );
-        _yntIFnot( $debugL1->ShowTreeOfChildrenForParent(kAllReturns) );
+        _yntIFnot( $debugL1->ShowTreeOfChildrenForParent(kAllFunctions) );
+/*        _yntIFnot( $debugL1->ShowTreeOfChildrenForParent(kAllReturns) );
         _yntIFnot( $debugL1->ShowTreeOfParentsForChild("a") );
         _yntIFnot( $debugL1->ShowTreeOfParentsForChild(yes) );*/
         //_r( $debugL1->ynIsNode("a") );

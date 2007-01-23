@@ -348,6 +348,7 @@ rdef('kCreatedDBNodeNames');
 rdef('kCreatedDBRelations');
 rdef('kEmpty');
 rdef('kOneElement');//one element detected, expected list; but it's ok even this way, we made that element into an one element list
+rdef('kWasUnset');//prior to call to a function, some var was unset, now after call it's set
 
 
 // vim: fdm=marker

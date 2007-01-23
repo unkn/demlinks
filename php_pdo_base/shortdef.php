@@ -31,8 +31,16 @@
 
 
 #include "color.php"
+include_once("term.php");
 
+        define('br',"<br />");
+
+if (terminal) {
         define('nl',"\n");
+} else {
+        define('nl',br."\n");
+}
+
         define('tab',"\t");
         define('space'," ");
         define('emptystr',"");

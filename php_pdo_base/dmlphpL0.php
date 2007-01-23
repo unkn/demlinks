@@ -65,20 +65,26 @@
 #define endfunc0re(...) \
         endfuncL0re(__VA_ARGS__)
 
+#define addretflag0(...) \
+        addretflagL0(__VA_ARGS__)
+
+#define keepflags0(...) \
+        keepflagsL0(__VA_ARGS__)
 
 func0 (UniqAppendElemToList($elem,&$list))/*{{{*/
 {
-        _if (TRUE===is_array(&$list) && TRUE===in_array($elem, &$list, TRUE/*strict type check*/)) {
-                addretflagL0(kAlready);
+        _if (TRUE===isNElist(&$list) && TRUE===in_array($elem, &$list, TRUE/*strict type check*/)) {
+                addretflag0(kAlready);
         } else { //attempting to append
+                _tIF(isset($list) && !is_array(&$list));//can't be set and non-array
                 $list[]=$elem;//auto numbered index, appending to end
-                addretflagL0(kAdded);
+                addretflag0(kAdded);
         }
 }endfunc0(yes)/*}}}*/
 
 func0 (RelaxedArrayCount(&$list, &$count))/*{{{*/
 {
-        _if (TRUE===is_array(&$list)) {
+        _if (TRUE===isNElist(&$list)) {
                 $count=count(&$list);
         } else { //attempting to append
                 $count=0;
@@ -89,18 +95,23 @@ func0 (ArrayCount(&$list, &$count))/*{{{*/
 {
         _tIFnot(is_array(&$list)); //catching some bug in the program
         _yntIFnot( $ar=RelaxedArrayCount(&$list, &$count) );
-        keepflagsL0($ar);
+        keepflags0($ar);
 }endfunc0()/*}}}*/
 
 func0 (DelElemFromList($elem,&$list))/*{{{*/
 {
-        _if (TRUE===is_array(&$list) && $key=array_search($elem, &$list, TRUE) ) {
+        _if (TRUE===isNElist(&$list) && $key=array_search($elem, &$list, TRUE) ) {
                         unset($list[$key]);
-                        addretflagL0(kDeleted);
+                        addretflag0(kDeleted);
         } else {
-                addretflagL0(kAlready);
+                addretflag0(kAlready);
         }
 }endfunc0(yes)/*}}}*/
+
+function isNElist(&$list) //returns true if it's a list and it's non-empty
+{
+        return (isset($list) && is_array($list) && !empty($list));
+}
 
 class dmlphpL0 {
         protected $AllElements;
@@ -111,10 +122,53 @@ class dmlphpL0 {
                 $this->AllElements=array();
                 define('dParents',"Parents");
                 define('dChildren',"Children");
-//when accessing ie. kParentsOf[$elem] you must make sure that $elem is scalar! aka not array! or an error/warning php issues
-#define kParentsOf $this->AllElements[dParents]
-#define kChildrenOf $this->AllElements[dChildren]
+//when accessing ie. dParentsOf($elem) you must make sure that $elem is scalar! aka not array! or an error/warning php issues
+//ie. dParents, 'A'
+#define dGetAll(_PorC,_ofnode) $this->AllElements[_PorC][_ofnode]
+//#define dGetAll(_PorC,_ofnode) ( isset(dlowlevGetAll(_PorC,_ofnode)) ? dlowlevGetAll(_PorC,_ofnode) : null )
+#define dParentsOf(_who) dGetAll(dParents,_who)
+#define dChildrenOf(_who) dGetAll(dChildren,_who)
         }endfunc0(ok)/*}}}*/
+
+        private func0 (E_NOTICE_hide($PorC, $node))//ie. ,dParents, 'A'
+        {
+                #define _ez dGetAll($PorC,$node)
+                if (!isset(_ez)) {
+                        _ez=array();
+                        addretflag0(kWasUnset);
+                }
+                _tIFnot(is_array(_ez));//unlikely
+                if (empty(_ez)) {
+                        addretflag0(kEmpty);
+                }
+                #undef _ez
+        }endfunc0(ok)
+        /*protected func0 (GetList_OfPorC_OfNode(&$list, $PorC, $node))//ie. ,dParents, 'A'
+        {
+                #define _ez dGetAll($PorC,$node)
+                if (!isset(_ez)) {
+                        _ez=array();
+                }
+                _tIFnot(is_array(_ez));//unlikely
+                $list=&_ez;//can be empty
+                #undef _ez
+                if (empty($list)) {
+                        addretflag0(kEmpty);
+                }
+        }endfunc0(ok)
+
+        protected func0( Get_ParentsList_OfNode(&$list, $who))//list of parents of element node $who
+        {
+                _yntIFnot( $ar=$this->GetList_OfPorC_OfNode($list,dParents, $who) );
+                keepflags0($ar);
+        }endfunc0()
+
+        protected func0( Get_ChildrenList_OfNode(&$list, $who))//list of children of element node $who
+        {
+                _yntIFnot( $ar=$this->GetList_OfPorC_OfNode($list,dChildren, $who) );
+                keepflags0($ar);
+        }endfunc0()
+         */
 
 /*yeah doesn't work        function &returnArray($type)
         {
@@ -131,10 +185,10 @@ class dmlphpL0 {
         func0 (ynTestElementInvariants(&$elem) )
         {
                 _if (is_string($elem) && !empty($elem)){ //we DON'T allow empty string as a valid element id && ! empty($elem)) {
-                        addretflagL0(yes);
+                        addretflag0(yes);
                 } else {
                         show("php, ynTestElementInvariants: var that failed test is \" ".retValue(&$elem)."\"");
-                        addretflagL0(no);
+                        addretflag0(no);
                 }
         }endfunc0()
 
@@ -149,41 +203,47 @@ class dmlphpL0 {
         {//let me make smth str8: $parent and $child are ID names similar to pointer value of some pointer, not the actual data but the pointer to the data; these IDs are names/descriptions but they really are pointers; remember that the data is(are) rather irrelevant, the relations(/-ships) within the data are the relevant ones
                 _yntIFnot($this->ynTestElementInvariants($parent));
                 _yntIFnot($this->ynTestElementInvariants($child));
-                _yntIFnot( $ar=UniqAppendElemToList($child, kChildrenOf[$parent]/* returnArray(dChildren)[$parent]*/ ) );
-                keepflagsL0($ar);
+                _yntIFnot($this->E_NOTICE_hide(dChildren,$parent));
+                _yntIFnot( $ar=UniqAppendElemToList($child, dChildrenOf($parent)/* returnArray(dChildren)[$parent]*/ ) );
+                keepflags0($ar);
         }endfunc0()/*}}}*/
 
         protected func0 (addParent($child,$parent))/*{{{*/
         {
                 _yntIFnot($this->ynTestElementInvariants($parent));
                 _yntIFnot($this->ynTestElementInvariants($child));
-                _yntIFnot( $retlist=UniqAppendElemToList($parent, kParentsOf[$child]) );
-                keepflagsL0($retlist);
+                _yntIFnot($this->E_NOTICE_hide(dParents,$child));
+                _yntIFnot( $retlist=UniqAppendElemToList($parent, dParentsOf($child)) );
+                keepflags0($retlist);
         }endfunc0()/*}}}*/
 
         protected func0 (delChild($parent,$child))/*{{{*/
         {
                 _yntIFnot($this->ynTestElementInvariants($parent));
                 _yntIFnot($this->ynTestElementInvariants($child));
-                _yntIFnot( $ar=DelElemFromList($child, kChildrenOf[$parent] ) );
-                keepflagsL0($ar);
+                _yntIFnot($this->E_NOTICE_hide(dChildren,$parent));
+                _yntIFnot( $ar=DelElemFromList($child, dChildrenOf($parent) ) );
+                keepflags0($ar);
         }endfunc0()/*}}}*/
 
         protected func0 (delParentFromChild($parent,$child))/*{{{*/
         {
                 _yntIFnot($this->ynTestElementInvariants($parent));
                 _yntIFnot($this->ynTestElementInvariants($child));
-                _yntIFnot( $ar=DelElemFromList($parent, kParentsOf[$child] ) );
-                keepflagsL0($ar);
+                _yntIFnot($this->E_NOTICE_hide(dParents,$child));
+                _yntIFnot( $ar=DelElemFromList($parent, dParentsOf($child) ) );
+                keepflags0($ar);
         }endfunc0()/*}}}*/
 
         func0 (ynIsNode($node))/*{{{*/
         {//let me remind you that a Node(be it parent of child) cannot exist unless it is a part of a relationship, ie. another node is somehow connected to it
                 _yntIFnot($this->ynTestElementInvariants($node));
-                _if( TRUE===is_array(kChildrenOf[$node]) || TRUE===is_array(kParentsOf[$node])) {
-                        addretflagL0(yes);
+                _yntIFnot($this->E_NOTICE_hide(dParents,$node));
+                _yntIFnot($this->E_NOTICE_hide(dChildren,$node));
+                _if( TRUE===isNElist(dChildrenOf($node)) || TRUE===isNElist(dParentsOf($node))) {
+                        addretflag0(yes);
                 } else {
-                        addretflagL0(no);
+                        addretflag0(no);
                 }
         }endfunc0()/*}}}*/
 
@@ -191,29 +251,30 @@ class dmlphpL0 {
         {
                 _yntIFnot($this->ynTestElementInvariants($parent));
                 _yntIFnot($this->ynTestElementInvariants($child));
-                _if( TRUE===is_array(kChildrenOf[$parent]) && TRUE===in_array($child, kChildrenOf[$parent])) {
-                        addretflagL0(yes);
+                _yntIFnot($this->E_NOTICE_hide(dChildren,$parent));
+                _if( TRUE===isNElist(dChildrenOf($parent)) && TRUE===in_array($child, dChildrenOf($parent))) {
+                        addretflag0(yes);
                 } else {
-                        addretflagL0(no);
+                        addretflag0(no);
                 }
         }endfunc0()/*}}}*/
 
         func0 (GetOfParent_AllChildren($parent,&$children))/*{{{*/
         {
                 _yntIFnot($this->ynTestElementInvariants($parent));
-                _ifnot (is_array($parent)) {
-                        $children=kChildrenOf[$parent];
-                        _if (is_array($children)) {
+                _yntIFnot($this->E_NOTICE_hide(dChildren,$parent));
+                        $children=dChildrenOf($parent);//copy?
+                        _if (isNElist($children)) {
                                 endnow0(yes);
                         }
-                }
         }endfunc0(no)/*}}}*/
 
         func0 (DelAllChildrenOf($parent))/*{{{*/
         {
                 _yntIFnot($this->ynTestElementInvariants($parent));
-                $children=&kChildrenOf[$parent];// get all children of the $parent
-                _if (is_array($children)) {
+                _yntIFnot($this->E_NOTICE_hide(dChildren,$parent));
+                $children=&dChildrenOf($parent);//ref!
+                _if (isNElist($children)) {
                         foreach ($children as $child) {
                                 // del all $parent from these $children
                                 _yntIFnot( $this->delParentFromChild($parent, $child) );
@@ -225,25 +286,39 @@ class dmlphpL0 {
         func0 (GetOfChild_AllParents($child,&$parents))/*{{{*/
         {
                 _yntIFnot($this->ynTestElementInvariants($child));
-                _ifnot (is_array($child)) {
-                        $parents=kParentsOf[$child];
-                        _if (is_array($parents)) {
-                                endnow0(yes);
-                        }
+                _yntIFnot($this->E_NOTICE_hide(dParents,$child));
+                $parents=dParentsOf($child);//copy?
+                _if (isNElist($parents)) {
+                        endnow0(yes);
                 }
         }endfunc0(no)/*}}}*/
 
         func0 (DelAllParents($child))/*{{{*/
         {
                 _yntIFnot($this->ynTestElementInvariants($child));
-                $parents=&kParentsOf[$child];
-                _if (is_array($parents)) {
+                _yntIFnot($this->E_NOTICE_hide(dParents,$child));
+                $parents=&dParentsOf($child);//ref!
+                _if (isNElist($parents)) {
                         foreach ($parents as $parent) {
                                 // del all $parent from these $children
                                 _yntIFnot( $this->delChild($parent, $child) );
                         }
                         $parents=null;//empty the array of children of the $parent
                 }
+        }endfunc0(yes)/*}}}*/
+
+        func0 (GetCountOfChildren_OfParent(&$count,$parent))/*{{{*/
+        {
+                _yntIFnot($this->ynTestElementInvariants($parent));
+                _yntIFnot($this->E_NOTICE_hide(dChildren,$parent));
+                _yntIFnot( RelaxedArrayCount(dChildrenOf($parent), $count) );
+        }endfunc0(yes)/*}}}*/
+
+        func0 (GetCountOfParents_OfChild(&$count,$child))/*{{{*/
+        {
+                _yntIFnot($this->ynTestElementInvariants($child));
+                _yntIFnot($this->E_NOTICE_hide(dParents,$child));
+                _yntIFnot( RelaxedArrayCount(dParentsOf($child), $count) );
         }endfunc0(yes)/*}}}*/
 
 
