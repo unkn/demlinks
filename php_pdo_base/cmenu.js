@@ -1,6 +1,6 @@
 
 //set this variable to 1 if you wish the URLs of the highlighted menu to be displayed in the status bar
-var display_url=0
+var display_url=1
 
 var ie5=document.all&&document.getElementById
 var ns6=document.getElementById&&!document.all
@@ -46,8 +46,9 @@ function highlightie5(e){
 		if (ns6&&firingobj.parentNode.className=="menuitems") firingobj=firingobj.parentNode //up one node
 		firingobj.style.backgroundColor="highlight"
 		firingobj.style.color="white"
-		if (ie5 && display_url==1) //only works in IE, not ff
-			window.status=event.srcElement.url;
+		if (display_url==1) {//only works in IE && ff, both need to allow status to be changed
+			window.status=(ie5? event.srcElement.url:e.target.getAttribute('url'));
+                }
 	}
 }
 
