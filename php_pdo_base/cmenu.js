@@ -1,6 +1,6 @@
 
 //set this variable to 1 if you wish the URLs of the highlighted menu to be displayed in the status bar
-var display_url=1
+var display_url=0
 
 var ie5=document.all&&document.getElementById
 var ns6=document.getElementById&&!document.all

@@ -355,7 +355,10 @@ For full source code and Terms Of Use, visit http://www.dynamicdrive.com */
 </div>
 
 <script type="text/javascript" src="cmenu.js">
+</script>
 
+</body>
+</html>
 <?
         }
         endprogram
