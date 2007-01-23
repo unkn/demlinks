@@ -35,6 +35,7 @@ ddtreemenu.buildSubTree=function(treeid, ulelement, index){
                 else if (ulelement.getAttribute("rel")=="open") //else if no cookie and this UL has an explicit rel value of "open"
                                 ddtreemenu.expandSubTree(treeid, ulelement) //expand this UL plus all parent ULs (so the most inner UL is revealed!)
         ulelement.parentNode.onmousedown=function(e){
+                if (e.button===2) return false;
                 //if (dumbvar===true) return false;
                 //alert('folder clicked:'+e.target.id);
                 var submenu=this.getElementsByTagName("ul")[0]
@@ -53,6 +54,7 @@ ddtreemenu.buildSubTree=function(treeid, ulelement, index){
         }
         //if (ie5) ulelement.parentNode.ondblclick=ulelement.parentNode.onmousedown;
         ulelement.onmousedown=function(e){
+                if (e.button===2) return false;
                 //if (dumbvar===true) return false;
                 //alert('subitem clicked'+e.target.id);
                 ddtreemenu.preventpropagate(e)
