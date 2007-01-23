@@ -135,7 +135,7 @@ class dmlphpL1 extends dmlphpL0 {
         {
                 _yntIFnot($this->ynTestElementInvariants($parent));
                 for ($i=0; $i<$startlevel; $i++) {
-                        echo " ";
+                        echo space;
                 }
                 if ($startlevel>0) {
                         echo "|>";
@@ -155,7 +155,7 @@ class dmlphpL1 extends dmlphpL0 {
         {
                 _yntIFnot($this->ynTestElementInvariants($child));
                 for ($i=0; $i<$startlevel; $i++) {
-                        echo " ";
+                        echo space;
                 }
                 if ($startlevel>0) {
                         echo "|<";

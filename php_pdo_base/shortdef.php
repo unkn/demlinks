@@ -37,12 +37,14 @@ include_once("term.php");
 
 if (terminal) {
         define('nl',"\n");
-} else {
-        define('nl',br."\n");
-}
-
         define('tab',"\t");
         define('space'," ");
+} else {
+        define('nl',br."\n");
+        define('space',"&nbsp;");
+        define('tab',space.space.space.space.space.space.space.space);
+}
+
         define('emptystr',"");
         define('yes',greencol."yes".nocol);
         define('no',redcol."no".nocol);
