@@ -297,8 +297,8 @@ For full source code and Terms Of Use, visit http://www.dynamicdrive.com */
         //$debugL1->b();
         _yntIFnot($curs->GetEnvironment($somevar));
         show($somevar);
-        exit;
-
+        //exit;
+/*
         __($ar=$curs->Get(kFirst, $id) );
         while (ynIsGood($ar)) {
                 __($ar=$curs->Get(kNext, $id) );
@@ -337,10 +337,27 @@ For full source code and Terms Of Use, visit http://www.dynamicdrive.com */
         _yntIFnot($curs->Count($howmany) );
 
         __( $curs=null; );
+ */
 
 
 
+        if (!terminal) {
+?>
+<div id="ie5menu" class="skin0" onMouseover="highlightie5(event)" onMouseout="lowlightie5(event)" onClick="jumptoie5(event)" display:none>
+<div class="menuitems" url="http://dynamicdrive.com">Dynamicdrive.com</div>
+<div class="menuitems" url="http://dynamicdrive.com/new.htm" target="newwin">What's New?</div>
+<div class="menuitems" url="http://dynamicdrive.com/hot.htm">What's Hot?</div>
+<div class="menuitems" url="http://wsabstract.com/cgi-bin/Ultimate.cgi">Message Forum</div>
+<div class="menuitems" url="http://dynamicdrive.com/faqs.htm">FAQs</div>
+<div class="menuitems" url="http://dynamicdrive.com/submitscript.htm">Submit</div>
+<hr>
+<div class="menuitems" url="mailto:dynamicdrive@yahoo.com">Email Us</div>
+</div>
 
+<script type="text/javascript" src="cmenu.js">
+
+<?
+        }
         endprogram
 // vim: fdm=marker
 ?>
