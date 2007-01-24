@@ -163,7 +163,7 @@ class dmlphpL1 extends dmlphpL0 {
                         echo "Parents of:";
                 } else {
                         //$treemenuid='TreeMenu for Parents of '.$child;
-                        echo '<a href="javascript:ddtreemenu.flatten(\''.$treemenuid.'\', \'expand\')">Expand All</a> | <a href="javascript:ddtreemenu.flatten(\''.$treemenuid.'\', \'contract\')">Contract All</a>'.rnl;
+                        //echo '<a href="javascript:ddtreemenu.flatten(\''.$treemenuid.'\', \'expand\')">Expand All</a> | <a href="javascript:ddtreemenu.flatten(\''.$treemenuid.'\', \'contract\')">Contract All</a>'.rnl;
 
                         echo '<ul id="'.$treemenuid.'" class="treeview">'.rnl;
                 }
@@ -203,7 +203,7 @@ class dmlphpL1 extends dmlphpL0 {
                         if (terminal) {
                                 echo " \"$child\"".nl;
                         } else {
-                                echo '<li id="'.$uec.'" style="background-image: url(closed.gif);" class="submenu">'.$child.rnl;
+                                echo '<li id="'.$uec.'" style="background-image: url(closed.gif);" class="'.($startlevel==0?'root':'node').'">'.$child.rnl;
                                 echo rtab.'<ul id="'.$uec.'" style="display: none;" rel="closed">'.rnl;
                         }
                         foreach ($parents as $val) {
@@ -217,7 +217,7 @@ class dmlphpL1 extends dmlphpL0 {
                         if (terminal) {
                                 echo " \"$child\"".nl;
                         } else {
-                                echo '<li id="'.$uec.'">'.$child.'</li>'.rnl;
+                                echo '<li id="'.$uec.'" class="leaf">'.$child.'</li>'.rnl;
                         }
                 }
 

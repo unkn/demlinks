@@ -20,7 +20,7 @@ ddtreemenu.createTree=function(treeid, enablepersist, persistdays){
 }
 
 ddtreemenu.buildSubTree=function(treeid, ulelement, index){
-        ulelement.parentNode.className="submenu"
+        //ulelement.parentNode.className="node" //this here overrides the className of any node that has subnodes
         if (typeof persisteduls[treeid]=="object"){ //if cookie exists (persisteduls[treeid] is an array versus "" string)
                 if (ddtreemenu.searcharray(persisteduls[treeid], index)){
                         ulelement.setAttribute("rel", "open")

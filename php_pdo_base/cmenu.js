@@ -30,16 +30,20 @@ function showmenuie5(e){
 	var onwhat=ie5? event.srcElement : e.target;
 	//alert(onwhat.id);
         var onwhatid=unescape(onwhat.id);
+        var onwhatclass=onwhat.className;
+
         menuobj.innerHTML="";
 
-        if (""!=onwhatid) {
+        if (onwhatclass=="node" || onwhatclass=="root") {
                 newitem(onwhatid,"",onwhatid);
                 newitem('Add new child...',"add",onwhatid);
+                //newitem('<a href="javascript:ddtreemenu.flatten(\''+eemenuid.'\', \'expand\')">Expand All</a> | <a href="javascript:ddtreemenu.flatten(\''.$treemenuid.'\', \'contract\')">Contract All</a>'.rnl;
+
         } else {
                 newitem("nothing to do!","",onwhatid);
         }
 
-//	return false;
+//position of menu
 	var rightedge=ie5? document.body.clientWidth-event.clientX : window.innerWidth-e.clientX
 	var bottomedge=ie5? document.body.clientHeight-event.clientY : window.innerHeight-e.clientY
 
@@ -57,6 +61,7 @@ function showmenuie5(e){
 	else
 		menuobj.style.top=ie5? document.body.scrollTop+event.clientY : window.pageYOffset+e.clientY
 
+//show menu:
 	menuobj.style.visibility="visible"
 	return false
 }
