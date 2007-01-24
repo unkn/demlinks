@@ -151,7 +151,35 @@ class dmlphpL1 extends dmlphpL0 {
                 }
         }endfunc1re(yes)/*}}}*/
 
-        func1re (ShowTreeOfParentsForChild($child, $startlevel=0))/*{{{*/
+        func1 (ShowTreeOfParents_WithID_ForChild($treemenuid,$child))/*{{{*/
+        {
+                _tIF(empty($treemenuid));
+                //$treemenuid=preg_replace('/([\'\"])/',preg_quote('\\').'\1',$treemenuid);
+                $treemenuid=rawurlencode($treemenuid);
+                _yntIFnot($this->ynTestElementInvariants($child));
+
+                //root
+                if (terminal) {
+                        echo "Parents of:";
+                } else {
+                        //$treemenuid='TreeMenu for Parents of '.$child;
+                        echo '<a href="javascript:ddtreemenu.flatten(\''.$treemenuid.'\', \'expand\')">Expand All</a> | <a href="javascript:ddtreemenu.flatten(\''.$treemenuid.'\', \'contract\')">Contract All</a>'.rnl;
+
+                        echo '<ul id="'.$treemenuid.'" class="treeview">'.rnl;
+                }
+                _yntIFnot( $ar=$this->parseTree($child) );
+                keepflags1($ar);
+
+                if (!terminal) {
+                        echo "</ul>".rnl;
+                        echo '<script type="text/javascript">'.rnl;
+                        echo '//ddtreemenu.createTree(treeid, enablepersist, opt_persist_in_days (default is 1))'.rnl;
+                        echo 'ddtreemenu.createTree("'.$treemenuid.'", true)'.rnl;
+                        echo '</script>'.rnl;
+                }
+        }endfunc1()/*}}}*/
+
+        private func1re (parseTree($child, $startlevel=0))/*{{{*/
         {
                 _yntIFnot($this->ynTestElementInvariants($child));
                         for ($i=0; $i<$startlevel; $i++) {
@@ -161,19 +189,13 @@ class dmlphpL1 extends dmlphpL0 {
                                         echo rtab;
                                 }
                         }
+                if (!terminal) {
+                        $uec=rawurlencode($child);
+                }
 
                 if ($startlevel>0) {//non-root
                         if (terminal) {
                                 echo "|<";
-                        }
-                } else { //root:
-                        if (terminal) {
-                                echo "Parents of:";
-                        } else {
-                                $treemenuid='TreeMenu for Parents of '.$child;
-                                echo '<a href="javascript:ddtreemenu.flatten(\''.$treemenuid.'\', \'expand\')">Expand All</a> | <a href="javascript:ddtreemenu.flatten(\''.$treemenuid.'\', \'contract\')">Contract All</a>'.rnl;
-
-                                echo '<ul id="'.$treemenuid.'" class="treeview">'.rnl;
                         }
                 }
 
@@ -181,11 +203,11 @@ class dmlphpL1 extends dmlphpL0 {
                         if (terminal) {
                                 echo " \"$child\"".nl;
                         } else {
-                                echo '<li id="'.$child.'" style="background-image: url(closed.gif);" class="submenu">'.$child.rnl;
-                                echo rtab.'<ul id="'.$child.'" style="display: none;" rel="closed">'.rnl;
+                                echo '<li id="'.$uec.'" style="background-image: url(closed.gif);" class="submenu">'.$child.rnl;
+                                echo rtab.'<ul id="'.$uec.'" style="display: none;" rel="closed">'.rnl;
                         }
                         foreach ($parents as $val) {
-                                _yntIFnot( $this->ShowTreeOfParentsForChild($val, 1+$startlevel) );
+                                _yntIFnot( $this->parseTree($val, 1+$startlevel) );
                         }
                         if (!terminal) {
                                 echo rtab."</ul>".rnl;
@@ -195,19 +217,10 @@ class dmlphpL1 extends dmlphpL0 {
                         if (terminal) {
                                 echo " \"$child\"".nl;
                         } else {
-                                echo '<li id="'.$child.'">'.$child.'</li>'.rnl;
+                                echo '<li id="'.$uec.'">'.$child.'</li>'.rnl;
                         }
                 }
 
-                if (!terminal) {
-                        if ($startlevel<=0) {
-                                echo "</ul>".rnl;
-                                echo '<script type="text/javascript">'.rnl;
-                                echo '//ddtreemenu.createTree(treeid, enablepersist, opt_persist_in_days (default is 1))'.rnl;
-                                echo 'ddtreemenu.createTree("'.$treemenuid.'", true)'.rnl;
-                                echo '</script>'.rnl;
-                        }
-                }
         }endfunc1re(yes)/*}}}*/
 
 

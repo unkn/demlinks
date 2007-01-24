@@ -1,6 +1,8 @@
 .skin0{
 position:absolute;
-width:165px;
+/*width:165px;*/
+width:auto;
+max-width:90%;
 border:2px solid black;
 background-color:menu;
 font-family:Verdana;
@@ -14,5 +16,13 @@ visibility:hidden;
 .menuitems{
 padding-left:10px;
 padding-right:10px;
+}
+
+.nonmenuitems{
+padding-left:1px;
+padding-right:10px;
+color:#007F00;
+cursor:help;
+border-bottom: 2px solid gray;
 }
 

@@ -5,14 +5,40 @@ var display_url=1
 var ie5=document.all&&document.getElementById
 var ns6=document.getElementById&&!document.all
 if (ie5||ns6)
-	var menuobj=document.getElementById("ie5menu")
+	var menuobj=document.getElementById("contextmenu")
 else
-	alert("Only works in IE5+ or NS6/Firefox");
+	alert("The ContextMenu only works in IE5+ or NS6/Firefox");
 
+function newitem(text, action, id)
+{
+        var d1=document.createElement('div');
+
+        if (""!=action) {
+                //d1.setAttribute('class','menuitems');
+                d1.className='menuitems';
+                d1.setAttribute('url','dothis.php?action='+action+'&onwhat='+escape(id));
+        } else {
+                //d1.setAttribute('class','nonmenuitems');
+                d1.className='nonmenuitems';
+        }
+        d1.appendChild(document.createTextNode(text));
+        //d1.innerHTML=text;
+        menuobj.appendChild(d1);
+}
 function showmenuie5(e){
 //Find out how close the mouse is to the corner of the window
 	var onwhat=ie5? event.srcElement : e.target;
 	//alert(onwhat.id);
+        var onwhatid=unescape(onwhat.id);
+        menuobj.innerHTML="";
+
+        if (""!=onwhatid) {
+                newitem(onwhatid,"",onwhatid);
+                newitem('Add new child...',"add",onwhatid);
+        } else {
+                newitem("nothing to do!","",onwhatid);
+        }
+
 //	return false;
 	var rightedge=ie5? document.body.clientWidth-event.clientX : window.innerWidth-e.clientX
 	var bottomedge=ie5? document.body.clientHeight-event.clientY : window.innerHeight-e.clientY
