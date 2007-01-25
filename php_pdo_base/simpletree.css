@@ -13,7 +13,6 @@ color:black;
 
 .treeview li.root{ /* Style for LI that contains sub lists (other ULs). */
 background: white url(closed.gif) no-repeat left 1px;
-cursor: hand !important;
 cursor: pointer !important;
 color:blue;
 }
@@ -30,7 +29,6 @@ cursor: default;
 
 .treeview li.node{ /* Style for LI that contains sub lists (other ULs). */
 background: white url(closed.gif) no-repeat left 1px;
-cursor: hand !important;
 cursor: pointer !important;
 }
 
@@ -56,3 +54,5 @@ display: none; /*Hide them by default. Don't delete. */
 .treeview .leaf ul li{ /*Style for LIs of ULs that are children of LIs (submenu) */
 cursor: default;
 }
+
+

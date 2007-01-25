@@ -1,4 +1,4 @@
-/*.skin0{
+.skin0{
 position:absolute;
 width:auto;
 max-width:90%;
@@ -16,7 +16,8 @@ visibility:hidden;
 padding-left:10px;
 padding-right:10px;
 }
-*/
+
+        /*
 .skin0{
 position:absolute;
 width:auto;
@@ -35,6 +36,7 @@ div.menuitems:hover { -moz-opacity: 1.0; -moz-border-radius-topleft: 10px;
 capitalize; color: black; font-weight: bold;
 }
 div.menuitems:first-letter { font-size: 15px; }
+*/
 
 .nonmenuitems{
 padding-left:1px;
@@ -45,9 +47,4 @@ border-bottom: 2px solid gray;
 }
 
 
-.renamebox {
-width:auto;
-max-width:90%;
-
-}
 
