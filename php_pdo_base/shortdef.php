@@ -31,18 +31,21 @@
 
 
 #include "color.php"
-include_once("term.php");
+//include_once("term.php");
+#include "term.php"
+#include "served.php"
 
         define('br',"<br />");
         define('rnl',"\n");
         define('rspace'," ");
         define('rtab',"\t");
 
-if (terminal) {
+if (IsTerminal()) {
         define('nl',rnl);
         define('space',rspace);
         define('tab',rtab);
-} else {
+}
+if (Served()) {
         define('nl',br.rnl);
         define('space',"&nbsp;");
         define('tab',space.space.space.space.space.space.space.space);

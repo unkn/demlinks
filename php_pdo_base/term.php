@@ -29,12 +29,17 @@
 *
 ***************************************************************************}}}*/
 
-if (isset($_SERVER['TERM'])) {
-        define('terminal',true);
-} else {
-        define('terminal',false);
+static $IsTerminal=false;
+
+function IsTerminal() //well since there's no way to make own variables superglobal (or i haven't searched enough)
+{//an evil workaround eh?
+        global $IsTerminal;
+        return $IsTerminal;
 }
 
+if (isset($_SERVER['TERM'])) {
+        $IsTerminal=true;
+}
 
 // vim: fdm=marker
 #endif //header

@@ -32,6 +32,8 @@
 ***************************************************************************}}}*/
 
 
+#include "term.php"
+#include "served.php"
 #include "shortdef.php"
 #include "debugL0.php"
 #include "color.php"
@@ -159,9 +161,9 @@ class dmlphpL1 extends dmlphpL0 {
                 _yntIFnot($this->ynTestElementInvariants($child));
 
                 //root
-                if (terminal) {
+                if (IsTerminal()) {
                         echo "Parents of:";
-                } else {
+                } else if (Served()){
                         //$treemenuid='TreeMenu for Parents of '.$child;
                         //echo '<a href="javascript:ddtreemenu.flatten(\''.$treemenuid.'\', \'expand\')">Expand All</a> | <a href="javascript:ddtreemenu.flatten(\''.$treemenuid.'\', \'contract\')">Contract All</a>'.rnl;
 
@@ -170,7 +172,7 @@ class dmlphpL1 extends dmlphpL0 {
                 _yntIFnot( $ar=$this->parseTree($child) );
                 keepflags1($ar);
 
-                if (!terminal) {
+                if (Served()) {
                         echo "</ul>".rnl;
                         echo '<script type="text/javascript">'.rnl;
                         echo '//ddtreemenu.createTree(treeid, enablepersist, opt_persist_in_days (default is 1))'.rnl;
@@ -183,40 +185,40 @@ class dmlphpL1 extends dmlphpL0 {
         {
                 _yntIFnot($this->ynTestElementInvariants($child));
                         for ($i=0; $i<$startlevel; $i++) {
-                                if (terminal) {
+                                if (IsTerminal()) {
                                         echo rspace;
                                 } else {
                                         echo rtab;
                                 }
                         }
-                if (!terminal) {
+                if (Served()) {
                         $uec=rawurlencode($child);
                 }
 
                 if ($startlevel>0) {//non-root
-                        if (terminal) {
+                        if (IsTerminal()) {
                                 echo "|<";
                         }
                 }
 
                 _ynif ( $this->GetOfChild_AllParents($child,$parents) ) { //folder
-                        if (terminal) {
+                        if (IsTerminal()) {
                                 echo " \"$child\"".nl;
-                        } else {
+                        } else if (Served()) {
                                 echo '<li id="'.$uec.'" style="background-image: url(closed.gif);" class="'.($startlevel==0?'root':'node').'">'.$child.rnl;
                                 echo rtab.'<ul id="'.$uec.'" style="display: none;" rel="closed">'.rnl;
                         }
                         foreach ($parents as $val) {
                                 _yntIFnot( $this->parseTree($val, 1+$startlevel) );
                         }
-                        if (!terminal) {
+                        if (Served()) {
                                 echo rtab."</ul>".rnl;
                                 echo "</li>".rnl;
                         }
                 } else {//not a folder  ==leaf!
-                        if (terminal) {
+                        if (IsTerminal()) {
                                 echo " \"$child\"".nl;
-                        } else {
+                        } else if (Served()){
                                 echo '<li id="'.$uec.'" class="leaf">'.$child.'</li>'.rnl;
                         }
                 }

@@ -1,6 +1,6 @@
 //<?php
-#ifndef COLOR_PHP
-#define COLOR_PHP
+#ifndef SERVED_PHP
+#define SERVED_PHP
 
 /*LICENSE*GNU*GPL************************************************************{{{
 *
@@ -25,29 +25,52 @@
 *
 *  ========================================================================
 *
-* Description: linux console colors
+* Description: handles many things when the scrips is serving the webpage
 *
 ***************************************************************************}}}*/
 
-//include_once("term.php");
+
+#include "shortdef.php"
 #include "term.php"
 
-#define setcol(col) "\x1B[3".#col."m"
-function defcol($str, $num)
+define("kRead","kRead");//first time request/GET
+define("kWrite","kWrite");//ie. POST, not first time
+
+static $ReqMethod;
+static $Served=false;//not served, ie. terminal; if($Served) should be true if script is used on a webpage
+static $PageVars;
+
+
+function Served()
 {
-        if (IsTerminal()) {
-                define($str,setcol($num));
-        } else {
-                define($str,'');
-        }
+        global $Served;
+        return $Served;
 }
 
-defcol('nocol',9);
-defcol('browncol',3);
-defcol('redcol',1);
-defcol('bluecol',4);
-defcol('greencol',2);
-defcol('purplecol',5);
+function PageVars()
+{
+        global $PageVars;
+        return $PageVars;
+}
+function ReqMethod()
+{
+        global $ReqMethod;
+        return $ReqMethod;
+}
+
+if (!IsTerminal()) {
+        $ReqMethod=$_SERVER['REQUEST_METHOD'];
+        if (!empty($ReqMethod)) {
+                eval('$PageVars=&$_'.$ReqMethod.";");
+                if (0===count($PageVars) && ("GET"===$ReqMethod)) {
+                        $Served=kRead;
+                } else {
+                        $Served=kWrite;
+                }
+        }
+} else {
+        $Served=false;
+}
 
 // vim: fdm=marker
 #endif //header
