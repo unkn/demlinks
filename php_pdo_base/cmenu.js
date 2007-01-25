@@ -32,9 +32,14 @@ function showmenuie5(e){
         var onwhatid=unescape(onwhat.id);
         var onwhatclass=onwhat.className;
 
+        try { //rightclicked on an already open contexmenu? do nothing
+                if (onwhatclass.indexOf('menuitems') != -1)
+                        return false;
+        } catch(m) {}
+
         menuobj.innerHTML="";
 
-        if (onwhatclass=="node" || onwhatclass=="root") {
+        if (onwhatclass=="node") {
                 newitem(onwhatid,"",onwhatid);
                 newitem('Add new child...',"add",onwhatid);
                 //newitem('<a href="javascript:ddtreemenu.flatten(\''+eemenuid.'\', \'expand\')">Expand All</a> | <a href="javascript:ddtreemenu.flatten(\''.$treemenuid.'\', \'contract\')">Contract All</a>'.rnl;
@@ -66,8 +71,12 @@ function showmenuie5(e){
 	return false
 }
 
-function hidemenuie5(e){
-	menuobj.style.visibility="hidden"
+function semihidemenu(e){
+	var firingobj=ie5? event.srcElement : e.target
+        try {
+        if (firingobj.className.indexOf('menuitems') == -1)
+	        menuobj.style.visibility="hidden"
+} catch(m) {}
         //dumbvar=false;
 }
 
@@ -97,16 +106,16 @@ function jumptoie5(e){
 	var firingobj=ie5? event.srcElement : e.target
 	if (firingobj.className=="menuitems"||ns6&&firingobj.parentNode.className=="menuitems"){
 		if (ns6&&firingobj.parentNode.className=="menuitems") firingobj=firingobj.parentNode
-		if (firingobj.getAttribute("target"))
-		window.open(firingobj.getAttribute("url"),firingobj.getAttribute("target"))
-	else
-		window.location=firingobj.getAttribute("url")
+		/*if (firingobj.getAttribute("target"))
+		        window.open(firingobj.getAttribute("url"),firingobj.getAttribute("target"))
+	        else
+		        window.location=firingobj.getAttribute("url")*/
 	}
 }
 
 if (ie5||ns6){
 	menuobj.style.display=''
 	document.oncontextmenu=showmenuie5
-	document.onclick=hidemenuie5
+	document.onclick=semihidemenu
 }
 
