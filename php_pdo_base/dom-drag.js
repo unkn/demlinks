@@ -10,6 +10,7 @@
 var Drag = {
 
 	obj : null,
+        last_zIndex:null,
 
 	init : function(o, oRoot, minX, maxX, minY, maxY, bSwapHorzRef, bSwapVertRef, fXMapper, fYMapper)
 	{
@@ -41,6 +42,10 @@ var Drag = {
 	start : function(e)
 	{
 		var o = Drag.obj = this;
+
+                this.last_zIndex=o.style.zIndex;
+                o.style.zIndex=101;
+
 		e = Drag.fixE(e);
 		var y = parseInt(o.vmode ? o.root.style.top  : o.root.style.bottom);
 		var x = parseInt(o.hmode ? o.root.style.left : o.root.style.right );
@@ -104,6 +109,9 @@ var Drag = {
 
 	end : function()
 	{
+                if (null!=Drag.obj.last_zIndex) {
+                        Drag.obj.style.zIndex=Drag.last_zIndex;
+                }
 		document.onmousemove = null;
 		document.onmouseup   = null;
 		Drag.obj.root.onDragEnd(	parseInt(Drag.obj.root.style[Drag.obj.hmode ? "left" : "right"]), 

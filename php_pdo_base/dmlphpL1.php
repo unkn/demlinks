@@ -167,7 +167,7 @@ class dmlphpL1 extends dmlphpL0 {
                         //$treemenuid='TreeMenu for Parents of '.$child;
                         //echo '<a href="javascript:ddtreemenu.flatten(\''.$treemenuid.'\', \'expand\')">Expand All</a> | <a href="javascript:ddtreemenu.flatten(\''.$treemenuid.'\', \'contract\')">Contract All</a>'.rnl;
 
-                        echo '<ul id="'.$treemenuid.'" class="treeview" style="position:relative;">'.rnl;
+                        echo '<ul id="'.$treemenuid.'" class="treeview">'.rnl;
                 }
                 _yntIFnot( $ar=$this->parseTree($child) );
                 keepflags1($ar);

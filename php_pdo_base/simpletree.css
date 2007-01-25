@@ -1,6 +1,9 @@
 .treeview {
-position:relative;/*so it can be moved by drag-drop*/
+position:absolute;/*so it can be moved by drag-drop*/
 background-color:#00008B;
+padding-left: 22px;
+padding-right: 2px;
+padding-top: 2px;
 }
 
 .treeview ul{ /*CSS for Simple Tree Menu*/
@@ -12,7 +15,7 @@ padding: 0;
 background: black url(none) no-repeat left center;
 list-style-type: none;
 padding-left: 22px;
-margin-bottom: 3px;
+margin-bottom: 2px;
 color:white;
 }
 
