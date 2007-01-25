@@ -167,7 +167,7 @@ class dmlphpL1 extends dmlphpL0 {
                         //$treemenuid='TreeMenu for Parents of '.$child;
                         //echo '<a href="javascript:ddtreemenu.flatten(\''.$treemenuid.'\', \'expand\')">Expand All</a> | <a href="javascript:ddtreemenu.flatten(\''.$treemenuid.'\', \'contract\')">Contract All</a>'.rnl;
 
-                        echo '<ul id="'.$treemenuid.'" class="treeview">'.rnl;
+                        echo '<ul id="'.$treemenuid.'" class="treeview" style="position:relative;">'.rnl;
                 }
                 _yntIFnot( $ar=$this->parseTree($child) );
                 keepflags1($ar);
@@ -177,6 +177,7 @@ class dmlphpL1 extends dmlphpL0 {
                         echo '<script type="text/javascript">'.rnl;
                         echo '//ddtreemenu.createTree(treeid, enablepersist, opt_persist_in_days (default is 1))'.rnl;
                         echo 'ddtreemenu.createTree("'.$treemenuid.'", true)'.rnl;
+                        echo 'Drag.init(document.getElementById("'.$treemenuid.'"));'.rnl;
                         echo '</script>'.rnl;
                 }
         }endfunc1()/*}}}*/
@@ -205,7 +206,7 @@ class dmlphpL1 extends dmlphpL0 {
                         if (IsTerminal()) {
                                 echo " \"$child\"".nl;
                         } else if (Served()) {
-                                echo '<li id="'.$uec.'" style="background-image: url(closed.gif);" class="'.($startlevel==0?'root':'node').'">'.$child.rnl;
+                                echo '<li id="'.$uec.'" style="background-image: url(closed.png);" class="'.($startlevel==0?'root':'node').'">'.$child.rnl;
                                 echo rtab.'<ul id="'.$uec.'" style="display: none;" rel="closed">'.rnl;
                         }
                         foreach ($parents as $val) {

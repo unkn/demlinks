@@ -1,18 +1,23 @@
+.treeview {
+position:relative;/*so it can be moved by drag-drop*/
+background-color:#00008B;
+}
+
 .treeview ul{ /*CSS for Simple Tree Menu*/
 margin: 0;
 padding: 0;
 }
 
 .treeview li{ /*Style for LI elements in general (excludes an LI that contains sub lists)*/
-background: white url(none) no-repeat left center;
+background: black url(none) no-repeat left center;
 list-style-type: none;
 padding-left: 22px;
 margin-bottom: 3px;
-color:black;
+color:white;
 }
 
 .treeview li.root{ /* Style for LI that contains sub lists (other ULs). */
-background: white url(closed.gif) no-repeat left 1px;
+background: black url(closed.png) no-repeat left 1px;
 cursor: pointer !important;
 color:blue;
 }
@@ -28,7 +33,7 @@ cursor: default;
 
 
 .treeview li.node{ /* Style for LI that contains sub lists (other ULs). */
-background: white url(closed.gif) no-repeat left 1px;
+background: black url(closed.png) no-repeat left 1px;
 cursor: pointer !important;
 }
 
@@ -42,7 +47,7 @@ cursor: default;
 }
 
 .treeview li.leaf{ /* Style for LI that contains sub lists (other ULs). */
-background: white url(list.gif) no-repeat left center;
+background: black url(list.png) no-repeat left center;
 color:maroon;
 }
 

@@ -43,6 +43,8 @@
 
 <head>
 
+<script language="javascript" src="dom-drag.js"></script>
+
 <script type="text/javascript" src="simpletreemenu.js">
 
 /***********************************************
@@ -64,7 +66,7 @@ For full source code and Terms Of Use, visit http://www.dynamicdrive.com */
 
 </head>
 
-<body>
+<body style="background-color:black;">
 
 <?
 
