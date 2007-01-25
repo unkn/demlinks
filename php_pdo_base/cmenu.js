@@ -52,17 +52,36 @@ function ajaxrename(old, newname)
 {
         alert("ajaxrename");
 }
+function getrealobject(child)
+{
+        //parse upward if no ID found
+        try{
+                var parser=child;
+                //alert(parser.id);
+                while (parser.id=="") {
+                        parser=parser.parentNode;
+                }
+                //alert(parser.id);
+                return parser;
+        }catch(m){
+        return child; 
+        }
+}
 
 var passer;
 function showmenuie5(e){
 //Find out how close the mouse is to the corner of the window
 	var onwhat=ie5? event.srcElement : e.target;
 	//alert(onwhat.id);
+        onwhat=getrealobject(onwhat);//one with ID ie. ignoring object like <a> or <font> which have no id and are children of the real object you know
         var onwhatid=unescape(onwhat.id);
+        if (onwhatid=="") {
+                return false;
+        }
         var onwhatclass=onwhat.className;
 
         try { //rightclicked on an already open contexmenu? do nothing
-                if (onwhatclass.indexOf('menuitems') != -1 )
+                if (onwhatclass.indexOf('menuitems') != -1 ) //==menuitems
                         return false;
         } catch(m) {}
 
@@ -77,7 +96,7 @@ function showmenuie5(e){
                 //newitem('<a href="javascript:ddtreemenu.flatten(\''+eemenuid.'\', \'expand\')">Expand All</a> | <a href="javascript:ddtreemenu.flatten(\''.$treemenuid.'\', \'contract\')">Contract All</a>'.rnl;
 
         } else {
-                newitem("nothing to do!","",onwhatid);
+                newitem("nothing to do!"+onwhat.id,"");
         }
 
 //position of menu
@@ -91,6 +110,8 @@ function showmenuie5(e){
 	else
 		//position the horizontal position of the menu where the mouse was clicked
 		menuobj.style.left=ie5? document.body.scrollLeft+event.clientX : window.pageXOffset+e.clientX
+        //if (menuobj.style.left<=0)
+                menuobj.style.left=e.clientX;
 
 //same concept with the vertical position
 	if (bottomedge<menuobj.offsetHeight)

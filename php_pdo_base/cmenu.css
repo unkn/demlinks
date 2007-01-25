@@ -2,6 +2,7 @@
 position:absolute;
 width:auto;
 max-width:90%;
+min-width:10%;
 border:2px solid black;
 background-color:menu;
 font-family:Verdana;

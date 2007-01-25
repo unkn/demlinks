@@ -206,7 +206,8 @@ class dmlphpL1 extends dmlphpL0 {
                         if (IsTerminal()) {
                                 echo " \"$child\"".nl;
                         } else if (Served()) {
-                                echo '<li id="'.$uec.'" style="background-image: url(closed.png);" class="'.($startlevel==0?'root':'node').'">'.$child.rnl;
+                                $classtype=$startlevel==0?'root':'node';
+                                echo '<li id="'.$uec.'" style="background-image: url(closed.png);" class="'.$classtype.'">'/*<a id="'.$uec.'" class="'.$classtype.'">'*/.$child./*"</a>".*/rnl;
                                 echo rtab.'<ul id="'.$uec.'" style="display: none;" rel="closed">'.rnl;
                         }
                         foreach ($parents as $val) {
