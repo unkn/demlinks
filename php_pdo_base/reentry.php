@@ -38,7 +38,7 @@
                         static $_the_nonreentrant_lockvar=0; \
                         ++$_the_nonreentrant_lockvar; \
                         if ($_the_nonreentrant_lockvar > 1) { /*then this part was "called" at least twice */ \
-                                throw_exception("attempting to locally enter for the $_the_nonreentrant_lockvar-th time"); \
+                                lnexcept("attempting to locally enter for the $_the_nonreentrant_lockvar-th time"); \
                         } }
 
 
@@ -47,21 +47,21 @@
                         $_the_NONreentrant_GLOBAL_LOCKVAR=&global_lockvar; \
                         ++$_the_NONreentrant_GLOBAL_LOCKVAR; \
                         if ($_the_NONreentrant_GLOBAL_LOCKVAR > 1) { \
-                                throw_exception("attempting to globally enter for the $_the_NONreentrant_GLOBAL_LOCKVAR-th time"); \
+                                lnexcept("attempting to globally enter for the $_the_NONreentrant_GLOBAL_LOCKVAR-th time"); \
                         } }
 
 #define AllowLocalReentry() { \
                         _tIFnot(isset($_the_nonreentrant_lockvar));\
                         --$_the_nonreentrant_lockvar;\
                         if ($_the_nonreentrant_lockvar < 0) { \
-                                throw_exception("LOCAL:attempting to exit too many times, ie. non matching begin for this exit! $_the_nonreentrant_lockvar should be 0"); \
+                                lnexcept("LOCAL:attempting to exit too many times, ie. non matching begin for this exit! $_the_nonreentrant_lockvar should be 0"); \
                         }}
 
 #define AllowGlobalReentry() { \
                         _tIFnot(isset($_the_NONreentrant_GLOBAL_LOCKVAR));\
                         --$_the_NONreentrant_GLOBAL_LOCKVAR; \
                         if ($_the_NONreentrant_GLOBAL_LOCKVAR < 0) { \
-                                throw_exception("GLOBAL:attempting to exit too many times, ie. non matching begin for this exit! $_the_nonreentrant_lockvar should be 0"); \
+                                lnexcept("GLOBAL:attempting to exit too many times, ie. non matching begin for this exit! $_the_nonreentrant_lockvar should be 0"); \
                         }}
 
 //reentry functions must be called within the same scope! ie. within the same {} block or same function, such to not loose sight of the static var, or use another's var

@@ -29,6 +29,9 @@
 *
 ***************************************************************************}}}*/
 
+
+#include "served.php"
+
 static $IsTerminal=false;
 
 function IsTerminal() //well since there's no way to make own variables superglobal (or i haven't searched enough)
@@ -39,6 +42,8 @@ function IsTerminal() //well since there's no way to make own variables superglo
 
 if (isset($_SERVER['TERM'])) {
         $IsTerminal=true;
+} else if (!Served()) {
+        throw new Exception("one of Terminal and Served must exist!");
 }
 
 // vim: fdm=marker

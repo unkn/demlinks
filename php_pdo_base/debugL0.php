@@ -52,17 +52,21 @@
 #define getfile \
         browncol.__FILE__.nocol
 
-#define throw_exception(_message) \
+//use lnexcept() in main program(s), instead of this:
+#define _throw_exception(_message) \
                 throw new Exception(_message);
 
 #ifdef IMMEDIATE_REPORTS
         #define except(_message) \
                 echo _message; \
-                throw_exception(_message);
+                _throw_exception(_message);
 #else
         #define except(_message) \
-                throw_exception(_message);
+                _throw_exception(_message);
 #endif
+
+#define lnexcept(msg) \
+                except(dropmsg(msg));
 
 #define quitmsg \
                 nl.redcol."vim ".getfile." +".getline.nl.tab.greencol.$e->getmessage().nocol.nl
@@ -303,7 +307,7 @@ ynfunc ynIsGood($var,$allowemptystr=no)
                                         _if (isValue_InList(no, $var)) {
                                                 return no;
                                         }
-                                        throw_exception("invalid kReturnStateList_type! neither yes, nor no");
+                                        lnexcept("invalid kReturnStateList_type! neither yes, nor no");
                                 }
                         }
                         return yes; //a non kReturnStateList_type

@@ -147,10 +147,10 @@ boolfunc isL1YesReturn($ar_return)
                 if ($no) {
                         return FALSE;
                 } else {//neither yes nor no is present
-                        throw_exception("neither ".yes." nor ".no." is present in this return:".retValue($ar_return));
+                        lnexcept("neither ".yes." nor ".no." is present in this return:".retValue($ar_return));
                 }
         }
-        throw_exception("can't reach this");
+        lnexcept("can't reach this");
 }
 
 #define _arifL0(arreturn, _booltest) \

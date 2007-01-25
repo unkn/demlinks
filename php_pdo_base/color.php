@@ -31,23 +31,26 @@
 
 //include_once("term.php");
 #include "term.php"
+#include "served.php"
 
 #define setcol(col) "\x1B[3".#col."m"
-function defcol($str, $num)
+
+function defcol($str, $termcol, $sitecol)
 {
         if (IsTerminal()) {
-                define($str,setcol($num));
-        } else {
-                define($str,'');
+                define($str,setcol($termcol));//_setcol($num));
+        } else if (Served()){
+                define($str,'<font color="#'.$sitecol.'">');
         }
 }
 
-defcol('nocol',9);
-defcol('browncol',3);
-defcol('redcol',1);
-defcol('bluecol',4);
-defcol('greencol',2);
-defcol('purplecol',5);
+defcol('nocol',9,"000000");
+defcol('browncol',3,"A52A2A");
+defcol('redcol',1,"FF0000");
+defcol('bluecol',4,"0000FF");
+defcol('greencol',2,"00FF00");
+defcol('purplecol',5,"800080");
+
 
 // vim: fdm=marker
 #endif //header

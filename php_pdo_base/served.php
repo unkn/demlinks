@@ -29,9 +29,8 @@
 *
 ***************************************************************************}}}*/
 
+//don't include term.php here, because it uses this script
 
-#include "shortdef.php"
-#include "term.php"
 
 define("kRead","kRead");//first time request/GET
 define("kWrite","kWrite");//ie. POST, not first time
@@ -58,7 +57,8 @@ function ReqMethod()
         return $ReqMethod;
 }
 
-if (!IsTerminal()) {
+
+if (isset($_SERVER['REQUEST_METHOD']) ) {
         $ReqMethod=$_SERVER['REQUEST_METHOD'];
         if (!empty($ReqMethod)) {
                 eval('$PageVars=&$_'.$ReqMethod.";");
