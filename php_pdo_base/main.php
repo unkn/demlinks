@@ -64,6 +64,9 @@ For full source code and Terms Of Use, visit http://www.dynamicdrive.com */
 
 <link rel="stylesheet" type="text/css" href="cmenu.css" />
 
+<script type="text/javascript" src="base64.js"></script>
+
+
 </head>
 
 <body style="background-color:black;">

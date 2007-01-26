@@ -3,19 +3,24 @@ position:absolute;
 width:auto;
 max-width:90%;
 min-width:10%;
-border:2px solid black;
-background-color:menu;
+border:2px solid white;
+background-color:black;
 font-family:Verdana;
 line-height:20px;
 cursor:default;
 font-size:14px;
 z-index:100;
 visibility:hidden;
+color:white;
 }
 
 .menuitems{
 padding-left:10px;
 padding-right:10px;
+}
+div.menuitems:hover { -moz-opacity: 1.0; -moz-border-radius-topleft: 10px;
+-moz-border-radius-bottomright: 10px; border: 1px solid blue; text-transform:
+capitalize; color:yellow; background-color:blue; font-weight: bold;
 }
 
         /*

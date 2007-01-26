@@ -157,7 +157,7 @@ class dmlphpL1 extends dmlphpL0 {
         {
                 _tIF(empty($treemenuid));
                 //$treemenuid=preg_replace('/([\'\"])/',preg_quote('\\').'\1',$treemenuid);
-                $treemenuid=rawurlencode($treemenuid);
+                $treemenuid=base64_encode($treemenuid);
                 _yntIFnot($this->ynTestElementInvariants($child));
 
                 //root
@@ -193,7 +193,7 @@ class dmlphpL1 extends dmlphpL0 {
                                 }
                         }
                 if (Served()) {
-                        $uec=rawurlencode($child);
+                        $uec=base64_encode($child);
                 }
 
                 if ($startlevel>0) {//non-root
@@ -207,7 +207,7 @@ class dmlphpL1 extends dmlphpL0 {
                                 echo " \"$child\"".nl;
                         } else if (Served()) {
                                 $classtype=$startlevel==0?'root':'node';
-                                echo '<li id="'.$uec.'" style="background-image: url(closed.png);" class="'.$classtype.'">'/*<a id="'.$uec.'" class="'.$classtype.'">'*/.$child./*"</a>".*/rnl;
+                                echo '<li id="'.$uec.'" style="background-image: url(closed.png);" class="'.$classtype.'"><a id="'.$uec.'" class="'.$classtype.'">'.$child."</a>".rnl;//anchor for find!
                                 echo rtab.'<ul id="'.$uec.'" style="display: none;" rel="closed">'.rnl;
                         }
                         foreach ($parents as $val) {
@@ -221,7 +221,7 @@ class dmlphpL1 extends dmlphpL0 {
                         if (IsTerminal()) {
                                 echo " \"$child\"".nl;
                         } else if (Served()){
-                                echo '<li id="'.$uec.'" class="leaf">'.$child.'</li>'.rnl;
+                                echo '<li id="'.$uec.'" class="leaf"><a id="'.$uec.'" class="leaf">'.$child.'</a></li>'.rnl;
                         }
                 }
 

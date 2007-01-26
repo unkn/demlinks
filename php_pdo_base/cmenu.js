@@ -29,12 +29,79 @@ function newitem(text, urlaction)
 }
 
 var lastnewnode="";
+var lastfindnode="";
+function findprompt(onwhat)
+{
+        var id=base64.decode(onwhat.id);
+        var lastfound=null;
+        var lastcolor=null;
+        do {
+                var findnow=prompt("Find what ID:", (lastfindnode==""?id:lastfindnode));
+                if (findnow!=null && findnow!="") {//ok pressed
+                        var i;
+                        if (lastfindnode!=findnow) {
+                                i=0;//start search from beginning
+                        }
+
+                        lastfindnode=findnow;
+                        //findnow=base64.encode(findnow);
+
+                        var allelems=document.getElementsByTagName('li');
+                        //alert(anchors.length);
+                        var found=null;
+                        for (;i<allelems.length;i++) {
+                                var cure=allelems[i];
+                                //partial match search:
+                                if (base64.decode(cure.id).indexOf(findnow) != -1) {//.indexOf(id) != -1 ) {
+                                        var anchors=cure.getElementsByTagName("a");
+                                        if (null!=anchors && anchors.length>0) {
+                                                for (var k=0;k<anchors.length;k++) {
+                                                        if (base64.decode(anchors[k].id).indexOf(findnow) != -1) {
+                                                                found=anchors[k];//only first anchor should be shown! the other anchors are prolly children of their respective LIs which will be found later via local var 'i'
+                                                                break;//second for
+                                                        }//if
+                                                }//for
+                                                if (null!=found) {//found one
+                                                        i++;//prepare to parse from the next LI
+                                                        break;//first for
+                                                }
+                                        }//if
+                                }//if
+                        }//for
+                        if (null!=found) {
+                                if (null!=lastfound) {
+                                        lastfound.parentNode.style.color=lastcolor;
+                                }
+                                lastfound=found;
+                                lastcolor=found.style.color;
+                                found.focus();//first occurence is focused
+                                try {
+                                        ddtreemenu.flattenUL(found.parentNode.parentNode,"expand");
+                                        var a=found.parentNode;
+                                        while (null != a) {
+                                                if (a.tagName=="ul") {
+                                                        ddtreemenu.flattenUL(a,"expand");
+                                                }
+                                                a=a.parentNode;
+                                        }
+                                } catch(m) {}
+                                found.parentNode.style.color="#FF0000";
+                        } else {
+                                alert('searched for anchor but not found:'+findnow);
+                                i=0;
+                        }
+                }
+        } while (findnow!=null && findnow!="");
+        if (null!=lastfound) {
+                lastfound.parentNode.style.color=lastcolor;
+        }
+}
 function renameprompt(what)
 {
         //var parent1=what.parentNode;
         //var newinput=document.createElement('input');
         //newinput.className="renamebox";
-        var id=unescape(what.id);
+        var id=base64.decode(what.id);
         var old=what.style.color;
         what.style.color="#FF0000";
         //newinput.value=id;
@@ -47,6 +114,7 @@ function renameprompt(what)
         //alert(what.id);
         //parent1.replaceChild(oldone,newinput);
 }
+
 
 function ajaxrename(old, newname)
 {
@@ -74,7 +142,7 @@ function showmenuie5(e){
 	var onwhat=ie5? event.srcElement : e.target;
 	//alert(onwhat.id);
         onwhat=getrealobject(onwhat);//one with ID ie. ignoring object like <a> or <font> which have no id and are children of the real object you know
-        var onwhatid=unescape(onwhat.id);
+        var onwhatid=base64.decode(onwhat.id);
         if (onwhatid=="") {
                 return false;
         }
@@ -88,10 +156,10 @@ function showmenuie5(e){
         menuobj.innerHTML="";
 
         if (onwhatclass=="node" || onwhatclass=="root"||onwhatclass=="leaf") {
+                passer=onwhat;
                 newitem(onwhatid,"");
                 newitem('Add New Child...',"javascript:var addchild=prompt(\"Add New Child ID to "+onwhatid+":\",addchild);");
-                newitem('Find ID...',"javascript:var findthis=prompt(\"Find what ID:\", findthis);");
-                passer=onwhat;
+                newitem('Find ID...',"javascript:findprompt(passer);");
                 newitem('Rename ID...',"javascript:renameprompt(passer);");
                 //newitem('<a href="javascript:ddtreemenu.flatten(\''+eemenuid.'\', \'expand\')">Expand All</a> | <a href="javascript:ddtreemenu.flatten(\''.$treemenuid.'\', \'contract\')">Contract All</a>'.rnl;
 

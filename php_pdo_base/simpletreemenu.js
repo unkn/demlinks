@@ -89,11 +89,19 @@ ddtreemenu.expandSubTree=function(treeid, ulelement){ //expand a UL element and 
 ddtreemenu.flatten=function(treeid, action){ //expand or contract all UL elements
         var ultags=document.getElementById(treeid).getElementsByTagName("ul")
         for (var i=0; i<ultags.length; i++){
-                ultags[i].style.display=(action=="expand")? "block" : "none"
+                ddtreemenu.flattenUL(ultags[i],action);
+/*                ultags[i].style.display=(action=="expand")? "block" : "none"
                 var relvalue=(action=="expand")? "open" : "closed"
                 ultags[i].setAttribute("rel", relvalue)
-                ultags[i].parentNode.style.backgroundImage=(action=="expand")? "url("+ddtreemenu.openfolder+")" : "url("+ddtreemenu.closefolder+")"
+                ultags[i].parentNode.style.backgroundImage=(action=="expand")? "url("+ddtreemenu.openfolder+")" : "url("+ddtreemenu.closefolder+")"*/
         }
+}
+
+ddtreemenu.flattenUL=function(ulid, action){ //expand or contract one UL element only, not his children, useful for Find from context menu
+        ulid.style.display=(action=="expand")? "block":"none";
+        var relvalue=(action=="expand")?"open":"closed";
+        ulid.setAttribute("rel",relvalue);
+        ulid.parentNode.style.backgroundImage=(action=="expand")?"url("+ddtreemenu.openfolder+")":"usrl("+ddtreemenu.closefolder+")";
 }
 
 ddtreemenu.rememberstate=function(treeid, durationdays){ //store index of opened ULs relative to other ULs in Tree into cookie
