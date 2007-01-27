@@ -40,7 +40,11 @@ function defcol($str, $termcol, $sitecol)
         if (IsTerminal()) {
                 define($str,setcol($termcol));//_setcol($num));
         } else if (Served()){
-                define($str,'<font color="#'.$sitecol.'">');//disabled, while checking onclick-ed item's ID we get none, the id of the <font> tag! '<font color="#'.$sitecol.'">');
+                if ($sitecol==="none") {
+                        define($str,'</font>');
+                } else {
+                        define($str,'<font color="#'.$sitecol.'">');//disabled, while checking onclick-ed item's ID we get none, the id of the <font> tag! '<font color="#'.$sitecol.'">');
+                }
         }
 }
 
