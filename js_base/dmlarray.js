@@ -31,6 +31,8 @@ var cParents="AllParents";
 var cChildren="AllChildren";
 var rnl="\n";
 
+//TODO: replace, insertafter/before Node, first last
+
 function GetList_OfFamily_OfNode(familytype,whichnode) /*{{{*/
 {//doesn't create that which didn't exist! unlike _Ensure*.*
         var list=this.AllNodes[familytype];
@@ -50,9 +52,11 @@ function _EnsureGetList_OfFamily_OfNode(familytype,whichnode) //private function
 }/*}}}*/
 
 function NewPCrel(p,c)/*{{{*/
-{
-        this._EnsureGetList_OfFamily_OfNode(cChildren, p).push(c);//p->c
-        this._EnsureGetList_OfFamily_OfNode(cParents, c).push(p);//c<-p
+{//a relation can only exist once, ie. a->b once, not a->b and then a->b again, like a:{b,b} there are no DUP elements! dup elements would be on the next level
+        if (!this.IsPCRel(p,c)) {
+                this._EnsureGetList_OfFamily_OfNode(cChildren, p).push(c);//p->c
+                this._EnsureGetList_OfFamily_OfNode(cParents, c).push(p);//c<-p
+        }
 }/*}}}*/
 
 function toSource()/*{{{*/
@@ -201,6 +205,7 @@ var b=new Tree();//eval(AllNodes.toSource()));
 //alert(tree1.IsPCRel("a","b"));
 tree1.NewPCRel("a","b");
 tree1.NewPCRel("a","d");
+tree1.NewPCRel("a","e");
 tree1.NewPCRel("a","e");
 tree1.NewPCRel("f","a");
 tree1.NewPCRel("f","b");
