@@ -29,6 +29,7 @@
 
 var cParents="AllParents";
 var cChildren="AllChildren";
+var rnl="\n";
 
 function _exists_Node_InFamily(whichnode, familytype) //private function, I wish
 {
@@ -58,6 +59,8 @@ function toSource()
         return this.AllNodes.toSource();
 }
 
+//empty node check, ie. array is empty
+//del rel
 
 function IsPCRel(p,c)
 {
@@ -71,14 +74,23 @@ function IsPCRel(p,c)
         return false;
 }
 
-function inspect()//BAD
+function _showallof_family(family)
 {
-        var ar=Object.values(this.AllNodes[cParents]);
-        var str;
-        for (var i=0;i<ar.length();i++) {
-                str+=ar[i]+',';
+        return this.AllNodes[family].toSource();
+        //return Object.keys(this.AllNodes[family]);
+/*        var par=Object.values(this.AllNodes[family]);
+        var pl=(null!=par[0]?'"'+par[0]+'"':null);
+        for (var i=1;i<par.length;i++) {
+                pl+=',"'+par[i]+'"';
         }
-        return str;
+        return pl;*/
+}
+
+function inspect()
+{
+        var pl=this._showallof_family(cParents);
+        var cl=this._showallof_family(cChildren);
+        return "ParentsOf:"+rnl+pl+rnl+"ChildrenOf:"+rnl+cl;
 }
 
 function Tree()
@@ -94,6 +106,7 @@ function Tree()
         this.toSource=toSource;
         this.inspect=inspect;
         this.IsPCRel=IsPCRel;
+        this._showallof_family=_showallof_family;
 }
 
 var tree1=new Tree();
@@ -101,8 +114,11 @@ var tree1=new Tree();
 var b=new Tree();//eval(AllNodes.toSource()));
 //alert(b.toSource());
 
+alert(tree1.inspect());
 alert(tree1.IsPCRel("a","b"));
 tree1.NewPCRel("a","b");
+tree1.NewPCRel("a","d");
+tree1.NewPCRel("a","e");
 alert(tree1.IsPCRel("a","b"));
 /*AllNodes[cParents]["merge"]=[];
 AllNodes[cParents]["merge"].push("id2");
@@ -115,7 +131,7 @@ b[cParents]["id4"].push("id5");
 //alert(b.toSource());
 //b[cParents].merge(AllNodes[cParents]);
 //alert(b.values()[0]);
-alert(tree1.toSource());
+//alert(tree1.toSource());
+alert(tree1.inspect());
 //var a=eval(AllNodes.toSource());
-
 
