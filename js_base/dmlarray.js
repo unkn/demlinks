@@ -31,50 +31,102 @@ var cParents="AllParents";
 var cChildren="AllChildren";
 var rnl="\n";
 
-function _exists_Node_InFamily(whichnode, familytype) //private function, I wish
-{
+function GetList_OfFamily_OfNode(familytype,whichnode) /*{{{*/
+{//doesn't create that which didn't exist! unlike _Ensure*.*
         var list=this.AllNodes[familytype];
         if (null===list[whichnode] || typeof(list[whichnode]) != "object") {
-                return false;
+                return null;
         }
-        return true;
-}
-function _ensure_Node_InFamily(whichnode, familytype) //private function, I wish
-{
-        if (!this._exists_Node_InFamily(whichnode, familytype)) {
-                this.AllNodes[familytype][whichnode]=new Array();
+        return list[whichnode];
+}/*}}}*/
+
+function _EnsureGetList_OfFamily_OfNode(familytype,whichnode) //private function, I wish/*{{{*/
+{//always returns an array, even if it wasn't defined previously
+        var list=this.AllNodes[familytype];
+        if (null===list[whichnode] || typeof(list[whichnode]) != "object") {
+                list[whichnode]=new Array();
         }
-}
+        return list[whichnode];
+}/*}}}*/
 
-function NewPCrel(p,c)
+function NewPCrel(p,c)/*{{{*/
 {
-        this._ensure_Node_InFamily(p, cChildren);
-        this._ensure_Node_InFamily(c, cParents);
-        this.AllNodes[cParents][c].push(p);
-        this.AllNodes[cChildren][p].push(c);
-}
+        this._EnsureGetList_OfFamily_OfNode(cChildren, p).push(c);//p->c
+        this._EnsureGetList_OfFamily_OfNode(cParents, c).push(p);//c<-p
+}/*}}}*/
 
-function toSource()
+function toSource()/*{{{*/
 {
         return this.AllNodes.toSource();
+}/*}}}*/
+
+function DelPCRel(p,c) //PC=parent,child  (order of params)
+{
+        var ar=this._GetPCRel(p,c);
+        if (null != ar) {
+                var pl=this.GetList_OfFamily_OfNode(cParents, c);
+                if (null!=pl) {//null==pl is unlikely because of prev. if
+                        delete pl[ar[0]];
+                }
+                this._AutoDelEmptyNode(c);
+
+                var cl=this.GetList_OfFamily_OfNode(cChildren, p);
+                if (null!=cl) {
+                        delete cl[ar[1]];
+                }
+                this._AutoDelEmptyNode(p);
+        }
 }
 
-//empty node check, ie. array is empty
-//del rel
-
-function IsPCRel(p,c)
+function _AutoDelEmptyNode(n)
 {
-        if ( (this._exists_Node_InFamily(c, cParents)) &&
-             (this._exists_Node_InFamily(p, cChildren)) ) {
-                if ( (this.AllNodes[cParents][c].indexOf(p) != -1)
-                   &&(this.AllNodes[cChildren][p].indexOf(c) != -1) ){ //exists
-                        return true;
+        this._AutoDelEmptyNode_OfFamily(n, cParents);
+        this._AutoDelEmptyNode_OfFamily(n, cChildren);
+}
+
+function _AutoDelEmptyNode_OfFamily(whichnode, familytype)
+{
+        var list=this.AllNodes[familytype];
+        if (null !== list[whichnode] && typeof(list[whichnode]) == "object") {
+                list[whichnode]=list[whichnode].compact();//this should decrease performance
+                if (list[whichnode].length<=0 ) {
+                        //then it's empty to can delete it
+                        delete list[whichnode];
                 }
+        }
+}
+
+function IsNode(n)
+{//exists only if part of one or more relationships
+        //no need to compact() the arrays since compacting is done on delete
+        if (this.GetList_OfFamily_OfNode(cParents,n) || this.GetList_OfFamily_OfNode(cChildren,n) ) {
+                return true;
         }
         return false;
 }
 
-function _showallof_family(family)
+function _GetPCRel(p,c){//doesn't create those that don't exist
+        var pl=this.GetList_OfFamily_OfNode(cParents, c);
+        var cl=this.GetList_OfFamily_OfNode(cChildren, p);
+        if (null==pl || null==cl) {//it'd be a bug if one of pl or cl is not -1 at this point!
+                return null;
+        }
+        var pi=pl.indexOf(p);
+        var ci=cl.indexOf(c);
+        if ( (pi != -1) && (ci != -1) ) {//exist
+                return new Array(pi,ci);//return index of p, and index of c, in their respective lists, to avoid dup searches via indexOf
+        }
+}
+
+function IsPCRel(p,c)/*{{{*/
+{
+        if (null!=this._GetPCRel(p,c)){
+                return true;
+        }
+        return false;
+}/*}}}*/
+
+function _showallof_family(family)/*{{{*/
 {
         return this.AllNodes[family].toSource();
         //return Object.keys(this.AllNodes[family]);
@@ -84,16 +136,16 @@ function _showallof_family(family)
                 pl+=',"'+par[i]+'"';
         }
         return pl;*/
-}
+}/*}}}*/
 
-function inspect()
+function inspect()/*{{{*/
 {
         var pl=this._showallof_family(cParents);
         var cl=this._showallof_family(cChildren);
         return "ParentsOf:"+rnl+pl+rnl+"ChildrenOf:"+rnl+cl;
-}
+}/*}}}*/
 
-function Tree()
+function Tree()/*{{{*/
 {
 //vars:
         this.AllNodes=new Hash();
@@ -101,25 +153,33 @@ function Tree()
         this.AllNodes[cChildren]=new Object();
 //methods:
         this.NewPCRel=NewPCrel;
-        this._ensure_Node_InFamily=_ensure_Node_InFamily;
-        this._exists_Node_InFamily=_exists_Node_InFamily;
+        this._EnsureGetList_OfFamily_OfNode=_EnsureGetList_OfFamily_OfNode;
+        this.GetList_OfFamily_OfNode=GetList_OfFamily_OfNode;
         this.toSource=toSource;
         this.inspect=inspect;
         this.IsPCRel=IsPCRel;
+        this.DelPCRel=DelPCRel;
+        this.IsNode=IsNode;
         this._showallof_family=_showallof_family;
-}
+        this._GetPCRel=_GetPCRel;
+        this._AutoDelEmptyNode_OfFamily=_AutoDelEmptyNode_OfFamily;
+        this._AutoDelEmptyNode=_AutoDelEmptyNode;
+}/*}}}*/
 
 var tree1=new Tree();
 
 var b=new Tree();//eval(AllNodes.toSource()));
 //alert(b.toSource());
 
-alert(tree1.inspect());
-alert(tree1.IsPCRel("a","b"));
+//alert(tree1.inspect());
+//alert(tree1.IsPCRel("a","b"));
 tree1.NewPCRel("a","b");
 tree1.NewPCRel("a","d");
 tree1.NewPCRel("a","e");
-alert(tree1.IsPCRel("a","b"));
+alert(tree1.IsPCRel("a","e"));
+tree1.DelPCRel("a","e");
+//alert(tree1.IsPCRel("a","b"));
+alert(tree1.IsPCRel("a","e"));
 /*AllNodes[cParents]["merge"]=[];
 AllNodes[cParents]["merge"].push("id2");
 AllNodes[cParents]["merge"].push("id3");
@@ -135,3 +195,5 @@ b[cParents]["id4"].push("id5");
 alert(tree1.inspect());
 //var a=eval(AllNodes.toSource());
 
+
+// vim: fdm=marker
