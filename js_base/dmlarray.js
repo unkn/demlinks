@@ -60,52 +60,77 @@ function toSource()/*{{{*/
         return this.AllNodes.toSource();
 }/*}}}*/
 
-function DelPCRel(p,c) //PC=parent,child  (order of params)
+function DelNode(n)/*{{{*/
+{
+        var pl=this.GetList_OfFamily_OfNode(cParents,n);
+        var cl=this.GetList_OfFamily_OfNode(cChildren,n);
+        if (null!=pl) {
+                //evaporate all parents, cleanly
+                while (pl.length>0) {
+                        this.DelPCRel(pl[0],n);
+                }
+
+/*                pl.each(function(elem) {
+                        alert(this);
+                        this.DelPCRel(elem,n);
+                });*/
+                //delete this.AllNodes[cParents][n];//pl.clear();
+        }
+        if (null!=cl) {
+                //evaporate all parents, cleanly
+                while (cl.length>0) {
+                        this.DelPCRel(n,cl[0]);
+                }
+        }
+
+}/*}}}*/
+
+function DelPCRel(p,c) //PC=parent,child  (order of params)/*{{{*/
 {
         var ar=this._GetPCRel(p,c);
         if (null != ar) {
                 var pl=this.GetList_OfFamily_OfNode(cParents, c);
                 if (null!=pl) {//null==pl is unlikely because of prev. if
-                        delete pl[ar[0]];
+                        pl.splice(ar[0],1);
                 }
                 this._AutoDelEmptyNode(c);
 
                 var cl=this.GetList_OfFamily_OfNode(cChildren, p);
                 if (null!=cl) {
-                        delete cl[ar[1]];
+                        cl.splice(ar[1],1);
                 }
                 this._AutoDelEmptyNode(p);
         }
-}
+}/*}}}*/
 
-function _AutoDelEmptyNode(n)
+function _AutoDelEmptyNode(n)/*{{{*/
 {
         this._AutoDelEmptyNode_OfFamily(n, cParents);
         this._AutoDelEmptyNode_OfFamily(n, cChildren);
-}
+}/*}}}*/
 
-function _AutoDelEmptyNode_OfFamily(whichnode, familytype)
+function _AutoDelEmptyNode_OfFamily(whichnode, familytype)/*{{{*/
 {
         var list=this.AllNodes[familytype];
         if (null !== list[whichnode] && typeof(list[whichnode]) == "object") {
-                list[whichnode]=list[whichnode].compact();//this should decrease performance
+                //list[whichnode]=list[whichnode].compact();//this should decrease performance
                 if (list[whichnode].length<=0 ) {
                         //then it's empty to can delete it
                         delete list[whichnode];
                 }
         }
-}
+}/*}}}*/
 
-function IsNode(n)
+function IsNode(n)/*{{{*/
 {//exists only if part of one or more relationships
         //no need to compact() the arrays since compacting is done on delete
         if (this.GetList_OfFamily_OfNode(cParents,n) || this.GetList_OfFamily_OfNode(cChildren,n) ) {
                 return true;
         }
         return false;
-}
+}/*}}}*/
 
-function _GetPCRel(p,c){//doesn't create those that don't exist
+function _GetPCRel(p,c){//doesn't create those that don't exist/*{{{*/
         var pl=this.GetList_OfFamily_OfNode(cParents, c);
         var cl=this.GetList_OfFamily_OfNode(cChildren, p);
         if (null==pl || null==cl) {//it'd be a bug if one of pl or cl is not -1 at this point!
@@ -116,7 +141,7 @@ function _GetPCRel(p,c){//doesn't create those that don't exist
         if ( (pi != -1) && (ci != -1) ) {//exist
                 return new Array(pi,ci);//return index of p, and index of c, in their respective lists, to avoid dup searches via indexOf
         }
-}
+}/*}}}*/
 
 function IsPCRel(p,c)/*{{{*/
 {
@@ -142,7 +167,7 @@ function inspect()/*{{{*/
 {
         var pl=this._showallof_family(cParents);
         var cl=this._showallof_family(cChildren);
-        return "ParentsOf:"+rnl+pl+rnl+"ChildrenOf:"+rnl+cl;
+        return "ChildrenOf:"+rnl+cl+rnl+"ParentsOf:"+rnl+pl;
 }/*}}}*/
 
 function Tree()/*{{{*/
@@ -157,6 +182,7 @@ function Tree()/*{{{*/
         this.GetList_OfFamily_OfNode=GetList_OfFamily_OfNode;
         this.toSource=toSource;
         this.inspect=inspect;
+        this.DelNode=DelNode;
         this.IsPCRel=IsPCRel;
         this.DelPCRel=DelPCRel;
         this.IsNode=IsNode;
@@ -176,10 +202,15 @@ var b=new Tree();//eval(AllNodes.toSource()));
 tree1.NewPCRel("a","b");
 tree1.NewPCRel("a","d");
 tree1.NewPCRel("a","e");
-alert(tree1.IsPCRel("a","e"));
-tree1.DelPCRel("a","e");
+tree1.NewPCRel("f","a");
+tree1.NewPCRel("f","b");
+tree1.NewPCRel("g","a");
+//alert(tree1.IsPCRel("a","e"));
+alert(tree1.inspect());
+//tree1.DelPCRel("a","e");
+tree1.DelNode("a");
 //alert(tree1.IsPCRel("a","b"));
-alert(tree1.IsPCRel("a","e"));
+//alert(tree1.IsPCRel("a","e"));
 /*AllNodes[cParents]["merge"]=[];
 AllNodes[cParents]["merge"].push("id2");
 AllNodes[cParents]["merge"].push("id3");
