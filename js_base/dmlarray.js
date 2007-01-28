@@ -31,12 +31,44 @@ var cParents="AllParents";
 var cChildren="AllChildren";
 var rnl="\n";
 
-//TODO: replace, insertafter/before Node, first last
+//TODO: replace, insertafter/before Node, first last using splice()
+//insert_InNode_WhichFamily_OfNode_   ("a", cChildren, "e", );
+/*
+var a=new Cursor_OnTree_OfFamily_OfNode(tree1, cChildren,"a");//make a cursor on children of 'a'
+a.Insert_WhatNode_Where_OfNode("f", kAfter, "e");//true/false, use one splice
+a.Insert_WhatNode_Where_OfNode("g", kFirst);//true/false
+a.Move_WhatNode_Where_OfNode("f", kBefore,"e");//use 2 splices, one del one insert
+a.Move_WhatNode_Where_OfNode("f", kLast);
+a.GetNode_Where(kFirst);
+a.GetNode_Where(kNext);//repeat this, returns null if no more
+a.Replace_WhatNode_Where_OfNode("f", kLast, "m");//delete f, insert m kLast
+a.Delete_WhatNode("m");
+a.GetTree();
+a.GetCount();//return number of elements of children of "a" ie. array.length;
+a.ClearAll();//empty all cChildren of "a"
+
+var p=new Pointer_OnTree_OfFamily(tree1, cChildren);//with no domain
+p.SetPointee("e");//or null
+p.SetNull();
+p.IsNull();
+p.GetPointee();//=="e"; or null if null
+p.GetTree();
+
+var dp=new DomainPointer_FamilyKind_OnTree_OfFamily_OfNode(cParents,tree1, cChildren, "a");//pointer uses it's parents list with one element which points to any element which is child of "a"
+dp.SetPointee("e");//limited to children of "a"; OR null
+dp.GetPointee();//null if none set
+dp.GetTree();//returns the tree of where this pointer is part of(or smth
+dp.SetNull();//==SetPointee(null)
+dp.IsNull();
+//use array() named arguments inside a function!
+
+*/
 
 function GetList_OfFamily_OfNode(familytype,whichnode) /*{{{*/
 {//doesn't create that which didn't exist! unlike _Ensure*.*
         var list=this.AllNodes[familytype];
-        if (null===list[whichnode] || typeof(list[whichnode]) != "object") {
+        //if (null===list[whichnode] || typeof(list[whichnode]) != "object") {
+        if (null===list[whichnode] || !Array.prototype.isPrototypeOf(list[whichnode])) {
                 return null;
         }
         return list[whichnode];
@@ -45,7 +77,8 @@ function GetList_OfFamily_OfNode(familytype,whichnode) /*{{{*/
 function _EnsureGetList_OfFamily_OfNode(familytype,whichnode) //private function, I wish/*{{{*/
 {//always returns an array, even if it wasn't defined previously
         var list=this.AllNodes[familytype];
-        if (null===list[whichnode] || typeof(list[whichnode]) != "object") {
+        if (null===list[whichnode] || !Array.prototype.isPrototypeOf(list[whichnode])) {
+        //if (null===list[whichnode] || typeof(list[whichnode]) != "object") {
                 list[whichnode]=new Array();
         }
         return list[whichnode];
@@ -116,7 +149,7 @@ function _AutoDelEmptyNode(n)/*{{{*/
 function _AutoDelEmptyNode_OfFamily(whichnode, familytype)/*{{{*/
 {
         var list=this.AllNodes[familytype];
-        if (null !== list[whichnode] && typeof(list[whichnode]) == "object") {
+        if (null !== list[whichnode] && Array.prototype.isPrototypeOf(list[whichnode])) {
                 //list[whichnode]=list[whichnode].compact();//this should decrease performance
                 if (list[whichnode].length<=0 ) {
                         //then it's empty to can delete it
