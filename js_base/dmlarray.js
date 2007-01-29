@@ -61,29 +61,15 @@ dp.GetTree();//returns the tree of where this pointer is part of(or smth
 dp.SetNull();//==SetPointee(null)
 dp.IsNull();
 //use array() named arguments inside a function!
-
+try using prototype.js ie. object.extend() and stuff Class, $A()
 */
 
 function Tree()//constructor /*{{{*/
 {
 //vars:
-        this.AllNodes=new Hash();
-        this.AllNodes[cParents]=new Object();//not a hash because it'll overwrite some of its methods, and we need to support any index name!
-        this.AllNodes[cChildren]=new Object();
-//methods:
-/*        this.NewPCRel=NewPCrel;
-        this._EnsureGetList_OfFamily_OfNode=_EnsureGetList_OfFamily_OfNode;
-        this.GetList_OfFamily_OfNode=GetList_OfFamily_OfNode;
-        this.toSource=toSource;
-        this.inspect=inspect;
-        this.DelNode=DelNode;
-        this.IsPCRel=IsPCRel;
-        this.DelPCRel=DelPCRel;
-        this.IsNode=IsNode;
-        this._showallof_family=_showallof_family;
-        this._GetPCRel=_GetPCRel;
-        this._AutoDelEmptyNode_OfFamily=_AutoDelEmptyNode_OfFamily;
-        this._AutoDelEmptyNode=_AutoDelEmptyNode;*/
+        this.AllNodes=$H();
+        this.AllNodes[cParents]={};//not a hash because it'll overwrite some of its methods, and we need to support any index name!
+        this.AllNodes[cChildren]={};
 }/*}}}*/
 
 Tree.prototype.GetList_OfFamily_OfNode=function (familytype,whichnode) /*{{{*/
@@ -94,7 +80,7 @@ Tree.prototype.GetList_OfFamily_OfNode=function (familytype,whichnode) /*{{{*/
                 return null;
         }
         return list[whichnode];
-}/*}}}*/
+};/*}}}*/
 
 Tree.prototype._EnsureGetList_OfFamily_OfNode=function(familytype,whichnode) //private function, I wish/*{{{*/
 {//always returns an array, even if it wasn't defined previously
@@ -104,13 +90,13 @@ Tree.prototype._EnsureGetList_OfFamily_OfNode=function(familytype,whichnode) //p
                 list[whichnode]=new Array();
         }
         return list[whichnode];
-}/*}}}*/
+};/*}}}*/
 
 
 Tree.prototype.toSource=function()/*{{{*/
 {
         return this.AllNodes.toSource();
-}/*}}}*/
+};/*}}}*/
 
 Tree.prototype.DelNode=function(n)/*{{{*/
 {
@@ -135,7 +121,7 @@ Tree.prototype.DelNode=function(n)/*{{{*/
                 }
         }
 
-}/*}}}*/
+};/*}}}*/
 
 Tree.prototype.DelPCRel=function(p,c) //PC=parent,child  (order of params)/*{{{*/
 {
@@ -153,13 +139,13 @@ Tree.prototype.DelPCRel=function(p,c) //PC=parent,child  (order of params)/*{{{*
                 }
                 this._AutoDelEmptyNode(p);
         }
-}/*}}}*/
+};/*}}}*/
 
 Tree.prototype._AutoDelEmptyNode=function(n)/*{{{*/
 {
         this._AutoDelEmptyNode_OfFamily(n, cParents);
         this._AutoDelEmptyNode_OfFamily(n, cChildren);
-}/*}}}*/
+};/*}}}*/
 
 Tree.prototype._AutoDelEmptyNode_OfFamily=function(whichnode, familytype)/*{{{*/
 {
@@ -171,7 +157,7 @@ Tree.prototype._AutoDelEmptyNode_OfFamily=function(whichnode, familytype)/*{{{*/
                         delete list[whichnode];
                 }
         }
-}/*}}}*/
+};/*}}}*/
 
 Tree.prototype.IsNode=function(n)/*{{{*/
 {//exists only if part of one or more relationships
@@ -180,7 +166,7 @@ Tree.prototype.IsNode=function(n)/*{{{*/
                 return true;
         }
         return false;
-}/*}}}*/
+};/*}}}*/
 
 Tree.prototype._GetPCRel=function(p,c){//doesn't create those that don't exist/*{{{*/
         var pl=this.GetList_OfFamily_OfNode(cParents, c);
@@ -193,7 +179,7 @@ Tree.prototype._GetPCRel=function(p,c){//doesn't create those that don't exist/*
         if ( (pi != -1) && (ci != -1) ) {//exist
                 return new Array(pi,ci);//return index of p, and index of c, in their respective lists, to avoid dup searches via indexOf
         }
-}/*}}}*/
+};/*}}}*/
 
 Tree.prototype.IsPCRel=function(p,c)/*{{{*/
 {
@@ -201,7 +187,7 @@ Tree.prototype.IsPCRel=function(p,c)/*{{{*/
                 return true;
         }
         return false;
-}/*}}}*/
+};/*}}}*/
 
 Tree.prototype.NewPCRel=function (p,c)/*{{{*/
 {//a relation can only exist once, ie. a->b once, not a->b and then a->b again, like a:{b,b} there are no DUP elements! dup elements would be on the next level
@@ -209,26 +195,23 @@ Tree.prototype.NewPCRel=function (p,c)/*{{{*/
                 this._EnsureGetList_OfFamily_OfNode(cChildren, p).push(c);//p->c
                 this._EnsureGetList_OfFamily_OfNode(cParents, c).push(p);//c<-p
         }
-}/*}}}*/
+};/*}}}*/
 
 Tree.prototype._showallof_family=function(family)/*{{{*/
 {
-        return this.AllNodes[family].toSource();
-        //return Object.keys(this.AllNodes[family]);
-/*        var par=Object.values(this.AllNodes[family]);
-        var pl=(null!=par[0]?'"'+par[0]+'"':null);
-        for (var i=1;i<par.length;i++) {
-                pl+=',"'+par[i]+'"';
-        }
-        return pl;*/
-}/*}}}*/
+        var a=$A(Object.keys(this.AllNodes[family]));
+        var str="";
+        var that=this;
+        a.each(function (elem) { str+=elem+":"+that.AllNodes[family][elem].toSource()+' '; } );
+        return str;
+};/*}}}*/
 
 Tree.prototype.inspect=function()/*{{{*/
 {
         var pl=this._showallof_family(cParents);
         var cl=this._showallof_family(cChildren);
         return "ChildrenOf:"+rnl+cl+rnl+"ParentsOf:"+rnl+pl;
-}/*}}}*/
+};/*}}}*/
 
 //------------------------------------------------------------------------------------------
 
