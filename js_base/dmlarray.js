@@ -82,6 +82,46 @@ Tree.prototype.GetList_OfFamily_OfNode=function (familytype,whichnode) /*{{{*/
         return list[whichnode];
 };/*}}}*/
 
+Tree.prototype._AutoDelEmptyNode=function(n)/*{{{*//*{{{*/
+{
+        this._AutoDelEmptyNode_OfFamily(n, cParents);
+        this._AutoDelEmptyNode_OfFamily(n, cChildren);
+};/*}}}*/
+
+Tree.prototype._AutoDelEmptyNode_OfFamily=function(whichnode, familytype)/*{{{*/
+{
+        var list=this.AllNodes[familytype];
+        if (null !== list[whichnode] && Array.prototype.isPrototypeOf(list[whichnode])) {
+                //list[whichnode]=list[whichnode].compact();//this should decrease performance
+                if (list[whichnode].length<=0 ) {
+                        //then it's empty to can delete it
+                        delete list[whichnode];
+                }
+        }
+};/*}}}*/
+
+Tree.prototype._GetPCRel=function(p,c){//doesn't create those that don't exist/*{{{*/
+        var pl=this.GetList_OfFamily_OfNode(cParents, c);
+        var cl=this.GetList_OfFamily_OfNode(cChildren, p);
+        if (null==pl || null==cl) {//it'd be a bug if one of pl or cl is not -1 at this point!
+                return null;
+        }
+        var pi=pl.indexOf(p);
+        var ci=cl.indexOf(c);
+        if ( (pi != -1) && (ci != -1) ) {//exist
+                return new Array(pi,ci);//return index of p, and index of c, in their respective lists, to avoid dup searches via indexOf
+        }
+};/*}}}*/
+
+Tree.prototype._showallof_family=function(family)/*{{{*/
+{
+        var a=$A(Object.keys(this.AllNodes[family]));
+        var str="";
+        var that=this;
+        a.each(function (elem) { str+=elem+":"+that.AllNodes[family][elem].toSource()+rnl; } );
+        return str;
+};/*}}}*/
+
 Tree.prototype._EnsureGetList_OfFamily_OfNode=function(familytype,whichnode) //private function, I wish/*{{{*/
 {//always returns an array, even if it wasn't defined previously
         var list=this.AllNodes[familytype];
@@ -91,7 +131,7 @@ Tree.prototype._EnsureGetList_OfFamily_OfNode=function(familytype,whichnode) //p
         }
         return list[whichnode];
 };/*}}}*/
-
+/*}}}*/
 
 Tree.prototype.toSource=function()/*{{{*/
 {
@@ -141,23 +181,6 @@ Tree.prototype.DelPCRel=function(p,c) //PC=parent,child  (order of params)/*{{{*
         }
 };/*}}}*/
 
-Tree.prototype._AutoDelEmptyNode=function(n)/*{{{*/
-{
-        this._AutoDelEmptyNode_OfFamily(n, cParents);
-        this._AutoDelEmptyNode_OfFamily(n, cChildren);
-};/*}}}*/
-
-Tree.prototype._AutoDelEmptyNode_OfFamily=function(whichnode, familytype)/*{{{*/
-{
-        var list=this.AllNodes[familytype];
-        if (null !== list[whichnode] && Array.prototype.isPrototypeOf(list[whichnode])) {
-                //list[whichnode]=list[whichnode].compact();//this should decrease performance
-                if (list[whichnode].length<=0 ) {
-                        //then it's empty to can delete it
-                        delete list[whichnode];
-                }
-        }
-};/*}}}*/
 
 Tree.prototype.IsNode=function(n)/*{{{*/
 {//exists only if part of one or more relationships
@@ -166,19 +189,6 @@ Tree.prototype.IsNode=function(n)/*{{{*/
                 return true;
         }
         return false;
-};/*}}}*/
-
-Tree.prototype._GetPCRel=function(p,c){//doesn't create those that don't exist/*{{{*/
-        var pl=this.GetList_OfFamily_OfNode(cParents, c);
-        var cl=this.GetList_OfFamily_OfNode(cChildren, p);
-        if (null==pl || null==cl) {//it'd be a bug if one of pl or cl is not -1 at this point!
-                return null;
-        }
-        var pi=pl.indexOf(p);
-        var ci=cl.indexOf(c);
-        if ( (pi != -1) && (ci != -1) ) {//exist
-                return new Array(pi,ci);//return index of p, and index of c, in their respective lists, to avoid dup searches via indexOf
-        }
 };/*}}}*/
 
 Tree.prototype.IsPCRel=function(p,c)/*{{{*/
@@ -195,15 +205,6 @@ Tree.prototype.NewPCRel=function (p,c)/*{{{*/
                 this._EnsureGetList_OfFamily_OfNode(cChildren, p).push(c);//p->c
                 this._EnsureGetList_OfFamily_OfNode(cParents, c).push(p);//c<-p
         }
-};/*}}}*/
-
-Tree.prototype._showallof_family=function(family)/*{{{*/
-{
-        var a=$A(Object.keys(this.AllNodes[family]));
-        var str="";
-        var that=this;
-        a.each(function (elem) { str+=elem+":"+that.AllNodes[family][elem].toSource()+' '; } );
-        return str;
 };/*}}}*/
 
 Tree.prototype.inspect=function()/*{{{*/
