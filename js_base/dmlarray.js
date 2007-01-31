@@ -22,6 +22,7 @@
 *  ========================================================================
 *
 * Description: this is going to implement level 0 demlinks using arrays in js
+*               - requires prototype.js (1.5.0 ?)
 *
 *
 ***************************************************************************}}}*/
@@ -29,12 +30,14 @@
 
 var cParents="AllParents";
 var cChildren="AllChildren";
+var cUp=cParents;
+var cDown=cChildren;
 var rnl="\n";
 
 //TODO: replace, insertafter/before Node, first last using splice()
 //insert_InNode_WhichFamily_OfNode_   ("a", cChildren, "e", );
 /*
-var a=new Cursor_OnTree_OfFamily_OfNode(tree1, cChildren,"a");//make a cursor on children of 'a'
+var a=new Cursor_OnTree_OnSense_OfNode_DPSense(tree0, cDown, "a", cDown);//make a cursor on children of 'a' ; DP=domain pointer; DPSense=in which sense will the DP point to, usually this is the same as OnSense
 a.Insert_WhatNode_Where_OfNode("f", kAfter, "e");//true/false, use one splice
 a.Insert_WhatNode_Where_OfNode("g", kFirst);//true/false
 a.Move_WhatNode_Where_OfNode("f", kBefore,"e");//use 2 splices, one del one insert
@@ -47,14 +50,14 @@ a.GetTree();
 a.GetCount();//return number of elements of children of "a" ie. array.length;
 a.ClearAll();//empty all cChildren of "a"
 
-var p=new Pointer_OnTree_OfFamily(tree1, cChildren);//with no domain
+var p=new Pointer_OnTree_OfFamily(tree0, cChildren);//with no domain
 p.SetPointee("e");//or null
 p.SetNull();
 p.IsNull();
 p.GetPointee();//=="e"; or null if null
 p.GetTree();
 
-var dp=new DomainPointer_FamilyKind_OnTree_OfFamily_OfNode(cParents,tree1, cChildren, "a");//pointer uses it's parents list with one element which points to any element which is child of "a"
+var dp=new DomainPointer_FamilyKind_OnTree_OfFamily_OfNode(cParents,tree0, cChildren, "a");//pointer uses it's parents list with one element which points to any element which is child of "a"
 dp.SetPointee("e");//limited to children of "a"; OR null
 dp.GetPointee();//null if none set
 dp.GetTree();//returns the tree of where this pointer is part of(or smth
@@ -64,15 +67,16 @@ dp.IsNull();
 try using prototype.js ie. object.extend() and stuff Class, $A()
 */
 
-function Tree()//constructor /*{{{*/
-{
-//vars:
-        this.AllNodes=$H();
-        this.AllNodes[cParents]={};//not a hash because it'll overwrite some of its methods, and we need to support any index name!
-        this.AllNodes[cChildren]={};
-}/*}}}*/
+var TreeL0=Class.create();/*{{{*/
+TreeL0.prototype={
+        initialize: function(){//constructor
+                this.AllNodes=$H();
+                this.AllNodes[cParents]={};//not a hash because it'll overwrite some of its methods, and we need to support any index name!
+                this.AllNodes[cChildren]={};
+                //alert('TreeL0 init');
+        },
 
-Tree.prototype.GetList_OfFamily_OfNode=function (familytype,whichnode) /*{{{*/
+        GetList_OfFamily_OfNode:function (familytype,whichnode) /*{{{*/
 {//doesn't create that which didn't exist! unlike _Ensure*.*
         var list=this.AllNodes[familytype];
         //if (null===list[whichnode] || typeof(list[whichnode]) != "object") {
@@ -80,15 +84,15 @@ Tree.prototype.GetList_OfFamily_OfNode=function (familytype,whichnode) /*{{{*/
                 return null;
         }
         return list[whichnode];
-};/*}}}*/
+},/*}}}*/
 
-Tree.prototype._AutoDelEmptyNode=function(n)/*{{{*//*{{{*/
+        _AutoDelEmptyNode:function(n)/*{{{*//*{{{*/
 {
         this._AutoDelEmptyNode_OfFamily(n, cParents);
         this._AutoDelEmptyNode_OfFamily(n, cChildren);
-};/*}}}*/
+},/*}}}*/
 
-Tree.prototype._AutoDelEmptyNode_OfFamily=function(whichnode, familytype)/*{{{*/
+        _AutoDelEmptyNode_OfFamily:function(whichnode, familytype)/*{{{*/
 {
         var list=this.AllNodes[familytype];
         if (null !== list[whichnode] && Array.prototype.isPrototypeOf(list[whichnode])) {
@@ -98,9 +102,10 @@ Tree.prototype._AutoDelEmptyNode_OfFamily=function(whichnode, familytype)/*{{{*/
                         delete list[whichnode];
                 }
         }
-};/*}}}*/
+},/*}}}*/
 
-Tree.prototype._GetPCRel=function(p,c){//doesn't create those that don't exist/*{{{*/
+        _GetPCRel:function(p,c)//doesn't create those that don't exist/*{{{*/
+{
         var pl=this.GetList_OfFamily_OfNode(cParents, c);
         var cl=this.GetList_OfFamily_OfNode(cChildren, p);
         if (null==pl || null==cl) {//it'd be a bug if one of pl or cl is not -1 at this point!
@@ -111,18 +116,18 @@ Tree.prototype._GetPCRel=function(p,c){//doesn't create those that don't exist/*
         if ( (pi != -1) && (ci != -1) ) {//exist
                 return new Array(pi,ci);//return index of p, and index of c, in their respective lists, to avoid dup searches via indexOf
         }
-};/*}}}*/
+},/*}}}*/
 
-Tree.prototype._showallof_family=function(family)/*{{{*/
+        _showallof_family:function(family)/*{{{*/
 {
         var a=$A(Object.keys(this.AllNodes[family]));
         var str="";
         var that=this;
         a.each(function (elem) { str+=elem+":"+that.AllNodes[family][elem].toSource()+rnl; } );
         return str;
-};/*}}}*/
+},/*}}}*/
 
-Tree.prototype._EnsureGetList_OfFamily_OfNode=function(familytype,whichnode) //private function, I wish/*{{{*/
+        _EnsureGetList_OfFamily_OfNode:function(familytype,whichnode) //private function, I wish/*{{{*/
 {//always returns an array, even if it wasn't defined previously
         var list=this.AllNodes[familytype];
         if (null===list[whichnode] || !Array.prototype.isPrototypeOf(list[whichnode])) {
@@ -130,15 +135,15 @@ Tree.prototype._EnsureGetList_OfFamily_OfNode=function(familytype,whichnode) //p
                 list[whichnode]=new Array();
         }
         return list[whichnode];
-};/*}}}*/
+},/*}}}*/
 /*}}}*/
 
-Tree.prototype.toSource=function()/*{{{*/
+        toSource:function()/*{{{*/
 {
         return this.AllNodes.toSource();
-};/*}}}*/
+},/*}}}*/
 
-Tree.prototype.DelNode=function(n)/*{{{*/
+        DelNode:function(n)/*{{{*/
 {
         var pl=this.GetList_OfFamily_OfNode(cParents,n);
         var cl=this.GetList_OfFamily_OfNode(cChildren,n);
@@ -161,9 +166,9 @@ Tree.prototype.DelNode=function(n)/*{{{*/
                 }
         }
 
-};/*}}}*/
+},/*}}}*/
 
-Tree.prototype.DelPCRel=function(p,c) //PC=parent,child  (order of params)/*{{{*/
+        DelPCRel:function(p,c) //PC=parent,child  (order of params)/*{{{*/
 {
         var ar=this._GetPCRel(p,c);
         if (null != ar) {
@@ -179,78 +184,89 @@ Tree.prototype.DelPCRel=function(p,c) //PC=parent,child  (order of params)/*{{{*
                 }
                 this._AutoDelEmptyNode(p);
         }
-};/*}}}*/
+},/*}}}*/
 
-
-Tree.prototype.IsNode=function(n)/*{{{*/
+        IsNode:function(n)/*{{{*/
 {//exists only if part of one or more relationships
         //no need to compact() the arrays since compacting is done on delete
         if (this.GetList_OfFamily_OfNode(cParents,n) || this.GetList_OfFamily_OfNode(cChildren,n) ) {
                 return true;
         }
         return false;
-};/*}}}*/
+},/*}}}*/
 
-Tree.prototype.IsPCRel=function(p,c)/*{{{*/
+        IsPCRel:function(p,c)/*{{{*/
 {
         if (null!=this._GetPCRel(p,c)){
                 return true;
         }
         return false;
-};/*}}}*/
+},/*}}}*/
 
-Tree.prototype.NewPCRel=function (p,c)/*{{{*/
+        NewPCRel:function (p,c)/*{{{*/
 {//a relation can only exist once, ie. a->b once, not a->b and then a->b again, like a:{b,b} there are no DUP elements! dup elements would be on the next level
         if (!this.IsPCRel(p,c)) {
                 this._EnsureGetList_OfFamily_OfNode(cChildren, p).push(c);//p->c
                 this._EnsureGetList_OfFamily_OfNode(cParents, c).push(p);//c<-p
         }
-};/*}}}*/
+},/*}}}*/
 
-Tree.prototype.inspect=function()/*{{{*/
+        inspect:function()/*{{{*/
 {
         var pl=this._showallof_family(cParents);
         var cl=this._showallof_family(cChildren);
         return "ChildrenOf:"+rnl+cl+rnl+"ParentsOf:"+rnl+pl;
+}/*}}}*/
+
 };/*}}}*/
 
 //------------------------------------------------------------------------------------------
 
+/*var TreeL1=Class.create();
+TreeL1.prototype={
+        initialize: function(){
+                alert('initing');
+        },
+        speak: function(what) {
+                this.e="ceva";
+                alert("1:"+this.e);
+        }
+};*/
 
-var tree1=new Tree();
+var TreeL1=Class.create();
+TreeL1.prototype=Object.extend(new TreeL0(), {
+        initialize: function() {
+        }
+/*        speak: function(wh) {
+                //TreeL0.prototype.speak.apply(this,[wh]);//this is how calling a base class method is done
+                //TreeL0.prototype.speak(wh);//or this
+                alert("2:"+this.e);
+        }*/
+});
 
-var b=new Tree();//eval(AllNodes.toSource()));
-//alert(b.toSource());
+//------------------------------------------------------------------------------------------
 
-//alert(tree1.inspect());
-//alert(tree1.IsPCRel("a","b"));
-tree1.NewPCRel("a","b");
-tree1.NewPCRel("a","d");
-tree1.NewPCRel("a","e");
-tree1.NewPCRel("a","e");
-tree1.NewPCRel("f","a");
-tree1.NewPCRel("f","b");
-tree1.NewPCRel("g","a");
-alert(tree1.IsPCRel("a","e"));
-alert(tree1.inspect());
-//tree1.DelPCRel("a","e");
-tree1.DelNode("a");
-alert(tree1.IsPCRel("a","b"));
-//alert(tree1.IsPCRel("a","e"));
-/*AllNodes[cParents]["merge"]=[];
-AllNodes[cParents]["merge"].push("id2");
-AllNodes[cParents]["merge"].push("id3");
+//test section follows:
 
-b[cParents]["id4"]=[];
-b[cParents]["id4"].push("id5");
-*/
-//alert(AllNodes.toSource());
-//alert(b.toSource());
-//b[cParents].merge(AllNodes[cParents]);
-//alert(b.values()[0]);
-//alert(tree1.toSource());
-alert(tree1.inspect());
-//var a=eval(AllNodes.toSource());
+//var tree1=new TreeL1();
+//tree1.speak("about it");
+
+
+var tree0=new TreeL0();
+
+var b=new TreeL0();//eval(AllNodes.toSource()));
+tree0.NewPCRel("a","b");
+tree0.NewPCRel("a","d");
+tree0.NewPCRel("a","e");
+tree0.NewPCRel("a","e");
+tree0.NewPCRel("f","a");
+tree0.NewPCRel("f","b");
+tree0.NewPCRel("g","a");
+alert(tree0.IsPCRel("a","e"));
+alert(tree0.inspect());
+tree0.DelNode("a");
+alert(tree0.IsPCRel("a","b"));
+alert(tree0.inspect());
 
 
 // vim: fdm=marker
