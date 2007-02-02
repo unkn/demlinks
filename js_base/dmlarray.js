@@ -50,7 +50,7 @@ a.GetTree();
 a.GetCount();//return number of elements of children of "a" ie. array.length;
 a.ClearAll();//empty all cChildren of "a"
 
-var p=new Pointer_OnTree_OfFamily(tree0, cChildren);//with no domain
+var p=new Pointer_OnTree_OnSense(tree0, cDown);//with no domain
 p.SetPointee("e");//or null
 p.SetNull();
 p.IsNull();
@@ -63,175 +63,394 @@ dp.GetPointee();//null if none set
 dp.GetTree();//returns the tree of where this pointer is part of(or smth
 dp.SetNull();//==SetPointee(null)
 dp.IsNull();
-//use array() named arguments inside a function!
+//use array() named "arguments" inside a function!
 try using prototype.js ie. object.extend() and stuff Class, $A()
 */
+
+/*abcd={
+        a:"sasad"
+        ,ab:"undefined"
+        };*/
+/*var abcd=Class.create();
+abcd.prototype={
+        initialize: function() {
+                        alert('init');
+                }
+};*/
+/*var abcd=new Hash();
+alert((null===abcd["length"]) || (null!=abcd["length"]));
+alert(abcd.prototype);
+alert(abcd.propertyIsEnumerable("length"));
+var s="";
+for (var b in abcd) {
+        s+=b+rnl;
+}
+        alert(s);
+//alert(Object.propertyIsEnumerable(Hash.lengt));
+*/
+
+//---------------------------BEGIN global funx
+function IsDefined(val)/*{{{*/
+{
+        var exists=typeof(val)!=="undefined";
+        var exists2=(null===val || null != val);//true=exists, even if it's set to null, but however it can be undefined in which case == null but it's not === null => thus it doesn't exist
+        _tIF(exists !== exists2);
+        return exists;
+}/*}}}*/
+
+function _t(what) //unconditional throw/*{{{*/
+{
+        showbacktrace;//it works with ff and firebug, unlike throw below, this makes firebug show backtrace
+        throw new Error(what);
+}/*}}}*/
+
+function _tIF(bool)/*{{{*/
+{
+        if (bool) {
+                _t("_tIF("+bool+")");
+        }
+}/*}}}*/
+
+function _tIFnot(bool)/*{{{*/
+{
+        if (! bool) {
+                _t("_tIFnot("+bool+")");
+        }
+}/*}}}*/
+//---------------------------END global funx
+
+
+var UniqListL0=Class.create();/*{{{*/
+UniqListL0.prototype=Object.extend(new Array(), {//this will make sure it only keeps uniq values
+        initialize: function()
+        {
+        }
+
+        ,IsValidVal: function(val)
+        {
+                return ('string'===typeof(val) && val.length>0);
+        }
+
+        ,DelValue: function(val)
+        {
+                _tIFnot(this.IsValidVal(val));
+                this.splice(this.indexOf(val),1);
+        }
+
+        ,AppendValue: function(val)
+        {
+                _tIFnot(this.IsValidVal(val));
+                this.push(val);
+        }
+
+        ,IsValue: function(val)
+        {
+                return -1 != this.indexOf(val);
+        }
+
+        ,IsValidWhere: function(where)/*{{{*/
+        {
+        }/*}}}*/
+
+});/*}}}*/
+
+var HashL0=Class.create();/*{{{*/
+HashL0.prototype=Object.extend(new Hash(), {
+        initialize: function()
+        {
+                this.magicheader="id_";
+//last:
+                this.__diffsize=Hash.prototype.size.apply(this) + 1;//which is this property
+        }
+
+        ,size: function()/*{{{*/
+        {
+                var size=Hash.prototype.size.apply(this) - this.__diffsize;
+                _tIFnot(size>=0);
+                return size;
+        }/*}}}*/
+
+        ,MangleKey: function(key)//modifies the key so it won't overwrite existing methods or properties/*{{{*/
+        {
+                return this.magicheader+key;
+        }/*}}}*/
+
+        ,UnmangleKey: function(mangledkey)/*{{{*/
+        {
+                _tIFnot(mangledkey.substring(0, this.magicheader.length - 1) != this.magicheader);//not a mangled key? bug in program maybe!
+                return mangledkey.substring(this.magicheader.length);//skip header
+        }/*}}}*/
+
+        ,GetVal_OfKey: function(key)/*{{{*/
+        {
+                var tmp=this[this.MangleKey(key)];
+                return tmp;//undefined if not exists, and null if it exists and it's set to null, value otherwise; user IsDefined() to test
+        }/*}}}*/
+
+        ,Set_OfKey_Val: function(key, val)/*{{{*/
+        {
+                this[this.MangleKey(key)]=val;//val can be null
+        }/*}}}*/
+
+
+/*        ,add_key_value_where_ofkey: function(key,value,where,ofkey) //"a",array("b","d"),kAfter,"c"
+        {
+                if (null!=where) {
+                        _tIFnot(IsValidWhere(where));
+                }
+        }
+
+        ,IsValidWhere: function(where)
+        {
+        }
+*/
+        ,PropertyExists:function (prop)/*{{{*/ //unused
+        {
+                return IsDefined(this[prop]);//handled situation when property is set to null thus it exists; also sees non-enumerable ones ie. 'length'
+        }/*}}}*/
+
+
+});/*}}}*/
+
+/*var a=new HashL0();
+//alert(a.UnmangleKey(a.MangleKey("doh")));
+//alert(a.GetVal_OfKey("doh"));
+a.Set_OfKey_Val("k1","a");
+a.Set_OfKey_Val("k2",Array("mm","dd","ee"));
+//alert(a.GetVal_OfKey("k1"))
+alert(a.GetVal_OfKey("k2"))
+alert(IsDefined(a.GetVal_OfKey("k2")))
+//alert(typeof(a.GetVal_OfKey("k2"))=="undefined")
+//alert(a.size());
+str="";
+for (var b in a) {
+        str+=b+rnl;
+}
+alert(str);
+*/
+/*var tr=Class.create();
+tr.prototype=Object.extend(new HashL0(), {
+        initialize: function() {
+        }
+        ,sz:function()
+        {
+                return this.size();
+        }
+});
+var k=new tr();
+alert(k.sz());
+exit;
+*/
+
+/*alert(a.toSource());
+//alert(a.entries().toSource());
+alert(a instanceof Hash);
+exit;*/
 
 var TreeL0=Class.create();/*{{{*/
 TreeL0.prototype={
         initialize: function(){//constructor
-                this.AllNodes=$H();
-                this.AllNodes[cParents]={};//not a hash because it'll overwrite some of its methods, and we need to support any index name!
-                this.AllNodes[cChildren]={};
+                this.AllNodes=new HashL0();
+                //this.AllNodes.Set_OfKey_Val(cParents, new HashL0());
+                //this.AllNodes[cParents]=new HashL0();//not a hash because it'll overwrite some of its methods, and we need to support any index name!
+                //this.AllNodes.Set_OfKey_Val(cChildren, new HashL0());
+                //this.AllNodes[cChildren]=new HashL0();
                 //alert('TreeL0 init');
-        },
-
-        GetList_OfFamily_OfNode:function (familytype,whichnode) /*{{{*/
-{//doesn't create that which didn't exist! unlike _Ensure*.*
-        var list=this.AllNodes[familytype];
-        //if (null===list[whichnode] || typeof(list[whichnode]) != "object") {
-        if (null===list[whichnode] || !Array.prototype.isPrototypeOf(list[whichnode])) {
-                return null;
         }
-        return list[whichnode];
-},/*}}}*/
+//add mangle for node ID before storage and unmangle on read... smth like prepend a "0" so ids like "length" or "prototype" don't overwrite the properties existent in $H()
+//or use Object.propertyIsEnumerable(property) and only prepend "0" to those IDs which are not enumerable so they won't overwrite methods
 
-        _AutoDelEmptyNode:function(n)/*{{{*//*{{{*/
-{
-        this._AutoDelEmptyNode_OfFamily(n, cParents);
-        this._AutoDelEmptyNode_OfFamily(n, cChildren);
-},/*}}}*/
 
-        _AutoDelEmptyNode_OfFamily:function(whichnode, familytype)/*{{{*/
-{
-        var list=this.AllNodes[familytype];
-        if (null !== list[whichnode] && Array.prototype.isPrototypeOf(list[whichnode])) {
-                //list[whichnode]=list[whichnode].compact();//this should decrease performance
-                if (list[whichnode].length<=0 ) {
-                        //then it's empty to can delete it
-                        delete list[whichnode];
+        ,IsValidSense:function(sense)/*{{{*/
+        {
+                if (sense===cUp || sense===cDown) {
+                        return true;
                 }
-        }
-},/*}}}*/
+                return false;
+        }/*}}}*/
 
-        _GetPCRel:function(p,c)//doesn't create those that don't exist/*{{{*/
-{
-        var pl=this.GetList_OfFamily_OfNode(cParents, c);
-        var cl=this.GetList_OfFamily_OfNode(cChildren, p);
-        if (null==pl || null==cl) {//it'd be a bug if one of pl or cl is not -1 at this point!
-                return null;
-        }
-        var pi=pl.indexOf(p);
-        var ci=cl.indexOf(c);
-        if ( (pi != -1) && (ci != -1) ) {//exist
-                return new Array(pi,ci);//return index of p, and index of c, in their respective lists, to avoid dup searches via indexOf
-        }
-},/*}}}*/
+        ,IsValidFamily: function(fam)/*{{{*/
+        {
+                return this.IsValidSense(fam);
+        }/*}}}*/
 
-        _showallof_family:function(family)/*{{{*/
-{
-        var a=$A(Object.keys(this.AllNodes[family]));
-        var str="";
-        var that=this;
-        a.each(function (elem) { str+=elem+":"+that.AllNodes[family][elem].toSource()+rnl; } );
-        return str;
-},/*}}}*/
+        ,IsValidNodeName: function (node)/*{{{*/
+        {
+                //if (String.prototype.isPrototypeOf(node)) {
+                if ('string'===typeof(node)) {
+                        if (node.length > 0) {
+                                return true;
+                        }
+                }
+                return false;
+        }/*}}}*/
 
-        _EnsureGetList_OfFamily_OfNode:function(familytype,whichnode) //private function, I wish/*{{{*/
+        ,GetOppositeSense: function(sense)/*{{{*/
+        {
+                _tIFnot(this.IsValidSense(sense));
+                switch (sense) {
+                        case cUp:
+                                return cDown;
+                                break;
+                        case cDown:
+                                return cUp;
+                                break;
+                        default:
+                                _t("critical failure, better yet: evil");
+                }
+        }/*}}}*/
+
+//private functions:/*{{{*/
+
+        ,_Ensure_GetNode: function(node)
+        {
+                var cnt=0;
+                var n;
+                do {
+                        n=this._GetNode(node);
+                        if (!IsDefined(n)) {
+                                this.AllNodes.Set_OfKey_Val(node, new HashL0());
+                        }
+                        cnt++;
+                        _tIF(cnt>2);//this shouldn't repeat more than 2 times
+                } while (!IsDefined(n));
+                return n;
+        }
+
+        ,_EnsureGetList_OfFamily_OfNode:function(familytype,whichnode) //private function, I wish/*{{{*/
 {//always returns an array, even if it wasn't defined previously
-        var list=this.AllNodes[familytype];
-        if (null===list[whichnode] || !Array.prototype.isPrototypeOf(list[whichnode])) {
-        //if (null===list[whichnode] || typeof(list[whichnode]) != "object") {
-                list[whichnode]=new Array();
+var cnt=0;
+var list;
+do {
+        list=this._Get_Family_OfNode(familytype, whichnode);
+        if (!IsDefined(list)) {
+                var node=this._Ensure_GetNode(whichnode);
+                //list=
+                _tIF(IsDefined(node.GetVal_OfKey(familytype)));//safe check
+                //if (!IsDefined(list)) {//create
+                //var xx=new UniqListL0();
+                //alert(UniqListL0.prototype.isPrototypeOf(xx));
+                node.Set_OfKey_Val(familytype, new UniqListL0());//we repeat do-while to test this was properly entered
+                //}
+                //_tIFnot(UniqListL0.prototype.isPrototypeOf(node.GetVal_OfKey(familytype)));
         }
-        return list[whichnode];
-},/*}}}*/
+        cnt++;
+        _tIF(cnt>2);//no more than 2 times
+} while (!IsDefined(list));
+
+        return list;
+}/*}}}*/
+
+        ,_GetNode: function(node)/*{{{*/
+        {
+                _tIFnot(this.IsValidNodeName(node));
+                var nodvar= this.AllNodes.GetVal_OfKey(node);//can be undefined
+                _tIF( IsDefined(nodvar) && (!HashL0.prototype.isPrototypeOf(nodvar)) );
+                return nodvar;
+        }/*}}}*/
+
+        ,_Get_Family_OfNode: function(fam,node)/*{{{*/
+        {
+                _tIFnot(this.IsValidFamily(fam));
+                _tIFnot(this.IsValidNodeName(node));
+
+                var nodvar=this._GetNode(node);//node tested inhere
+                var got=undefined;
+                if (IsDefined(nodvar)) {
+                        got=nodvar.GetVal_OfKey(fam);
+                        //_tIFnot(IsDefined(got) && !UniqListL0.prototype.isPrototypeOf(got));
+                }
+                return got;
+        }/*}}}*/
 /*}}}*/
 
-        toSource:function()/*{{{*/
+//TODO: DelNode()
+
+        ,DelRel_Node_Sense_Node:function(n1, sense, n2) //PC=parent,child  (order of params)/*{{{*/
 {
-        return this.AllNodes.toSource();
-},/*}}}*/
+ //       var ar=this._GetArrayPosOf_PCRel(p,c);
+   //     if (IsDefined(ar)) {
+        if (this.IsRel_Node_Sense_Node(n1,sense,n2)) {
 
-        DelNode:function(n)/*{{{*/
-{
-        var pl=this.GetList_OfFamily_OfNode(cParents,n);
-        var cl=this.GetList_OfFamily_OfNode(cChildren,n);
-        if (null!=pl) {
-                //evaporate all parents, cleanly
-                while (pl.length>0) {
-                        this.DelPCRel(pl[0],n);
-                }
+                var cl=this._Get_Family_OfNode(sense, n1);
+                _tIFnot(IsDefined(cl));
+                cl.DelValue(n2);//cl.splice(ar[1],1);
 
-/*                pl.each(function(elem) {
-                        alert(this);
-                        this.DelPCRel(elem,n);
-                });*/
-                //delete this.AllNodes[cParents][n];//pl.clear();
+                //this._AutoDelEmptyNode(c);
+
+                var pl=this._Get_Family_OfNode(this.GetOppositeSense(sense),n2);
+                _tIFnot(IsDefined(pl));// is unlikely because of prev. if
+                pl.DelValue(n1);//pl.splice(ar[0],1);
+
+                //this._AutoDelEmptyNode(p);
         }
-        if (null!=cl) {
-                //evaporate all parents, cleanly
-                while (cl.length>0) {
-                        this.DelPCRel(n,cl[0]);
-                }
-        }
+}/*}}}*/
 
-},/*}}}*/
-
-        DelPCRel:function(p,c) //PC=parent,child  (order of params)/*{{{*/
-{
-        var ar=this._GetPCRel(p,c);
-        if (null != ar) {
-                var pl=this.GetList_OfFamily_OfNode(cParents, c);
-                if (null!=pl) {//null==pl is unlikely because of prev. if
-                        pl.splice(ar[0],1);
-                }
-                this._AutoDelEmptyNode(c);
-
-                var cl=this.GetList_OfFamily_OfNode(cChildren, p);
-                if (null!=cl) {
-                        cl.splice(ar[1],1);
-                }
-                this._AutoDelEmptyNode(p);
-        }
-},/*}}}*/
-
-        IsNode:function(n)/*{{{*/
+        ,IsNode:function(n)/*{{{*/
 {//exists only if part of one or more relationships
         //no need to compact() the arrays since compacting is done on delete
-        if (this.GetList_OfFamily_OfNode(cParents,n) || this.GetList_OfFamily_OfNode(cChildren,n) ) {
+        if (IsDefined(_GetNode(n))) {
                 return true;
         }
         return false;
-},/*}}}*/
-
-        IsPCRel:function(p,c)/*{{{*/
-{
-        if (null!=this._GetPCRel(p,c)){
-                return true;
-        }
-        return false;
-},/*}}}*/
-
-        NewPCRel:function (p,c)/*{{{*/
-{//a relation can only exist once, ie. a->b once, not a->b and then a->b again, like a:{b,b} there are no DUP elements! dup elements would be on the next level
-        if (!this.IsPCRel(p,c)) {
-                this._EnsureGetList_OfFamily_OfNode(cChildren, p).push(c);//p->c
-                this._EnsureGetList_OfFamily_OfNode(cParents, c).push(p);//c<-p
-        }
-},/*}}}*/
-
-        inspect:function()/*{{{*/
-{
-        var pl=this._showallof_family(cParents);
-        var cl=this._showallof_family(cChildren);
-        return "ChildrenOf:"+rnl+cl+rnl+"ParentsOf:"+rnl+pl;
 }/*}}}*/
+
+        ,_IsSemiRel_Node_Sense_Node: function(n1,sense,n2) // a, cDown, b
+        {//one sense testing, the other(opposing sense) must also be true, ie. b, cUp, a
+                _tIFnot(this.IsValidSense(sense));
+                _tIFnot(this.IsValidNodeName(n1));
+                _tIFnot(this.IsValidNodeName(n2));
+
+                var first=this._Get_Family_OfNode(sense,n1);
+                if (IsDefined(first)) {
+                        return first.IsValue(n2);
+                }
+                return false;
+        }
+
+        ,IsRel_Node_Sense_Node:function(n1,sense,n2)/*{{{*/
+{
+        _tIFnot(this.IsValidSense(sense));
+        _tIFnot(this.IsValidNodeName(n1));
+        _tIFnot(this.IsValidNodeName(n2));
+
+        if (this._IsSemiRel_Node_Sense_Node(n1, sense, n2)) {//a->b
+                _tIFnot(this._IsSemiRel_Node_Sense_Node(n2, this.GetOppositeSense(sense), n1));//this is a MUST, or something is wrong in implementation  ;   // b<-a
+                return true;
+        }
+        return false;
+}/*}}}*/
+
+        ,IsPCRel: function(p,c)
+        {
+                return this.IsRel_Node_Sense_Node(p, cDown, c);
+        }
+
+        ,NewRel_Node_Sense_Node:function (n1, sense, n2)/*{{{*/
+{//a relation can only exist once, ie. a->b once, not a->b and then a->b again, like a:{b,b} there are no DUP elements! dup elements would be on the next level
+        if (!this.IsRel_Node_Sense_Node(n1, sense, n2)) {
+                this._EnsureGetList_OfFamily_OfNode(cChildren, n1).AppendValue(n2);//p->c
+                this._EnsureGetList_OfFamily_OfNode(cParents, n2).AppendValue(n1);//c<-p
+        }
+}/*}}}*/
+
+        ,NewPCRel: function (p,c)
+        {
+                this.NewRel_Node_Sense_Node(p, cDown, c);
+        }
 
 };/*}}}*/
 
 //------------------------------------------------------------------------------------------
 
-/*var TreeL1=Class.create();
-TreeL1.prototype={
-        initialize: function(){
+var PointerL0_OnTree_OnSense=Class.create();/*{{{*/
+PointerL0_OnTree_OnSense.prototype={
+        initialize: function(tree, sense){
+                _tIFnot(TreeL0.prototype.isPrototypeOf(tree));
+                _tIFnot(tree.IsValidSense(sense));
                 alert('initing');
-        },
-        speak: function(what) {
-                this.e="ceva";
-                alert("1:"+this.e);
         }
-};*/
+};/*}}}*/
 
 var TreeL1=Class.create();
 TreeL1.prototype=Object.extend(new TreeL0(), {
@@ -239,7 +458,7 @@ TreeL1.prototype=Object.extend(new TreeL0(), {
         }
 /*        speak: function(wh) {
                 //TreeL0.prototype.speak.apply(this,[wh]);//this is how calling a base class method is done
-                //TreeL0.prototype.speak(wh);//or this
+                //TreeL0.prototype.speak(wh);//or this which doesn't WORK in some cases!
                 alert("2:"+this.e);
         }*/
 });
@@ -253,8 +472,9 @@ TreeL1.prototype=Object.extend(new TreeL0(), {
 
 
 var tree0=new TreeL0();
+//var p1=new PointerL0_OnTree_OnSense(tree0,cDown);
 
-var b=new TreeL0();//eval(AllNodes.toSource()));
+//var b=new TreeL0();//eval(AllNodes.toSource()));
 tree0.NewPCRel("a","b");
 tree0.NewPCRel("a","d");
 tree0.NewPCRel("a","e");
@@ -263,10 +483,10 @@ tree0.NewPCRel("f","a");
 tree0.NewPCRel("f","b");
 tree0.NewPCRel("g","a");
 alert(tree0.IsPCRel("a","e"));
-alert(tree0.inspect());
-tree0.DelNode("a");
-alert(tree0.IsPCRel("a","b"));
-alert(tree0.inspect());
+//alert(tree0.inspect());
+//tree0.DelNode("a");
+//alert(tree0.IsPCRel("a","b"));
+//alert(tree0.inspect());
 
 
 // vim: fdm=marker
