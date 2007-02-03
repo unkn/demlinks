@@ -152,6 +152,11 @@ UniqListL0.prototype=Object.extend(new Array(), {//this will make sure it only k
         {
         }/*}}}*/
 
+        ,inspect: function()
+        {
+                return this.toSource();
+        }
+
 });/*}}}*/
 
 var HashL0=Class.create();/*{{{*/
@@ -177,8 +182,16 @@ HashL0.prototype=Object.extend(new Hash(), {
 
         ,UnmangleKey: function(mangledkey)/*{{{*/
         {
-                _tIFnot(mangledkey.substring(0, this.magicheader.length - 1) != this.magicheader);//not a mangled key? bug in program maybe!
-                return mangledkey.substring(this.magicheader.length);//skip header
+                _tIFnot(this.IsMangled(mangledkey));//not a mangled key? bug in program maybe!
+                return mangledkey.substr(this.magicheader.length);//skip header
+        }/*}}}*/
+
+        ,IsMangled: function(mangledkey)/*{{{*/
+        {
+                if (typeof(mangledkey)==='string') {
+                        return mangledkey.substr(0, this.magicheader.length ) === this.magicheader;
+                }
+                return false;
         }/*}}}*/
 
         ,GetVal_OfKey: function(key)/*{{{*/
@@ -209,6 +222,60 @@ HashL0.prototype=Object.extend(new Hash(), {
                 return IsDefined(this[prop]);//handled situation when property is set to null thus it exists; also sees non-enumerable ones ie. 'length'
         }/*}}}*/
 
+        ,toSource: function()/*{{{*/
+        {
+                var str="";
+                var that=this;
+                for (var key in this) {
+                        if (this.IsMangled(key)) {
+                                if (typeof(this[key])==='object') {
+                                        str+=key+":"+this[key].toSource();
+                                } else {
+                                        str+=this[key]+",";
+                                }
+                        }
+                }
+                /*this.each( function(pair) {
+                        if (that.IsMangled.apply(that,[pair.key])) {
+                                str+=pair.value+',';
+                        }
+                });*/
+                //alert(str.length);
+                /*if (str.charAt(str.length)===',') {
+                        str=str.truncate(str.length-1,"");
+                }*/
+                return str+rnl;
+        }/*}}}*/
+
+        ,each: function(iteratorfunc)/*{{{*/
+        {
+                var that=this;
+                Hash.prototype.each.apply(this, [ function(pair) {
+                        if (that.IsMangled(pair.key)) {
+                                iteratorfunc({ key:that.UnmangleKey(pair.key), value:pair.value });
+                        }
+                }]);
+        }/*}}}*/
+
+        ,GetKeys: function()/*{{{*/
+        {
+                var ar=new Array();
+                var that=this;
+                this.each( function(pair) {
+                        ar.push(pair.key);
+                });
+                /*this.each( function(pair) {
+                        if (that.IsMangled(pair.key)) {
+                                ar.push(that.UnmangleKey(pair.key));
+                        }
+                });*/
+                /*for (var key in this) {
+                        if (this.IsMangled(key)) {
+                                ar.push(this.UnmangleKey(key));
+                        }
+                }*/
+                return ar;
+        }/*}}}*/
 
 });/*}}}*/
 
@@ -250,6 +317,8 @@ exit;*/
 var TreeL0=Class.create();/*{{{*/
 TreeL0.prototype={
         initialize: function(){//constructor
+                this.famdelimiter=" AND ";
+                this.nodedelimiter=", ";
                 this.AllNodes=new HashL0();
                 //this.AllNodes.Set_OfKey_Val(cParents, new HashL0());
                 //this.AllNodes[cParents]=new HashL0();//not a hash because it'll overwrite some of its methods, and we need to support any index name!
@@ -302,7 +371,7 @@ TreeL0.prototype={
 
 //private functions:/*{{{*/
 
-        ,_Ensure_GetNode: function(node)
+        ,_Ensure_GetNode: function(node)/*{{{*/
         {
                 var cnt=0;
                 var n;
@@ -315,7 +384,7 @@ TreeL0.prototype={
                         _tIF(cnt>2);//this shouldn't repeat more than 2 times
                 } while (!IsDefined(n));
                 return n;
-        }
+        }/*}}}*/
 
         ,_EnsureGetList_OfFamily_OfNode:function(familytype,whichnode) //private function, I wish/*{{{*/
 {//always returns an array, even if it wasn't defined previously
@@ -395,7 +464,7 @@ do {
         return false;
 }/*}}}*/
 
-        ,_IsSemiRel_Node_Sense_Node: function(n1,sense,n2) // a, cDown, b
+        ,_IsSemiRel_Node_Sense_Node: function(n1,sense,n2) // a, cDown, b/*{{{*/
         {//one sense testing, the other(opposing sense) must also be true, ie. b, cUp, a
                 _tIFnot(this.IsValidSense(sense));
                 _tIFnot(this.IsValidNodeName(n1));
@@ -406,7 +475,7 @@ do {
                         return first.IsValue(n2);
                 }
                 return false;
-        }
+        }/*}}}*/
 
         ,IsRel_Node_Sense_Node:function(n1,sense,n2)/*{{{*/
 {
@@ -421,10 +490,10 @@ do {
         return false;
 }/*}}}*/
 
-        ,IsPCRel: function(p,c)
+        ,IsPCRel: function(p,c)/*{{{*/
         {
                 return this.IsRel_Node_Sense_Node(p, cDown, c);
-        }
+        }/*}}}*/
 
         ,NewRel_Node_Sense_Node:function (n1, sense, n2)/*{{{*/
 {//a relation can only exist once, ie. a->b once, not a->b and then a->b again, like a:{b,b} there are no DUP elements! dup elements would be on the next level
@@ -434,10 +503,43 @@ do {
         }
 }/*}}}*/
 
-        ,NewPCRel: function (p,c)
+        ,NewPCRel: function (p,c)/*{{{*/
         {
                 this.NewRel_Node_Sense_Node(p, cDown, c);
-        }
+        }/*}}}*/
+
+        ,toSource: function()/*{{{*/
+        {
+                //for (var iter in
+                return this.AllNodes.toSource();
+        }/*}}}*/
+
+        ,inspect: function()/*{{{*/
+        {
+                /*var str="";
+                for (var i in this.AllNodes) {
+                        str+=i+rnl;
+                }
+                return str;*/
+                //var ar=this.AllNodes.GetKeys();
+                var str="";
+                var that=this;
+                this.AllNodes.each( function(s) { //s.key=nodeID, s.value=object HashL0
+                        var family="";
+                        s.value.each( function(fam) {//fam.key=AllParents or AllChildren, fam.value=array of nodeIDs
+                                var nodelist="";
+                                fam.value.each( function(value){
+                                        nodelist+=value+that.nodedelimiter;
+                                });//.toSource() also works
+                                family+=fam.key+"( "+nodelist.truncate(nodelist.length-that.nodedelimiter.length,"")+" )"+that.famdelimiter;//AllChildren:a,b,c,d
+                        });
+                        str+=s.key+": "+family.truncate(family.length-that.famdelimiter.length,"")+rnl;//a: AllChildren:b,c,d ! AllParents:q,e
+                });
+                /*for (var key in ar) {
+                        str+=ar[key]+" ";
+                }*/
+                return str;
+        }/*}}}*/
 
 };/*}}}*/
 
@@ -483,6 +585,8 @@ tree0.NewPCRel("f","a");
 tree0.NewPCRel("f","b");
 tree0.NewPCRel("g","a");
 alert(tree0.IsPCRel("a","e"));
+//alert(tree0.toSource());
+alert(tree0.inspect());
 //alert(tree0.inspect());
 //tree0.DelNode("a");
 //alert(tree0.IsPCRel("a","b"));
