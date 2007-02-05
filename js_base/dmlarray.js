@@ -63,8 +63,8 @@ a.ClearAll();//empty all cChildren of "a"
 
 var p=new Pointer_OnTree_OnSense(tree0, cDown);//with no domain
 p.SetPointee("e");//or null
-p.SetNull();
-p.IsNull();
+p.SetUndefined();
+p.IsUndefined();
 p.GetPointee();//=="e"; or null if null
 p.GetTree();
 
@@ -72,8 +72,8 @@ var dp=new DomainPointer_FamilyKind_OnTree_OfFamily_OfNode(cParents,tree0, cChil
 dp.SetPointee("e");//limited to children of "a"; OR null
 dp.GetPointee();//null if none set
 dp.GetTree();//returns the tree of where this pointer is part of(or smth
-dp.SetNull();//==SetPointee(null)
-dp.IsNull();
+dp.SetUndefined();//==SetPointee(null)
+dp.IsUndefined();
 //use array() named "arguments" inside a function!
 try using prototype.js ie. object.extend() and stuff Class, $A()
 */
@@ -414,7 +414,7 @@ for (var b in a) {
 alert(str);
 */
 /*var tr=Class.create();
-tr.prototype=Object.extend(new HashL0(), {
+tr.prototype=Object.extend(HashL0, {
         initialize: function() {
         }
         ,sz:function()
@@ -431,6 +431,7 @@ exit;
 //alert(a.entries().toSource());
 alert(a instanceof Hash);
 exit;*/
+
 
 var TreeL0=Class.create();/*{{{*/
 TreeL0.prototype={
@@ -703,29 +704,145 @@ do {
                 return str;*/
         }/*}}}*/
 
+        ,GetPointerL0_OnSense: function(sense)
+        {
+                return new PointerL0_OnTree_OnSense(this, sense);
+        }
+
+        ,GetDomainPointerL1_OnDomainNode_OnSense: function(dnode, sense)
+        {
+                return new DomainPointerL1_OnTree_OnDomainNode_OnSense(this, dnode, sense);
+        }
+
 };/*}}}*/
 
 //------------------------------------------------------------------------------------------
 
 var PointerL0_OnTree_OnSense=Class.create();/*{{{*/
+//function PointerL0_OnTree_OnSense(tree, sense)
+//{
 PointerL0_OnTree_OnSense.prototype={
-        initialize: function(tree, sense){
-                _tIFnot(TreeL0.prototype.isPrototypeOf(tree));
-                _tIFnot(tree.IsValidSense(sense));
-                alert('initing');
-        }
-};/*}}}*/
+        initialize: function(tree, sense)/*{{{*/
+        {
+                if (arguments.length>0) {
+                        this.evilInit(tree, sense);
+                }
+        }/*}}}*/
 
-var TreeL1=Class.create();/*{{{*/
-TreeL1.prototype=Object.extend(new TreeL0(), {
-        initialize: function() {
-        }
-/*        speak: function(wh) {
-                //TreeL0.prototype.speak.apply(this,[wh]);//this is how calling a base class method is done
-                //TreeL0.prototype.speak(wh);//or this which doesn't WORK in some cases!
-                alert("2:"+this.e);
-        }*/
-});/*}}}*/
+        ,evilInit: function(tree, sense)/*{{{*/
+        {
+                this.SetTree(tree);
+                this.SetSense(sense);
+                this.SetUndefined();
+        }/*}}}*/
+
+//PointerL0_OnTree_OnSense.prototype.SetPointee=function (node)
+        ,SetPointee: function(node)/*{{{*/
+        {
+                if (IsDefined(node)){
+                        //_tIFnot(this.tree.IsValidNodeName(node));
+                        _tIFnot(this.GetTree().IsNode(node));
+                }
+                this.pointee=node;//can be undefined
+        }/*}}}*/
+
+//PointerL0_OnTree_OnSense.prototype.SetUndefined=function ()
+        ,SetUndefined: function()/*{{{*/
+        {
+                this.SetPointee();
+        }/*}}}*/
+
+//PointerL0_OnTree_OnSense.prototype.IsUndefined=function ()
+        ,IsUndefined: function()/*{{{*/
+        {
+                return !this.IsDefined();
+        }/*}}}*/
+
+//PointerL0_OnTree_OnSense.prototype.IsDefined=function ()
+        ,IsDefined: function()/*{{{*/
+        {
+                return IsDefined(this.GetPointee());
+        }/*}}}*/
+
+//PointerL0_OnTree_OnSense.prototype.GetPointee=function ()
+        ,GetPointee: function()/*{{{*/
+        {
+                //_tIFnot(this.tree.IsNode(this.pointee));//just a safety check
+                return this.pointee;//undefined==null
+        }/*}}}*/
+
+//PointerL0_OnTree_OnSense.prototype.GetTree=function ()
+        ,SetTree: function(tree)/*{{{*/
+        {
+                _tIFnot(TreeL0.prototype.isPrototypeOf(tree));
+                this.tree=tree;
+        }/*}}}*/
+
+        ,GetTree: function()/*{{{*/
+        {
+                _tIFnot(TreeL0.prototype.isPrototypeOf(this.tree));//safety
+                return this.tree;
+        }/*}}}*/
+
+        ,GetSense: function()/*{{{*/
+        {
+                _tIFnot(this.GetTree().IsValidSense(this.sense));//safety check
+                return this.sense;
+        }/*}}}*/
+
+        ,SetSense: function(sense)/*{{{*/
+        {
+                _tIFnot(this.GetTree().IsValidSense(sense));
+                this.sense=sense;
+        }/*}}}*/
+};
+
+
+//------------------------------------------------------------------------------------------
+var DomainPointerL1_OnTree_OnDomainNode_OnSense=Class.create();
+/*function DomainPointerL1_OnTree_OnDomainNode_OnSense(tree, dnode, sense)
+{
+        PointerL0_OnTree_OnSense.apply(this,[tree,sense]);
+        this.domainNode=dnode;
+}*/
+//DomainPointerL1_OnTree_OnDomainNode_OnSense.prototype=new PointerL0_OnTree_OnSense();
+//DomainPointerL1_OnTree_OnDomainNode_OnSense.prototype.constructor=DomainPointerL1_OnTree_OnDomainNode_OnSense;
+
+DomainPointerL1_OnTree_OnDomainNode_OnSense.prototype=Object.extend(new PointerL0_OnTree_OnSense(), {
+        initialize: function(tree, dnode, sense) {/*{{{*/
+                this.evilInit(tree,sense);
+                this.SetDomain(dnode);
+                //PointerL0_OnTree_OnSense.apply(this,[tree,sense]);
+                //PointerL0_OnTree_OnSense.initialize.apply(tree,sense);
+        }/*}}}*/
+
+        ,SetDomain: function(dnode)/*{{{*/
+        {
+                _tIFnot(this.GetTree().IsNode(dnode));
+                this.domainNode=dnode;
+        }/*}}}*/
+
+        ,GetDomain: function()/*{{{*/
+        {
+                return this.domainNode;
+        }/*}}}*/
+
+        ,SetPointee: function(node)/*{{{*/
+        {
+                if (IsDefined(node)) {
+                        _tIFnot(this.IsOfDomain_Node(node));
+                }
+                PointerL0_OnTree_OnSense.prototype.SetPointee.apply(this,[node]);
+        }/*}}}*/
+
+        ,IsOfDomain_Node: function(node)/*{{{*/
+        {
+                return (IsDefined(node) && this.GetTree().IsRel_Node_Sense_Node(this.GetDomain(), this.GetSense(), node));
+        }/*}}}*/
+});
+//DomainPointerL1_OnTree_OnDomainNode_OnSense.prototype=
+//DomainPointerL1_OnTree_OnDomainNode_OnSense=Object.clone(PointerL0_OnTree_OnSense);
+//------------------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------------------
 
@@ -733,18 +850,18 @@ TreeL1.prototype=Object.extend(new TreeL0(), {
 
 //var tree1=new TreeL1();
 //tree1.speak("about it");
-var u=new UniqListL0("a","b","c","d");
+//var u=new UniqListL0("a","b","c","d");
 
 //alert(u.IsValidWhere([kFirst,oPrev]));
-alert(u);
+/*alert(u);
 alert(u.GetValue_OfIndex(u.GetIndex_Where_Node(oFirst)));
 alert(u.GetValue_OfIndex(u.GetIndex_Where_Node(oLast)));
-alert(u.GetValue_OfIndex(u.GetIndex_Where_Node(oPinPoint,"d")));
+alert(u.GetValue_OfIndex(u.GetIndex_Where_Node(oPinPoint,"d")));*/
 //alert(u.toSource());
-exit;
 
 var tree0=new TreeL0();
 //var p1=new PointerL0_OnTree_OnSense(tree0,cDown);
+var p1=tree0.GetPointerL0_OnSense(cDown);
 
 //var b=new TreeL0();//eval(AllNodes.toSource()));
 tree0.NewPCRel("a","b");
@@ -754,6 +871,19 @@ tree0.NewPCRel("a","e");
 tree0.NewPCRel("f","a");
 tree0.NewPCRel("f","b");
 tree0.NewPCRel("g","a");
+alert(p1.GetPointee());
+p1.SetPointee("g");
+alert(p1.GetPointee());
+var p2=tree0.GetDomainPointerL1_OnDomainNode_OnSense("a", cDown);
+//alert(p2.IsDefined());
+alert(p2.GetPointee());
+p2.SetPointee("e");
+alert(p2.GetPointee());
+p2.SetPointee("b");
+alert(p2.GetPointee());
+
+//var p3=tree0.GetPointerL0_OnSense(cDown);alert(p3.GetPointee());
+
 //alert(tree0.IsPCRel("a","e"));
 //alert(tree0.inspect());
 /*tree0.DelPCRel("a","e");
