@@ -577,13 +577,15 @@ do {
                 _tIFnot(this.IsValidFamily(fam));
 
                 var fref=this._GetRefTo_Family_OfNode(fam, node);
-                //here we clean all elements of family
-                var that=this;
-                while (fref.size() >0) {
-                        var first=fref.first();
-                        _tIFnot(IsDefined(first));
-                        //alert("del:"+node+" "+fam+" "+first);
-                        this.DelRel_Node_Sense_Node(node, fam, first);
+                if (IsDefined(fref)) {
+                        //here we clean all elements of family
+                        var that=this;
+                        while (fref.size() >0) {
+                                var first=fref.first();
+                                _tIFnot(IsDefined(first));
+                                //alert("del:"+node+" "+fam+" "+first);
+                                this.DelRel_Node_Sense_Node(node, fam, first);
+                        }
                 }
         }/*}}}*/
 
@@ -795,19 +797,11 @@ PointerL0_OnTree_OnSense.prototype={
                 _tIFnot(this.GetTree().IsValidSense(sense));
                 this.sense=sense;
         }/*}}}*/
-};
+};/*}}}*/
 
 
 //------------------------------------------------------------------------------------------
-var DomainPointerL1_OnTree_OnDomainNode_OnSense=Class.create();
-/*function DomainPointerL1_OnTree_OnDomainNode_OnSense(tree, dnode, sense)
-{
-        PointerL0_OnTree_OnSense.apply(this,[tree,sense]);
-        this.domainNode=dnode;
-}*/
-//DomainPointerL1_OnTree_OnDomainNode_OnSense.prototype=new PointerL0_OnTree_OnSense();
-//DomainPointerL1_OnTree_OnDomainNode_OnSense.prototype.constructor=DomainPointerL1_OnTree_OnDomainNode_OnSense;
-
+var DomainPointerL1_OnTree_OnDomainNode_OnSense=Class.create();/*{{{*/
 DomainPointerL1_OnTree_OnDomainNode_OnSense.prototype=Object.extend(new PointerL0_OnTree_OnSense(), {
         initialize: function(tree, dnode, sense) {/*{{{*/
                 this.evilInit(tree,sense);
@@ -839,25 +833,12 @@ DomainPointerL1_OnTree_OnDomainNode_OnSense.prototype=Object.extend(new PointerL
         {
                 return (IsDefined(node) && this.GetTree().IsRel_Node_Sense_Node(this.GetDomain(), this.GetSense(), node));
         }/*}}}*/
-});
-//DomainPointerL1_OnTree_OnDomainNode_OnSense.prototype=
-//DomainPointerL1_OnTree_OnDomainNode_OnSense=Object.clone(PointerL0_OnTree_OnSense);
+});/*}}}*/
 //------------------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------------------
 
 //test section follows:
-
-//var tree1=new TreeL1();
-//tree1.speak("about it");
-//var u=new UniqListL0("a","b","c","d");
-
-//alert(u.IsValidWhere([kFirst,oPrev]));
-/*alert(u);
-alert(u.GetValue_OfIndex(u.GetIndex_Where_Node(oFirst)));
-alert(u.GetValue_OfIndex(u.GetIndex_Where_Node(oLast)));
-alert(u.GetValue_OfIndex(u.GetIndex_Where_Node(oPinPoint,"d")));*/
-//alert(u.toSource());
 
 var tree0=new TreeL0();
 //var p1=new PointerL0_OnTree_OnSense(tree0,cDown);
@@ -893,7 +874,8 @@ tree0.DelPCRel("f","a");*/
 //tree0.DelPCRel("g","a");
 alert(tree0.inspect());
 //alert(tree0.IsNode("a"));
-tree0.DelNode("a");
+//tree0.DelNode("a");
+tree0.DelNode("f");
 //alert(tree0.IsNode("a"));
 //alert(tree0.IsPCRel("a","e"));
 //alert(tree0.toSource());
