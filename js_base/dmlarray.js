@@ -34,6 +34,17 @@ var cUp=cParents;
 var cDown=cChildren;
 var rnl="\n";
 
+var oFirst=1;
+var oLast=2;
+var oPrev=4;
+var oBefore=oPrev;
+var oNext=8;
+var oAfter=oNext;
+var oCurrent=16;
+var oPinPoint=oCurrent;
+
+var validWheres=[oFirst, oLast, oPrev, oNext, oCurrent];//only one of these can be passed to a function accepting a Where param;  'o' comes from only one
+
 //TODO: replace, insertafter/before Node, first last using splice()
 //insert_InNode_WhichFamily_OfNode_   ("a", cChildren, "e", );
 /*
@@ -122,51 +133,131 @@ function _tIFnot(bool)/*{{{*/
 
 var UniqListL0=Class.create();/*{{{*/
 UniqListL0.prototype=Object.extend(new Array(), {//this will make sure it only keeps uniq values
-        initialize: function()
+        initialize: function()/*{{{*/
         {
-        }
+                var i=0;
+                while (i<arguments.length) {
+                        this.AppendValue(arguments[i]);
+                        i++;
+                }
+                arguments.length=0;
+        }/*}}}*/
 
-        ,IsValidVal: function(val)
+        ,IsValidVal: function(val)/*{{{*/
         {
-                return ('string'===typeof(val) && val.length>0);
-        }
+                return (IsDefined(val)&&('string'===typeof(val) && val.length>0));
+        }/*}}}*/
 
-        ,DelValue: function(val)
+        ,DelValue: function(val)/*{{{*/
         {
                 _tIFnot(this.IsValidVal(val));
                 this.splice(this.indexOf(val),1);
-        }
+        }/*}}}*/
 
-        ,AppendValue: function(val)
+        ,AppendValue: function(val)/*{{{*/
         {
                 _tIFnot(this.IsValidVal(val));
                 this.push(val);
-        }
+        }/*}}}*/
 
-        ,IsValue: function(val)
+        ,IsValue: function(val)/*{{{*/
         {
+                _tIFnot(this.IsValidVal(val));
                 return -1 != this.indexOf(val);
-        }
+        }/*}}}*/
 
         ,IsValidWhere: function(where)/*{{{*/
         {
+                /*where.Is=function (what) {
+                        return where.indexOf(what)!=-1;
+                };*/
+
+                //alert(where.Is(0));
+                if (IsDefined(where)) {// && Int.prototype.isPrototypeOf(where)) {
+                        if (validWheres.indexOf(where) != -1) {
+                                return true;
+                        }
+/*                        if (!onebad) {
+                                //dup check
+                                if (where.join()===where.uniq().join()) {
+                                        //opposite values cannot coexist:
+                                        return true;
+                                }
+                        }*/
+                }
+                return false;
         }/*}}}*/
 
-        ,inspect: function()
+        ,GetIndex_OfVal: function(val) {
+                _tIFnot(this.IsValidVal(val));
+                var ind=this.indexOf(val);
+                if (-1 == ind) {
+                        return undefined;
+                }
+                return ind;
+        }
+
+        ,IsValidIndex: function(index)
+        {
+                return (IsDefined(index) &&((index>=0) && (index < this.length)));
+        }
+
+        ,GetValue_OfIndex: function(index) {
+                _tIFnot(this.IsValidIndex(index));
+                return this[index];//never undefined
+        }
+
+        ,GetIndex_Where_Node: function(where,val)
+        {
+                //alert(IsDefined(undefined -1));
+                _tIFnot(this.IsValidWhere(where));
+                if ( (where === oBefore) || (where === oAfter) ) {
+                                //get index of val
+                                //calc if prev index is not out of scope
+                                //get val of prev index
+                        _tIFnot(this.IsValidVal(val));
+                        var ind=this.GetIndex_OfVal(val);
+                        if (this.IsValidIndex(ind)) {
+                                ind= ind + (where===oAfter?+1:-1);
+                                if (this.IsValidIndex(ind)) {
+                                        //return this.GetValue_OfIndex(ind));//can't be undefined
+                                        return ind;
+                                }
+                        }
+                        return undefined;
+                }
+
+                if ( (where === oFirst) || (where === oLast) ) {
+                        _tIF(IsDefined(val));
+                        var ind=(where===oFirst?0:this.length-1);
+                        if (this.IsValidIndex(ind)) {
+                                return ind;
+                        }
+                        return undefined;
+                }
+                if (where===oPinPoint) {
+                        _tIFnot(IsDefined(val));
+                        return this.GetIndex_OfVal(val);
+                }
+                _t('impossible, IsValidWhere must not do it\'s job');
+        }
+
+        ,inspect: function()/*{{{*/
         {
                 return this.toSource();
-        }
+        }/*}}}*/
+
 
 });/*}}}*/
 
 var HashL0=Class.create();/*{{{*/
 HashL0.prototype=Object.extend(new Hash(), {
-        initialize: function()
+        initialize: function()/*{{{*/
         {
                 this.magicheader="id_";
 //last:
                 this.__diffsize=Hash.prototype.size.apply(this) + 1;//which is this property
-        }
+        }/*}}}*/
 
         ,size: function()/*{{{*/
         {
@@ -194,7 +285,7 @@ HashL0.prototype=Object.extend(new Hash(), {
                 return false;
         }/*}}}*/
 
-        ,GetVal_OfKey: function(key)/*{{{*/
+        ,GetValue_OfKey: function(key)/*{{{*/
         {
                 var tmp=this[this.MangleKey(key)];
                 return tmp;//undefined if not exists, and null if it exists and it's set to null, value otherwise; user IsDefined() to test
@@ -205,6 +296,15 @@ HashL0.prototype=Object.extend(new Hash(), {
                 this[this.MangleKey(key)]=val;//val can be null
         }/*}}}*/
 
+        ,DelKey: function(key)/*{{{*/
+        {
+                var val=this.GetValue_OfKey(key);
+                if (IsDefined(key)) {
+                        //alert(val.toSource());
+                        //_tIF(typeof(val)==='object');//unallocated child, responsibility of the caller
+                        delete this[this.MangleKey(key)];
+                }
+        }/*}}}*/
 
 /*        ,add_key_value_where_ofkey: function(key,value,where,ofkey) //"a",array("b","d"),kAfter,"c"
         {
@@ -220,6 +320,24 @@ HashL0.prototype=Object.extend(new Hash(), {
         ,PropertyExists:function (prop)/*{{{*/ //unused
         {
                 return IsDefined(this[prop]);//handled situation when property is set to null thus it exists; also sees non-enumerable ones ie. 'length'
+        }/*}}}*/
+
+        ,inspect: function()/*{{{*/
+        {
+                var str="";
+                this.each( function(s) { //s.key=nodeID, s.value=object HashL0
+                        var family=s.value.inspect();//s.key=cParents or cChildren, s.value is object HashL0
+/*                        s.value.each( function(fam) {//fam.key=AllParents or AllChildren, fam.value=array of nodeIDs
+                                var nodelist="";
+                                fam.value.each( function(value){
+                                        nodelist+=value+that.nodedelimiter;
+                                });//.toSource() also works
+                                family+=fam.key+"( "+nodelist.truncate(nodelist.length-that.nodedelimiter.length,"")+" )"+that.famdelimiter;//AllChildren:a,b,c,d
+                        });*/
+                        //str+=s.key+": "+family.truncate(family.length-that.famdelimiter.length,"")+rnl;//a: AllChildren:b,c,d ! AllParents:q,e
+                        str+=s.key+": "+family;
+                });
+                return str+rnl;
         }/*}}}*/
 
         ,toSource: function()/*{{{*/
@@ -248,7 +366,7 @@ HashL0.prototype=Object.extend(new Hash(), {
         }/*}}}*/
 
         ,each: function(iteratorfunc)/*{{{*/
-        {
+        {//beware don't use this with an iterator that deletes elements
                 var that=this;
                 Hash.prototype.each.apply(this, [ function(pair) {
                         if (that.IsMangled(pair.key)) {
@@ -281,13 +399,13 @@ HashL0.prototype=Object.extend(new Hash(), {
 
 /*var a=new HashL0();
 //alert(a.UnmangleKey(a.MangleKey("doh")));
-//alert(a.GetVal_OfKey("doh"));
+//alert(a.GetValue_OfKey("doh"));
 a.Set_OfKey_Val("k1","a");
 a.Set_OfKey_Val("k2",Array("mm","dd","ee"));
-//alert(a.GetVal_OfKey("k1"))
-alert(a.GetVal_OfKey("k2"))
-alert(IsDefined(a.GetVal_OfKey("k2")))
-//alert(typeof(a.GetVal_OfKey("k2"))=="undefined")
+//alert(a.GetValue_OfKey("k1"))
+alert(a.GetValue_OfKey("k2"))
+alert(IsDefined(a.GetValue_OfKey("k2")))
+//alert(typeof(a.GetValue_OfKey("k2"))=="undefined")
 //alert(a.size());
 str="";
 for (var b in a) {
@@ -320,15 +438,7 @@ TreeL0.prototype={
                 this.famdelimiter=" AND ";
                 this.nodedelimiter=", ";
                 this.AllNodes=new HashL0();
-                //this.AllNodes.Set_OfKey_Val(cParents, new HashL0());
-                //this.AllNodes[cParents]=new HashL0();//not a hash because it'll overwrite some of its methods, and we need to support any index name!
-                //this.AllNodes.Set_OfKey_Val(cChildren, new HashL0());
-                //this.AllNodes[cChildren]=new HashL0();
-                //alert('TreeL0 init');
         }
-//add mangle for node ID before storage and unmangle on read... smth like prepend a "0" so ids like "length" or "prototype" don't overwrite the properties existent in $H()
-//or use Object.propertyIsEnumerable(property) and only prepend "0" to those IDs which are not enumerable so they won't overwrite methods
-
 
         ,IsValidSense:function(sense)/*{{{*/
         {
@@ -376,7 +486,7 @@ TreeL0.prototype={
                 var cnt=0;
                 var n;
                 do {
-                        n=this._GetNode(node);
+                        n=this._GetRefTo_Node(node);
                         if (!IsDefined(n)) {
                                 this.AllNodes.Set_OfKey_Val(node, new HashL0());
                         }
@@ -391,17 +501,17 @@ TreeL0.prototype={
 var cnt=0;
 var list;
 do {
-        list=this._Get_Family_OfNode(familytype, whichnode);
+        list=this._GetRefTo_Family_OfNode(familytype, whichnode);
         if (!IsDefined(list)) {
                 var node=this._Ensure_GetNode(whichnode);
                 //list=
-                _tIF(IsDefined(node.GetVal_OfKey(familytype)));//safe check
+                _tIF(IsDefined(node.GetValue_OfKey(familytype)));//safe check
                 //if (!IsDefined(list)) {//create
                 //var xx=new UniqListL0();
                 //alert(UniqListL0.prototype.isPrototypeOf(xx));
-                node.Set_OfKey_Val(familytype, new UniqListL0());//we repeat do-while to test this was properly entered
+                node.Set_OfKey_Val(familytype, new UniqListL0());//we repeat do-while to test this was properly entered and has proper type, this is done via _GetRefTo_Family_OfNode()
                 //}
-                //_tIFnot(UniqListL0.prototype.isPrototypeOf(node.GetVal_OfKey(familytype)));
+                //_tIFnot(UniqListL0.prototype.isPrototypeOf(node.GetValue_OfKey(familytype)));
         }
         cnt++;
         _tIF(cnt>2);//no more than 2 times
@@ -410,30 +520,94 @@ do {
         return list;
 }/*}}}*/
 
-        ,_GetNode: function(node)/*{{{*/
+        ,_GetRefTo_Node: function(node)/*{{{*/
         {
                 _tIFnot(this.IsValidNodeName(node));
-                var nodvar= this.AllNodes.GetVal_OfKey(node);//can be undefined
+                var nodvar= this.AllNodes.GetValue_OfKey(node);//can be undefined
                 _tIF( IsDefined(nodvar) && (!HashL0.prototype.isPrototypeOf(nodvar)) );
                 return nodvar;
         }/*}}}*/
 
-        ,_Get_Family_OfNode: function(fam,node)/*{{{*/
+        ,_GetRefTo_Family_OfNode: function(fam,node)/*{{{*/
         {
                 _tIFnot(this.IsValidFamily(fam));
                 _tIFnot(this.IsValidNodeName(node));
 
-                var nodvar=this._GetNode(node);//node tested inhere
+                var nodvar=this._GetRefTo_Node(node);//node tested inhere
                 var got=undefined;
                 if (IsDefined(nodvar)) {
-                        got=nodvar.GetVal_OfKey(fam);
+                        got=nodvar.GetValue_OfKey(fam);
                         //_tIFnot(IsDefined(got) && !UniqListL0.prototype.isPrototypeOf(got));
                 }
                 return got;
         }/*}}}*/
+
+        ,_AutoDelEmptyNode: function(nodeid)/*{{{*/
+        {
+                var node=this._GetRefTo_Node(nodeid);
+                if (IsDefined(node)){
+                        var p=this._AutoDel_NodeVar_Family(node, cParents);
+                        var c=this._AutoDel_NodeVar_Family(node, cChildren);
+                        if (c && p) {
+                                //both gone, then node has to go too
+                                this.AllNodes.DelKey(nodeid);
+                        }
+                }
+        }/*}}}*/
+
+        ,_AutoDel_NodeVar_Family: function(noderef, fam)/*{{{*/
+        {
+                //no checks FIXME
+                var famref=noderef.GetValue_OfKey(fam);
+                if (IsDefined(famref)) {
+                        if (famref.size() > 0) {
+                                return false;//not empty!
+                        }
+                        //empty:
+                        noderef.DelKey(fam);
+                }
+                return true;//deleted, or already inexistent
+        }/*}}}*/
 /*}}}*/
 
-//TODO: DelNode()
+        ,_DelAll_Family_OfNode: function(fam, node)/*{{{*/
+        {
+                _tIFnot(this.IsValidNodeName(node));
+                _tIFnot(this.IsValidFamily(fam));
+
+                var fref=this._GetRefTo_Family_OfNode(fam, node);
+                //here we clean all elements of family
+                var that=this;
+                while (fref.size() >0) {
+                        var first=fref.first();
+                        _tIFnot(IsDefined(first));
+                        //alert("del:"+node+" "+fam+" "+first);
+                        this.DelRel_Node_Sense_Node(node, fam, first);
+                }
+        }/*}}}*/
+
+        ,DelNode: function(nodeid)/*{{{*/
+        {
+                var node=this._GetRefTo_Node(nodeid);
+                if (IsDefined(node)) {
+                        //we got a node to delete
+                        this._DelAll_Family_OfNode(cParents, nodeid);
+                        this._DelAll_Family_OfNode(cChildren, nodeid);
+                        /*if (p && c) {
+                                //both families are gone, so has the node
+                                this.AllNodes.DelKey(nodeid);
+                        }*/
+                }
+        }/*}}}*/
+
+        ,_SemiDel_Node_Where_DelNode: function(n1, sense, n2)/*{{{*/
+        {
+                var cl=this._GetRefTo_Family_OfNode(sense, n1);
+                _tIFnot(IsDefined(cl));
+                cl.DelValue(n2);//cl.splice(ar[1],1);
+
+                this._AutoDelEmptyNode(n1);
+        }/*}}}*/
 
         ,DelRel_Node_Sense_Node:function(n1, sense, n2) //PC=parent,child  (order of params)/*{{{*/
 {
@@ -441,24 +615,20 @@ do {
    //     if (IsDefined(ar)) {
         if (this.IsRel_Node_Sense_Node(n1,sense,n2)) {
 
-                var cl=this._Get_Family_OfNode(sense, n1);
-                _tIFnot(IsDefined(cl));
-                cl.DelValue(n2);//cl.splice(ar[1],1);
-
-                //this._AutoDelEmptyNode(c);
-
-                var pl=this._Get_Family_OfNode(this.GetOppositeSense(sense),n2);
-                _tIFnot(IsDefined(pl));// is unlikely because of prev. if
-                pl.DelValue(n1);//pl.splice(ar[0],1);
-
-                //this._AutoDelEmptyNode(p);
+                this._SemiDel_Node_Where_DelNode(n1,sense,n2);
+                this._SemiDel_Node_Where_DelNode(n2, this.GetOppositeSense(sense), n1);
         }
 }/*}}}*/
+
+        ,DelPCRel: function(p,c)/*{{{*/
+        {
+                this.DelRel_Node_Sense_Node(p, cDown, c);
+        }/*}}}*/
 
         ,IsNode:function(n)/*{{{*/
 {//exists only if part of one or more relationships
         //no need to compact() the arrays since compacting is done on delete
-        if (IsDefined(_GetNode(n))) {
+        if (IsDefined(this._GetRefTo_Node(n))) {
                 return true;
         }
         return false;
@@ -470,7 +640,7 @@ do {
                 _tIFnot(this.IsValidNodeName(n1));
                 _tIFnot(this.IsValidNodeName(n2));
 
-                var first=this._Get_Family_OfNode(sense,n1);
+                var first=this._GetRefTo_Family_OfNode(sense,n1);
                 if (IsDefined(first)) {
                         return first.IsValue(n2);
                 }
@@ -516,13 +686,8 @@ do {
 
         ,inspect: function()/*{{{*/
         {
-                /*var str="";
-                for (var i in this.AllNodes) {
-                        str+=i+rnl;
-                }
-                return str;*/
-                //var ar=this.AllNodes.GetKeys();
-                var str="";
+                return this.AllNodes.inspect();
+/*                var str="";
                 var that=this;
                 this.AllNodes.each( function(s) { //s.key=nodeID, s.value=object HashL0
                         var family="";
@@ -535,10 +700,7 @@ do {
                         });
                         str+=s.key+": "+family.truncate(family.length-that.famdelimiter.length,"")+rnl;//a: AllChildren:b,c,d ! AllParents:q,e
                 });
-                /*for (var key in ar) {
-                        str+=ar[key]+" ";
-                }*/
-                return str;
+                return str;*/
         }/*}}}*/
 
 };/*}}}*/
@@ -554,7 +716,7 @@ PointerL0_OnTree_OnSense.prototype={
         }
 };/*}}}*/
 
-var TreeL1=Class.create();
+var TreeL1=Class.create();/*{{{*/
 TreeL1.prototype=Object.extend(new TreeL0(), {
         initialize: function() {
         }
@@ -563,7 +725,7 @@ TreeL1.prototype=Object.extend(new TreeL0(), {
                 //TreeL0.prototype.speak(wh);//or this which doesn't WORK in some cases!
                 alert("2:"+this.e);
         }*/
-});
+});/*}}}*/
 
 //------------------------------------------------------------------------------------------
 
@@ -571,7 +733,15 @@ TreeL1.prototype=Object.extend(new TreeL0(), {
 
 //var tree1=new TreeL1();
 //tree1.speak("about it");
+var u=new UniqListL0("a","b","c","d");
 
+//alert(u.IsValidWhere([kFirst,oPrev]));
+alert(u);
+alert(u.GetValue_OfIndex(u.GetIndex_Where_Node(oFirst)));
+alert(u.GetValue_OfIndex(u.GetIndex_Where_Node(oLast)));
+alert(u.GetValue_OfIndex(u.GetIndex_Where_Node(oPinPoint,"d")));
+//alert(u.toSource());
+exit;
 
 var tree0=new TreeL0();
 //var p1=new PointerL0_OnTree_OnSense(tree0,cDown);
@@ -584,7 +754,18 @@ tree0.NewPCRel("a","e");
 tree0.NewPCRel("f","a");
 tree0.NewPCRel("f","b");
 tree0.NewPCRel("g","a");
-alert(tree0.IsPCRel("a","e"));
+//alert(tree0.IsPCRel("a","e"));
+//alert(tree0.inspect());
+/*tree0.DelPCRel("a","e");
+tree0.DelPCRel("a","b");
+tree0.DelPCRel("a","d");
+tree0.DelPCRel("f","a");*/
+//tree0.DelPCRel("g","a");
+alert(tree0.inspect());
+//alert(tree0.IsNode("a"));
+tree0.DelNode("a");
+//alert(tree0.IsNode("a"));
+//alert(tree0.IsPCRel("a","e"));
 //alert(tree0.toSource());
 alert(tree0.inspect());
 //alert(tree0.inspect());
