@@ -46,7 +46,7 @@
 <script language="javascript" src="prototype.js"></script>
 <script language="javascript" src="dmlarray.js"></script>
 
-<!-- <script language="javascript" src="dom-drag.js"></script>
+<script language="javascript" src="dom-drag.js"></script>
 
 <script type="text/javascript" src="simpletreemenu.js">
 
@@ -60,15 +60,14 @@
 
 <link rel="stylesheet" type="text/css" href="simpletree.css" />
 
-<!- -
+<!--
 /* Context menu Script- © Dynamic Drive (www.dynamicdrive.com) Last updated: 01/08/22
 For full source code and Terms Of Use, visit http://www.dynamicdrive.com */
-- ->
+-->
 
 <link rel="stylesheet" type="text/css" href="cmenu.css" />
 
 <script type="text/javascript" src="base64.js"></script>
--->
 
 </head>
 
@@ -297,8 +296,8 @@ For full source code and Terms Of Use, visit http://www.dynamicdrive.com */
 */
         global $debugL1;
         //_yntIFnot( $debugL1->ShowTreeOfChildrenForParent(kAllFunctions) );
-//        _yntIFnot( $debugL1->ShowTreeOfParents_WithID_ForChild('TreeMenu for Parents of "yes"',yes) );
-//        _yntIFnot( $debugL1->ShowTreeOfParents_WithID_ForChild('TreeMenu for Parents of "OpenTransaction1"',"OpenTransaction1") );
+        _yntIFnot( $debugL1->ShowTreeOfParents_WithID_ForChild('TreeMenu for Parents of "yes"',yes) );
+        _yntIFnot( $debugL1->ShowTreeOfParents_WithID_ForChild('TreeMenu for Parents of "OpenTransaction1"',"OpenTransaction1") );
 /*        _yntIFnot( $debugL1->ShowTreeOfChildrenForParent(kAllReturns) );
         _yntIFnot( $debugL1->ShowTreeOfParentsForChild("a") );
         _yntIFnot( $debugL1->ShowTreeOfParentsForChild(yes) );*/
@@ -356,11 +355,10 @@ For full source code and Terms Of Use, visit http://www.dynamicdrive.com */
 
         if (Served()) {
 ?>
-<!-- <div id="contextmenu" class="skin0" onMouseover="highlightie5(event)" onMouseout="lowlightie5(event)" onClick="jumptoie5(event)">
+<div id="contextmenu" class="skin0" onMouseover="highlightie5(event)" onMouseout="lowlightie5(event)" onClick="jumptoie5(event)">
 </div>
 
 <script type="text/javascript" src="cmenu.js"></script>
--->
 </body>
 </html>
 <?

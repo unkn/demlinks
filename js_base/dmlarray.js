@@ -36,19 +36,19 @@ var rnl="\n";
 
 var oFirst=1;
 var oLast=2;
-var oPrev=4;
-var oBefore=oPrev;
+var oPrev=4;//prev&next are accessible in cursors
 var oNext=8;
-var oAfter=oNext;
 var oCurrent=16;
 var oPinPoint=oCurrent;
+var oBefore=32;
+var oAfter=64;
 
-var validWheres=[oFirst, oLast, oPrev, oNext, oCurrent];//only one of these can be passed to a function accepting a Where param;  'o' comes from only one
+var validWheres=[oFirst, oLast, oBefore, oAfter, oPrev, oNext, oCurrent];//only one of these can be passed to a function accepting a Where param;  'o' comes from only one
 
 //TODO: replace, insertafter/before Node, first last using splice()
 //insert_InNode_WhichFamily_OfNode_   ("a", cChildren, "e", );
 /*
-var a=new Cursor_OnTree_OnSense_OfNode_DPSense(tree0, cDown, "a", cDown);//make a cursor on children of 'a' ; DP=domain pointer; DPSense=in which sense will the DP point to, usually this is the same as OnSense
+var a=new CursorL0_OnTree_OnSense_DNode(tree0, cDown, "a", cDown);//make a cursor on children of 'a' ; DP=domain pointer; DPSense=in which sense will the DP point to, usually this is the same as OnSense; DNode=domain node
 a.Insert_WhatNode_Where_OfNode("f", kAfter, "e");//true/false, use one splice
 a.Insert_WhatNode_Where_OfNode("g", kFirst);//true/false
 a.Move_WhatNode_Where_OfNode("f", kBefore,"e");//use 2 splices, one del one insert
@@ -128,6 +128,16 @@ function _tIFnot(bool)/*{{{*/
                 _t("_tIFnot("+bool+")");
         }
 }/*}}}*/
+
+function IsDiv_WithID(divid)
+{
+        var thediv=document.getElementById(divid).getElementsByTagName("div")
+        if (IsDefined(thediv)) {
+                return true;
+        }
+        return false;
+}
+
 //---------------------------END global funx
 
 
@@ -215,7 +225,7 @@ UniqListL0.prototype=Object.extend(new Array(), {//this will make sure it only k
                                 //get index of val
                                 //calc if prev index is not out of scope
                                 //get val of prev index
-                        _tIFnot(this.IsValidVal(val));
+                        _tIFnot(this.IsValidVal(val));//mandatory
                         var ind=this.GetIndex_OfVal(val);
                         if (this.IsValidIndex(ind)) {
                                 ind= ind + (where===oAfter?+1:-1);
@@ -322,9 +332,32 @@ HashL0.prototype=Object.extend(new Hash(), {
                 return IsDefined(this[prop]);//handled situation when property is set to null thus it exists; also sees non-enumerable ones ie. 'length'
         }/*}}}*/
 
+/*        ,toUL_onDivID: function(divid)
+        {
+                _tIFnot(IsDiv_WithID(thediv));//making sure the div with ID divid exists
+                var str="";
+                this.each( function(s) { //s.key=nodeID, s.value=object HashL0
+                        var family=s.value.inspect();//s.key=cParents or cChildren, s.value is object HashL0
+                        str+=s.key+": "+family;
+                });
+                
+        }*/
+
+/*        ,parse: function(iteratorfunc)
+        {
+                this.each( function(family) { //family.key=nodeID, family.value=object HashL0
+                        family.value.parse(iteratorfunc, family.key);//family.key=cParents or cChildren, family.value is object HashL0
+                        //str+=s.key+": "+family;
+                });
+                //return str+rnl;
+        }
+*/
         ,inspect: function()/*{{{*/
         {
                 var str="";
+                /*this.parse( function(family) {
+                        str+=family+": "+obj.
+                });*/
                 this.each( function(s) { //s.key=nodeID, s.value=object HashL0
                         var family=s.value.inspect();//s.key=cParents or cChildren, s.value is object HashL0
 /*                        s.value.each( function(fam) {//fam.key=AllParents or AllChildren, fam.value=array of nodeIDs
@@ -502,7 +535,7 @@ TreeL0.prototype={
 var cnt=0;
 var list;
 do {
-        list=this._GetRefTo_Family_OfNode(familytype, whichnode);
+        list=this._GetRefToList_OfFamily_OfNode(familytype, whichnode);
         if (!IsDefined(list)) {
                 var node=this._Ensure_GetNode(whichnode);
                 //list=
@@ -510,7 +543,7 @@ do {
                 //if (!IsDefined(list)) {//create
                 //var xx=new UniqListL0();
                 //alert(UniqListL0.prototype.isPrototypeOf(xx));
-                node.Set_OfKey_Val(familytype, new UniqListL0());//we repeat do-while to test this was properly entered and has proper type, this is done via _GetRefTo_Family_OfNode()
+                node.Set_OfKey_Val(familytype, new UniqListL0());//we repeat do-while to test this was properly entered and has proper type, this is done via _GetRefToList_OfFamily_OfNode()
                 //}
                 //_tIFnot(UniqListL0.prototype.isPrototypeOf(node.GetValue_OfKey(familytype)));
         }
@@ -529,7 +562,7 @@ do {
                 return nodvar;
         }/*}}}*/
 
-        ,_GetRefTo_Family_OfNode: function(fam,node)/*{{{*/
+        ,_GetRefToList_OfFamily_OfNode: function(fam,node)/*{{{*/
         {
                 _tIFnot(this.IsValidFamily(fam));
                 _tIFnot(this.IsValidNodeName(node));
@@ -569,14 +602,22 @@ do {
                 }
                 return true;//deleted, or already inexistent
         }/*}}}*/
-/*}}}*/
+
+        ,_SemiDel_Node_Where_DelNode: function(n1, sense, n2)/*{{{*/
+        {
+                var cl=this._GetRefToList_OfFamily_OfNode(sense, n1);
+                _tIFnot(IsDefined(cl));
+                cl.DelValue(n2);//cl.splice(ar[1],1);
+
+                this._AutoDelEmptyNode(n1);
+        }/*}}}*/
 
         ,_DelAll_Family_OfNode: function(fam, node)/*{{{*/
         {
                 _tIFnot(this.IsValidNodeName(node));
                 _tIFnot(this.IsValidFamily(fam));
 
-                var fref=this._GetRefTo_Family_OfNode(fam, node);
+                var fref=this._GetRefToList_OfFamily_OfNode(fam, node);
                 if (IsDefined(fref)) {
                         //here we clean all elements of family
                         var that=this;
@@ -588,6 +629,21 @@ do {
                         }
                 }
         }/*}}}*/
+
+        ,_IsSemiRel_Node_Sense_Node: function(n1,sense,n2) // a, cDown, b/*{{{*/
+        {//one sense testing, the other(opposing sense) must also be true, ie. b, cUp, a
+                _tIFnot(this.IsValidSense(sense));
+                _tIFnot(this.IsValidNodeName(n1));
+                _tIFnot(this.IsValidNodeName(n2));
+
+                var first=this._GetRefToList_OfFamily_OfNode(sense,n1);
+                if (IsDefined(first)) {
+                        return first.IsValue(n2);
+                }
+                return false;
+        }/*}}}*/
+
+/*}}}*/
 
         ,DelNode: function(nodeid)/*{{{*/
         {
@@ -601,15 +657,6 @@ do {
                                 this.AllNodes.DelKey(nodeid);
                         }*/
                 }
-        }/*}}}*/
-
-        ,_SemiDel_Node_Where_DelNode: function(n1, sense, n2)/*{{{*/
-        {
-                var cl=this._GetRefTo_Family_OfNode(sense, n1);
-                _tIFnot(IsDefined(cl));
-                cl.DelValue(n2);//cl.splice(ar[1],1);
-
-                this._AutoDelEmptyNode(n1);
         }/*}}}*/
 
         ,DelRel_Node_Sense_Node:function(n1, sense, n2) //PC=parent,child  (order of params)/*{{{*/
@@ -636,19 +683,6 @@ do {
         }
         return false;
 }/*}}}*/
-
-        ,_IsSemiRel_Node_Sense_Node: function(n1,sense,n2) // a, cDown, b/*{{{*/
-        {//one sense testing, the other(opposing sense) must also be true, ie. b, cUp, a
-                _tIFnot(this.IsValidSense(sense));
-                _tIFnot(this.IsValidNodeName(n1));
-                _tIFnot(this.IsValidNodeName(n2));
-
-                var first=this._GetRefTo_Family_OfNode(sense,n1);
-                if (IsDefined(first)) {
-                        return first.IsValue(n2);
-                }
-                return false;
-        }/*}}}*/
 
         ,IsRel_Node_Sense_Node:function(n1,sense,n2)/*{{{*/
 {
@@ -687,6 +721,12 @@ do {
                 return this.AllNodes.toSource();
         }/*}}}*/
 
+/*        ,toUL_onDivID: function(divid)
+        {
+                _tIFnot(IsDiv_WithID(thediv));
+                this.toUL_onDivID(divid);
+        }*/
+
         ,inspect: function()/*{{{*/
         {
                 return this.AllNodes.inspect();
@@ -706,19 +746,24 @@ do {
                 return str;*/
         }/*}}}*/
 
-        ,GetPointerL0_OnSense: function(sense)
+        ,GetPointerL0_OnSense: function(sense)/*{{{*/
         {
                 return new PointerL0_OnTree_OnSense(this, sense);
-        }
+        }/*}}}*/
 
-        ,GetDomainPointerL1_OnDomainNode_OnSense: function(dnode, sense)
+        ,GetDomainPointerL1_OnDomainNode_OnSense: function(dnode, sense)/*{{{*/
         {
                 return new DomainPointerL1_OnTree_OnDomainNode_OnSense(this, dnode, sense);
-        }
+        }/*}}}*/
 
+        /*,GetCursorL0_OnSense_DNode: function(sense, dnode, dpsense)
+        {
+                return new CursorL0_OnSense_DNode(this, sense, dnode, dpsense);
+        }*/
 };/*}}}*/
 
 //------------------------------------------------------------------------------------------
+
 
 var PointerL0_OnTree_OnSense=Class.create();/*{{{*/
 //function PointerL0_OnTree_OnSense(tree, sense)
@@ -726,7 +771,8 @@ var PointerL0_OnTree_OnSense=Class.create();/*{{{*/
 PointerL0_OnTree_OnSense.prototype={
         initialize: function(tree, sense)/*{{{*/
         {
-                if (arguments.length>0) {
+                //alert('normalp'+tree);
+                if (arguments.length>0) {//ags are not provided when used in a new on the derriving class' definition ie. a.prototype=Object.extend(new base(),{ initialize: function{} });
                         this.evilInit(tree, sense);
                 }
         }/*}}}*/
@@ -799,15 +845,21 @@ PointerL0_OnTree_OnSense.prototype={
         }/*}}}*/
 };/*}}}*/
 
-
 //------------------------------------------------------------------------------------------
 var DomainPointerL1_OnTree_OnDomainNode_OnSense=Class.create();/*{{{*/
-DomainPointerL1_OnTree_OnDomainNode_OnSense.prototype=Object.extend(new PointerL0_OnTree_OnSense(), {
+//here you find a case of inheritance + passing params to the base constructor (a workaround of course)
+DomainPointerL1_OnTree_OnDomainNode_OnSense.prototype=Object.extend(new PointerL0_OnTree_OnSense(), {//we need new because it gets us inheritance... if we don't use new and () then we can pass constructor params to base class(if i remember correctly)
         initialize: function(tree, dnode, sense) {/*{{{*/
-                this.evilInit(tree,sense);
+                //alert('domainp'+tree);
+                if (arguments.length>0) {
+                        this.evilInit(tree, dnode, sense);
+                }
+        }/*}}}*/
+
+        ,evilInit: function(tree, dnode, sense)/*{{{*/
+        {
+                PointerL0_OnTree_OnSense.prototype.evilInit.apply(this,[tree,sense]);
                 this.SetDomain(dnode);
-                //PointerL0_OnTree_OnSense.apply(this,[tree,sense]);
-                //PointerL0_OnTree_OnSense.initialize.apply(tree,sense);
         }/*}}}*/
 
         ,SetDomain: function(dnode)/*{{{*/
@@ -833,16 +885,61 @@ DomainPointerL1_OnTree_OnDomainNode_OnSense.prototype=Object.extend(new PointerL
         {
                 return (IsDefined(node) && this.GetTree().IsRel_Node_Sense_Node(this.GetDomain(), this.GetSense(), node));
         }/*}}}*/
+
+        /*,_GetList: function()
+        {
+                return _GetRefToList_OfFamily_OfNode(this.GetSense(), this.GetDomain());
+        }*/
+/*
+        ,Insert_WhatNode_Where_OfNode: function() //("f", kAfter, "e");//true/false, use one splice
+a.Insert_WhatNode_Where_OfNode("g", kFirst);//true/false
+a.Move_WhatNode_Where_OfNode("f", kBefore,"e");//use 2 splices, one del one insert
+a.Move_WhatNode_Where_OfNode("f", kLast);
+a.GetNode_Where(kFirst);
+a.GetNode_Where(kNext);//repeat this, returns null if no more
+a.Replace_WhatNode_Where_OfNode("f", kLast, "m");//delete f, insert m kLast
+a.Delete_WhatNode("m");
+a.GetCount();//return number of elements of children of "a" ie. array.length;
+a.ClearAll();//empty all cChildren of "a"
+*/
 });/*}}}*/
 //------------------------------------------------------------------------------------------
 
+/*var CursorL0_OnTree_OnSense_DNode=Class.create();//(tree0, cDown, "a", cDown);//make a cursor on children of 'a' ; DP=domain pointer; DPSense=in which sense will the DP point to, usually this is the same as OnSense; DNode=domain node
+CursorL0_OnTree_OnSense_DNode.prototype=Object.extend(new DomainPointerL1_OnTree_OnDomainNode_OnSense(), {
+        initialize: function(tree, sense, dnode)
+        {//dnode=domain node, sense=which sense from dnode
+                alert('cursor'+tree);
+                if (arguments.length>0) {
+                        this.evilInit(tree, sense, dnode);
+                }
+        }
+
+        ,evilInit: function(tree, sense, dnode)
+        {
+                DomainPointerL1_OnTree_OnDomainNode_OnSense.prototype.evilInit.apply(this,[tree, dnode, sense]);
+                this.SetCursorSense(sense);
+        }
+
+        ,GetCursorSense: function()
+        {
+                _tIFnot(this.GetTree().IsValidSense(this.cursorSense));//safety check
+                return this.cursorSense;
+        }
+
+        ,SetCursorSense: function(sense)
+        {
+                _tIFnot(this.GetTree().IsValidSense(sense));
+                this.cursorSense=sense;
+        }
+});*/
 //------------------------------------------------------------------------------------------
 
 //test section follows:
 
 var tree0=new TreeL0();
 //var p1=new PointerL0_OnTree_OnSense(tree0,cDown);
-var p1=tree0.GetPointerL0_OnSense(cDown);
+//var p1=tree0.GetPointerL0_OnSense(cDown);
 
 //var b=new TreeL0();//eval(AllNodes.toSource()));
 tree0.NewPCRel("a","b");
@@ -852,17 +949,29 @@ tree0.NewPCRel("a","e");
 tree0.NewPCRel("f","a");
 tree0.NewPCRel("f","b");
 tree0.NewPCRel("g","a");
-alert(p1.GetPointee());
-p1.SetPointee("g");
-alert(p1.GetPointee());
+//alert(p1.GetPointee());
+//p1.SetPointee("g");
+//alert(p1.GetPointee());
 var p2=tree0.GetDomainPointerL1_OnDomainNode_OnSense("a", cDown);
-//alert(p2.IsDefined());
+//var c1=tree0.GetCursorL0_OnSense_DNode(cDown, "a");
+/*alert(p2.IsDefined());
 alert(p2.GetPointee());
 p2.SetPointee("e");
 alert(p2.GetPointee());
 p2.SetPointee("b");
 alert(p2.GetPointee());
-
+*/
+/*p2.Insert_WhatNode_Where_OfNode("f", kAfter, "e");//true/false, use one splice
+p2.Insert_WhatNode_Where_OfNode("g", kFirst);//true/false
+p2.Move_WhatNode_Where_OfNode("f", kBefore,"e");//use 2 splices, one del one insert
+p2.Move_WhatNode_Where_OfNode("f", kLast);
+alert(p2.GetNode_Where(kFirst));
+alert(p2.GetNode_Where(kNext));//repeat this, returns null if no more
+p2.Replace_WhatNode_Where_OfNode("f", kLast, "m");//delete f, insert m kLast
+p2.Delete_WhatNode("g");//child of "a" ie. a->g
+alert(p2.GetCount());//return number of elements of children of "a" ie. array.length;
+p2.ClearAll();//empty all cChildren of "a"
+*/
 //var p3=tree0.GetPointerL0_OnSense(cDown);alert(p3.GetPointee());
 
 //alert(tree0.IsPCRel("a","e"));
@@ -872,14 +981,14 @@ tree0.DelPCRel("a","b");
 tree0.DelPCRel("a","d");
 tree0.DelPCRel("f","a");*/
 //tree0.DelPCRel("g","a");
-alert(tree0.inspect());
+//alert(tree0.inspect());
 //alert(tree0.IsNode("a"));
 //tree0.DelNode("a");
-tree0.DelNode("f");
+//tree0.DelNode("f");
 //alert(tree0.IsNode("a"));
 //alert(tree0.IsPCRel("a","e"));
 //alert(tree0.toSource());
-alert(tree0.inspect());
+//alert(tree0.inspect());
 //alert(tree0.inspect());
 //tree0.DelNode("a");
 //alert(tree0.IsPCRel("a","b"));
