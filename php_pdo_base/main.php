@@ -296,8 +296,8 @@ For full source code and Terms Of Use, visit http://www.dynamicdrive.com */
 */
         global $debugL1;
         //_yntIFnot( $debugL1->ShowTreeOfChildrenForParent(kAllFunctions) );
-        _yntIFnot( $debugL1->ShowTreeOfParents_WithID_ForChild('TreeMenu for Parents of "yes"',yes) );
         _yntIFnot( $debugL1->ShowTreeOfParents_WithID_ForChild('TreeMenu for Parents of "OpenTransaction1"',"OpenTransaction1") );
+        _yntIFnot( $debugL1->ShowTreeOfParents_WithID_ForChild('TreeMenu for Parents of "yes"',yes) );
 /*        _yntIFnot( $debugL1->ShowTreeOfChildrenForParent(kAllReturns) );
         _yntIFnot( $debugL1->ShowTreeOfParentsForChild("a") );
         _yntIFnot( $debugL1->ShowTreeOfParentsForChild(yes) );*/
