@@ -72,7 +72,7 @@ class dmlDBL1 extends dmlDBL0
         funcL1 (AddName,($nodename))/*{{{*/
         {
                 _artIFnot( $this->TestElementInvariants($nodename) );//must not be empty or so; if it is then maybe's a bug outside this funcL1 provided user shall never call this funcL1 with an empty param value
-                _arifnot ($this->GetID($id,$nodename)) {
+                _arifnot ($this->GetID($id,$nodename)) {//no ID found, autoincrement ID on add
                         $this->fParamNodeName=$nodename;
                         _yntIFnot( $this->fPrepNewNode->execute() );//error here? it probably already exists! error in GetID maybe
                         addretflagL1(kAdded);

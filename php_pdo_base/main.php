@@ -43,7 +43,7 @@
 
 <head>
 
-<script language="javascript" src="prototype.js"></script>
+<?/*<script language="javascript" src="prototype.js"></script>
 <script language="javascript" src="dmlarray.js"></script>
 
 <script language="javascript" src="dom-drag.js"></script>
@@ -54,7 +54,7 @@
 * Simple Tree Menu- © Dynamic Drive DHTML code library (www.dynamicdrive.com)
 * This notice MUST stay intact for legal use
 * Visit Dynamic Drive at http://www.dynamicdrive.com/ for full source code
-***********************************************/
+*********************************************** /
 
 </script>
 
@@ -62,16 +62,175 @@
 
 <!--
 /* Context menu Script- © Dynamic Drive (www.dynamicdrive.com) Last updated: 01/08/22
-For full source code and Terms Of Use, visit http://www.dynamicdrive.com */
+For full source code and Terms Of Use, visit http://www.dynamicdrive.com * /
 -->
 
 <link rel="stylesheet" type="text/css" href="cmenu.css" />
 
 <script type="text/javascript" src="base64.js"></script>
+ */?>
+
+
+<script type="text/javascript" src="dojo.js"></script>
+
+<script type="text/javascript">
+        dojo.require("dojo.lang.*");
+        dojo.require("dojo.widget.Tree");
+        dojo.require("dojo.widget.TreeRPCController");
+        dojo.require("dojo.widget.TreeSelector");
+        dojo.require("dojo.widget.TreeNode");
+        dojo.require("dojo.widget.TreeContextMenu");
+
+        function restoreIconSrc() {
+                // icon was changed during the action => no need to move it back
+                //alert("Restore "+this.icon.src.substr(-18))
+                if (this.icon.src.substr(-18) != 'static/loading.jpg') { // check if icon.src is loading icon
+                        return;
+                }
+                this.icon.src = this.oldIconSrc;
+        }
+
+
+        /* process up or down operation */
+        function moveClicked(selectedNode, controllerId, icon, direction) {
+                if (selectedNode.actionIsDisabled(selectedNode.actions.MOVE)) {
+                        return false;
+                }
+
+                this.icon = icon;
+                this.oldIconSrc = icon.src;
+
+                this.controller = dojo.widget.manager.getWidgetById(controllerId);
+
+                if (!selectedNode) {
+                        alert('No node selected');
+                        return false;
+                }
+
+                if (direction == 'up') {
+                        if (!selectedNode.getPreviousSibling()) return;
+                        var res = controller.move(selectedNode, selectedNode.parent, selectedNode.getParentIndex()-1);
+                } else if (direction == 'down') {
+                        if (!selectedNode.getNextSibling()) return;
+                        var res = controller.move(selectedNode, selectedNode.parent, selectedNode.getParentIndex()+1);
+                }
+
+
+        }
+
+        /* process create operation */
+        function createClicked(selectedNode, controllerId, icon) {
+                if (!selectedNode || selectedNode.actionIsDisabled(selectedNode.actions.ADDCHILD)) {                        return false;
+                }
+
+                this.icon = icon;
+                this.oldIconSrc = icon.src;
+
+                this.controller = dojo.widget.manager.getWidgetById(controllerId);
+
+                if (!selectedNode || !selectedNode.isFolder) {
+                        alert('Select folder please');
+                        return false;
+                }
+
+                this.icon.src = 'static/loading.jpg';
+
+                // I send some data to server and recieve feedback with right node
+                var res = controller.createChild(selectedNode, 0, { suggestedTitle: "half New node" }, dojo.lang.hitch(this, restoreIconSrc));
+                //var res = controller.createChild(selectedNode, 0, { title: "aaa", suggestedTitle: "half New node" }, '/');
+
+                // local checks failed
+                if (res == false) {
+                        restoreIconSrc.apply(this);
+                }
+        }
+
+        function removeClicked(selectedNode, controllerId, icon) {
+
+                if (!selectedNode) {
+                        alert('No node selected');
+                        return false;
+                }
+
+                if (selectedNode.actionIsDisabled(selectedNode.actions.REMOVE)) {
+                        return false;
+                }
+
+                this.icon = icon;
+                this.oldIconSrc = icon.src;
+
+                this.controller = dojo.widget.manager.getWidgetById(controllerId);
+
+
+                this.icon.src = 'static/loading.jpg';
+
+                var res = controller.removeNode(selectedNode, dojo.lang.hitch(this, restoreIconSrc));
+
+                // local checks failed
+                if (res == false) {
+                        restoreIconSrc.apply(this);
+                }
+
+
+        }
+<?
+        /*var reporter = function(reporter) {
+                this.name = eventName;
+                this.go = function(message) {
+                        var rep = [ reporter + " -- event: "+this.name ];
+                        for(i in message) rep.push(i+": "+message[i]);
+                        dojo.debug(rep.join(', '));
+                }
+        }*/
+
+        /*dojo.addOnLoad(function(){
+
+
+                /* Add debug print for all controller events * /
+                var controller = dojo.widget.manager.getWidgetById('treeController');
+                for(eventName in controller.eventNames) {
+                        dojo.event.topic.subscribe(
+                                controller.eventNames[eventName],
+                                new reporter('controller'),
+                                'go'
+                        );
+                }
+
+                /* Add debug print for all firstTree events * /
+                var firstTree = dojo.widget.manager.getWidgetById('firstTree');
+
+
+                for(eventName in firstTree.eventNames) {
+                        dojo.event.topic.subscribe(
+                                firstTree.eventNames[eventName],
+                                new reporter('firstTree'),
+                                'go'
+                        );
+                }
+
+                /* Add debug print for all secondTree events * /
+                var secondTree = dojo.widget.manager.getWidgetById('secondTree');
+                for(eventName in secondTree.eventNames) {
+                        dojo.event.topic.subscribe(
+                                secondTree.eventNames[eventName],
+                                new reporter('secondTree'),
+                                'go'
+                        );
+                }
+
+                //dojo.widget.manager.getWidgetById('1.1').edit({title: '123'});
+
+        });*/
+?>
+
+
+</script>
+
 
 </head>
 
-<body style="background-color:black;">
+<body style="background-color:white;color:black;">
+
 
 <?
 
@@ -296,8 +455,8 @@ For full source code and Terms Of Use, visit http://www.dynamicdrive.com */
 */
         global $debugL1;
         //_yntIFnot( $debugL1->ShowTreeOfChildrenForParent(kAllFunctions) );
-        _yntIFnot( $debugL1->ShowTreeOfParents_WithID_ForChild('TreeMenu for Parents of "OpenTransaction1"',"OpenTransaction1") );
-        _yntIFnot( $debugL1->ShowTreeOfParents_WithID_ForChild('TreeMenu for Parents of "yes"',yes) );
+        //_yntIFnot( $debugL1->ShowTreeOfParents_WithID_ForChild('TreeMenu for Parents of "OpenTransaction1"',"OpenTransaction1") );
+        //_yntIFnot( $debugL1->ShowTreeOfParents_WithID_ForChild('TreeMenu for Parents of "yes"',yes) );
 /*        _yntIFnot( $debugL1->ShowTreeOfChildrenForParent(kAllReturns) );
         _yntIFnot( $debugL1->ShowTreeOfParentsForChild("a") );
         _yntIFnot( $debugL1->ShowTreeOfParentsForChild(yes) );*/
@@ -354,11 +513,118 @@ For full source code and Terms Of Use, visit http://www.dynamicdrive.com */
 
 
         if (Served()) {
-?>
+                /*
 <div id="contextmenu" class="skin0" onMouseover="highlightie5(event)" onMouseout="lowlightie5(event)" onClick="jumptoie5(event)">
 </div>
 
 <script type="text/javascript" src="cmenu.js"></script>
+ */
+?>
+<div dojoType="TreeRPCController" RPCUrl="local" widgetId="treeController" DNDController="create"></div>
+
+<div dojoType="TreeSelector" widgetId="treeSelector"></div>
+
+
+<div dojoType="TreeContextMenu" toggle="explode" contextMenuForWindow="false" widgetId="treeContextMenu">
+        <div dojoType="TreeMenuItem" treeActions="addChild" iconSrc="static/createsmall.gif" widgetId="treeContextMenuCreate" caption="Create"></div>
+        <div dojoType="TreeMenuItem" treeActions="remove" iconSrc="static/removesmall.gif" caption="Remove" widgetId="treeContextMenuRemove"></div>
+        <div dojoType="TreeMenuItem" treeActions="move" iconSrc="static/downsmall.png" caption="Up"
+widgetId="treeContextMenuUp"></div>
+        <div dojoType="TreeMenuItem" treeActions="move" iconSrc="static/upsmall.png" caption="Down"
+widgetId="treeContextMenuDown"></div>
+</div>
+<script>
+
+/* setup menu actrions */
+dojo.addOnLoad(function() {
+
+        dojo.event.topic.subscribe('treeContextMenuCreate/engage',
+                function (menuItem) { createClicked( menuItem.getTreeNode(), 'treeController',  menuItem.getTreeNode().expandIcon); }
+        );
+
+        dojo.event.topic.subscribe('treeContextMenuRemove/engage',
+                function (menuItem) { removeClicked( menuItem.getTreeNode(), 'treeController',  menuItem.getTreeNode().expandIcon); }
+        );
+
+        dojo.event.topic.subscribe('treeContextMenuUp/engage',
+                function (menuItem) { moveClicked( menuItem.getTreeNode(), 'treeController',  menuItem.getTreeNode().expandIcon, 'up'); }
+        );
+
+        dojo.event.topic.subscribe('treeContextMenuDown/engage',
+                function (menuItem) { moveClicked( menuItem.getTreeNode(), 'treeController',  menuItem.getTreeNode().expandIcon, 'down'); }
+        );
+
+
+});
+
+
+</script>
+
+<style>
+<?
+echo "#toolsDiv img {";
+?>
+        vertical-align: middle;
+<?
+        echo "}";
+?>
+.treeTable tr {
+        vertical-align: top;
+}
+</style>
+<!--
+        A sample toolbar
+-->
+<div id="toolsDiv">
+<img src="static/create.gif" onclick="createClicked(dojo.widget.manager.getWidgetById('treeSelector').selectedNode,'treeController', this);"/>
+<img src="static/up.gif" onclick="moveClicked(dojo.widget.manager.getWidgetById('treeSelector').selectedNode,'treeController', this, 'up');"/>
+<img src="static/down.gif" onclick="moveClicked(dojo.widget.manager.getWidgetById('treeSelector').selectedNode,'treeController', this, 'down');"/>
+<img src="static/recyclebin.gif" onclick="removeClicked(dojo.widget.manager.getWidgetById('treeSelector').selectedNode, 'treeController', this);"/>
+
+</div>
+<hr/>
+
+<!--
+        Every node must have widgetId to get recognized by server (ajax)
+        !!! wipe toggle from widget.Tree is buggy in FF (try open a lot of nodes)
+-->
+<table class="treeTable" cellpadding="10">
+<tr>
+<td style="border:1px dashed black;">
+<h4>firstTree</h4>
+
+
+
+<div dojoType="Tree" menu="treeContextMenu" DNDMode="between" selector="treeSelector" actionsDisabled="addChild" toggler="fade" widgetId="firstTree" DNDAcceptTypes="secondTree" controller="treeController">
+
+    <div dojoType="TreeNode" widgetId="1.1" title="Can't remove me" actionsDisabled="remove">
+
+        <div dojoType="TreeNode" widgetId="aaaa1.1.1" title="<span style='color:blue'>node with HTML title</span>" isFolder="true">
+        </div>
+
+
+    </div>
+
+        <div dojoType="TreeNode" widgetId="1.2" title="Can't add child to me" actionsDisabled="addChild" isFolder="true"></div>
+        <div dojoType="TreeNode" widgetId="1.3" title="Can't move me" actionsDisabled="remove" isFolder="true"></div>
+
+</div>
+</td>
+<td style="border:1px dashed black;">
+<h4>secondTree</h4>
+<div dojoType="Tree" DNDMode="between" menu="treeContextMenu" selector="treeSelector" widgetId="secondTree" DNDAcceptTypes="secondTree;firstTree"  controller="treeController">
+
+    <div dojoType="TreeNode" title="Item 2.1" widgetId="2.1" isFolder="true"></div>
+    <div dojoType="TreeNode" title="Item 2.2" widgetId="2.2" isFolder="true"></div>
+
+</div>
+</td>
+</tr>
+</table>
+
+
+<hr>
+
 </body>
 </html>
 <?

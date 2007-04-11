@@ -48,7 +48,7 @@ function defcol($str, $termcol, $sitecol)
         }
 }
 
-defcol('nocol',9,"FFFFFF");
+defcol('nocol',9,"000000");
 defcol('browncol',3,"A52A2A");
 defcol('redcol',1,"FF0000");
 defcol('bluecol',4,"0000FF");
