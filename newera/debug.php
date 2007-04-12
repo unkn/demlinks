@@ -56,7 +56,14 @@ function except($msg)
 
 function failed($var,$allowemptystr=false)
 {
-        exceptif(yes!==ok || no!==bad);//safety precaution
+        return !allok($var,$allowemptystr);
+}
+
+function allok($var,$allowemptystr=false)
+{//don't use exceptif inside this func
+        if(yes!==ok || no!==bad) {//safety precaution
+                except('yes!==ok || no!==bad');
+        }
 
         if (true===is_null($var)) {
                 return false;

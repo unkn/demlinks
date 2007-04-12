@@ -83,6 +83,7 @@ class dmlDBL0
                 // create a SQLite3 database file with PDO and return a database handle (Object Oriented)
                 $this->fDBHandle = new PDO('sqlite:'.dbasename,''/*user*/,''/*pwd*/,
                                 array(PDO::ATTR_PERSISTENT => true));//singleton?
+                echo "a".$this->fDBHandle;
                 if (failed($this->fDBHandle)) {
                         except("failed to init db handle");
                 }
@@ -128,13 +129,13 @@ class dmlDBL0
 
                 $sqlRelations = 'CREATE TABLE '.$this->qRelations.
                             ' ('.$this->qParentNodeID.' INTEGER PRIMARY KEY , '.$this->qChildNodeID.' INTEGER SECONDARY KEY)';
-                exceptif( $this->OpenTransaction() );
+                exceptifnot( $this->OpenTransaction() );
 
                 $wecommit=false;
                 $res= $this->fDBHandle->exec($sqlNodeNames);
                 if (!failed($res) ) {
-                        exceptif( $this->fDBHandle->exec($sqlNodeNamesIndex12) );
-                        exceptif( $this->fDBHandle->exec($sqlNodeNamesIndex21) );
+                        exceptifnot( $this->fDBHandle->exec($sqlNodeNamesIndex12) );
+                        exceptifnot( $this->fDBHandle->exec($sqlNodeNamesIndex21) );
                         ensureexists($ret,kCreatedDBNodeNames);
                         $wecommit=true;
                 }
@@ -145,10 +146,10 @@ class dmlDBL0
                 }
 
                 if ($wecommit) { //at least one dbase was created, the other one could already exist perhaps.
-                        exceptif( $this->CloseTransaction() );
+                        exceptifnot( $this->CloseTransaction() );
                         ensureexists($ret,ok);//ok and yes point to the same "yes"
                 }else{
-                        exceptif( $this->AbortTransaction() );
+                        exceptifnot( $this->AbortTransaction() );
                         ensureexists($ret,bad);//bad~no
                 }
                 return $ret;
@@ -158,7 +159,7 @@ class dmlDBL0
         function OpenTransaction() //only one active transaction at a time; PDO limitation?!/*{{{*/
         {
                 initret($ret);
-                exceptif( $this->fDBHandle->beginTransaction() );
+                exceptifnot( $this->fDBHandle->beginTransaction() );
                 ensureexists($ret,ok);
                 return $ret;
         }/*}}}*/
@@ -166,7 +167,7 @@ class dmlDBL0
         function CloseTransaction()/*{{{*/
         {
                 initret($ret);
-                exceptif( $this->fDBHandle->commit() );
+                exceptifnot( $this->fDBHandle->commit() );
                 ensureexists($ret,ok);
                 return $ret;
         }/*}}}*/
@@ -174,7 +175,7 @@ class dmlDBL0
         function AbortTransaction()/*{{{*/
         {
                 initret($ret);
-                exceptif( $this->fDBHandle->rollBack() );
+                exceptifnot( $this->fDBHandle->rollBack() );
                 ensureexists($ret,ok);
                 return $ret;
         }/*}}}*/
@@ -183,7 +184,7 @@ class dmlDBL0
 
         function IsID($id)/*{{{*/
         {
-                exceptif($this->TestElementInvariants($id));
+                exceptifnot($this->TestElementInvariants($id));
                 $ret=$this->GetName($name,$id);//could throw
                 exceptif(in_array(yes,$exists) && in_array(no,$this->TestElementInvariants($name)) );
                 return $ret;
@@ -192,7 +193,7 @@ class dmlDBL0
         function GetName(&$name,$id)// returns Name by ID /*{{{*/
         {
                 initret($ret);
-                exceptif($this->TestElementInvariants($id));
+                exceptifnot($this->TestElementInvariants($id));
                 $this->fParamNodeID = $id;
                 exceptifnot( $this->fPrepGetNodeName->execute() );
                 $ar=$this->fPrepGetNodeName->FetchAll();//can throw
@@ -211,9 +212,9 @@ class dmlDBL0
         function DelID($id)/*{{{*/
         {
                 initret($ret);
-                exceptif($this->TestElementInvariants($id));
+                exceptifnot($this->TestElementInvariants($id));
                 $this->fParamNodeID = $id;
-                exceptif( $this->fPrepDelID->execute() );
+                exceptifnot( $this->fPrepDelID->execute() );
                 ensureexists($ret,ok);
                 return $ret;
         }/*}}}*/
