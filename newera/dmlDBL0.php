@@ -83,7 +83,6 @@ class dmlDBL0
                 // create a SQLite3 database file with PDO and return a database handle (Object Oriented)
                 $this->fDBHandle = new PDO('sqlite:'.dbasename,''/*user*/,''/*pwd*/,
                                 array(PDO::ATTR_PERSISTENT => true));//singleton?
-                echo "a".$this->fDBHandle;
                 if (failed($this->fDBHandle)) {
                         except("failed to init db handle");
                 }
