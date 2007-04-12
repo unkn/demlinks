@@ -174,8 +174,11 @@ class dmlDBL0
         function AbortTransaction()/*{{{*/
         {
                 initret($ret);
-                exceptifnot( $this->fDBHandle->rollBack() );
-                ensureexists($ret,ok);
+                if( failed($this->fDBHandle->rollBack() )) {
+                        ensureexists($ret,bad);
+                } else {
+                        ensureexists($ret,ok);
+                }
                 return $ret;
         }/*}}}*/
 //------------------------/*}}}*/

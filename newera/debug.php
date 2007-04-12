@@ -35,14 +35,14 @@ function report($msg)
 }
 
 function exceptifnot($bool,$msg="IFnot")
-{
+{//handling not just bool
         if (failed($bool)) {
                 except($msg);
         }
 }
 
 function exceptif($bool,$msg="IF")
-{
+{//handling not just bool
         if (!failed($bool)) {
                 except($msg);
         }
@@ -117,7 +117,7 @@ function retValue($var)
         if (true===is_array($var)) {
                 foreach ($var as $v) {
                         if (!empty($ret)) {
-                                $ret+=" ";
+                                $ret.=" ";
                         }
                         $ret.="'$v'";
                 }

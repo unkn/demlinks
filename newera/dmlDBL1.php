@@ -67,9 +67,15 @@ class dmlDBL1 extends dmlDBL0
         {
                 initret($ret);
                 exceptifnot( $this->TestElementInvariants($nodename) );//must not be empty or so; if it is then maybe's a bug outside this funcL1 provided user shall never call this funcL1 with an empty param value
-                if (in_array(no,$this->GetID($id,$nodename))) {//no ID found, autoincrement ID on add
+                $rr=$this->GetID($id,$nodename);
+                if (in_array(no,$rr)) {//no ID found, autoincrement ID on add; either the ID is used by another process in a transaction(=>not found by GetID) or it really is not found by GetID
+                        //echo retValue($rr);
                         $this->fParamNodeName=$nodename;
-                        exceptifnot( $this->fPrepNewNode->execute() );//error here? it probably already exists! error in GetID maybe
+                        if( failed($this->fPrepNewNode->execute()) ) {//error here? it probably already exists! error in GetID maybe; or transaction protected item(ie. another transaction is using this item that's why it wasn't found by GetID)
+                                ensureexists($ret,no);
+                                return $ret;
+                        }//fi
+
                         ensureexists($ret,kAdded);
                 } else {
                         ensureexists($ret,kAlready);

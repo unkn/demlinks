@@ -22,7 +22,14 @@ require_once("dmlDBL1.php");
 
                    try {
 
-                        exceptifnot( $ret=$dmlDB->AddName($val) );
+                        $ret=$dmlDB->AddName($val);
+                        //echo "!".retValue($ret)."!";
+                        /*if (in_array(no,$ret))  {
+                                $dmlDB->AbortTransaction();
+                                $aborted=true;
+                                break;
+                        }*/
+                        exceptifnot($ret);
 
                         if (in_array(kAlready,$ret)) {
                                 echo redcol;
@@ -30,7 +37,7 @@ require_once("dmlDBL1.php");
                                 echo greencol;
                         }
                         echo $val.nocol." ";//.nl;
-                        //usleep(100000);
+                        usleep(100000);
                         $cnt++;//echo "cnt=".$cnt.nl;
 
                         //if ($cnt % 15 == 0) {
@@ -39,11 +46,13 @@ require_once("dmlDBL1.php");
 
                    }
                    catch(PDOException $e) {
+                                //echo purplecol.$e->getmessage().nocol.nl;
                                 exceptifnot( $dmlDB->AbortTransaction());
                                 $aborted=true;
                                 break;
                    }
                    catch(Exception $e) {
+                                //echo purplecol.$e->getmessage().nocol.nl;
                                 exceptifnot( $dmlDB->AbortTransaction());
                                 $aborted=true;
                                 break;
