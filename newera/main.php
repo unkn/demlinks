@@ -13,7 +13,7 @@ require_once("dmlDBL1.php");
         }
         $res=split("[ .,/\\\"\?\<\>&!;|\#\$\*\+\{\}=\(\)'`\n\-]",file_get_contents("dmlDBL0def.php"));
         exceptif(1===count($res));
-        exceptifnot( $dmlDB->OpenTransaction() );
+        //exceptifnot( $dmlDB->OpenTransaction() );
         $aborted=false;
         $cnt=0;
         foreach ($res as $val) {
@@ -47,13 +47,13 @@ require_once("dmlDBL1.php");
                    }
                    catch(PDOException $e) {
                                 //echo purplecol.$e->getmessage().nocol.nl;
-                                exceptifnot( $dmlDB->AbortTransaction());
+                                //exceptifnot( $dmlDB->AbortTransaction());
                                 $aborted=true;
                                 break;
                    }
                    catch(Exception $e) {
                                 //echo purplecol.$e->getmessage().nocol.nl;
-                                exceptifnot( $dmlDB->AbortTransaction());
+                                //exceptifnot( $dmlDB->AbortTransaction());
                                 $aborted=true;
                                 break;
                    }
@@ -61,8 +61,9 @@ require_once("dmlDBL1.php");
         }//foreach
 
         echo nocol.nl;
-        if (!$aborted) {
-                exceptifnot( $dmlDB->CloseTransaction() );
+        if ($aborted) {
+                //exceptifnot( $dmlDB->CloseTransaction() );
+                report("aborted for some reason");
         }
         echo nocol.nl;
 
