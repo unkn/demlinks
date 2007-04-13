@@ -20,7 +20,7 @@ require_once("dmlDBL1.php");
                      $val=trim($val);
                 if (!empty($val)) {//ie. non-empty
 
-                   try {
+                   //try {
 
                         $ret=$dmlDB->AddName($val);
                         //echo "!".retValue($ret)."!";
@@ -29,7 +29,11 @@ require_once("dmlDBL1.php");
                                 $aborted=true;
                                 break;
                         }*/
-                        exceptifnot($ret);
+                        if (failed($ret)) {
+                                $aborted=true;
+                                break;
+                        }
+                        //exceptifnot($ret);
 
                         if (in_array(kAlready,$ret)) {
                                 echo redcol;
@@ -37,14 +41,14 @@ require_once("dmlDBL1.php");
                                 echo greencol;
                         }
                         echo $val.nocol." ";//.nl;
-                        usleep(100000);
+                        //usleep(10000);
                         $cnt++;//echo "cnt=".$cnt.nl;
 
                         //if ($cnt % 15 == 0) {
                                 //_yntIFnot( $dmlDB->CloseTransaction() );
                         //}
 
-                   }
+                   /*}
                    catch(PDOException $e) {
                                 //echo purplecol.$e->getmessage().nocol.nl;
                                 //exceptifnot( $dmlDB->AbortTransaction());
@@ -56,7 +60,7 @@ require_once("dmlDBL1.php");
                                 //exceptifnot( $dmlDB->AbortTransaction());
                                 $aborted=true;
                                 break;
-                   }
+                   }*/
                 } //fi
         }//foreach
 
@@ -64,10 +68,11 @@ require_once("dmlDBL1.php");
         if ($aborted) {
                 //exceptifnot( $dmlDB->CloseTransaction() );
                 report("aborted for some reason");
+                exit;
         }
         echo nocol.nl;
 
-        exceptifnot( $dmlDB->IsName("if") );
+        show( $dmlDB->IsName("if") );
 
         exceptifnot( $dmlDB->Show($into) );
         $arr=$into->fetchAll();
@@ -75,7 +80,7 @@ require_once("dmlDBL1.php");
         report( "Before del: $count times.");
 
         exceptifnot($dmlDB->DelName("if") );
-        $dmlDB->IsName("if");
+        show($dmlDB->IsName("if"));//fails
 
         exceptifnot( $dmlDB->Show($into) );
         $arr=$into->fetchAll();

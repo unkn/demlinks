@@ -129,6 +129,11 @@ function retValue($var)
         return $ret;
 }
 
+function show($val)
+{
+        echo retValue($val).nl;
+}
+
 function initret(&$ret)
 {
         $ret=array(kReturnStateList_type);
