@@ -82,7 +82,8 @@ class dmlDBL0
         {
                 // create a SQLite3 database file with PDO and return a database handle (Object Oriented)
                 $this->fDBHandle = new PDO('sqlite:'.dbasename,''/*user*/,''/*pwd*/,
-                                array(PDO::ATTR_PERSISTENT => true));//singleton?
+                        array(PDO::ATTR_PERSISTENT => true/*singleton?*/, PDO::ATTR_AUTOCOMMIT => false/*, PDO::ATTR_ERRMODE => PDO::ERRMODE_SILENT seems to have no effect */));
+                //$this->fDBHandle->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_SILENT);
                 if (failed($this->fDBHandle)) {
                         except("failed to init db handle");
                 }
@@ -174,7 +175,8 @@ class dmlDBL0
         function AbortTransaction()/*{{{*/
         {
                 initret($ret);
-                if( failed($this->fDBHandle->rollBack() )) {
+                $rr=$this->fDBHandle->rollBack();
+                if( failed( $rr )) {
                         ensureexists($ret,bad);
                 } else {
                         ensureexists($ret,ok);

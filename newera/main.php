@@ -13,7 +13,9 @@ require_once("dmlDBL1.php");
         }
         $res=split("[ .,/\\\"\?\<\>&!;|\#\$\*\+\{\}=\(\)'`\n\-]",file_get_contents("dmlDBL0def.php"));
         exceptif(1===count($res));
-        //exceptifnot( $dmlDB->OpenTransaction() );
+        $tries=10;
+        while ($tries > 0) {
+        exceptifnot( $dmlDB->OpenTransaction() );
         $aborted=false;
         $cnt=0;
         foreach ($res as $val) {
@@ -41,7 +43,7 @@ require_once("dmlDBL1.php");
                                 echo greencol;
                         }
                         echo $val.nocol." ";//.nl;
-                        //usleep(10000);
+                        usleep(10000);
                         $cnt++;//echo "cnt=".$cnt.nl;
 
                         //if ($cnt % 15 == 0) {
@@ -66,11 +68,17 @@ require_once("dmlDBL1.php");
 
         echo nocol.nl;
         if ($aborted) {
-                //exceptifnot( $dmlDB->CloseTransaction() );
                 report("aborted for some reason");
-                exit;
+                $dmlDB->AbortTransaction();//this fails
+                usleep(1000000);
+                --$tries;
+                report("going for another try ! tries left:$tries");
+        } else {
+                exceptifnot( $dmlDB->CloseTransaction() );
+                break;//while
         }
         echo nocol.nl;
+        }//while
 
         show( $dmlDB->IsName("if") );
 
