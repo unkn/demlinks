@@ -3,6 +3,35 @@ configuration for ubuntu:
 to get php5:
 * sudo apt-get install php5
 
+postgresql version (non pdo):
+* sudo apt-get install php5-pgsql
+* sudo apt-get install postgresql-8.2 postgresql-server-dev-8.2 postgresql-dev
+* vim /etc/php5/cli/php.ini append "extension=pdo_pgsql.so" at eof
+* sudo -u postgres createuser -P -d -A -e
+user: demlinks_user
+* append the following to: sudo vim /etc/postgresql/8.2/main/pg_hba.conf
+local   all         demlinks_user                     password sameuser
+* sudo /etc/init.d/postgresql-8.2 restart
+*sudo -u postgres createdb -U demlinks_user demlinks_db
+*sudo -u postgres createlang -U postgres plpgsql
+
+*ignore this:Creating the PL/php language in a PostgreSQL 8.0 database
+
+   In 8.0 you need to create the PL/php language using these commands:
+
+ CREATE FUNCTION plphp_call_handler() RETURNS language_handler
+ LANGUAGE C AS '/usr/lib/postgresql/8.2/lib/plphp', 'plphp_call_handler';
+
+ CREATE TRUSTED LANGUAGE plphp
+ HANDLER plphp_call_handler;
+
+ CREATE LANGUAGE plphpu
+ HANDLER plphp_call_handler;
+
+
+
+------the following are obsolete
+
 to get pecl:
 * sudo apt-get install php-db
 
@@ -19,7 +48,8 @@ to get phpize:
 * vim /etc/php5/cli/php.ini append "extension=pdo_sqlite.so" at eof
 
 
-postgresql version:
+
+pdo+postgresql version:
 * sudo apt-get install postgresql-8.2 postgresql-server-dev-8.2 postgresql-dev
 * sudo pecl install pdo_pgsql
 * vim /etc/php5/cli/php.ini append "extension=pdo_pgsql.so" at eof
