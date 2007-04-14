@@ -1,23 +1,27 @@
 <?php
-require_once("color.php");
 
  $db = new PDO('sqlite:demlinks6.3sql',''/*user*/,''/*pwd*/);
 
-$crea='CREATE TABLE \'NodeNames\' ("NodeID" INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE, "NodeName" VARCHAR(256) UNIQUE NOT NULL);';
+$crea='CREATE TABLE \'NodeNames\' ("NodeName" VARCHAR(10));';
 //$crea2='CREATE TABLE \'Relations\' ("ParentNodeID" INTEGER PRIMARY KEY , "ChildNodeID" INTEGER SECONDARY KEY);';
 
  $db->exec($crea);
 // $db->exec($crea2);
 
+$db->beginTransaction();
+
                 $getter="zTest";
                 //--------- get Name by ID
                 $pgn = $db->prepare('SELECT * FROM \'NodeNames\' WHERE "NodeName" = :node13');
                 $pgn->bindParam(":node13", $getter, PDO::PARAM_STR);
+        //read
+        $pgn->execute();//execute above SELECT
+        $ar=$pgn->FetchAll();//get array of results
 
 
-function read($now) {
-        global $getter;
-        $getter=$now;
+/*function read($now) {
+        //global $getter;
+        //$getter=$now;
         global $pgn;
         $pgn->execute();//execute above SELECT
         $ar=$pgn->FetchAll();//get array of results
@@ -26,20 +30,22 @@ function read($now) {
                 return false;
         }
         return true;
-}
+}*/
 //read("zTest");
 //it prolly doesn't exist so let's add it:
 
 $writter="zTest";
 $pnn=$db->prepare('INSERT INTO \'NodeNames\' ("NodeName") VALUES (:node14)');
 $pnn->bindParam(":node14", $writter, PDO::PARAM_STR);
+        //write
+        $pnn->execute();//write it!
 
-function write($now) {
-        global $writter;
-        $writter=$now;
+/*function write($now) {
+        //global $writter;
+        //$writter=$now;
         global $pnn;
         $pnn->execute();//write it!
-}
+}*/
 
 /*
         $res=split("[ .,/\\\"\?\<\>&!;|\#\$\*\+\{\}=\(\)'`\n\-]",file_get_contents("dmlDBL0def.php"));
@@ -59,19 +65,18 @@ $db->beginTransaction();
         }//foreach
 */
 
-$db->beginTransaction();
-echo read("zTest");
-write("zTest");
+//echo read("zTest");
+//write("zTest");
 /*echo read("zTest");
 write("zTest");
 echo read("zTest");*/
 echo "waiting...";
-                usleep(2000000);
+usleep(2000000);
+echo "\n";
 //echo read("zTest");
 //write("zTest");
 
  //$db->
-echo "\n";
  $db->rollBack();//this doesn't do it's job
  $db->beginTransaction();//here it fails, when running this program twice at the same time; 'There is already an active transaction'
 
