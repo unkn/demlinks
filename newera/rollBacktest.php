@@ -30,13 +30,13 @@ function read($now) {
 //read("zTest");
 //it prolly doesn't exist so let's add it:
 
-//$writter="zTest";
+$writter="zTest";
 $pnn=$db->prepare('INSERT INTO \'NodeNames\' ("NodeName") VALUES (:node14)');
-$pnn->bindParam(":node14", $getter, PDO::PARAM_STR);
+$pnn->bindParam(":node14", $writter, PDO::PARAM_STR);
 
 function write($now) {
-        global $getter;
-        $getter=$now;
+        global $writter;
+        $writter=$now;
         global $pnn;
         $pnn->execute();//write it!
 }
