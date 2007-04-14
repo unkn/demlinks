@@ -5,7 +5,7 @@
 //then it writes it(since it wasn't there)
 //then decides to rollBack the transaction and eventually try a new one
 //because rollBack doesn't really work(apparently) for some unknown reason, beginTransaction fails saying 'There is already an active transaction'
-$db = new PDO('sqlite:demlinks6.3sql',''/*user*/,''/*pwd*/);
+$db = new PDO('pgsql:host=localhost port=5432 dbname=demlinks_db','demlinks_user'/*user*/,'dml'/*pwd*/);
 
 $db->exec('CREATE TABLE \'NodeNames\' ("NodeName" VARCHAR(10));');
 

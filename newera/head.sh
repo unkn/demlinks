@@ -1,6 +1,6 @@
 #!/bin/sh
 src="main.php"
-dbase="demlinks6.3sql"
+dbase="demlinks_db"
 src2="dmlDBL0.php"
 src3="dmlDBL1.php"
 

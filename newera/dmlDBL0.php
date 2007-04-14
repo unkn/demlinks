@@ -52,7 +52,8 @@ class dmlDBL0
         function fieldquote($whatfield)
         {
                 //since we're in sqlite we're gonna quote the field with "" and the value with ''
-                return '"'.$whatfield.'"';
+                //return '"'.$whatfield.'"';//FIXME: this is a flawed way of quoting a field!!
+                return $this->valquote($whatfield);
         }
 
         function valquote($whatval)
@@ -81,7 +82,9 @@ class dmlDBL0
         function __construct()/*{{{*/
         {
                 // create a SQLite3 database file with PDO and return a database handle (Object Oriented)
-                $this->fDBHandle = new PDO('sqlite:'.dbasename,''/*user*/,''/*pwd*/,
+                //$this->fDBHandle = new PDO('sqlite:'.dbasename,''/*user*/,''/*pwd*/,
+                  //      array(PDO::ATTR_PERSISTENT => true/*singleton?*/, PDO::ATTR_AUTOCOMMIT => false/*, PDO::ATTR_ERRMODE => PDO::ERRMODE_SILENT seems to have no effect */));
+                $this->fDBHandle = new PDO('pgsql:host=localhost port=5432 dbname=demlinks_db','demlinks_user'/*user*/,'dml'/*pwd*/,
                         array(PDO::ATTR_PERSISTENT => true/*singleton?*/, PDO::ATTR_AUTOCOMMIT => false/*, PDO::ATTR_ERRMODE => PDO::ERRMODE_SILENT seems to have no effect */));
                 //$this->fDBHandle->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_SILENT);
                 if (failed($this->fDBHandle)) {
@@ -95,7 +98,7 @@ class dmlDBL0
                 $this->qChildNodeID = $this->fieldquote(dChildNodeID);
                 $this->qNodeID = $this->fieldquote(dNodeID);
 
-                $ar=$this->CreateDB();
+                $ar=$this->CreateDB();//the return is no in both of the following cases: tables exist | something failed(ie. syntax)
                 if ( in_array(yes,$ar) ) {
                         $this->fFirstTime=true;
                 }else{
@@ -123,12 +126,17 @@ class dmlDBL0
                 initret($ret);
 
                 $sqlNodeNames = 'CREATE TABLE '.$this->qNodeNames.
-                            ' ('.$this->qNodeID.' INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE, '.$this->qNodeName.' VARCHAR(256) UNIQUE NOT NULL)';
-                $sqlNodeNamesIndex12 = 'CREATE INDEX indexname12 ON '.$this->qNodeNames.'('.$this->qNodeID./*",".$this->qNodeName.*/")";
-                $sqlNodeNamesIndex21 = 'CREATE INDEX indexname21 ON '.$this->qNodeNames.'('.$this->qNodeName./*",".$this->qNodeID.*/")";
+                            ' ('.$this->qNodeID.' INTEGER PRIMARY KEY UNIQUE, '.$this->qNodeName.' character varying (256) UNIQUE NOT NULL)';
+                //$sqlNodeNames = 'CREATE TABLE '.$this->qNodeNames.
+                  //          ' ('.$this->qNodeID.' INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE, '.$this->qNodeName.' VARCHAR(256) UNIQUE NOT NULL)';
+                $sqlNodeNamesIndex12 = 'CREATE INDEX indexname12 ON '.$this->qNodeNames.' ('.$this->qNodeID./*",".$this->qNodeName.*/")";
+                $sqlNodeNamesIndex21 = 'CREATE INDEX indexname21 ON '.$this->qNodeNames.' ('.$this->qNodeName./*",".$this->qNodeID.*/")";
 
+                //$sqlRelations = 'CREATE TABLE '.$this->qRelations.
+                 //           ' ('.$this->qParentNodeID.' INTEGER PRIMARY KEY , '.$this->qChildNodeID.' INTEGER SECONDARY KEY)';
                 $sqlRelations = 'CREATE TABLE '.$this->qRelations.
-                            ' ('.$this->qParentNodeID.' INTEGER PRIMARY KEY , '.$this->qChildNodeID.' INTEGER SECONDARY KEY)';
+                            ' ('.$this->qParentNodeID.' INTEGER PRIMARY KEY , '.$this->qChildNodeID.' INTEGER )';
+                //echo $sqlRelations;
                 exceptifnot( $this->OpenTransaction() );
 
                 $wecommit=false;

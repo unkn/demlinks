@@ -19,3 +19,20 @@ to get phpize:
 * vim /etc/php5/cli/php.ini append "extension=pdo_sqlite.so" at eof
 
 
+postgresql version:
+* sudo apt-get install postgresql-8.2 postgresql-server-dev-8.2 postgresql-dev
+* sudo pecl install pdo_pgsql
+* vim /etc/php5/cli/php.ini append "extension=pdo_pgsql.so" at eof
+* sudo -u postgres createuser -P -d -A -e
+user: demlinks_user
+answers: n,y,n
+//* sudo -u postgre psql
+//   alter user demlinks_user PASSWORD 'dml'
+* append the following to: sudo vim /etc/postgresql/8.2/main/pg_hba.conf
+local   all         demlinks_user                     password sameuser
+
+* sudo /etc/init.d/postgresql-8.2 restart
+*sudo -u postgres createdb -U demlinks_user demlinks_db
+Password:
+CREATE DATABASE
+

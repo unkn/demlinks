@@ -4,5 +4,12 @@
 
 . ./head.sh
 
-rm -f "$dbase"
+#rm -f "$dbase"
+
+if [ -z "$dbase" ]; then
+        echo "hey, \$dbase is empty! halting"
+        exit 3
+fi
+sudo -u postgres dropdb -U demlinks_user "$dbase"
+sudo -u postgres createdb -U demlinks_user "$dbase"
 
