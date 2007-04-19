@@ -7,6 +7,15 @@ function pg_die($msg)
         die($msg .": ". pg_last_error());
 }
 
+/*$dbconn = pg_connect("host=localhost dbname=postgres user=postgres password=dml")
+    or pg_die('Could not connect');
+go('DROP DATABASE IF EXISTS demlinks_db');
+go('CREATE DATABASE demlinks_db WITH OWNER=demlinks_user');
+
+pg_close($dbconn);
+ */
+
+
 $dbconn = pg_connect("host=localhost dbname=demlinks_db user=demlinks_user password=dml")
     or pg_die('Could not connect');
 pg_trace('./pg_trace.log');
@@ -34,6 +43,32 @@ go('CREATE TABLE "NodeNames" ( "ID" SERIAL PRIMARY KEY, "Name" CHARACTER VARYING
 go('CREATE TABLE "Relations" ( "ParentID" integer NOT NULL REFERENCES "NodeNames" ("ID") MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE,
                              "ChildID" integer NOT NULL REFERENCES "NodeNames" ("ID") MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE)');
 
+go('drop view if exists showrel cascade');
+go('create or replace view showrel as select w1."Name" as "Parent", w2."Name" as "Child" from "NodeNames" w1,"NodeNames" w2,"Relations" r where w1."ID" = r."ParentID" AND w2."ID" = r."ChildID"');
+go('drop function if exists getID(character) cascade');
+go('create or replace function getID (character) RETURNS integer as $$ select "ID" from "NodeNames" where "Name"=$1; $$ LANGUAGE SQL;');
+
+go('create or replace function ensureName(character) RETURNS integer as $$
+        -- returns ID of "Name"
+        DECLARE
+                rec RECORD;
+                nam ALIAS FOR $1;
+        BEGIN
+                SELECT INTO rec * FROM "NodeNames" WHERE "Name"=nam;
+                IF NOT FOUND THEN
+                        INSERT INTO "NodeNames" ( "Name" ) VALUES (nam);
+                        RETURN getID(nam);
+                ELSE
+                        RETURN rec."ID";
+                END IF;
+        END; $$ LANGUAGE PLPGSQL');
+
+//go('drop function foobar(character, character) cascade');
+//go('create or replace function foobar (character, character, OUT integer, OUT integer) as $$ select getID($1),getID($2); $$ LANGUAGE SQL');
+go('create or replace rule insert_in_showrel as on insert to showrel do instead insert into "Relations" values (ensureName(NEW."Parent"), ensureName(NEW."Child"))');
+
+//go('CREATE OR REPLACE RULE returnID AS ON INSERT TO "NodeNames" DO ALSO SELECT NEW."ID"');
+
 $res=split("[ .,/\\\"\?\<\>&!;|\#\$\*\+\{\}=\(\)'`\n\-]",file_get_contents("dmlDBL0def.php"));
         foreach ($res as $val) {
                 $val=trim($val);
@@ -44,6 +79,11 @@ $res=split("[ .,/\\\"\?\<\>&!;|\#\$\*\+\{\}=\(\)'`\n\-]",file_get_contents("dmlD
                         pg_free_result($res);
                         if (empty($status)) {
                                 go('INSERT INTO "NodeNames" ( "Name" ) VALUES (\''.$val.'\')');
+                                go('Insert into "showrel" values (\'main.cpp\', \''.$val.'\')');
+                                if (isset($lastval)) {go('insert into "showrel" values(\''.$lastval.'\', \''.$val.'\')');
+                                }
+                                $lastval=$val;
+                                //go('INSERT INTO "Relations" ( "ParentID", "ChildID" ) VALUES (\''.$status["ID"].'\', \''.$status["ID"].'\')');
                         }
                 }//fi
         }//foreach
@@ -78,4 +118,3 @@ pg_free_result($result);
 // Closing connection
 pg_close($dbconn);
 ?>
-
