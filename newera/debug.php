@@ -28,6 +28,13 @@
 
 require_once("shortdef.php");
 
+function pg_die($msg)
+{
+        debug_print_backtrace();
+        die($msg .": ". pg_last_error());
+}
+
+
 function report($msg)
 {
         echo "Report: ".$msg.nl;

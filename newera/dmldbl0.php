@@ -33,38 +33,22 @@ require_once("debug.php");
 require_once("dmldbdef.php");
 require_once("color.php");
 
+function goq($query)
+{
+        $res=getq($query);
+        pg_free_result($res);//this gets executed only if the above did not fail
+}
+
+function getq($query)
+{
+        @$res= pg_query($query) or pg_die('Query("'.$query.'") failed');
+        return $res;
+}
+
 
 class dmlDBL0
 {
-        protected $qNodeNames,$qRelations,$qNodeName,$qParentNodeID,$qChildNodeID,$qNodeID;//q from quote
         protected static $fDBHandle=null;
-        public $fFirstTime;//created table
-
-        private $fParamNodeID;
-
-        private $sqlGetNodeName;
-        private $fPrepGetNodeName;
-
-        private $sqlDelID;
-        private $fPrepDelID;
-
-        /* quote functions {{{*/
-        function fieldquote($whatfield)
-        {
-                //since we're in sqlite we're gonna quote the field with "" and the value with ''
-                //return '"'.$whatfield.'"';//FIXME: this is a flawed way of quoting a field!!
-                return $this->valquote($whatfield);
-        }
-
-        function valquote($whatval)
-        {
-                return $this->fDBHandle->quote($whatval);
-        }
-
-        function tablequote($whattable)
-        {
-                return $this->valquote($whattable);
-        }/*}}}*/
 
         function TestElementInvariants(&$elem)
         {
@@ -81,29 +65,21 @@ class dmlDBL0
 
         function __construct()/*{{{*/
         {
+                $this->fDBHandle = pg_connect("host=".dbhost." dbname=".dbname." user=".dbuser." password=".dbpwd)
+                            or pg_die('Could not connect');
+                pg_trace(dbtracefile);
+
                 // create a SQLite3 database file with PDO and return a database handle (Object Oriented)
                 //$this->fDBHandle = new PDO('sqlite:'.dbasename,''/*user*/,''/*pwd*/,
                   //      array(PDO::ATTR_PERSISTENT => true/*singleton?*/, PDO::ATTR_AUTOCOMMIT => false/*, PDO::ATTR_ERRMODE => PDO::ERRMODE_SILENT seems to have no effect */));
-                $this->fDBHandle = new PDO('pgsql:host=localhost port=5432 dbname=demlinks_db','demlinks_user'/*user*/,'dml'/*pwd*/,
-                        array(PDO::ATTR_PERSISTENT => true/*singleton?*/, PDO::ATTR_AUTOCOMMIT => false/*, PDO::ATTR_ERRMODE => PDO::ERRMODE_SILENT seems to have no effect */));
+                //$this->fDBHandle = new PDO('pgsql:host=localhost port=5432 dbname=demlinks_db','demlinks_user'/*user*/,'dml'/*pwd*/,
+                  //      array(PDO::ATTR_PERSISTENT => true/*singleton?*/, PDO::ATTR_AUTOCOMMIT => false/*, PDO::ATTR_ERRMODE => PDO::ERRMODE_SILENT seems to have no effect */));
                 //$this->fDBHandle->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_SILENT);
-                if (failed($this->fDBHandle)) {
-                        except("failed to init db handle");
-                }
-
-                $this->qNodeNames = $this->tablequote(dNodeNames);
-                $this->qRelations = $this->tablequote(dRelations);
-                $this->qNodeName = $this->fieldquote(dNodeName);
-                $this->qParentNodeID = $this->fieldquote(dParentNodeID);
-                $this->qChildNodeID = $this->fieldquote(dChildNodeID);
-                $this->qNodeID = $this->fieldquote(dNodeID);
+                //if (failed($this->fDBHandle)) {
+                  //      except("failed to init db handle");
+                //}
 
                 $ar=$this->CreateDB();//the return is no in both of the following cases: tables exist | something failed(ie. syntax)
-                if ( in_array(yes,$ar) ) {
-                        $this->fFirstTime=true;
-                }else{
-                        $this->fFirstTime=false;
-                }
 
                 //--------- get Name by ID
                 $this->sqlGetNodeName = 'SELECT * FROM '.$this->qNodeNames.' WHERE '.$this->qNodeID.' = '.paramNodeID;
@@ -241,6 +217,7 @@ class dmlDBL0
         }/*}}}*/
 //------------------------
 } //class
+
 
 // vim: fdm=marker
 //?>

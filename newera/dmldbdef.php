@@ -28,17 +28,57 @@
 ***************************************************************************}}}*/
 
 
-define('dbasename',"demlinks6.3sql");
+define('dbhost',"localhost");
+define('dbname',"demlinks_db");
+define('dbuser',"demlinks_user");
+define('dbpwd',"dml");
+define('dbtracefile',"./main.log");
+/*
 define('dNodeNames',"NodeNames");//table name
 define('dRelations',"Relations");//table name
 define('dNodeName',"NodeName");//table name
-define('dParentNodeID',"ParentNodeID");//table name
-define('dChildNodeID',"ChildNodeID");//table name
-define('dNodeID',"NodeID");//table name
+define('dParentNodeID',"ParentID");//table name
+define('dChildNodeID',"ChildID");//table name
+define('dNodeID',"ID");//table name
+*/
+//define('paramprefix',":");
+//define('paramNodeName',paramprefix.dNodeName);
+//define('paramNodeID',paramprefix.dNodeID);
 
-define('paramprefix',":");
-define('paramNodeName',paramprefix.dNodeName);
-define('paramNodeID',paramprefix.dNodeID);
+        /* quote functions {{{*/
+        function fieldquote($whatfield)
+        {
+                return $this->tablequote($whatfield);
+        }
+
+        function dataquote($whatval)//' ' quotes are still necessary
+        {
+                return pg_escape_string($whatval);
+        }
+
+        function valuequote($val)
+        {
+                return "'".$this->dataquote($val)."'";
+        }
+
+        function tablequote($whattable)
+        {
+                return '"'.$this->dataquote($whattable).'"';
+        }/*}}}*/
+
+function ddef($var,$table=false)
+{
+        define('d'.$var,$var);
+        $q=(true===$table?tablequote($var):fieldquote($var));
+        define('q'.$var, $q);
+}
+
+ddef('NodeNames',true);//created qNodeNames and dNodeNames where the former is quoted(dNodeNames) and the latter is ='NodeNames'(string)
+ddef('Relations',true);
+ddef('Name');
+ddef('ParentID');
+ddef('ChildID');
+ddef('ID');
 
 // vim: fdm=marker
 ?>

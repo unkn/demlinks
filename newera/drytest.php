@@ -26,7 +26,7 @@ function go($query)
 {
         //@$res= pg_query($query) or pg_die('Query("'.$query.'") failed');
         $res=get($query);
-        pg_free_result($res);//exec this only if not failed
+        pg_free_result($res);//this gets executed only if the above did not fail
 }
 
 function get($query)
