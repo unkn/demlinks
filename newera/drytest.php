@@ -1,6 +1,8 @@
 <?php
 // Connecting, selecting database
 
+require_once("shortdef.php");
+
 function pg_die($msg)
 {
         debug_print_backtrace();
@@ -89,7 +91,7 @@ $res=split("[ .,/\\\"\?\<\>&!;|\#\$\*\+\{\}=\(\)'`\n\-]",file_get_contents("dmld
 /*$res= pg_query($query) or die('Query failed: ' . pg_last_error());
 pg_free_result($res);*/
 //$query = 
-    echo "\n\n";
+    echo nl.nl;
 $result=get('SELECT * from "NodeNames"');
 //$result = pg_query($query) or pg_die('Query("'.$query.'") failed');
  
