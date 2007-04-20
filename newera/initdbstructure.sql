@@ -14,12 +14,13 @@ CREATE TABLE "Relations" (
                 ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-drop view if exists showrel cascade;
+drop view if exists "ShowRel" cascade;
 
-create or replace view showrel as
-        select w1."Name" as "Parent", w2."Name" as "Child"
-                from "NodeNames" w1,"NodeNames" w2,"Relations" r
-                where w1."ID" = r."ParentID" AND w2."ID" = r."ChildID";
+create or replace view "ShowRel" as
+        -- warning changin '"Parent"' here means changing '"Parent"' near the far below rule using the same text: '"Parent"'
+        select n1."Name" as "Parent", n2."Name" as "Child"
+                from "NodeNames" n1,"NodeNames" n2,"Relations" r
+                where n1."ID" = r."ParentID" AND n2."ID" = r."ChildID";
 
 drop function if exists getID(character) cascade;
 
@@ -45,6 +46,6 @@ create or replace function ensureName(character) RETURNS integer as $$
         END;
         $$ LANGUAGE PLPGSQL;
 
-create or replace rule insert_in_showrel as on insert to showrel do instead
+create or replace rule "insert_in_ShowRel" as on insert to "ShowRel" do instead
         insert into "Relations" values (ensureName(NEW."Parent"), ensureName(NEW."Child"));
 

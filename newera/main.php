@@ -1,21 +1,16 @@
 <?php
 
-require_once("dmlDBL1.php");
+require_once("dmldbl1.php");
 
-        exceptifnot( $dmlDB=new dmlDBL1 );
-        //debug_zval_dump($dmlDB);
+        exceptifnot( $dmldb=new dmldbl1 );
+        //debug_zval_dump($dmldb);
 
 
-        if ($dmlDB->fFirstTime) {
-                report("First time run!");
-        } else {
-                report("...using prev. defined table");
-        }
-        $res=split("[ .,/\\\"\?\<\>&!;|\#\$\*\+\{\}=\(\)'`\n\-]",file_get_contents("dmlDBL0def.php"));
+        $res=split("[ .,/\\\"\?\<\>&!;|\#\$\*\+\{\}=\(\)'`\n\-]",file_get_contents("dmldbdef.php"));
         exceptif(1===count($res));
         $tries=10;
         while ($tries > 0) {
-        exceptifnot( $dmlDB->OpenTransaction() );
+        exceptifnot( $dmldb->OpenTransaction() );
         $aborted=false;
         $cnt=0;
         foreach ($res as $val) {
@@ -24,10 +19,10 @@ require_once("dmlDBL1.php");
 
                    //try {
 
-                        $ret=$dmlDB->AddName($val);
+                        $ret=$dmldb->AddName($val);
                         //echo "!".retValue($ret)."!";
                         /*if (in_array(no,$ret))  {
-                                $dmlDB->AbortTransaction();
+                                $dmldb->AbortTransaction();
                                 $aborted=true;
                                 break;
                         }*/
@@ -47,19 +42,19 @@ require_once("dmlDBL1.php");
                         $cnt++;//echo "cnt=".$cnt.nl;
 
                         //if ($cnt % 15 == 0) {
-                                //_yntIFnot( $dmlDB->CloseTransaction() );
+                                //_yntIFnot( $dmldb->CloseTransaction() );
                         //}
 
                    /*}
                    catch(PDOException $e) {
                                 //echo purplecol.$e->getmessage().nocol.nl;
-                                //exceptifnot( $dmlDB->AbortTransaction());
+                                //exceptifnot( $dmldb->AbortTransaction());
                                 $aborted=true;
                                 break;
                    }
                    catch(Exception $e) {
                                 //echo purplecol.$e->getmessage().nocol.nl;
-                                //exceptifnot( $dmlDB->AbortTransaction());
+                                //exceptifnot( $dmldb->AbortTransaction());
                                 $aborted=true;
                                 break;
                    }*/
@@ -69,33 +64,33 @@ require_once("dmlDBL1.php");
         echo nocol.nl;
         if ($aborted) {
                 report("aborted for some reason");
-                $dmlDB->AbortTransaction();//this fails
+                $dmldb->AbortTransaction();//this fails
                 usleep(1000000);
                 --$tries;
                 report("going for another try ! tries left:$tries");
         } else {
-                exceptifnot( $dmlDB->CloseTransaction() );
+                exceptifnot( $dmldb->CloseTransaction() );
                 break;//while
         }
         echo nocol.nl;
         }//while
 
-        show( $dmlDB->IsName("if") );
+        show( $dmldb->IsName("if") );
 
-        exceptifnot( $dmlDB->Show($into) );
+        exceptifnot( $dmldb->Show($into) );
         $arr=$into->fetchAll();
         $count=count($arr);
         report( "Before del: $count times.");
 
-        exceptifnot($dmlDB->DelName("if") );
-        show($dmlDB->IsName("if"));//fails
+        exceptifnot($dmldb->DelName("if") );
+        show($dmldb->IsName("if"));//fails
 
-        exceptifnot( $dmlDB->Show($into) );
+        exceptifnot( $dmldb->Show($into) );
         $arr=$into->fetchAll();
         $count=count($arr);
         report( "After del:  $count times.");
 
-        $dmlDB=null;//ie. dispose()
+        $dmldb=null;//ie. dispose()
 
 
 ?>

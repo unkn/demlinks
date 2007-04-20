@@ -35,7 +35,7 @@ syn keyword phpDefine except space rspace failed rdef report exceptif exceptifno
 syn keyword phpDefine emptystr nil
 "syn match phpCoreConstant     /\<T[A-Z0-9]\+[_A-Za-z0-9]*/
 "hi phpCoreConstant ctermfg=6
-syn match phpCoreConstant     /\<[_a-zA-Z]*L[0-9]\+[_a-zA-Z]*/
+syn match phpCoreConstant     /\<[_a-zA-Z]*l[0-9]\+[_a-zA-Z]*/
 hi phpCoreConstant ctermfg=2
 
 "syn match   cppUserType		/[_A-Za-z]\+[_A-Za-z0-9]*[A-Za-z0-9]_t/

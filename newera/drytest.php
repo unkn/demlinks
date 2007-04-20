@@ -32,13 +32,10 @@ function get($query)
         @$res= pg_query($query) or pg_die('Query("'.$query.'") failed');
         return $res;
 }
-
+/*
 // Performing SQL query
 go('DROP TABLE IF EXISTS "NodeNames" CASCADE');//case sensitivity is preserved with quotes
 go('DROP TABLE IF EXISTS "Relations" CASCADE');//case sensitivity is preserved with quotes
-/*$res= pg_query($query) or die('Query failed: ' . pg_last_error());
-pg_free_result($res);
- */
 go('CREATE TABLE "NodeNames" ( "ID" SERIAL PRIMARY KEY, "Name" CHARACTER VARYING(256) UNIQUE NOT NULL )');
 go('CREATE TABLE "Relations" ( "ParentID" integer NOT NULL REFERENCES "NodeNames" ("ID") MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE,
                              "ChildID" integer NOT NULL REFERENCES "NodeNames" ("ID") MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE)');
@@ -66,10 +63,10 @@ go('create or replace function ensureName(character) RETURNS integer as $$
 //go('drop function foobar(character, character) cascade');
 //go('create or replace function foobar (character, character, OUT integer, OUT integer) as $$ select getID($1),getID($2); $$ LANGUAGE SQL');
 go('create or replace rule insert_in_showrel as on insert to showrel do instead insert into "Relations" values (ensureName(NEW."Parent"), ensureName(NEW."Child"))');
-
+*/
 //go('CREATE OR REPLACE RULE returnID AS ON INSERT TO "NodeNames" DO ALSO SELECT NEW."ID"');
 
-$res=split("[ .,/\\\"\?\<\>&!;|\#\$\*\+\{\}=\(\)'`\n\-]",file_get_contents("dmlDBL0def.php"));
+$res=split("[ .,/\\\"\?\<\>&!;|\#\$\*\+\{\}=\(\)'`\n\-]",file_get_contents("dmldbdef.php"));
         foreach ($res as $val) {
                 $val=trim($val);
                 if (!empty($val)) {//ie. non-empty
@@ -79,8 +76,8 @@ $res=split("[ .,/\\\"\?\<\>&!;|\#\$\*\+\{\}=\(\)'`\n\-]",file_get_contents("dmlD
                         pg_free_result($res);
                         if (empty($status)) {
                                 go('INSERT INTO "NodeNames" ( "Name" ) VALUES (\''.$val.'\')');
-                                go('Insert into "showrel" values (\'main.cpp\', \''.$val.'\')');
-                                if (isset($lastval)) {go('insert into "showrel" values(\''.$lastval.'\', \''.$val.'\')');
+                                go('Insert into "ShowRel" values (\'main.cpp\', \''.$val.'\')');
+                                if (isset($lastval)) {go('insert into "ShowRel" values(\''.$lastval.'\', \''.$val.'\')');
                                 }
                                 $lastval=$val;
                                 //go('INSERT INTO "Relations" ( "ParentID", "ChildID" ) VALUES (\''.$status["ID"].'\', \''.$status["ID"].'\')');
