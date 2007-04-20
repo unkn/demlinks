@@ -1,6 +1,7 @@
 #!/bin/sh
 src="main.php"
 dbase="demlinks_db"
+dbuser="demlinks_user"
 src2="dmldbl0.php"
 src3="dmldbl1.php"
 
