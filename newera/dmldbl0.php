@@ -30,7 +30,7 @@
 
 require_once("shortdef.php");
 require_once("debug.php");
-require_once("dmlDBL0def.php");
+require_once("dmldbdef.php");
 require_once("color.php");
 
 
