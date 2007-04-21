@@ -47,7 +47,7 @@ class dmlDBL1 extends dmlDBL0
         {
                 parent::__construct();
                 //--------- get ID by Name
-                $this->sqlGetNodeID = 'SELECT '.$this->qNodeID.' FROM '.$this->qNodeNames.' WHERE '.$this->qNodeName.' = '.paramNodeName;
+                /*$this->sqlGetNodeID = 'SELECT '.$this->qNodeID.' FROM '.$this->qNodeNames.' WHERE '.$this->qNodeName.' = '.paramNodeName;
                 exceptifnot( $this->fPrepGetNodeID = $this->fDBHandle->prepare($this->sqlGetNodeID) );
                 exceptifnot( $this->fPrepGetNodeID->bindParam(paramNodeName, $this->fParamNodeName, PDO::PARAM_STR) );
                 //---------
@@ -55,6 +55,10 @@ class dmlDBL1 extends dmlDBL0
 
                 exceptifnot( $this->fPrepNewNode = $this->fDBHandle->prepare($this->sqlNewNode) );//can't prepare unless the table already exists!
                 exceptifnot( $this->fPrepNewNode->bindParam(paramNodeName, $this->fParamNodeName, PDO::PARAM_STR) ); //, PDO::PARAM_INT);
+                 */
+                pg_prepare($this->fDBHandle,dGetID,'SELECT getID($1) as '.qID);// is it necessary to pg_free_result() the result of this function?
+                pg_prepare($this->fDBHandle,dEnsureName,'SELECT EnsureName($1)');
+
                 //---------
         }/*}}}*/
 
@@ -63,18 +67,22 @@ class dmlDBL1 extends dmlDBL0
                 parent::__destruct();
         }/*}}}*/
 
-        function AddName($nodename)/*{{{*/
+        function EnsureName($nodename)/*{{{*/
         {
                 initret($ret);
                 exceptifnot( $this->TestElementInvariants($nodename) );//must not be empty or so; if it is then maybe's a bug outside this funcL1 provided user shall never call this funcL1 with an empty param value
                 $rr=$this->GetID($id,$nodename);
                 if (in_array(no,$rr)) {//no ID found, autoincrement ID on add; either the ID is used by another process in a transaction(=>not found by GetID) or it really is not found by GetID
                         //echo retValue($rr);
-                        $this->fParamNodeName=$nodename;
-                        if( failed($this->fPrepNewNode->execute()) ) {//error here? it probably already exists! error in GetID maybe; or transaction protected item(ie. another transaction is using this item that's why it wasn't found by GetID)
+                        $result=pg_execute($this->fDBHandle,dEnsureName,array($nodename));
+                        if (failed($result)) {
+                        //$this->fParamNodeName=$nodename;
+                        //if( failed($this->fPrepNewNode->execute()) ) {//error here? it probably already exists! error in GetID maybe; or transaction protected item(ie. another transaction is using this item that's why it wasn't found by GetID)
                                 ensureexists($ret,no);
+                                exceptifnot(pg_free_result($result));
                                 return $ret;
                         }//fi
+                        exceptifnot(pg_free_result($result));
 
                         ensureexists($ret,kAdded);
                 } else {
@@ -89,10 +97,15 @@ class dmlDBL1 extends dmlDBL0
         {
                 initret($ret);
                 exceptifnot( $this->TestElementInvariants($nodename) );
-                $this->fParamNodeName = $nodename;
-                if ( !failed($this->fPrepGetNodeID->execute()) ) {
-                        if(!failed( $ar=$this->fPrepGetNodeID->FetchAll() )) {
-                                $id=(string)$ar[0][dNodeID];
+                $result=pg_execute($this->fDBHandle,dGetID,array($nodename));
+                if ( !failed($result) ) {
+                        $line = pg_fetch_array($result, null, PGSQL_ASSOC);
+                        if(!failed( $line )) {
+                    //            $id=(string)$ar[0][dNodeID];
+                                $id=$line[dID];
+                        }
+                        $trimm=trim($id);
+                        if (!empty($trimm)) {
                                 ensureexists($ret,yes);
                         } else {
                                 ensureexists($ret,array(no,kEmpty));
@@ -100,6 +113,7 @@ class dmlDBL1 extends dmlDBL0
                 } else {
                         ensureexists($ret,no);
                 }
+                exceptifnot(pg_free_result($result));
                 return $ret;
         }/*}}}*/
 
@@ -120,9 +134,10 @@ class dmlDBL1 extends dmlDBL0
         {
                 initret($ret);
                 exceptifnot( $this->TestElementInvariants($nodename) );
-                if (in_array(yes,$this->GetID($id,$nodename))) {
+                /*if (in_array(yes,$this->GetID($id,$nodename))) {
                         exceptifnot( $this->DelID($id) );
-                }
+                }*/
+                //FIXME:
                 ensureexists($ret,ok);
                 return $ret;
         }/*}}}*/

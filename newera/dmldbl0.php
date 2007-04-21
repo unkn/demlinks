@@ -39,7 +39,7 @@ function goq($query)
         pg_free_result($res);//this gets executed only if the above did not fail
 }
 
-function getq($query)
+function getq($query) //executes a query in current open db connection
 {
         @$res= pg_query($query) or pg_die('Query("'.$query.'") failed');
         return $res;
@@ -50,7 +50,7 @@ class dmlDBL0
 {
         protected static $fDBHandle=null;
 
-        function TestElementInvariants(&$elem)
+        function TestElementInvariants(&$elem)/*{{{*/
         {
                 //$ret=array(kReturnStateList_type);
                 initret($ret);
@@ -61,7 +61,7 @@ class dmlDBL0
                         ensureexists($ret,no);
                 }
                 return $ret;
-        }
+        }/*}}}*/
 
         function __construct()/*{{{*/
         {
@@ -69,73 +69,34 @@ class dmlDBL0
                             or pg_die('Could not connect');
                 pg_trace(dbtracefile);
 
-                // create a SQLite3 database file with PDO and return a database handle (Object Oriented)
-                //$this->fDBHandle = new PDO('sqlite:'.dbasename,''/*user*/,''/*pwd*/,
-                  //      array(PDO::ATTR_PERSISTENT => true/*singleton?*/, PDO::ATTR_AUTOCOMMIT => false/*, PDO::ATTR_ERRMODE => PDO::ERRMODE_SILENT seems to have no effect */));
-                //$this->fDBHandle = new PDO('pgsql:host=localhost port=5432 dbname=demlinks_db','demlinks_user'/*user*/,'dml'/*pwd*/,
-                  //      array(PDO::ATTR_PERSISTENT => true/*singleton?*/, PDO::ATTR_AUTOCOMMIT => false/*, PDO::ATTR_ERRMODE => PDO::ERRMODE_SILENT seems to have no effect */));
-                //$this->fDBHandle->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_SILENT);
-                //if (failed($this->fDBHandle)) {
-                  //      except("failed to init db handle");
-                //}
+                pg_prepare($this->fDBHandle,dGetName,'SELECT "Name" from "NodeNames" WHERE "ID"=$1');// is it necessary to pg_free_result() the result of this function?
+                pg_prepare($this->fDBHandle,dShow,'SELECT * from "NodeNames"');// is it necessary to pg_free_result() the result of this function?
 
-                $ar=$this->CreateDB();//the return is no in both of the following cases: tables exist | something failed(ie. syntax)
-
-                //--------- get Name by ID
-                $this->sqlGetNodeName = 'SELECT * FROM '.$this->qNodeNames.' WHERE '.$this->qNodeID.' = '.paramNodeID;
-                exceptifnot( $this->fPrepGetNodeName = $this->fDBHandle->prepare($this->sqlGetNodeName) );
-                exceptifnot( $this->fPrepGetNodeName->bindParam(paramNodeID, $this->fParamNodeID, PDO::PARAM_STR) ); //, PDO::PARAM_INT);
-                //--------- del by ID
-                $this->sqlDelID = 'DELETE FROM '.$this->qNodeNames.' WHERE '.$this->qNodeID.' = '.paramNodeID;
-                exceptifnot( $this->fPrepDelID = $this->fDBHandle->prepare($this->sqlDelID) );
-                exceptifnot( $this->fPrepDelID->bindParam(paramNodeID, $this->fParamNodeID, PDO::PARAM_STR) );
                 //---------
-        }/*the return is for the endfunc internal test that requeires either yes or no on return*/ /*}}}*/
+        }/*}}}*/
 
         function __destruct()/*{{{*/
         {
                 $fDBHandle=null;
         }/*}}}*/
 
-        function CreateDB()/*{{{*/
+        function emptyTables()/*{{{*/
         {
                 initret($ret);
 
-                $sqlNodeNames = 'CREATE TABLE '.$this->qNodeNames.
-                            ' ('.$this->qNodeID.' INTEGER PRIMARY KEY UNIQUE, '.$this->qNodeName.' character varying (256) UNIQUE NOT NULL)';
-                //$sqlNodeNames = 'CREATE TABLE '.$this->qNodeNames.
-                  //          ' ('.$this->qNodeID.' INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE, '.$this->qNodeName.' VARCHAR(256) UNIQUE NOT NULL)';
-                $sqlNodeNamesIndex12 = 'CREATE INDEX indexname12 ON '.$this->qNodeNames.' ('.$this->qNodeID./*",".$this->qNodeName.*/")";
-                $sqlNodeNamesIndex21 = 'CREATE INDEX indexname21 ON '.$this->qNodeNames.' ('.$this->qNodeName./*",".$this->qNodeID.*/")";
+                goq('DROP TABLE IF EXISTS "NodeNames" CASCADE');
 
-                //$sqlRelations = 'CREATE TABLE '.$this->qRelations.
-                 //           ' ('.$this->qParentNodeID.' INTEGER PRIMARY KEY , '.$this->qChildNodeID.' INTEGER SECONDARY KEY)';
-                $sqlRelations = 'CREATE TABLE '.$this->qRelations.
-                            ' ('.$this->qParentNodeID.' INTEGER PRIMARY KEY , '.$this->qChildNodeID.' INTEGER )';
-                //echo $sqlRelations;
-                exceptifnot( $this->OpenTransaction() );
+                goq('DROP TABLE IF EXISTS "Relations" CASCADE');
 
-                $wecommit=false;
-                $res= $this->fDBHandle->exec($sqlNodeNames);
-                if (!failed($res) ) {
-                        exceptifnot( $this->fDBHandle->exec($sqlNodeNamesIndex12) );
-                        exceptifnot( $this->fDBHandle->exec($sqlNodeNamesIndex21) );
-                        ensureexists($ret,kCreatedDBNodeNames);
-                        $wecommit=true;
-                }
-                $res = $this->fDBHandle->exec($sqlRelations);
-                if (!failed($res) ) {
-                        ensureexists($ret,kCreatedDBRelations);
-                        $wecommit=true;
-                }
+                goq('CREATE TABLE "NodeNames" ( "ID" SERIAL PRIMARY KEY, "Name" CHARACTER VARYING(256) UNIQUE NOT NULL )');
+                goq('CREATE TABLE "Relations" (
+        "ParentID" integer NOT NULL REFERENCES "NodeNames" ("ID") MATCH FULL
+                ON DELETE CASCADE ON UPDATE CASCADE,
+        "ChildID" integer NOT NULL REFERENCES "NodeNames" ("ID") MATCH FULL
+                ON DELETE CASCADE ON UPDATE CASCADE
+)');
 
-                if ($wecommit) { //at least one dbase was created, the other one could already exist perhaps.
-                        exceptifnot( $this->CloseTransaction() );
-                        ensureexists($ret,ok);//ok and yes point to the same "yes"
-                }else{
-                        exceptifnot( $this->AbortTransaction() );
-                        ensureexists($ret,bad);//bad~no
-                }
+                ensureexists($ret,ok);
                 return $ret;
         } /*}}}*/
 
@@ -143,7 +104,8 @@ class dmlDBL0
         function OpenTransaction() //only one active transaction at a time; PDO limitation?!/*{{{*/
         {
                 initret($ret);
-                exceptifnot( $this->fDBHandle->beginTransaction() );
+                goq("BEGIN TRANSACTION ISOLATION LEVEL READ COMMITTED");
+                //exceptifnot( $this->fDBHandle->beginTransaction() );
                 ensureexists($ret,ok);
                 return $ret;
         }/*}}}*/
@@ -151,7 +113,8 @@ class dmlDBL0
         function CloseTransaction()/*{{{*/
         {
                 initret($ret);
-                exceptifnot( $this->fDBHandle->commit() );
+                goq("COMMIT TRANSACTION");
+                //exceptifnot( $this->fDBHandle->commit() );
                 ensureexists($ret,ok);
                 return $ret;
         }/*}}}*/
@@ -159,12 +122,14 @@ class dmlDBL0
         function AbortTransaction()/*{{{*/
         {
                 initret($ret);
-                $rr=$this->fDBHandle->rollBack();
+                /*$rr=$this->fDBHandle->rollBack();
                 if( failed( $rr )) {
                         ensureexists($ret,bad);
                 } else {
                         ensureexists($ret,ok);
-                }
+                }*/
+                goq("ROLLBACK TRANSACTION");
+                ensureexists($ret,ok);
                 return $ret;
         }/*}}}*/
 //------------------------/*}}}*/
@@ -182,17 +147,28 @@ class dmlDBL0
         {
                 initret($ret);
                 exceptifnot($this->TestElementInvariants($id));
-                $this->fParamNodeID = $id;
-                exceptifnot( $this->fPrepGetNodeName->execute() );
-                $ar=$this->fPrepGetNodeName->FetchAll();//can throw
-                $name=(string)$ar[dNodeName];
-                if (empty($ar) || empty($name)) {
+                //$this->fParamNodeID = $id;
+
+                $result=pg_execute($this->fDBHandle,dGetName,array($id));
+                exceptifnot($result);
+
+                $line = pg_fetch_array($result, null, PGSQL_ASSOC);
+                //exceptifnot($line);//shouldn't use this!
+                        $line2 = pg_fetch_array($result, null, PGSQL_ASSOC);
+                        exceptif($line2);//can't have more than one row !
+                $name=$line[dName];
+
+                //exceptifnot( $this->fPrepGetNodeName->execute() );
+                /*$ar=$this->fPrepGetNodeName->FetchAll();//can throw
+                $name=(string)$ar[dNodeName];*/
+                if (empty($line) || empty($name)) {
                         ensureexists($ret,no);
                         //addretflagL1(no);
                 } else {
                         ensureexists($ret,yes);
                         //addretflagL1(yes);
                 }
+                exceptifnot(pg_free_result($result));
                 return $ret;
         }/*}}}*/
 
@@ -201,8 +177,9 @@ class dmlDBL0
         {
                 initret($ret);
                 exceptifnot($this->TestElementInvariants($id));
-                $this->fParamNodeID = $id;
-                exceptifnot( $this->fPrepDelID->execute() );
+                /*$this->fParamNodeID = $id;
+                exceptifnot( $this->fPrepDelID->execute() );*/
+                //FIXME:
                 ensureexists($ret,ok);
                 return $ret;
         }/*}}}*/
@@ -210,9 +187,15 @@ class dmlDBL0
         function Show(&$result)//temp/*{{{*/
         {
                 initret($ret);
-                $sqlGetView = 'SELECT * FROM '.$this->qNodeNames;
-                exceptifnot( $result=$this->fDBHandle->query($sqlGetView) );
-                ensureexists($ret,ok);
+                //$sqlGetView = 'SELECT * FROM '.$this->qNodeNames;
+                //exceptifnot( $result=$this->fDBHandle->query($sqlGetView) );
+                //FIXME:
+                $result=pg_execute($this->fDBHandle,dShow,array());
+                if (failed($result)) {
+                        ensureexists($ret,no);
+                } else {
+                        ensureexists($ret,ok);
+                }
                 return $ret;
         }/*}}}*/
 //------------------------

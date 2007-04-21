@@ -15,14 +15,13 @@ CREATE TABLE "Relations" (
                 ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-drop view if exists "ShowRel" cascade;
-
-
 --create function a(integer) RETURNS record as $$
 --select * from "NodeNames";
 --select * from "Relations";
 --select * from "NodeNames";
 --$$ LANGUAGE SQL;
+
+drop view if exists "ShowRel" cascade;
 
 create or replace view "ShowRel" as
         -- warning changin '"Parent"' here means changing '"Parent"' near the far below rule using the same text: '"Parent"'
@@ -34,11 +33,29 @@ drop function if exists getID("NodeNames"."Name"%TYPE) cascade;
 
 create or replace function getID ("NodeNames"."Name"%TYPE)
         RETURNS "NodeNames"."ID"%TYPE as $$
+-- always returns 1 row; when no ID is found the ID number is missing ie.use if (empty(trim($res)))
                 select "ID" from "NodeNames" where "Name"=$1;
-        $$ LANGUAGE SQL;
+$$        LANGUAGE SQL;
+
+/*create or replace function g ("NodeNames"."Name"%TYPE)
+        RETURNS RECORD as $$
+        DECLARE
+                nam ALIAS FOR $1;
+                rec RECORD;
+        BEGIN
+                SELECT INTO rec "ID" from "NodeNames" WHERE "Name"=nam;
+                IF NOT FOUND THEN
+                        RAISE NOTICE 'hi';
+                        RETURN NULL;
+                ELSE
+                        RETURN rec;
+                END IF;
+        END;
+$$ LANGUAGE PLPGSQL;
+*/
 
 
-create or replace function ensureName(character) RETURNS integer as $moo$
+create or replace function EnsureName(character) RETURNS integer as $moo$
         -- returns ID of "Name"
         DECLARE
                 rec RECORD;
@@ -46,8 +63,13 @@ create or replace function ensureName(character) RETURNS integer as $moo$
         BEGIN
                 SELECT INTO rec * FROM "NodeNames" WHERE "Name"=nam;
                 IF NOT FOUND THEN
+                --BEGIN
                         INSERT INTO "NodeNames" ( "Name" ) VALUES (nam);
-                        RETURN getID(nam);
+                  --      EXCEPTION
+                    --            WHEN unique_violation THEN
+                      --                  NULL;-- do nothing
+                --END;
+                        RETURN getID(nam) as "ID";
                 ELSE
                         RETURN rec."ID";
                 END IF;
@@ -55,6 +77,6 @@ create or replace function ensureName(character) RETURNS integer as $moo$
         $moo$ LANGUAGE PLPGSQL;
 
 create or replace rule "insert_in_ShowRel" as on insert to "ShowRel" do instead
-        insert into "Relations" values (ensureName(NEW."Parent"), ensureName(NEW."Child"));
+        insert into "Relations" values (EnsureName(NEW."Parent"), EnsureName(NEW."Child"));
 
 --$bigf$ LANGUAGE SQL;

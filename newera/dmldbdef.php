@@ -48,7 +48,7 @@ define('dNodeID',"ID");//table name
         /* quote functions {{{*/
         function fieldquote($whatfield)
         {
-                return $this->tablequote($whatfield);
+                return tablequote($whatfield);
         }
 
         function dataquote($whatval)//' ' quotes are still necessary
@@ -58,12 +58,12 @@ define('dNodeID',"ID");//table name
 
         function valuequote($val)
         {
-                return "'".$this->dataquote($val)."'";
+                return "'".dataquote($val)."'";
         }
 
         function tablequote($whattable)
         {
-                return '"'.$this->dataquote($whattable).'"';
+                return '"'.dataquote($whattable).'"';
         }/*}}}*/
 
 function ddef($var,$table=false)
@@ -79,6 +79,10 @@ ddef('Name');
 ddef('ParentID');
 ddef('ChildID');
 ddef('ID');
+ddef('GetName');
+ddef('GetID');
+ddef('EnsureName');
+ddef('Show');
 
 // vim: fdm=marker
 ?>

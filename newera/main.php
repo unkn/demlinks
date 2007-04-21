@@ -19,7 +19,7 @@ require_once("dmldbl1.php");
 
                    //try {
 
-                        $ret=$dmldb->AddName($val);
+                        $ret=$dmldb->EnsureName($val);
                         //echo "!".retValue($ret)."!";
                         /*if (in_array(no,$ret))  {
                                 $dmldb->AbortTransaction();
@@ -70,7 +70,7 @@ require_once("dmldbl1.php");
                 report("going for another try ! tries left:$tries");
         } else {
                 exceptifnot( $dmldb->CloseTransaction() );
-                break;//while
+                break;//while tries
         }
         echo nocol.nl;
         }//while
@@ -78,19 +78,21 @@ require_once("dmldbl1.php");
         show( $dmldb->IsName("if") );
 
         exceptifnot( $dmldb->Show($into) );
-        $arr=$into->fetchAll();
-        $count=count($arr);
+        $line = pg_fetch_array($into, null, PGSQL_ASSOC);
+        $count=count($into);
+        exceptifnot(pg_free_result($into));//must free this or will core dump
         report( "Before del: $count times.");
 
         exceptifnot($dmldb->DelName("if") );
         show($dmldb->IsName("if"));//fails
 
         exceptifnot( $dmldb->Show($into) );
-        $arr=$into->fetchAll();
-        $count=count($arr);
+        $line = pg_fetch_array($into, null, PGSQL_ASSOC);
+        $count=count($into);
+        exceptifnot(pg_free_result($into));//must free this or will core dump
         report( "After del:  $count times.");
 
-        $dmldb=null;//ie. dispose()
+        //$dmldb=null;//ie. dispose()
 
 
 ?>
