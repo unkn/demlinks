@@ -70,6 +70,7 @@ class dmlDBL0
                 pg_trace(dbtracefile);
 
                 pg_prepare($this->fDBHandle,dGetName,'SELECT "Name" from "NodeNames" WHERE "ID"=$1');// is it necessary to pg_free_result() the result of this function?
+                pg_prepare($this->fDBHandle,dDelID,'SELECT DelID($1)');
                 pg_prepare($this->fDBHandle,dShow,'SELECT * from "NodeNames"');// is it necessary to pg_free_result() the result of this function?
 
                 //---------
@@ -177,6 +178,10 @@ class dmlDBL0
         {
                 initret($ret);
                 exceptifnot($this->TestElementInvariants($id));
+
+                $result=pg_execute($this->fDBHandle,dDelID,array($id));
+                exceptifnot($result);
+                exceptifnot(pg_free_result($result));
                 /*$this->fParamNodeID = $id;
                 exceptifnot( $this->fPrepDelID->execute() );*/
                 //FIXME:

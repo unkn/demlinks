@@ -56,8 +56,9 @@ class dmlDBL1 extends dmlDBL0
                 exceptifnot( $this->fPrepNewNode = $this->fDBHandle->prepare($this->sqlNewNode) );//can't prepare unless the table already exists!
                 exceptifnot( $this->fPrepNewNode->bindParam(paramNodeName, $this->fParamNodeName, PDO::PARAM_STR) ); //, PDO::PARAM_INT);
                  */
-                pg_prepare($this->fDBHandle,dGetID,'SELECT getID($1) as '.qID);// is it necessary to pg_free_result() the result of this function?
+                pg_prepare($this->fDBHandle,dGetID,'SELECT GetID($1) as '.qID);// is it necessary to pg_free_result() the result of this function?
                 pg_prepare($this->fDBHandle,dEnsureName,'SELECT EnsureName($1)');
+                pg_prepare($this->fDBHandle,dDelName,'SELECT DelName($1)');
 
                 //---------
         }/*}}}*/
@@ -134,6 +135,11 @@ class dmlDBL1 extends dmlDBL0
         {
                 initret($ret);
                 exceptifnot( $this->TestElementInvariants($nodename) );
+
+                $result=pg_execute($this->fDBHandle,dDelName,array($nodename));
+                exceptifnot($result);
+                exceptifnot(pg_free_result($result));
+
                 /*if (in_array(yes,$this->GetID($id,$nodename))) {
                         exceptifnot( $this->DelID($id) );
                 }*/

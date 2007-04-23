@@ -79,7 +79,9 @@ require_once("dmldbl1.php");
 
         exceptifnot( $dmldb->Show($into) );
         $line = pg_fetch_array($into, null, PGSQL_ASSOC);
-        $count=count($into);
+        //print_r($line);
+        //$count=count($line);
+        $count=pg_num_rows($into);
         exceptifnot(pg_free_result($into));//must free this or will core dump
         report( "Before del: $count times.");
 
@@ -87,8 +89,9 @@ require_once("dmldbl1.php");
         show($dmldb->IsName("if"));//fails
 
         exceptifnot( $dmldb->Show($into) );
-        $line = pg_fetch_array($into, null, PGSQL_ASSOC);
-        $count=count($into);
+        //$line = pg_fetch_array($into, null, PGSQL_ASSOC);
+        //$count=count($line);
+        $count=pg_num_rows($into);
         exceptifnot(pg_free_result($into));//must free this or will core dump
         report( "After del:  $count times.");
 

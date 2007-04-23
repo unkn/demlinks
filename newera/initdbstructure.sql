@@ -29,13 +29,27 @@ create or replace view "ShowRel" as
                 from "NodeNames" n1,"NodeNames" n2,"Relations" r
                 where n1."ID" = r."ParentID" AND n2."ID" = r."ChildID";
 
-drop function if exists getID("NodeNames"."Name"%TYPE) cascade;
-
-create or replace function getID ("NodeNames"."Name"%TYPE)
+drop function if exists GetID("NodeNames"."Name"%TYPE) cascade;
+create or replace function GetID ("NodeNames"."Name"%TYPE)
         RETURNS "NodeNames"."ID"%TYPE as $$
 -- always returns 1 row; when no ID is found the ID number is missing ie.use if (empty(trim($res)))
                 select "ID" from "NodeNames" where "Name"=$1;
 $$        LANGUAGE SQL;
+
+drop function if exists DelID("NodeNames"."ID"%TYPE) cascade;
+create or replace function DelID ("NodeNames"."ID"%TYPE)
+        RETURNS boolean as $$
+        DECLARE
+                idd ALIAS FOR $1;
+        BEGIN
+                delete from "NodeNames" where "ID"=idd;
+                if FOUND then
+                        return true;
+                else
+                        return false;
+                end if;
+        END;
+$$        LANGUAGE PLPGSQL;
 
 /*create or replace function g ("NodeNames"."Name"%TYPE)
         RETURNS RECORD as $$
@@ -55,7 +69,22 @@ $$ LANGUAGE PLPGSQL;
 */
 
 
-create or replace function EnsureName(character) RETURNS integer as $moo$
+drop function if exists DelName("NodeNames"."Name"%TYPE) cascade;
+create or replace function DelName("NodeNames"."Name"%TYPE) RETURNS boolean as $$
+        DECLARE
+                nam ALIAS FOR $1;
+        BEGIN
+                DELETE FROM "NodeNames" WHERE "Name"=nam;
+                if FOUND then
+                        return true;
+                else
+                        return false;
+                end if;
+        END;
+$$ LANGUAGE PLPGSQL;
+
+drop function if exists EnsureName("NodeNames"."Name"%TYPE) cascade;
+create or replace function EnsureName("NodeNames"."Name"%TYPE) RETURNS "NodeNames"."ID"%TYPE as $moo$
         -- returns ID of "Name"
         DECLARE
                 rec RECORD;
@@ -69,7 +98,7 @@ create or replace function EnsureName(character) RETURNS integer as $moo$
                     --            WHEN unique_violation THEN
                       --                  NULL;-- do nothing
                 --END;
-                        RETURN getID(nam) as "ID";
+                        RETURN GetID(nam) as "ID";
                 ELSE
                         RETURN rec."ID";
                 END IF;

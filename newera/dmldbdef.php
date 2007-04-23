@@ -81,6 +81,8 @@ ddef('ChildID');
 ddef('ID');
 ddef('GetName');
 ddef('GetID');
+ddef('DelID');
+ddef('DelName');
 ddef('EnsureName');
 ddef('Show');
 
