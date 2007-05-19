@@ -210,7 +210,7 @@ function retValue($var)
         if (TRUE===is_array($var)) {
                 foreach ($var as $v) {
                         if (!empty($ret)) {
-                                $ret+=" ";
+                                $ret.=" ";
                         }
                         $ret.="'$v'";
                 }
