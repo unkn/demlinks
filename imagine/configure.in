@@ -1,0 +1,98 @@
+AC_INIT([DeMLinks], [0.0.23], [AtKaaZ@users.SourceForge.net])
+AM_INIT_AUTOMAKE
+AC_CONFIG_SRCDIR([src/notetrk.cpp])
+AM_CONFIG_HEADER([config.h])
+AX_PREFIX_CONFIG_H(,DML)
+
+AM_MAINTAINER_MODE
+
+# Checks for programs.
+AC_PROG_CPP
+AC_PROG_CXX
+AC_PROG_CXXCPP
+AC_PROG_INSTALL
+
+#AC_PROG_CC
+AC_LANG_CPLUSPLUS
+
+
+
+#AC_ARG_ENABLE(full-debug,
+#   [  --enable-full-debug       full paranoid debugging.],
+#   [
+#            enable_full_debug="yes"
+#            if test "x$enableval" = "xno"; then
+#                enable_full_debug=$enableval
+#            fi
+#   ],
+#   [
+#    AC_MSG_ERROR([--enable-full-debug is an essential parameter in these early development stages, please specify it], 345)
+#    ]
+#)
+
+#if test "$enable_full_debug" = "yes"; then
+  AC_DEFINE(PARANOIA_DEBUG, 1, [Enable full paranoia debug])
+#else
+#  AC_DEFINE(DEBUG, 1, [Enable normal debug(ignores PARANOID_IF and LAME_PROGRAMMER_IF)])
+#fi
+
+
+#should be 4, but this doesn't actually constrain it to be 4, just sets a var.
+AC_CHECK_SIZEOF(int, 4)
+
+#treat warnings as errors, by default
+AC_LANG_WERROR
+
+# Checks for libraries.
+#AC_HAVE_LIBRARY([alleg-4.2.0],[allegro_init],[],[AC_MSG_ERROR([you must have http://alleg.sf.net library v4.2.0 installed. However, if you have some other version you may skip this check by modifying configure.in],222)])
+
+
+# Checks for header files.
+AC_HEADER_STDC
+AC_CHECK_HEADERS(stdlib.h stdio.h,, AC_MSG_ERROR([some C header files not found do you even have 'gcc'?]))
+
+
+# Check if -Wfatal-errors compiler flag is supported
+CPPFLAGS="$CPPFLAGS -pipe"
+DEVFLAGS="-Wall -Werror"
+# -Wfatal-errors"
+AC_MSG_CHECKING([if -Wfatal-errors is supported])
+saved_CPPFLAGS=$CPPFLAGS
+CPPFLAGS="$CPPFLAGS -Wfatal-errors"
+AC_TRY_COMPILE(,, 
+ AC_MSG_RESULT([yes])
+ DEVFLAGS="$DEVFLAGS -Wfatal-errors"
+ ,
+ AC_MSG_RESULT([no])
+)
+AC_SUBST(DEVFLAGS)
+CPPFLAGS="$saved_CPPFLAGS"
+
+
+
+dnl AC_CHECK_HEADER(allegro.h,, AC_MSG_ERROR([ALLEGRO header files not found is ALLEGRO installed?]))
+AM_PATH_ALLEGRO(4.2.0,, AC_MSG_ERROR([You must have allegro installed minimum version is 4.2.0]))
+#CFLAGS=$CFLAGS $allegro_CFLAGS
+CPPFLAGS="$CPPFLAGS $allegro_CPPFLAGS"
+LIBS="$LIBS $allegro_LIBS"
+
+
+#CPPFLAGS="-I/usr/local/BerkeleyDB.4.4/include $CPPFLAGS"
+#LIBS="-L/usr/local/BerkeleyDB.4.4/lib $LIBS"
+
+# BDB
+AX_BERKELEY_DB(4.3.0,,AC_MSG_ERROR([No usable Berkeley db found. However you may have it installed in a non-standard location(as it is normal if you do ./configure without any --prefix params) such as /usr/local/BerkeleyDB.4.4/ in which case you may try the following workaround which requires the creation of some symlinks from your root account(ie. sudo): ln -s /usr/local/BerkeleyDB.4.4/include /usr/local/include/db44 ; ln -s /usr/local/BerkeleyDB.4.4/lib/libdb_cxx-4.4.so /usr/local/lib/libdb_cxx-4.4.so]))
+
+AC_CHECK_HEADERS($db_HDR,,AC_MSG_ERROR([You obviously have some twisted configuration.]))
+LIBS="$db_LIBS $LIBS"
+
+# Checks for typedefs, structures, and compiler characteristics.
+AC_C_CONST
+
+# Checks for library functions.
+AC_CHECK_FUNC(strnlen,[AC_DEFINE(HAVE_STRNLEN,1,[This is linux])])
+
+
+AC_CONFIG_FILES([Makefile
+                 src/Makefile])
+AC_OUTPUT

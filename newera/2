@@ -1,0 +1,14 @@
+#!/bin/sh
+
+#used to execute main file
+
+. ./head.sh
+
+#rm -f "$dbase"
+
+if [ -n "$1" ]; then
+        src="$1"
+fi
+
+run "$src"
+

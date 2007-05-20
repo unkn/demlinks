@@ -1,0 +1,8 @@
+#!/bin/sh
+
+#used to delete the database
+
+. ./head.sh
+
+rm -f "$dbase"
+

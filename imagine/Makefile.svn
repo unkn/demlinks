@@ -1,0 +1,7 @@
+#usage: gmake -f Makefile.svn
+all:
+	@echo This Makefile is intended only for the SVN version of the project
+	@echo This will be removed from the release version
+	@echo Use gmake under BSD
+	pwd
+	aclocal && autoheader && automake -a -c && autoconf && mkdir obj >/dev/null 2>&1 ; cd obj && ../configure -C --enable-maintainer-mode && make && cd src && ls && echo now check the ./obj/src directory
