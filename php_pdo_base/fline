@@ -1,9 +1,0 @@
-#!/bin/sh
-#find real php line (the one reported by ie. "PHP Fatal error") since it won't match with the source file line...
-
-. ./head.sh
-
-line="$1"
-#(echo "<?php";cat "$prefer" |cpp) 
-cat "$phpfile" | grep -n ""|grep "^${line}:"
-
