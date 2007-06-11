@@ -10,9 +10,11 @@ postgresql version (non pdo) [currently!]:
 * sudo apt-get install postgresql-8.2 postgresql-server-dev-8.2 postgresql-dev
 
 * vim /etc/php5/cli/php.ini append "extension=pdo_pgsql.so" at eof
+sudo /etc/init.d/apache2 restart
 
-* append the following to: sudo vim /etc/postgresql/8.2/main/pg_hba.conf
+* prepend the following to: sudo vim /etc/postgresql/8.2/main/pg_hba.conf
 local   all         demlinks_user                     password demlinks_db
+
 
 * sudo /etc/init.d/postgresql-8.2 restart
 
