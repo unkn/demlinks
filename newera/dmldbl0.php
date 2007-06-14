@@ -72,6 +72,8 @@ class dmlDBL0
                 pg_prepare($this->fDBHandle,dGetName,'SELECT "Name" from "NodeNames" WHERE "ID"=$1');// is it necessary to pg_free_result() the result of this function?
                 pg_prepare($this->fDBHandle,dDelID,'SELECT DelID($1)');
                 pg_prepare($this->fDBHandle,dShow,'SELECT * from "NodeNames"');// is it necessary to pg_free_result() the result of this function?
+                $result=pg_query($this->fDBHandle,"SET SESSION CHARACTERISTICS AS TRANSACTION ISOLATION LEVEL READ COMMITTED READ WRITE");
+                exceptifnot($result);
 
                 //---------
         }/*}}}*/
@@ -105,7 +107,7 @@ class dmlDBL0
         function OpenTransaction() //only one active transaction at a time; PDO limitation?!/*{{{*/
         {
                 initret($ret);
-                goq("BEGIN TRANSACTION ISOLATION LEVEL READ COMMITTED");
+                goq("BEGIN TRANSACTION ISOLATION LEVEL READ COMMITTED READ WRITE");
                 //exceptifnot( $this->fDBHandle->beginTransaction() );
                 ensureexists($ret,ok);
                 return $ret;
