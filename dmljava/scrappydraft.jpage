@@ -1,0 +1,9 @@
+org.omg.CORBA.UserException.UserException cannot be resolved to a typeorg.omg.CORBA.UserException.UserException f = null;LinkedHashSet<String> a = new LinkedHashSet<String>();
+a.add("e");
+a.add("b");
+a.add("e");
+a.add("a");
+//a.contains("f")
+Iterator itr=a.iterator();
+while(itr.hasNext())
+	System.out.println(itr.next());

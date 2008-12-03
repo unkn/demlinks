@@ -1,4 +1,7 @@
+DeMLinks
 This is dmljava project folder for Eclipse (3.4.0+)
+
+Rudimentary instructions to get this project inside Eclipse:
 
 First need to have svn support in Eclipse:
 Help->Software Updates...->Available Software->Add Site
@@ -14,5 +17,5 @@ URL: https://demlinks.svn.sourceforge.net/svnroot/demlinks/trunk/dmljava/
 Finish
 right click on the repository, Check Out
 
-should check out a project named "dmljava"
+That should check out a project named "dmljava"
 
