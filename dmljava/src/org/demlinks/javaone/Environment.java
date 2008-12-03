@@ -19,8 +19,6 @@
 package org.demlinks.javaone;
 
 import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.Set;
 
 
 
@@ -44,6 +42,7 @@ public class Environment {
 	}
 
 	/**
+	 * parent -> child   also implied parent <- child connection
 	 * @param parentID
 	 * @param childID
 	 * @return parentNode

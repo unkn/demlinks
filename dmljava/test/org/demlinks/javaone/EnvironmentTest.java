@@ -37,10 +37,11 @@ public class EnvironmentTest {
 		assertTrue(_par.isLinkTo(_chi));
 		
 		a.unlink("A","B");
-		assertTrue(0 == _chi.childrenList.size());
-		assertTrue(0 == _chi.parentsList.size());
+		assertTrue(0 == _chi.getChildrenListSize());
+		assertTrue(0 == _chi.getParentsListSize());
 		assertTrue(_chi.isDead());
 		assertTrue(null == a.getNode("B"));
+		assertTrue(null == a.getNode("A"));
 		
 	}
 

@@ -1,4 +1,4 @@
-org.omg.CORBA.UserException.UserException cannot be resolved to a typeorg.omg.CORBA.UserException.UserException f = null;LinkedHashSet<String> a = new LinkedHashSet<String>();
+LinkedHashSet<String> a = new LinkedHashSet<String>();
 a.add("e");
 a.add("b");
 a.add("e");

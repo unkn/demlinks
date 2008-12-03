@@ -38,35 +38,33 @@ public class NodeTest {
 		b.unlinkFrom(a);
 		assertFalse(a.isLinkTo(b));
 		assertFalse(b.isLinkFrom(a));
-		//checkIntegrity(a);
-		//checkIntegrity(b);
-//		System.out.println(a.toString());
-//		System.out.println(b.toString());
+
 	}
 	
 	public void checkIntegrity(Node masterNode) {
 		// check if both lists are null/empty
-		assertFalse ( ((masterNode.parentsList == null) || (masterNode.parentsList.isEmpty())) &&
-				((masterNode.childrenList == null) || (masterNode.childrenList.isEmpty())) );
+//		assertFalse ( ((masterNode.parentsList == null) || (masterNode.parentsList.isEmpty())) &&
+//				((masterNode.childrenList == null) || (masterNode.childrenList.isEmpty())) );
+		assertFalse(masterNode.isDead());
 		
 		// parse parentsList; parent <- masterNode
-		if (masterNode.parentsList != null) {
-			Iterator<Node> itr = masterNode.parentsList.iterator();
-			while (itr.hasNext()) {
-				Node parentNode = itr.next();
-				assertTrue(parentNode.isLinkTo(masterNode));
-				assertTrue(masterNode.isLinkFrom(parentNode));
-			}
+		//if (masterNode.parentsList != null) {
+		Iterator<Node> pitr = masterNode.getParentsListIterator();
+		while (pitr.hasNext()) {
+			Node parentNode = pitr.next();
+			assertTrue(parentNode.isLinkTo(masterNode));
+			assertTrue(masterNode.isLinkFrom(parentNode));
 		}
-		
+		//}
+
 		//parse childrenList;  masterNode -> child
-		if (masterNode.childrenList != null) {
-			Iterator<Node> itr = masterNode.childrenList.iterator();
-			while (itr.hasNext()) {
-				Node childNode = itr.next();
-				assertTrue(childNode.isLinkFrom(masterNode));
-				assertTrue(masterNode.isLinkTo(childNode));
-			}
+		//if (masterNode.childrenList != null) {
+		Iterator<Node> citr = masterNode.getChildrenListIterator();
+		while (citr.hasNext()) {
+			Node childNode = citr.next();
+			assertTrue(childNode.isLinkFrom(masterNode));
+			assertTrue(masterNode.isLinkTo(childNode));
 		}
+		//}
 	}
 }

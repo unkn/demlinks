@@ -27,8 +27,8 @@ import java.util.LinkedHashSet;
 public class Node {
 	// if both lists are empty the node shouldn't exist (in the Environment)
 	// lists should never be null
-	protected LinkedHashSet<Node> parentsList;
-	protected LinkedHashSet<Node> childrenList;
+	private LinkedHashSet<Node> parentsList;
+	private LinkedHashSet<Node> childrenList;
 	
 	public Node() {
 		parentsList = new LinkedHashSet<Node>();
@@ -61,32 +61,6 @@ public class Node {
 		}
 	}
 
-/* bad using these here, instead use them in Environment class
-  	public void die() {
-		removeChildren();
-		removeParents();
-	}
-
-	public void removeChildren() {
-		if ( (childrenList != null) && (false == childrenList.isEmpty()) ) {
-			Iterator<Node> itr = childrenList.iterator();
-			while (itr.hasNext()) {
-				Node current = itr.next();
-				this.unlinkTo(current); // this implies current.unlinkFrom(this);
-			}
-		}
-	}
-	
-	public void removeParents() {
-		if ( (parentsList != null) && (false == parentsList.isEmpty()) ) {
-			Iterator<Node> itr = parentsList.iterator();
-			while (itr.hasNext()) {
-				Node current = itr.next();
-				this.unlinkFrom(current); // this implies current.unlinkTo(this);
-			}
-		}
-	}
-*/
 	public void unlinkTo(Node childNode) {
 		if (this.childrenList.remove(childNode)) { // true= contained then removed
 			childNode.unlinkFrom(this);
@@ -118,5 +92,22 @@ public class Node {
 	
 	public boolean isDead() {
 		return ( (parentsList.isEmpty()) && (childrenList.isEmpty()) );
+	}
+	
+	public Iterator<Node> getParentsListIterator() {
+		return parentsList.iterator();
+	}
+	
+	public Iterator<Node> getChildrenListIterator() {
+		return childrenList.iterator();
+	}
+
+
+	public int getChildrenListSize() {
+		return childrenList.size();
+	}
+	
+	public int getParentsListSize() {
+		return parentsList.size();
 	}
 }
