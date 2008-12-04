@@ -18,8 +18,6 @@
 
 package org.demlinks.javaone;
 
-import java.util.IdentityHashMap;
-
 
 
 // at this level the Node objects are given String IDs
@@ -29,22 +27,20 @@ import java.util.IdentityHashMap;
 
 public class Environment {
 	//fields
-	private IdentityHashMap<String, Node> allIDNodeTuples; //list of unique elements
-	private IdentityHashMap<Node, String> allNodeIDTuples; //list of unique elements
+	private TwoWayIdentityHashMap<String, Node> allIDNodeTuples; // unique elements
 	
 	//constructor
 	public Environment() {
-		allIDNodeTuples = new IdentityHashMap<String, Node>();
-		allNodeIDTuples = new IdentityHashMap<Node, String>();
+		allIDNodeTuples = new TwoWayIdentityHashMap<String, Node>();
 	}
 	
 	//methods
 	public Node getNode(String id) {
-		return allIDNodeTuples.get(id);
+		return allIDNodeTuples.getValue(id);
 	}
 
 	public String getID(Node node) {
-		return allNodeIDTuples.get(node);
+		return allIDNodeTuples.getKey(node);
 	}
 	
 	/**
@@ -72,8 +68,7 @@ public class Environment {
 		Node nod = getNode(id);
 		if (null == nod) {
 			nod = new Node();
-			allIDNodeTuples.put(id, nod);
-			allNodeIDTuples.put(nod, id);
+			allIDNodeTuples.putKeyValue(id, nod);
 		}
 		return nod;
 	}
@@ -83,16 +78,13 @@ public class Environment {
 	}
 
 	/**
-	 * remove the id from allNodes only
+	 * remove the id from allIDNodeTuples only, it's assumed it's already empty
+	 * ie. children/parents lists are empty ('cause only then should it be removed)
 	 * 
 	 * @param id
 	 */
 	private Node removeNode(String id) {
-		Node removedNode = allIDNodeTuples.remove(id);
-		allNodeIDTuples.remove(removedNode);
-		return removedNode;
-		//removedNode.die();
-		//removedNode = null; // hopefully helps the garbage collector ?
+		return allIDNodeTuples.removeKey(id);
 	}
 
 	public boolean isLink(String parentID, String childID) {

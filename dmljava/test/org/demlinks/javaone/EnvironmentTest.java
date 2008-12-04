@@ -20,6 +20,8 @@ package org.demlinks.javaone;
 
 import static org.junit.Assert.*;
 
+import java.util.Iterator;
+
 import org.junit.Test;
 
 public class EnvironmentTest {
@@ -56,6 +58,37 @@ public class EnvironmentTest {
 		assertTrue(a.getID(a.getNode("B")).equals("B"));
 		assertTrue(a.getID(a.getNode("C")).equals("C"));
 		assertTrue(null == a.getNode("A"));
+		
+		a.link("AllWords", "dood");
+		a.link("dood", "d");
+		a.link("dood", "o");
+		a.link("dood", "o"); // already exists hehe, no DUPs supported like that
+		a.link("dood", "d"); // same here
+		assertTrue(2 == a.getNode("dood").getChildrenListSize());
+		
+		a.link("AllWords", "DOOD");
+		a.link("DOOD", "RND_2180");
+		a.link("DOOD", "RND_7521");
+		a.link("DOOD", "RND_1288");
+		a.link("DOOD", "RND_1129");
+		a.link("RND_2180", "D");
+		a.link("RND_7521", "O");
+		a.link("RND_1288", "O");
+		a.link("RND_1129", "D");
+		assertTrue( a.getNode("DOOD").getChildrenListSize() == 4 );
+		Iterator<Node> itr = a.getNode("DOOD").getChildrenListIterator();
+		while (itr.hasNext()) {
+			Node cur = itr.next();
+			System.out.print("DOOD->"+a.getID(cur));
+			Iterator<Node> citr = cur.getChildrenListIterator();
+			while (citr.hasNext()) {
+				Node ccur = citr.next();
+				StringBuilder stringBuilder = new StringBuilder();
+				stringBuilder.append("->");
+				stringBuilder.append(a.getID(ccur));
+				System.out.println(stringBuilder.toString());
+			}
+		}
 	}
 
 }

@@ -64,7 +64,6 @@ public class Node {
 	public void unlinkTo(Node childNode) {
 		if (this.childrenList.remove(childNode)) { // true= contained then removed
 			childNode.unlinkFrom(this);
-			// TODO if (isDead()) must remove from Environment.allNodes too
 		}
 	}
 
@@ -72,7 +71,6 @@ public class Node {
 	public void unlinkFrom(Node parentNode) {
 		if (this.parentsList.remove(parentNode)) {
 			parentNode.unlinkTo(this);
-			// TODO if (isDead()) must remove from Environment.allNodes too
 		}
 	}
 
