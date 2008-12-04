@@ -1,4 +1,4 @@
-/*  Copyright (C) 2005-2008 AtKaaZ <atkaaz@sourceforge.net>
+/*  Copyright (C) 2005-2008 AtKaaZ <atkaaz@users.sourceforge.net>
  	
  	This file and its contents are part of DeMLinks.
 
@@ -21,6 +21,7 @@ package org.demlinks.javaone;
 import static org.junit.Assert.*;
 
 import java.util.Iterator;
+import java.util.ListIterator;
 
 import org.junit.Test;
 
@@ -30,6 +31,7 @@ public class NodeTest {
 	public void testNode() {
 		Node a = new Node();
 		Node b = new Node();
+		Node c = new Node();
 		a.linkTo(b);
 		checkIntegrity(a);
 		checkIntegrity(b);
@@ -39,6 +41,25 @@ public class NodeTest {
 		assertFalse(a.isLinkTo(b));
 		assertFalse(b.isLinkFrom(a));
 
+		a.linkTo(b);
+		b.linkTo(c);
+		c.linkTo(a);
+		b.linkTo(a);
+		assertTrue(a.isLinkFrom(b));
+		assertTrue(a.isLinkTo(b));
+		assertFalse(a.isLinkTo(c));
+		assertTrue(a.isLinkFrom(c));
+		//a.getChildrenList().add
+		ListIterator<Node> itr = a.getChildrenList().listIterator();
+		//System.out.println(itr.toString());
+		itr.add(c);
+		itr.previous();
+		while(itr.hasNext()) {
+			System.out.println(itr.next()+".");
+		}
+		System.out.println(a);
+		System.out.println(b);
+		System.out.println(c);
 	}
 	
 	public void checkIntegrity(Node masterNode) {
@@ -49,7 +70,7 @@ public class NodeTest {
 		
 		// parse parentsList; parent <- masterNode
 		//if (masterNode.parentsList != null) {
-		Iterator<Node> pitr = masterNode.getParentsListIterator();
+		ListIterator<Node> pitr = masterNode.getParentsList().listIterator();
 		while (pitr.hasNext()) {
 			Node parentNode = pitr.next();
 			assertTrue(parentNode.isLinkTo(masterNode));
@@ -59,7 +80,7 @@ public class NodeTest {
 
 		//parse childrenList;  masterNode -> child
 		//if (masterNode.childrenList != null) {
-		Iterator<Node> citr = masterNode.getChildrenListIterator();
+		Iterator<Node> citr = masterNode.getChildrenList().iterator();
 		while (citr.hasNext()) {
 			Node childNode = citr.next();
 			assertTrue(childNode.isLinkFrom(masterNode));

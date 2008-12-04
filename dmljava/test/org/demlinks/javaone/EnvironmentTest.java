@@ -1,4 +1,4 @@
-/*  Copyright (C) 2005-2008 AtKaaZ <atkaaz@sourceforge.net>
+/*  Copyright (C) 2005-2008 AtKaaZ <atkaaz@users.sourceforge.net>
  	
  	This file and its contents are part of DeMLinks.
 
@@ -20,75 +20,92 @@ package org.demlinks.javaone;
 
 import static org.junit.Assert.*;
 
-import java.util.Iterator;
+import java.util.ListIterator;
+import java.util.NoSuchElementException;
 
 import org.junit.Test;
 
 public class EnvironmentTest {
 
+	Environment env;
+	
 	@Test
 	public void testLink() {
-		Environment a = new Environment();
-		assertTrue(null == a.getNode("C"));
-		a.link("A", "B");
-		assertTrue(a.isLink("A","B"));
-		assertTrue(a.size() == 2);
-		Node _par = a.getNode("A");
-		Node _chi = a.getNode("B");
+		env = new Environment();
+		assertTrue(null == env.getNode("C"));
+		env.link("A", "B");
+		assertTrue(env.isLink("A","B"));
+		assertTrue(env.size() == 2);
+		Node _par = env.getNode("A");
+		Node _chi = env.getNode("B");
 		assertTrue(_chi.isLinkFrom(_par));
 		assertTrue(_par.isLinkTo(_chi));
 		
-		a.unlink("A","B");
-		assertTrue(0 == _chi.getChildrenListSize());
-		assertTrue(0 == _chi.getParentsListSize());
+		env.unLink("A","B");
+		assertTrue(0 == _chi.getChildrenList().size());
+		assertTrue(0 == _chi.getParentsList().size());
 		assertTrue(_chi.isDead());
-		assertTrue(null == a.getNode("B"));
-		assertTrue(null == a.getNode("A"));
+		assertTrue(null == env.getNode("B"));
+		assertTrue(null == env.getNode("A"));
 		
-		a.link("A", "B");
-		a.link("B", "C");
-		assertTrue(a.isLink("A", "B"));
-		assertTrue(a.isLink("B", "C"));
-		assertFalse(a.isLink("A", "C"));
-		assertFalse(a.isLink("B", "A"));
-		assertFalse(a.isLink("C", "B"));
-		a.unlink("A", "B");
-		assertFalse(a.isLink("A", "B"));
-		assertTrue(a.isLink("B", "C"));
-		assertTrue(a.getID(a.getNode("B")).equals("B"));
-		assertTrue(a.getID(a.getNode("C")).equals("C"));
-		assertTrue(null == a.getNode("A"));
+		env.link("A", "B");
+		env.link("B", "C");
+		assertTrue(env.isLink("A", "B"));
+		assertTrue(env.isLink("B", "C"));
+		assertFalse(env.isLink("A", "C"));
+		assertFalse(env.isLink("B", "A"));
+		assertFalse(env.isLink("C", "B"));
+		env.unLink("A", "B");
+		assertFalse(env.isLink("A", "B"));
+		assertTrue(env.isLink("B", "C"));
+		assertTrue(env.getID(env.getNode("B")).equals("B"));
+		assertTrue(env.getID(env.getNode("C")).equals("C"));
+		assertTrue(null == env.getNode("A"));
 		
-		a.link("AllWords", "dood");
-		a.link("dood", "d");
-		a.link("dood", "o");
-		a.link("dood", "o"); // already exists hehe, no DUPs supported like that
-		a.link("dood", "d"); // same here
-		assertTrue(2 == a.getNode("dood").getChildrenListSize());
+		env.link("AllWords", "dood");
+		env.link("dood", "d");
+		env.link("dood", "o");
+		env.link("dood", "o"); // already exists hehe, no DUPs supported like that
+		env.link("dood", "d"); // same here
+		assertTrue(2 == env.getNode("dood").getChildrenList().size());
 		
-		a.link("AllWords", "DOOD");
-		a.link("DOOD", "RND_2180");
-		a.link("DOOD", "RND_7521");
-		a.link("DOOD", "RND_1288");
-		a.link("DOOD", "RND_1129");
-		a.link("RND_2180", "D");
-		a.link("RND_7521", "O");
-		a.link("RND_1288", "O");
-		a.link("RND_1129", "D");
-		assertTrue( a.getNode("DOOD").getChildrenListSize() == 4 );
-		Iterator<Node> itr = a.getNode("DOOD").getChildrenListIterator();
-		while (itr.hasNext()) {
-			Node cur = itr.next();
-			System.out.print("DOOD->"+a.getID(cur));
-			Iterator<Node> citr = cur.getChildrenListIterator();
-			while (citr.hasNext()) {
-				Node ccur = citr.next();
-				StringBuilder stringBuilder = new StringBuilder();
-				stringBuilder.append("->");
-				stringBuilder.append(a.getID(ccur));
-				System.out.println(stringBuilder.toString());
-			}
+		env.link("AllWords", "DOOD");
+		env.link("DOOD", "RND_2180");
+		env.link("DOOD", "RND_7521");
+		env.link("DOOD", "RND_1288");
+		env.link("DOOD", "RND_1129");
+		env.link("RND_2180", "D");
+		env.link("RND_7521", "O");
+		env.link("RND_1288", "O");
+		env.link("RND_1129", "D");
+		assertTrue( env.getNode("DOOD").getChildrenList().size() == 4 );
+
+		parseTree("AllWords",20,"");
+		env.link("A", "B");
+		env.link("B","C");
+		env.link("C", "A");
+		parseTree("A",20,"");
+	}
+	
+	public void parseTree(String ID, int downToLevel, String whatWas) {
+		whatWas+=ID;
+		if  (downToLevel < 0) {
+			System.out.println(whatWas+" {max level reached}");
+			return;
+		}
+		Node nod = env.getNode(ID);
+		if (null == nod) { // this will never happen (unless first call)
+			throw new NoSuchElementException();
+		}
+		ListIterator<Node> litr = nod.getChildrenList().listIterator();
+		if (!litr.hasNext()) { // no more children
+			System.out.println(whatWas);
+			return;
+		}
+		while (litr.hasNext()) {
+			Node curr = litr.next();
+			String id = env.getID(curr);
+			parseTree(id, downToLevel - 1, whatWas+"->");
 		}
 	}
-
 }

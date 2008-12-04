@@ -1,4 +1,4 @@
-/*  Copyright (C) 2005-2008 AtKaaZ <atkaaz@sourceforge.net>
+/*  Copyright (C) 2005-2008 AtKaaZ <atkaaz@users.sourceforge.net>
  	
  	This file and its contents are part of DeMLinks.
 
@@ -96,7 +96,7 @@ public class Environment {
 		return _par.isLinkTo(_chi); // implied _chi.isLinkFrom(_par) same thing
 	}
 	
-	public boolean unlink(String parentID, String childID) {
+	public boolean unLink(String parentID, String childID) {
 		if (!isLink(parentID,childID)) {
 			return false;
 		}

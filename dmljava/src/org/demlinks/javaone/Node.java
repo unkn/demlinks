@@ -1,4 +1,4 @@
-/*  Copyright (C) 2005-2008 AtKaaZ <atkaaz@sourceforge.net>
+/*  Copyright (C) 2005-2008 AtKaaZ <atkaaz@users.sourceforge.net>
  	
  	This file and its contents are part of DeMLinks.
 
@@ -19,20 +19,18 @@
 package org.demlinks.javaone;
 
 
-import java.util.Iterator;
-import java.util.LinkedHashSet;
 
 // at this level the Nodes don't have IDs, they're just java objects
 
 public class Node {
 	// if both lists are empty the node shouldn't exist (in the Environment)
 	// lists should never be null
-	private LinkedHashSet<Node> parentsList;
-	private LinkedHashSet<Node> childrenList;
+	private LinkedListSet<Node> parentsList;
+	private LinkedListSet<Node> childrenList;
 	
 	public Node() {
-		parentsList = new LinkedHashSet<Node>();
-		childrenList = new LinkedHashSet<Node>();
+		parentsList = new LinkedListSet<Node>();
+		childrenList = new LinkedListSet<Node>();
 	}
 
 
@@ -74,6 +72,10 @@ public class Node {
 		}
 	}
 
+	/** 
+	 * @param childNode
+	 * @return
+	 */
 	public boolean isLinkTo(Node childNode) {
 		if (this.childrenList.contains(childNode)) {
 			return true;
@@ -91,21 +93,21 @@ public class Node {
 	public boolean isDead() {
 		return ( (parentsList.isEmpty()) && (childrenList.isEmpty()) );
 	}
-	
-	public Iterator<Node> getParentsListIterator() {
-		return parentsList.iterator();
-	}
-	
-	public Iterator<Node> getChildrenListIterator() {
-		return childrenList.iterator();
+
+
+	/**
+	 * @return the parentsList
+	 */
+	public LinkedListSet<Node> getParentsList() {
+		return parentsList;
 	}
 
 
-	public int getChildrenListSize() {
-		return childrenList.size();
+	/**
+	 * @return the childrenList
+	 */
+	public LinkedListSet<Node> getChildrenList() {
+		return childrenList;
 	}
 	
-	public int getParentsListSize() {
-		return parentsList.size();
-	}
 }
