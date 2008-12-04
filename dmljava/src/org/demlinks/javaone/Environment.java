@@ -18,7 +18,7 @@
 
 package org.demlinks.javaone;
 
-import java.util.Hashtable;
+import java.util.IdentityHashMap;
 
 
 
@@ -29,18 +29,24 @@ import java.util.Hashtable;
 
 public class Environment {
 	//fields
-	private Hashtable<String,Node> allNodes; //list of unique elements
+	private IdentityHashMap<String, Node> allIDNodeTuples; //list of unique elements
+	private IdentityHashMap<Node, String> allNodeIDTuples; //list of unique elements
 	
 	//constructor
 	public Environment() {
-		allNodes = new Hashtable<String, Node>();
+		allIDNodeTuples = new IdentityHashMap<String, Node>();
+		allNodeIDTuples = new IdentityHashMap<Node, String>();
 	}
 	
 	//methods
 	public Node getNode(String id) {
-		return allNodes.get(id);
+		return allIDNodeTuples.get(id);
 	}
 
+	public String getID(Node node) {
+		return allNodeIDTuples.get(node);
+	}
+	
 	/**
 	 * parent -> child   also implied parent <- child connection
 	 * @param parentID
@@ -63,16 +69,17 @@ public class Environment {
 	 * 	this func. to ensure the new Node (if created) is linked to someother node
 	 */
 	private Node ensureNode(String id) {
-		Node nod = allNodes.get(id);
+		Node nod = getNode(id);
 		if (null == nod) {
 			nod = new Node();
-			allNodes.put(id, nod);
+			allIDNodeTuples.put(id, nod);
+			allNodeIDTuples.put(nod, id);
 		}
 		return nod;
 	}
 	
 	public int size() {
-		return allNodes.size();
+		return allIDNodeTuples.size();
 	}
 
 	/**
@@ -81,7 +88,9 @@ public class Environment {
 	 * @param id
 	 */
 	private Node removeNode(String id) {
-		return allNodes.remove(id);
+		Node removedNode = allIDNodeTuples.remove(id);
+		allNodeIDTuples.remove(removedNode);
+		return removedNode;
 		//removedNode.die();
 		//removedNode = null; // hopefully helps the garbage collector ?
 	}

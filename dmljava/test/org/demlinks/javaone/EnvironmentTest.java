@@ -43,6 +43,19 @@ public class EnvironmentTest {
 		assertTrue(null == a.getNode("B"));
 		assertTrue(null == a.getNode("A"));
 		
+		a.link("A", "B");
+		a.link("B", "C");
+		assertTrue(a.isLink("A", "B"));
+		assertTrue(a.isLink("B", "C"));
+		assertFalse(a.isLink("A", "C"));
+		assertFalse(a.isLink("B", "A"));
+		assertFalse(a.isLink("C", "B"));
+		a.unlink("A", "B");
+		assertFalse(a.isLink("A", "B"));
+		assertTrue(a.isLink("B", "C"));
+		assertTrue(a.getID(a.getNode("B")).equals("B"));
+		assertTrue(a.getID(a.getNode("C")).equals("C"));
+		assertTrue(null == a.getNode("A"));
 	}
 
 }
