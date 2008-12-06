@@ -52,7 +52,7 @@ public class Node {
 	 * 
 	 * @param childNode
 	 */
-	public void linkTo(Node childNode) {
+	public void linkTo(Node childNode) { //TODO: this is not the way, mutual link should be handled one level outside of Node ie. in Environment class
 		if (this.childrenList.add(childNode)) {
 			// true if didn't already had it
 			childNode.linkFrom(this);
@@ -99,7 +99,7 @@ public class Node {
 	 * @return the parentsList
 	 */
 	public LinkedListSet<Node> getParentsList() {
-		return parentsList;
+		return parentsList; //TODO: remove this method in the future for this is not the way
 	}
 
 

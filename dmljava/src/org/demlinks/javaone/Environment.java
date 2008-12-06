@@ -53,6 +53,7 @@ public class Environment {
 		Node _par = ensureNode(parentID);
 		Node _chi = ensureNode(childID);
 		_par.linkTo(_chi); // this will imply _chi <- _par connections
+		//that imply is bad, hence defaults causing unwanted pathways to be followed
 		return _par;
 	}
 	
