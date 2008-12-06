@@ -73,7 +73,7 @@ public class NodeTest {
 		Iterator<Node> citr = masterNode.getChildrenListIterator();
 		while (citr.hasNext()) {
 			Node childNode = citr.next();
-			assertTrue(childNode.isLinkFrom(masterNode));// b doesn't link back to a
+			assertTrue(childNode.isLinkFrom(masterNode));// b doesn't link back to a (this is normal)
 			assertTrue(masterNode.isLinkTo(childNode));
 		}
 		//}

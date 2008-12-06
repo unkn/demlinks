@@ -24,6 +24,7 @@ import java.util.ListIterator;
 import java.util.NoSuchElementException;
 
 import org.junit.Test;
+import org.omg.CORBA.ORBPackage.InconsistentTypeCode;
 import org.omg.PortableInterceptor.ORBInitInfoPackage.DuplicateName;
 
 public class EnvironmentTest {
@@ -31,8 +32,9 @@ public class EnvironmentTest {
 	Environment env;
 	
 	@Test
-	public void testLink() throws DuplicateName {
+	public void testLink() throws DuplicateName, InconsistentTypeCode {
 		env = new Environment();
+		env.unLink("F","G");
 		assertTrue(null == env.getNode("C"));
 		env.link("A", "B");
 		assertTrue(env.isLink("A","B"));
@@ -64,10 +66,10 @@ public class EnvironmentTest {
 		assertTrue(null == env.getNode("A"));
 		
 		env.link("AllWords", "dood");
-		env.link("dood", "d");
-		env.link("dood", "o");
-		env.link("dood", "o"); // already exists hehe, no DUPs supported like that
-		env.link("dood", "d"); // same here
+		assertTrue(env.link("dood", "d"));
+		assertTrue(env.link("dood", "o"));
+		assertFalse(env.link("dood", "o")); // false=already exists hehe, no DUPs supported like that
+		assertFalse(env.link("dood", "d")); // same here
 		assertTrue(2 == env.getNode("dood").getChildrenListSize());
 		
 		env.link("AllWords", "DOOD");

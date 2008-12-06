@@ -20,7 +20,6 @@ package org.demlinks.javaone;
 
 import java.util.ListIterator;
 
-import org.omg.PortableInterceptor.ORBInitInfoPackage.DuplicateName;
 
 
 
@@ -40,46 +39,52 @@ public class Node {
 
 
 	/**
-	 * parentNode -> this, but not also parentNode <- this !
+	 * parentNode -> this, but not also parentNode <- this ! <br>
+	 * ensures the link exits
 	 * 
 	 * @param parentNode
-	 * @throws DuplicateName 
-	 * 
+	 * @return <tt>true</tt> if added and didn't previously exist<br>
+	 * <tt>false</tt> if already exited hence it remains
 	 */
-	public void linkFrom(Node parentNode) throws DuplicateName {
-		boolean changed = this.parentsList.add(parentNode);
-		if (!changed) {
-			// then it already exited, if so then maybe bad programming at the caller level?
-			throw new DuplicateName();
-		}
+	public boolean linkFrom(Node parentNode) {
+		return this.parentsList.add(parentNode); // boolean changed
+			// not changed? then it already exited, 
+			// if so then maybe bad programming at the caller level? so to assume
 	}
 	
 	/**
-	 * this -> childNode, this won't imply this <- childNode link
-	 * however this is consistent at this level, but not at the Environment level
+	 * this -> childNode, this won't imply this <- childNode link<br>
+	 * however this is consistent at this level, but not at the Environment level<br>
 	 * at the latter level, both or none links should exits
 	 * 
 	 * @param childNode
-	 * @throws DuplicateName 
+	 * @return same as {@link #linkFrom} 
 	 */
-	public void linkTo(Node childNode) throws DuplicateName {
+	public boolean linkTo(Node childNode) {
 		// TODO: we may want to interface (aka public interface) some stuffs like linkTo
-		if (!this.childrenList.add(childNode)) {
+		return this.childrenList.add(childNode);
 			// false, means collection not changed hence child already existed
-			throw new DuplicateName();
-		}
 	}
 
-	public void unlinkTo(Node childNode) {
-		this.childrenList.remove(childNode);
+	/**
+	 * @param childNode
+	 * @return true if the child existed before call, now not anymore
+	 */
+	public boolean unlinkTo(Node childNode) {
+		return this.childrenList.remove(childNode);
 	}
 
 
-	public void unlinkFrom(Node parentNode) {
-		this.parentsList.remove(parentNode);
+	/**
+	 * @param parentNode
+	 * @return see: {@link #unlinkTo(Node)}
+	 */
+	public boolean unlinkFrom(Node parentNode) {
+		return this.parentsList.remove(parentNode);
 	}
 
-	/** 
+	/**
+	 * <tt>this</tt> -> <tt>childNode</tt> link exist?
 	 * @param childNode
 	 * @return
 	 */
@@ -99,7 +104,7 @@ public class Node {
 		return childrenList.size();
 	}
 	
-	
+	// TODO: temporarily here:
 	public ListIterator<Node> getChildrenListIterator() {
 		return childrenList.listIterator();
 	}

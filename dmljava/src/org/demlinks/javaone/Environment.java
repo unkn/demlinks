@@ -18,7 +18,8 @@
 
 package org.demlinks.javaone;
 
-import org.omg.PortableInterceptor.ORBInitInfoPackage.DuplicateName;
+
+import org.omg.CORBA.ORBPackage.InconsistentTypeCode;
 
 
 
@@ -37,45 +38,62 @@ public class Environment {
 	}
 	
 	//methods
+	/**
+	 * @param id
+	 * @return
+	 */
 	public Node getNode(String id) {
 		return allIDNodeTuples.getValue(id);
 	}
 
+	/**
+	 * @param node
+	 * @return
+	 */
 	public String getID(Node node) {
 		return allIDNodeTuples.getKey(node);
 	}
 	
 	/**
-	 * parent -> child   also implied parent <- child connection
-	 * @param parentID
-	 * @param childID
-	 * @return parentNode
-	 * @throws DuplicateName 
+	 * Creates mutual links between the two Nodes (it maps String IDs to Nodes)<br>
+	 * parent -> child<br>
+	 * parent <- child
+	 * @return same as {@link #link(Node, Node)}
+	 * @throws InconsistentTypeCode if either of the two links, which form the transaction,
+	 * already exited
 	 */
-	public Node link(String parentID, String childID) throws DuplicateName {
+	public boolean link(String parentID, String childID) throws InconsistentTypeCode {
 		Node _par = ensureNode(parentID);
 		Node _chi = ensureNode(childID);
-		_par.linkTo(_chi);
-		_chi.linkFrom(_par);
-		return _par;
+		return link(_par, _chi);
 	}
 	
-	public boolean link(Node parentNode, Node childNode) throws DuplicateName {
-		if (parentNode.isLinkTo(childNode)) {
-			return false; //already linked (mutually)
+	/**
+	 * @param parentNode
+	 * @param childNode
+	 * @return <tt>true</tt> if link didn't exist but now after the call, it should<br>
+	 * <tt>false</tt> if link already exits, nothing else done
+	 * @throws InconsistentTypeCode 
+	 */
+	public boolean link(Node parentNode, Node childNode) throws InconsistentTypeCode {
+		boolean newLink1 = parentNode.linkTo(childNode);
+		boolean newLink2 = childNode.linkFrom(parentNode);
+		if (newLink1 ^ newLink2) { //( (newLink1 == false) || (newLink2 == false) )
+			// if just one of them is true, then inconsitency detected
+			// can't already have either of the links w/o the other
+			throw new InconsistentTypeCode();
 		}
-		parentNode.linkTo(childNode);
-		childNode.linkFrom(parentNode);
-		return true;
+		return (newLink1 && newLink2); // both must be true
 	}
+	//TODO: two more methods for link between Node and ID and between ID and Node
 	
 	/**
 	 * make sure that node "id" exists in the allNodes list and points to a new or 
 	 *  previous Node object
 	 * @param id
 	 * 
-	 * this is basicly allowing an empty Node to exist, hence it must after calling
-	 * 	this func. to ensure the new Node (if created) is linked to someother node
+	 * this is basically allowing an empty Node to exist, hence it must after calling
+	 * 	this method to ensure the new Node (if created) is linked to some other node
 	 */
 	private Node ensureNode(String id) {
 		Node nod = getNode(id);
@@ -86,6 +104,9 @@ public class Environment {
 		return nod;
 	}
 	
+	/**
+	 * @return number of Nodes in the environment
+	 */
 	public int size() {
 		return allIDNodeTuples.size();
 	}
@@ -100,28 +121,60 @@ public class Environment {
 		return allIDNodeTuples.removeKey(id);
 	}
 
+	/**
+	 * @param parentID
+	 * @param childID
+	 * @return see {@link #isLink(Node, Node)}
+	 */
 	public boolean isLink(String parentID, String childID) {
 		Node _par = getNode(parentID);
 		Node _chi = getNode(childID);
-		if ( (null == _par) || (null == _chi) ) {
-			return false;
-		}
-		return ( _par.isLinkTo(_chi) && _chi.isLinkFrom(_par));
+		return isLink(_par, _chi);
 	}
 	
-	public void unLink(String parentID, String childID) {
-		if (!isLink(parentID,childID)) {
+	/**
+	 * @param parentNode
+	 * @param childNode
+	 * @return
+	 */
+	public boolean isLink(Node parentNode, Node childNode) {
+		if ( (null == parentNode) || (null == childNode) ) {
+			return false;
+		}
+		return ( parentNode.isLinkTo(childNode) && childNode.isLinkFrom(parentNode));
+	}
+	
+	/**
+	 * @param parentID
+	 * @param childID
+	 * <br>see: {@link #unLink(Node, Node)}
+	 * @throws InconsistentTypeCode 
+	 */
+	public void unLink(String parentID, String childID) throws InconsistentTypeCode {
+		unLink(getNode(parentID), getNode(childID));
+	}
+	
+	/**
+	 * @param parentNode
+	 * @param childNode
+	 * @throws InconsistentTypeCode 
+	 */
+	public void unLink(Node parentNode, Node childNode) throws InconsistentTypeCode {
+		if (!isLink(parentNode, childNode)) {
 			return;
 		}
-		Node _par = getNode(parentID);
-		Node _chi = getNode(childID);
-		_par.unlinkTo(_chi);
-		_chi.unlinkFrom(_par);
-		if (_par.isDead()) {
-			this.removeNode(parentID);
+		boolean removed1 = parentNode.unlinkTo(childNode);
+		boolean removed2 = childNode.unlinkFrom(parentNode);
+		if (parentNode.isDead()) {
+			this.removeNode(this.getID(parentNode));
 		}
-		if (_chi.isDead()) {
-			this.removeNode(childID);
+		if (childNode.isDead()) {
+			removeNode(getID(childNode));
+		}
+		if (removed1 ^ removed2) {
+			// Basically we're here because one of the above removals didn't have an element to 
+			// remove, in effect proving non-mutual link existed
+			throw new InconsistentTypeCode();
 		}
 	}
 }
