@@ -18,6 +18,8 @@
 
 package org.demlinks.javaone;
 
+import org.omg.PortableInterceptor.ORBInitInfoPackage.DuplicateName;
+
 
 
 // at this level the Node objects are given String IDs
@@ -48,13 +50,23 @@ public class Environment {
 	 * @param parentID
 	 * @param childID
 	 * @return parentNode
+	 * @throws DuplicateName 
 	 */
-	public Node link(String parentID, String childID) {
+	public Node link(String parentID, String childID) throws DuplicateName {
 		Node _par = ensureNode(parentID);
 		Node _chi = ensureNode(childID);
-		_par.linkTo(_chi); // this will imply _chi <- _par connections
-		//that imply is bad, hence defaults causing unwanted pathways to be followed
+		_par.linkTo(_chi);
+		_chi.linkFrom(_par);
 		return _par;
+	}
+	
+	public boolean link(Node parentNode, Node childNode) throws DuplicateName {
+		if (parentNode.isLinkTo(childNode)) {
+			return false; //already linked (mutually)
+		}
+		parentNode.linkTo(childNode);
+		childNode.linkFrom(parentNode);
+		return true;
 	}
 	
 	/**
@@ -81,7 +93,7 @@ public class Environment {
 	/**
 	 * remove the id from allIDNodeTuples only, it's assumed it's already empty
 	 * ie. children/parents lists are empty ('cause only then should it be removed)
-	 * 
+	 * doesn't recursively remove
 	 * @param id
 	 */
 	private Node removeNode(String id) {
@@ -94,22 +106,22 @@ public class Environment {
 		if ( (null == _par) || (null == _chi) ) {
 			return false;
 		}
-		return _par.isLinkTo(_chi); // implied _chi.isLinkFrom(_par) same thing
+		return ( _par.isLinkTo(_chi) && _chi.isLinkFrom(_par));
 	}
 	
-	public boolean unLink(String parentID, String childID) {
+	public void unLink(String parentID, String childID) {
 		if (!isLink(parentID,childID)) {
-			return false;
+			return;
 		}
 		Node _par = getNode(parentID);
 		Node _chi = getNode(childID);
 		_par.unlinkTo(_chi);
+		_chi.unlinkFrom(_par);
 		if (_par.isDead()) {
 			this.removeNode(parentID);
 		}
 		if (_chi.isDead()) {
 			this.removeNode(childID);
 		}
-		return true;
 	}
 }

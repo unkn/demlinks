@@ -18,6 +18,10 @@
 
 package org.demlinks.javaone;
 
+import java.util.ListIterator;
+
+import org.omg.PortableInterceptor.ORBInitInfoPackage.DuplicateName;
+
 
 
 // at this level the Nodes don't have IDs, they're just java objects
@@ -25,6 +29,7 @@ package org.demlinks.javaone;
 public class Node {
 	// if both lists are empty the node shouldn't exist (in the Environment)
 	// lists should never be null
+	//TODO: make a new class for these lists, also an interface for it which may be used somewhere else also
 	private LinkedListSet<Node> parentsList;
 	private LinkedListSet<Node> childrenList;
 	
@@ -35,41 +40,43 @@ public class Node {
 
 
 	/**
-	 * parentNode -> this
+	 * parentNode -> this, but not also parentNode <- this !
 	 * 
 	 * @param parentNode
+	 * @throws DuplicateName 
 	 * 
 	 */
-	public void linkFrom(Node parentNode) {
-		if (this.parentsList.add(parentNode)) {
-			// true if didn't already had it
-			parentNode.linkTo(this);
+	public void linkFrom(Node parentNode) throws DuplicateName {
+		boolean changed = this.parentsList.add(parentNode);
+		if (!changed) {
+			// then it already exited, if so then maybe bad programming at the caller level?
+			throw new DuplicateName();
 		}
 	}
 	
 	/**
-	 * this -> childNode
+	 * this -> childNode, this won't imply this <- childNode link
+	 * however this is consistent at this level, but not at the Environment level
+	 * at the latter level, both or none links should exits
 	 * 
 	 * @param childNode
+	 * @throws DuplicateName 
 	 */
-	public void linkTo(Node childNode) { //TODO: this is not the way, mutual link should be handled one level outside of Node ie. in Environment class
-		if (this.childrenList.add(childNode)) {
-			// true if didn't already had it
-			childNode.linkFrom(this);
+	public void linkTo(Node childNode) throws DuplicateName {
+		// TODO: we may want to interface (aka public interface) some stuffs like linkTo
+		if (!this.childrenList.add(childNode)) {
+			// false, means collection not changed hence child already existed
+			throw new DuplicateName();
 		}
 	}
 
 	public void unlinkTo(Node childNode) {
-		if (this.childrenList.remove(childNode)) { // true= contained then removed
-			childNode.unlinkFrom(this);
-		}
+		this.childrenList.remove(childNode);
 	}
 
 
 	public void unlinkFrom(Node parentNode) {
-		if (this.parentsList.remove(parentNode)) {
-			parentNode.unlinkTo(this);
-		}
+		this.parentsList.remove(parentNode);
 	}
 
 	/** 
@@ -77,37 +84,23 @@ public class Node {
 	 * @return
 	 */
 	public boolean isLinkTo(Node childNode) {
-		if (this.childrenList.contains(childNode)) {
-			return true;
-		}
-		return false;
+		return this.childrenList.contains(childNode);
 	}
 	
 	public boolean isLinkFrom(Node parentNode) {
-		if (this.parentsList.contains(parentNode)) {
-			return true;
-		}
-		return false;
+		return this.parentsList.contains(parentNode);
 	}
 	
 	public boolean isDead() {
 		return ( (parentsList.isEmpty()) && (childrenList.isEmpty()) );
 	}
-
-
-	/**
-	 * @return the parentsList
-	 */
-	public LinkedListSet<Node> getParentsList() {
-		return parentsList; //TODO: remove this method in the future for this is not the way
-	}
-
-
-	/**
-	 * @return the childrenList
-	 */
-	public LinkedListSet<Node> getChildrenList() {
-		return childrenList;
+	
+	public int getChildrenListSize() {
+		return childrenList.size();
 	}
 	
+	
+	public ListIterator<Node> getChildrenListIterator() {
+		return childrenList.listIterator();
+	}
 }

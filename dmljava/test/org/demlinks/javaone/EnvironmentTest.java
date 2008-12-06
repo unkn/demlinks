@@ -24,13 +24,14 @@ import java.util.ListIterator;
 import java.util.NoSuchElementException;
 
 import org.junit.Test;
+import org.omg.PortableInterceptor.ORBInitInfoPackage.DuplicateName;
 
 public class EnvironmentTest {
 
 	Environment env;
 	
 	@Test
-	public void testLink() {
+	public void testLink() throws DuplicateName {
 		env = new Environment();
 		assertTrue(null == env.getNode("C"));
 		env.link("A", "B");
@@ -42,8 +43,8 @@ public class EnvironmentTest {
 		assertTrue(_par.isLinkTo(_chi));
 		
 		env.unLink("A","B");
-		assertTrue(0 == _chi.getChildrenList().size());
-		assertTrue(0 == _chi.getParentsList().size());
+		assertTrue(0 == _chi.getChildrenListSize());
+		//assertTrue(0 == _chi.getParentsListSize());
 		assertTrue(_chi.isDead());
 		assertTrue(null == env.getNode("B"));
 		assertTrue(null == env.getNode("A"));
@@ -67,7 +68,7 @@ public class EnvironmentTest {
 		env.link("dood", "o");
 		env.link("dood", "o"); // already exists hehe, no DUPs supported like that
 		env.link("dood", "d"); // same here
-		assertTrue(2 == env.getNode("dood").getChildrenList().size());
+		assertTrue(2 == env.getNode("dood").getChildrenListSize());
 		
 		env.link("AllWords", "DOOD");
 		env.link("DOOD", "RND_2180");
@@ -78,7 +79,7 @@ public class EnvironmentTest {
 		env.link("RND_7521", "O");
 		env.link("RND_1288", "O");
 		env.link("RND_1129", "D");
-		assertTrue( env.getNode("DOOD").getChildrenList().size() == 4 );
+		assertTrue( env.getNode("DOOD").getChildrenListSize() == 4 );
 
 		parseTree("AllWords",20,"");
 		env.link("A", "B");
@@ -97,7 +98,7 @@ public class EnvironmentTest {
 		if (null == nod) { // this will never happen (unless first call)
 			throw new NoSuchElementException();
 		}
-		ListIterator<Node> litr = nod.getChildrenList().listIterator();
+		ListIterator<Node> litr = nod.getChildrenListIterator();
 		if (!litr.hasNext()) { // no more children
 			System.out.println(whatWas);
 			return;
