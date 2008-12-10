@@ -56,10 +56,10 @@ public class Node {
 	 * at the latter level, both or none links should exits
 	 * 
 	 * @param childNode
-	 * @return same as {@link #linkFrom} 
+	 * @return true if link changed as a result of the call, that is a links didn't exist already but it does now<br>
+	 * false is link existed and still exists after the call but well nothing changed then.
 	 */
 	public boolean linkTo(Node childNode) {
-		// TODO: we may want to interface (aka public interface) some stuffs like linkTo
 		return get(List.CHILDREN).append(childNode);
 			// false, means collection not changed hence child already existed
 	}

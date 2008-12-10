@@ -19,9 +19,6 @@
 package org.demlinks.javaone;
 
 
-import org.omg.CORBA.ORBPackage.InconsistentTypeCode;
-
-
 
 // at this level the Node objects are given String IDs
 // such that a String ID can be referring to only one Node object
@@ -39,13 +36,21 @@ public class Environment {
 	
 	//methods
 	/**
-	 * @param id
+	 * @param nodeID
 	 * @return
 	 */
-	public Node getNode(String id) {
-		return allIDNodeTuples.getValue(id);
+	public Node getNode(String nodeID) {
+		return allIDNodeTuples.getValue(nodeID);
 	}
 
+	public boolean isNode(String nodeID) {
+		return ( null != getNode(nodeID) );
+	}
+	
+	public boolean isNode(Node node) {
+		return ( null != getID(node) );
+	}
+	
 	/**
 	 * @param node
 	 * @return
@@ -59,13 +64,54 @@ public class Environment {
 	 * parent -> child<br>
 	 * parent <- child
 	 * @return same as {@link #link(Node, Node)}
-	 * @throws InconsistentTypeCode if either of the two links, which form the transaction,
-	 * already exited
+	 * @throws Exception 
+	 * @transaction protected
 	 */
-	public boolean link(String parentID, String childID) throws InconsistentTypeCode {
-		Node _par = ensureNode(parentID);
-		Node _chi = ensureNode(childID);
-		return link(_par, _chi);
+	public boolean link(String parentID, String childID) throws Exception {
+		boolean chiExisted=true;
+		boolean parExisted=true;
+		boolean ret;
+		Node _chi=null;
+		Node _par=null;
+		try {
+		//begin transaction
+			chiExisted = null != (_chi=getNode(childID));
+			if (!chiExisted) {
+				//gets created
+				_chi = newNode(childID);
+				nullCheck(_chi);
+			}
+			
+			parExisted = null != (_par=getNode(parentID));
+			if (!parExisted) {
+				_par = newNode(parentID);
+				nullCheck(_par);
+			}
+
+			ret=link(_par, _chi);
+		} catch (Exception e) {
+			if (!chiExisted) {
+				if (null == _chi) {
+					throw new AssertionError("chiExisted==false hence _chi must be non-null");
+				}
+				//if didn't exist this means we just created it above and since we're gonna be throwing then let us rollback()
+				if (_chi != removeNode(childID)) {
+					//it's probably null signaling that it didn't remove!
+					throw new AssertionError("this shouldn't happen");
+				}
+			}
+			if (!parExisted) {
+				if (null == _chi) {
+					throw new AssertionError("parExisted==false hence _par must be non-null");
+				}
+				if (_par != removeNode(parentID)) {
+					throw new AssertionError("should've existed before calling remove!");
+				}
+			}
+			throw e;
+		}
+		
+		return ret;
 	}
 	
 	/**
@@ -73,29 +119,72 @@ public class Environment {
 	 * @param childNode
 	 * @return <tt>true</tt> if link didn't exist but now after the call, it should<br>
 	 * <tt>false</tt> if link already exits, nothing else done
-	 * @throws InconsistentTypeCode 
+	 * @throws Exception 
 	 */
-	public boolean link(Node parentNode, Node childNode) throws InconsistentTypeCode {
-		boolean newLink1 = parentNode.linkTo(childNode);
-		boolean newLink2 = childNode.linkFrom(parentNode);
-		if (newLink1 ^ newLink2) { //( (newLink1 == false) || (newLink2 == false) )
-			// if just one of them is true, then inconsitency detected
-			// can't already have either of the links w/o the other
-			throw new InconsistentTypeCode();
+	public boolean link(Node parentNode, Node childNode) throws Exception {
+		boolean newLink1=false;
+		boolean newLink2=false;
+		try { //begin transaction
+			newLink1 = parentNode.linkTo(childNode);//true = it didn't previously exist; false= it already did exist;any = exists now after call
+			newLink2 = childNode.linkFrom(parentNode);
+		} catch (Exception e) {
+			//so in effect we should undo before throwing (up) again
+			if (newLink1) {
+				//must delete it
+				if (!parentNode.unlinkTo(childNode)) {
+					//false = didn't exist before call, impossible because newLink1=true hence we passed over linkTo which should've created it
+					// so if we're here, it was created but it wasn't deleted because it was already gone
+					throw new AssertionError("attempted to delete a node that didn't exist to start with. This is serious.");
+				}
+			}
+			if (newLink2) {
+				//must delete 2
+				if (!childNode.linkFrom(parentNode)) {
+					throw new AssertionError("another attempt to delete somenode that didn't exist but it should've existed");
+				}
+			}
+			throw e;
 		}
-		return (newLink1 && newLink2); // both must be true
+		
+		if (newLink1 ^ newLink2) { //( (newLink1 == false) || (newLink2 == false) )
+			// if just one of them is true, then inconsistency detected
+			// can't already have either of the links w/o the other
+			throw new AssertionError("one of the 'small' links already existed without the other");
+		}
+		return (newLink1 && newLink2); // both must be true, or they're both false if we're here
 	}
 	
+	/**
+	 * @param parentNode
+	 * @param childID
+	 * @return
+	 * @throws Exception
+	 */
 	public boolean link(Node parentNode, String childID) throws Exception {
-		Node _chi = ensureNode(childID);
+		boolean existed=true;//so we won't have to remove it, in the catch block assuming try would've been before Node _chi;
+		//begin transaction
+			Node _chi;
+			existed = null != (_chi=getNode(childID));
+			if (!existed) {
+				//gets created
+				_chi = newNode(childID);
+			}
 		boolean ret;
 		try {
 			ret=link(parentNode, _chi);
 		} catch (Exception e) {
-			// TODO: handle exception, this would have to remove _chi if it wasn't already existent before ensureNode above executed
-			// but we can't since we don't know if _chi existed before
+			//handle exception, this would have to remove _chi if it wasn't already existent before ensureNode above executed
+			if (!existed) {
+				//hence it was created above by newNode() thus we have to remove it here if we were to undo changes aka rollback
+				if (_chi != removeNode(childID)) {
+					//it's probably null signaling that it didn't remove!
+					//e.printStackTrace();
+					throw new AssertionError("this shouldn't happen");
+				}
+			}
 			throw e;
-		} 
+		}
+		//end transaction
 		return ret;
 	}
 	//TODO: one more methods for link between Node and ID and between ID and Node
@@ -103,17 +192,32 @@ public class Environment {
 	/**
 	 * make sure that node "id" exists in the allNodes list and points to a new or 
 	 *  previous Node object
-	 * @param id
+	 * @param nodeID
 	 * 
 	 * this is basically allowing an empty Node to exist, hence it must after calling
 	 * 	this method to ensure the new Node (if created) is linked to some other node
+	 * @throws Exception 
+	 * @transaction protected
 	 */
-	private Node ensureNode(String id) {
-		Node nod = getNode(id);
-		if (null == nod) {
-			nod = new Node();
-			allIDNodeTuples.putKeyValue(id, nod);
-		}
+//	private Node ensureNode(String nodeID) throws Exception {
+//		Node nod = getNode(nodeID);
+//		if (null == nod) {
+//			nod = newNode(nodeID);
+//		}
+//		return nod;
+//	}
+	
+	
+	/**
+	 * better not call this unless u're sure nodeID doesn't exist
+	 * @param nodeID
+	 * @return
+	 * @throws Exception when nodeID existed before<br>
+	 * @transaction protected
+	 */
+	private Node newNode(String nodeID) throws Exception {
+		Node nod = new Node();
+		allIDNodeTuples.putKeyValue(nodeID, nod); // if this excepts then the "nod" variable will get destroyed by Java anyway
 		return nod;
 	}
 	
@@ -129,8 +233,9 @@ public class Environment {
 	 * ie. children/parents lists are empty ('cause only then should it be removed)
 	 * doesn't recursively remove
 	 * @param id
+	 * @throws Exception 
 	 */
-	private Node removeNode(String id) {
+	private Node removeNode(String id) throws Exception {
 		return allIDNodeTuples.removeKey(id);
 	}
 
@@ -138,10 +243,14 @@ public class Environment {
 	 * @param parentID
 	 * @param childID
 	 * @return see {@link #isLink(Node, Node)}
+	 * @throws Exception 
 	 */
-	public boolean isLink(String parentID, String childID) {
+	public boolean isLink(String parentID, String childID) throws Exception {
 		Node _par = getNode(parentID);
 		Node _chi = getNode(childID);
+		if ((null == _par) || (null == _chi) ) {
+			return false;
+		}
 		return isLink(_par, _chi);
 	}
 	
@@ -149,32 +258,48 @@ public class Environment {
 	 * @param parentNode
 	 * @param childNode
 	 * @return
+	 * @throws Exception 
 	 */
-	public boolean isLink(Node parentNode, Node childNode) {
-		if ( (null == parentNode) || (null == childNode) ) {
-			return false;
-		}
+	public boolean isLink(Node parentNode, Node childNode) throws Exception {
+		nullCheck(parentNode);
+		nullCheck(childNode);
 		return ( parentNode.isLinkTo(childNode) && childNode.isLinkFrom(parentNode));
 	}
 	
+	private static void nullCheck(Object any) {
+		if (null == any) {
+			throw new NullPointerException("bad programming?");
+		}
+	}
+
 	/**
 	 * @param parentID
 	 * @param childID
 	 * <br>see: {@link #unLink(Node, Node)}
-	 * @throws InconsistentTypeCode 
+	 * @throws Exception 
+	 * @returns see {@link #unLink(Node, Node)}
 	 */
-	public void unLink(String parentID, String childID) throws InconsistentTypeCode {
-		unLink(getNode(parentID), getNode(childID));
+	public boolean unLink(String parentID, String childID) throws Exception {
+		Node _par = getNode(parentID);
+		Node _chi = getNode(childID);
+		if ((null == _par) || (null == _chi)) {
+			return false;//never existed
+		}
+		return unLink(_par, _chi);
 	}
 	
 	/**
 	 * @param parentNode
 	 * @param childNode
-	 * @throws InconsistentTypeCode 
+	 * @throws Exception 
+	 * @returns true = existed and now it's removed<br>
+	 * false = didn't exist and hence it still doesn't
 	 */
-	public void unLink(Node parentNode, Node childNode) throws InconsistentTypeCode {
+	public boolean unLink(Node parentNode, Node childNode) throws Exception {
+		nullCheck(parentNode);
+		nullCheck(childNode);
 		if (!isLink(parentNode, childNode)) {
-			return;
+			return false;
 		}
 		boolean removed1 = parentNode.unlinkTo(childNode);
 		boolean removed2 = childNode.unlinkFrom(parentNode);
@@ -187,8 +312,9 @@ public class Environment {
 		if (removed1 ^ removed2) {
 			// Basically we're here because one of the above removals didn't have an element to 
 			// remove, in effect proving non-mutual link existed
-			throw new InconsistentTypeCode();
+			throw new AssertionError();
 		}
+		return true;
 	}
 
 	

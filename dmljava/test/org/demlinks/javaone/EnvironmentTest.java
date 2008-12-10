@@ -26,7 +26,6 @@ import java.util.NoSuchElementException;
 
 
 import org.junit.Test;
-import org.omg.CORBA.ORBPackage.InconsistentTypeCode;
 
 public class EnvironmentTest {
 
@@ -37,6 +36,7 @@ public class EnvironmentTest {
 		env = new Environment();
 		assertTrue(env.size() == 0);
 		
+		assertFalse(env.isNode("A"));
 		// delete non-existent link
 		env.unLink("F","G");
 		assertTrue(env.size() == 0);
@@ -48,12 +48,16 @@ public class EnvironmentTest {
 		env.link("A", "B");
 		assertTrue(env.isLink("A","B"));
 		assertTrue(env.size() == 2); // two nodes exist
+		assertTrue(env.isNode("A"));
+		assertTrue(env.isNode("B"));
 		
 		
 		Node _par = env.getNode("A");
 		Node _chi = env.getNode("B");
 		assertTrue(_chi.isLinkFrom(_par));
 		assertTrue(_par.isLinkTo(_chi));
+		assertTrue(env.isNode(_par));
+		assertTrue(env.isNode(_chi));
 		
 		env.unLink(_par, _chi);
 		//env.unLink("A","B");
@@ -104,7 +108,7 @@ public class EnvironmentTest {
 		Node allWords = env.getNode("AllWords");
 		addAllChars();
 		parseTree("AllWords",20,"");
-		System.out.print(List.CHILDREN);
+		//System.out.print(List.CHILDREN);
 		/*
 		NodeIterator itr = allWords.getNodeIterator(List.CHILDREN);
 		NodeIterator itr = env.getListIterator(allWords,kChildrenList);
@@ -138,13 +142,13 @@ public class EnvironmentTest {
 		ni.find(_f);
 		ni.insert(_k, Location.BEFORE);
 		
-		String k = String.format("%c",65);
-		String kk = "A";
-		String kkk = "A".toString();
-		String k4 = new String("A");
-		assertTrue(kkk.equals(kk));
-		assertTrue(kkk.equals(k4));
-		assertTrue(kkk.equals(k));
+//		String k = String.format("%c",65);
+//		String kk = "A";
+//		String kkk = "A".toString();
+//		String k4 = new String("A");
+//		assertTrue(kkk.equals(kk));
+//		assertTrue(kkk.equals(k4));
+//		assertTrue(kkk.equals(k));
 //		
 //		//TODO so technically we would need to handle a node as a String ID and as a Node object,wherever such node is to be used
 //		env.getNode("AllWords").get(List.CHILDREN).insert("k", Location.BEFORE, "f");

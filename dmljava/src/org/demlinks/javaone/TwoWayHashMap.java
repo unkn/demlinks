@@ -29,6 +29,10 @@ public class TwoWayHashMap<Key,Value> {
 		backward = new HashMap<Value, Key>();
 	}
 	
+	/** (non-Javadoc)
+	 * should contain no null values tho, thus a null return would mean there's no key->value tuple
+	 * @see java.util.HashMap#get(Object key)
+	 */
 	public Value getValue(Key _k) {
 		return forward.get(_k);
 	}
@@ -37,18 +41,37 @@ public class TwoWayHashMap<Key,Value> {
 		return backward.get(_v);
 	}
 
-	public void putKeyValue(Key _k, Value _v) {
-		forward.put(_k, _v);
-		backward.put(_v, _k);
+	/**
+	 * not allowing replacing existing key->value tuples, this should only add new key->value that didn't previously exist
+	 * @throws Exception if the key->value tuple existed, or rather is key->anyvalue existed, except key->null tuple<br>
+	 * @transaction protected
+	 */
+	public void putKeyValue(Key _k, Value _v) throws Exception {
+		Value one = forward.put(_k, _v); 
+		if (one != null) {
+			forward.remove(_k);//undo-ing transaction
+			throw new Exception("the value("+one+") just got replaced (by "+_v+"), in key "+_k);
+		}
+		Key two = backward.put(_v, _k);
+		if (two != null) {
+			//if we're here then "one" did not got replaced hence it's safe to remove it since it didn't previously exist or
+			//worst case scenario key -> null (association), null is the Value
+			forward.remove(_k); // we undo this transaction even if we throw exception
+			backward.remove(_v);//this too!
+			throw new Exception("the key("+two+") just got replaced (by "+_k+"), in value "+_v);
+		}
 	}
 
 	public int size() {
 		return forward.size();// == backward.size()
 	}
 
-	public Value removeKey(Key _k) {
+	public Value removeKey(Key _k) throws Exception {
 		Value deleted = forward.remove(_k);
-		backward.remove(deleted);
+		Key tmpk = backward.remove(deleted);
+		if (tmpk != _k) {
+			throw new Exception("impartial removal, how?!");
+		}
 		return deleted;
 	}
 }

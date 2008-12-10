@@ -18,6 +18,10 @@ public class UniqueListOfNodes {
 	 */
 	private static final long serialVersionUID = 842508346073648046L;
 
+	/**
+	 * @param node
+	 * @return true if list changed as a result of the call
+	 */
 	public boolean append(Node node) {
 		return listSet.add(node);
 	}
@@ -66,7 +70,7 @@ public class UniqueListOfNodes {
 		public void insert(Node whatNode, Location location) {
 			// TODO Auto-generated method stub
 			//UniqueListOfNodes.
-			insert(whatNode, location); // TODO this will need to call insert of UniqueListOfNodes class
+			//insert(whatNode, location); // TODO this will need to call insert of UniqueListOfNodes class
 		}
 
 	}
