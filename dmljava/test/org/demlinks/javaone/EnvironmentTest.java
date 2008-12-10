@@ -33,7 +33,7 @@ public class EnvironmentTest {
 	Environment env;
 	
 	@Test
-	public void testLink() throws InconsistentTypeCode {
+	public void testLink() throws Exception {
 		env = new Environment();
 		assertTrue(env.size() == 0);
 		
@@ -102,7 +102,7 @@ public class EnvironmentTest {
 		parseTree("A",20,"");
 		
 		Node allWords = env.getNode("AllWords");
-		addAllChars(allWords);
+		addAllChars();
 		parseTree("AllWords",20,"");
 		System.out.print(List.CHILDREN);
 		/*
@@ -128,8 +128,16 @@ public class EnvironmentTest {
 		aw.insert(List.CHILDREN, "k", kBefore, "f");
 		UniqueListOfNodes nl = aw.get(List.CHILDREN);
 		nl.insert("k",kBefore,"f");
-		env.getNode("AllWords").get(List.CHILDREN).insert(env.getNode("k"), Location.BEFORE, env.getNode("f"));
 		*/
+		env.getNode("AllWords").get(List.CHILDREN).insert(env.getNode("k"), Location.BEFORE, env.getNode("f"));
+		UniqueListOfNodes chiList= allWords.get(List.CHILDREN);
+		Node _k = env.getNode("k");
+		Node _f	= env.getNode("f");
+		chiList.insert(_k, Location.BEFORE, _f);
+		NodeIterator ni = chiList.nodeIterator(0);
+		ni.find(_f);
+		ni.insert(_k, Location.BEFORE);
+		
 		String k = String.format("%c",65);
 		String kk = "A";
 		String kkk = "A".toString();
@@ -137,12 +145,24 @@ public class EnvironmentTest {
 		assertTrue(kkk.equals(kk));
 		assertTrue(kkk.equals(k4));
 		assertTrue(kkk.equals(k));
+//		
+//		//TODO so technically we would need to handle a node as a String ID and as a Node object,wherever such node is to be used
+//		env.getNode("AllWords").get(List.CHILDREN).insert("k", Location.BEFORE, "f");
+//		env.getNode("AllWords").get(List.CHILDREN).insert("k", Location.BEFORE, _f);
+//		env.getNode("AllWords").get(List.CHILDREN).insert("k", Location.BEFORE, "f");
+//		env.getNode("AllWords").get(List.CHILDREN).insert(_k, Location.BEFORE, _f);
+//		//only "k" may not exist here tho, and will be created, but "f" must exist in that context
+//		//so supposedly the above can be reduces to 2 methods:
+//		env.getNode("AllWords").get(List.CHILDREN).insert("k", Location.BEFORE, env.getNode("f"));
+//		env.getNode("AllWords").get(List.CHILDREN).insert(_k, Location.BEFORE, env.getNode("f"));
+//		// but obviously the latter can only be used if _k exists and it's the Node object of "k"
+//		//still this implies UniqueListOfNodes to have access to Environment aka env here so it can create the needed new ID-Node
 	}
 	
-	public void addAllChars(Node _par) throws InconsistentTypeCode {
+	public void addAllChars() throws Exception {
+		Node _a = env.getNode("AllWords");
 		for (int i = 65; i < 72; i++) {
-			env.link(_par,String.format("%c", i));
-			//System.out.print(String.format("%c", i));
+			env.link(_a,String.format("%c", i));
 		}
 	}
 	

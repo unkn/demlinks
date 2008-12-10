@@ -86,9 +86,17 @@ public class Environment {
 		return (newLink1 && newLink2); // both must be true
 	}
 	
-	public boolean link(Node parentNode, String childID) throws InconsistentTypeCode {
+	public boolean link(Node parentNode, String childID) throws Exception {
 		Node _chi = ensureNode(childID);
-		return link(parentNode, _chi);
+		boolean ret;
+		try {
+			ret=link(parentNode, _chi);
+		} catch (Exception e) {
+			// TODO: handle exception, this would have to remove _chi if it wasn't already existent before ensureNode above executed
+			// but we can't since we don't know if _chi existed before
+			throw e;
+		} 
+		return ret;
 	}
 	//TODO: one more methods for link between Node and ID and between ID and Node
 	

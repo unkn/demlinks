@@ -55,10 +55,36 @@ public class UniqueListOfNodes {
 		NodeItr(int index) {
 			
 		}
+
+		@Override
+		public void find(Node node) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void insert(Node whatNode, Location location) {
+			// TODO Auto-generated method stub
+			//UniqueListOfNodes.
+			insert(whatNode, location); // TODO this will need to call insert of UniqueListOfNodes class
+		}
+
 	}
 
 	//TODO temporary
 	public ListIterator<Node> listIterator() {
 		return listSet.listIterator();
 	}
+
+	public void insert(Node whatNode, Location location, Node locationNode) {
+		// TODO Auto-generated method stub
+		if (locationNode == null) {
+			//TODO disallow location == BEFORE or AFTER or INSTEADOF
+		}
+	}
+	
+	public void insert(Node whatNode, Location location) {
+		insert(whatNode, location, null);
+	}
+	
 }
