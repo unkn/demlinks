@@ -25,18 +25,53 @@ import java.util.NoSuchElementException;
 
 
 
+import org.junit.Before;
 import org.junit.Test;
 
 public class EnvironmentTest {
 
 	Environment env;
 	
+	@Before
+	public void init() {
+		env = new Environment();
+
+		assertTrue(env.size() == 0);
+	}
+	
+	@Test
+	public void testisNode() {
+		// empty string not allowed
+		try {
+			env.isNode("");
+		} catch (Error e) {
+			//e.printStackTrace();
+		}
+		
+		// null Node not allowed
+		try {
+			Node ca=null;
+			env.isNode(ca);
+		} catch (Error e) {
+			//e.printStackTrace();
+		}
+		
+		//null string not allowed
+		try {
+			String cas = null;
+			System.out.println(env.isNode(cas));
+		} catch (Error e) {
+			//e.printStackTrace();
+		}
+		
+		//non-existent node "A"
+		assertFalse(env.isNode("A"));
+	}
+	
 	@Test
 	public void testLink() throws Exception {
-		env = new Environment();
-		assertTrue(env.size() == 0);
-		
-		assertFalse(env.isNode("A"));
+
+
 		// delete non-existent link
 		env.unLink("F","G");
 		assertTrue(env.size() == 0);

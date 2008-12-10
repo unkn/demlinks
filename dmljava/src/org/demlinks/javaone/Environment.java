@@ -40,14 +40,36 @@ public class Environment {
 	 * @return
 	 */
 	public Node getNode(String nodeID) {
+		emptyError(nodeID);
 		return allIDNodeTuples.getValue(nodeID);
 	}
 
+	/**
+	 * includes {@link #nullError(Object)}
+	 * @param anyString
+	 */
+	private static void emptyError(String anyString) {
+		nullError(anyString);
+		if (anyString.isEmpty()) {
+			throw new AssertionError("should never be empty");
+		}
+	}
+
+	/**
+	 * @param nodeID
+	 * @return
+	 */
 	public boolean isNode(String nodeID) {
+		emptyError(nodeID);
 		return ( null != getNode(nodeID) );
 	}
 	
+	/**
+	 * @param node
+	 * @return
+	 */
 	public boolean isNode(Node node) {
+		nullError(node);
 		return ( null != getID(node) );
 	}
 	
@@ -56,6 +78,7 @@ public class Environment {
 	 * @return
 	 */
 	public String getID(Node node) {
+		nullError(node);
 		return allIDNodeTuples.getKey(node);
 	}
 	
@@ -68,6 +91,10 @@ public class Environment {
 	 * @transaction protected
 	 */
 	public boolean link(String parentID, String childID) throws Exception {
+		nullError(parentID);
+		emptyError(parentID);
+		nullError(childID);
+		emptyError(childID);
 		boolean chiExisted=true;
 		boolean parExisted=true;
 		boolean ret;
@@ -79,13 +106,13 @@ public class Environment {
 			if (!chiExisted) {
 				//gets created
 				_chi = newNode(childID);
-				nullCheck(_chi);
+				nullError(_chi);
 			}
 			
 			parExisted = null != (_par=getNode(parentID));
 			if (!parExisted) {
 				_par = newNode(parentID);
-				nullCheck(_par);
+				nullError(_par);
 			}
 
 			ret=link(_par, _chi);
@@ -122,6 +149,8 @@ public class Environment {
 	 * @throws Exception 
 	 */
 	public boolean link(Node parentNode, Node childNode) throws Exception {
+		nullError(parentNode);
+		nullError(childNode);
 		boolean newLink1=false;
 		boolean newLink2=false;
 		try { //begin transaction
@@ -161,6 +190,9 @@ public class Environment {
 	 * @throws Exception
 	 */
 	public boolean link(Node parentNode, String childID) throws Exception {
+		nullError(parentNode);
+		nullError(childID);
+		emptyError(childID);
 		boolean existed=true;//so we won't have to remove it, in the catch block assuming try would've been before Node _chi;
 		//begin transaction
 			Node _chi;
@@ -216,6 +248,11 @@ public class Environment {
 	 * @transaction protected
 	 */
 	private Node newNode(String nodeID) throws Exception {
+		//lucky it's possible to create ID-Node tuple without being in a link, or else Nodes won't exist unless in a link and so
+		//the nodeID would have to be passed to the childrenList of some Node object and this list would add this nodeID after
+		//it created the ID-Node tuple, and ofc if exception, undo (ID-Node tuple creation - unless it already was there)
+		nullError(nodeID);
+		emptyError(nodeID);
 		Node nod = new Node();
 		allIDNodeTuples.putKeyValue(nodeID, nod); // if this excepts then the "nod" variable will get destroyed by Java anyway
 		return nod;
@@ -232,11 +269,13 @@ public class Environment {
 	 * remove the id from allIDNodeTuples only, it's assumed it's already empty
 	 * ie. children/parents lists are empty ('cause only then should it be removed)
 	 * doesn't recursively remove
-	 * @param id
+	 * @param nodeID
 	 * @throws Exception 
 	 */
-	private Node removeNode(String id) throws Exception {
-		return allIDNodeTuples.removeKey(id);
+	private Node removeNode(String nodeID) throws Exception {
+		nullError(nodeID);
+		emptyError(nodeID);
+		return allIDNodeTuples.removeKey(nodeID);
 	}
 
 	/**
@@ -246,6 +285,10 @@ public class Environment {
 	 * @throws Exception 
 	 */
 	public boolean isLink(String parentID, String childID) throws Exception {
+		nullError(parentID);
+		nullError(childID);
+		emptyError(parentID);
+		emptyError(childID);
 		Node _par = getNode(parentID);
 		Node _chi = getNode(childID);
 		if ((null == _par) || (null == _chi) ) {
@@ -261,14 +304,23 @@ public class Environment {
 	 * @throws Exception 
 	 */
 	public boolean isLink(Node parentNode, Node childNode) throws Exception {
-		nullCheck(parentNode);
-		nullCheck(childNode);
+		nullError(parentNode);
+		nullError(childNode);
 		return ( parentNode.isLinkTo(childNode) && childNode.isLinkFrom(parentNode));
 	}
 	
-	private static void nullCheck(Object any) {
-		if (null == any) {
-			throw new NullPointerException("bad programming?");
+//	private static void nullExcept(Object any) {
+//		if (null == any) {
+//			throw new NullPointerException("bad programming?");
+//		}
+//	}
+	
+	/**
+	 * @param anyObject
+	 */
+	private static void nullError(Object anyObject) {
+		if (null == anyObject) {
+			throw new AssertionError("should never be null");
 		}
 	}
 
@@ -280,6 +332,10 @@ public class Environment {
 	 * @returns see {@link #unLink(Node, Node)}
 	 */
 	public boolean unLink(String parentID, String childID) throws Exception {
+		nullError(parentID);
+		nullError(childID);
+		emptyError(parentID);
+		emptyError(childID);
 		Node _par = getNode(parentID);
 		Node _chi = getNode(childID);
 		if ((null == _par) || (null == _chi)) {
@@ -296,8 +352,8 @@ public class Environment {
 	 * false = didn't exist and hence it still doesn't
 	 */
 	public boolean unLink(Node parentNode, Node childNode) throws Exception {
-		nullCheck(parentNode);
-		nullCheck(childNode);
+		nullError(parentNode);
+		nullError(childNode);
 		if (!isLink(parentNode, childNode)) {
 			return false;
 		}
