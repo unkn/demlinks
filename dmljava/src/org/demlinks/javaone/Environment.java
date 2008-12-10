@@ -30,11 +30,11 @@ import org.omg.CORBA.ORBPackage.InconsistentTypeCode;
 
 public class Environment {
 	//fields
-	private TwoWayIdentityHashMap<String, Node> allIDNodeTuples; // unique elements
+	private TwoWayHashMap<String, Node> allIDNodeTuples; // unique elements
 	
 	//constructor
 	public Environment() {
-		allIDNodeTuples = new TwoWayIdentityHashMap<String, Node>();
+		allIDNodeTuples = new TwoWayHashMap<String, Node>();
 	}
 	
 	//methods
@@ -85,7 +85,12 @@ public class Environment {
 		}
 		return (newLink1 && newLink2); // both must be true
 	}
-	//TODO: two more methods for link between Node and ID and between ID and Node
+	
+	public boolean link(Node parentNode, String childID) throws InconsistentTypeCode {
+		Node _chi = ensureNode(childID);
+		return link(parentNode, _chi);
+	}
+	//TODO: one more methods for link between Node and ID and between ID and Node
 	
 	/**
 	 * make sure that node "id" exists in the allNodes list and points to a new or 
@@ -177,4 +182,6 @@ public class Environment {
 			throw new InconsistentTypeCode();
 		}
 	}
+
+	
 }

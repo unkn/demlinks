@@ -23,29 +23,41 @@ import static org.junit.Assert.*;
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
 
+
+
 import org.junit.Test;
 import org.omg.CORBA.ORBPackage.InconsistentTypeCode;
-import org.omg.PortableInterceptor.ORBInitInfoPackage.DuplicateName;
 
 public class EnvironmentTest {
 
 	Environment env;
 	
 	@Test
-	public void testLink() throws DuplicateName, InconsistentTypeCode {
+	public void testLink() throws InconsistentTypeCode {
 		env = new Environment();
+		assertTrue(env.size() == 0);
+		
+		// delete non-existent link
 		env.unLink("F","G");
+		assertTrue(env.size() == 0);
+
+		// get non-existent node
 		assertTrue(null == env.getNode("C"));
+
+		// create a link between two (non-existent) nodes
 		env.link("A", "B");
 		assertTrue(env.isLink("A","B"));
-		assertTrue(env.size() == 2);
+		assertTrue(env.size() == 2); // two nodes exist
+		
+		
 		Node _par = env.getNode("A");
 		Node _chi = env.getNode("B");
 		assertTrue(_chi.isLinkFrom(_par));
 		assertTrue(_par.isLinkTo(_chi));
 		
-		env.unLink("A","B");
-		assertTrue(0 == _chi.getChildrenListSize());
+		env.unLink(_par, _chi);
+		//env.unLink("A","B");
+		//assertTrue(0 == _chi.getChildrenListSize());
 		//assertTrue(0 == _chi.getParentsListSize());
 		assertTrue(_chi.isDead());
 		assertTrue(null == env.getNode("B"));
@@ -70,7 +82,7 @@ public class EnvironmentTest {
 		assertTrue(env.link("dood", "o"));
 		assertFalse(env.link("dood", "o")); // false=already exists hehe, no DUPs supported like that
 		assertFalse(env.link("dood", "d")); // same here
-		assertTrue(2 == env.getNode("dood").getChildrenListSize());
+		//assertTrue(2 == env.getNode("dood").getChildrenListSize());
 		
 		env.link("AllWords", "DOOD");
 		env.link("DOOD", "RND_2180");
@@ -81,13 +93,57 @@ public class EnvironmentTest {
 		env.link("RND_7521", "O");
 		env.link("RND_1288", "O");
 		env.link("RND_1129", "D");
-		assertTrue( env.getNode("DOOD").getChildrenListSize() == 4 );
+		//assertTrue( env.getNode("DOOD").getChildrenListSize() == 4 );
 
-		parseTree("AllWords",20,"");
+		//parseTree("AllWords",20,"");
 		env.link("A", "B");
 		env.link("B","C");
 		env.link("C", "A");
 		parseTree("A",20,"");
+		
+		Node allWords = env.getNode("AllWords");
+		addAllChars(allWords);
+		parseTree("AllWords",20,"");
+		System.out.print(List.CHILDREN);
+		/*
+		NodeIterator itr = allWords.getNodeIterator(List.CHILDREN);
+		NodeIterator itr = env.getListIterator(allWords,kChildrenList);
+		itr.append("a");
+		itr.find("a");
+		itr.insert("b",kAfter);
+		itr.insert("c",kFirst);
+		itr.insert("d",kLast);
+		itr.insert("e",kBefore); // before "a"
+		itr.insert("f",kInstead); // a gets replaced with "f"
+		itr.insert(_par,kBefore,_chi); //assuming _chi exists else fails
+		itr.insert("g",kAfter,10); // after index 10, overridden method
+		itr.insert("h",kBefore,10); // before index 10
+		itr.insert("i",kAfter,"a");//this is something the list should have, not the iterator
+		//OR the environment even
+		env.insert("b",kAfter,"a","AllWords",List.CHILDREN);
+		//OR
+		env.insert("AllWords",List.CHILDREN,"k", Location.BEFORE,"f");//in children list of AllWords, insert "k" before "f"
+		// order now: AllWords->k   , AllWords->f
+		Node aw = env.getNode("AllWords");
+		aw.insert(List.CHILDREN, "k", kBefore, "f");
+		UniqueListOfNodes nl = aw.get(List.CHILDREN);
+		nl.insert("k",kBefore,"f");
+		env.getNode("AllWords").get(List.CHILDREN).insert(env.getNode("k"), Location.BEFORE, env.getNode("f"));
+		*/
+		String k = String.format("%c",65);
+		String kk = "A";
+		String kkk = "A".toString();
+		String k4 = new String("A");
+		assertTrue(kkk.equals(kk));
+		assertTrue(kkk.equals(k4));
+		assertTrue(kkk.equals(k));
+	}
+	
+	public void addAllChars(Node _par) throws InconsistentTypeCode {
+		for (int i = 65; i < 72; i++) {
+			env.link(_par,String.format("%c", i));
+			//System.out.print(String.format("%c", i));
+		}
 	}
 	
 	public void parseTree(String ID, int downToLevel, String whatWas) {
@@ -100,7 +156,7 @@ public class EnvironmentTest {
 		if (null == nod) { // this will never happen (unless first call)
 			throw new NoSuchElementException();
 		}
-		ListIterator<Node> litr = nod.getChildrenListIterator();
+		ListIterator<Node> litr = nod.get(List.CHILDREN).listIterator();
 		if (!litr.hasNext()) { // no more children
 			System.out.println(whatWas);
 			return;

@@ -18,7 +18,6 @@
 
 package org.demlinks.javaone;
 
-import java.util.ListIterator;
 
 
 
@@ -28,13 +27,12 @@ import java.util.ListIterator;
 public class Node {
 	// if both lists are empty the node shouldn't exist (in the Environment)
 	// lists should never be null
-	//TODO: make a new class for these lists, also an interface for it which may be used somewhere else also
-	private LinkedListSet<Node> parentsList;
-	private LinkedListSet<Node> childrenList;
+	private UniqueListOfNodes parentsList;
+	private UniqueListOfNodes childrenList;
 	
 	public Node() {
-		parentsList = new LinkedListSet<Node>();
-		childrenList = new LinkedListSet<Node>();
+		parentsList = new UniqueListOfNodes();
+		childrenList = new UniqueListOfNodes();
 	}
 
 
@@ -47,7 +45,7 @@ public class Node {
 	 * <tt>false</tt> if already exited hence it remains
 	 */
 	public boolean linkFrom(Node parentNode) {
-		return this.parentsList.add(parentNode); // boolean changed
+		return get(List.PARENTS).append(parentNode); // boolean changed
 			// not changed? then it already exited, 
 			// if so then maybe bad programming at the caller level? so to assume
 	}
@@ -62,7 +60,7 @@ public class Node {
 	 */
 	public boolean linkTo(Node childNode) {
 		// TODO: we may want to interface (aka public interface) some stuffs like linkTo
-		return this.childrenList.add(childNode);
+		return get(List.CHILDREN).append(childNode);
 			// false, means collection not changed hence child already existed
 	}
 
@@ -71,7 +69,7 @@ public class Node {
 	 * @return true if the child existed before call, now not anymore
 	 */
 	public boolean unlinkTo(Node childNode) {
-		return this.childrenList.remove(childNode);
+		return get(List.CHILDREN).remove(childNode);
 	}
 
 
@@ -80,7 +78,7 @@ public class Node {
 	 * @return see: {@link #unlinkTo(Node)}
 	 */
 	public boolean unlinkFrom(Node parentNode) {
-		return this.parentsList.remove(parentNode);
+		return get(List.PARENTS).remove(parentNode);
 	}
 
 	/**
@@ -89,23 +87,26 @@ public class Node {
 	 * @return
 	 */
 	public boolean isLinkTo(Node childNode) {
-		return this.childrenList.contains(childNode);
+		return get(List.CHILDREN).contains(childNode);
 	}
 	
 	public boolean isLinkFrom(Node parentNode) {
-		return this.parentsList.contains(parentNode);
+		return get(List.PARENTS).contains(parentNode);
 	}
 	
 	public boolean isDead() {
-		return ( (parentsList.isEmpty()) && (childrenList.isEmpty()) );
+		return ( (get(List.PARENTS).isEmpty()) && (get(List.CHILDREN).isEmpty()) );
 	}
 	
-	public int getChildrenListSize() {
-		return childrenList.size();
+	public UniqueListOfNodes get(List list) throws AssertionError {
+		switch (list) {
+		case CHILDREN:
+			return this.childrenList;
+		case PARENTS:
+			return this.parentsList;
+		default:
+			throw new AssertionError("Unhandled list type: "+list);
+		}
 	}
 	
-	// TODO: temporarily here:
-	public ListIterator<Node> getChildrenListIterator() {
-		return childrenList.listIterator();
-	}
 }

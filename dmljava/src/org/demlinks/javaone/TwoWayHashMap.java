@@ -18,15 +18,15 @@
 
 package org.demlinks.javaone;
 
-import java.util.IdentityHashMap;
+import java.util.HashMap;
 
-public class TwoWayIdentityHashMap<Key,Value> {
-	private IdentityHashMap<Key,Value> forward;
-	private IdentityHashMap<Value,Key> backward;
+public class TwoWayHashMap<Key,Value> {
+	private HashMap<Key,Value> forward;
+	private HashMap<Value,Key> backward;
 	
-	TwoWayIdentityHashMap() {
-		forward = new IdentityHashMap<Key, Value>();
-		backward = new IdentityHashMap<Value, Key>();
+	TwoWayHashMap() {
+		forward = new HashMap<Key, Value>();
+		backward = new HashMap<Value, Key>();
 	}
 	
 	public Value getValue(Key _k) {

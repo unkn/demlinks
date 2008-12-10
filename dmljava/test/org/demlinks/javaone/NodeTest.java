@@ -20,62 +20,46 @@ package org.demlinks.javaone;
 
 import static org.junit.Assert.*;
 
-import java.util.Iterator;
-import java.util.ListIterator;
 
 import org.junit.Test;
-import org.omg.PortableInterceptor.ORBInitInfoPackage.DuplicateName;
 
 
 public class NodeTest {
 	@Test
-	public void testNode() throws DuplicateName {
+	public void testNode() {
 
 		//TODO: tests need to be remade, in both units
 		Node a = new Node();
 		Node b = new Node();
 		Node c = new Node();
 		a.linkTo(b);
-		checkIntegrity(a);// yep b doesn't link back to a here
-		checkIntegrity(b);
 		assertTrue(a.isLinkTo(b));
-		assertTrue(b.isLinkFrom(a));
-		b.unlinkFrom(a);
-		assertFalse(a.isLinkTo(b));
 		assertFalse(b.isLinkFrom(a));
+		b.unlinkFrom(a);
+		assertTrue(a.isLinkTo(b));
+		assertFalse(b.isLinkFrom(a));
+		a.unlinkTo(b);
+		assertFalse(a.isLinkTo(b));
 
 		a.linkTo(b);
 		b.linkTo(c);
 		c.linkTo(a);
 		b.linkTo(a);
-		assertTrue(a.isLinkFrom(b));
+		assertFalse(a.isLinkFrom(b));
 		assertTrue(a.isLinkTo(b));
 		assertFalse(a.isLinkTo(c));
-		assertTrue(a.isLinkFrom(c));
+		assertFalse(a.isLinkFrom(c));
 		//a.getChildrenList().add
-		ListIterator<Node> itr = a.getChildrenListIterator();
+		/*ListIterator<Node> itr = a.getChildrenListIterator();
 		//System.out.println(itr.toString());
 		itr.add(c);
 		itr.previous();
 		while(itr.hasNext()) {
 			System.out.println(itr.next()+".");
-		}
+		}*/
 		System.out.println(a);
 		System.out.println(b);
 		System.out.println(c);
 	}
 	
-	public void checkIntegrity(Node masterNode) {
-		// check if both lists are empty
-		assertFalse(masterNode.isDead());
-		
-
-		Iterator<Node> citr = masterNode.getChildrenListIterator();
-		while (citr.hasNext()) {
-			Node childNode = citr.next();
-			assertTrue(childNode.isLinkFrom(masterNode));// b doesn't link back to a (this is normal)
-			assertTrue(masterNode.isLinkTo(childNode));
-		}
-		//}
-	}
 }
