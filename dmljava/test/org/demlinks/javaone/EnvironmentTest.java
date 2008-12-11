@@ -239,6 +239,9 @@ public class EnvironmentTest {
 		a.linkTo(env,"c");//assuming Env is now not inherited by Node, now Node can use the Node _c = env.getNode("c") 
 							//and even env.link(this,_c); inside a ofc hence this=a
 		
+		//VARIANT5: Node gets an Environment field (since it's not copied or cloned, instead is referenced)
+		env.link("a", "b");//this makes the link between new nodes "a" and "b" and gives them each an Env field
+		
 //		String k = String.format("%c",65);
 //		String kk = "A";
 //		String kkk = "A".toString();

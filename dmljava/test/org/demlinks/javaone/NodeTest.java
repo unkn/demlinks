@@ -21,18 +21,28 @@ package org.demlinks.javaone;
 import static org.junit.Assert.*;
 
 
+import org.junit.Before;
 import org.junit.Test;
 
 
 public class NodeTest {
+	
+	private Environment env;
+	
+	@Before
+	public void init() {
+		env = new Environment();
+	}
+	
 	@Test
 	public void testNode() throws Exception {
 
 		//TODO: tests need to be remade, in both units
-		Node a = new Node();
-		Node b = new Node();
-		Node c = new Node();
+		Node a = new Node(env);
+		Node b = new Node(env);
+		Node c = new Node(env);
 		a.linkTo(b);
+		a.linkTo("somename");
 		assertTrue(a.isLinkTo(b));
 		assertFalse(b.isLinkFrom(a));
 		b.unlinkFrom(a);

@@ -27,7 +27,7 @@ package org.demlinks.javaone;
 
 public class Environment {
 	//fields
-	private static TwoWayHashMap<String, Node> allIDNodeTuples; // unique elements
+	private TwoWayHashMap<String, Node> allIDNodeTuples; // unique elements
 	// the issue here is, what if I want more than one Environment?!
 	
 	//constructor

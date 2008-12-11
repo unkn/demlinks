@@ -24,31 +24,39 @@ package org.demlinks.javaone;
 
 // at this level the Nodes don't have IDs, they're just java objects
 
-public class Node extends Environment {
+public class Node {
 	// if both lists are empty the node shouldn't exist (in the Environment)
 	// lists should never be null
+	private Environment environment;
 	private UniqueListOfNodes parentsList;
 	private UniqueListOfNodes childrenList;
 	
-	public Node() throws Exception {
+	public Node(Environment env) {
+		nullError(env);
+		environment = env;
 		createLists();
 		//assign random ID
-		this.mapNode(null, this);//null here means give random ID
+		//this.mapNode(null, this);//null here means give random ID
 	}
 	
-	public Node(String nodeID) throws Exception {
-		createLists();
-		this.mapNode(nodeID, this);
-	}
-	
-	private void createLists() {
-		parentsList = new UniqueListOfNodes();
-		childrenList = new UniqueListOfNodes();
+	private static void nullError(Object anyObject) {
+		if (null == anyObject) {
+			throw new AssertionError("should never be null");
+		}
 	}
 
-	//@Override
+	//	public Node(String nodeID) throws Exception {
+//		createLists();
+//		this.mapNode(nodeID, this);
+//	}
+//	
+	private void createLists() {
+		parentsList = new UniqueListOfNodes(environment);
+		childrenList = new UniqueListOfNodes(environment);
+	}
+
 	public String getID() { // returns own ID
-		return getID(this);
+		return environment.getID(this);
 	}
 
 	/**
@@ -75,9 +83,18 @@ public class Node extends Environment {
 	 * false is link existed and still exists after the call but well nothing changed then.
 	 */
 	public boolean linkTo(Node childNode) {
+		nullError(childNode);
+		sameEnv(childNode);
+		
 		//TODO if childNode is null then create new Node() before call or let this happen inside list?
 		return get(List.CHILDREN).append(childNode);
 			// false, means collection not changed hence child already existed
+	}
+
+	private void sameEnv(Node node) {
+		if (node.environment != this.environment) {
+			throw new AssertionError("cannot cross-environmentally do that"); //lol?
+		}
 	}
 
 	/**
