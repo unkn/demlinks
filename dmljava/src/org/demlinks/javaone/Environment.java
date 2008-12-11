@@ -148,7 +148,7 @@ public class Environment {
 	 * <tt>false</tt> if link already exits, nothing else done
 	 * @throws Exception 
 	 */
-	public boolean link(Node parentNode, Node childNode) throws Exception {
+	public Node link(Node parentNode, Node childNode) throws Exception {
 		nullError(parentNode);
 		nullError(childNode);
 		boolean newLink1=false;
@@ -186,38 +186,18 @@ public class Environment {
 	/**
 	 * @param parentNode
 	 * @param childID
-	 * @return
+	 * @return childNode
 	 * @throws Exception
 	 */
-	public boolean link(Node parentNode, String childID) throws Exception {
+	public Node link(Node parentNode, String childID) throws Exception {
 		nullError(parentNode);
 		nullError(childID);
 		emptyError(childID);
-		boolean existed=true;//so we won't have to remove it, in the catch block assuming try would've been before Node _chi;
-		//begin transaction
-			Node _chi;
-			existed = null != (_chi=getNode(childID));
-			if (!existed) {
-				//gets created
-				_chi = newNode(childID);
-			}
-		boolean ret;
-		try {
-			ret=link(parentNode, _chi);
-		} catch (Exception e) {
-			//handle exception, this would have to remove _chi if it wasn't already existent before ensureNode above executed
-			if (!existed) {
-				//hence it was created above by newNode() thus we have to remove it here if we were to undo changes aka rollback
-				if (_chi != removeNode(childID)) {
-					//it's probably null signaling that it didn't remove!
-					//e.printStackTrace();
-					throw new AssertionError("this shouldn't happen");
-				}
-			}
-			throw e;
-		}
-		//end transaction
-		return ret;
+		
+		Node _chi = getNode(childID);
+		_chi=link(parentNode, _chi);
+		mapNode(childID, _chi);
+		return _chi;
 	}
 	//TODO: one more methods for link between Node and ID and between ID and Node
 	
@@ -240,22 +220,48 @@ public class Environment {
 //	}
 	
 	
+//	/**
+//	 * better not call this unless u're sure nodeID doesn't exist
+//	 * @param nodeID
+//	 * @return
+//	 * @throws Exception when nodeID existed before<br>
+//	 * @transaction protected
+//	 */
+//	private Node newNode(String nodeID) throws Exception {
+//		//lucky it's possible to create ID-Node tuple without being in a link, or else Nodes won't exist unless in a link and so
+//		//the nodeID would have to be passed to the childrenList of some Node object and this list would add this nodeID after
+//		//it created the ID-Node tuple, and ofc if exception, undo (ID-Node tuple creation - unless it already was there)
+//		nullError(nodeID);
+//		emptyError(nodeID);
+//		Node nod = new Node();
+//		if (isNode(nod)) {
+//			throw new AssertionError("impossible, this node is new, couldn't've existed");
+//		}
+//		if (isNode(nodeID)) {
+//			throw new Exception("already existing nodeID="+nodeID);
+//		}
+//		mapNode(nodeID, nod);
+//		//allIDNodeTuples.putKeyValue(nodeID, nod); // if this excepts then the "nod" variable will get destroyed by Java anyway
+//		return nod;
+//	}
+	
 	/**
-	 * better not call this unless u're sure nodeID doesn't exist
 	 * @param nodeID
-	 * @return
-	 * @throws Exception when nodeID existed before<br>
-	 * @transaction protected
+	 * @param node object should already exist outside of call
+	 * @throws Exception if the node already exists, either the ID or the Node object in the ID-Node tuple list
+	 * @return node
 	 */
-	private Node newNode(String nodeID) throws Exception {
-		//lucky it's possible to create ID-Node tuple without being in a link, or else Nodes won't exist unless in a link and so
-		//the nodeID would have to be passed to the childrenList of some Node object and this list would add this nodeID after
-		//it created the ID-Node tuple, and ofc if exception, undo (ID-Node tuple creation - unless it already was there)
-		nullError(nodeID);
+	protected Node mapNode(String nodeID, Node node) throws Exception {
+		nullError(node);
+		if (node.isDead()) {
+			throw new AssertionError("we shouldn't map empty nodes like that");
+		}
 		emptyError(nodeID);
-		Node nod = new Node();
-		allIDNodeTuples.putKeyValue(nodeID, nod); // if this excepts then the "nod" variable will get destroyed by Java anyway
-		return nod;
+		if (isNode(node) || isNode(nodeID)) {
+			throw new Exception("one of them already exists, nodeID="+nodeID);
+		}
+		allIDNodeTuples.putKeyValue(nodeID, node);
+		return node;
 	}
 	
 	/**

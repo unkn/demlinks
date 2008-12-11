@@ -60,6 +60,7 @@ public class Node {
 	 * false is link existed and still exists after the call but well nothing changed then.
 	 */
 	public boolean linkTo(Node childNode) {
+		//TODO if childNode is null then create new Node() before call or let this happen inside list?
 		return get(List.CHILDREN).append(childNode);
 			// false, means collection not changed hence child already existed
 	}

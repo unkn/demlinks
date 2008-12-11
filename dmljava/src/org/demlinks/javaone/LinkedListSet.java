@@ -23,6 +23,7 @@ import java.util.LinkedList;
 
 // no DUPlicate elements
 // ability to insert anywhere
+// no nulls
 
 public class LinkedListSet<E> extends LinkedList<E> {
 
@@ -30,15 +31,21 @@ public class LinkedListSet<E> extends LinkedList<E> {
 //		super();
 //	}
 	
+	private static void nullError(Object anyObject) {
+		if (null == anyObject) {
+			throw new AssertionError("should never be null");
+		}
+	}
+	
 	/* (non-Javadoc)
 	 * @see java.util.LinkedList#add(java.lang.Object)
 	 */
 	@Override
-	public boolean add(E obj) throws AlreadyConnectedException {
+	public boolean add(E obj) {
+		nullError(obj);
 		if (!this.contains(obj)) {
 			return super.add(obj);
 		}
-		//throw new AlreadyConnectedException();
 		return false;
 	}
 	

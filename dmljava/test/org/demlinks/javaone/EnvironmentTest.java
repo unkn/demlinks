@@ -176,6 +176,52 @@ public class EnvironmentTest {
 		NodeIterator ni = chiList.nodeIterator(0);
 		ni.find(_f);
 		ni.insert(_k, Location.BEFORE);
+		Node newNode = ni.insert(Location.AFTER,_f);//new node here
+		assertTrue( newNode == env.mapNode("newNode",newNode) );
+		
+		env.link("A", "B");
+		env.link(null, null);
+		
+		env.getNode("AllWords").get(List.CHILDREN).insert(env.mapNode("k",new Node()), Location.BEFORE, env.getNode("f"));
+		//-----------------------------------------------
+		//VARIANT1: try block necessary since we create the new node before potentially dangerous call to insert() which may throw
+		// this is what would take to transactionally insert (possibly new) node "k" BEFORE node "f" in the children of "AllWords"
+		Node _k = env.getNode("k");
+		boolean created=false;
+		if (null == _k) {
+			created = (null != env.newNode("k"));
+		}
+		try {
+			env.getNode("AllWords").get(List.CHILDREN).insert(_k, Location.BEFORE, env.getNode("f"));
+		}catch (Exception e) {
+			//undo creation of "k" if it was created above
+			if (created) {
+				env.removeNode("k");
+			}
+		}
+		
+		//VARIANT2: a try block isn't necessary because the node is created after success of insert()
+		Node _k = env.getNode("k");//null if didn't previously exist
+		Node newNode = env.getNode("AllWords").get(List.CHILDREN).insert(_k, Location.BEFORE, env.getNode("f"));
+		if (_k != newNode) {//newNode will not be null, ever, instead insert() will throw exception
+			//then it's only logical _k didn't exist and it was created by insert as a new Node() and returned as newNode
+			env.mapNode("k",newNode);
+		}
+		//variant2 seems to be ok but there's already env.link(null,null) implication, how to return 2 new Nodes from that
+		
+		//VARIANT3:
+		env.getNode("AllWords").get(List.CHILDREN).insert(env,"k", Location.BEFORE, "f");
+		//whether "k" exists or not, it's up to insert() to realize but it will have to use the env.getNode(id) somehow
+		//in effect this doesn't look like object oriented though
+		//insert() will also use env to do mapNode() in case "k" is a new node in the env(ironment)
+		
+		//whatever variant used the following should be able to execute:
+		Node _k = env.getNode("k");
+		_k.linkTo(env, "g");//will also have to execute _g.linkFrom(_k); ?!!
+		//also BIG NOTE: insert() will have to execute env.link() or have the same code when trying to add "k" to the list (that is
+		//AllWords->"k" and AllWords<-"k" links, but that would mean duplication of code which would exist in both env.link() and
+		//in insert()
+		//------------------------------------
 		
 //		String k = String.format("%c",65);
 //		String kk = "A";
