@@ -24,17 +24,32 @@ package org.demlinks.javaone;
 
 // at this level the Nodes don't have IDs, they're just java objects
 
-public class Node {
+public class Node extends Environment {
 	// if both lists are empty the node shouldn't exist (in the Environment)
 	// lists should never be null
 	private UniqueListOfNodes parentsList;
 	private UniqueListOfNodes childrenList;
 	
-	public Node() {
+	public Node() throws Exception {
+		createLists();
+		//assign random ID
+		this.mapNode(null, this);//null here means give random ID
+	}
+	
+	public Node(String nodeID) throws Exception {
+		createLists();
+		this.mapNode(nodeID, this);
+	}
+	
+	private void createLists() {
 		parentsList = new UniqueListOfNodes();
 		childrenList = new UniqueListOfNodes();
 	}
 
+	//@Override
+	public String getID() { // returns own ID
+		return getID(this);
+	}
 
 	/**
 	 * parentNode -> this, but not also parentNode <- this ! <br>

@@ -26,7 +26,7 @@ import org.junit.Test;
 
 public class NodeTest {
 	@Test
-	public void testNode() {
+	public void testNode() throws Exception {
 
 		//TODO: tests need to be remade, in both units
 		Node a = new Node();

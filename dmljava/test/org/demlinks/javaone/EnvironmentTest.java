@@ -223,6 +223,22 @@ public class EnvironmentTest {
 		//in insert()
 		//------------------------------------
 		
+		//VARIANT4: Node extends Environment
+		Node n;
+		n.linkTo(n);// would have to imply a linkFrom()
+		
+		env.link("a", "b");
+		Node a = env.getNode("a");
+		Node c = a.linkTo("c");//will imply c.linkFrom(a); or if Node is inheriting Env then this.link(this,"c"); executed
+		//and a private _linkTo(node) and _linkFrom(node) ofc must exist in Node that Env uses to .link() =)
+		//those private ones mustn't have ID params, only Node
+		env.link("c", "d");//would work like env.getNode("c")._linkTo(_d) and _d.linkFrom(_c);
+		//so either Node inherits Env or Node gets passed the Env param, this way we could have any number of Env instances since
+		//we'll unstatic that field in Env
+		
+		a.linkTo(env,"c");//assuming Env is now not inherited by Node, now Node can use the Node _c = env.getNode("c") 
+							//and even env.link(this,_c); inside a ofc hence this=a
+		
 //		String k = String.format("%c",65);
 //		String kk = "A";
 //		String kkk = "A".toString();
