@@ -96,8 +96,45 @@ public class Environment {
 		return allIDNodeTuples.getKey(node);
 	}
 	
+	/**
+	 * @param parentNode
+	 * @param childNode
+	 * @return
+	 * @throws Exception 
+	 * @transaction protected
+	 * @consistency checks
+	 */
+	protected boolean internalLink(Node parentNode, Node childNode) throws Exception {
+		//assumes both nodes exist in the environment already, and hence non-null params
+		boolean new1=false;
+		boolean new2=false;
+		try {
+			new1 = parentNode.internalLinkTo(childNode);
+			new2 = childNode.internalLinkFrom(parentNode);
+		} catch (Exception e) {
+			if (new1) {
+				//undo it
+				try {
+					parentNode.unlinkTo(childNode);
+				} catch (Exception f) {
+					e.printStackTrace();
+					f.printStackTrace();
+					throw new AssertionError(e);
+				}
+			}
+			//new2 probably threw it so it is undone or not done
+			throw e;
+		}
+		if (new1 ^ new2) {
+			throw new AssertionError("inconsistent links, one existed w/o the other");
+		}
+		return new1;//new1 and new2 are either both false or both true here
+	}
+	
 	public boolean link(Object parent, Object child) {
 		nullError(parent,child);
+		Extractor pExtr = getExtractor(parent);
+		Extractor cExtr = getExtractor(child);
 		//parent can be String ID, or Node object; both may or may not exist in this Environment
 		//same goes for child
 		if (( isTypeID(parent) ) && (isTypeID(child)) ) {
@@ -333,6 +370,16 @@ public class Environment {
 		return nodeObject;
 	}
 	
+	protected void internalMapNode(String nodeID, Node nodeObject) throws Exception {
+		allIDNodeTuples.putKeyValue(nodeID, nodeObject);
+	}
+	
+	public void internalUnMapNode(String nodeID, Node node) {
+		if (!nodeID.equals(allIDNodeTuples.removeKey(nodeID))) {
+			throw new AssertionError("what did we remove? not the same object or contents?");
+		}
+	}
+	
 	/**
 	 * @return number of Nodes in the environment
 	 */
@@ -347,7 +394,7 @@ public class Environment {
 	 * @param nodeID
 	 * @throws Exception 
 	 */
-	private Node removeNode(String nodeID) throws Exception {
+	private Node unMapNode(String nodeID) throws Exception {
 		nullError(nodeID);
 		emptyError(nodeID);
 		return allIDNodeTuples.removeKey(nodeID);
@@ -449,6 +496,12 @@ public class Environment {
 		}
 		return true;
 	}
+
+	public Extractor getExtractor(Object node) {
+		return new Extractor(this, node);
+	}
+
+	
 
 	
 }

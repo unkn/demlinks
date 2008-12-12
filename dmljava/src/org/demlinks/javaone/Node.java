@@ -60,20 +60,6 @@ public class Node {
 	}
 
 	/**
-	 * parentNode -> this, but not also parentNode <- this ! <br>
-	 * ensures the link exits
-	 * 
-	 * @param parentNode
-	 * @return <tt>true</tt> if added and didn't previously exist<br>
-	 * <tt>false</tt> if already exited hence it remains
-	 */
-	private boolean internalLinkFrom(Node parentNode) {
-		return get(List.PARENTS).append(parentNode); // boolean changed
-			// not changed? then it already exited, 
-			// if so then maybe bad programming at the caller level? so to assume
-	}
-	
-	/**
 	 * this -> childNode, this won't imply this <- childNode link<br>
 	 * however this is consistent at this level, but not at the Environment level<br>
 	 * at the latter level, both or none links should exits
@@ -108,13 +94,35 @@ public class Node {
 		}//else
 		return true;
 	}
-	private boolean internalLinkTo(Node childNode) throws Exception {
+	
+	
+	/**
+	 * this only half links
+	 * @param childNode
+	 * @return
+	 * @throws Exception
+	 */
+	protected boolean internalLinkTo(Node childNode) throws Exception {
 		//TODO if childNode is null then create new Node() before call or let this happen inside list?
-		return get(List.CHILDREN).append(childNode);
+		return get(List.CHILDREN).internalAppend(childNode);
 			// false, means collection not changed hence child already existed
 	}
 
 
+	/**
+	 * parentNode -> this, but not also parentNode <- this ! <br>
+	 * ensures the link exits
+	 * 
+	 * @param parentNode
+	 * @return <tt>true</tt> if added and didn't previously exist<br>
+	 * <tt>false</tt> if already exited hence it remains
+	 */
+	protected boolean internalLinkFrom(Node parentNode) {
+		return get(List.PARENTS).internalAppend(parentNode); // boolean changed
+			// not changed? then it already exited, 
+			// if so then maybe bad programming at the caller level? so to assume
+	}
+	
 	
 	private void sameEnv(String nodeID) {
 		if

@@ -24,7 +24,7 @@ import java.rmi.AlreadyBoundException;
 
 //TODO may want same interface used in both this list and its iterator
 
-public class UniqueListOfNodes {
+public class UniqueListOfNodes { // order matters; Nodes are unique
 
 	private Node ourFatherNode;
 	private LinkedListSet<Node> listSet; // this is here instead of inherited because we don't want users to access other methods from it
@@ -45,76 +45,76 @@ public class UniqueListOfNodes {
 	private static final long serialVersionUID = 842508346073648046L;
 
 	
-	public void append(Node node) throws Exception {
-		//node can be null
-		Environment.nullError(node);
-		// or not exist
-		if (!getEnvironment().existsNode(node)) {
-			//doesn't exist?
-			throw new AssertionError("node doesn't exist; in this environment");
-		}
-		//so exists then we add it:
-		if (!listSet.add(node)) {// ourFatherNode -> node
-			throw new Exception("should've added it! maybe already existed! it's a listSet");
-		}
-		try {
-			if (!node.get(List.PARENTS).internalAppend(ourFatherNode)) {// ourFatherNode <- node
-				throw new Exception("should've added it");
-			}
-		} catch (Exception e) {
-			
-		}
-	}
+//	public void append(Node node) throws Exception {
+//		//node can be null
+//		Environment.nullError(node);
+//		// or not exist
+//		if (!getEnvironment().existsNode(node)) {
+//			//doesn't exist?
+//			throw new AssertionError("node doesn't exist; in this environment");
+//		}
+//		//so exists then we add it:
+//		if (!listSet.add(node)) {// ourFatherNode -> node
+//			throw new Exception("should've added it! maybe already existed! it's a listSet");
+//		}
+//		try {
+//			if (!node.get(List.PARENTS).internalAppend(ourFatherNode)) {// ourFatherNode <- node
+//				throw new Exception("should've added it");
+//			}
+//		} catch (Exception e) {
+//			
+//		}
+//	}
 	
 	protected boolean internalAppend(Node node) {
 		return listSet.add(node);
 	}
 	
-	public boolean append(String nodeID) {
-		//can be null
-		Environment.nullError(nodeID);
-
-		Environment env=getEnvironment();
-		Node nodeToAdd = env.getNode(nodeID);
-		boolean created = false;
-		if (null == nodeToAdd) {
-			//doesn't exist, we create it
-			nodeToAdd = new Node(env);
-			created = true;
-		}
-		boolean ret = this.append(nodeToAdd);
-		if (created) {
-			//also map ID to Node now
-		}
-		return false;
-	}
-	
+//	public boolean append(String nodeID) {
+//		//can be null
+//		Environment.nullError(nodeID);
+//
+//		Environment env=getEnvironment();
+//		Node nodeToAdd = env.getNode(nodeID);
+//		boolean created = false;
+//		if (null == nodeToAdd) {
+//			//doesn't exist, we create it
+//			nodeToAdd = new Node(env);
+//			created = true;
+//		}
+//		boolean ret = this.append(nodeToAdd);
+//		if (created) {
+//			//also map ID to Node now
+//		}
+//		return false;
+//	}
+//	
 	
 	public boolean append(Object node) {
-		
-		Node n;
-		Extractor extr;
-		boolean o1=false;
-		boolean o2=false;
+		Extractor extr=null;
+		boolean ret=false;
+		Environment env=getEnvironment();
+		extr=env.getExtractor(node);//if node(s) don't exist they will be created by extractor but not yet mapped ID-Node
 		try {
-			extr=getEnvironment().getExtractor(node);//if node(s) don't exist they will be created by extractor
-			n = extr.getNode();
-			env.link(ourFatherNode,n);//we're here
-			if (this.contains(n)) {
-				throw new AlreadyBoundException("already exists");
-			}
-				o1=append(n);//true means added
-				o2=n.get(List.PARENTS).append(ourFatherNode); // true means added
+			ret=env.internalLink(ourFatherNode, extr.getNode());//supposedly returns true if it's a new link?that is it didn't previously exist
+			extr.map();//if map throws, then we'd need to unlink
 		} catch (Exception e) {
 			//undo first
-			if (o2) {
-				
-			}
 			if (null != extr) {
-				
+				extr.undo();//if anything is needed to be undone, such as if it made a new Node() temporarely and maybe unmap ID to Node
+			}
+			if (ret) {
+				try {
+					env.internalUnLink(ourFatherNode, extr.getNode());//and if this throws, we lose "e"
+				} catch (Exception f) {
+					e.printStackTrace();
+					throw new AssertionError("above it was created but here it could not be removed!");
+				}
 			}
 			throw e;
 		}
+		
+		return ret;
 	}
 	
 	/**

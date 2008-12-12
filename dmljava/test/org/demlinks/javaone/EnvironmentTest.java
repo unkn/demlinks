@@ -171,6 +171,30 @@ public class EnvironmentTest {
 		UniqueListOfNodes nl = aw.get(List.CHILDREN);
 		nl.insert("k",kBefore,"f");
 		*/
+		
+		env.link("existingnode1","existingnode2");//not existing atm
+		env.link("newnode1", "newnode2");
+		env.link("existingnode1", "newnode3");
+		env.link("newnode4", "existingnode1");
+		
+		Node e1 = env.getNode("existingnode1");
+		Node e2 = env.getNode("existingnode2");
+		
+		env.link(e1,"newnode5");
+		env.link("newnode6", e1);
+		
+		env.link(e1, env.refNode("newnode7"));//newnode7 supposedly created by refNode temporarely before the link is made and removed if link exception throws
+		env.link(env.refNode("newnode8"), e1);
+		//actually i've to use refNode everywhere or... nowhere
+		
+		UniqueListOfNodes e1Children = e1.getList(List.CHILDREN);
+		NodeIterator itr = e1Children.getIterator();
+		itr.find("f");
+		itr.append("g");
+		itr.insert("h", Location.LAST);
+		itr.insert(e2, Location.BEFORE, "h");
+		
+		
 		env.getNode("AllWords").get(List.CHILDREN).insert(env.getNode("k"), Location.BEFORE, env.getNode("f"));
 		UniqueListOfNodes chiList= allWords.get(List.CHILDREN);
 		Node _k = env.getNode("k");
