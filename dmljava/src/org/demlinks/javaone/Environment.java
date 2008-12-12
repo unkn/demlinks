@@ -316,21 +316,21 @@ public class Environment {
 //	}
 	/**
 	 * @param nodeID
-	 * @param node object should already exist outside of call
+	 * @param nodeObject object should already exist outside of call
 	 * @throws Exception if the node already exists, either the ID or the Node object in the ID-Node tuple list
 	 * @return node
 	 */
-	protected Node mapNode(String nodeID, Node node) throws Exception {
-		nullError(node);
-		if (node.isDead()) {
+	protected Node mapNode(String nodeID, Node nodeObject) throws Exception {
+		nullError(nodeObject);
+		if (nodeObject.isDead()) {
 			throw new AssertionError("we shouldn't map empty nodes like that");
 		}
 		emptyError(nodeID);
-		if (isNode(node) || isNode(nodeID)) {
+		if (isNode(nodeObject) || isNode(nodeID)) {
 			throw new Exception("one of them already exists, nodeID="+nodeID);
 		}
-		allIDNodeTuples.putKeyValue(nodeID, node);
-		return node;
+		allIDNodeTuples.putKeyValue(nodeID, nodeObject);
+		return nodeObject;
 	}
 	
 	/**

@@ -108,7 +108,7 @@ public class Node {
 		}//else
 		return true;
 	}
-	private boolean internalLinkTo(Node childNode) {
+	private boolean internalLinkTo(Node childNode) throws Exception {
 		//TODO if childNode is null then create new Node() before call or let this happen inside list?
 		return get(List.CHILDREN).append(childNode);
 			// false, means collection not changed hence child already existed
