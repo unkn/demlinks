@@ -36,18 +36,138 @@ public class EnvironmentTest {
 		
 	}
 	
+	
+
 	@Test
-	public void testLink() {
+	public void testLink() throws Exception {
+		
+
 		env.link("a", "b"); //link two new nodes "a"->"b"
 		
-		Node _a = env.getNode("a");
-		assertTrue( _a.isLinkTo("b") );
-		
+		Node _a = env.getNode("a");//get the Node object who's ID is "a"
 		Node _b = env.getNode("b");
-		assertTrue( _a.isLinkTo(_b) );
+		assertTrue(null != _a);
+		assertTrue(null != _b);
+		
+		assertTrue( _a.isLinkTo(_b) );// does link _a -> _b exists ? also implies _a <- _b exists
+		assertTrue( _a.isLinkTo("b") );
+
 		
 		assertTrue( null == env.getNode("c") ); //inexistent Node
 		
+		env.link(_a,"c"); // link between existing node _a and new node "c"
+		assertTrue(env.isLink(_a,"c"));
+		
+		Node _c = env.getNode("c");
+		assertTrue(null != _c);
+		
+		assertTrue(env.isLink(_a, _c));//same test different identifying ways
+		assertTrue(env.isLink("a", _c));//same test different identifying ways
+		assertTrue(env.isLink("a", "c"));//same test different identifying ways
+		
+		env.link(_b,_c); //link two existing nodes
+		assertTrue(env.isLink(_b, _c));
+		
+		env.link("d", _c);//new node "d"
+		assertTrue(env.isLink("d", _c));
+		
+		Node _d = env.getNode("d");
+		assertTrue(env.isLink(_d, _c));
+		
+		Node _boo = new Node();//a node that's not in environment because it's not mapped to an ID
+		try {
+			env.link(_boo, _a); //an attempt to link these nodes should fail because one of them is not in the environment/mapped
+		} catch (Exception e) {
+			
+		}
+		assertFalse(env.isLink(_boo, _a));
+		
+		
+	}
+	
+	
+	
+	@Test
+	public void testNullParameters() {
+		
+		String nullStr = null;
+		Node nullNode = null;
+		String fullStr = "something";
+		Node fullNode = new Node();
+		
+		boolean excepted=false;
+		try {
+			env.link(nullStr, nullStr);
+		} catch (Exception e) {
+			excepted = true;
+		} finally {
+			assertTrue(excepted);
+		}
+		
+		excepted=false;
+		try {
+			env.link(nullNode, nullNode);
+		} catch (Exception e) {
+			excepted = true;
+		} finally {
+			assertTrue(excepted);
+		}
+		
+		excepted=false;
+		try {
+			env.link(nullStr, nullNode);
+		} catch (Exception e) {
+			excepted = true;
+		} finally {
+			assertTrue(excepted);
+		}
+		
+		excepted=false;
+		try {
+			env.link(nullNode, nullStr);
+		} catch (Exception e) {
+			excepted = true;
+		} finally {
+			assertTrue(excepted);
+		}
+		
+		excepted = false;
+		try {
+			env.link(fullStr, nullStr);
+		} catch (Exception e) {
+			excepted = true;
+		} finally {
+			assertTrue(excepted);
+		}
+		
+		excepted = false;
+		try {
+			env.link(fullStr, nullNode);
+		} catch (Exception e) {
+			excepted = true;
+		} finally {
+			assertTrue(excepted);
+		}
+		
+		excepted = false;
+		try {
+			env.link(fullNode, nullStr);
+		} catch (Exception e) {
+			excepted = true;
+		} finally {
+			assertTrue(excepted);
+		}
+		
+		excepted = false;
+		try {
+			env.link(fullNode, nullNode);
+		} catch (Exception e) {
+			excepted = true;
+		} finally {
+			assertTrue(excepted);
+		}
+		
+		//TODO ? 4 more variants ?
 	}
 	
 }

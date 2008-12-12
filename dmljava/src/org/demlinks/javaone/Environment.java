@@ -20,11 +20,17 @@ package org.demlinks.javaone;
 
 
 
-// at this level the Node objects are given String IDs
-// such that a String ID can be referring to only one Node object
-// a Node will exist only if it has at least one link
-// a link is a tuple of Nodes; link is imaginary so to speak
 
+/**
+ *  at this level the Node objects are given String IDs<br>
+ *	such that a String ID can be referring to only one Node object<br>
+ *  so there's an 1 to 1 mapping between ID and Node<br>
+ *	a Node will exist only if it has at least one link or rather is part of the link<br>
+ *	a link is a tuple of Nodes; link is imaginary so to speak<br>
+ *	parentID -> childID means: the Node object identified by parentID will have its children list contain the Node object identified by childID<br> 
+ *	parentID <- childID means: the Node identified by childID will have its parents list contain the Node object identified by parentID<br>
+ *
+ */
 public class Environment {
 	//fields
 	private TwoWayHashMap<String, Node> allIDNodeTuples; // unique elements
@@ -55,7 +61,6 @@ public class Environment {
 		return allIDNodeTuples.getKey(node);
 	}
 	
-	@SuppressWarnings("unused")
 	private void internalMapIDToNode(String nodeID, Node nodeObject) throws Exception {
 		allIDNodeTuples.putKeyValue(nodeID, nodeObject);
 	}
@@ -90,12 +95,112 @@ public class Environment {
 	 * parentID <- childID (the Node identified by childID will have its parents list contain the Node object identified by parentID)<br>
 	 * @param parentID
 	 * @param childID
+	 * @throws Exception if ID to Node mapping fails
 	 */
-	public void link(String parentID, String childID) {
-		//this will link the two nodes identified by those IDs:
-		//the Node identified by parentID will get in its children list the node identified by childID
-		//the Node identified by childID will get in its parents list the node identified by parentID
+	public void link(String parentID, String childID) throws Exception {
+		//1.it will create empty Node objects if they don't already exist
+		//2.link them
+		//3.and THEN map them to IDs
 		
+		boolean parentCreated = false;
+		Node parentNode = getNode(parentID);//fetch existing Node
+		if (null == parentNode) {
+			//ah there was no existing Node object with that ID
+			//we create a new one
+			parentNode = new Node();
+			parentCreated = true;
+		}
+		
+		boolean childCreated = false;
+		Node childNode = getNode(childID);//fetch existing Node identified by childID
+		if (null == childNode) {
+			//nothing existing? create one
+			childNode = new Node();
+			childCreated = true;
+		}
+		
+		link(parentNode, childNode);//link the Node objects
+		
+		if (parentCreated) {
+			//if it was a new Node we just created above then we need to map ID to Node
+			internalMapIDToNode(parentID, parentNode);
+		}
+		
+		if (childCreated) {
+			internalMapIDToNode(childID, childNode);
+		}
+	}
+	
+	/**
+	 * @param parentID
+	 * @param childNode
+	 * @throws Exception
+	 * @see #link(String, String)
+	 */
+	public void link(String parentID, Node childNode) throws Exception {
+		boolean parentCreated = false;
+		Node parentNode = getNode(parentID);//fetch existing Node
+		if (null == parentNode) {
+			//ah there was no existing Node object with that ID
+			//we create a new one
+			parentNode = new Node();
+			parentCreated = true;
+		}
+		
+		link(parentNode, childNode);
+		
+		if (parentCreated) {
+			//if it was a new Node we just created above then we need to map ID to Node
+			internalMapIDToNode(parentID, parentNode);
+		}
+	}
+	public void link(Node parentNode, String childID) throws Exception {
+		boolean childCreated = false;
+		Node childNode = getNode(childID);//fetch existing Node identified by childID
+		if (null == childNode) {
+			//nothing existing? create one
+			childNode = new Node();
+			childCreated = true;
+		}
+		
+		link(parentNode, childNode);
+		
+		if (childCreated) {
+			internalMapIDToNode(childID, childNode);
+		}
+	}
+	public void link(Node parentNode, Node childNode) {
+		//if we're here, either other link() methods above called us, and both nodes now exist except they could be not mapped if created by other sister link() method
+		// OR main() called us and we don't know if nodes exist
+		//so we have to check if they exist:
+		// but we can't use getID(node) because they may not be mapped yet (by sister link() methods that called us)
+		Environment.nullError(parentNode, childNode);//at least make sure they're not null instead of objects
+		//so we don't know if any other sister link() called us to assume the nodes will exist when we return to caller(sister link() method) and the caller maps them
+		//hence we should make an internalLink(Node,Node) that our sisters and this link() will call that will assume Node(s) exist
+	}
+
+	/**
+	 * parentNode -> childNode<br>
+	 * parentNode <- childNode<br>
+	 * @param parentNode
+	 * @param childNode
+	 * @return true if (mutual) link between the two nodes exists
+	 */
+	public boolean isLink(Node parentNode, Node childNode) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	public boolean isLink(Node parentNode, String childID) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	public boolean isLink(String parentID, Node childNode) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	public boolean isLink(String parentID, String childID) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 }
