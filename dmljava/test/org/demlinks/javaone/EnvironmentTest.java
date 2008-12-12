@@ -187,6 +187,12 @@ public class EnvironmentTest {
 		
 		ni.find(_f);//or this way
 		ni.find("f");
+		
+		
+		ni.find(env.getExtracter("f"));//same as RefNode
+		ni.find(new Extracter(env,"f"));
+		
+		
 //		ni.insert("k", Location.BEFORE, "f");
 //		ni.insert(_k, Location.BEFORE);
 //		Node newNode = ni.insert(Location.AFTER,_f);//new node here

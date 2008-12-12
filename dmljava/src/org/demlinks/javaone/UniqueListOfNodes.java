@@ -18,6 +18,8 @@
 
 package org.demlinks.javaone;
 
+import java.rmi.AlreadyBoundException;
+
 
 
 //TODO may want same interface used in both this list and its iterator
@@ -42,6 +44,79 @@ public class UniqueListOfNodes {
 	 */
 	private static final long serialVersionUID = 842508346073648046L;
 
+	
+	public void append(Node node) throws Exception {
+		//node can be null
+		Environment.nullError(node);
+		// or not exist
+		if (!getEnvironment().existsNode(node)) {
+			//doesn't exist?
+			throw new AssertionError("node doesn't exist; in this environment");
+		}
+		//so exists then we add it:
+		if (!listSet.add(node)) {// ourFatherNode -> node
+			throw new Exception("should've added it! maybe already existed! it's a listSet");
+		}
+		try {
+			if (!node.get(List.PARENTS).internalAppend(ourFatherNode)) {// ourFatherNode <- node
+				throw new Exception("should've added it");
+			}
+		} catch (Exception e) {
+			
+		}
+	}
+	
+	protected boolean internalAppend(Node node) {
+		return listSet.add(node);
+	}
+	
+	public boolean append(String nodeID) {
+		//can be null
+		Environment.nullError(nodeID);
+
+		Environment env=getEnvironment();
+		Node nodeToAdd = env.getNode(nodeID);
+		boolean created = false;
+		if (null == nodeToAdd) {
+			//doesn't exist, we create it
+			nodeToAdd = new Node(env);
+			created = true;
+		}
+		boolean ret = this.append(nodeToAdd);
+		if (created) {
+			//also map ID to Node now
+		}
+		return false;
+	}
+	
+	
+	public boolean append(Object node) {
+		
+		Node n;
+		Extractor extr;
+		boolean o1=false;
+		boolean o2=false;
+		try {
+			extr=getEnvironment().getExtractor(node);//if node(s) don't exist they will be created by extractor
+			n = extr.getNode();
+			env.link(ourFatherNode,n);//we're here
+			if (this.contains(n)) {
+				throw new AlreadyBoundException("already exists");
+			}
+				o1=append(n);//true means added
+				o2=n.get(List.PARENTS).append(ourFatherNode); // true means added
+		} catch (Exception e) {
+			//undo first
+			if (o2) {
+				
+			}
+			if (null != extr) {
+				
+			}
+			throw e;
+		}
+	}
+	
 	/**
 	 * @param node can be a Node object or a String ID of a Node object
 	 * @return true if list changed as a result of the call
@@ -58,7 +133,9 @@ public class UniqueListOfNodes {
 		// 2.1 Node object -> use it 
 		// 2.2 String ID -> get it's Node object
 		Environment.nullError(node);
+		
 		Environment env=getEnvironment();
+		
 		Node nodeToAdd=env.getNode(node);
 		boolean tempNode = false;
 		if (null == nodeToAdd) {
