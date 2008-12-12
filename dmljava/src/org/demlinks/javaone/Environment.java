@@ -41,12 +41,21 @@ public class Environment {
 		return null;
 	}
 	/**
-	 * @param nodeID
+	 * returns the Node object if it exists in the Environment
+	 * @param node can be a nodeID or Node object
 	 * @return
 	 */
-	public Node getNode(String nodeID) {
-		emptyError(nodeID);
-		return allIDNodeTuples.getValue(nodeID);
+	public Node getNode(Object node) {
+		nullError(node);
+		if (isTypeNode(node)) {
+			if (null != allIDNodeTuples.getKey((Node)node)) {
+				return (Node)node; //exists in this Environment
+			}
+		}
+		if (isTypeID(node)) {
+			return allIDNodeTuples.getValue((String)node);
+		}
+		throw new AssertionError("shouldn't reach this code");
 	}
 
 	/**
@@ -85,6 +94,62 @@ public class Environment {
 	public String getID(Node node) {
 		nullError(node);
 		return allIDNodeTuples.getKey(node);
+	}
+	
+	public boolean link(Object parent, Object child) {
+		nullError(parent,child);
+		//parent can be String ID, or Node object; both may or may not exist in this Environment
+		//same goes for child
+		if (( isTypeID(parent) ) && (isTypeID(child)) ) {
+			// they're both IDs hence they may both not exist yet
+			if ( (!existsNode(parent)) && (!existsNode(child)) ) {
+				//both don't exist
+				Node _new = new Node(this);
+				_new.linkTo(child);//this will execute child.linkFrom(_new) atomaticly inside
+				return true;
+			}
+		}
+		if (isTypeNode(parent)) {
+			//if parent doesn't exist in the environment already it will be added to it, unless it's part of another environment
+			//then it will throw exception not error
+			(Node)parent.linkTo(child);
+		} else {
+			if (isTypeNode(child)) {
+				(Node)child.linkFrom(parent);
+			}
+		} //else
+		return true;
+	}
+
+	public void sameEnv(Object node) {
+		if (isTypeNode(node)) {
+			if (((Node)node).getEnvironment() != this) {
+				throw new AssertionError("cannot cross-environmentally do that"); //lol?
+			}
+		}
+		if (isTypeID(node)) {
+			Node n = getNode(node);
+			if (null != n)
+		}
+	}
+	
+	/**
+	 * @see #getNode(Object)
+	 * @param node
+	 * @return
+	 */
+	public boolean existsNode(Object node) {
+		return null != getNode(node);
+	}
+	
+	public static boolean isTypeID(Object obj) {
+		nullError(obj);
+		return obj.getClass().getSimpleName().equals("String");
+	}
+	
+	public static boolean isTypeNode(Object obj) {
+		nullError(obj);
+		return obj.getClass().getSimpleName().equals("Node");
 	}
 	
 	/**
@@ -249,7 +314,6 @@ public class Environment {
 //		//allIDNodeTuples.putKeyValue(nodeID, nod); // if this excepts then the "nod" variable will get destroyed by Java anyway
 //		return nod;
 //	}
-	
 	/**
 	 * @param nodeID
 	 * @param node object should already exist outside of call
@@ -329,9 +393,11 @@ public class Environment {
 	/**
 	 * @param anyObject
 	 */
-	private static void nullError(Object anyObject) {
-		if (null == anyObject) {
-			throw new AssertionError("should never be null");
+	public static void nullError(Object... anyObject) {
+		for (int i = 0; i < anyObject.length; i++) {
+			if (null == anyObject[i]) {
+				throw new AssertionError("should never be null");
+			}
 		}
 	}
 

@@ -36,11 +36,14 @@ public class EnvironmentTest {
 	public void init() {
 		env = new Environment();
 
-		assertTrue(env.size() == 0);
+		
 	}
 	
 	@Test
-	public void testisNode() {
+	public void testIsNode() {
+		
+		assertTrue(env.size() == 0);
+		
 		// empty string not allowed
 		try {
 			env.isNode("");
@@ -138,11 +141,11 @@ public class EnvironmentTest {
 		env.link("A", "B");
 		env.link("B","C");
 		env.link("C", "A");
-		parseTree("A",20,"");
+		//parseTree("A",20,"");
 		
 		Node allWords = env.getNode("AllWords");
 		addAllChars();
-		parseTree("AllWords",20,"");
+		//parseTree("AllWords",20,"");
 		//System.out.print(List.CHILDREN);
 		/*
 		NodeIterator itr = allWords.getNodeIterator(List.CHILDREN);
@@ -174,74 +177,84 @@ public class EnvironmentTest {
 		Node _f	= env.getNode("f");
 		chiList.insert(_k, Location.BEFORE, _f);
 		NodeIterator ni = chiList.nodeIterator(0);
-		ni.find(_f);
-		ni.insert(_k, Location.BEFORE);
-		Node newNode = ni.insert(Location.AFTER,_f);//new node here
-		assertTrue( newNode == env.mapNode("newNode",newNode) );
 		
-		env.link("A", "B");
-		env.link(null, null);
+		ni.find(new RefNode("f"));// a simple way to refer to a node, by String ID or by Node object
+		ni.find(new RefNode(_f));
 		
-		env.getNode("AllWords").get(List.CHILDREN).insert(env.mapNode("k",new Node()), Location.BEFORE, env.getNode("f"));
-		//-----------------------------------------------
-		//VARIANT1: try block necessary since we create the new node before potentially dangerous call to insert() which may throw
-		// this is what would take to transactionally insert (possibly new) node "k" BEFORE node "f" in the children of "AllWords"
-		Node _k = env.getNode("k");
-		boolean created=false;
-		if (null == _k) {
-			created = (null != env.newNode("k"));
-		}
-		try {
-			env.getNode("AllWords").get(List.CHILDREN).insert(_k, Location.BEFORE, env.getNode("f"));
-		}catch (Exception e) {
-			//undo creation of "k" if it was created above
-			if (created) {
-				env.removeNode("k");
-			}
-		}
+		ni.find(env.refNode("f"));//whether it exists or not, returns RefNode class
+		ni.find(env.refNode(chiList));//pulls the father of chiList as a Node
+		ni.find(env.refNode(_f));//the thing with this is that it may get outdated, not even considering multiple threads
 		
-		//VARIANT2: a try block isn't necessary because the node is created after success of insert()
-		Node _k = env.getNode("k");//null if didn't previously exist
-		Node newNode = env.getNode("AllWords").get(List.CHILDREN).insert(_k, Location.BEFORE, env.getNode("f"));
-		if (_k != newNode) {//newNode will not be null, ever, instead insert() will throw exception
-			//then it's only logical _k didn't exist and it was created by insert as a new Node() and returned as newNode
-			env.mapNode("k",newNode);
-		}
-		//variant2 seems to be ok but there's already env.link(null,null) implication, how to return 2 new Nodes from that
-		
-		//VARIANT3:
-		env.getNode("AllWords").get(List.CHILDREN).insert(env,"k", Location.BEFORE, "f");
-		//whether "k" exists or not, it's up to insert() to realize but it will have to use the env.getNode(id) somehow
-		//in effect this doesn't look like object oriented though
-		//insert() will also use env to do mapNode() in case "k" is a new node in the env(ironment)
-		
-		//whatever variant used the following should be able to execute:
-		Node _k = env.getNode("k");
-		_k.linkTo(env, "g");//will also have to execute _g.linkFrom(_k); ?!!
-		//also BIG NOTE: insert() will have to execute env.link() or have the same code when trying to add "k" to the list (that is
-		//AllWords->"k" and AllWords<-"k" links, but that would mean duplication of code which would exist in both env.link() and
-		//in insert()
-		//------------------------------------
-		
-		//VARIANT4: Node extends Environment
-		Node n;
-		n.linkTo(n);// would have to imply a linkFrom()
-		
-		env.link("a", "b");
-		Node a = env.getNode("a");
-		Node c = a.linkTo("c");//will imply c.linkFrom(a); or if Node is inheriting Env then this.link(this,"c"); executed
-		//and a private _linkTo(node) and _linkFrom(node) ofc must exist in Node that Env uses to .link() =)
-		//those private ones mustn't have ID params, only Node
-		env.link("c", "d");//would work like env.getNode("c")._linkTo(_d) and _d.linkFrom(_c);
-		//so either Node inherits Env or Node gets passed the Env param, this way we could have any number of Env instances since
-		//we'll unstatic that field in Env
-		
-		a.linkTo(env,"c");//assuming Env is now not inherited by Node, now Node can use the Node _c = env.getNode("c") 
-							//and even env.link(this,_c); inside a ofc hence this=a
-		
-		//VARIANT5: Node gets an Environment field (since it's not copied or cloned, instead is referenced)
-		env.link("a", "b");//this makes the link between new nodes "a" and "b" and gives them each an Env field
-		
+		ni.find(_f);//or this way
+		ni.find("f");
+//		ni.insert("k", Location.BEFORE, "f");
+//		ni.insert(_k, Location.BEFORE);
+//		Node newNode = ni.insert(Location.AFTER,_f);//new node here
+//		assertTrue( newNode == env.mapNode("newNode",newNode) );
+//		
+//		env.link("A", "B");
+//		env.link(null, null);
+//		
+//		env.getNode("AllWords").get(List.CHILDREN).insert(env.mapNode("k",new Node()), Location.BEFORE, env.getNode("f"));
+//		//-----------------------------------------------
+//		//VARIANT1: try block necessary since we create the new node before potentially dangerous call to insert() which may throw
+//		// this is what would take to transactionally insert (possibly new) node "k" BEFORE node "f" in the children of "AllWords"
+//		Node _k = env.getNode("k");
+//		boolean created=false;
+//		if (null == _k) {
+//			created = (null != env.newNode("k"));
+//		}
+//		try {
+//			env.getNode("AllWords").get(List.CHILDREN).insert(_k, Location.BEFORE, env.getNode("f"));
+//		}catch (Exception e) {
+//			//undo creation of "k" if it was created above
+//			if (created) {
+//				env.removeNode("k");
+//			}
+//		}
+//		
+//		//VARIANT2: a try block isn't necessary because the node is created after success of insert()
+//		Node _k = env.getNode("k");//null if didn't previously exist
+//		Node newNode = env.getNode("AllWords").get(List.CHILDREN).insert(_k, Location.BEFORE, env.getNode("f"));
+//		if (_k != newNode) {//newNode will not be null, ever, instead insert() will throw exception
+//			//then it's only logical _k didn't exist and it was created by insert as a new Node() and returned as newNode
+//			env.mapNode("k",newNode);
+//		}
+//		//variant2 seems to be ok but there's already env.link(null,null) implication, how to return 2 new Nodes from that
+//		
+//		//VARIANT3:
+//		env.getNode("AllWords").get(List.CHILDREN).insert(env,"k", Location.BEFORE, "f");
+//		//whether "k" exists or not, it's up to insert() to realize but it will have to use the env.getNode(id) somehow
+//		//in effect this doesn't look like object oriented though
+//		//insert() will also use env to do mapNode() in case "k" is a new node in the env(ironment)
+//		
+//		//whatever variant used the following should be able to execute:
+//		Node _k = env.getNode("k");
+//		_k.linkTo(env, "g");//will also have to execute _g.linkFrom(_k); ?!!
+//		//also BIG NOTE: insert() will have to execute env.link() or have the same code when trying to add "k" to the list (that is
+//		//AllWords->"k" and AllWords<-"k" links, but that would mean duplication of code which would exist in both env.link() and
+//		//in insert()
+//		//------------------------------------
+//		
+//		//VARIANT4: Node extends Environment
+//		Node n;
+//		n.linkTo(n);// would have to imply a linkFrom()
+//		
+//		env.link("a", "b");
+//		Node a = env.getNode("a");
+//		Node c = a.linkTo("c");//will imply c.linkFrom(a); or if Node is inheriting Env then this.link(this,"c"); executed
+//		//and a private _linkTo(node) and _linkFrom(node) ofc must exist in Node that Env uses to .link() =)
+//		//those private ones mustn't have ID params, only Node
+//		env.link("c", "d");//would work like env.getNode("c")._linkTo(_d) and _d.linkFrom(_c);
+//		//so either Node inherits Env or Node gets passed the Env param, this way we could have any number of Env instances since
+//		//we'll unstatic that field in Env
+//		
+//		a.linkTo(env,"c");//assuming Env is now not inherited by Node, now Node can use the Node _c = env.getNode("c") 
+//							//and even env.link(this,_c); inside a ofc hence this=a
+//		
+//		//VARIANT5: Node gets an Environment field (since it's not copied or cloned, instead is referenced)
+//		env.link("a", "b");//this makes the link between new nodes "a" and "b" and gives them each an Env field
+//		
 //		String k = String.format("%c",65);
 //		String kk = "A";
 //		String kkk = "A".toString();
@@ -270,25 +283,25 @@ public class EnvironmentTest {
 		}
 	}
 	
-	public void parseTree(String ID, int downToLevel, String whatWas) {
-		whatWas+=ID;
-		if  (downToLevel < 0) {
-			System.out.println(whatWas+" {max level reached}");
-			return;
-		}
-		Node nod = env.getNode(ID);
-		if (null == nod) { // this will never happen (unless first call)
-			throw new NoSuchElementException();
-		}
-		ListIterator<Node> litr = nod.get(List.CHILDREN).listIterator();
-		if (!litr.hasNext()) { // no more children
-			System.out.println(whatWas);
-			return;
-		}
-		while (litr.hasNext()) {
-			Node curr = litr.next();
-			String id = env.getID(curr);
-			parseTree(id, downToLevel - 1, whatWas+"->");
-		}
-	}
+//	public void parseTree(String ID, int downToLevel, String whatWas) {
+//		whatWas+=ID;
+//		if  (downToLevel < 0) {
+//			System.out.println(whatWas+" {max level reached}");
+//			return;
+//		}
+//		Node nod = env.getNode(ID);
+//		if (null == nod) { // this will never happen (unless first call)
+//			throw new NoSuchElementException();
+//		}
+//		ListIterator<Node> litr = nod.get(List.CHILDREN).listIterator();
+//		if (!litr.hasNext()) { // no more children
+//			System.out.println(whatWas);
+//			return;
+//		}
+//		while (litr.hasNext()) {
+//			Node curr = litr.next();
+//			String id = env.getID(curr);
+//			parseTree(id, downToLevel - 1, whatWas+"->");
+//		}
+//	}
 }

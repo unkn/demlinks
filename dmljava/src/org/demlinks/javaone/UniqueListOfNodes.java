@@ -18,7 +18,6 @@
 
 package org.demlinks.javaone;
 
-import java.util.ListIterator;
 
 
 //TODO may want same interface used in both this list and its iterator
@@ -29,15 +28,13 @@ public class UniqueListOfNodes {
 	private LinkedListSet<Node> listSet; // this is here instead of inherited because we don't want users to access other methods from it
 	 
 	public UniqueListOfNodes(Node fatherNode) {
-		nullError(fatherNode);
+		Environment.nullError(fatherNode);
 		ourFatherNode = fatherNode;
 		listSet = new LinkedListSet<Node>();
 	}
 	
-	private static void nullError(Object anyObject) {
-		if (null == anyObject) {
-			throw new AssertionError("must never be null");
-		}
+	public Environment getEnvironment() {
+		return ourFatherNode.getEnvironment();
 	}
 
 	/**
@@ -49,7 +46,9 @@ public class UniqueListOfNodes {
 	 * @param node
 	 * @return true if list changed as a result of the call
 	 */
-	public boolean append(Node node) {
+	public boolean append(Object node) {
+		Environment.nullError(node);
+		if (getEnvironment().isTypeID(node))
 		return listSet.add(node);
 	}
 
@@ -88,9 +87,19 @@ public class UniqueListOfNodes {
 		}
 
 		@Override
-		public void find(Node node) {
+		public void find(Object node) {
 			// TODO Auto-generated method stub
-			
+
+			String name = node.getClass().getSimpleName();
+			if ( name.equals("Node")) {
+				Node tmp = (Node)node;
+				System.out.println(tmp);
+			} else {
+				if (name.equals("String")) {
+					String tmp = (String)node;
+					System.out.println(tmp);
+				}
+			}
 		}
 
 		@Override
@@ -103,11 +112,6 @@ public class UniqueListOfNodes {
 //			}
 		}
 
-	}
-
-	//TODO temporary
-	public ListIterator<Node> listIterator() {
-		return listSet.listIterator();
 	}
 
 	public void insert(Node whatNode, Location location, Node locationNode) {

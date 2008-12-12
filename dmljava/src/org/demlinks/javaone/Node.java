@@ -51,8 +51,8 @@ public class Node {
 //	}
 //	
 	private void createLists() {
-		parentsList = new UniqueListOfNodes(environment);
-		childrenList = new UniqueListOfNodes(environment);
+		parentsList = new UniqueListOfNodes(this);
+		childrenList = new UniqueListOfNodes(this);
 	}
 
 	public String getID() { // returns own ID
@@ -67,7 +67,7 @@ public class Node {
 	 * @return <tt>true</tt> if added and didn't previously exist<br>
 	 * <tt>false</tt> if already exited hence it remains
 	 */
-	public boolean linkFrom(Node parentNode) {
+	private boolean internalLinkFrom(Node parentNode) {
 		return get(List.PARENTS).append(parentNode); // boolean changed
 			// not changed? then it already exited, 
 			// if so then maybe bad programming at the caller level? so to assume
@@ -78,23 +78,46 @@ public class Node {
 	 * however this is consistent at this level, but not at the Environment level<br>
 	 * at the latter level, both or none links should exits
 	 * 
-	 * @param childNode
+	 * @param child
 	 * @return true if link changed as a result of the call, that is a links didn't exist already but it does now<br>
 	 * false is link existed and still exists after the call but well nothing changed then.
 	 */
-	public boolean linkTo(Node childNode) {
-		nullError(childNode);
-		sameEnv(childNode);
-		
+	public boolean linkTo(Object child) {
+		nullError(child);
+		Node childNode;
+		if (environment.existsNode(child)) {
+			if (Environment.isTypeID(child)) {
+				childNode = environment.getNode(child);
+			}
+			this.internalLinkTo((Node)child);
+			((Node)child).internalLinkFrom(this);
+		} else { //child doesn't exist (in this environment) and it can be a Node of another environ or a new ID
+			Node newChild;
+			if (Environment.isTypeID(child)) {
+				// if it's an ID, it's a non-existing one
+				newChild = new Node(environment);//blank expendable node, in case of throw
+				
+			} else {
+				if (Environment.isTypeNode(child)) {
+					newChild = (Node)child;
+				}
+			}//else
+			//we're here, means we have either a new Node or the child node, both being the child parameter
+			this.internalLinkTo(newChild);
+			newChild.internalLinkFrom(this);
+		}//else
+		return true;
+	}
+	private boolean internalLinkTo(Node childNode) {
 		//TODO if childNode is null then create new Node() before call or let this happen inside list?
 		return get(List.CHILDREN).append(childNode);
 			// false, means collection not changed hence child already existed
 	}
 
-	private void sameEnv(Node node) {
-		if (node.environment != this.environment) {
-			throw new AssertionError("cannot cross-environmentally do that"); //lol?
-		}
+
+	
+	private void sameEnv(String nodeID) {
+		if
 	}
 
 	/**
@@ -140,6 +163,10 @@ public class Node {
 		default:
 			throw new AssertionError("Unhandled list type: "+list);
 		}
+	}
+
+	public Environment getEnvironment() {
+		return this.environment;
 	}
 	
 }
