@@ -27,7 +27,7 @@ public class UniqueListOfNodes { // order matters; Nodes are unique
 
 	private LinkedListSet<Node> listSet; // this is here instead of inherited because we don't want users to access other methods from it
 	 
-	public UniqueListOfNodes(Node fatherNode) {
+	public UniqueListOfNodes() {
 		listSet = new LinkedListSet<Node>();
 	}
 	

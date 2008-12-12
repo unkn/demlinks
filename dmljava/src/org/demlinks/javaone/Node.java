@@ -31,12 +31,12 @@ package org.demlinks.javaone;
 public class Node {
 	// if both lists are empty the node shouldn't exist (in the Environment)
 	// lists should never be null
-	private UniqueListOfNodes parentsList;
-	private UniqueListOfNodes childrenList;
+	private UniqueListOfNodes parentsList;//list of all Nodes that point to <this>
+	private UniqueListOfNodes childrenList;//list of all Nodes that <this> points to
 	
 	public Node() {
-		parentsList = new UniqueListOfNodes(this);
-		childrenList = new UniqueListOfNodes(this);
+		parentsList = new UniqueListOfNodes();
+		childrenList = new UniqueListOfNodes();
 	}
 
 	/**
@@ -52,36 +52,85 @@ public class Node {
 	}
 
 
+	/**
+	 * ensures there's a link from parentNode to <tt>this</tt> Node<br>
+	 * @param parentNode the node that will point to us
+	 * @return true if the link didn't exist before call
+	 */
 	public boolean linkFrom(Node parentNode) {
-		return get(List.PARENTS).append(parentNode);
+		boolean ret = get(List.PARENTS).append(parentNode);
+		parentNode.get(List.CHILDREN).append(this);
+		return ret;
 	}
 	
+	/**
+	 * we will no longer point to <tt>childNode</tt>
+	 * @param childNode Node that will be removed from being a child of <tt>this</tt> Node
+	 * @return
+	 */
 	public boolean unLinkTo(Node childNode) {
-		return get(List.CHILDREN).remove(childNode);
+		boolean ret = get(List.CHILDREN).remove(childNode);
+		childNode.get(List.PARENTS).remove(this);
+		return ret;
 	}
 
 
+	/**
+	 * <tt>parentNode</tt> will no longer point to <tt>this</tt><br>
+	 * @param parentNode Node that will be removed from being a parent of <tt>this</tt> Node
+	 * @return
+	 */
 	public boolean unLinkFrom(Node parentNode) {
-		return get(List.PARENTS).remove(parentNode);
+		boolean ret = get(List.PARENTS).remove(parentNode);
+		parentNode.get(List.CHILDREN).remove(this);
+		return ret;
 	}
 
+	/**
+	 * checks if <tt>this</tt> points to <tt>childNode</tt>
+	 * also checks if <tt>childNode</tt> has <tt>this</tt> pointing to it
+	 * @param childNode
+	 * @return true is so
+	 */
 	public boolean isLinkTo(Node childNode) {
-		return get(List.CHILDREN).contains(childNode);
+		boolean ret = get(List.CHILDREN).contains(childNode);
+		boolean ret2 = childNode.get(List.PARENTS).contains(this);
+		return (ret && ret2);
 	}
 	
-	public boolean isLinkTo(String nodeID) {
+	/**
+	 * @param childID the ID of a child Node object
+	 * @return
+	 */
+	public boolean isLinkTo(String childID) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 	
+	/**
+	 * checks if <tt>parentNode <- this</tt> and if <tt>parentNode -> this</tt>
+	 * @param parentNode
+	 * @return true if so
+	 * @see #isLinkTo(Node)
+	 */
 	public boolean isLinkFrom(Node parentNode) {
-		return get(List.PARENTS).contains(parentNode);
+		boolean ret = get(List.PARENTS).contains(parentNode);
+		boolean ret2 = parentNode.get(List.CHILDREN).contains(this);
+		return ret && ret2;
 	}
 	
+	/**
+	 * @return true if the Node object should not exist in the Environment, since it's not part of any links
+	 */
 	public boolean isDead() {
 		return ( (get(List.PARENTS).isEmpty()) && (get(List.CHILDREN).isEmpty()) );
 	}
 	
+	/**
+	 * @param list List.CHILDREN or List.PARENTS
+	 * @return the specified list object
+	 * @throws AssertionError if you specify unknown type of list to be returned
+	 */
 	public UniqueListOfNodes get(List list) throws AssertionError {
 		switch (list) {
 		case CHILDREN:
@@ -93,6 +142,4 @@ public class Node {
 		}
 	}
 
-
-	
 }

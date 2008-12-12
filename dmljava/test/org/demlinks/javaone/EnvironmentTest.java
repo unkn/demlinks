@@ -20,9 +20,6 @@ package org.demlinks.javaone;
 
 import static org.junit.Assert.*;
 
-import java.util.ListIterator;
-import java.util.NoSuchElementException;
-
 
 
 import org.junit.Before;
@@ -42,12 +39,14 @@ public class EnvironmentTest {
 	@Test
 	public void testLink() {
 		env.link("a", "b"); //link two new nodes "a"->"b"
+		
 		Node _a = env.getNode("a");
 		assertTrue( _a.isLinkTo("b") );
 		
 		Node _b = env.getNode("b");
 		assertTrue( _a.isLinkTo(_b) );
 		
+		assertTrue( null == env.getNode("c") ); //inexistent Node
 		
 	}
 	
