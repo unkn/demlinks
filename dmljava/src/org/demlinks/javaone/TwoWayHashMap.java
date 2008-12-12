@@ -20,6 +20,16 @@ package org.demlinks.javaone;
 
 import java.util.HashMap;
 
+/**
+ * provides 1 to 1 mapping between two Objects: Key<->Value<br>
+ * can find one given the other ie. get value if you know key and get key if you know value<br>
+ * permits no nulls<br>
+ * uses .equals() to test see: {@link HashMap#get(Object)}<br>
+ * seems it also uses "==" to test so if either equality yields true then it's considered the same object<br>
+ *
+ * @param <Key>
+ * @param <Value>
+ */
 public class TwoWayHashMap<Key,Value> {
 	private HashMap<Key,Value> forward;
 	private HashMap<Value,Key> backward;

@@ -28,356 +28,41 @@ package org.demlinks.javaone;
 public class Environment {
 	//fields
 	private TwoWayHashMap<String, Node> allIDNodeTuples; // unique elements
-	// the issue here is, what if I want more than one Environment?!
 	
 	//constructor
+	/**
+	 * Environment containing ID to Node mappings<br>
+	 * ID is {@link String} identifier
+	 * Node is a {@link Node} object
+	 */
 	public Environment() {
 		allIDNodeTuples = new TwoWayHashMap<String, Node>();
 	}
 	
 	//methods
-	private String generateUniqueNodeID() {
-		// TODO make sure the ID doesn't already exist by using getNode(id)
-		return null;
-	}
+
 	/**
-	 * returns the Node object if it exists in the Environment
-	 * @param node can be a nodeID or Node object
-	 * @return
+	 * @return the Node object that's mapped to the ID, if it doesn't exist in the Environment then null
 	 */
-	public Node getNode(Object node) {
-		nullError(node);
-		if (isTypeNode(node)) {
-			if (null != allIDNodeTuples.getKey((Node)node)) {
-				return (Node)node; //exists in this Environment
-			}
-		}
-		if (isTypeID(node)) {
-			return allIDNodeTuples.getValue((String)node);
-		}
-		throw new AssertionError("shouldn't reach this code");
+	public Node getNode(String nodeID) {
+		return allIDNodeTuples.getValue(nodeID);
 	}
 
 	/**
-	 * includes {@link #nullError(Object)}
-	 * @param anyString
-	 */
-	private static void emptyError(String anyString) {
-		nullError(anyString);
-		if (anyString.isEmpty()) {
-			throw new AssertionError("should never be empty");
-		}
-	}
-
-	/**
-	 * @param nodeID
-	 * @return
-	 */
-	public boolean isNode(String nodeID) {
-		emptyError(nodeID);
-		return ( null != getNode(nodeID) );
-	}
-	
-	/**
-	 * @param node
-	 * @return
-	 */
-	public boolean isNode(Node node) {
-		nullError(node);
-		return ( null != getID(node) );
-	}
-	
-	/**
-	 * @param node
-	 * @return
+	 * @return the ID that is mapped to the Node object, in this environment, or null if there's no such mapping
 	 */
 	public String getID(Node node) {
-		nullError(node);
 		return allIDNodeTuples.getKey(node);
 	}
 	
-	/**
-	 * @param parentNode
-	 * @param childNode
-	 * @return
-	 * @throws Exception 
-	 * @transaction protected
-	 * @consistency checks
-	 */
-	protected boolean internalLink(Node parentNode, Node childNode) throws Exception {
-		//assumes both nodes exist in the environment already, and hence non-null params
-		boolean new1=false;
-		boolean new2=false;
-		try {
-			new1 = parentNode.internalLinkTo(childNode);
-			new2 = childNode.internalLinkFrom(parentNode);
-		} catch (Exception e) {
-			if (new1) {
-				//undo it
-				try {
-					parentNode.unlinkTo(childNode);
-				} catch (Exception f) {
-					e.printStackTrace();
-					f.printStackTrace();
-					throw new AssertionError(e);
-				}
-			}
-			//new2 probably threw it so it is undone or not done
-			throw e;
-		}
-		if (new1 ^ new2) {
-			throw new AssertionError("inconsistent links, one existed w/o the other");
-		}
-		return new1;//new1 and new2 are either both false or both true here
-	}
-	
-	public boolean link(Object parent, Object child) {
-		nullError(parent,child);
-		Extractor pExtr = getExtractor(parent);
-		Extractor cExtr = getExtractor(child);
-		//parent can be String ID, or Node object; both may or may not exist in this Environment
-		//same goes for child
-		if (( isTypeID(parent) ) && (isTypeID(child)) ) {
-			// they're both IDs hence they may both not exist yet
-			if ( (!existsNode(parent)) && (!existsNode(child)) ) {
-				//both don't exist
-				Node _new = new Node(this);
-				_new.linkTo(child);//this will execute child.linkFrom(_new) atomaticly inside
-				return true;
-			}
-		}
-		if (isTypeNode(parent)) {
-			//if parent doesn't exist in the environment already it will be added to it, unless it's part of another environment
-			//then it will throw exception not error
-			(Node)parent.linkTo(child);
-		} else {
-			if (isTypeNode(child)) {
-				(Node)child.linkFrom(parent);
-			}
-		} //else
-		return true;
-	}
-
-	public void sameEnv(Object node) {
-		if (isTypeNode(node)) {
-			if (((Node)node).getEnvironment() != this) {
-				throw new AssertionError("cannot cross-environmentally do that"); //lol?
-			}
-		}
-		if (isTypeID(node)) {
-			Node n = getNode(node);
-			if (null != n)
-		}
-	}
-	
-	/**
-	 * @see #getNode(Object)
-	 * @param node
-	 * @return
-	 */
-	public boolean existsNode(Object node) {
-		return null != getNode(node);
-	}
-	
-	public static boolean isTypeID(Object obj) {
-		nullError(obj);
-		return obj.getClass().getSimpleName().equals("String");
-	}
-	
-	public static boolean isTypeNode(Object obj) {
-		nullError(obj);
-		return obj.getClass().getSimpleName().equals("Node");
-	}
-	
-	/**
-	 * Creates mutual links between the two Nodes (it maps String IDs to Nodes)<br>
-	 * parent -> child<br>
-	 * parent <- child
-	 * @return same as {@link #link(Node, Node)}
-	 * @throws Exception 
-	 * @transaction protected
-	 */
-	public boolean link(String parentID, String childID) throws Exception {
-		nullError(parentID);
-		emptyError(parentID);
-		nullError(childID);
-		emptyError(childID);
-		boolean chiExisted=true;
-		boolean parExisted=true;
-		boolean ret;
-		Node _chi=null;
-		Node _par=null;
-		try {
-		//begin transaction
-			chiExisted = null != (_chi=getNode(childID));
-			if (!chiExisted) {
-				//gets created
-				_chi = newNode(childID);
-				nullError(_chi);
-			}
-			
-			parExisted = null != (_par=getNode(parentID));
-			if (!parExisted) {
-				_par = newNode(parentID);
-				nullError(_par);
-			}
-
-			ret=link(_par, _chi);
-		} catch (Exception e) {
-			if (!chiExisted) {
-				if (null == _chi) {
-					throw new AssertionError("chiExisted==false hence _chi must be non-null");
-				}
-				//if didn't exist this means we just created it above and since we're gonna be throwing then let us rollback()
-				if (_chi != removeNode(childID)) {
-					//it's probably null signaling that it didn't remove!
-					throw new AssertionError("this shouldn't happen");
-				}
-			}
-			if (!parExisted) {
-				if (null == _chi) {
-					throw new AssertionError("parExisted==false hence _par must be non-null");
-				}
-				if (_par != removeNode(parentID)) {
-					throw new AssertionError("should've existed before calling remove!");
-				}
-			}
-			throw e;
-		}
-		
-		return ret;
-	}
-	
-	/**
-	 * @param parentNode
-	 * @param childNode
-	 * @return <tt>true</tt> if link didn't exist but now after the call, it should<br>
-	 * <tt>false</tt> if link already exits, nothing else done
-	 * @throws Exception 
-	 */
-	public Node link(Node parentNode, Node childNode) throws Exception {
-		nullError(parentNode);
-		nullError(childNode);
-		boolean newLink1=false;
-		boolean newLink2=false;
-		try { //begin transaction
-			newLink1 = parentNode.linkTo(childNode);//true = it didn't previously exist; false= it already did exist;any = exists now after call
-			newLink2 = childNode.linkFrom(parentNode);
-		} catch (Exception e) {
-			//so in effect we should undo before throwing (up) again
-			if (newLink1) {
-				//must delete it
-				if (!parentNode.unlinkTo(childNode)) {
-					//false = didn't exist before call, impossible because newLink1=true hence we passed over linkTo which should've created it
-					// so if we're here, it was created but it wasn't deleted because it was already gone
-					throw new AssertionError("attempted to delete a node that didn't exist to start with. This is serious.");
-				}
-			}
-			if (newLink2) {
-				//must delete 2
-				if (!childNode.linkFrom(parentNode)) {
-					throw new AssertionError("another attempt to delete somenode that didn't exist but it should've existed");
-				}
-			}
-			throw e;
-		}
-		
-		if (newLink1 ^ newLink2) { //( (newLink1 == false) || (newLink2 == false) )
-			// if just one of them is true, then inconsistency detected
-			// can't already have either of the links w/o the other
-			throw new AssertionError("one of the 'small' links already existed without the other");
-		}
-		return (newLink1 && newLink2); // both must be true, or they're both false if we're here
-	}
-	
-	/**
-	 * @param parentNode
-	 * @param childID
-	 * @return childNode
-	 * @throws Exception
-	 */
-	public Node link(Node parentNode, String childID) throws Exception {
-		nullError(parentNode);
-		nullError(childID);
-		emptyError(childID);
-		
-		Node _chi = getNode(childID);
-		_chi=link(parentNode, _chi);
-		mapNode(childID, _chi);
-		return _chi;
-	}
-	//TODO: one more methods for link between Node and ID and between ID and Node
-	
-	/**
-	 * make sure that node "id" exists in the allNodes list and points to a new or 
-	 *  previous Node object
-	 * @param nodeID
-	 * 
-	 * this is basically allowing an empty Node to exist, hence it must after calling
-	 * 	this method to ensure the new Node (if created) is linked to some other node
-	 * @throws Exception 
-	 * @transaction protected
-	 */
-//	private Node ensureNode(String nodeID) throws Exception {
-//		Node nod = getNode(nodeID);
-//		if (null == nod) {
-//			nod = newNode(nodeID);
-//		}
-//		return nod;
-//	}
-	
-	
-//	/**
-//	 * better not call this unless u're sure nodeID doesn't exist
-//	 * @param nodeID
-//	 * @return
-//	 * @throws Exception when nodeID existed before<br>
-//	 * @transaction protected
-//	 */
-//	private Node newNode(String nodeID) throws Exception {
-//		//lucky it's possible to create ID-Node tuple without being in a link, or else Nodes won't exist unless in a link and so
-//		//the nodeID would have to be passed to the childrenList of some Node object and this list would add this nodeID after
-//		//it created the ID-Node tuple, and ofc if exception, undo (ID-Node tuple creation - unless it already was there)
-//		nullError(nodeID);
-//		emptyError(nodeID);
-//		Node nod = new Node();
-//		if (isNode(nod)) {
-//			throw new AssertionError("impossible, this node is new, couldn't've existed");
-//		}
-//		if (isNode(nodeID)) {
-//			throw new Exception("already existing nodeID="+nodeID);
-//		}
-//		mapNode(nodeID, nod);
-//		//allIDNodeTuples.putKeyValue(nodeID, nod); // if this excepts then the "nod" variable will get destroyed by Java anyway
-//		return nod;
-//	}
-	/**
-	 * @param nodeID
-	 * @param nodeObject object should already exist outside of call
-	 * @throws Exception if the node already exists, either the ID or the Node object in the ID-Node tuple list
-	 * @return node
-	 */
-	protected Node mapNode(String nodeID, Node nodeObject) throws Exception {
-		nullError(nodeObject);
-		if (nodeObject.isDead()) {
-			throw new AssertionError("we shouldn't map empty nodes like that");
-		}
-		emptyError(nodeID);
-		if (isNode(nodeObject) || isNode(nodeID)) {
-			throw new Exception("one of them already exists, nodeID="+nodeID);
-		}
-		allIDNodeTuples.putKeyValue(nodeID, nodeObject);
-		return nodeObject;
-	}
-	
-	protected void internalMapNode(String nodeID, Node nodeObject) throws Exception {
+	@SuppressWarnings("unused")
+	private void internalMapIDToNode(String nodeID, Node nodeObject) throws Exception {
 		allIDNodeTuples.putKeyValue(nodeID, nodeObject);
 	}
 	
-	public void internalUnMapNode(String nodeID, Node node) {
-		if (!nodeID.equals(allIDNodeTuples.removeKey(nodeID))) {
-			throw new AssertionError("what did we remove? not the same object or contents?");
-		}
+	@SuppressWarnings("unused")
+	private void internalUnMapIDToNode(String nodeID, Node node) {
+		allIDNodeTuples.removeKey(nodeID);
 	}
 	
 	/**
@@ -388,120 +73,29 @@ public class Environment {
 	}
 
 	/**
-	 * remove the id from allIDNodeTuples only, it's assumed it's already empty
-	 * ie. children/parents lists are empty ('cause only then should it be removed)
-	 * doesn't recursively remove
-	 * @param nodeID
-	 * @throws Exception 
-	 */
-	private Node unMapNode(String nodeID) throws Exception {
-		nullError(nodeID);
-		emptyError(nodeID);
-		return allIDNodeTuples.removeKey(nodeID);
-	}
-
-	/**
-	 * @param parentID
-	 * @param childID
-	 * @return see {@link #isLink(Node, Node)}
-	 * @throws Exception 
-	 */
-	public boolean isLink(String parentID, String childID) throws Exception {
-		nullError(parentID);
-		nullError(childID);
-		emptyError(parentID);
-		emptyError(childID);
-		Node _par = getNode(parentID);
-		Node _chi = getNode(childID);
-		if ((null == _par) || (null == _chi) ) {
-			return false;
-		}
-		return isLink(_par, _chi);
-	}
-	
-	/**
-	 * @param parentNode
-	 * @param childNode
-	 * @return
-	 * @throws Exception 
-	 */
-	public boolean isLink(Node parentNode, Node childNode) throws Exception {
-		nullError(parentNode);
-		nullError(childNode);
-		return ( parentNode.isLinkTo(childNode) && childNode.isLinkFrom(parentNode));
-	}
-	
-//	private static void nullExcept(Object any) {
-//		if (null == any) {
-//			throw new NullPointerException("bad programming?");
-//		}
-//	}
-	
-	/**
-	 * @param anyObject
+	 * @param anyObject one or more objects to be tested if they're null, if so then we throw AssertionError
 	 */
 	public static void nullError(Object... anyObject) {
 		for (int i = 0; i < anyObject.length; i++) {
 			if (null == anyObject[i]) {
-				throw new AssertionError("should never be null");
+				throw new AssertionError("should never be null:"+anyObject[i]+" [i]");
 			}
 		}
 	}
 
 	/**
+	 * this will link the two nodes identified by those IDs<br>
+	 * if there is no Node for the specified ID it will be created and mapped to it<br>
+	 * parentID -> childID (the Node object identified by parentID will have its children list contain the Node object identified by childID)<br> 
+	 * parentID <- childID (the Node identified by childID will have its parents list contain the Node object identified by parentID)<br>
 	 * @param parentID
 	 * @param childID
-	 * <br>see: {@link #unLink(Node, Node)}
-	 * @throws Exception 
-	 * @returns see {@link #unLink(Node, Node)}
 	 */
-	public boolean unLink(String parentID, String childID) throws Exception {
-		nullError(parentID);
-		nullError(childID);
-		emptyError(parentID);
-		emptyError(childID);
-		Node _par = getNode(parentID);
-		Node _chi = getNode(childID);
-		if ((null == _par) || (null == _chi)) {
-			return false;//never existed
-		}
-		return unLink(_par, _chi);
-	}
-	
-	/**
-	 * @param parentNode
-	 * @param childNode
-	 * @throws Exception 
-	 * @returns true = existed and now it's removed<br>
-	 * false = didn't exist and hence it still doesn't
-	 */
-	public boolean unLink(Node parentNode, Node childNode) throws Exception {
-		nullError(parentNode);
-		nullError(childNode);
-		if (!isLink(parentNode, childNode)) {
-			return false;
-		}
-		boolean removed1 = parentNode.unlinkTo(childNode);
-		boolean removed2 = childNode.unlinkFrom(parentNode);
-		if (parentNode.isDead()) {
-			this.removeNode(this.getID(parentNode));
-		}
-		if (childNode.isDead()) {
-			removeNode(getID(childNode));
-		}
-		if (removed1 ^ removed2) {
-			// Basically we're here because one of the above removals didn't have an element to 
-			// remove, in effect proving non-mutual link existed
-			throw new AssertionError();
-		}
-		return true;
+	public void link(String parentID, String childID) {
+		//this will link the two nodes identified by those IDs:
+		//the Node identified by parentID will get in its children list the node identified by childID
+		//the Node identified by childID will get in its parents list the node identified by parentID
+		
 	}
 
-	public Extractor getExtractor(Object node) {
-		return new Extractor(this, node);
-	}
-
-	
-
-	
 }

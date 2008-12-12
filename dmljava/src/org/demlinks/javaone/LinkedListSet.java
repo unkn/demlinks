@@ -18,31 +18,23 @@
 
 package org.demlinks.javaone;
 
-import java.nio.channels.AlreadyConnectedException;
 import java.util.LinkedList;
 
-// no DUPlicate elements
-// ability to insert anywhere
-// no nulls
-
+/**
+ * a list of unique objects (no duplicates)<br>
+ * no null objects<br>
+ * ability to insert anywhere<br>
+ *
+ * @param <E> the list will have objects of this type
+ */
 public class LinkedListSet<E> extends LinkedList<E> {
 
-//	LinkedListSet() {
-//		super();
-//	}
-	
-	private static void nullError(Object anyObject) {
-		if (null == anyObject) {
-			throw new AssertionError("should never be null");
-		}
-	}
-	
 	/* (non-Javadoc)
 	 * @see java.util.LinkedList#add(java.lang.Object)
 	 */
 	@Override
 	public boolean add(E obj) {
-		nullError(obj);
+		Environment.nullError(obj);
 		if (!this.contains(obj)) {
 			return super.add(obj);
 		}
@@ -50,26 +42,25 @@ public class LinkedListSet<E> extends LinkedList<E> {
 	}
 	
 	@Override
-	public void addFirst(E obj) throws AlreadyConnectedException {
-		if (this.contains(obj)) {
-			throw new AlreadyConnectedException();
+	public void addFirst(E obj) {
+		Environment.nullError(obj);
+		if (!this.contains(obj)) {
+			super.addFirst(obj);
 		}
-		super.addFirst(obj);
 	}
 	
 	
 	@Override
-	public void addLast(E obj) throws AlreadyConnectedException {
-		if (this.contains(obj)) {
-			throw new AlreadyConnectedException();
+	public void addLast(E obj) {
+		Environment.nullError(obj);
+		if (!this.contains(obj)) {
+			super.addLast(obj);
 		}
-		super.addLast(obj);
 	}
 	
 	@Override
 	public boolean addAll(java.util.Collection<? extends E> c) {
 		throw new UnknownError();
-		//return false;
 	}
 	
 	@Override
@@ -79,50 +70,54 @@ public class LinkedListSet<E> extends LinkedList<E> {
 	
 	@Override
 	public void add(int index, E element) {
-		if (this.contains(element)) {
-			throw new AlreadyConnectedException();
+		Environment.nullError(element);
+		if (!this.contains(element)) {
+			super.add(index, element);
 		}
-		super.add(index, element);
 	}
 	
 	@Override
 	public boolean offer(E e) {
-		if (this.contains(e)) {
-			throw new AlreadyConnectedException();
+		Environment.nullError(e);
+		if (!this.contains(e)) {
+			return super.offer(e);
 		}
-		return super.offer(e);
-	};
+		return false;
+	}
 	
 	@Override
 	public boolean offerFirst(E e) {
-		if (this.contains(e)) {
-			throw new AlreadyConnectedException();
+		Environment.nullError(e);
+		if (!this.contains(e)) {
+			return super.offerFirst(e);
 		}
-		return super.offerFirst(e);
+		return false;
 	}
 	
 	@Override
 	public boolean offerLast(E e) {
-		if (this.contains(e)) {
-			throw new AlreadyConnectedException();
+		Environment.nullError(e);
+		if (!this.contains(e)) {
+			return super.offerLast(e);
 		}
-		return super.offerLast(e);
+		return false;
 	}
 	
 	@Override
 	public void push(E e) {
-		if (this.contains(e)) {
-			throw new AlreadyConnectedException();
+		Environment.nullError(e);
+		if (!this.contains(e)) {
+			super.push(e);
 		}
-		super.push(e);
 	}
 	
 	@Override
 	public E set(int index, E element) {
-		if (this.contains(element)) {
-			throw new AlreadyConnectedException();
+		Environment.nullError(element);
+		if (!this.contains(element)) {
+			return super.set(index, element);
 		}
-		return super.set(index, element);
+		return null;
 	};
 	
 	/**
@@ -130,5 +125,4 @@ public class LinkedListSet<E> extends LinkedList<E> {
 	 */
 	private static final long serialVersionUID = 3380435324961393742L;
 
-	// TODO: inserting element that already exists should move it, or fail but a move() func. should exist in case insert fails
 }

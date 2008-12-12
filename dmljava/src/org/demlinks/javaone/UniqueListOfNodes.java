@@ -18,164 +18,30 @@
 
 package org.demlinks.javaone;
 
-import java.rmi.AlreadyBoundException;
 
-
-
-//TODO may want same interface used in both this list and its iterator
-
+/**
+ * * a list of unique Node objects (no two are the same)<br>
+ * * the order of Nodes in the list matters
+ */
 public class UniqueListOfNodes { // order matters; Nodes are unique
 
-	private Node ourFatherNode;
 	private LinkedListSet<Node> listSet; // this is here instead of inherited because we don't want users to access other methods from it
 	 
 	public UniqueListOfNodes(Node fatherNode) {
-		Environment.nullError(fatherNode);
-		ourFatherNode = fatherNode;
 		listSet = new LinkedListSet<Node>();
 	}
 	
-	public Environment getEnvironment() {
-		return ourFatherNode.getEnvironment();
-	}
-
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 842508346073648046L;
 
 	
-//	public void append(Node node) throws Exception {
-//		//node can be null
-//		Environment.nullError(node);
-//		// or not exist
-//		if (!getEnvironment().existsNode(node)) {
-//			//doesn't exist?
-//			throw new AssertionError("node doesn't exist; in this environment");
-//		}
-//		//so exists then we add it:
-//		if (!listSet.add(node)) {// ourFatherNode -> node
-//			throw new Exception("should've added it! maybe already existed! it's a listSet");
-//		}
-//		try {
-//			if (!node.get(List.PARENTS).internalAppend(ourFatherNode)) {// ourFatherNode <- node
-//				throw new Exception("should've added it");
-//			}
-//		} catch (Exception e) {
-//			
-//		}
-//	}
 	
-	protected boolean internalAppend(Node node) {
+	protected boolean append(Node node) {
 		return listSet.add(node);
 	}
 	
-//	public boolean append(String nodeID) {
-//		//can be null
-//		Environment.nullError(nodeID);
-//
-//		Environment env=getEnvironment();
-//		Node nodeToAdd = env.getNode(nodeID);
-//		boolean created = false;
-//		if (null == nodeToAdd) {
-//			//doesn't exist, we create it
-//			nodeToAdd = new Node(env);
-//			created = true;
-//		}
-//		boolean ret = this.append(nodeToAdd);
-//		if (created) {
-//			//also map ID to Node now
-//		}
-//		return false;
-//	}
-//	
-	
-	public boolean append(Object node) {
-		Extractor extr=null;
-		boolean ret=false;
-		Environment env=getEnvironment();
-		extr=env.getExtractor(node);//if node(s) don't exist they will be created by extractor but not yet mapped ID-Node
-		try {
-			ret=env.internalLink(ourFatherNode, extr.getNode());//supposedly returns true if it's a new link?that is it didn't previously exist
-			extr.map();//if map throws, then we'd need to unlink
-		} catch (Exception e) {
-			//undo first
-			if (null != extr) {
-				extr.undo();//if anything is needed to be undone, such as if it made a new Node() temporarely and maybe unmap ID to Node
-			}
-			if (ret) {
-				try {
-					env.internalUnLink(ourFatherNode, extr.getNode());//and if this throws, we lose "e"
-				} catch (Exception f) {
-					e.printStackTrace();
-					throw new AssertionError("above it was created but here it could not be removed!");
-				}
-			}
-			throw e;
-		}
-		
-		return ret;
-	}
-	
-	/**
-	 * @param node can be a Node object or a String ID of a Node object
-	 * @return true if list changed as a result of the call
-	 * @throws Exception 
-	 * @transaction protected
-	 */
-	public boolean append(Object node) throws Exception {
-		// the node can be:
-		// 0. null -> throws error
-		// 1. non-existing (or from another environ, same thing)
-		// 1.1 Node object -> throw exception ? or use that object(maybe was created by the caller as temporary for a new
-		// 1.2 String ID -> create new local Node()
-		// 2. existing (implies only in this environment tested)
-		// 2.1 Node object -> use it 
-		// 2.2 String ID -> get it's Node object
-		Environment.nullError(node);
-		
-		Environment env=getEnvironment();
-		
-		Node nodeToAdd=env.getNode(node);
-		boolean tempNode = false;
-		if (null == nodeToAdd) {
-			//doesn't exist
-			if (Environment.isTypeNode(node)) {
-				throw new Exception("you passed me a Node object that doesn't exist; at least in this environment");
-			} else {
-				if (Environment.isTypeID(node)) {
-					nodeToAdd = new Node(env);
-					tempNode = true; // yes we created a new node from an ID but we didn't yet map the ID to the Node
-				}
-			}
-		}//if
-		
-		boolean ret = listSet.add(nodeToAdd);//true = added a new one, hence it didn't exist previously
-		//technicly if the above call throws exception, we don't have to undo anything until now
-		// we also need to add the reverse link
-		boolean ret2=false;
-		try {
-			ret2 = nodeToAdd.get(List.PARENTS).append(this.ourFatherNode);//or maybe create an internal _append() to bypass the circular calls
-			if (tempNode) {
-				//here we attempt to map the ID to Node, this should work because ID didn't exist above
-				env.mapNode((String)node, nodeToAdd);
-				//TODO make this except in a junit test, and check if correctly removed the append() we were supposed to do
-			}
-		} catch (Exception e) {
-			if (ret) {
-				//if ret==true this means we above added the nodeToAdd and hence if we wanna undo we have to remove it now
-				listSet.remove(nodeToAdd);//remove works since it's a listSet hence there can't be 2 elemens that are the same
-				//so above we're sure to remove the only existing and out element: nodeToAdd
-			}
-			if (ret2) {
-				//remove reverse link also
-				nodeToAdd.get(List.PARENTS).remove(this.ourFatherNode);
-			}
-			throw e;
-		}
-		return ret;
-	}
-
 	public boolean contains(Node node) {
 		return listSet.contains(node);
 	}
@@ -189,12 +55,6 @@ public class UniqueListOfNodes { // order matters; Nodes are unique
 	}
 
 	/**
-	 * the following won't work
-	 * {@linkplain LinkedList#remove(Object)}
-	 * {@linkplain LinkedListSet#remove(Object)}
-	 * {@linkplain LinkedList#remove}
-	 * {@linkplain LinkedListSet#remove}
-	 * this works:
 	 * @see java.util.LinkedList#remove(Object)
 	 */
 	public boolean remove(Node node) {
@@ -207,46 +67,22 @@ public class UniqueListOfNodes { // order matters; Nodes are unique
 	
 	private class NodeItr implements NodeIterator {
 		NodeItr(int index) {
-			
 		}
 
 		@Override
 		public void find(Object node) {
 			// TODO Auto-generated method stub
-
-			String name = node.getClass().getSimpleName();
-			if ( name.equals("Node")) {
-				Node tmp = (Node)node;
-				System.out.println(tmp);
-			} else {
-				if (name.equals("String")) {
-					String tmp = (String)node;
-					System.out.println(tmp);
-				}
-			}
 		}
 
 		@Override
 		public void insert(Node whatNode, Location location) {
 			// TODO Auto-generated method stub
-			//UniqueListOfNodes.
-			//insert(whatNode, location); // TODO this will need to call insert of UniqueListOfNodes class
-//			if (null == whatNode) {
-//				whatNode = new Node(environ);
-//			}
 		}
 
-	}
+	}//NodeItr class
 
 	public void insert(Node whatNode, Location location, Node locationNode) {
 		// TODO Auto-generated method stub
-		if (locationNode == null) {
-			//TODO disallow location == BEFORE or AFTER or INSTEADOF
-		}
-	}
-	
-	public void insert(Node whatNode, Location location) {
-		insert(whatNode, location, null);
 	}
 	
 }
