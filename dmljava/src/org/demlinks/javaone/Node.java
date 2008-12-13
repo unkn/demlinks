@@ -37,8 +37,8 @@ public class Node {
 	
 	public Node(Environment env) {
 		environ = env;
-		parentsList = new UniqueListOfNodes();
-		childrenList = new UniqueListOfNodes();
+		parentsList = new UniqueListOfNodes(environ, this);
+		childrenList = new UniqueListOfNodes(environ, this);
 	}
 
 	/**

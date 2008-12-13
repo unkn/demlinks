@@ -51,6 +51,7 @@ public class Environment {
 	 * @return the Node object that's mapped to the ID, if it doesn't exist in the Environment then null
 	 */
 	public Node getNode(String nodeID) {
+		nullException(nodeID);
 		return allIDNodeTuples.getValue(nodeID);
 	}
 
@@ -58,6 +59,7 @@ public class Environment {
 	 * @return the ID that is mapped to the Node object, in this environment, or null if there's no such mapping
 	 */
 	public String getID(Node node) {
+		nullException(node);
 		return allIDNodeTuples.getKey(node);
 	}
 	
@@ -82,7 +84,7 @@ public class Environment {
 	public static void nullException(Object... anyObject) {
 		for (int i = 0; i < anyObject.length; i++) {
 			if (null == anyObject[i]) {
-				throw new NullPointerException("should never be null:"+anyObject[i]+" [i]");
+				throw new NullPointerException("should never be null:"+anyObject[i]+" ["+i+"]");
 			}
 		}
 	}
@@ -223,15 +225,19 @@ public class Environment {
 	 * @return true if (mutual) link between the two nodes exists
 	 */
 	public boolean isLink(Node parentNode, Node childNode) {
+		nullException(parentNode, childNode);
 		return parentNode.isLinkTo(childNode);
 	}
 	public boolean isLink(Node parentNode, String childID) {
+		nullException(parentNode, childID);
 		return parentNode.isLinkTo(childID);
 	}
 	public boolean isLink(String parentID, Node childNode) {
+		nullException(parentID, childNode);
 		return childNode.isLinkFrom(parentID);
 	}
 	public boolean isLink(String parentID, String childID) {
+		nullException(parentID, childID);
 		Node parentNode = this.getNode(parentID);
 		if (null != parentNode) {
 			//at least the node exists

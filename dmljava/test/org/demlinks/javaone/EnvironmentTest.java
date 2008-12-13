@@ -20,6 +20,9 @@ package org.demlinks.javaone;
 
 import static org.junit.Assert.*;
 
+import java.util.ListIterator;
+import java.util.NoSuchElementException;
+
 
 
 import org.junit.Before;
@@ -83,9 +86,54 @@ public class EnvironmentTest {
 
 		// -------------------------
 		
+		env.link("AllChars","A");
+		Node ac = env.getNode("AllChars");
+		ac.linkTo("B");
+		addAllChars();
 		
+		UniqueListOfNodes chi = ac.get(List.CHILDREN);
+		chi.append("H");
+		assertTrue(chi.contains("H"));
+		assertTrue(chi.contains("B"));
+		chi.remove("B");
+		//assertFlase(chi.contains("B"));
+		
+//		ListIterator<Node> litr = chi.listIterator();
+//		litr.add("I");
+		
+		parseTree("AllChars",20,"");
 		
 	}
+	
+	public void addAllChars() throws Exception {
+		Node _a = env.getNode("AllChars");
+		for (int i = 65; i < 72; i++) {
+			env.link(_a,String.format("%c", i));
+		}
+	}
+
+	public void parseTree(String ID, int downToLevel, String whatWas) {
+		whatWas+=ID;
+		if  (downToLevel < 0) {
+			System.out.println(whatWas+" {max level reached}");
+			return;
+		}
+		Node nod = env.getNode(ID);
+		if (null == nod) { // this will never happen (unless first call)
+			throw new NoSuchElementException();
+		}
+		ListIterator<Node> litr = nod.get(List.CHILDREN).listIterator();
+		if (!litr.hasNext()) { // no more children
+			System.out.println(whatWas);
+			return;
+		}
+		while (litr.hasNext()) {
+			Node curr = litr.next();
+			String id = env.getID(curr);
+			parseTree(id, downToLevel - 1, whatWas+"->");
+		}
+	}
+
 	
 	@Test
 	public void testUnMappedNode() throws Exception {

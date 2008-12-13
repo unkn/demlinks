@@ -18,6 +18,8 @@
 
 package org.demlinks.javaone;
 
+import java.util.ListIterator;
+
 
 /**
  * * a list of unique Node objects (no two are the same)<br>
@@ -25,10 +27,14 @@ package org.demlinks.javaone;
  */
 public class UniqueListOfNodes { // order matters; Nodes are unique
 
+	private Node ourFatherNode;//father doesn't mean this list is children of that node, it could be the parents list of that node
+	private Environment environ;
 	private LinkedListSet<Node> listSet; // this is here instead of inherited because we don't want users to access other methods from it
 	 
-	public UniqueListOfNodes() {
+	public UniqueListOfNodes(Environment env, Node fatherNode) {
 		listSet = new LinkedListSet<Node>();
+		environ = env;
+		ourFatherNode = fatherNode;
 	}
 	
 	/**
@@ -43,9 +49,19 @@ public class UniqueListOfNodes { // order matters; Nodes are unique
 		return listSet.add(node);
 	}
 	
+	public void append(String childID) throws Exception {
+		//let's remember that this list can be PARENTS or CHILDREN
+		//TODO xx
+	}
+	
 	public boolean contains(Node node) {
 		Environment.nullException(node);
 		return listSet.contains(node);
+	}
+	
+	public boolean contains(String childID) {
+		//TODO xx
+		return false;
 	}
 
 	public boolean isEmpty() {
@@ -63,6 +79,11 @@ public class UniqueListOfNodes { // order matters; Nodes are unique
 		Environment.nullException(node);
 		return listSet.remove(node);
 	}
+
+	public void remove(String childID) {
+		//TODO xx
+	}
+
 	
 	public NodeIterator nodeIterator(int index) {
 		return new NodeItr(index);
@@ -90,5 +111,14 @@ public class UniqueListOfNodes { // order matters; Nodes are unique
 		// TODO Auto-generated method stub
 		Environment.nullException(whatNode);
 	}
+
+	// TODO temporary
+	public ListIterator<Node> listIterator() {
+		return listSet.listIterator();
+	}
+
+
+
+
 	
 }
