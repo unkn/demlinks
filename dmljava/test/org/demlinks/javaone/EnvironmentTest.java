@@ -75,13 +75,19 @@ public class EnvironmentTest {
 		Node _d = env.getNode("d");
 		assertTrue(env.isLink(_d, _c));
 		
-		Node _boo = new Node(env);//a node that's not in environment because it's not mapped to an ID
+		Node _boo = new Node(env);//a node that's not mapped ID to Node in the environment
+		boolean errored=false;
 		try {
 			env.link(_boo, _a); //an attempt to link these nodes should fail because one of them is not in the environment/mapped
 		} catch (Error e) {
-			
+			errored=true;
 		}
+		assertTrue(errored);
+		
 		assertFalse(env.isLink(_boo, _a));
+		
+		_boo.linkTo(_a);
+		assertFalse(env.isLink(_boo, _a)); //_boo wasn't mapped in the environment
 		
 		
 	}

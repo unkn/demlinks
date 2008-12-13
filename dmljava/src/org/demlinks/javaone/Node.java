@@ -48,6 +48,7 @@ public class Node {
 	 * @return true if the link didn't exist before call
 	 */
 	public boolean linkTo(Node childNode) {
+		//TODO: before you link this to the childNode shouldn't we ensure that both this and childNode are mapped within the environment?
 		boolean ret = get(List.CHILDREN).append(childNode);
 		childNode.get(List.PARENTS).append(this);
 		return ret;
