@@ -34,7 +34,7 @@ public class LinkedListSet<E> extends LinkedList<E> {
 	 */
 	@Override
 	public boolean add(E obj) {
-		Environment.nullError(obj);
+		Environment.nullException(obj);
 		if (!this.contains(obj)) {
 			return super.add(obj);
 		}
@@ -43,7 +43,7 @@ public class LinkedListSet<E> extends LinkedList<E> {
 	
 	@Override
 	public void addFirst(E obj) {
-		Environment.nullError(obj);
+		Environment.nullException(obj);
 		if (!this.contains(obj)) {
 			super.addFirst(obj);
 		}
@@ -52,7 +52,7 @@ public class LinkedListSet<E> extends LinkedList<E> {
 	
 	@Override
 	public void addLast(E obj) {
-		Environment.nullError(obj);
+		Environment.nullException(obj);
 		if (!this.contains(obj)) {
 			super.addLast(obj);
 		}
@@ -70,7 +70,7 @@ public class LinkedListSet<E> extends LinkedList<E> {
 	
 	@Override
 	public void add(int index, E element) {
-		Environment.nullError(element);
+		Environment.nullException(element);
 		if (!this.contains(element)) {
 			super.add(index, element);
 		}
@@ -78,7 +78,7 @@ public class LinkedListSet<E> extends LinkedList<E> {
 	
 	@Override
 	public boolean offer(E e) {
-		Environment.nullError(e);
+		Environment.nullException(e);
 		if (!this.contains(e)) {
 			return super.offer(e);
 		}
@@ -87,7 +87,7 @@ public class LinkedListSet<E> extends LinkedList<E> {
 	
 	@Override
 	public boolean offerFirst(E e) {
-		Environment.nullError(e);
+		Environment.nullException(e);
 		if (!this.contains(e)) {
 			return super.offerFirst(e);
 		}
@@ -96,7 +96,7 @@ public class LinkedListSet<E> extends LinkedList<E> {
 	
 	@Override
 	public boolean offerLast(E e) {
-		Environment.nullError(e);
+		Environment.nullException(e);
 		if (!this.contains(e)) {
 			return super.offerLast(e);
 		}
@@ -105,7 +105,7 @@ public class LinkedListSet<E> extends LinkedList<E> {
 	
 	@Override
 	public void push(E e) {
-		Environment.nullError(e);
+		Environment.nullException(e);
 		if (!this.contains(e)) {
 			super.push(e);
 		}
@@ -113,7 +113,7 @@ public class LinkedListSet<E> extends LinkedList<E> {
 	
 	@Override
 	public E set(int index, E element) {
-		Environment.nullError(element);
+		Environment.nullException(element);
 		if (!this.contains(element)) {
 			return super.set(index, element);
 		}

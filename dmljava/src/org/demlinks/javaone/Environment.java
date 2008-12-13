@@ -79,7 +79,7 @@ public class Environment {
 	/**
 	 * @param anyObject one or more objects to be tested if they're null, if so then we throw AssertionError
 	 */
-	public static void nullError(Object... anyObject) {
+	public static void nullException(Object... anyObject) {
 		for (int i = 0; i < anyObject.length; i++) {
 			if (null == anyObject[i]) {
 				throw new NullPointerException("should never be null:"+anyObject[i]+" [i]");

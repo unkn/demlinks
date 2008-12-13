@@ -39,12 +39,12 @@ public class UniqueListOfNodes { // order matters; Nodes are unique
 	
 	
 	protected boolean append(Node node) {
-		Environment.nullError(node);
+		Environment.nullException(node);
 		return listSet.add(node);
 	}
 	
 	public boolean contains(Node node) {
-		Environment.nullError(node);
+		Environment.nullException(node);
 		return listSet.contains(node);
 	}
 
@@ -60,7 +60,7 @@ public class UniqueListOfNodes { // order matters; Nodes are unique
 	 * @see java.util.LinkedList#remove(Object)
 	 */
 	public boolean remove(Node node) {
-		Environment.nullError(node);
+		Environment.nullException(node);
 		return listSet.remove(node);
 	}
 	
@@ -74,13 +74,13 @@ public class UniqueListOfNodes { // order matters; Nodes are unique
 
 		@Override
 		public void find(Object node) {
-			Environment.nullError(node);
+			Environment.nullException(node);
 			// TODO Auto-generated method stub
 		}
 
 		@Override
 		public void insert(Node whatNode, Location location) {
-			Environment.nullError(whatNode);
+			Environment.nullException(whatNode);
 			// TODO Auto-generated method stub
 		}
 
@@ -88,7 +88,7 @@ public class UniqueListOfNodes { // order matters; Nodes are unique
 
 	public void insert(Node whatNode, Location location, Node locationNode) {
 		// TODO Auto-generated method stub
-		Environment.nullError(whatNode);
+		Environment.nullException(whatNode);
 	}
 	
 }

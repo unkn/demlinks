@@ -45,12 +45,12 @@ public class TwoWayHashMap<Key,Value> {
 	 * @see java.util.HashMap#get(Object key)
 	 */
 	public Value getValue(Key _k) {
-		nullError(_k);
+		Environment.nullException(_k);
 		return forward.get(_k);
 	}
 	
 	public Key getKey(Value _v) {
-		nullError(_v);
+		Environment.nullException(_v);
 		return backward.get(_v);
 	}
 
@@ -60,8 +60,7 @@ public class TwoWayHashMap<Key,Value> {
 	 * @transaction protected
 	 */
 	public void putKeyValue(Key _k, Value _v) throws Exception {
-		nullError(_k);
-		nullError(_v);
+		Environment.nullException(_k,_v);
 		Value one = forward.put(_k, _v); 
 		if (one != null) {
 			forward.remove(_k);//undo-ing transaction
@@ -77,18 +76,12 @@ public class TwoWayHashMap<Key,Value> {
 		}
 	}
 
-	private static void nullError(Object obj) {
-		if (null == obj) {
-			throw new NullPointerException("object shouldn't be null. Like ever!");
-		}
-	}
-
 	public int size() {
 		return forward.size();// == backward.size()
 	}
 
 	public Value removeKey(Key _k) {
-		nullError(_k);
+		Environment.nullException(_k);
 		Value deleted = forward.remove(_k);
 		Key tmpk = backward.remove(deleted);
 		if (tmpk != _k) {
