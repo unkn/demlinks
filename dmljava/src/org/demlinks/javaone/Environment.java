@@ -88,6 +88,22 @@ public class Environment {
 			}
 		}
 	}
+	
+	/**
+	 * this will create a new Node object and map it to the given ID<br>
+	 * 
+	 * @param nodeID supposedly unused ID
+	 * @return if the ID is already mapped then it will return its respective Node object
+	 * @throws Exception
+	 */
+	public Node newNode(String nodeID) throws Exception {
+		Node n = getNode(nodeID);
+		if (null == n) {
+			n = new Node(this);
+			internalMapIDToNode(nodeID, n);
+		}
+		return n;
+	}
 
 	/**
 	 * this will link the two nodes identified by those IDs<br>
@@ -108,16 +124,17 @@ public class Environment {
 		if (null == parentNode) {
 			//ah there was no existing Node object with that ID
 			//we create a new one
-			parentNode = new Node(this);
+			parentNode = newNode(parentID);
+//			new Node(this);
 			parentCreated = true;
-			internalMapIDToNode(parentID, parentNode);
+//			internalMapIDToNode(parentID, parentNode);
 		}
 		
 		boolean childCreated = false;
 		Node childNode = getNode(childID);//fetch existing Node identified by childID
 		if (null == childNode) {
 			//nothing existing? create one
-			childNode = new Node(this);
+			childNode = new Node(this);//TODO look at the above parentID do the same
 			childCreated = true;
 			internalMapIDToNode(childID, childNode);
 		}
@@ -128,11 +145,12 @@ public class Environment {
 			try {
 				if (parentCreated) {
 					//if it was a new Node we just created above then we need to map ID to Node
-					internalUnMapIDToNode(parentID, parentNode);
+//					internalUnMapIDToNode(parentID, parentNode);
+					removeNode(parentID);
 				}
 
 				if (childCreated) {
-					internalUnMapIDToNode(childID, childNode);
+					internalUnMapIDToNode(childID, childNode);//TODO x
 				}
 			} catch (Exception f) {
 				e.printStackTrace();
@@ -142,6 +160,23 @@ public class Environment {
 		}
 	}
 	
+	/**
+	 * remove a Node created by newNode() usually<br>
+	 * basically it will unmap the ID from the Node object only if the Node object has no children and no parents
+	 * @param nodeID
+	 * @return the removed Node or null
+	 */
+	public Node removeNode(String nodeID) {
+		Node n = getNode(nodeID);
+		if (n != null) {
+			if (!n.isDead()) {
+				throw new AssertionError("attempt to remove a non-empty node. Clear its lists first!");
+			}
+			internalUnMapIDToNode(nodeID, n);
+		}
+		return n;
+	}
+
 	/**
 	 * @param parentID
 	 * @param childNode
