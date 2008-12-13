@@ -79,7 +79,7 @@ public class TwoWayHashMap<Key,Value> {
 
 	private static void nullError(Object obj) {
 		if (null == obj) {
-			throw new AssertionError("object shouldn't be null. Like ever!");
+			throw new NullPointerException("object shouldn't be null. Like ever!");
 		}
 	}
 

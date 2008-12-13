@@ -41,6 +41,7 @@ public class EnvironmentTest {
 	@Test
 	public void testLink() throws Exception {
 		
+		
 
 		env.link("a", "b"); //link two new nodes "a"->"b"
 		
@@ -50,7 +51,7 @@ public class EnvironmentTest {
 		assertTrue(null != _b);
 		
 		assertTrue( _a.isLinkTo(_b) );// does link _a -> _b exists ? also implies _a <- _b exists
-		assertTrue( _a.isLinkTo("b") );
+		assertTrue( _a.isLinkTo(new String("b")) );
 
 		
 		assertTrue( null == env.getNode("c") ); //inexistent Node
@@ -74,10 +75,10 @@ public class EnvironmentTest {
 		Node _d = env.getNode("d");
 		assertTrue(env.isLink(_d, _c));
 		
-		Node _boo = new Node();//a node that's not in environment because it's not mapped to an ID
+		Node _boo = new Node(env);//a node that's not in environment because it's not mapped to an ID
 		try {
 			env.link(_boo, _a); //an attempt to link these nodes should fail because one of them is not in the environment/mapped
-		} catch (Exception e) {
+		} catch (Error e) {
 			
 		}
 		assertFalse(env.isLink(_boo, _a));
@@ -88,86 +89,126 @@ public class EnvironmentTest {
 	
 	
 	@Test
-	public void testNullParameters() {
+	public void testNullParameters() throws Exception {
 		
 		String nullStr = null;
 		Node nullNode = null;
 		String fullStr = "something";
-		Node fullNode = new Node();
+		Node fullNode = new Node(env);
 		
 		boolean excepted=false;
+		
+		try {
+			env.link("a", new Node(env));
+		} catch (Error e) {
+			excepted = true;
+		}
+		assertTrue(excepted);
+		
+		excepted = false;
+		try {
+			env.link(new Node(env),"a");
+		} catch (Error e) {
+			excepted = true;
+		}
+		assertTrue(excepted);
+		
+		excepted = false;
 		try {
 			env.link(nullStr, nullStr);
-		} catch (Exception e) {
+		} catch (NullPointerException e) {
 			excepted = true;
-		} finally {
-			assertTrue(excepted);
 		}
+		assertTrue(excepted);
 		
 		excepted=false;
 		try {
 			env.link(nullNode, nullNode);
-		} catch (Exception e) {
+		} catch (NullPointerException e) {
 			excepted = true;
-		} finally {
-			assertTrue(excepted);
 		}
+		assertTrue(excepted);
 		
 		excepted=false;
 		try {
 			env.link(nullStr, nullNode);
-		} catch (Exception e) {
+		} catch (NullPointerException e) {
 			excepted = true;
-		} finally {
-			assertTrue(excepted);
 		}
+		assertTrue(excepted);
 		
 		excepted=false;
 		try {
 			env.link(nullNode, nullStr);
-		} catch (Exception e) {
+		} catch (NullPointerException e) {
 			excepted = true;
-		} finally {
-			assertTrue(excepted);
 		}
+		assertTrue(excepted);
 		
 		excepted = false;
 		try {
 			env.link(fullStr, nullStr);
-		} catch (Exception e) {
+		} catch (NullPointerException e) {
 			excepted = true;
-		} finally {
-			assertTrue(excepted);
 		}
+		assertTrue(excepted);
 		
 		excepted = false;
 		try {
 			env.link(fullStr, nullNode);
-		} catch (Exception e) {
+		} catch (NullPointerException e) {
 			excepted = true;
-		} finally {
-			assertTrue(excepted);
 		}
+		assertTrue(excepted);
+		
+		excepted = false;
+		try {
+			env.link(nullStr, fullStr);
+		} catch (NullPointerException e) {
+			excepted = true;
+		}
+		assertTrue(excepted);
+		
+		excepted = false;
+		try {
+			env.link(nullNode, fullStr);
+		} catch (NullPointerException e) {
+			excepted = true;
+		}
+		assertTrue(excepted);
 		
 		excepted = false;
 		try {
 			env.link(fullNode, nullStr);
-		} catch (Exception e) {
+		} catch (NullPointerException e) {
 			excepted = true;
-		} finally {
-			assertTrue(excepted);
 		}
+		assertTrue(excepted);
 		
 		excepted = false;
 		try {
 			env.link(fullNode, nullNode);
-		} catch (Exception e) {
+		} catch (Error e) {
 			excepted = true;
-		} finally {
-			assertTrue(excepted);
 		}
+		assertTrue(excepted);
 		
-		//TODO ? 4 more variants ?
+		excepted = false;
+		try {
+			env.link(nullStr, fullNode);
+		} catch (NullPointerException e) {
+			excepted = true;
+		}
+		assertTrue(excepted);
+		
+		excepted = false;
+		try {
+			env.link(nullNode, fullNode);
+		} catch (NullPointerException e) {
+			excepted = true;
+		}
+		assertTrue(excepted);
+		
 	}
 	
 }

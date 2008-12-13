@@ -33,8 +33,10 @@ public class Node {
 	// lists should never be null
 	private UniqueListOfNodes parentsList;//list of all Nodes that point to <this>
 	private UniqueListOfNodes childrenList;//list of all Nodes that <this> points to
+	Environment environ;
 	
-	public Node() {
+	public Node(Environment env) {
+		environ = env;
 		parentsList = new UniqueListOfNodes();
 		childrenList = new UniqueListOfNodes();
 	}
@@ -103,8 +105,12 @@ public class Node {
 	 * @return
 	 */
 	public boolean isLinkTo(String childID) {
-		// TODO Auto-generated method stub
-		return false;
+		Node childNode = environ.getNode(childID);
+		if (null == childNode) {
+			//no mapping for that ID
+			return false;
+		}
+		return isLinkTo(childNode);
 	}
 	
 	/**
@@ -118,6 +124,15 @@ public class Node {
 		boolean ret2 = parentNode.get(List.CHILDREN).contains(this);
 		return ret && ret2;
 	}
+	
+	public boolean isLinkFrom(String parentID) {
+		Node parentNode = environ.getNode(parentID);
+		if (null == parentNode) {
+			return false;
+		}
+		return isLinkFrom(parentNode);
+	}
+
 	
 	/**
 	 * @return true if the Node object should not exist in the Environment, since it's not part of any links
@@ -141,5 +156,6 @@ public class Node {
 			throw new AssertionError("Unhandled list type: "+list);
 		}
 	}
+
 
 }

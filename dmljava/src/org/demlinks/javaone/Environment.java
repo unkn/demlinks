@@ -83,7 +83,7 @@ public class Environment {
 	public static void nullError(Object... anyObject) {
 		for (int i = 0; i < anyObject.length; i++) {
 			if (null == anyObject[i]) {
-				throw new AssertionError("should never be null:"+anyObject[i]+" [i]");
+				throw new NullPointerException("should never be null:"+anyObject[i]+" [i]");
 			}
 		}
 	}
@@ -107,7 +107,7 @@ public class Environment {
 		if (null == parentNode) {
 			//ah there was no existing Node object with that ID
 			//we create a new one
-			parentNode = new Node();
+			parentNode = new Node(this);
 			parentCreated = true;
 		}
 		
@@ -115,11 +115,11 @@ public class Environment {
 		Node childNode = getNode(childID);//fetch existing Node identified by childID
 		if (null == childNode) {
 			//nothing existing? create one
-			childNode = new Node();
+			childNode = new Node(this);
 			childCreated = true;
 		}
 		
-		link(parentNode, childNode);//link the Node objects
+		internalLink(parentNode, childNode);//link the Node objects
 		
 		if (parentCreated) {
 			//if it was a new Node we just created above then we need to map ID to Node
@@ -143,11 +143,15 @@ public class Environment {
 		if (null == parentNode) {
 			//ah there was no existing Node object with that ID
 			//we create a new one
-			parentNode = new Node();
+			parentNode = new Node(this);
 			parentCreated = true;
 		}
 		
-		link(parentNode, childNode);
+		if (null == getID(childNode)) {
+			throw new AssertionError("childNode isn't mapped in this environment");
+		}
+		
+		internalLink(parentNode, childNode);
 		
 		if (parentCreated) {
 			//if it was a new Node we just created above then we need to map ID to Node
@@ -159,24 +163,30 @@ public class Environment {
 		Node childNode = getNode(childID);//fetch existing Node identified by childID
 		if (null == childNode) {
 			//nothing existing? create one
-			childNode = new Node();
+			childNode = new Node(this);
 			childCreated = true;
 		}
 		
-		link(parentNode, childNode);
+		if (null == getID(parentNode)) {
+			throw new AssertionError("childNode isn't mapped in this environment");
+		}
+		
+		internalLink(parentNode, childNode);
 		
 		if (childCreated) {
 			internalMapIDToNode(childID, childNode);
 		}
 	}
 	public void link(Node parentNode, Node childNode) {
-		//if we're here, either other link() methods above called us, and both nodes now exist except they could be not mapped if created by other sister link() method
-		// OR main() called us and we don't know if nodes exist
-		//so we have to check if they exist:
-		// but we can't use getID(node) because they may not be mapped yet (by sister link() methods that called us)
-		Environment.nullError(parentNode, childNode);//at least make sure they're not null instead of objects
-		//so we don't know if any other sister link() called us to assume the nodes will exist when we return to caller(sister link() method) and the caller maps them
-		//hence we should make an internalLink(Node,Node) that our sisters and this link() will call that will assume Node(s) exist
+		if ( (null == getID(parentNode)) || (null == getID(childNode)) ) {
+			throw new AssertionError("one or both nodes are not mapped within this environment");
+		}
+		internalLink(parentNode, childNode);
+	}
+	
+	private void internalLink(Node parentNode, Node childNode) {
+		//assumes both Nodes exist and are not null params, else except exceptions
+		parentNode.linkTo(childNode);//we assume this also links childNode to parentNode  
 	}
 
 	/**
@@ -187,20 +197,23 @@ public class Environment {
 	 * @return true if (mutual) link between the two nodes exists
 	 */
 	public boolean isLink(Node parentNode, Node childNode) {
-		// TODO Auto-generated method stub
-		return false;
+		return parentNode.isLinkTo(childNode);
 	}
 	public boolean isLink(Node parentNode, String childID) {
-		// TODO Auto-generated method stub
-		return false;
+		return parentNode.isLinkTo(childID);
 	}
 	public boolean isLink(String parentID, Node childNode) {
-		// TODO Auto-generated method stub
-		return false;
+		return childNode.isLinkFrom(parentID);
 	}
 	public boolean isLink(String parentID, String childID) {
-		// TODO Auto-generated method stub
-		return false;
+		Node parentNode = this.getNode(parentID);
+		if (null != parentNode) {
+			//at least the node exists
+			return isLink(parentNode, childID);
+		} else {
+			//parent doesn't exist hence neither the link
+			return false;
+		}
 	}
 
 }
