@@ -103,6 +103,15 @@ public class EnvironmentTest {
 		
 		parseTree("AllChars",20,"");
 		
+		
+//		env.link("z","y");
+//		Node z = env.getNode("z");
+//		//to link z to "w" providing you have only z Node object
+//		env.link( env.getID(z) , "w" );
+//		//but that can be done inside z Node object like:
+//		z.linkTo("w");//technically saying z is parent of "w" and "w" is child of z (yes both)
+//		UniqueListOfNodes par = env.getNode("y").getList(List.PARENTS);
+//		par.append("w");//means "w" is a parent of "y" and "y" is a child of "w"
 	}
 	
 	public void addAllChars() throws Exception {

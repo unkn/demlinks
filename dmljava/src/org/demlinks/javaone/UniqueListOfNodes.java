@@ -49,7 +49,7 @@ public class UniqueListOfNodes { // order matters; Nodes are unique
 		return listSet.add(node);
 	}
 	
-	public void append(String childID) throws Exception {
+	public void append(String nodeID) { //we don't know if nodeID is a child or parent to ourFatherNode
 		//let's remember that this list can be PARENTS or CHILDREN
 		//TODO xx
 	}
@@ -59,7 +59,7 @@ public class UniqueListOfNodes { // order matters; Nodes are unique
 		return listSet.contains(node);
 	}
 	
-	public boolean contains(String childID) {
+	public boolean contains(String nodeID) {
 		//TODO xx
 		return false;
 	}
