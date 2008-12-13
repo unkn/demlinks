@@ -86,9 +86,45 @@ public class EnvironmentTest {
 		
 		assertFalse(env.isLink(_boo, _a));
 		
-		_boo.linkTo(_a);
+		errored=false;
+		try {
+			_boo.linkTo(_a);//_boo has no corresponding ID ! hence this link should not succeed
+		} catch (Error e) {
+			errored=true;
+		}
+		assertTrue(errored);
 		assertFalse(env.isLink(_boo, _a)); //_boo wasn't mapped in the environment
 		
+		
+		errored=false;
+		try {
+			_a.linkTo(_boo);
+		}catch (Error e) {
+			errored=true;
+		}
+		assertTrue(errored);
+		assertFalse(env.isLink(_a,_boo));
+		
+		errored=false;
+		try {
+			_boo.linkFrom(_c);
+		}catch (Error e) {
+			errored=true;
+		}
+		assertTrue(errored);
+		assertFalse(env.isLink(_c,_boo));
+		
+		
+		errored=false;
+		try {
+			_c.linkFrom(_boo);
+		}catch (Error e) {
+			errored=true;
+		}
+		assertTrue(errored);
+		assertFalse(env.isLink(_boo,_c));
+		
+		//_boo.linkTo("c");
 		
 	}
 	

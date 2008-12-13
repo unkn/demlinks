@@ -48,7 +48,13 @@ public class Node {
 	 * @return true if the link didn't exist before call
 	 */
 	public boolean linkTo(Node childNode) {
-		//TODO: before you link this to the childNode shouldn't we ensure that both this and childNode are mapped within the environment?
+		//before you link this to the childNode shouldn't we ensure that both this and childNode are mapped within the environment?
+		if (null == environ.getID(this)) {
+			throw new AssertionError("can't link unmapped Node");
+		}
+		if (null == environ.getID(childNode)) {
+			throw new AssertionError("can't link unmapped Node");
+		}
 		boolean ret = get(List.CHILDREN).append(childNode);
 		childNode.get(List.PARENTS).append(this);
 		return ret;
@@ -61,6 +67,12 @@ public class Node {
 	 * @return true if the link didn't exist before call
 	 */
 	public boolean linkFrom(Node parentNode) {
+		if (null == environ.getID(this)) {
+			throw new AssertionError("can't link unmapped Node");
+		}
+		if (null == environ.getID(parentNode)) {
+			throw new AssertionError("can't link unmapped Node");
+		}
 		boolean ret = get(List.PARENTS).append(parentNode);
 		parentNode.get(List.CHILDREN).append(this);
 		return ret;

@@ -65,7 +65,6 @@ public class Environment {
 		allIDNodeTuples.putKeyValue(nodeID, nodeObject);
 	}
 	
-	@SuppressWarnings("unused")
 	private void internalUnMapIDToNode(String nodeID, Node node) {
 		allIDNodeTuples.removeKey(nodeID);
 	}
@@ -109,6 +108,7 @@ public class Environment {
 			//we create a new one
 			parentNode = new Node(this);
 			parentCreated = true;
+			internalMapIDToNode(parentID, parentNode);
 		}
 		
 		boolean childCreated = false;
@@ -117,17 +117,26 @@ public class Environment {
 			//nothing existing? create one
 			childNode = new Node(this);
 			childCreated = true;
-		}
-		
-		internalLink(parentNode, childNode);//link the Node objects
-		
-		if (parentCreated) {
-			//if it was a new Node we just created above then we need to map ID to Node
-			internalMapIDToNode(parentID, parentNode);
-		}
-		
-		if (childCreated) {
 			internalMapIDToNode(childID, childNode);
+		}
+		
+		try {
+			internalLink(parentNode, childNode);//link the Node objects
+		} catch (Exception e) {
+			try {
+				if (parentCreated) {
+					//if it was a new Node we just created above then we need to map ID to Node
+					internalUnMapIDToNode(parentID, parentNode);
+				}
+
+				if (childCreated) {
+					internalUnMapIDToNode(childID, childNode);
+				}
+			} catch (Exception f) {
+				e.printStackTrace();
+				throw new AssertionError(f);
+			}
+			throw e;
 		}
 	}
 	
@@ -145,17 +154,26 @@ public class Environment {
 			//we create a new one
 			parentNode = new Node(this);
 			parentCreated = true;
+			internalMapIDToNode(parentID, parentNode);
 		}
 		
 		if (null == getID(childNode)) {
 			throw new AssertionError("childNode isn't mapped in this environment");
 		}
 		
-		internalLink(parentNode, childNode);
-		
-		if (parentCreated) {
-			//if it was a new Node we just created above then we need to map ID to Node
-			internalMapIDToNode(parentID, parentNode);
+		try {
+			internalLink(parentNode, childNode);
+		} catch (Exception e) {
+			try {
+				if (parentCreated) {
+					//if it was a new Node we just created above then we need to map ID to Node
+					internalUnMapIDToNode(parentID, parentNode);
+				}
+			}catch (Exception f) {
+				e.printStackTrace();
+				throw new AssertionError(f);
+			}
+			throw e;
 		}
 	}
 	public void link(Node parentNode, String childID) throws Exception {
@@ -165,16 +183,24 @@ public class Environment {
 			//nothing existing? create one
 			childNode = new Node(this);
 			childCreated = true;
+			internalMapIDToNode(childID, childNode);
 		}
 		
 		if (null == getID(parentNode)) {
 			throw new AssertionError("childNode isn't mapped in this environment");
 		}
-		
-		internalLink(parentNode, childNode);
-		
-		if (childCreated) {
-			internalMapIDToNode(childID, childNode);
+
+		try {
+			internalLink(parentNode, childNode);
+		} catch (Exception e) {
+			try {
+				if (childCreated) {
+					internalUnMapIDToNode(childID, childNode);
+				}
+			}catch (Exception f) {
+				throw new AssertionError(f);
+			}
+			throw e;
 		}
 	}
 	public void link(Node parentNode, Node childNode) {
