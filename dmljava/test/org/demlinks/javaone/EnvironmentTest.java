@@ -56,6 +56,11 @@ public class EnvironmentTest {
 		
 		assertTrue( null == env.getNode("c") ); //inexistent Node
 		
+		assertTrue( null == env.getID(new Node(env)));
+		
+		assertTrue( "b".equals(env.getID(_b)));
+		assertTrue( env.getID(_a).equals("a"));
+		
 		env.link(_a,"c"); // link between existing node _a and new node "c"
 		assertTrue(env.isLink(_a,"c"));
 		
@@ -74,6 +79,22 @@ public class EnvironmentTest {
 		
 		Node _d = env.getNode("d");
 		assertTrue(env.isLink(_d, _c));
+		
+
+		// -------------------------
+		
+		
+		
+	}
+	
+	@Test
+	public void testUnMappedNode() throws Exception {
+		//this will test behavior while using an unmapped new Node() , that is: it has no ID associated with it (at least not in this environment)
+		
+		//you know, never catch Errors ... in general, if you do here things may remain inconsistent link-wise
+		env.link("a","b");
+		Node _a = env.getNode("a");
+		Node _b = env.getNode("b");
 		
 		Node _boo = new Node(env);//a node that's not mapped ID to Node in the environment
 		boolean errored=false;
@@ -107,28 +128,35 @@ public class EnvironmentTest {
 		
 		errored=false;
 		try {
-			_boo.linkFrom(_c);
+			_boo.linkFrom(_b);
 		}catch (Error e) {
 			errored=true;
 		}
 		assertTrue(errored);
-		assertFalse(env.isLink(_c,_boo));
+		assertFalse(env.isLink(_b,_boo));
 		
 		
 		errored=false;
 		try {
-			_c.linkFrom(_boo);
+			_b.linkFrom(_boo);
 		}catch (Error e) {
 			errored=true;
 		}
 		assertTrue(errored);
-		assertFalse(env.isLink(_boo,_c));
+		assertFalse(env.isLink(_boo,_b));
 		
-		//_boo.linkTo("c");
+		errored=false;
+		try {
+			_boo.linkTo("boo2");//boo2 is new
+		}catch (Error e) {
+			errored=true;
+		}
+		assertTrue(errored);
+		assertFalse(env.isLink(_boo, "boo2"));
 		
+		_b.linkFrom("boo");//ofc "boo" here is a new Node , not _boo
+		assertTrue(env.isLink("boo", _b));
 	}
-	
-	
 	
 	@Test
 	public void testNullParameters() throws Exception {

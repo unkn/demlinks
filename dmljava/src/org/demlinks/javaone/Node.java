@@ -60,7 +60,16 @@ public class Node {
 		return ret;
 	}
 
+	/**
+	 * @param childID
+	 * @throws Exception 
+	 * @see #linkTo(Node)
+	 */
+	public void linkTo(String childID) throws Exception {
+		environ.link(this, childID);
+	}
 
+	
 	/**
 	 * ensures there's a link from parentNode to <tt>this</tt> Node<br>
 	 * @param parentNode the node that will point to us
@@ -77,6 +86,16 @@ public class Node {
 		parentNode.get(List.CHILDREN).append(this);
 		return ret;
 	}
+	
+	/**
+	 * @param string
+	 * @throws Exception 
+	 * @see #linkFrom(Node)
+	 */
+	public void linkFrom(String parentID) throws Exception {
+		environ.link(parentID, this);
+	}
+
 	
 	/**
 	 * we will no longer point to <tt>childNode</tt>
@@ -169,6 +188,8 @@ public class Node {
 			throw new AssertionError("Unhandled list type: "+list);
 		}
 	}
+
+
 
 
 }

@@ -178,7 +178,7 @@ public class Environment {
 	}
 	public void link(Node parentNode, String childID) throws Exception {
 		boolean childCreated = false;
-		Node childNode = getNode(childID);//fetch existing Node identified by childID
+		Node childNode = getNode(childID);//fetch existing Node identified by ID
 		if (null == childNode) {
 			//nothing existing? create one
 			childNode = new Node(this);
@@ -187,7 +187,7 @@ public class Environment {
 		}
 		
 		if (null == getID(parentNode)) {
-			throw new AssertionError("childNode isn't mapped in this environment");
+			throw new AssertionError("parentNode isn't mapped in this environment");
 		}
 
 		try {
