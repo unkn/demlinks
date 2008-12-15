@@ -76,10 +76,17 @@ public class TwoWayHashMap<Key,Value> {
 		}
 	}
 
+	/**
+	 * @return number of elements in this 1 to 1 Map
+	 */
 	public int size() {
 		return forward.size();// == backward.size()
 	}
 
+	/**
+	 * @param _k
+	 * @return
+	 */
 	public Value removeKey(Key _k) {
 		Environment.nullException(_k);
 		Value deleted = forward.remove(_k);
@@ -88,5 +95,18 @@ public class TwoWayHashMap<Key,Value> {
 			throw new AssertionError("impartial removal, how?! and this is weird!");
 		}
 		return deleted;
+	}
+	
+	/**
+	 * @param _v
+	 * @return
+	 */
+	public Key removeValue(Value _v) {
+		Environment.nullException(_v);
+		Key _k = getKey(_v);
+		if (_v != removeKey(_k)) {
+			throw new AssertionError("we removed the value of another key, this means 2 keys had same value in this 1 to 1 MAP");
+		}
+		return _k;
 	}
 }

@@ -51,7 +51,6 @@ public class Environment {
 	 * @return the Node object that's mapped to the ID, if it doesn't exist in the Environment then null
 	 */
 	public Node getNode(String nodeID) {
-		nullException(nodeID);
 		return allIDNodeTuples.getValue(nodeID);
 	}
 
@@ -59,7 +58,6 @@ public class Environment {
 	 * @return the ID that is mapped to the Node object, in this environment, or null if there's no such mapping
 	 */
 	public String getID(Node node) {
-		nullException(node);
 		return allIDNodeTuples.getKey(node);
 	}
 	
@@ -67,8 +65,12 @@ public class Environment {
 		allIDNodeTuples.putKeyValue(nodeID, nodeObject);
 	}
 	
-	private void internalUnMapIDToNode(String nodeID, Node node) {
+	private void internalUnMapID(String nodeID) {
 		allIDNodeTuples.removeKey(nodeID);
+	}
+	
+	private void internalUnMapNode(Node node) {
+		allIDNodeTuples.removeValue(node);
 	}
 	
 	/**
@@ -91,15 +93,16 @@ public class Environment {
 	
 	/**
 	 * this will create a new Node object and map it to the given ID<br>
+	 * unless it already exists<br>
 	 * 
 	 * @param nodeID supposedly unused ID
 	 * @return if the ID is already mapped then it will return its respective Node object
 	 * @throws Exception
 	 */
-	public Node newNode(String nodeID) throws Exception {
+	public Node ensureNode(String nodeID) throws Exception {
 		Node n = getNode(nodeID);
 		if (null == n) {
-			n = new Node(this);
+			n = new Node();
 			internalMapIDToNode(nodeID, n);
 		}
 		return n;
@@ -124,7 +127,7 @@ public class Environment {
 		if (null == parentNode) {
 			//ah there was no existing Node object with that ID
 			//we create a new one
-			parentNode = newNode(parentID);
+			parentNode = ensureNode(parentID);
 //			new Node(this);
 			parentCreated = true;
 //			internalMapIDToNode(parentID, parentNode);
@@ -134,9 +137,9 @@ public class Environment {
 		Node childNode = getNode(childID);//fetch existing Node identified by childID
 		if (null == childNode) {
 			//nothing existing? create one
-			childNode = new Node(this);//TODO look at the above parentID do the same
+			childNode = ensureNode(childID);
 			childCreated = true;
-			internalMapIDToNode(childID, childNode);
+			//internalMapIDToNode(childID, childNode);
 		}
 		
 		try {
@@ -146,11 +149,11 @@ public class Environment {
 				if (parentCreated) {
 					//if it was a new Node we just created above then we need to map ID to Node
 //					internalUnMapIDToNode(parentID, parentNode);
-					removeNode(parentID);
+					removeNode(parentNode);
 				}
 
 				if (childCreated) {
-					internalUnMapIDToNode(childID, childNode);//TODO x
+					removeNode(childNode);
 				}
 			} catch (Exception f) {
 				e.printStackTrace();
@@ -161,20 +164,40 @@ public class Environment {
 	}
 	
 	/**
-	 * remove a Node created by newNode() usually<br>
+	 * remove the mapping between Node and its ID<br>
 	 * basically it will unmap the ID from the Node object only if the Node object has no children and no parents
 	 * @param nodeID
-	 * @return the removed Node or null
+	 * @return the removed Node
 	 */
 	public Node removeNode(String nodeID) {
 		Node n = getNode(nodeID);
-		if (n != null) {
-			if (!n.isDead()) {
-				throw new AssertionError("attempt to remove a non-empty node. Clear its lists first!");
-			}
-			internalUnMapIDToNode(nodeID, n);
+		if (n == null) {
+			throw new AssertionError("attempt to remove a non-existing node ID");
 		}
+		if (!n.isAlone()) {
+			throw new AssertionError("attempt to remove a non-empty node. Clear its lists first!");
+		}
+		internalUnMapID(nodeID);
 		return n;
+	}
+	
+	/**
+	 * @param node
+	 * @return
+	 * @see #removeNode(String)
+	 */
+	public String removeNode(Node node) {
+		String id = getID(node);
+		if (null == id) { //doesn't exist
+			throw new AssertionError("attempt to remove a node object that doesn't exist in this environment");
+		}
+		//exists
+		if (!node.isAlone()) {
+			throw new AssertionError("attempt to remove an existing node that still has children/parents");
+		}
+		//exists and is alone
+		internalUnMapNode(node);
+		return id;
 	}
 
 	/**
@@ -184,62 +207,30 @@ public class Environment {
 	 * @see #link(String, String)
 	 */
 	public void link(String parentID, Node childNode) throws Exception {
-		boolean parentCreated = false;
-		Node parentNode = getNode(parentID);//fetch existing Node
-		if (null == parentNode) {
-			//ah there was no existing Node object with that ID
-			//we create a new one
-			parentNode = new Node(this);
-			parentCreated = true;
-			internalMapIDToNode(parentID, parentNode);
-		}
-		
-		if (null == getID(childNode)) {
+		String childID = getID(childNode);
+		if (null == childID) {
 			throw new AssertionError("childNode isn't mapped in this environment");
 		}
-		
-		try {
-			internalLink(parentNode, childNode);
-		} catch (Exception e) {
-			try {
-				if (parentCreated) {
-					//if it was a new Node we just created above then we need to map ID to Node
-					internalUnMapIDToNode(parentID, parentNode);
-				}
-			}catch (Exception f) {
-				e.printStackTrace();
-				throw new AssertionError(f);
-			}
-			throw e;
-		}
+		link(parentID, childID);
 	}
+	
+	/**
+	 * @param parentNode
+	 * @param childID
+	 * @throws Exception
+	 */
 	public void link(Node parentNode, String childID) throws Exception {
-		boolean childCreated = false;
-		Node childNode = getNode(childID);//fetch existing Node identified by ID
-		if (null == childNode) {
-			//nothing existing? create one
-			childNode = new Node(this);
-			childCreated = true;
-			internalMapIDToNode(childID, childNode);
-		}
-		
-		if (null == getID(parentNode)) {
+		String parentID = getID(parentNode);
+		if (null == parentID) {
 			throw new AssertionError("parentNode isn't mapped in this environment");
 		}
-
-		try {
-			internalLink(parentNode, childNode);
-		} catch (Exception e) {
-			try {
-				if (childCreated) {
-					internalUnMapIDToNode(childID, childNode);
-				}
-			}catch (Exception f) {
-				throw new AssertionError(f);
-			}
-			throw e;
-		}
+		link(parentID, childID);
 	}
+	
+	/**
+	 * @param parentNode
+	 * @param childNode
+	 */
 	public void link(Node parentNode, Node childNode) {
 		if ( (null == getID(parentNode)) || (null == getID(childNode)) ) {
 			throw new AssertionError("one or both nodes are not mapped within this environment");
@@ -248,8 +239,9 @@ public class Environment {
 	}
 	
 	private void internalLink(Node parentNode, Node childNode) {
-		//assumes both Nodes exist and are not null params, else except exceptions
-		parentNode.linkTo(childNode);//we assume this also links childNode to parentNode  
+		//assumes both Nodes exist and are not null params, else expect exceptions
+		parentNode.linkTo(childNode);
+		childNode.linkFrom(parentNode);
 	}
 
 	/**
@@ -261,26 +253,55 @@ public class Environment {
 	 */
 	public boolean isLink(Node parentNode, Node childNode) {
 		nullException(parentNode, childNode);
-		return parentNode.isLinkTo(childNode);
+		boolean one = parentNode.isLinkTo(childNode);
+		boolean two = childNode.isLinkFrom(parentNode);
+		if (one ^ two) {
+			throw new AssertionError("inconsistent link detected");
+		}
+		return one;
 	}
+	
+	/**
+	 * @param parentNode
+	 * @param childID
+	 * @return
+	 */
 	public boolean isLink(Node parentNode, String childID) {
 		nullException(parentNode, childID);
-		return parentNode.isLinkTo(childID);
+		Node childNode = getNode(childID);
+		if (null != childNode) {
+			return isLink(parentNode, childNode);
+		}
+		return false;
 	}
+	
+	/**
+	 * @param parentID
+	 * @param childNode
+	 * @return
+	 */
 	public boolean isLink(String parentID, Node childNode) {
 		nullException(parentID, childNode);
-		return childNode.isLinkFrom(parentID);
+		Node parentNode = getNode(parentID);
+		if (null != parentNode) {
+			return isLink(parentNode, childNode);
+		}
+		return false;
 	}
+	
+	/**
+	 * @param parentID
+	 * @param childID
+	 * @return
+	 */
 	public boolean isLink(String parentID, String childID) {
 		nullException(parentID, childID);
 		Node parentNode = this.getNode(parentID);
 		if (null != parentNode) {
-			//at least the node exists
 			return isLink(parentNode, childID);
-		} else {
-			//parent doesn't exist hence neither the link
-			return false;
 		}
+		//parent doesn't exist hence neither the link
+		return false;
 	}
 
 }
