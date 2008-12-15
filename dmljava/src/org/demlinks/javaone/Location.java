@@ -23,5 +23,6 @@ public enum Location {
 	AFTER,
 	FIRST,
 	LAST,
-	INSTEADOF
+	INSTEADOF,
+	CURRENT
 }

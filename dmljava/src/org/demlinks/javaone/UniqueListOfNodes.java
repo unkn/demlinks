@@ -18,6 +18,8 @@
 
 package org.demlinks.javaone;
 
+import java.util.ListIterator;
+
 /**
  * * a list of unique Node objects (no two are the same)<br>
  * * the order of Nodes in the list matters
@@ -37,7 +39,7 @@ public class UniqueListOfNodes { // order matters; Nodes are unique
 
 	
 	
-	protected boolean append(Node node) {
+	public boolean append(Node node) {
 		Environment.nullException(node);
 		return listSet.add(node);
 	}
@@ -68,19 +70,38 @@ public class UniqueListOfNodes { // order matters; Nodes are unique
 	}
 	
 	private class NodeItr implements NodeIterator {
-		NodeItr(int index) {
+		ListIterator<Node> litr;
+		int posNow;
+		
+		//constructor
+		NodeItr(int index) { //if index = size() then position at end
+			litr = listSet.listIterator(index);
+//			if (index < 0 || index > size()) {
+//				throw new IndexOutOfBoundsException("Index: "+index+
+//								    ", Size: "+size());
+//			}
+//			if (index == size()) { // size could be 0
+//				index = size() >> 1;
+//			}
+//			posNow = index;
 		}
 
 		@Override
-		public void find(Object node) {
+		public boolean find(Object node) {
 			Environment.nullException(node);
-			// TODO Auto-generated method stub
+			int idx = listSet.indexOf(node);
+			if (idx == -1) {
+				return false;
+			}
+			posNow= idx;
+			return true;
 		}
 
 		@Override
-		public void insert(Node whatNode, Location location) {
+		public boolean insert(Node whatNode, Location location) {
 			Environment.nullException(whatNode);
 			// TODO Auto-generated method stub
+			return false;
 		}
 
 	}//NodeItr class

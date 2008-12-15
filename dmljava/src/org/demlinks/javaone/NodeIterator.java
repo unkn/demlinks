@@ -20,8 +20,13 @@ package org.demlinks.javaone;
 
 public interface NodeIterator {
 
-	void find(Object node);
+	/**
+	 * locate and position on that Node
+	 * @param node
+	 * @return true if succeeded in finding and positioning on it 
+	 */
+	boolean find(Object node);
 
-	void insert(Node whatNode, Location location);
+	boolean insert(Node whatNode, Location location);
 
 }
