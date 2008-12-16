@@ -45,7 +45,7 @@ public class Node {
 	 * @return true if the link didn't exist before call
 	 */
 	public boolean linkTo(Node childNode) {
-		boolean ret = get(List.CHILDREN).append(childNode);
+		boolean ret = get(List.CHILDREN).addLast(childNode);
 		return ret;
 	}
 
@@ -55,7 +55,7 @@ public class Node {
 	 * @return true if the link didn't exist before call
 	 */
 	public boolean linkFrom(Node parentNode) {
-		boolean ret = get(List.PARENTS).append(parentNode);
+		boolean ret = get(List.PARENTS).addLast(parentNode);
 		return ret;
 	}
 	
@@ -65,7 +65,7 @@ public class Node {
 	 * @return
 	 */
 	public boolean unLinkTo(Node childNode) {
-		boolean ret = get(List.CHILDREN).remove(childNode);
+		boolean ret = get(List.CHILDREN).removeObj(childNode);
 		return ret;
 	}
 
@@ -76,7 +76,7 @@ public class Node {
 	 * @return
 	 */
 	public boolean unLinkFrom(Node parentNode) {
-		boolean ret = get(List.PARENTS).remove(parentNode);
+		boolean ret = get(List.PARENTS).removeObj(parentNode);
 		return ret;
 	}
 
@@ -86,7 +86,7 @@ public class Node {
 	 * @return true is so
 	 */
 	public boolean isLinkTo(Node childNode) {
-		boolean ret = get(List.CHILDREN).contains(childNode);
+		boolean ret = get(List.CHILDREN).containsObj(childNode);
 		return ret;
 	}
 	
@@ -97,7 +97,7 @@ public class Node {
 	 * @see #isLinkTo(Node)
 	 */
 	public boolean isLinkFrom(Node parentNode) {
-		boolean ret = get(List.PARENTS).contains(parentNode);
+		boolean ret = get(List.PARENTS).containsObj(parentNode);
 		return ret;
 	}
 	

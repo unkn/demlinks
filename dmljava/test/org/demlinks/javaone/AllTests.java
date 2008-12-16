@@ -24,7 +24,9 @@ import org.junit.runners.*;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses(value={
-		EnvironmentTest.class
+		EnvironmentTest.class,
+		LinkedListSetTest.class,
+		UniqueListOfNodesTest.class
 		})
 		
 public class AllTests {
