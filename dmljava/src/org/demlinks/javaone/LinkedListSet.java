@@ -307,17 +307,78 @@ public class LinkedListSet<Obj> {
 		return new ListItr(index);
 	}
 	
+	public ListCursor<Obj> listCursor(Obj object) {
+		return new ListItr(object);
+	}
+	
 	//CLASS ListItr
 	/**
 	 * 
 	 *
 	 */
 	private class ListItr implements ListCursor<Obj> {
-
+		Capsule<Obj> current;
+		int currentIndex;
+		
 		//constructor
-		ListItr(int index) {
+		private ListItr(int index) {
+			if (isEmpty()) {
+				if (0 == index) {
+					currentIndex = index;
+					current = null;
+				} else {
+					throw new AssertionError("list is empty and you try to position cursor beyond first");
+				}
+			}
+
+			//not empty...
 			checkIndex(index);
-			//TODO 
+			current = getCapsuleAt(index);
+			currentIndex = index;
+		}
+
+		private ListItr(Obj object) {
+			// TODO Auto-generated constructor stub
+			if (isEmpty()) {
+				throw new AssertionError("list is empty");
+			}
+			currentIndex = indexOfObj(object);//or -1 if not found
+			try {
+				current = getCapsuleAt(currentIndex);
+			} catch (IndexOutOfBoundsException e) {
+				throw new NoSuchElementException("there's no such item in that list");
+			}
+		}
+
+		@Override
+		public boolean goTo(Location location) {
+			// TODO Auto-generated method stub
+			return false;
+		}
+
+		@Override
+		public boolean goTo(Obj object) {
+			// TODO Auto-generated method stub
+			return false;
+		}
+
+		@Override
+		public boolean insert(Obj insertObject, Location location,
+				Obj locationObject) {
+			// TODO Auto-generated method stub
+			return false;
+		}
+
+		@Override
+		public Obj replace(Obj whichObj, Obj withThisObj) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public Obj replace(Location location, Obj withThisObj) {
+			// TODO Auto-generated method stub
+			return null;
 		}
 
 	} //end CLASS ListItr
@@ -326,5 +387,7 @@ public class LinkedListSet<Obj> {
 	 * 
 	 */
 	private static final long serialVersionUID = 3380435324961393742L;
+
+
 
 }
