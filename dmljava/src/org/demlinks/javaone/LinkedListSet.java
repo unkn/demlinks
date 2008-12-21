@@ -35,32 +35,53 @@ public class LinkedListSet<Obj> {
 	private Capsule<Obj> tail;//points to last capsule in list, or null if empty list
 	
 	// constructor
+	/**
+	 * 
+	 */
 	LinkedListSet() {
 		setListToEmpty();
 	}
 
+	/**
+	 * 
+	 */
 	private void setListToEmpty() {
 		cachedSize = 0;//increased on add, decreased on remove and related
 		head = null;
 		tail = null;
 	}
 	
+	/**
+	 * @return
+	 */
 	public int getSize() {
 		return cachedSize;
 	}
 	
+	/**
+	 * @return
+	 */
 	public boolean isEmpty() {
 		return (0 == getSize()) || (head == null) || (tail == null);
 	}
 
+	/**
+	 * @return
+	 */
 	private Capsule<Obj> getFirstCapsule() {
 		return head;
 	}
 	
+	/**
+	 * @return
+	 */
 	private Capsule<Obj> getLastCapsule() {
 		return tail;
 	}
 	
+	/**
+	 * @return
+	 */
 	public Obj getFirstObj() {
 		if (isEmpty()) {
 			return null;
@@ -68,6 +89,9 @@ public class LinkedListSet<Obj> {
 		return getFirstCapsule().object;
 	}
 
+	/**
+	 * @return
+	 */
 	public Obj getLastObj() {
 		if (isEmpty()) {
 			return null;
@@ -75,6 +99,10 @@ public class LinkedListSet<Obj> {
 		return getLastCapsule().object;
 	}
 	
+	/**
+	 * @param obj
+	 * @return
+	 */
 	public boolean addFirst(Obj obj) {
 		if (containsObj(obj)) {
 			return false;
@@ -83,18 +111,28 @@ public class LinkedListSet<Obj> {
 		return getFirstObj() == obj;
 	}
 
+	/**
+	 * @param obj
+	 * @return
+	 */
 	public boolean addLast(Obj obj) {
 		if (containsObj(obj)) {
 			return false;
 		}
-		addObjAfter(obj, tail);
+		addObjAfterCapsule(obj, tail);
 		return getLastObj() == obj;
 	}
 	
+	/**
+	 * @return
+	 */
 	public Obj removeFirst() {
 		return removeCapsule(getFirstCapsule());
 	}
 
+	/**
+	 * @return
+	 */
 	public Obj removeLast() {
 		return removeCapsule(getLastCapsule());
 	}
@@ -147,16 +185,13 @@ public class LinkedListSet<Obj> {
 		return true;
 	}
 
-	public Obj get(int index) {
-		return getCapsuleAt(index).object;
-	}
 
 	/**
 	 * @param index
 	 * @param withWhatObject
 	 * @return
 	 */
-	public Obj replace(int index, Obj withWhatObject) {
+	public Obj replaceObjAt(int index, Obj withWhatObject) {
 		if (containsObj(withWhatObject)) {
 			return null;//failed because object already exists somewhere (and we're a Set)
 		}
@@ -167,16 +202,127 @@ public class LinkedListSet<Obj> {
 	}
 
 	/**
-	 * @param index
 	 * @param object
+	 * @param index
 	 * @return
 	 */
-	public boolean insertAt(int index, Obj object) {
+	public boolean insertObjAt(Obj object, int index) {
 		if (containsObj(object)) {
 			return false;
 		}
 		checkIndex(index);
 		addObjBeforeCapsule(object, getCapsuleAt(index));
+		return true;
+	}
+
+	/**
+	 * @param object
+	 * @param location
+	 * @return
+	 */
+	public boolean insertObjAt(Obj object, Location location) {
+		switch (location) {
+		case FIRST:
+			return addFirst(object);
+		case LAST:
+			return addLast(object);
+		default:
+			throw new AssertionError("undefined location here.");
+		}
+	}
+	
+	//TODO move method
+
+	/**
+	 * @param object
+	 * @param location
+	 * @param locationObject
+	 * @return
+	 */
+	public boolean insertObjAt(Obj object, Location location, Obj locationObject) {
+		Capsule<Obj> caps = getCapsuleAt(indexOfObj(locationObject));
+		
+		switch (location) {
+		case BEFORE:
+			addObjBeforeCapsule(object, caps);
+			break;
+		case AFTER:
+			addObjAfterCapsule(object, caps);
+			break;
+		case FIRST:
+		case LAST:
+			return insertObjAt(object, location);
+		default:
+			throw new AssertionError("undefined location within this context");
+		}
+		return true;
+	}
+	
+	/**
+	 * @param index
+	 * @return
+	 */
+	public Obj getObjAt(int index) {
+		return getCapsuleAt(index).object;
+	}
+
+	/**
+	 * @param location
+	 * @return
+	 */
+	public Obj getObjAt(Location location) {
+		switch (location) {
+		case FIRST:
+			return getFirstObj();
+		case LAST:
+			return getLastObj();
+		default:
+			throw new AssertionError("undefined location here.");
+		}
+	}
+
+	/**
+	 * @param location
+	 * @param object
+	 * @return
+	 */
+	public Obj getObjAt(Location location, Obj object) {
+		int index=0;
+		if (object != null){
+			index = indexOfObj(object);
+		}
+		switch (location) {
+		case BEFORE:
+			if (object == null) {
+				return getLastObj();
+			}
+			index -= 1;
+			if (indexInBounds(index)) {
+				return getObjAt(index);
+			}
+			break;
+		case AFTER:
+			if (object == null) {
+				return getFirstObj();
+			}
+			index += 1;
+			if (indexInBounds(index)) {
+				return getObjAt(index);
+			}
+			break;
+		case FIRST:
+		case LAST:
+			return getObjAt(location);
+		default:
+			throw new AssertionError("undefined location within this context");
+		}
+		return null;
+	}
+	
+	public boolean indexInBounds(int index) {
+		if ((index < 0) || (index >= cachedSize)) {
+			return false;
+		}
 		return true;
 	}
 
@@ -187,8 +333,6 @@ public class LinkedListSet<Obj> {
 	public Obj removeAt(int index) {
 		return removeCapsule(getCapsuleAt(index));
 	}
-
-
 
 	/**
 	 * @param anyObjectInList
@@ -206,12 +350,20 @@ public class LinkedListSet<Obj> {
 		return -1;
 	}
 
+	/**
+	 * @param index
+	 */
 	private void checkIndex(int index) {
-		if ((index < 0) || (index >= cachedSize)) {
+		if (!indexInBounds(index)) {
 			throw new IndexOutOfBoundsException();
 		}
 	}
 
+	/**
+	 * @param addWhatObj
+	 * @param beforeWhatCapsule
+	 * @return
+	 */
 	private Capsule<Obj> addObjBeforeCapsule(Obj addWhatObj, Capsule<Obj> beforeWhatCapsule) {
 		if (beforeWhatCapsule == null) {
 			head = new Capsule<Obj>(addWhatObj, null, null);
@@ -230,7 +382,12 @@ public class LinkedListSet<Obj> {
 		return newCapsule;
 	}
 	
-	private Capsule<Obj> addObjAfter(Obj addWhatObj, Capsule<Obj> afterWhatCapsule) {
+	/**
+	 * @param addWhatObj
+	 * @param afterWhatCapsule
+	 * @return
+	 */
+	private Capsule<Obj> addObjAfterCapsule(Obj addWhatObj, Capsule<Obj> afterWhatCapsule) {
 		if (afterWhatCapsule == null) {
 			head = new Capsule<Obj>(addWhatObj, null, null);
 			tail = head;
@@ -248,6 +405,10 @@ public class LinkedListSet<Obj> {
 		return newCapsule;
 	}
 
+	/**
+	 * @param capsule
+	 * @return
+	 */
 	private Obj removeCapsule(Capsule<Obj> capsule) {
 		if (capsule == null) {
 			throw new NoSuchElementException();
@@ -274,6 +435,10 @@ public class LinkedListSet<Obj> {
 		return oldObject;
 	}
 
+	/**
+	 * @param index
+	 * @return
+	 */
 	private Capsule<Obj> getCapsuleAt(int index) {
 		checkIndex(index);
 		Capsule<Obj> current;
@@ -290,6 +455,11 @@ public class LinkedListSet<Obj> {
 	}
 	
 	//CLASS
+	/**
+	 * 
+	 *
+	 * @param <Obj>
+	 */
 	private static class Capsule<Obj> {
 		Capsule<Obj> prevCapsule;
 		Obj object;
@@ -302,92 +472,13 @@ public class LinkedListSet<Obj> {
 		}
 	}//end CLASS
 	
-	
-	public ListCursor<Obj> listCursor(int index) {
-		return new ListItr(index);
-	}
-	
-	public ListCursor<Obj> listCursor(Obj object) {
-		return new ListItr(object);
-	}
-	
-	//CLASS ListItr
-	/**
-	 * 
-	 *
-	 */
-	private class ListItr implements ListCursor<Obj> {
-		Capsule<Obj> current;
-		int currentIndex;
-		
-		//constructor
-		private ListItr(int index) {
-			if (isEmpty()) {
-				if (0 == index) {
-					currentIndex = index;
-					current = null;
-				} else {
-					throw new AssertionError("list is empty and you try to position cursor beyond first");
-				}
-			}
-
-			//not empty...
-			checkIndex(index);
-			current = getCapsuleAt(index);
-			currentIndex = index;
-		}
-
-		private ListItr(Obj object) {
-			// TODO Auto-generated constructor stub
-			if (isEmpty()) {
-				throw new AssertionError("list is empty");
-			}
-			currentIndex = indexOfObj(object);//or -1 if not found
-			try {
-				current = getCapsuleAt(currentIndex);
-			} catch (IndexOutOfBoundsException e) {
-				throw new NoSuchElementException("there's no such item in that list");
-			}
-		}
-
-		@Override
-		public boolean goTo(Location location) {
-			// TODO Auto-generated method stub
-			return false;
-		}
-
-		@Override
-		public boolean goTo(Obj object) {
-			// TODO Auto-generated method stub
-			return false;
-		}
-
-		@Override
-		public boolean insert(Obj insertObject, Location location,
-				Obj locationObject) {
-			// TODO Auto-generated method stub
-			return false;
-		}
-
-		@Override
-		public Obj replace(Obj whichObj, Obj withThisObj) {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public Obj replace(Location location, Obj withThisObj) {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-	} //end CLASS ListItr
-	
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 3380435324961393742L;
 
 
+
+//TODO use a lastCapsule field to make seeks faster
 
 }

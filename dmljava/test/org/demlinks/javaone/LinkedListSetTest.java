@@ -183,18 +183,18 @@ public class LinkedListSetTest {
 	}
 
 	@Test
-	public void testGet() {
+	public void testGetObjAt() {
 		lls.addFirst(a);
 		lls.addLast(b);
 		lls.addLast(c);
-		assertTrue( a == lls.get(0));
-		assertTrue( b == lls.get(1));
-		assertTrue( c == lls.get(2));
+		assertTrue( a == lls.getObjAt(0));
+		assertTrue( b == lls.getObjAt(1));
+		assertTrue( c == lls.getObjAt(2));
 		assertTrue(lls.clear());
 		assertTrue(lls.isEmpty());
 		boolean ioobe = false;
 		try {
-			lls.get(0);
+			lls.getObjAt(0);
 		}catch (IndexOutOfBoundsException e) {
 			ioobe = true;
 		}
@@ -205,7 +205,7 @@ public class LinkedListSetTest {
 	public void testReplace() {
 		boolean ioobe = false;
 		try {
-			lls.replace(0, a);
+			lls.replaceObjAt(0, a);
 		}catch (IndexOutOfBoundsException e) {
 			ioobe = true;
 		}
@@ -213,83 +213,52 @@ public class LinkedListSetTest {
 		
 		lls.addFirst(a);
 		lls.addLast(b);
-		assertTrue(lls.get(0) == a);
-		assertTrue( a == lls.replace(0,c) );
-		assertTrue( b == lls.replace(1,a) );
-		assertTrue( null == lls.replace(0, a) ); //again, but fail
-		assertTrue( null == lls.replace(0, c) );//already exists too
+		assertTrue(lls.getObjAt(0) == a);
+		assertTrue( a == lls.replaceObjAt(0,c) );
+		assertTrue( b == lls.replaceObjAt(1,a) );
+		assertTrue( null == lls.replaceObjAt(0, a) ); //again, but fail
+		assertTrue( null == lls.replaceObjAt(0, c) );//already exists too
 	}
 
 	@Test
-	public void testListCursor() {
-		ListCursor<String> li;
+	public void testInsertObjAt() {
+		assertTrue(lls.isEmpty());
 		
-		boolean ioobe = false;
-		try {
-			li = lls.listCursor(200);//non existent index
-		}catch (IndexOutOfBoundsException e) {
-			ioobe = true;
+		//lls.insertObjAt(a, 0);
+		
+		String d = "d";
+		String e = "e";
+		String f = "f";
+		
+		assertTrue( lls.insertObjAt(b, Location.LAST) );
+		assertTrue( lls.insertObjAt(d, Location.AFTER, b) );
+		assertTrue( lls.insertObjAt(c, Location.BEFORE, d) );
+		assertTrue( lls.insertObjAt(a, Location.FIRST) );
+		assertTrue( lls.insertObjAt(e, Location.AFTER, d) );
+		assertTrue( lls.insertObjAt(f, Location.LAST) );
+		
+		String obj = lls.getObjAt(Location.FIRST);
+		assertTrue( a == obj);
+		obj = lls.getObjAt(Location.AFTER, obj);
+		assertTrue( b == obj);
+		obj = lls.getObjAt(Location.LAST);
+		assertTrue( f == obj);
+		assertTrue( e == lls.getObjAt(Location.BEFORE, f));
+		assertTrue( c == lls.getObjAt(Location.AFTER, b));
+		
+		// iterator style
+		obj = null;//backward
+		while (null != (obj = lls.getObjAt(Location.BEFORE, obj)) ) {
+			System.out.print(obj+", ");
 		}
-		assertTrue(ioobe);
+		System.out.println();
 		
-		lls.listCursor(0);
+		obj = null;//forward
+		while (null != (obj = lls.getObjAt(Location.AFTER, obj)) ) {
+			System.out.print(obj+", ");
+		}
+		System.out.println();
 		
-//		assertTrue( lls.addFirst(a) );
-//		assertTrue( lls.insertAt(0,b) );
-//		assertTrue( lls.insertAt(0, c) );
-//		// c,b,a so far
-//		String d = "d";
-//		String e = "e";
-//		String f = "f";
-//		li = lls.listCursor(a);
-//		li.insert(d, Location.AFTER);//after current which is "a"
-//		li.insert(e, Location.LAST);
-//		li.insert(f, Location.LAST);
-//		//c,b,a,d,e,f
-//		
-//		assertTrue( li.goTo(Location.FIRST) );
-//		while (li.isCurrent()) {
-//			System.out.println(li.getCurrent());
-//			li.goNext();
-//		}
-//
-//		li.goTo(0);
-//		while (li.isCurrent()) {
-//			System.out.println(li.getCurrent());
-//			li.goNext();
-//		}
-//		
-//		li = null;
-//		li = lls.listCursor(Location.FIRST);
-//		while (li.isCurrent()) {
-//			System.out.println(li.getCurrent());
-//			li.goNext();
-//		}
-//		
-//		li.goPrev();
-//		while (li.isCurrent()) {
-//			System.out.println(li.getCurrent());
-//			li.goPrev();
-//		}
-//
-//		li.goTo(e);
-//		String removed = li.remove(Location.BEFORE);//remove the one Before <current which is "e">
-//		assertTrue(removed == d);//hence "d" was removed
-//		li.insert(removed, Location.BEFORE);//insert "d" before "e"
-//		li.goTo(0);//go to first
-//		li.remove(Location.BEFORE, e);//remove the one BEFORE "e"
-//		assertFalse( li.goTo(d) );
-//		li.replace(e, d);
-//		li.insert(e, Location.AFTER, d);
-//		assertTrue( li.goTo(Location.LAST) );
-//		while (li.isCurrent()) {
-//			System.out.println(li.getCurrent());
-//			li.goPrev();
-//		}
-//		
-//		li.goTo(a);
-//		String moo = "moo";
-//		assertTrue( a == li.replace(Location.CURRENT, moo) );
 	}
-
+	
 }

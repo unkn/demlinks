@@ -22,7 +22,5 @@ public enum Location {
 	BEFORE,
 	AFTER,
 	FIRST,
-	LAST,
-	INSTEADOF,
-	CURRENT
+	LAST
 }
