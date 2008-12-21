@@ -207,6 +207,14 @@ public class LinkedListSet<Obj> {
 	 * @return
 	 */
 	public boolean insertObjAt(Obj object, int index) {
+		if (isEmpty()) {
+			return addFirst(object);
+		} else {
+			if (index == getSize()) {
+				return addLast(object);
+			}
+		}
+		
 		if (containsObj(object)) {
 			return false;
 		}
@@ -227,7 +235,7 @@ public class LinkedListSet<Obj> {
 		case LAST:
 			return addLast(object);
 		default:
-			throw new AssertionError("undefined location here.");
+			throw new AssertionError("That location is unused in this context.");
 		}
 	}
 	
@@ -290,6 +298,9 @@ public class LinkedListSet<Obj> {
 		int index=0;
 		if (object != null){
 			index = indexOfObj(object);
+			if (-1 == index) {
+				return null;
+			}
 		}
 		switch (location) {
 		case BEFORE:
@@ -312,7 +323,7 @@ public class LinkedListSet<Obj> {
 			break;
 		case FIRST:
 		case LAST:
-			return getObjAt(location);
+			throw new AssertionError("use the other method.");
 		default:
 			throw new AssertionError("undefined location within this context");
 		}

@@ -259,6 +259,56 @@ public class LinkedListSetTest {
 		}
 		System.out.println();
 		
+		assertTrue( null == lls.getObjAt(Location.BEFORE, a));
+		assertTrue( lls.removeObj(a) );
+		assertTrue( null == lls.getObjAt(Location.BEFORE, a));
+		assertTrue( lls.clear() );
+		assertTrue( null == lls.getObjAt(Location.FIRST));
+		
+		boolean npe = false;
+		try {
+			lls.insertObjAt(obj, Location.FIRST);
+		}catch (NullPointerException ex) {
+			npe = true;
+		}
+		assertTrue(npe);
+		
+		boolean err=false;
+		try {
+			lls.insertObjAt(obj, Location.AFTER);
+		}catch (Error er) {
+			err = true;
+		}
+		assertTrue(err);
+		
+		assertTrue( lls.insertObjAt(c, 0) );
+		assertFalse( lls.insertObjAt(c, -1) );//c already exist, even if index is out of bounds
+		boolean ioobe = false;
+		try {
+			lls.insertObjAt(a, -1);//a doesn't exist
+		}catch (IndexOutOfBoundsException ie) {
+			ioobe = true;
+		}
+		assertTrue(ioobe);
+		
+		ioobe=false;
+		try {
+			lls.insertObjAt(a, lls.getSize()+1);
+		}catch (IndexOutOfBoundsException ie) {
+			ioobe = true;
+		}
+		assertTrue(ioobe);
+		
+		assertTrue( lls.insertObjAt(a, 0) );
+		assertTrue( lls.insertObjAt(d, 2) );
+		assertTrue( lls.insertObjAt(b, 1) );
+		assertTrue( lls.insertObjAt(e, 4) );
+		assertTrue( lls.insertObjAt(f, lls.getSize()) );
+		obj = null;//forward iterate
+		while (null != (obj = lls.getObjAt(Location.AFTER, obj)) ) {
+			System.out.print(obj+", ");
+		}
+		System.out.println();
 	}
 	
 }
