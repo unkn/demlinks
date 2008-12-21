@@ -8,11 +8,11 @@ import org.junit.Test;
 
 public class UniqueListOfNodesTest {
 
-	UniqueListOfNodes ul;
+	ListOfUniqueNodes ul;
 	
 	@Before
 	public void testUniqueListOfNodes() {
-		ul = new UniqueListOfNodes();
+		ul = new ListOfUniqueNodes();
 	}
 
 	@Test

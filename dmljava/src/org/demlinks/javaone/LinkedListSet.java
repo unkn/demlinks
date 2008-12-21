@@ -248,6 +248,9 @@ public class LinkedListSet<Obj> {
 	 * @return
 	 */
 	public boolean insertObjAt(Obj object, Location location, Obj locationObject) {
+		if (containsObj(object)) {
+			return false;
+		}
 		Capsule<Obj> caps = getCapsuleAt(indexOfObj(locationObject));
 		
 		switch (location) {

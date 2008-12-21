@@ -31,12 +31,12 @@ package org.demlinks.javaone;
 public class Node {
 	// if both lists are empty the node shouldn't exist (in the Environment)
 	// lists should never be null
-	private UniqueListOfNodes parentsList;//list of all Nodes that point to <this>
-	private UniqueListOfNodes childrenList;//list of all Nodes that <this> points to
+	private ListOfUniqueNodes parentsList;//list of all Nodes that point to <this>
+	private ListOfUniqueNodes childrenList;//list of all Nodes that <this> points to
 	
 	public Node() {
-		parentsList = new UniqueListOfNodes();
-		childrenList = new UniqueListOfNodes();
+		parentsList = new ListOfUniqueNodes();
+		childrenList = new ListOfUniqueNodes();
 	}
 
 	/**
@@ -113,7 +113,7 @@ public class Node {
 	 * @return the specified list object
 	 * @throws AssertionError if you specify unknown type of list to be returned
 	 */
-	public UniqueListOfNodes get(List list) throws AssertionError {
+	public ListOfUniqueNodes get(List list) throws AssertionError {
 		switch (list) {
 		case CHILDREN:
 			return this.childrenList;
