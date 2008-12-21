@@ -1,7 +1,7 @@
 package org.demlinks.javaone;
 import static org.junit.Assert.*;
 
-import org.demlinks.javaone.Node;
+import org.demlinks.javaone.NodeLevel0;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -17,14 +17,14 @@ public class UniqueListOfNodesTest {
 
 	@Test
 	public void testAppend() {
-		Node a = new Node();
+		NodeLevel0 a = new NodeLevel0();
 		assertTrue(ul.addLast(a));
-		Node b = new Node();
+		NodeLevel0 b = new NodeLevel0();
 		assertTrue(ul.addLast(b));
 		
 		assertFalse(ul.addLast(a));
 		
-		Node c = null;
+		NodeLevel0 c = null;
 		boolean upe=false;
 		try {
 			ul.addLast(c);
@@ -39,26 +39,26 @@ public class UniqueListOfNodesTest {
 	public void testSize() {
 		assertTrue(ul.getSize() == 0);
 		assertTrue(ul.isEmpty());
-		Node a;
-		ul.addLast(a=new Node());
+		NodeLevel0 a;
+		ul.addLast(a=new NodeLevel0());
 		assertFalse(ul.isEmpty());
 		assertTrue(ul.getSize() == 1);
-		ul.addLast(new Node());
+		ul.addLast(new NodeLevel0());
 		assertTrue(ul.getSize() == 2);
 		assertTrue(ul.containsObj(a));
-		assertFalse(ul.containsObj(new Node()));
+		assertFalse(ul.containsObj(new NodeLevel0()));
 		ul.removeObj(a);
 		assertTrue(ul.getSize() == 1);
 	}
 
 	@Test
 	public void testRemove() {
-		Node a=new Node();
+		NodeLevel0 a=new NodeLevel0();
 		ul.addLast(a);
 		assertTrue(ul.removeObj(a));
 		assertFalse(ul.removeObj(a));
 		
-		Node b= null;
+		NodeLevel0 b= null;
 		boolean npe=false;
 		try {
 			ul.removeObj(b);

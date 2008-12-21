@@ -43,8 +43,8 @@ public class EnvironmentTest {
 
 		env.link("a", "b"); //link two new nodes "a"->"b"
 		
-		Node _a = env.getNode("a");//get the Node object who's ID is "a"
-		Node _b = env.getNode("b");
+		NodeLevel0 _a = env.getNode("a");//get the Node object who's ID is "a"
+		NodeLevel0 _b = env.getNode("b");
 		assertTrue(null != _a);
 		assertTrue(null != _b);
 		
@@ -63,7 +63,7 @@ public class EnvironmentTest {
 		env.link(_a,"c"); // link between existing node _a and new node "c"
 		assertTrue(env.isLink(_a,"c"));
 		
-		Node _c = env.getNode("c");
+		NodeLevel0 _c = env.getNode("c");
 		assertTrue(null != _c);
 		
 		assertTrue(env.isLink(_a, _c));//same test different identifying ways
@@ -76,7 +76,7 @@ public class EnvironmentTest {
 		env.link("d", _c);//new node "d"
 		assertTrue(env.isLink("d", _c));
 		
-		Node _d = env.getNode("d");
+		NodeLevel0 _d = env.getNode("d");
 		assertTrue(env.isLink(_d, _c));
 		
 
@@ -100,7 +100,7 @@ public class EnvironmentTest {
 	}
 	
 	public void addAllChars() throws Exception {
-		Node _a = env.getNode("AllChars");
+		NodeLevel0 _a = env.getNode("AllChars");
 		for (int i = 65; i < 72; i++) {
 			env.link(_a,String.format("%c", i));
 		}
@@ -112,12 +112,12 @@ public class EnvironmentTest {
 			System.out.println(whatWas+" {max level reached}");
 			return;
 		}
-		Node nod = env.getNode(ID);
+		NodeLevel0 nod = env.getNode(ID);
 		if (null == nod) { // this will never happen (unless first call)
 			throw new NoSuchElementException();
 		}
 		ListOfUniqueNodes list = nod.get(List.CHILDREN);
-		Node curr=null;
+		NodeLevel0 curr=null;
 		curr = list.getObjAt(Location.AFTER, curr);
 		if (null == curr) { //no more children
 			System.out.println(whatWas);
@@ -139,10 +139,10 @@ public class EnvironmentTest {
 		
 		//you know, never catch Errors ... in general, if you do here things may remain inconsistent link-wise
 		env.link("a","b");
-		Node _a = env.getNode("a");
+		NodeLevel0 _a = env.getNode("a");
 		//Node _b = env.getNode("b");
 		
-		Node _boo = new Node();//a node that's not mapped ID to Node in the environment
+		NodeLevel0 _boo = new NodeLevel0();//a node that's not mapped ID to Node in the environment
 		boolean errored=false;
 		try {
 			env.link(_boo, _a); //an attempt to link these nodes should fail because one of them is not in the environment/mapped
@@ -208,14 +208,14 @@ public class EnvironmentTest {
 	public void testNullParameters() throws Exception {
 		
 		String nullStr = null;
-		Node nullNode = null;
+		NodeLevel0 nullNode = null;
 		String fullStr = "something";
-		Node fullNode = new Node();
+		NodeLevel0 fullNode = new NodeLevel0();
 		
 		boolean excepted=false;
 		
 		try {
-			env.link("a", new Node());
+			env.link("a", new NodeLevel0());
 		} catch (Error e) {
 			excepted = true;
 		}
@@ -223,7 +223,7 @@ public class EnvironmentTest {
 		
 		excepted = false;
 		try {
-			env.link(new Node(),"a");
+			env.link(new NodeLevel0(),"a");
 		} catch (Error e) {
 			excepted = true;
 		}
