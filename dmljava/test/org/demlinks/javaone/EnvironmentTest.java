@@ -116,7 +116,7 @@ public class EnvironmentTest {
 		if (null == nod) { // this will never happen (unless first call)
 			throw new NoSuchElementException();
 		}
-		ListOfUniqueNodes list = nod.get(List.CHILDREN);
+		ListOfUniqueNodesLevel0 list = nod.get(List.CHILDREN);
 		NodeLevel0 curr=null;
 		curr = list.getObjAt(Location.AFTER, curr);
 		if (null == curr) { //no more children

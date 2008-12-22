@@ -18,17 +18,26 @@
 
 package org.demlinks.javaone;
 
-import org.junit.runner.*;
-import org.junit.runners.*;
 
+/**
+ * * a list of unique Node objects (no two are the same)<br>
+ * * the order of Nodes in the list matters
+ */
+public class ListOfUniqueNodesLevel0 extends LinkedListSet<NodeLevel0> { // order matters; no duplicate Nodes in list
 
-@RunWith(Suite.class)
-@Suite.SuiteClasses(value={
-		EnvironmentTest.class,
-		LinkedListSetTest.class,
-		ListOfUniqueNodesLevel0Test.class
-		})
-		
-public class AllTests {
+	public ListOfUniqueNodesLevel0() {
+		super();
+	}
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 842508346073648046L;
+
+	/**
+	 * this is supposed to be only in L1
+	 */
+	public void init() {
+	}
 
 }

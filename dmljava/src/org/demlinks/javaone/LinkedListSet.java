@@ -28,7 +28,7 @@ import java.util.NoSuchElementException;
  * @param <Obj>
  *            the list will have objects of this type
  */
-public class LinkedListSet<Obj> {
+public class LinkedListSet<Obj> implements OnLinkedListSetEvents<Obj> {
 
 	private int cachedSize; // cached size, prevents parsing the entire list
 	private Capsule<Obj> head;//points to first capsule in list, or null if empty list
@@ -102,24 +102,30 @@ public class LinkedListSet<Obj> {
 	/**
 	 * @param obj
 	 * @return
+	 * @throws Exception 
 	 */
 	public boolean addFirst(Obj obj) {
 		if (containsObj(obj)) {
 			return false;
 		}
-		addObjBeforeCapsule(obj, head);
+		if (null == addObjBeforeCapsule(obj, head)) {
+			return false;
+		}
 		return getFirstObj() == obj;
 	}
 
 	/**
 	 * @param obj
 	 * @return
+	 * @throws Exception 
 	 */
 	public boolean addLast(Obj obj) {
 		if (containsObj(obj)) {
 			return false;
 		}
-		addObjAfterCapsule(obj, tail);
+		if (null == addObjAfterCapsule(obj, tail)) {
+			return false;
+		}
 		return getLastObj() == obj;
 	}
 	
@@ -156,8 +162,7 @@ public class LinkedListSet<Obj> {
 		}
 		for (Capsule<Obj> current = getFirstCapsule(); current != null; current = current.nextCapsule) {
 			if ( current.object.equals(whichObj) ) {
-				removeCapsule(current);
-				return true;
+				return (null != removeCapsule(current));
 			}
 		}
 		return false;
@@ -175,13 +180,16 @@ public class LinkedListSet<Obj> {
 		Capsule<Obj> parser = getFirstCapsule();//first in list
 		while (parser != null) {
 			Capsule<Obj> tmpNext = parser.nextCapsule;
-			parser.prevCapsule = null;
-			parser.nextCapsule = null;
-			parser.object = null;
+//			parser.prevCapsule = null;
+//			parser.nextCapsule = null;
+//			parser.object = null;
+			if (null == removeCapsule(parser)) {
+				return false;
+			}
 			parser = tmpNext;
 		}
 		
-		setListToEmpty();
+		//setListToEmpty();
 		return true;
 	}
 
@@ -197,14 +205,20 @@ public class LinkedListSet<Obj> {
 		}
 		Capsule<Obj> capsule = getCapsuleAt(index);
 		Obj oldObj = capsule.object;
+		if (!onBeforeReplace(oldObj, withWhatObject)) {
+			return null;//instructed not to replace
+		}
 		capsule.object = withWhatObject;
+		onAfterReplace(oldObj, withWhatObject);
 		return oldObj;
 	}
+
 
 	/**
 	 * @param object
 	 * @param index
 	 * @return
+	 * @throws Exception 
 	 */
 	public boolean insertObjAt(Obj object, int index) {
 		if (isEmpty()) {
@@ -219,14 +233,14 @@ public class LinkedListSet<Obj> {
 			return false;
 		}
 		checkIndex(index);
-		addObjBeforeCapsule(object, getCapsuleAt(index));
-		return true;
+		return (null != addObjBeforeCapsule(object, getCapsuleAt(index)));
 	}
 
 	/**
 	 * @param object
 	 * @param location
 	 * @return
+	 * @throws Exception 
 	 */
 	public boolean insertObjAt(Obj object, Location location) {
 		switch (location) {
@@ -246,6 +260,7 @@ public class LinkedListSet<Obj> {
 	 * @param location
 	 * @param locationObject
 	 * @return
+	 * @throws Exception 
 	 */
 	public boolean insertObjAt(Obj object, Location location, Obj locationObject) {
 		if (containsObj(object)) {
@@ -253,12 +268,13 @@ public class LinkedListSet<Obj> {
 		}
 		Capsule<Obj> caps = getCapsuleAt(indexOfObj(locationObject));
 		
+		boolean ret=false;
 		switch (location) {
 		case BEFORE:
-			addObjBeforeCapsule(object, caps);
+			ret = (null != addObjBeforeCapsule(object, caps));
 			break;
 		case AFTER:
-			addObjAfterCapsule(object, caps);
+			ret = (null != addObjAfterCapsule(object, caps) );
 			break;
 		case FIRST:
 		case LAST:
@@ -266,7 +282,7 @@ public class LinkedListSet<Obj> {
 		default:
 			throw new AssertionError("undefined location within this context");
 		}
-		return true;
+		return ret;
 	}
 	
 	/**
@@ -377,22 +393,37 @@ public class LinkedListSet<Obj> {
 	 * @param addWhatObj
 	 * @param beforeWhatCapsule
 	 * @return
+	 * @throws Exception 
 	 */
 	private Capsule<Obj> addObjBeforeCapsule(Obj addWhatObj, Capsule<Obj> beforeWhatCapsule) {
+		if (!onBeforeAddition(addWhatObj)) {
+			return null;
+		}
 		if (beforeWhatCapsule == null) {
-			head = new Capsule<Obj>(addWhatObj, null, null);
-			tail = head;
-			cachedSize++;
+			try {
+				head = new Capsule<Obj>(addWhatObj, null, null);
+				tail = head;
+				cachedSize++;
+			}catch (Exception e) {
+				onFailedAddition(addWhatObj);
+			}
+			onAfterAddition(addWhatObj);
 			return head;
 		}
-		Capsule<Obj> newCapsule = new Capsule<Obj>(addWhatObj, beforeWhatCapsule.prevCapsule, beforeWhatCapsule);
-		if (beforeWhatCapsule.prevCapsule != null) { // has prev
-			beforeWhatCapsule.prevCapsule.nextCapsule = newCapsule;
-		} else {
-			head = newCapsule;
+		Capsule<Obj> newCapsule=null;
+		try {
+			newCapsule = new Capsule<Obj>(addWhatObj, beforeWhatCapsule.prevCapsule, beforeWhatCapsule);
+			if (beforeWhatCapsule.prevCapsule != null) { // has prev
+				beforeWhatCapsule.prevCapsule.nextCapsule = newCapsule;
+			} else {
+				head = newCapsule;
+			}
+			beforeWhatCapsule.prevCapsule = newCapsule;
+			cachedSize++;
+		}catch (Exception e) {
+			onFailedAddition(addWhatObj);
 		}
-		beforeWhatCapsule.prevCapsule = newCapsule;
-		cachedSize++;
+		onAfterAddition(addWhatObj);
 		return newCapsule;
 	}
 	
@@ -400,22 +431,38 @@ public class LinkedListSet<Obj> {
 	 * @param addWhatObj
 	 * @param afterWhatCapsule
 	 * @return
+	 * @throws Exception 
 	 */
 	private Capsule<Obj> addObjAfterCapsule(Obj addWhatObj, Capsule<Obj> afterWhatCapsule) {
+		if (!onBeforeAddition(addWhatObj)) {
+			return null;
+		}
 		if (afterWhatCapsule == null) {
-			head = new Capsule<Obj>(addWhatObj, null, null);
-			tail = head;
-			cachedSize++;
+			try {
+				head = new Capsule<Obj>(addWhatObj, null, null);
+				tail = head;
+				cachedSize++;
+			}catch (Exception e) {
+				onFailedAddition(addWhatObj);
+			}
+			onAfterAddition(addWhatObj);
 			return head;
 		}
-		Capsule<Obj> newCapsule = new Capsule<Obj>(addWhatObj, afterWhatCapsule, afterWhatCapsule.nextCapsule);
-		if (afterWhatCapsule.nextCapsule != null) { // has next
-			afterWhatCapsule.nextCapsule.prevCapsule = newCapsule;
-		} else {//this was last, we move tail also
-			tail = newCapsule;
+		
+		Capsule<Obj> newCapsule=null;
+		try {
+			newCapsule = new Capsule<Obj>(addWhatObj, afterWhatCapsule, afterWhatCapsule.nextCapsule);
+			if (afterWhatCapsule.nextCapsule != null) { // has next
+				afterWhatCapsule.nextCapsule.prevCapsule = newCapsule;
+			} else {//this was last, we move tail also
+				tail = newCapsule;
+			}
+			afterWhatCapsule.nextCapsule = newCapsule;
+			cachedSize++;
+		}catch (Exception e) {
+			onFailedAddition(addWhatObj);
 		}
-		afterWhatCapsule.nextCapsule = newCapsule;
-		cachedSize++;
+		onAfterAddition(addWhatObj);
 		return newCapsule;
 	}
 
@@ -429,6 +476,9 @@ public class LinkedListSet<Obj> {
 		}
 
 		Obj oldObject = capsule.object;
+		if (!onBeforeRemove(oldObject)) {
+			return null;//failed to remove
+		}
 		if (capsule.prevCapsule != null) {//has prev
 			capsule.prevCapsule.nextCapsule = capsule.nextCapsule;
 		} else {
@@ -446,6 +496,7 @@ public class LinkedListSet<Obj> {
 		capsule.object = null;
 		
 		cachedSize--;
+		onAfterRemove(oldObject);
 		return oldObject;
 	}
 
@@ -490,6 +541,56 @@ public class LinkedListSet<Obj> {
 	 * 
 	 */
 	private static final long serialVersionUID = 3380435324961393742L;
+
+	
+	/* (non-Javadoc)
+	 * @see org.demlinks.javaone.OnLinkedListSetEvents#onAfterReplace(java.lang.Object, java.lang.Object)
+	 */
+	public void onAfterReplace(Obj oldObj, Obj newObj) {
+	}
+
+	/* (non-Javadoc)
+	 * @see org.demlinks.javaone.OnLinkedListSetEvents#onBeforeReplace(java.lang.Object, java.lang.Object)
+	 */
+	public boolean onBeforeReplace(Obj oldObj, Obj newObj) {
+		return true;
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.demlinks.javaone.OnLinkedListSetEvents#onBeforeAddition(java.lang.Object)
+	 */
+	public boolean onBeforeAddition(Obj objectToBeAdded) {
+		return true;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.demlinks.javaone.OnLinkedListSetEvents#onAfterAddition(java.lang.Object)
+	 */
+	public void onAfterAddition(Obj objectJustAdded) {
+	}
+
+	
+	/* (non-Javadoc)
+	 * @see org.demlinks.javaone.OnLinkedListSetEvents#onAfterRemove(java.lang.Object)
+	 */
+	@Override
+	public void onAfterRemove(Obj objectJustRemoved) {
+	}
+
+	/* (non-Javadoc)
+	 * @see org.demlinks.javaone.OnLinkedListSetEvents#onBeforeRemove(java.lang.Object)
+	 */
+	@Override
+	public boolean onBeforeRemove(Obj objectToBeRemoved) {
+		return true;
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.demlinks.javaone.OnLinkedListSetEvents#onFailedAddition(java.lang.Object)
+	 */
+	@Override
+	public void onFailedAddition(Obj objThatFailedToBeAdded) {
+	}
 
 
 

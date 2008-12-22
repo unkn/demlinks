@@ -93,8 +93,8 @@ public class NodeLevel0Test {
 
 	@Test
 	public void testGet() {
-		ListOfUniqueNodes par = a.get(List.PARENTS);
-		ListOfUniqueNodes chi = a.get(List.CHILDREN);
+		ListOfUniqueNodesLevel0 par = a.get(List.PARENTS);
+		ListOfUniqueNodesLevel0 chi = a.get(List.CHILDREN);
 		assertTrue(par != null);
 		assertTrue(chi != null);
 		assertTrue(par != chi);

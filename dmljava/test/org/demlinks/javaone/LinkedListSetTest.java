@@ -195,6 +195,7 @@ public class LinkedListSetTest {
 		lls.addLast(b);
 		lls.addLast(c);
 		assertTrue(lls.getSize() == 3);
+		lls.addFirst(new String("sasa"));
 		assertTrue(lls.clear());
 		assertTrue(lls.isEmpty());
 		assertFalse(lls.clear());

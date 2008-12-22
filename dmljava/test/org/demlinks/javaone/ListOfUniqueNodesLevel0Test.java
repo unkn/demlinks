@@ -6,17 +6,17 @@ import org.junit.Before;
 import org.junit.Test;
 
 
-public class UniqueListOfNodesTest {
+public class ListOfUniqueNodesLevel0Test {
 
-	ListOfUniqueNodes ul;
+	ListOfUniqueNodesLevel0 ul;
 	
 	@Before
 	public void testUniqueListOfNodes() {
-		ul = new ListOfUniqueNodes();
+		ul = new ListOfUniqueNodesLevel0();
 	}
 
 	@Test
-	public void testAppend() {
+	public void testAddLast() {
 		NodeLevel0 a = new NodeLevel0();
 		assertTrue(ul.addLast(a));
 		NodeLevel0 b = new NodeLevel0();
@@ -36,7 +36,7 @@ public class UniqueListOfNodesTest {
 	}
 
 	@Test
-	public void testSize() {
+	public void testGetSize() {
 		assertTrue(ul.getSize() == 0);
 		assertTrue(ul.isEmpty());
 		NodeLevel0 a;
@@ -52,7 +52,7 @@ public class UniqueListOfNodesTest {
 	}
 
 	@Test
-	public void testRemove() {
+	public void testRemoveObj() {
 		NodeLevel0 a=new NodeLevel0();
 		ul.addLast(a);
 		assertTrue(ul.removeObj(a));
@@ -70,24 +70,7 @@ public class UniqueListOfNodesTest {
 
 	@Test
 	public void testNodeCursor() {
-//		NodeIterator ni = ul.listCursor(0);
-//		
-//		boolean npe=false;
-//		try {
-//			ni.find(null);
-//		} catch  (NullPointerException e) {
-//			npe=true;
-//		}
-//		assertTrue(npe);
-//		
-//		Node a = new Node();
-//		Node b = a;
-//		ul.addLast(a);
-//		assertTrue(ni.find(b));
-//		
-//		assertFalse(ni.find(new Node()));
-//		
-		
+		//TODO x
 	}
 
 }

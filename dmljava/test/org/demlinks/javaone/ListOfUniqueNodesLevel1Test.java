@@ -18,20 +18,28 @@
 
 package org.demlinks.javaone;
 
+import static org.junit.Assert.*;
 
-/**
- * * a list of unique Node objects (no two are the same)<br>
- * * the order of Nodes in the list matters
- */
-public class ListOfUniqueNodes extends LinkedListSet<NodeLevel0> { // order matters; no duplicate Nodes in list
+import org.junit.Before;
+import org.junit.Test;
 
-	public ListOfUniqueNodes() {
-		super();
+
+public class ListOfUniqueNodesLevel1Test {
+	
+	NodeLevel1 n1,d1;
+	ListOfUniqueNodesLevel1 list1;
+	
+	@Before
+	public void init() {
+		n1 = new NodeLevel1();
+		list1 = (ListOfUniqueNodesLevel1) n1.get(List.CHILDREN);
+		d1 = new NodeLevel1();
 	}
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 842508346073648046L;
-
+	@Test
+	public void testAddLast() throws Exception {
+		assertTrue( list1.addLast(d1) );
+		assertTrue(list1.getSize() == 1);
+		
+	}
 }

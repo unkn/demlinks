@@ -49,6 +49,8 @@ public class NodeLevel1Test {
 		assertTrue( b0.isLinkFrom(a0));//calls L0 method
 		assertTrue(b.isLinkFrom(a));//L1
 		assertTrue(a.isLinkTo(b));//L1
+		assertFalse(a.isLinkFrom(b));
+		assertFalse(b.isLinkTo(a));
 		
 		assertTrue( c.linkFrom(a) );
 		assertTrue(a.isLinkTo(c));

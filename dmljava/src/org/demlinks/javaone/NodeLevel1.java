@@ -31,6 +31,14 @@ public class NodeLevel1 extends NodeLevel0 {
 	public NodeLevel1() {
 		super();
 	}
+	
+	@Override
+	protected void createLists() {
+		parentsList = new ListOfUniqueNodesLevel1(this);
+		parentsList.init();
+		childrenList = new ListOfUniqueNodesLevel1(this);
+		childrenList.init();
+	}
 
 	/**
 	 * @param childNode2

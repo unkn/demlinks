@@ -33,14 +33,19 @@ package org.demlinks.javaone;
 public class NodeLevel0 {
 	// if both lists are empty the node shouldn't exist (in the Environment)
 	// lists should never be null
-	private ListOfUniqueNodes parentsList;//list of all Nodes that point to <this>
-	private ListOfUniqueNodes childrenList;//list of all Nodes that <this> points to
+	protected ListOfUniqueNodesLevel0 parentsList=null;//list of all Nodes that point to <this>
+	protected ListOfUniqueNodesLevel0 childrenList=null;//list of all Nodes that <this> points to
 	
 	public NodeLevel0() {
-		parentsList = new ListOfUniqueNodes();
-		childrenList = new ListOfUniqueNodes();
+		createLists();
 	}
 
+	protected void createLists() {
+		parentsList = new ListOfUniqueNodesLevel0();
+		childrenList = new ListOfUniqueNodesLevel0();
+	}
+
+	
 	/**
 	 * Makes sure that after the call <tt>this</tt> NodeLevel0 object has <tt>childNodeLevel0</tt> in its children list.<br>
 	 * @param childNodeLevel0 the NodeLevel0 object that will be a child for <tt>this</tt> NodeLevel0
@@ -115,7 +120,7 @@ public class NodeLevel0 {
 	 * @return the specified list object
 	 * @throws AssertionError if you specify unknown type of list to be returned
 	 */
-	public ListOfUniqueNodes get(List list) throws AssertionError {
+	public ListOfUniqueNodesLevel0 get(List list) throws AssertionError {
 		switch (list) {
 		case CHILDREN:
 			return this.childrenList;
