@@ -20,7 +20,8 @@ package org.demlinks.javaone;
 
 /**
  * NodeLevel1
- * linkTo(child) makes sure child.parentList.has(this) and also this.childList.has(child) 
+ * linkTo(child) makes sure child.parentList.has(this) and also this.childList.has(child)
+ * a.linkTo(b) is equivalent to b.linkFrom(a) 
  */
 public class NodeLevel1 extends NodeLevel0 {
 
@@ -77,4 +78,44 @@ public class NodeLevel1 extends NodeLevel0 {
 		return ret1 && ret2;
 	}
 	
+	
+	/**
+	 * @param childNodeLevel1
+	 * @return
+	 */
+	public boolean unLinkTo(NodeLevel1 childNodeLevel1) {
+		boolean ret1 = super.unLinkTo(childNodeLevel1);
+		boolean ret2 = ((NodeLevel0)childNodeLevel1).unLinkFrom(this);
+		incoLinkError(ret1, ret2);
+		return ret1 && ret2;
+	}
+	
+	/**
+	 * @param parentNodeLevel1
+	 * @return
+	 */
+	public boolean unLinkFrom(NodeLevel1 parentNodeLevel1) {
+		boolean ret1 = super.unLinkFrom(parentNodeLevel1);
+		boolean ret2 = ((NodeLevel0)parentNodeLevel1).unLinkTo(this);
+		incoLinkError(ret1, ret2);
+		return ret1 && ret2;
+	}
+	
+	/**
+	 * @param ret1
+	 * @param ret2
+	 */
+	public void incoLinkError(boolean ret1, boolean ret2) {
+		if (ret1 ^ ret2) {
+			throw new AssertionError("inconsistent link detected");
+		}
+	}
+	
+//	@Override
+//	public boolean equals(Object o) {
+//		boolean ret = super.equals(o);
+//		boolean ret2 = (this == o);
+//		return ret || ret2;
+//		
+//	}
 }

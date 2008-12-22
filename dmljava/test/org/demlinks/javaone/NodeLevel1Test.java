@@ -51,6 +51,21 @@ public class NodeLevel1Test {
 		assertTrue(a.isLinkTo(b));//L1
 		
 		assertTrue( c.linkFrom(a) );
+		assertTrue(a.isLinkTo(c));
+		assertTrue(c.isLinkFrom(a));
 		
+		
+		
+		assertTrue( a.unLinkTo(c) );
+		assertFalse(a.isLinkTo(c));
+		assertFalse(c.isLinkFrom(a));
+		
+		assertTrue( b.unLinkFrom(a) );
+		assertFalse(b.isLinkFrom(a));
+		assertFalse(a.isLinkTo(b));
+		
+		assertTrue(a.isAlone());
+		assertTrue(b.isAlone());
+		assertTrue(c.isAlone());
 	}
 }
