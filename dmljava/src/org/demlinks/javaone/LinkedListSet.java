@@ -400,29 +400,21 @@ public class LinkedListSet<Obj> implements OnLinkedListSetEvents<Obj> {
 			return null;
 		}
 		if (beforeWhatCapsule == null) {
-			try {
-				head = new Capsule<Obj>(addWhatObj, null, null);
-				tail = head;
-				cachedSize++;
-			}catch (Exception e) {
-				onFailedAddition(addWhatObj);
-			}
+			head = new Capsule<Obj>(addWhatObj, null, null);
+			tail = head;
+			cachedSize++;
 			onAfterAddition(addWhatObj);
 			return head;
 		}
 		Capsule<Obj> newCapsule=null;
-		try {
-			newCapsule = new Capsule<Obj>(addWhatObj, beforeWhatCapsule.prevCapsule, beforeWhatCapsule);
-			if (beforeWhatCapsule.prevCapsule != null) { // has prev
-				beforeWhatCapsule.prevCapsule.nextCapsule = newCapsule;
-			} else {
-				head = newCapsule;
-			}
-			beforeWhatCapsule.prevCapsule = newCapsule;
-			cachedSize++;
-		}catch (Exception e) {
-			onFailedAddition(addWhatObj);
+		newCapsule = new Capsule<Obj>(addWhatObj, beforeWhatCapsule.prevCapsule, beforeWhatCapsule);
+		if (beforeWhatCapsule.prevCapsule != null) { // has prev
+			beforeWhatCapsule.prevCapsule.nextCapsule = newCapsule;
+		} else {
+			head = newCapsule;
 		}
+		beforeWhatCapsule.prevCapsule = newCapsule;
+		cachedSize++;
 		onAfterAddition(addWhatObj);
 		return newCapsule;
 	}
@@ -438,30 +430,22 @@ public class LinkedListSet<Obj> implements OnLinkedListSetEvents<Obj> {
 			return null;
 		}
 		if (afterWhatCapsule == null) {
-			try {
-				head = new Capsule<Obj>(addWhatObj, null, null);
-				tail = head;
-				cachedSize++;
-			}catch (Exception e) {
-				onFailedAddition(addWhatObj);
-			}
+			head = new Capsule<Obj>(addWhatObj, null, null);
+			tail = head;
+			cachedSize++;
 			onAfterAddition(addWhatObj);
 			return head;
 		}
 		
 		Capsule<Obj> newCapsule=null;
-		try {
-			newCapsule = new Capsule<Obj>(addWhatObj, afterWhatCapsule, afterWhatCapsule.nextCapsule);
-			if (afterWhatCapsule.nextCapsule != null) { // has next
-				afterWhatCapsule.nextCapsule.prevCapsule = newCapsule;
-			} else {//this was last, we move tail also
-				tail = newCapsule;
-			}
-			afterWhatCapsule.nextCapsule = newCapsule;
-			cachedSize++;
-		}catch (Exception e) {
-			onFailedAddition(addWhatObj);
+		newCapsule = new Capsule<Obj>(addWhatObj, afterWhatCapsule, afterWhatCapsule.nextCapsule);
+		if (afterWhatCapsule.nextCapsule != null) { // has next
+			afterWhatCapsule.nextCapsule.prevCapsule = newCapsule;
+		} else {//this was last, we move tail also
+			tail = newCapsule;
 		}
+		afterWhatCapsule.nextCapsule = newCapsule;
+		cachedSize++;
 		onAfterAddition(addWhatObj);
 		return newCapsule;
 	}
@@ -585,14 +569,6 @@ public class LinkedListSet<Obj> implements OnLinkedListSetEvents<Obj> {
 		return true;
 	}
 	
-	/* (non-Javadoc)
-	 * @see org.demlinks.javaone.OnLinkedListSetEvents#onFailedAddition(java.lang.Object)
-	 */
-	@Override
-	public void onFailedAddition(Obj objThatFailedToBeAdded) {
-	}
-
-
 
 //TODO use a lastCapsule field to make seeks faster
 

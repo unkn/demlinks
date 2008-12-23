@@ -37,20 +37,10 @@ public interface OnLinkedListSetEvents<Obj> {
 	/**
 	 * this will be called right before the addition giving you the opportunity to abort the addition<br>
 	 * the chances of failing considering the code following the call to this method, are slim<br>
-	 * it this method returns false, then {@link #onFailedAddition(Object)} won't be called
 	 * @param objectToBeAdded
 	 * @return true if you allow the addition to occur, false otherwise
 	 */
 	public boolean onBeforeAddition(Obj objectToBeAdded);
-	
-	/**
-	 * this will be called if the addition failed for some reason<br>
-	 * Beware however that this method cannot be called unless after {@link #onBeforeAddition(Object)} was called<br>
-	 * In other words, {@link #onBeforeAddition(Object)} will always be called before onFailedAddition<br>
-	 * So if you're here, you can be sure you were also in {@link #onBeforeAddition(Object)} moments ago.
-	 * @param objThatFailedToBeAdded
-	 */
-	public void onFailedAddition(Obj objThatFailedToBeAdded);
 	
 	/**
 	 * this will be called only if the addition succeeded 

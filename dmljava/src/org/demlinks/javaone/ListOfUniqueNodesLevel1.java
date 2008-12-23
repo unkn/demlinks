@@ -61,16 +61,6 @@ public class ListOfUniqueNodesLevel1 extends ListOfUniqueNodesLevel0 {
 		//so we're trying to add nodeL1ToBeAdded in the list of fatherNodeL1
 		//and so, in the opposite list of nodeL1ToBeAdded we will add now fatherNodeL1
 		return nodeL1ToBeAdded.get(opposedList).addLast(fatherNodeL1);
-		//if this returns true at this point, it's most unlikely the addition will fail, so the need for onFailedAddition is unnecessary
-	}
-	
-	@Override
-	public void onFailedAddition(NodeLevel0 nodeL1ThatFailedToBeAdded) {
-		super.onFailedAddition(nodeL1ThatFailedToBeAdded);
-		//since we managed to add fatherNodeL1 to nodeL1ToBeAdded in method onBeforeAddition, 
-		//and the addition of nodeL1ToBeAdded in the list of fatherNodeL1 failed
-		//we must now remove the above added thingy, so we won't be left with half links
-		nodeL1ThatFailedToBeAdded.get(opposedList).removeObj(fatherNodeL1);
 	}
 	
 	
