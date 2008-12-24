@@ -16,28 +16,8 @@
     along with DeMLinks.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package org.demlinks.javaone;
+package org.demlinks.javatwo;
 
-
-/**
- * * a list of unique Node objects (no two are the same)<br>
- * * the order of Nodes in the list matters
- */
-public class ListOfUniqueNodesLevel0 extends LinkedListSet<Node_L0> { // order matters; no duplicate Nodes in list
-
-	public ListOfUniqueNodesLevel0() {
-		super();
-	}
-	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 842508346073648046L;
-
-	/**
-	 * this is supposed to be only in L1
-	 */
-	public void init() {
-	}
-
+public enum List {
+	CHILDREN, PARENTS
 }

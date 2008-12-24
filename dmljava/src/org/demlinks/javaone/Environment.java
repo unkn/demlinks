@@ -33,16 +33,16 @@ package org.demlinks.javaone;
  */
 public class Environment {
 	//fields
-	private TwoWayHashMap<String, NodeLevel0> allIDNodeTuples; // unique elements
+	private TwoWayHashMap<String, Node_L0> allIDNodeTuples; // unique elements
 	
 	//constructor
 	/**
 	 * Environment containing ID to Node mappings<br>
 	 * ID is {@link String} identifier
-	 * Node is a {@link NodeLevel0} object
+	 * Node is a {@link Node_L0} object
 	 */
 	public Environment() {
-		allIDNodeTuples = new TwoWayHashMap<String, NodeLevel0>();
+		allIDNodeTuples = new TwoWayHashMap<String, Node_L0>();
 	}
 	
 	//methods
@@ -50,18 +50,18 @@ public class Environment {
 	/**
 	 * @return the Node object that's mapped to the ID, if it doesn't exist in the Environment then null
 	 */
-	public NodeLevel0 getNode(String nodeID) {
+	public Node_L0 getNode(String nodeID) {
 		return allIDNodeTuples.getValue(nodeID);
 	}
 
 	/**
 	 * @return the ID that is mapped to the Node object, in this environment, or null if there's no such mapping
 	 */
-	public String getID(NodeLevel0 node) {
+	public String getID(Node_L0 node) {
 		return allIDNodeTuples.getKey(node);
 	}
 	
-	private void internalMapIDToNode(String nodeID, NodeLevel0 nodeObject) throws Exception {
+	private void internalMapIDToNode(String nodeID, Node_L0 nodeObject) throws Exception {
 		allIDNodeTuples.putKeyValue(nodeID, nodeObject);
 	}
 	
@@ -69,7 +69,7 @@ public class Environment {
 		allIDNodeTuples.removeKey(nodeID);
 	}
 	
-	private void internalUnMapNode(NodeLevel0 node) {
+	private void internalUnMapNode(Node_L0 node) {
 		allIDNodeTuples.removeValue(node);
 	}
 	
@@ -99,10 +99,10 @@ public class Environment {
 	 * @return if the ID is already mapped then it will return its respective Node object
 	 * @throws Exception
 	 */
-	public NodeLevel0 ensureNode(String nodeID) throws Exception {
-		NodeLevel0 n = getNode(nodeID);
+	public Node_L0 ensureNode(String nodeID) throws Exception {
+		Node_L0 n = getNode(nodeID);
 		if (null == n) {
-			n = new NodeLevel0();
+			n = new Node_L0();
 			internalMapIDToNode(nodeID, n);
 		}
 		return n;
@@ -123,7 +123,7 @@ public class Environment {
 		//3.and THEN map them to IDs
 		
 		boolean parentCreated = false;
-		NodeLevel0 parentNode = getNode(parentID);//fetch existing Node
+		Node_L0 parentNode = getNode(parentID);//fetch existing Node
 		if (null == parentNode) {
 			//ah there was no existing Node object with that ID
 			//we create a new one
@@ -134,7 +134,7 @@ public class Environment {
 		}
 		
 		boolean childCreated = false;
-		NodeLevel0 childNode = getNode(childID);//fetch existing Node identified by childID
+		Node_L0 childNode = getNode(childID);//fetch existing Node identified by childID
 		if (null == childNode) {
 			//nothing existing? create one
 			childNode = ensureNode(childID);
@@ -169,8 +169,8 @@ public class Environment {
 	 * @param nodeID
 	 * @return the removed Node
 	 */
-	public NodeLevel0 removeNode(String nodeID) {
-		NodeLevel0 n = getNode(nodeID);
+	public Node_L0 removeNode(String nodeID) {
+		Node_L0 n = getNode(nodeID);
 		if (n == null) {
 			throw new AssertionError("attempt to remove a non-existing node ID");
 		}
@@ -186,7 +186,7 @@ public class Environment {
 	 * @return
 	 * @see #removeNode(String)
 	 */
-	public String removeNode(NodeLevel0 node) {
+	public String removeNode(Node_L0 node) {
 		String id = getID(node);
 		if (null == id) { //doesn't exist
 			throw new AssertionError("attempt to remove a node object that doesn't exist in this environment");
@@ -206,7 +206,7 @@ public class Environment {
 	 * @throws Exception
 	 * @see #link(String, String)
 	 */
-	public void link(String parentID, NodeLevel0 childNode) throws Exception {
+	public void link(String parentID, Node_L0 childNode) throws Exception {
 		String childID = getID(childNode);
 		if (null == childID) {
 			throw new AssertionError("childNode isn't mapped in this environment");
@@ -219,7 +219,7 @@ public class Environment {
 	 * @param childID
 	 * @throws Exception
 	 */
-	public void link(NodeLevel0 parentNode, String childID) throws Exception {
+	public void link(Node_L0 parentNode, String childID) throws Exception {
 		String parentID = getID(parentNode);
 		if (null == parentID) {
 			throw new AssertionError("parentNode isn't mapped in this environment");
@@ -231,14 +231,14 @@ public class Environment {
 	 * @param parentNode
 	 * @param childNode
 	 */
-	public void link(NodeLevel0 parentNode, NodeLevel0 childNode) {
+	public void link(Node_L0 parentNode, Node_L0 childNode) {
 		if ( (null == getID(parentNode)) || (null == getID(childNode)) ) {
 			throw new AssertionError("one or both nodes are not mapped within this environment");
 		}
 		internalLink(parentNode, childNode);
 	}
 	
-	private void internalLink(NodeLevel0 parentNode, NodeLevel0 childNode) {
+	private void internalLink(Node_L0 parentNode, Node_L0 childNode) {
 		//assumes both Nodes exist and are not null params, else expect exceptions
 		parentNode.linkTo(childNode);
 		childNode.linkFrom(parentNode);
@@ -251,7 +251,7 @@ public class Environment {
 	 * @param childNode
 	 * @return true if (mutual) link between the two nodes exists
 	 */
-	public boolean isLink(NodeLevel0 parentNode, NodeLevel0 childNode) {
+	public boolean isLink(Node_L0 parentNode, Node_L0 childNode) {
 		nullException(parentNode, childNode);
 		boolean one = parentNode.isLinkTo(childNode);
 		boolean two = childNode.isLinkFrom(parentNode);
@@ -266,9 +266,9 @@ public class Environment {
 	 * @param childID
 	 * @return
 	 */
-	public boolean isLink(NodeLevel0 parentNode, String childID) {
+	public boolean isLink(Node_L0 parentNode, String childID) {
 		nullException(parentNode, childID);
-		NodeLevel0 childNode = getNode(childID);
+		Node_L0 childNode = getNode(childID);
 		if (null != childNode) {
 			return isLink(parentNode, childNode);
 		}
@@ -280,9 +280,9 @@ public class Environment {
 	 * @param childNode
 	 * @return
 	 */
-	public boolean isLink(String parentID, NodeLevel0 childNode) {
+	public boolean isLink(String parentID, Node_L0 childNode) {
 		nullException(parentID, childNode);
-		NodeLevel0 parentNode = getNode(parentID);
+		Node_L0 parentNode = getNode(parentID);
 		if (null != parentNode) {
 			return isLink(parentNode, childNode);
 		}
@@ -296,7 +296,7 @@ public class Environment {
 	 */
 	public boolean isLink(String parentID, String childID) {
 		nullException(parentID, childID);
-		NodeLevel0 parentNode = this.getNode(parentID);
+		Node_L0 parentNode = this.getNode(parentID);
 		if (null != parentNode) {
 			return isLink(parentNode, childID);
 		}

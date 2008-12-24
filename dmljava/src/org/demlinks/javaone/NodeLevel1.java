@@ -23,7 +23,7 @@ package org.demlinks.javaone;
  * linkTo(child) makes sure child.parentList.has(this) and also this.childList.has(child)
  * a.linkTo(b) is equivalent to b.linkFrom(a) 
  */
-public class NodeLevel1 extends NodeLevel0 {
+public class NodeLevel1 extends Node_L0 {
 
 	/**
 	 * 
@@ -46,7 +46,7 @@ public class NodeLevel1 extends NodeLevel0 {
 	 */
 	public boolean linkTo(NodeLevel1 childNode2) {
 		boolean ret1 = super.linkTo(childNode2);
-		boolean ret2 = ((NodeLevel0)childNode2).linkFrom(this);
+		boolean ret2 = ((Node_L0)childNode2).linkFrom(this);
 		return ret1 && ret2;
 	}
 	
@@ -56,7 +56,7 @@ public class NodeLevel1 extends NodeLevel0 {
 	 */
 	public boolean linkFrom(NodeLevel1 parentNode2) {
 		boolean ret1 = super.linkFrom(parentNode2);
-		boolean ret2 = ((NodeLevel0)parentNode2).linkTo(this);
+		boolean ret2 = ((Node_L0)parentNode2).linkTo(this);
 		return ret1 && ret2;
 	}
 	
@@ -66,7 +66,7 @@ public class NodeLevel1 extends NodeLevel0 {
 	 */
 	public boolean isLinkTo(NodeLevel1 childNodeL1) {
 		boolean ret1 = super.isLinkTo(childNodeL1);
-		boolean ret2 = ((NodeLevel0)childNodeL1).isLinkFrom(this);
+		boolean ret2 = ((Node_L0)childNodeL1).isLinkFrom(this);
 		if (ret1 ^ ret2) {
 			throw new AssertionError("inconsistent link detected");
 		}
@@ -79,7 +79,7 @@ public class NodeLevel1 extends NodeLevel0 {
 	 */
 	public boolean isLinkFrom(NodeLevel1 parentNodeL1) {
 		boolean ret1 = super.isLinkFrom(parentNodeL1);
-		boolean ret2 = ((NodeLevel0)parentNodeL1).isLinkTo(this);
+		boolean ret2 = ((Node_L0)parentNodeL1).isLinkTo(this);
 		if (ret1 ^ ret2) {
 			throw new AssertionError("inconsistent link detected");
 		}
@@ -93,7 +93,7 @@ public class NodeLevel1 extends NodeLevel0 {
 	 */
 	public boolean unLinkTo(NodeLevel1 childNodeLevel1) {
 		boolean ret1 = super.unLinkTo(childNodeLevel1);
-		boolean ret2 = ((NodeLevel0)childNodeLevel1).unLinkFrom(this);
+		boolean ret2 = ((Node_L0)childNodeLevel1).unLinkFrom(this);
 		incoLinkError(ret1, ret2);
 		return ret1 && ret2;
 	}
@@ -104,7 +104,7 @@ public class NodeLevel1 extends NodeLevel0 {
 	 */
 	public boolean unLinkFrom(NodeLevel1 parentNodeLevel1) {
 		boolean ret1 = super.unLinkFrom(parentNodeLevel1);
-		boolean ret2 = ((NodeLevel0)parentNodeLevel1).unLinkTo(this);
+		boolean ret2 = ((Node_L0)parentNodeLevel1).unLinkTo(this);
 		incoLinkError(ret1, ret2);
 		return ret1 && ret2;
 	}

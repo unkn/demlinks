@@ -1,5 +1,5 @@
 /*  Copyright (C) 2005-2008 AtKaaZ <atkaaz@users.sourceforge.net>
- 	
+
  	This file and its contents are part of DeMLinks.
 
     DeMLinks is free software: you can redistribute it and/or modify
@@ -14,30 +14,43 @@
 
     You should have received a copy of the GNU General Public License
     along with DeMLinks.  If not, see <http://www.gnu.org/licenses/>.
-*/
-
-package org.demlinks.javaone;
-
-
-/**
- * * a list of unique Node objects (no two are the same)<br>
- * * the order of Nodes in the list matters
  */
-public class ListOfUniqueNodesLevel0 extends LinkedListSet<Node_L0> { // order matters; no duplicate Nodes in list
 
-	public ListOfUniqueNodesLevel0() {
-		super();
+package org.demlinks.javatwo;
+
+import static org.junit.Assert.*;
+
+import org.junit.Before;
+import org.junit.Test;
+
+public class NodeRef_L1Test {
+
+	NodeRef_L1 n1,n2,n3;
+	
+	@Before
+	public void init() {
+		n1 = new NodeRef_L1();
+		n2 = new NodeRef_L1();
+		n3 = new NodeRef_L1();
 	}
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 842508346073648046L;
-
-	/**
-	 * this is supposed to be only in L1
-	 */
-	public void init() {
+	@Test
+	public void testNodeRef_L1() {
+		assertTrue( n1.getPrevNodeRef() == null );
+		assertTrue( n1.getNextNodeRef() == null );
+		assertTrue(n1.isAlone());
+		
+		assertTrue( n2.setNextNodeRef(n3) );
+		assertTrue(n2.getNextNodeRef() == n3);
+		assertTrue(n3.getPrevNodeRef() == n2);
+		
+		assertTrue( n2.setPrevNodeRef(n1) );
+		assertTrue(n2.getPrevNodeRef() == n1);
+		assertTrue(n1.getNextNodeRef() == n2);
+		
+		assertTrue( n2.selfRemove() );
+		assertTrue( n1.selfRemove() );
+		assertTrue( n3.selfRemove() );
 	}
 
 }

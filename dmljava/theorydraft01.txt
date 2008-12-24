@@ -80,3 +80,4 @@ also, using a listIterator on the ie. children list of "a"
 ListIterator litr = a.get(List.CHILDREN).listIterator();
 litr.insert("new2", Location.BEFORE, "newNode"); //or stuff like that
 
+AtKaaZ, 13 Dec 2008.

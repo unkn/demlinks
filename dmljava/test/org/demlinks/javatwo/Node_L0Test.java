@@ -16,14 +16,14 @@
     along with DeMLinks.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package org.demlinks.javaone;
+package org.demlinks.javatwo;
 
 import static org.junit.Assert.*;
 
 import org.junit.Before;
 import org.junit.Test;
 
-public class NodeLevel0Test {
+public class Node_L0Test {
 
 	Node_L0 a,b,c,nul;
 	
@@ -93,8 +93,8 @@ public class NodeLevel0Test {
 
 	@Test
 	public void testGet() {
-		ListOfUniqueNodesLevel0 par = a.get(List.PARENTS);
-		ListOfUniqueNodesLevel0 chi = a.get(List.CHILDREN);
+		NodeRefsList_L0 par = a.get(List.PARENTS);
+		NodeRefsList_L0 chi = a.get(List.CHILDREN);
 		assertTrue(par != null);
 		assertTrue(chi != null);
 		assertTrue(par != chi);
@@ -103,7 +103,7 @@ public class NodeLevel0Test {
 		a.linkTo(b);
 		assertTrue(par.isEmpty());
 		assertTrue(chi.getSize() == 1);
-		assertTrue(chi.getFirstObj() == b);
+		assertTrue(chi.getFirstNode() == b);
 		assertTrue(b.get(List.CHILDREN).isEmpty());
 		assertTrue(b.get(List.PARENTS).getSize() == 0);
 	}

@@ -19,4 +19,4 @@ transaction within transaction levels.
 A Sibling transaction has access to the above sibling transaction in the sense that
 it sees all modifications done by it.
 
-   
+AtKaaZ, 15 Dec 2008.

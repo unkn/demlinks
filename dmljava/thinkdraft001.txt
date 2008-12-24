@@ -92,3 +92,4 @@ some commands may do changes to other vars which don't directly/indirectly chang
 so they remain the same as when str was old str).
 So consistency in thread commands/vars would be wanted. That means many On events (ie. OnChange)
   
+AtKaaZ, 6 & 11 Dec 2008.
