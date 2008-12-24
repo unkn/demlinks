@@ -23,7 +23,7 @@ package org.demlinks.javaone;
  * * a list of unique Node objects (no two are the same)<br>
  * * the order of Nodes in the list matters
  */
-public class ListOfUniqueNodesLevel0 extends LinkedListSet<Node_L0> { // order matters; no duplicate Nodes in list
+public class ListOfUniqueNodesLevel0 extends LinkedListSet<NodeLevel0> { // order matters; no duplicate Nodes in list
 
 	public ListOfUniqueNodesLevel0() {
 		super();

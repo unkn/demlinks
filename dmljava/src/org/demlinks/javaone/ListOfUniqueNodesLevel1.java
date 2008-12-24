@@ -54,7 +54,7 @@ public class ListOfUniqueNodesLevel1 extends ListOfUniqueNodesLevel0 {
 	}
 
 	@Override
-	public boolean onBeforeAddition(Node_L0 nodeL1ToBeAdded) {
+	public boolean onBeforeAddition(NodeLevel0 nodeL1ToBeAdded) {
 		if (!super.onBeforeAddition(nodeL1ToBeAdded)) {//this is not needed here, since L0 does nothing with it, but maybe to keep consistency it's here
 			return false;
 		}

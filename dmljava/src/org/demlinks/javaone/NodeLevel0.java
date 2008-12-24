@@ -30,13 +30,13 @@ package org.demlinks.javaone;
  * It only knows to do operations for itself (ie. it won't also link parent to child is a child to parent link is requested via linkFrom)
  * linkTo(child) makes sure only this.childList.has(child) but nothing else like child.parentList.has(this) - that's in NodeLevel1
  */
-public class Node_L0 {
+public class NodeLevel0 {
 	// if both lists are empty the node shouldn't exist (in the Environment)
 	// lists should never be null
 	protected ListOfUniqueNodesLevel0 parentsList=null;//list of all Nodes that point to <this>
 	protected ListOfUniqueNodesLevel0 childrenList=null;//list of all Nodes that <this> points to
 	
-	public Node_L0() {
+	public NodeLevel0() {
 		createLists();
 	}
 
@@ -51,7 +51,7 @@ public class Node_L0 {
 	 * @param childNodeLevel0 the NodeLevel0 object that will be a child for <tt>this</tt> NodeLevel0
 	 * @return true if the link didn't exist before call
 	 */
-	public boolean linkTo(Node_L0 childNodeLevel0) {
+	public boolean linkTo(NodeLevel0 childNodeLevel0) {
 		boolean ret = get(List.CHILDREN).addLast(childNodeLevel0);
 		return ret;
 	}
@@ -61,7 +61,7 @@ public class Node_L0 {
 	 * @param parentNodeLevel0 the node that will point to us
 	 * @return true if the link didn't exist before call
 	 */
-	public boolean linkFrom(Node_L0 parentNodeLevel0) {
+	public boolean linkFrom(NodeLevel0 parentNodeLevel0) {
 		boolean ret = get(List.PARENTS).addLast(parentNodeLevel0);
 		return ret;
 	}
@@ -71,7 +71,7 @@ public class Node_L0 {
 	 * @param childNodeLevel0 NodeLevel0 that will be removed from being a child of <tt>this</tt> NodeLevel0
 	 * @return
 	 */
-	public boolean unLinkTo(Node_L0 childNodeLevel0) {
+	public boolean unLinkTo(NodeLevel0 childNodeLevel0) {
 		boolean ret = get(List.CHILDREN).removeObj(childNodeLevel0);
 		return ret;
 	}
@@ -82,7 +82,7 @@ public class Node_L0 {
 	 * @param parentNodeLevel0 NodeLevel0 that will be removed from being a parent of <tt>this</tt> NodeLevel0
 	 * @return
 	 */
-	public boolean unLinkFrom(Node_L0 parentNodeLevel0) {
+	public boolean unLinkFrom(NodeLevel0 parentNodeLevel0) {
 		boolean ret = get(List.PARENTS).removeObj(parentNodeLevel0);
 		return ret;
 	}
@@ -92,7 +92,7 @@ public class Node_L0 {
 	 * @param childNodeLevel0
 	 * @return true is so
 	 */
-	public boolean isLinkTo(Node_L0 childNodeLevel0) {
+	public boolean isLinkTo(NodeLevel0 childNodeLevel0) {
 		boolean ret = get(List.CHILDREN).containsObj(childNodeLevel0);
 		return ret;
 	}
@@ -101,9 +101,9 @@ public class Node_L0 {
 	 * checks if <tt>this</tt> is pointed by <tt>parentNodeLevel0</tt>
 	 * @param parentNodeLevel0
 	 * @return true if so
-	 * @see #isLinkTo(Node_L0)
+	 * @see #isLinkTo(NodeLevel0)
 	 */
-	public boolean isLinkFrom(Node_L0 parentNodeLevel0) {
+	public boolean isLinkFrom(NodeLevel0 parentNodeLevel0) {
 		boolean ret = get(List.PARENTS).containsObj(parentNodeLevel0);
 		return ret;
 	}

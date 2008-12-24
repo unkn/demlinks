@@ -27,14 +27,14 @@ import org.junit.Test;
 public class NodeLevel1Test {
 	
 	NodeLevel1 a,b,c;
-	Node_L0 a0,b0,c0;
+	NodeLevel0 a0,b0,c0;
 	
 	@Before
 	public void init() {
 		a=new NodeLevel1();
 		b=new NodeLevel1();
 		c=new NodeLevel1();
-		a0=(Node_L0)a;
+		a0=(NodeLevel0)a;
 		b0=b;
 		c0=c;
 	}

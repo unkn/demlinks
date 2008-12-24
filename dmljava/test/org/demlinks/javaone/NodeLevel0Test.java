@@ -25,13 +25,13 @@ import org.junit.Test;
 
 public class NodeLevel0Test {
 
-	Node_L0 a,b,c,nul;
+	NodeLevel0 a,b,c,nul;
 	
 	@Before
 	public void init() {
-		a= new Node_L0();
-		b= new Node_L0();
-		c= new Node_L0();
+		a= new NodeLevel0();
+		b= new NodeLevel0();
+		c= new NodeLevel0();
 		nul=null;
 	}
 
