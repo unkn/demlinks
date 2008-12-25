@@ -24,7 +24,9 @@ import org.junit.runners.*;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses(value={
-		NodeRefTest.class
+		NodeRefTest.class,
+		Node_L0Test.class,
+		EnvironmentTest.class
 		})
 		
 public class AllTests {

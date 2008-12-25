@@ -1,5 +1,5 @@
 /*  Copyright (C) 2005-2008 AtKaaZ <atkaaz@users.sourceforge.net>
-
+ 	
  	This file and its contents are part of DeMLinks.
 
     DeMLinks is free software: you can redistribute it and/or modify
@@ -14,56 +14,13 @@
 
     You should have received a copy of the GNU General Public License
     along with DeMLinks.  If not, see <http://www.gnu.org/licenses/>.
- */
+*/
 
 package org.demlinks.javathree;
 
-public class NodeRef {
-	private NodeRef prev=null;
-	private Node node=null;
-	private NodeRef next=null;
-	
-	public void setNode(Node nod) {//even if null
-		node = nod;
-	}
-	
-	public boolean isAlone() {
-		return ((prev == null) && (next == null));
-	}
-	
-	/**
-	 * @return the prev
-	 */
-	public NodeRef getPrev() {
-		return prev;
-	}
-
-	/**
-	 * @param prev the prev to set
-	 */
-	public void setPrev(NodeRef prev) {
-		this.prev = prev;
-	}
-
-	/**
-	 * @return the next
-	 */
-	public NodeRef getNext() {
-		return next;
-	}
-
-	/**
-	 * @param next the next to set
-	 */
-	public void setNext(NodeRef next) {
-		this.next = next;
-	}
-
-	/**
-	 * @return the node
-	 */
-	public Node getNode() {
-		return node;
-	}
-
+public enum Location {
+	BEFORE,
+	AFTER,
+	FIRST,
+	LAST
 }

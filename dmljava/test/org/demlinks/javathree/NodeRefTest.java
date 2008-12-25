@@ -26,14 +26,14 @@ import org.junit.Test;
 public class NodeRefTest {
 
 	NodeRef n1,n2,n3;
-	Node_L0 nod1;
+	Node nod1;
 	
 	@Before
 	public void init() {
 		n1 = new NodeRef();
 		n2 = new NodeRef();
 		n3 = new NodeRef();
-		nod1 = new Node_L0();
+		nod1 = new Node();
 	}
 	
 	@Test

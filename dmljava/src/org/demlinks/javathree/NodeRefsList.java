@@ -94,7 +94,7 @@ public class NodeRefsList {
 	 * @param node_L0
 	 * @return
 	 */
-	public NodeRef getNodeRef(Node_L0 node_L0) {
+	public NodeRef getNodeRef(Node node_L0) {
 		return getNodeRef_L0(node_L0);
 	}
 
@@ -102,7 +102,7 @@ public class NodeRefsList {
 	 * @param node_L0
 	 * @return
 	 */
-	public final NodeRef getNodeRef_L0(Node_L0 node_L0) {
+	public final NodeRef getNodeRef_L0(Node node_L0) {
 		nullException(node_L0);
 		NodeRef parser = firstNodeRef;
 		while (null != parser) {
@@ -174,18 +174,18 @@ public class NodeRefsList {
 		return false;
 	}
 
-	public boolean containsNodeL0(Node_L0 nodeLevel0) {
+	public boolean containsNodeL0(Node nodeLevel0) {
 		return containsNodeL0_L0(nodeLevel0);
 	}
 	
-	public final boolean containsNodeL0_L0(Node_L0 nodeLevel0) {
+	public final boolean containsNodeL0_L0(Node nodeLevel0) {
 		return (null != getNodeRef(nodeLevel0));
 	}
 
 	/**
 	 * @return
 	 */
-	public Node_L0 getFirstNode() {
+	public Node getFirstNode() {
 		if (firstNodeRef != null) {
 			return firstNodeRef.getNode();
 		}
@@ -197,7 +197,7 @@ public class NodeRefsList {
 	 * @param nodeLevel0
 	 * @return
 	 */
-	public NodeRef newNodeRef(Node_L0 nodeLevel0) {
+	public NodeRef newNodeRef(Node nodeLevel0) {
 		nullException(nodeLevel0);
 		NodeRef n = new NodeRef();
 		n.setNode(nodeLevel0);

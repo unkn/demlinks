@@ -18,7 +18,7 @@
 
 package org.demlinks.javathree;
 
-import static org.demlinks.javaone.Environment.nullException;
+import static org.demlinks.javathree.Environment.nullException;
 
 // at this level the Nodes don't have IDs, they're just java objects
 
@@ -28,13 +28,13 @@ import static org.demlinks.javaone.Environment.nullException;
  * It only knows to do operations for itself (ie. it won't also link parent to child is a child to parent link is requested via linkFrom)
  * linkTo(child) makes sure only this.childList.has(child) but nothing else like child.parentList.has(this) - that's in NodeLevel1
  */
-public class Node_L0 {
+public class Node {
 	// if both lists are empty the node shouldn't exist (in the Environment)
 	// lists should never be null
 	protected NodeRefsList parentsList=null;//list of all Nodes that point to <this>
 	protected NodeRefsList childrenList=null;//list of all Nodes that <this> points to
 	
-	public Node_L0() {
+	public Node() {
 		createLists();
 	}
 
@@ -49,11 +49,11 @@ public class Node_L0 {
 	 * @param childNodeLevel0 the NodeLevel0 object that will be a child for <tt>this</tt> NodeLevel0
 	 * @return true if the link didn't exist before call
 	 */
-	public boolean linkTo(Node_L0 childNodeLevel0) {
+	public boolean linkTo(Node childNodeLevel0) {
 		return linkTo_L0(childNodeLevel0);
 	}
 		
-	public final boolean linkTo_L0(Node_L0 childNodeLevel0) {
+	public final boolean linkTo_L0(Node childNodeLevel0) {
 		nullException(childNodeLevel0);
 		NodeRefsList list = get(List.CHILDREN);
 		boolean ret = list.addLast(list.newNodeRef(childNodeLevel0));
@@ -65,11 +65,11 @@ public class Node_L0 {
 	 * @param parentNodeLevel0 the node that will point to us
 	 * @return true if the link didn't exist before call
 	 */
-	public boolean linkFrom(Node_L0 parentNodeLevel0) {
+	public boolean linkFrom(Node parentNodeLevel0) {
 		return linkFrom_L0(parentNodeLevel0);
 	}
 	
-	public final boolean linkFrom_L0(Node_L0 parentNodeLevel0) {
+	public final boolean linkFrom_L0(Node parentNodeLevel0) {
 		NodeRefsList list = get(List.PARENTS);
 		NodeRef nr = list.newNodeRef(parentNodeLevel0);
 		boolean ret = list.addLast(nr);
@@ -81,11 +81,11 @@ public class Node_L0 {
 	 * @param childNodeLevel0 NodeLevel0 that will be removed from being a child of <tt>this</tt> NodeLevel0
 	 * @return
 	 */
-	public boolean unLinkTo(Node_L0 childNodeLevel0) {
+	public boolean unLinkTo(Node childNodeLevel0) {
 		return unLinkTo_L0(childNodeLevel0);
 	}
 	
-	public final boolean unLinkTo_L0(Node_L0 childNodeLevel0) {
+	public final boolean unLinkTo_L0(Node childNodeLevel0) {
 		NodeRefsList list = get(List.CHILDREN);
 		NodeRef nr = list.getNodeRef(childNodeLevel0);
 		boolean ret = list.removeNodeRef( nr );
@@ -98,11 +98,11 @@ public class Node_L0 {
 	 * @param parentNodeLevel0 NodeLevel0 that will be removed from being a parent of <tt>this</tt> NodeLevel0
 	 * @return
 	 */
-	public boolean unLinkFrom(Node_L0 parentNodeLevel0) {
+	public boolean unLinkFrom(Node parentNodeLevel0) {
 		return unLinkFrom_L0(parentNodeLevel0);
 	}
 	
-	public final boolean unLinkFrom_L0(Node_L0 parentNodeLevel0) {
+	public final boolean unLinkFrom_L0(Node parentNodeLevel0) {
 		NodeRefsList list = get(List.PARENTS);
 		NodeRef node = list.getNodeRef(parentNodeLevel0);
 		boolean ret = false;
@@ -117,11 +117,11 @@ public class Node_L0 {
 	 * @param childNodeLevel0
 	 * @return true is so
 	 */
-	public boolean isLinkTo(Node_L0 childNodeLevel0) {
+	public boolean isLinkTo(Node childNodeLevel0) {
 		return isLinkTo_L0(childNodeLevel0);
 	}
 	
-	public final boolean isLinkTo_L0(Node_L0 childNodeLevel0) {
+	public final boolean isLinkTo_L0(Node childNodeLevel0) {
 		boolean ret = get(List.CHILDREN).containsNodeL0(childNodeLevel0);
 		return ret;
 	}
@@ -130,13 +130,13 @@ public class Node_L0 {
 	 * checks if <tt>this</tt> is pointed by <tt>parentNodeLevel0</tt>
 	 * @param parentNodeLevel0
 	 * @return true if so
-	 * @see #isLinkTo(Node_L0)
+	 * @see #isLinkTo(Node)
 	 */
-	public boolean isLinkFrom(Node_L0 parentNodeLevel0) {
+	public boolean isLinkFrom(Node parentNodeLevel0) {
 		return isLinkFrom_L0(parentNodeLevel0);
 	}
 	
-	public final boolean isLinkFrom_L0(Node_L0 parentNodeLevel0) {
+	public final boolean isLinkFrom_L0(Node parentNodeLevel0) {
 		boolean ret = get(List.PARENTS).containsNodeL0(parentNodeLevel0);
 		return ret;
 	}
