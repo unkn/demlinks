@@ -18,7 +18,7 @@
 
 package org.demlinks.javatwo;
 
-import org.demlinks.javaone.Environment;
+import static org.demlinks.javaone.Environment.nullException;
 
 /**
  * a NodeReference may only exist within the list of children or the list of parents of a NodeLevel0<br>
@@ -39,24 +39,28 @@ public class NodeRef_L1 extends NodeRef_L0 {
 		return setNextNodeRef_L1(nextNodeRef);
 	}
 	
-	public final boolean setNextNodeRef_L1(NodeRef_L0 nextNodeRef) {
-		if (null == nextNodeRef) {
+	/**
+	 * @param newNext is inserted between this and this.next
+	 * @return
+	 */
+	public final boolean setNextNodeRef_L1(NodeRef_L0 newNext) {
+		if (null == newNext) {
 			if (null != this.getNextNodeRef()) {
 				throw new AssertionError();
 			}
 			return true;
 		}
-		if (!nextNodeRef.isAlone()) {
+		if (!newNext.isAlone()) {
 			return false;
 		}
 		
-		NodeRef_L0 cachedNext=this.getNextNodeRef();
-		nextNodeRef.setPrevNodeRef_L0(this);
-		if (cachedNext != null) {
-			nextNodeRef.setNextNodeRef_L0(cachedNext);
-			cachedNext.setPrevNodeRef_L0(nextNodeRef);
+		NodeRef_L0 oldNext=this.getNextNodeRef();//oldNext
+		newNext.setPrevNodeRef_L0(this);//this <- newNext
+		if (oldNext != null) {
+			newNext.setNextNodeRef_L0(oldNext);//newNext -> oldNext
+			oldNext.setPrevNodeRef_L0(newNext);//newNext <- oldNext
 		}
-		this.setNextNodeRef_L0(nextNodeRef);
+		this.setNextNodeRef_L0(newNext);//this -> newNext
 		return true;
 	}
 	
@@ -117,7 +121,7 @@ public class NodeRef_L1 extends NodeRef_L0 {
 	 * @return
 	 */
 	public boolean setNode_L1(Node_L0 node) {
-		Environment.nullException(node);
+		nullException(node);
 		return setNode_L0(node);
 	}
 }

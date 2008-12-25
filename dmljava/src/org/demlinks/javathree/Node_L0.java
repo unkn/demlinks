@@ -16,7 +16,7 @@
     along with DeMLinks.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package org.demlinks.javatwo;
+package org.demlinks.javathree;
 
 import static org.demlinks.javaone.Environment.nullException;
 
@@ -31,16 +31,16 @@ import static org.demlinks.javaone.Environment.nullException;
 public class Node_L0 {
 	// if both lists are empty the node shouldn't exist (in the Environment)
 	// lists should never be null
-	protected NodeRefsList_L0 parentsList=null;//list of all Nodes that point to <this>
-	protected NodeRefsList_L0 childrenList=null;//list of all Nodes that <this> points to
+	protected NodeRefsList parentsList=null;//list of all Nodes that point to <this>
+	protected NodeRefsList childrenList=null;//list of all Nodes that <this> points to
 	
 	public Node_L0() {
 		createLists();
 	}
 
 	protected void createLists() {
-		parentsList = new NodeRefsList_L0();
-		childrenList = new NodeRefsList_L0();
+		parentsList = new NodeRefsList();
+		childrenList = new NodeRefsList();
 	}
 
 	
@@ -55,7 +55,7 @@ public class Node_L0 {
 		
 	public final boolean linkTo_L0(Node_L0 childNodeLevel0) {
 		nullException(childNodeLevel0);
-		NodeRefsList_L0 list = get(List.CHILDREN);
+		NodeRefsList list = get(List.CHILDREN);
 		boolean ret = list.addLast(list.newNodeRef(childNodeLevel0));
 		return ret;
 	}
@@ -70,8 +70,9 @@ public class Node_L0 {
 	}
 	
 	public final boolean linkFrom_L0(Node_L0 parentNodeLevel0) {
-		NodeRefsList_L0 list = get(List.PARENTS);
-		boolean ret = list.addLast(list.newNodeRef(parentNodeLevel0));
+		NodeRefsList list = get(List.PARENTS);
+		NodeRef nr = list.newNodeRef(parentNodeLevel0);
+		boolean ret = list.addLast(nr);
 		return ret;
 	}
 	
@@ -85,8 +86,9 @@ public class Node_L0 {
 	}
 	
 	public final boolean unLinkTo_L0(Node_L0 childNodeLevel0) {
-		NodeRefsList_L0 list = get(List.CHILDREN);
-		boolean ret = list.removeNodeRef( list.getNodeRef(childNodeLevel0) );
+		NodeRefsList list = get(List.CHILDREN);
+		NodeRef nr = list.getNodeRef(childNodeLevel0);
+		boolean ret = list.removeNodeRef( nr );
 		return ret;
 	}
 
@@ -101,8 +103,8 @@ public class Node_L0 {
 	}
 	
 	public final boolean unLinkFrom_L0(Node_L0 parentNodeLevel0) {
-		NodeRefsList_L0 list = get(List.PARENTS);
-		NodeRef_L1 node = list.getNodeRef(parentNodeLevel0);
+		NodeRefsList list = get(List.PARENTS);
+		NodeRef node = list.getNodeRef(parentNodeLevel0);
 		boolean ret = false;
 		if (null != node) {
 			ret = list.removeNodeRef(node);
@@ -151,7 +153,7 @@ public class Node_L0 {
 	 * @return the specified list object
 	 * @throws AssertionError if you specify unknown type of list to be returned
 	 */
-	public final NodeRefsList_L0 get(List list) throws AssertionError {
+	public final NodeRefsList get(List list) throws AssertionError {
 		switch (list) {
 		case CHILDREN:
 			return this.childrenList;

@@ -1,8 +1,10 @@
 implemented in org.demlinks.javatwo
 
 We have a Node identified by a string "A". Case sensitive.
-This string will always point to that same node, unless node is recreated.
+This string will always point to that same node, unless node is recreated. Then it's another node object.
 This Node has two lists. A list of parents and a list of children.
+Parents are those nodes that point to this node.
+Children are those nodes that this node points to.
 
 These lists contain NodeReference elements.
 A NR is a reference that points to a Node.
@@ -38,4 +40,4 @@ I'm not exactly sure which version is better, the NR or the RND version, althoug
 but as you can see the RND version has the NRs in an indirect and subtle way, but the NRs are still there. It seems that for the sake of
 clarity and accessibility the NR version should exist. Instead the RND version seems like a speed optimization from NR.
 
-AtKaaZ, 24 December 2008.
+AtKaaZ, 24&25 December 2008.

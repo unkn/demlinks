@@ -16,9 +16,9 @@
     along with DeMLinks.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.demlinks.javatwo;
+package org.demlinks.javathree;
 
-import static org.demlinks.javaone.Environment.nullException;;
+import static org.demlinks.javaone.Environment.nullException;
 
 /**
  * a double-linked list of NodeReferences where no two are alike (no duplicates allowed)<br>
@@ -28,17 +28,17 @@ import static org.demlinks.javaone.Environment.nullException;;
  * ability to insert anywhere<br>
  * 
  */
-public class NodeRefsList_L0 {
+public class NodeRefsList {
 
 	private int cachedSize; // cached size, prevents parsing the entire list
-	private NodeRef_L1 firstNodeRef;//points to first nodeRef in list, or null if empty list
-	private NodeRef_L1 lastNodeRef;//points to last nodeRef in list, or null if empty list
+	private NodeRef firstNodeRef;//points to first nodeRef in list, or null if empty list
+	private NodeRef lastNodeRef;//points to last nodeRef in list, or null if empty list
 	
 	// constructor
 	/**
 	 * 
 	 */
-	NodeRefsList_L0() {
+	NodeRefsList() {
 		setListToEmpty();
 	}
 	
@@ -70,46 +70,31 @@ public class NodeRefsList_L0 {
 	 * @param nodeRefL1
 	 * @return
 	 */
-	public boolean addLast(NodeRef_L1 nodeRefL1) {
-		return addLast_L0(nodeRefL1);
+	public boolean addLast(NodeRef nodeRef) {
+		return addLast_L0(nodeRef);
 	}
 	
-	/**
-	 * @param nodeRefL1
-	 * @return
-	 */
-	public final boolean addLast_L0(NodeRef_L1 nodeRefL1) {
-		boolean ret = nodeRefL1.setPrevNodeRef(lastNodeRef);
-		if (ret) {
-			if (lastNodeRef == null) {
-				lastNodeRef = nodeRefL1;
-			}
-			if (firstNodeRef == null) {
-				firstNodeRef = nodeRefL1;
-			}
-			cachedSize++;
+	public final boolean addLast_L0(NodeRef newLastNodeRef) {
+		nullException(newLastNodeRef);
+		if (!newLastNodeRef.isAlone()) {
+			throw new AssertionError();
 		}
-		return ret;
+		if (lastNodeRef == null) {//list is initially empty
+			lastNodeRef = firstNodeRef = newLastNodeRef;
+		} else {//list not empty
+			lastNodeRef.setNext(newLastNodeRef);
+			newLastNodeRef.setPrev(lastNodeRef);
+			lastNodeRef = newLastNodeRef;
+		}
+		cachedSize++;
+		return true;
 	}
 
 	/**
-	 * created a new NodeRef for this list but doesn't link it to anything<br>
-	 * it's basically to preserve the type of NodeRef<br>
 	 * @param node_L0
 	 * @return
 	 */
-	public NodeRef_L1 newNodeRef(Node_L0 node_L0) {
-		nullException(node_L0);
-		NodeRef_L1 tmp= new NodeRef_L1();
-		tmp.setNode(node_L0);
-		return tmp;
-	}
-	
-	/**
-	 * @param node_L0
-	 * @return
-	 */
-	public NodeRef_L1 getNodeRef(Node_L0 node_L0) {
+	public NodeRef getNodeRef(Node_L0 node_L0) {
 		return getNodeRef_L0(node_L0);
 	}
 
@@ -117,41 +102,76 @@ public class NodeRefsList_L0 {
 	 * @param node_L0
 	 * @return
 	 */
-	public final NodeRef_L1 getNodeRef_L0(Node_L0 node_L0) {
+	public final NodeRef getNodeRef_L0(Node_L0 node_L0) {
 		nullException(node_L0);
-		NodeRef_L1 parser = firstNodeRef;
+		NodeRef parser = firstNodeRef;
 		while (null != parser) {
 			if (node_L0.equals(parser.getNode())) {
 				break;
 			}
-			parser = (NodeRef_L1) parser.getNextNodeRef();
+			parser = parser.getNext();
 		}
 		return parser;
 	}
 
 	/**
-	 * @param nodeRef_L1
+	 * @param nodeRef
 	 * @return
 	 */
-	public boolean removeNodeRef(NodeRef_L1 nodeRef_L1) {
-		return removeNodeRef_L0(nodeRef_L1);
+	public boolean removeNodeRef(NodeRef nodeRef) {
+		return removeNodeRef_L0(nodeRef);
 	}
 
 	/**
-	 * @param nodeRef_L1
+	 * @param killNR
 	 * @return
 	 */
-	public final boolean removeNodeRef_L0(NodeRef_L1 nodeRef_L1) {
-		nullException(nodeRef_L1);
-		if (firstNodeRef == nodeRef_L1) {
-			firstNodeRef = (NodeRef_L1) nodeRef_L1.getNextNodeRef();
+	public final boolean removeNodeRef_L0(NodeRef killNR) {
+		nullException(killNR);
+		if (!containsNodeRef(killNR)) {
+			return false;
 		}
-		if (lastNodeRef == nodeRef_L1) {
-			lastNodeRef = (NodeRef_L1) nodeRef_L1.getPrevNodeRef();
+		
+		
+		
+		NodeRef prev = killNR.getPrev();//beware if you remove this local var
+		NodeRef next = killNR.getNext();
+		if (prev != null) {
+			prev.setNext(next);
+			killNR.setPrev(null);//beware
+		} else {
+			if (firstNodeRef == killNR) {
+				firstNodeRef = next;//can be null
+			} else {
+				throw new AssertionError("compromised integrity of list");
+			}
 		}
-		boolean ret = nodeRef_L1.selfRemove();
+		
+		if (next != null) {
+			next.setPrev(prev);//beware
+			killNR.setNext(null);
+		} else {
+			if (lastNodeRef == killNR) {
+				lastNodeRef = prev;//can be null
+			} else {
+				throw new AssertionError("compromised integrity of list2");
+			}
+		}
+		
 		cachedSize--;
-		return ret;
+		return true;
+	}
+
+	public boolean containsNodeRef(NodeRef whichNR) {
+		nullException(whichNR);
+		NodeRef parser = firstNodeRef;
+		while (null != parser) {
+			if (whichNR.equals(parser)) {
+				return true;
+			}
+			parser = parser.getNext();
+		}
+		return false;
 	}
 
 	public boolean containsNodeL0(Node_L0 nodeLevel0) {
@@ -170,5 +190,17 @@ public class NodeRefsList_L0 {
 			return firstNodeRef.getNode();
 		}
 		return null;
+	}
+
+	/**
+	 * creates a new NodeRef to be added to this list, but it's not added via this method
+	 * @param nodeLevel0
+	 * @return
+	 */
+	public NodeRef newNodeRef(Node_L0 nodeLevel0) {
+		nullException(nodeLevel0);
+		NodeRef n = new NodeRef();
+		n.setNode(nodeLevel0);
+		return n;
 	}
 }
