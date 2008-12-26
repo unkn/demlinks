@@ -49,11 +49,7 @@ public class Node {
 	 * @param childNode the Node object that will be a child for <tt>this</tt> Node
 	 * @return true if the link didn't exist before call
 	 */
-	public boolean linkTo(Node childNode) {//TODO persistent return into Environment class methods
-		return linkTo_L0(childNode);
-	}
-		
-	public final boolean linkTo_L0(Node childNode) {
+	public boolean linkTo(Node childNode) {
 		nullException(childNode);
 		NodeRefsList list = get(List.CHILDREN);
 		boolean ret = list.addLast(childNode);
@@ -67,10 +63,6 @@ public class Node {
 	 * @return true if the link didn't exist before call
 	 */
 	public boolean linkFrom(Node parentNode) {
-		return linkFrom_L0(parentNode);
-	}
-	
-	public final boolean linkFrom_L0(Node parentNode) {
 		NodeRefsList list = get(List.PARENTS);
 		boolean ret = list.addLast(parentNode);
 		return ret;
@@ -82,10 +74,6 @@ public class Node {
 	 * @return
 	 */
 	public boolean unLinkTo(Node childNode) {
-		return unLinkTo_L0(childNode);
-	}
-	
-	public final boolean unLinkTo_L0(Node childNode) {
 		NodeRefsList list = get(List.CHILDREN);
 		boolean ret = list.removeNode( childNode );
 		return ret;
@@ -98,10 +86,6 @@ public class Node {
 	 * @return
 	 */
 	public boolean unLinkFrom(Node parentNode) {
-		return unLinkFrom_L0(parentNode);
-	}
-	
-	public final boolean unLinkFrom_L0(Node parentNode) {
 		NodeRefsList list = get(List.PARENTS);
 		boolean ret = list.removeNode(parentNode);;
 		return ret;
@@ -113,10 +97,6 @@ public class Node {
 	 * @return true is so
 	 */
 	public boolean isLinkTo(Node childNode) {
-		return isLinkTo_L0(childNode);
-	}
-	
-	public final boolean isLinkTo_L0(Node childNode) {
 		boolean ret = get(List.CHILDREN).containsNode(childNode);
 		return ret;
 	}
@@ -128,10 +108,6 @@ public class Node {
 	 * @see #isLinkTo(Node)
 	 */
 	public boolean isLinkFrom(Node parentNode) {
-		return isLinkFrom_L0(parentNode);
-	}
-	
-	public final boolean isLinkFrom_L0(Node parentNode) {
 		boolean ret = get(List.PARENTS).containsNode(parentNode);
 		return ret;
 	}

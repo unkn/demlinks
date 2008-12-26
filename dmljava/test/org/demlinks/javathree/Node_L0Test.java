@@ -127,7 +127,7 @@ public class Node_L0Test {
 		assertTrue(par != chi);
 		assertTrue(par.isEmpty());
 		assertTrue(chi.isEmpty());
-		a.linkTo(b);
+		assertTrue( a.linkTo(b) );
 		assertTrue(par.isEmpty());
 		assertTrue(chi.size() == 1);
 		assertTrue(chi.getFirstNode() == b);
