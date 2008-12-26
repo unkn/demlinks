@@ -81,6 +81,10 @@ public class EnvironmentTest {
 		// -------------------------
 		
 		env.link("AllChars","A");
+		env.link("AllChars","A");
+		env.link("AllChars",new String("A"));
+		env.link("AllChars",String.format("%c", 65));
+		assertTrue( env.getNode("AllChars").get(List.CHILDREN).size() == 1);
 		//Node ac = env.getNode("AllChars");
 		//ac.linkTo("B");
 		addAllChars();
@@ -101,6 +105,7 @@ public class EnvironmentTest {
 		Node _a = env.getNode("AllChars");
 		for (int i = 65; i < 72; i++) {
 			env.link(_a,String.format("%c", i));
+			assertTrue( env.isLink(_a,String.format("%c", i)) );
 		}
 	}
 
@@ -114,20 +119,19 @@ public class EnvironmentTest {
 		if (null == nod) { // this will never happen (unless first call)
 			throw new NoSuchElementException();
 		}
-		//TODO uncomment:
-//		NodeRefsList list = nod.get(List.CHILDREN);
-//		Node curr=null;
-//		curr = list.getObjAt(Location.AFTER, curr);
-//		if (null == curr) { //no more children
-//			System.out.println(whatWas);
-//			return;
-//		} else {
-//			do {
-//				String id = env.getID(curr);
-//				parseTree(id, downToLevel - 1, whatWas+"->");
-//				curr = list.getObjAt(Location.AFTER, curr);
-//			} while (null != curr);
-//		}
+		NodeRefsList list = nod.get(List.CHILDREN);
+		NodeRef parserNR=null;
+		parserNR = list.getNodeRefAt(Location.AFTER, parserNR);
+		if (null == parserNR) { //no more children
+			System.out.println(whatWas);
+			return;
+		} else {
+			do {
+				String id = env.getID(parserNR.getNode());
+				parseTree(id, downToLevel - 1, whatWas+"->");
+				parserNR = list.getNodeRefAt(Location.AFTER, parserNR);
+			} while (null != parserNR);
+		}
 
 	}
 

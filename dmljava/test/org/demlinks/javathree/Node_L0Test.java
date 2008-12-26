@@ -120,8 +120,8 @@ public class Node_L0Test {
 
 	@Test
 	public void testGet() {
-		NodeRefsList par = a.get(List.PARENTS);
-		NodeRefsList chi = a.get(List.CHILDREN);
+		NodeRefsList_L2 par = a.get(List.PARENTS);
+		NodeRefsList_L2 chi = a.get(List.CHILDREN);
 		assertTrue(par != null);
 		assertTrue(chi != null);
 		assertTrue(par != chi);
@@ -129,10 +129,10 @@ public class Node_L0Test {
 		assertTrue(chi.isEmpty());
 		a.linkTo(b);
 		assertTrue(par.isEmpty());
-		assertTrue(chi.getSize() == 1);
+		assertTrue(chi.size() == 1);
 		assertTrue(chi.getFirstNode() == b);
 		assertTrue(b.get(List.CHILDREN).isEmpty());
-		assertTrue(b.get(List.PARENTS).getSize() == 0);
+		assertTrue(b.get(List.PARENTS).size() == 0);
 	}
 
 }
