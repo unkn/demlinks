@@ -1,4 +1,23 @@
-implemented in org.demlinks.javatwo
+implemented in org.demlinks.javathree
+
+update:
+we still need the RND as  in:
+A->RND1->B
+A->RND2->C
+A->RND3->B (again)
+A->RND4->B
+because we need a node Ptr->RND3
+ofc the node Ptr would be defined on the domain of A but it's really not necessary since RND3 knows it's 
+child of A, nevertheless Ptr would be somehow defined on domain A. 
+Above, Ptr is supposedly pointing to the second B
+Should be easy to go to 3rd B from there.
+Also RNDs would be limited to 1 child and 1 parent.
+
+(We used this variant in the cpp version module named 'imagine')
+
+AtKaaZ, 26December 2008.
+
+--------old stuff follows:
 
 We have a Node identified by a string "A". Case sensitive.
 This string will always point to that same node, unless node is recreated. Then it's another node object.

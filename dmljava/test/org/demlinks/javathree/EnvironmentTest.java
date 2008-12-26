@@ -42,11 +42,11 @@ public class EnvironmentTest {
 	@Test
 	public void testLinkTo() throws Exception {
 		
-		assertTrue( _a.isLinkTo(_b) );// does link _a -> _b exists ? also implies _a <- _b exists
+		assertTrue( _a.isLinkForward(_b) );// does link _a -> _b exists ? also implies _a <- _b exists
 		//assertTrue( _a.isLinkTo(new String("b")) );
 		assertTrue(env.isLink(_a, "b"));
 		assertTrue(env.isLink(_a, new String("b")));
-		assertTrue( _b.isLinkFrom(_a) );
+		assertTrue( _b.isLinkBackward(_a) );
 		
 		assertTrue( "b".equals(env.getID(_b)));
 		assertTrue( env.getID(_a).equals("a"));
@@ -87,11 +87,11 @@ public class EnvironmentTest {
 		assertFalse( env.link("AllChars","A") );
 		assertFalse( env.link("AllChars",new String("A")) );
 		assertFalse( env.link("AllChars",String.format("%c", 65)) );
-		assertTrue( env.getNode("AllChars").get(List.CHILDREN).size() == 1);
+		assertTrue( env.getNode("AllChars").getForwardList().size() == 1);
 		Node ac = env.getNode("AllChars");
 		addAllChars();
 		
-		NodeRefsList chi = ac.get(List.CHILDREN);
+		NodeRefsList chi = ac.getForwardList();
 		Node nn = new Node();
 		chi.addLast(nn);
 		try {
@@ -127,7 +127,7 @@ public class EnvironmentTest {
 		if (null == nod) { // this will never happen (unless first call)
 			throw new NoSuchElementException();
 		}
-		NodeRefsList list = nod.get(List.CHILDREN);
+		NodeRefsList list = nod.getForwardList();
 		NodeRef parserNR=null;
 		parserNR = list.getNodeRefAt(Location.AFTER, parserNR);
 		if (null == parserNR) { //no more children
@@ -167,7 +167,7 @@ public class EnvironmentTest {
 		
 		errored=false;
 		try {
-			assertTrue( _boo.linkTo(_a) );//_boo has no corresponding ID ! but this is done at Node level
+			assertTrue( _boo.linkForward(_a) );//_boo has no corresponding ID ! but this is done at Node level
 		} catch (Error e) {
 			errored=true;
 		}

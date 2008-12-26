@@ -240,8 +240,8 @@ public class Environment {
 	
 	private boolean internalLink(Node parentNode, Node childNode) {
 		//assumes both Nodes exist and are not null params, else expect exceptions
-		boolean ret1 = parentNode.linkTo(childNode);
-		boolean ret2 = childNode.linkFrom(parentNode);
+		boolean ret1 = parentNode.linkForward(childNode);
+		boolean ret2 = childNode.linkBackward(parentNode);
 		if (ret1 ^ ret2) {
 			throw new AssertionError("inconsistent link detected");
 		}
@@ -257,8 +257,8 @@ public class Environment {
 	 */
 	public boolean isLink(Node parentNode, Node childNode) {
 		nullException(parentNode, childNode);
-		boolean one = parentNode.isLinkTo(childNode);
-		boolean two = childNode.isLinkFrom(parentNode);
+		boolean one = parentNode.isLinkForward(childNode);
+		boolean two = childNode.isLinkBackward(parentNode);
 		if (one ^ two) {
 			throw new AssertionError("inconsistent link detected");
 		}

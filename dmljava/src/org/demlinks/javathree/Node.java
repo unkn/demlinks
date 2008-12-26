@@ -29,6 +29,10 @@ import static org.demlinks.javathree.Environment.nullException;
  * linkTo(child) makes sure only this.childList.has(child) but nothing else like child.parentList.has(this) - that's in NodeLevel1
  */
 public class Node {
+	//this doesn't change, not while the program is running!
+	private static List sense=List.CHILDREN;//default sense ie. A->B means B exists in the "sense" list of A; and -> means forward link
+	//'sense' defines the meaning of forward
+	
 	// if both lists are empty the node shouldn't exist (in the Environment)
 	// lists should never be null
 	protected NodeRefsList parentsList=null;//list of all Nodes that point to <this>
@@ -43,29 +47,24 @@ public class Node {
 		childrenList = new NodeRefsList();
 	}
 
+	private boolean putNodeInList(Node node, NodeRefsList list) {
+		nullException(node, list);
+		return list.addLast(node);
+	}
+	
+	private boolean unPutNodeInList(Node node, NodeRefsList list) {
+		nullException(node, list);
+		return list.removeNode(node);
+	}
+	
 	
 	/**
 	 * Makes sure that after the call <tt>this</tt> Node object has <tt>childNode</tt> in its children list.<br>
 	 * @param childNode the Node object that will be a child for <tt>this</tt> Node
 	 * @return true if the link didn't exist before call
 	 */
-	public boolean linkTo(Node childNode) {
-		nullException(childNode);
-		NodeRefsList list = get(List.CHILDREN);
-		boolean ret = list.addLast(childNode);
-		return ret;
-	}
-	
-
-	/**
-	 * ensures there's a link from parentNode to <tt>this</tt> Node<br>
-	 * @param parentNode the node that will point to us
-	 * @return true if the link didn't exist before call
-	 */
-	public boolean linkFrom(Node parentNode) {
-		NodeRefsList list = get(List.PARENTS);
-		boolean ret = list.addLast(parentNode);
-		return ret;
+	public boolean linkForward(Node childNode) {
+		return putNodeInList(childNode, getForwardList());
 	}
 	
 	/**
@@ -73,22 +72,26 @@ public class Node {
 	 * @param childNode Node that will be removed from being a child of <tt>this</tt> Node
 	 * @return
 	 */
-	public boolean unLinkTo(Node childNode) {
-		NodeRefsList list = get(List.CHILDREN);
-		boolean ret = list.removeNode( childNode );
-		return ret;
+	public boolean unLinkForward(Node childNode) {
+		return unPutNodeInList(childNode, getForwardList());
 	}
-
-
+	
+	/**
+	 * ensures there's a link from parentNode to <tt>this</tt> Node<br>
+	 * @param parentNode the node that will point to us
+	 * @return true if the link didn't exist before call
+	 */
+	public boolean linkBackward(Node parentNode) {
+		return putNodeInList(parentNode, getBackwardList());
+	}
+	
 	/**
 	 * <tt>parentNode</tt> will no longer point to <tt>this</tt><br>
 	 * @param parentNode Node that will be removed from being a parent of <tt>this</tt> Node
 	 * @return
 	 */
-	public boolean unLinkFrom(Node parentNode) {
-		NodeRefsList list = get(List.PARENTS);
-		boolean ret = list.removeNode(parentNode);;
-		return ret;
+	public boolean unLinkBackward(Node parentNode) {
+		return unPutNodeInList(parentNode, getBackwardList());
 	}
 
 	/**
@@ -96,8 +99,8 @@ public class Node {
 	 * @param childNode
 	 * @return true is so
 	 */
-	public boolean isLinkTo(Node childNode) {
-		boolean ret = get(List.CHILDREN).containsNode(childNode);
+	public boolean isLinkForward(Node childNode) {
+		boolean ret = getForwardList().containsNode(childNode);
 		return ret;
 	}
 	
@@ -105,10 +108,10 @@ public class Node {
 	 * checks if <tt>this</tt> is pointed by <tt>parentNode</tt>
 	 * @param parentNode
 	 * @return true if so
-	 * @see #isLinkTo(Node)
+	 * @see #isLinkForward(Node)
 	 */
-	public boolean isLinkFrom(Node parentNode) {
-		boolean ret = get(List.PARENTS).containsNode(parentNode);
+	public boolean isLinkBackward(Node parentNode) {
+		boolean ret = getBackwardList().containsNode(parentNode);
 		return ret;
 	}
 	
@@ -116,7 +119,7 @@ public class Node {
 	 * @return true if the Node has no children and no parents
 	 */
 	public final boolean isAlone() {
-		return ( (get(List.PARENTS).isEmpty()) && (get(List.CHILDREN).isEmpty()) );
+		return ( (getForwardList().isEmpty()) && (getBackwardList().isEmpty()) );
 	}
 	
 	/**
@@ -124,7 +127,7 @@ public class Node {
 	 * @return the specified list object
 	 * @throws AssertionError if you specify unknown type of list to be returned
 	 */
-	public final NodeRefsList get(List list) throws AssertionError {
+	public final NodeRefsList getList(List list) {
 		switch (list) {
 		case CHILDREN:
 			return this.childrenList;
@@ -134,6 +137,28 @@ public class Node {
 			throw new AssertionError("Unhandled list type: "+list);
 		}
 	}
+	
+	/**
+	 * @return
+	 */
+	public final NodeRefsList getForwardList() {
+		return getList(sense);
+	}
+	
+	/**
+	 * @return
+	 */
+	public final NodeRefsList getBackwardList() {
+		switch (sense) {
+		case CHILDREN:
+			return getList(List.PARENTS);
+		case PARENTS:
+			return getList(List.CHILDREN);
+		default:
+			throw new AssertionError("undefined behaviour");
+		}
+	}
+	
 
 
 } // END of class

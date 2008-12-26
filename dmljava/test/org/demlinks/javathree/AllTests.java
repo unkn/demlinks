@@ -25,7 +25,7 @@ import org.junit.runners.*;
 @RunWith(Suite.class)
 @Suite.SuiteClasses(value={
 		NodeRefTest.class,
-		Node_L0Test.class,
+		NodeTest.class,
 		EnvironmentTest.class
 		})
 		

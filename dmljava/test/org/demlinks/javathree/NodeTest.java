@@ -23,7 +23,7 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
-public class Node_L0Test {
+public class NodeTest {
 
 	Node a,b,c,nul;
 	
@@ -38,23 +38,23 @@ public class Node_L0Test {
 	@Test
 	public void testLinkTo() {
 		assertTrue(a.isAlone());
-		assertTrue( a.linkTo(b) );
+		assertTrue( a.linkForward(b) );
 		assertFalse(a.isAlone());
-		assertFalse(b.isLinkFrom(a));
-		assertTrue(a.isLinkTo(b));
-		assertFalse(b.isLinkTo(a));
+		assertFalse(b.isLinkBackward(a));
+		assertTrue(a.isLinkForward(b));
+		assertFalse(b.isLinkForward(a));
 		
 		assertTrue(c.isAlone());
-		assertTrue( c.linkFrom(b) );
+		assertTrue( c.linkBackward(b) );
 		assertFalse(c.isAlone());
-		assertTrue(c.isLinkFrom(b));
-		assertFalse(b.isLinkTo(c));
-		assertFalse(b.isLinkFrom(c));
-		assertFalse(c.isLinkTo(b));
+		assertTrue(c.isLinkBackward(b));
+		assertFalse(b.isLinkForward(c));
+		assertFalse(b.isLinkBackward(c));
+		assertFalse(c.isLinkForward(b));
 		
 		boolean npe = false;
 		try {
-			b.linkTo(nul);
+			b.linkForward(nul);
 		}catch (NullPointerException e) {
 			npe = true;
 		}
@@ -62,7 +62,7 @@ public class Node_L0Test {
 		
 		npe=false;
 		try {
-			a.linkFrom(nul);
+			a.linkBackward(nul);
 		}catch (NullPointerException e) {
 			npe = true;
 		}
@@ -70,7 +70,7 @@ public class Node_L0Test {
 		
 		npe=false;
 		try {
-			a.unLinkFrom(nul);
+			a.unLinkBackward(nul);
 		}catch (NullPointerException e) {
 			npe = true;
 		}
@@ -78,24 +78,24 @@ public class Node_L0Test {
 		
 		npe =false;
 		try {
-			a.unLinkTo(nul);
+			a.unLinkForward(nul);
 		}catch (NullPointerException e) {
 			npe = true;
 		}
 		assertTrue(npe);
 		
 		
-		assertFalse(a.isLinkFrom(c));
-		assertFalse( a.unLinkFrom(c) );
+		assertFalse(a.isLinkBackward(c));
+		assertFalse( a.unLinkBackward(c) );
 		
-		assertTrue(a.isLinkTo(b));
-		assertTrue(a.unLinkTo(b));
-		assertFalse(a.isLinkTo(b));
+		assertTrue(a.isLinkForward(b));
+		assertTrue(a.unLinkForward(b));
+		assertFalse(a.isLinkForward(b));
 		
 		
-		assertTrue( c.isLinkFrom(b) );
-		assertTrue( c.unLinkFrom(b) );
-		assertFalse(c.isLinkFrom(b));
+		assertTrue( c.isLinkBackward(b) );
+		assertTrue( c.unLinkBackward(b) );
+		assertFalse(c.isLinkBackward(b));
 		
 		assertTrue(a.isAlone());
 		assertTrue(b.isAlone());
@@ -103,7 +103,7 @@ public class Node_L0Test {
 		
 		npe=false;
 		try {
-			a.isLinkTo(nul);
+			a.isLinkForward(nul);
 		}catch (NullPointerException e) {
 			npe=true;
 		}
@@ -111,7 +111,7 @@ public class Node_L0Test {
 		
 		npe=false;
 		try {
-			a.isLinkFrom(nul);
+			a.isLinkBackward(nul);
 		}catch (NullPointerException e) {
 			npe=true;
 		}
@@ -120,19 +120,19 @@ public class Node_L0Test {
 
 	@Test
 	public void testGet() {
-		NodeRefsList_L2 par = a.get(List.PARENTS);
-		NodeRefsList_L2 chi = a.get(List.CHILDREN);
+		NodeRefsList_L2 par = a.getBackwardList();
+		NodeRefsList_L2 chi = a.getForwardList();
 		assertTrue(par != null);
 		assertTrue(chi != null);
 		assertTrue(par != chi);
 		assertTrue(par.isEmpty());
 		assertTrue(chi.isEmpty());
-		assertTrue( a.linkTo(b) );
+		assertTrue( a.linkForward(b) );
 		assertTrue(par.isEmpty());
 		assertTrue(chi.size() == 1);
 		assertTrue(chi.getFirstNode() == b);
-		assertTrue(b.get(List.CHILDREN).isEmpty());
-		assertTrue(b.get(List.PARENTS).size() == 0);
+		assertTrue(b.getForwardList().isEmpty());
+		assertTrue(b.getBackwardList().size() == 0);
 	}
 
 }
