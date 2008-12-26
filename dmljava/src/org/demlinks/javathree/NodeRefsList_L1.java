@@ -67,15 +67,10 @@ public class NodeRefsList_L1 {
 	}
 
 	/**
-	 * override this
-	 * @param nodeRefL1
+	 * @param newLastNodeRef
 	 * @return
 	 */
-	public boolean addLast(NodeRef nodeRef) {
-		return addLast_L0(nodeRef);
-	}
-	
-	public final boolean addLast_L0(NodeRef newLastNodeRef) {
+	public boolean addLast(NodeRef newLastNodeRef) {
 		nullException(newLastNodeRef);
 		if (containsNodeRef(newLastNodeRef)) {
 			return false;//already exists
@@ -123,18 +118,10 @@ public class NodeRefsList_L1 {
 	}
 
 	/**
-	 * @param nodeRef
-	 * @return
-	 */
-	public boolean removeNodeRef(NodeRef nodeRef) {
-		return removeNodeRef_L0(nodeRef);
-	}
-
-	/**
 	 * @param killNR
 	 * @return
 	 */
-	public final boolean removeNodeRef_L0(NodeRef killNR) {
+	public boolean removeNodeRef(NodeRef killNR) {
 		nullException(killNR);
 		if (!containsNodeRef(killNR)) {
 			return false;
@@ -166,6 +153,7 @@ public class NodeRefsList_L1 {
 			}
 		}
 		
+		killNR.setNode(null);
 		cachedSize--;
 		return true;
 	}

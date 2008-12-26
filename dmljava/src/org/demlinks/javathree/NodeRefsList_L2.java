@@ -9,6 +9,21 @@ import static org.demlinks.javathree.Environment.nullException;
 public class NodeRefsList_L2 extends NodeRefsList_L1 {
 	
 	/**
+	 * @param location
+	 * @return
+	 */
+	public Node removeNode(Location location) {
+		NodeRef nr = getNodeRefAt(location);
+		if (null != nr) {
+			Node nod = nr.getNode();
+			if (removeNodeRef(nr)) {
+				return nod;
+			}
+		}
+		return null;
+	}
+	
+	/**
 	 * @param nodeLevel0
 	 * @return
 	 */

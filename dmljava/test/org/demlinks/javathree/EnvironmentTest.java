@@ -26,37 +26,40 @@ import org.junit.Test;
 public class EnvironmentTest {
 
 	Environment env;
+	Node _a, _b;
 	
 	@Before
-	public void init() {
+	public void init() throws Exception {
 		env = new Environment();
-	}
-	
-	
-
-	@Test
-	public void testLink() throws Exception {
-		
-		
-
-		env.link("a", "b"); //link two new nodes "a"->"b"
-		
-		Node _a = env.getNode("a");//get the Node object who's ID is "a"
-		Node _b = env.getNode("b");
+		//link two new nodes "a"->"b"
+		assertTrue( env.link("a", "b") );
+		_a = env.getNode("a");//get the Node object who's ID is "a"
+		_b = env.getNode("b");
 		assertTrue(null != _a);
 		assertTrue(null != _b);
+	}
+	
+	@Test
+	public void testLinkTo() throws Exception {
 		
 		assertTrue( _a.isLinkTo(_b) );// does link _a -> _b exists ? also implies _a <- _b exists
 		//assertTrue( _a.isLinkTo(new String("b")) );
 		assertTrue(env.isLink(_a, "b"));
+		assertTrue(env.isLink(_a, new String("b")));
+		assertTrue( _b.isLinkFrom(_a) );
+		
+		assertTrue( "b".equals(env.getID(_b)));
+		assertTrue( env.getID(_a).equals("a"));
+	}
 
+	@Test
+	public void testLink() throws Exception {
 		
 		assertTrue( null == env.getNode("c") ); //inexistent Node
 		
 		//assertTrue( null == env.getID(new Node(env)));
 		
-		assertTrue( "b".equals(env.getID(_b)));
-		assertTrue( env.getID(_a).equals("a"));
+
 		
 		env.link(_a,"c"); // link between existing node _a and new node "c"
 		assertTrue(env.isLink(_a,"c"));
@@ -80,24 +83,29 @@ public class EnvironmentTest {
 
 		// -------------------------
 		
-		env.link("AllChars","A");
-		env.link("AllChars","A");
-		env.link("AllChars",new String("A"));
-		env.link("AllChars",String.format("%c", 65));
+		assertTrue( env.link("AllChars","A") );
+		assertFalse( env.link("AllChars","A") );
+		assertFalse( env.link("AllChars",new String("A")) );
+		assertFalse( env.link("AllChars",String.format("%c", 65)) );
 		assertTrue( env.getNode("AllChars").get(List.CHILDREN).size() == 1);
-		//Node ac = env.getNode("AllChars");
-		//ac.linkTo("B");
+		Node ac = env.getNode("AllChars");
 		addAllChars();
 		
-		//UniqueListOfNodes chi = ac.get(List.CHILDREN);
-//		chi.append("H");
-//		assertTrue(chi.contains("H"));
-//		assertTrue(chi.contains("B"));
-//		chi.remove("B");
-
+		NodeRefsList chi = ac.get(List.CHILDREN);
+		Node nn = new Node();
+		chi.addLast(nn);
+		try {
+			parseTree("AllChars",20,"");
+			fail("should've errored");
+		}catch (Error e) {
+			System.out.println("ignore above^^");
+		}
+		
+		assertTrue( nn == chi.removeNode(Location.LAST) );
 		parseTree("AllChars",20,"");
 		parseTree("a",20,"");
 		parseTree("d",20,"");
+		parseTree("c",20,"");
 
 	}
 	
@@ -128,6 +136,9 @@ public class EnvironmentTest {
 		} else {
 			do {
 				String id = env.getID(parserNR.getNode());
+				if (null == id) {
+					throw new AssertionError();
+				}
 				parseTree(id, downToLevel - 1, whatWas+"->");
 				parserNR = list.getNodeRefAt(Location.AFTER, parserNR);
 			} while (null != parserNR);
@@ -141,9 +152,7 @@ public class EnvironmentTest {
 		//this will test behavior while using an unmapped new Node() , that is: it has no ID associated with it (at least not in this environment)
 		
 		//you know, never catch Errors ... in general, if you do here things may remain inconsistent link-wise
-		env.link("a","b");
-		Node _a = env.getNode("a");
-		//Node _b = env.getNode("b");
+		assertFalse( env.link("a","b") );
 		
 		Node _boo = new Node();//a node that's not mapped ID to Node in the environment
 		boolean errored=false;
@@ -155,56 +164,23 @@ public class EnvironmentTest {
 		assertTrue(errored);
 		
 		assertFalse(env.isLink(_boo, _a));
-//		
-//		errored=false;
-//		try {
-//			_boo.linkTo(_a);//_boo has no corresponding ID ! hence this link should not succeed
-//		} catch (Error e) {
-//			errored=true;
-//		}
-//		//assertTrue(errored);
-//		assertFalse(env.isLink(_boo, _a)); //_boo wasn't mapped in the environment
-//		
 		
-//		errored=false;
-//		try {
-//			_a.linkTo(_boo);
-//		}catch (Error e) {
-//			errored=true;
-//		}
-//		assertTrue(errored);
-//		assertFalse(env.isLink(_a,_boo));
-//		
-//		errored=false;
-//		try {
-//			_boo.linkFrom(_b);
-//		}catch (Error e) {
-//			errored=true;
-//		}
-//		assertTrue(errored);
-//		assertFalse(env.isLink(_b,_boo));
-//		
+		errored=false;
+		try {
+			assertTrue( _boo.linkTo(_a) );//_boo has no corresponding ID ! but this is done at Node level
+		} catch (Error e) {
+			errored=true;
+		}
+		assertFalse(errored);
+
+		errored=false;
+		try {
+			assertFalse(env.isLink(_boo, _a)); //inconsistent link detected, Error
+		}catch (Error e) {
+			errored = true;
+		}
+		assertTrue(errored);
 		
-//		errored=false;
-//		try {
-//			_b.linkFrom(_boo);
-//		}catch (Error e) {
-//			errored=true;
-//		}
-//		assertTrue(errored);
-//		assertFalse(env.isLink(_boo,_b));
-//		
-//		errored=false;
-//		try {
-//			_boo.linkTo("boo2");//boo2 is new
-//		}catch (Error e) {
-//			errored=true;
-//		}
-//		assertTrue(errored);
-//		assertFalse(env.isLink(_boo, "boo2"));
-		
-//		_b.linkFrom("boo");//ofc "boo" here is a new Node , not _boo
-//		assertTrue(env.isLink("boo", _b));
 	}
 	
 	@Test
@@ -296,13 +272,13 @@ public class EnvironmentTest {
 		}
 		assertTrue(excepted);
 		
-//		excepted = false;
-//		try {
-//			env.link(fullNode, nullStr);
-//		} catch (NullPointerException e) {
-//			excepted = true;
-//		}
-//		assertTrue(excepted);
+		excepted = false;
+		try {
+			env.link(_a, nullStr);
+		} catch (NullPointerException e) {
+			excepted = true;
+		}
+		assertTrue(excepted);
 		
 		excepted = false;
 		try {
@@ -312,13 +288,13 @@ public class EnvironmentTest {
 		}
 		assertTrue(excepted);
 		
-//		excepted = false;
-//		try {
-//			env.link(nullStr, fullNode);
-//		} catch (NullPointerException e) {
-//			excepted = true;
-//		}
-//		assertTrue(excepted);
+		excepted = false;
+		try {
+			env.link(nullStr, _a);
+		} catch (NullPointerException e) {
+			excepted = true;
+		}
+		assertTrue(excepted);
 		
 		excepted = false;
 		try {

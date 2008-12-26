@@ -48,6 +48,7 @@ public class Environment {
 	 * @return the Node object that's mapped to the ID, if it doesn't exist in the Environment then null
 	 */
 	public Node getNode(String nodeID) {
+		nullException(nodeID);
 		return allIDNodeTuples.getNode(nodeID);
 	}
 
@@ -114,7 +115,7 @@ public class Environment {
 	 * @param childID
 	 * @throws Exception if ID to Node mapping fails
 	 */
-	public void link(String parentID, String childID) throws Exception {
+	public boolean link(String parentID, String childID) throws Exception {
 		//1.it will create empty Node objects if they don't already exist
 		//2.link them
 		//3.and THEN map them to IDs
@@ -139,8 +140,9 @@ public class Environment {
 			//internalMapIDToNode(childID, childNode);
 		}
 		
+		boolean ret=false;
 		try {
-			internalLink(parentNode, childNode);//link the Node objects
+			ret = internalLink(parentNode, childNode);//link the Node objects
 		} catch (Exception e) {
 			try {
 				if (parentCreated) {
@@ -158,6 +160,7 @@ public class Environment {
 			}
 			throw e;
 		}
+		return ret;
 	}
 	
 	/**
@@ -203,12 +206,12 @@ public class Environment {
 	 * @throws Exception
 	 * @see #link(String, String)
 	 */
-	public void link(String parentID, Node childNode) throws Exception {
+	public boolean link(String parentID, Node childNode) throws Exception {
 		String childID = getID(childNode);
 		if (null == childID) {
 			throw new AssertionError("childNode isn't mapped in this environment");
 		}
-		link(parentID, childID);
+		return link(parentID, childID);
 	}
 	
 	/**
@@ -216,29 +219,33 @@ public class Environment {
 	 * @param childID
 	 * @throws Exception
 	 */
-	public void link(Node parentNode, String childID) throws Exception {
+	public boolean link(Node parentNode, String childID) throws Exception {
 		String parentID = getID(parentNode);
 		if (null == parentID) {
 			throw new AssertionError("parentNode isn't mapped in this environment");
 		}
-		link(parentID, childID);
+		return link(parentID, childID);
 	}
 	
 	/**
 	 * @param parentNode
 	 * @param childNode
 	 */
-	public void link(Node parentNode, Node childNode) {
+	public boolean link(Node parentNode, Node childNode) {
 		if ( (null == getID(parentNode)) || (null == getID(childNode)) ) {
 			throw new AssertionError("one or both nodes are not mapped within this environment");
 		}
-		internalLink(parentNode, childNode);
+		return internalLink(parentNode, childNode);
 	}
 	
-	private void internalLink(Node parentNode, Node childNode) {
+	private boolean internalLink(Node parentNode, Node childNode) {
 		//assumes both Nodes exist and are not null params, else expect exceptions
-		parentNode.linkTo(childNode);
-		childNode.linkFrom(parentNode);
+		boolean ret1 = parentNode.linkTo(childNode);
+		boolean ret2 = childNode.linkFrom(parentNode);
+		if (ret1 ^ ret2) {
+			throw new AssertionError("inconsistent link detected");
+		}
+		return ret1;
 	}
 
 	/**
