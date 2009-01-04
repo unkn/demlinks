@@ -16,30 +16,28 @@
     along with DeMLinks.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package org.demlinks.javaone;
-
-import static org.junit.Assert.*;
-
-import org.junit.Before;
-import org.junit.Test;
+package org.demlinks.obsolete;
 
 
-public class ListOfUniqueNodesLevel1Test {
+/**
+ * * a list of unique Node objects (no two are the same)<br>
+ * * the order of Nodes in the list matters
+ */
+public class ListOfUniqueNodesLevel0 extends LinkedListSet<NodeLevel0> { // order matters; no duplicate Nodes in list
+
+	public ListOfUniqueNodesLevel0() {
+		super();
+	}
 	
-	NodeLevel1 n1,d1;
-	ListOfUniqueNodesLevel1 list1;
-	
-	@Before
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 842508346073648046L;
+
+	/**
+	 * this is supposed to be only in L1
+	 */
 	public void init() {
-		n1 = new NodeLevel1();
-		list1 = (ListOfUniqueNodesLevel1) n1.get(List.CHILDREN);
-		d1 = new NodeLevel1();
 	}
-	
-	@Test
-	public void testAddLast() throws Exception {
-		assertTrue( list1.addLast(d1) );
-		assertTrue(list1.getSize() == 1);
-		
-	}
+
 }

@@ -16,7 +16,7 @@
     along with DeMLinks.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.demlinks.javaone;
+package org.demlinks.obsolete;
 
 import java.util.NoSuchElementException;
 
@@ -38,7 +38,7 @@ public class LinkedListSet<Obj> implements OnLinkedListSetEvents<Obj> {
 	/**
 	 * 
 	 */
-	LinkedListSet() {
+	public LinkedListSet() {
 		setListToEmpty();
 	}
 

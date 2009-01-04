@@ -16,8 +16,11 @@
     along with DeMLinks.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package org.demlinks.javaone;
+package org.demlinks.obsolete;
 
-public enum List {
-	CHILDREN, PARENTS
+public enum Location {
+	BEFORE,
+	AFTER,
+	FIRST,
+	LAST
 }

@@ -16,19 +16,33 @@
     along with DeMLinks.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package org.demlinks.javathree;
+package org.demlinks.obsolete;
 
-import org.junit.runner.*;
-import org.junit.runners.*;
+import static org.junit.Assert.*;
+
+import org.demlinks.obsolete.List;
+import org.demlinks.obsolete.ListOfUniqueNodesLevel1;
+import org.demlinks.obsolete.NodeLevel1;
+import org.junit.Before;
+import org.junit.Test;
 
 
-@RunWith(Suite.class)
-@Suite.SuiteClasses(value={
-		NodeRefTest.class,
-		NodeTest.class,
-		Environment_L2Test.class
-		})
+public class ListOfUniqueNodesLevel1Test {
+	
+	NodeLevel1 n1,d1;
+	ListOfUniqueNodesLevel1 list1;
+	
+	@Before
+	public void init() {
+		n1 = new NodeLevel1();
+		list1 = (ListOfUniqueNodesLevel1) n1.get(List.CHILDREN);
+		d1 = new NodeLevel1();
+	}
+	
+	@Test
+	public void testAddLast() throws Exception {
+		assertTrue( list1.addLast(d1) );
+		assertTrue(list1.getSize() == 1);
 		
-public class AllTests {
-
+	}
 }

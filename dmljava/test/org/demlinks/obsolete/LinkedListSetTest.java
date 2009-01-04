@@ -16,12 +16,14 @@
     along with DeMLinks.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package org.demlinks.javaone;
+package org.demlinks.obsolete;
 
 import static org.junit.Assert.*;
 
 import java.util.NoSuchElementException;
 
+import org.demlinks.obsolete.LinkedListSet;
+import org.demlinks.obsolete.Location;
 import org.junit.Before;
 import org.junit.Test;
 

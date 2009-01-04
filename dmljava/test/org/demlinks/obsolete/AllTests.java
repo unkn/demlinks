@@ -16,11 +16,19 @@
     along with DeMLinks.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package org.demlinks.javaone;
+package org.demlinks.obsolete;
 
-public enum Location {
-	BEFORE,
-	AFTER,
-	FIRST,
-	LAST
+import org.junit.runner.*;
+import org.junit.runners.*;
+
+
+@RunWith(Suite.class)
+@Suite.SuiteClasses(value={
+		EnvironmentTest.class,
+		LinkedListSetTest.class,
+		ListOfUniqueNodesLevel0Test.class
+		})
+		
+public class AllTests {
+
 }

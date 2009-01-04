@@ -19,6 +19,8 @@
 package org.demlinks.javathree;
 
 public class IDToNodeMap {//TODO change String to a new class named ID but only after everything works
+//the contents of the object ID are mapped to the object Node, such that two different ID objects with same content will 
+//	point to same Node object and a Node object is different if it's another object even if their contents are the same.
 	private TwoWayHashMap<String, Node> map;
 	
 	public IDToNodeMap() {

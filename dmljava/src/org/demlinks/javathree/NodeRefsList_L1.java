@@ -18,7 +18,6 @@
 
 package org.demlinks.javathree;
 
-import static org.demlinks.javathree.Environment.nullException;
 
 /**
  * a double-linked list of NodeReferences where no two are alike (no duplicates allowed)<br>
@@ -71,7 +70,7 @@ public class NodeRefsList_L1 {
 	 * @return
 	 */
 	public boolean addLast(NodeRef newLastNodeRef) {
-		nullException(newLastNodeRef);
+		Debug.nullException(newLastNodeRef);
 		if (containsNodeRef(newLastNodeRef)) {
 			return false;//already exists
 		}
@@ -122,7 +121,7 @@ public class NodeRefsList_L1 {
 	 * @return
 	 */
 	public boolean removeNodeRef(NodeRef killNR) {
-		nullException(killNR);
+		Debug.nullException(killNR);
 		if (!containsNodeRef(killNR)) {
 			return false;
 		}
@@ -159,7 +158,7 @@ public class NodeRefsList_L1 {
 	}
 
 	public boolean containsNodeRef(NodeRef whichNR) {
-		nullException(whichNR);
+		Debug.nullException(whichNR);
 		NodeRef parser = firstNodeRef;
 		while (null != parser) {
 			if (whichNR.equals(parser)) {

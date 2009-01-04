@@ -1,6 +1,5 @@
 package org.demlinks.javathree;
 
-import static org.demlinks.javathree.Environment.nullException;
 
 /**
  * handles the NodeRef list at the Node level
@@ -28,7 +27,7 @@ public class NodeRefsList_L2 extends NodeRefsList_L1 {
 	 * @return
 	 */
 	public boolean containsNode(Node nodeLevel0) {
-		nullException(nodeLevel0);
+		Debug.nullException(nodeLevel0);
 		return (null != this.getNodeRef(nodeLevel0));
 	}
 	
@@ -38,7 +37,7 @@ public class NodeRefsList_L2 extends NodeRefsList_L1 {
 	 * @return
 	 */
 	public NodeRef newNodeRef(Node node) {
-		nullException(node);
+		Debug.nullException(node);
 		NodeRef n = new NodeRef();
 		n.setNode(node);
 		return n;
@@ -57,7 +56,7 @@ public class NodeRefsList_L2 extends NodeRefsList_L1 {
 	 * @return
 	 */
 	public final NodeRef getNodeRef_L0(Node node_L0) {
-		nullException(node_L0);
+		Debug.nullException(node_L0);
 		NodeRef parser = getFirstNodeRef();
 		while (null != parser) {
 			if (node_L0.equals(parser.getNode())) {

@@ -16,10 +16,13 @@
     along with DeMLinks.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package org.demlinks.javaone;
+package org.demlinks.obsolete;
 
 import static org.junit.Assert.*;
 
+import org.demlinks.obsolete.List;
+import org.demlinks.obsolete.ListOfUniqueNodesLevel0;
+import org.demlinks.obsolete.NodeLevel0;
 import org.junit.Before;
 import org.junit.Test;
 

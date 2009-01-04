@@ -1,7 +1,8 @@
-package org.demlinks.javaone;
+package org.demlinks.obsolete;
 import static org.junit.Assert.*;
 
-import org.demlinks.javaone.NodeLevel0;
+import org.demlinks.obsolete.ListOfUniqueNodesLevel0;
+import org.demlinks.obsolete.NodeLevel0;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -66,11 +67,6 @@ public class ListOfUniqueNodesLevel0Test {
 			npe = true;
 		}
 		assertTrue(npe);
-	}
-
-	@Test
-	public void testNodeCursor() {
-		//TODO x
 	}
 
 }

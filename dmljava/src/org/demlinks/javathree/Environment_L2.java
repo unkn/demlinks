@@ -18,17 +18,7 @@
 
 package org.demlinks.javathree;
 
-/**
- *  at this level the Node objects are given String IDs<br>
- *	such that a String ID can be referring to only one Node object<br>
- *  so there's an 1 to 1 mapping between ID and Node<br>
- *	a Node will exist only if it has at least one link or rather is part of the link<br>
- *	a link is a tuple of Nodes; link is imaginary so to speak<br>
- *	parentID -> childID means: the Node object identified by parentID will have its children list contain the Node object identified by childID<br> 
- *	parentID <- childID means: the Node identified by childID will have its parents list contain the Node object identified by parentID<br>
- *
- */
-public class Environment {
+public class Environment_L2 extends Environment_L1 {
 	//fields
 	private IDToNodeMap allIDNodeTuples; // unique elements
 	
@@ -38,17 +28,18 @@ public class Environment {
 	 * ID is {@link String} identifier
 	 * Node is a {@link NodeLevel0} object
 	 */
-	public Environment() {
+	public Environment_L2() {
+		super();
 		allIDNodeTuples = new IDToNodeMap();
 	}
 	
 	//methods
-
+	
 	/**
 	 * @return the Node object that's mapped to the ID, if it doesn't exist in the Environment then null
 	 */
 	public Node getNode(String nodeID) {
-		nullException(nodeID);
+		Debug.nullException(nodeID);
 		return allIDNodeTuples.getNode(nodeID);
 	}
 
@@ -76,17 +67,6 @@ public class Environment {
 	 */
 	public int size() {
 		return allIDNodeTuples.size();
-	}
-
-	/**
-	 * @param anyObject one or more objects to be tested if they're null, if so then we throw AssertionError
-	 */
-	public static void nullException(Object... anyObject) {
-		for (int i = 0; i < anyObject.length; i++) {
-			if (null == anyObject[i]) {
-				throw new NullPointerException("should never be null:"+anyObject[i]+" ["+i+"]");
-			}
-		}
 	}
 	
 	/**
@@ -142,7 +122,7 @@ public class Environment {
 		
 		boolean ret=false;
 		try {
-			ret = internalLink(parentNode, childNode);//link the Node objects
+			ret = super.link(parentNode, childNode);//link the Node objects
 		} catch (Exception e) {
 			try {
 				if (parentCreated) {
@@ -199,6 +179,8 @@ public class Environment {
 		internalUnMapNode(node);
 		return id;
 	}
+	
+
 
 	/**
 	 * @param parentID
@@ -235,34 +217,7 @@ public class Environment {
 		if ( (null == getID(parentNode)) || (null == getID(childNode)) ) {
 			throw new AssertionError("one or both nodes are not mapped within this environment");
 		}
-		return internalLink(parentNode, childNode);
-	}
-	
-	private boolean internalLink(Node parentNode, Node childNode) {
-		//assumes both Nodes exist and are not null params, else expect exceptions
-		boolean ret1 = parentNode.linkForward(childNode);
-		boolean ret2 = childNode.linkBackward(parentNode);
-		if (ret1 ^ ret2) {
-			throw new AssertionError("inconsistent link detected");
-		}
-		return ret1;
-	}
-
-	/**
-	 * parentNode -> childNode<br>
-	 * parentNode <- childNode<br>
-	 * @param parentNode
-	 * @param childNode
-	 * @return true if (mutual) link between the two nodes exists
-	 */
-	public boolean isLink(Node parentNode, Node childNode) {
-		nullException(parentNode, childNode);
-		boolean one = parentNode.isLinkForward(childNode);
-		boolean two = childNode.isLinkBackward(parentNode);
-		if (one ^ two) {
-			throw new AssertionError("inconsistent link detected");
-		}
-		return one;
+		return super.link(parentNode, childNode);
 	}
 	
 	/**
@@ -271,7 +226,7 @@ public class Environment {
 	 * @return
 	 */
 	public boolean isLink(Node parentNode, String childID) {
-		nullException(parentNode, childID);
+		Debug.nullException(parentNode, childID);
 		Node childNode = getNode(childID);
 		if (null != childNode) {
 			return isLink(parentNode, childNode);
@@ -285,7 +240,7 @@ public class Environment {
 	 * @return
 	 */
 	public boolean isLink(String parentID, Node childNode) {
-		nullException(parentID, childNode);
+		Debug.nullException(parentID, childNode);
 		Node parentNode = getNode(parentID);
 		if (null != parentNode) {
 			return isLink(parentNode, childNode);
@@ -299,7 +254,7 @@ public class Environment {
 	 * @return
 	 */
 	public boolean isLink(String parentID, String childID) {
-		nullException(parentID, childID);
+		Debug.nullException(parentID, childID);
 		Node parentNode = this.getNode(parentID);
 		if (null != parentNode) {
 			return isLink(parentNode, childID);

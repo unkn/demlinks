@@ -18,7 +18,6 @@
 
 package org.demlinks.javathree;
 
-import static org.demlinks.javathree.Environment.nullException;
 
 // at this level the Nodes don't have IDs, they're just java objects
 
@@ -30,6 +29,7 @@ import static org.demlinks.javathree.Environment.nullException;
  */
 public class Node {
 	//this doesn't change, not while the program is running!
+	//TODO maybe remove List class ?
 	private static List sense=List.CHILDREN;//default sense ie. A->B means B exists in the "sense" list of A; and -> means forward link
 	//'sense' defines the meaning of forward
 	
@@ -48,12 +48,12 @@ public class Node {
 	}
 
 	private boolean putNodeInList(Node node, NodeRefsList list) {
-		nullException(node, list);
+		Debug.nullException(node, list);
 		return list.addLast(node);
 	}
 	
 	private boolean unPutNodeInList(Node node, NodeRefsList list) {
-		nullException(node, list);
+		Debug.nullException(node, list);
 		return list.removeNode(node);
 	}
 	
