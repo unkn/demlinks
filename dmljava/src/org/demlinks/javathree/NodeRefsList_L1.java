@@ -67,7 +67,7 @@ public class NodeRefsList_L1 {
 
 	/**
 	 * @param newLastNodeRef
-	 * @return
+	 * @return false if already exists; true if it didn't but it does now after call
 	 */
 	public boolean addLast(NodeRef newLastNodeRef) {
 		Debug.nullException(newLastNodeRef);

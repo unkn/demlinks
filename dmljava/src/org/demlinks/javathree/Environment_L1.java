@@ -18,15 +18,10 @@
 
 package org.demlinks.javathree;
 
+
 /**
- *  at this level the Node objects are given String IDs<br>
- *	such that a String ID can be referring to only one Node object<br>
- *  so there's an 1 to 1 mapping between ID and Node<br>
- *	a Node will exist only if it has at least one link or rather is part of the link<br>
- *	a link is a tuple of Nodes; link is imaginary so to speak<br>
- *	parentID -> childID means: the Node object identified by parentID will have its children list contain the Node object identified by childID<br> 
- *	parentID <- childID means: the Node identified by childID will have its parents list contain the Node object identified by parentID<br>
- *
+ * Node level only, no IDs here
+ * treating Nodes as Node objects only
  */
 public class Environment_L1 {
 	
@@ -59,5 +54,5 @@ public class Environment_L1 {
 		return one;
 	}
 	
-
+	//TODO unLink
 }

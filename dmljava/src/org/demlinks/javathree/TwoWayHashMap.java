@@ -19,6 +19,8 @@
 package org.demlinks.javathree;
 
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * provides 1 to 1 mapping between two Objects: Key<->Value<br>
@@ -55,27 +57,24 @@ public class TwoWayHashMap<Key,Value> {
 	}
 
 	/**
-	 * not allowing replacing existing key->value tuples, this should only add new key->value that didn't previously exist
-	 * @throws Exception if the key->value tuple existed, or rather is key->anyvalue existed, except key->null tuple<br>
-	 * @transaction protected
+	 * adds or replaces Key-Value tuple
+	 * @param _k key
+	 * @param _v value
+	 * @return false if key already existed and was associated with a value; true if it didn't exist
 	 */
-	public void putKeyValue(Key _k, Value _v) throws Exception {
+	public boolean putKeyValue(Key _k, Value _v) {
 		Debug.nullException(_k,_v);
-		Value one = forward.put(_k, _v); 
-		if (one != null) {
-			//forward.remove(_k);//undo-ing transaction, however here _k already had value one
-			forward.put(_k, one);//this should undo it
-			throw new Exception("the value("+one+") just got replaced (by "+_v+"), in key "+_k);
+		Value prevFwdVal = forward.put(_k, _v); 
+		boolean noPrevOne = prevFwdVal == null;
+		if (!noPrevOne) {
+			backward.remove(prevFwdVal); //this value was replaced so it must not exist in this other list
 		}
-		Key two = backward.put(_v, _k);
-		if (two != null) {
-			//if we're here then "one" did not got replaced hence it's safe to remove it since it didn't previously exist or
-			//worst case scenario key -> null (association), null is the Value
-			forward.remove(_k); // we undo this transaction even if we throw exception
-			//backward.remove(_v);//this one got replaced so we should put it back
-			backward.put(_v, two);//this is undo
-			throw new Exception("the key("+two+") just got replaced (by "+_k+"), in value "+_v);
+		Key prevBackwdKey = backward.put(_v, _k);
+		boolean noPrevTwo = prevBackwdKey == null;
+		if (!noPrevTwo) {
+			forward.remove(prevBackwdKey);
 		}
+		return noPrevOne && noPrevTwo;
 	}
 
 	/**
@@ -110,5 +109,9 @@ public class TwoWayHashMap<Key,Value> {
 			throw new AssertionError("we removed the value of another key, this means 2 keys had same value in this 1 to 1 MAP");
 		}
 		return _k;
+	}
+	
+	public Iterator<Map.Entry<Key, Value>> getKeyValueIterator() {
+		return forward.entrySet().iterator();
 	}
 }

@@ -18,6 +18,17 @@
 
 package org.demlinks.javathree;
 
+
+/**
+ *  at this level the Node objects are given String IDs<br>
+ *	such that a String ID can be referring to only one Node object<br>
+ *  so there's an 1 to 1 mapping between ID and Node<br>
+ *	a Node will exist only if it has at least one link or rather is part of the link<br>
+ *	a link is a tuple of Nodes; link is imaginary so to speak<br>
+ *	parentID -> childID means: the Node object identified by parentID will have its children list contain the Node object identified by childID<br> 
+ *	parentID <- childID means: the Node identified by childID will have its parents list contain the Node object identified by parentID<br>
+ *
+ */
 public class Environment_L2 extends Environment_L1 {
 	//fields
 	private IDToNodeMap allIDNodeTuples; // unique elements
@@ -50,8 +61,14 @@ public class Environment_L2 extends Environment_L1 {
 		return allIDNodeTuples.getID(node);
 	}
 	
-	private void internalMapIDToNode(String nodeID, Node nodeObject) throws Exception {
-		allIDNodeTuples.put(nodeID, nodeObject);
+	/**
+	 * @param nodeID
+	 * @param nodeObject
+	 * @return true if id was already mapped to a node
+	 * @throws Exception
+	 */
+	private boolean internalMapIDToNode(String nodeID, Node nodeObject) {
+		return allIDNodeTuples.put(nodeID, nodeObject);
 	}
 	
 	private void internalUnMapID(String nodeID) {
@@ -77,11 +94,13 @@ public class Environment_L2 extends Environment_L1 {
 	 * @return if the ID is already mapped then it will return its respective Node object
 	 * @throws Exception
 	 */
-	public Node ensureNode(String nodeID) throws Exception {
+	public Node ensureNode(String nodeID) {
 		Node n = getNode(nodeID);
 		if (null == n) {
 			n = new Node();
-			internalMapIDToNode(nodeID, n);
+			if (internalMapIDToNode(nodeID, n)) {
+				throw new AssertionError("overwritten something, which is impossible");
+			}
 		}
 		return n;
 	}
@@ -94,11 +113,12 @@ public class Environment_L2 extends Environment_L1 {
 	 * @param parentID
 	 * @param childID
 	 * @throws Exception if ID to Node mapping fails
+	 * @transaction protected
 	 */
 	public boolean link(String parentID, String childID) throws Exception {
 		//1.it will create empty Node objects if they don't already exist
-		//2.link them
-		//3.and THEN map them to IDs
+		//2.map them to IDs
+		//3.THEN link them
 		
 		boolean parentCreated = false;
 		Node parentNode = getNode(parentID);//fetch existing Node

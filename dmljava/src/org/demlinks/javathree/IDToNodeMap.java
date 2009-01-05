@@ -18,6 +18,9 @@
 
 package org.demlinks.javathree;
 
+import java.util.Iterator;
+import java.util.Map;
+
 public class IDToNodeMap {//TODO change String to a new class named ID but only after everything works
 //the contents of the object ID are mapped to the object Node, such that two different ID objects with same content will 
 //	point to same Node object and a Node object is different if it's another object even if their contents are the same.
@@ -35,8 +38,14 @@ public class IDToNodeMap {//TODO change String to a new class named ID but only 
 		return map.getKey(node);
 	}
 
-	public void put(String id, Node node) throws Exception {
-		map.putKeyValue(id, node);
+	/**
+	 * @param id
+	 * @param node
+	 * @return true if the id WAS already mapped to a node
+	 * @throws Exception
+	 */
+	public boolean put(String id, Node node) {
+		return map.putKeyValue(id, node);
 	}
 
 	public Node removeID(String id) {
@@ -49,5 +58,9 @@ public class IDToNodeMap {//TODO change String to a new class named ID but only 
 	
 	public int size() {
 		return map.size();
+	}
+	
+	public Iterator<Map.Entry<String, Node>> getKeyValueIterator() {
+		return map.getKeyValueIterator();
 	}
 }
