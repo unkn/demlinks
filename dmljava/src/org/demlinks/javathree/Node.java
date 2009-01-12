@@ -52,6 +52,11 @@ public class Node {
 		return list.addLast(node);
 	}
 	
+	/**
+	 * @param node
+	 * @param list
+	 * @return true if existed; removed regardless of return
+	 */
 	private boolean unPutNodeInList(Node node, NodeRefsList list) {
 		Debug.nullException(node, list);
 		return list.removeNode(node);
@@ -70,7 +75,7 @@ public class Node {
 	/**
 	 * we will no longer point to <tt>childNode</tt>
 	 * @param childNode Node that will be removed from being a child of <tt>this</tt> Node
-	 * @return
+	 * @return true if existed; removed after call anyway
 	 */
 	public boolean unLinkForward(Node childNode) {
 		return unPutNodeInList(childNode, getForwardList());

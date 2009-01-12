@@ -92,7 +92,7 @@ public class NodeRefsList_L2 extends NodeRefsList_L1 {
 
 	/**
 	 * @param node
-	 * @return
+	 * @return true if existed; either way after call it's removed
 	 */
 	public boolean removeNode(Node node) {
 		NodeRef nr = getNodeRef(node);

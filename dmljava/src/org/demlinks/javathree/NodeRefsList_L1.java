@@ -118,7 +118,7 @@ public class NodeRefsList_L1 {
 
 	/**
 	 * @param killNR
-	 * @return
+	 * @return true if removed, false if it was already inexistent
 	 */
 	public boolean removeNodeRef(NodeRef killNR) {
 		Debug.nullException(killNR);

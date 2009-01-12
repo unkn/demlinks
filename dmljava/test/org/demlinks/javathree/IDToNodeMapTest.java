@@ -11,27 +11,27 @@ import org.junit.Test;
 public class IDToNodeMapTest {
 
 	IDToNodeMap imap;
-	String a,b,c,d,e,f,g;
+	Id a,b,c,d,e,f,g;
 	Node nodea, nodeb;
 	
 	@Before
 	public void init() {
 		imap = new IDToNodeMap();
 		
-		a = "a";
-		b = new String(a);
-		c = new String("a");
-		d="a";
+		a = new Id("a");
+		b = new Id(new String(new String("a")));
+		c = new Id(new String("a"));
+		d=new Id("a");
 		e=a;
 		f=c;
-		g="gggggg";
+		g=new Id("gggggg");
 		
 		nodea = new Node();
 		nodeb = new Node();
 	}
 	
 	public void showAllKeys(String s) {
-		Iterator<Map.Entry<String, Node>> itr = imap.getKeyValueIterator();
+		Iterator<Map.Entry<Id, Node>> itr = imap.getKeyValueIterator();
 		System.out.println(s);
 		while (itr.hasNext()) {
 			System.out.println(itr.next());
@@ -78,7 +78,7 @@ public class IDToNodeMapTest {
 		assertTrue(a != b);
 		assertTrue(a != c);
 		assertTrue(b != c);
-		assertTrue(a == d);
+		assertFalse(a == d);
 		assertTrue(a == e);
 		assertTrue(c == f);
 		assertTrue(imap.put(a, nodea));

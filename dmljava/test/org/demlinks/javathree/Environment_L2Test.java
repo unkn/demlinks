@@ -27,16 +27,21 @@ public class Environment_L2Test {
 
 	Environment_L2 env;
 	Node _a, _b;
+	Id ida, idb;
 	
 	@Before
 	public void init() throws Exception {
 		env = new Environment_L2();
+		ida = new Id("a");
+		idb = new Id("b");
 		//link two new nodes "a"->"b"
-		assertTrue( env.link("a", "b") );
-		_a = env.getNode("a");//get the Node object who's ID is "a"
-		_b = env.getNode("b");
+		assertTrue( env.link(ida, idb) );
+		_a = env.getNode(ida);//get the Node object who's ID is "a"
+		_b = env.getNode(idb);
 		assertTrue(null != _a);
 		assertTrue(null != _b);
+		
+		
 	}
 	
 	@Test
@@ -44,80 +49,84 @@ public class Environment_L2Test {
 		
 		assertTrue( _a.isLinkForward(_b) );// does link _a -> _b exists ? also implies _a <- _b exists
 		//assertTrue( _a.isLinkTo(new String("b")) );
-		assertTrue(env.isLink(_a, "b"));
-		assertTrue(env.isLink(_a, new String("b")));
+		//assertTrue(env.isLink(_a, "b"));
+		assertTrue(env.isLink(_a, idb));
+		assertTrue(env.isLink(_a, new Id("b")));//working is the king of war
 		assertTrue( _b.isLinkBackward(_a) );
 		
-		assertTrue( "b".equals(env.getID(_b)));
-		assertTrue( env.getID(_a).equals("a"));
+		assertTrue( (new Id("b")).equals(env.getID(_b)));
+		assertTrue( env.getID(_a).equals(new Id("a")));
 	}
 
 	@Test
 	public void testLink() throws Exception {
 		
-		assertTrue( null == env.getNode("c") ); //inexistent Node
+		Id idc = new Id("c");
+		assertTrue( null == env.getNode(idc) ); //inexistent Node
 		
 		//assertTrue( null == env.getID(new Node(env)));
 		
 
 		
-		env.link(_a,"c"); // link between existing node _a and new node "c"
-		assertTrue(env.isLink(_a,"c"));
+		env.link(_a,idc); // link between existing node _a and new node "c"
+		assertTrue(env.isLink(_a,idc));
 		
-		Node _c = env.getNode("c");
+		Node _c = env.getNode(idc);
 		assertTrue(null != _c);
 		
 		assertTrue(env.isLink(_a, _c));//same test different identifying ways
-		assertTrue(env.isLink("a", _c));//same test different identifying ways
-		assertTrue(env.isLink("a", "c"));//same test different identifying ways
+		assertTrue(env.isLink(new Id("a"), _c));//same test different identifying ways
+		assertTrue(env.isLink(new Id("a"), new Id("c")));//same test different identifying ways
 		
 		env.link(_b,_c); //link two existing nodes
 		assertTrue(env.isLink(_b, _c));
 		
-		env.link("d", _c);//new node "d"
-		assertTrue(env.isLink("d", _c));
+		env.link(new Id("d"), _c);//new node "d"
+		assertTrue(env.isLink(new Id("d"), _c));
 		
-		Node _d = env.getNode("d");
+		Node _d = env.getNode(new Id("d"));
 		assertTrue(env.isLink(_d, _c));
 		
 
 		// -------------------------
 		
-		assertTrue( env.link("AllChars","A") );
-		assertFalse( env.link("AllChars","A") );
-		assertFalse( env.link("AllChars",new String("A")) );
-		assertFalse( env.link("AllChars",String.format("%c", 65)) );
-		assertTrue( env.getNode("AllChars").getForwardList().size() == 1);
-		Node ac = env.getNode("AllChars");
+		Id allChars = new Id("AllChars");
+		Id __A = new Id("A");
+		assertTrue( env.link(allChars,__A) );
+		assertFalse( env.link(allChars,__A) );
+		assertFalse( env.link(allChars,new Id("A")) );
+		assertFalse( env.link(allChars,new Id(String.format("%c", 65))) );
+		assertTrue( env.getNode(allChars).getForwardList().size() == 1);
+		Node ac = env.getNode(allChars);
 		addAllChars();
 		
 		NodeRefsList chi = ac.getForwardList();
 		Node nn = new Node();
 		chi.addLast(nn);
 		try {
-			parseTree("AllChars",20,"");
+			parseTree(allChars,20,"");
 			fail("should've errored");
 		}catch (Error e) {
 			System.out.println("ignore above^^");
 		}
 		
 		assertTrue( nn == chi.removeNode(Location.LAST) );
-		parseTree("AllChars",20,"");
-		parseTree("a",20,"");
-		parseTree("d",20,"");
-		parseTree("c",20,"");
+		parseTree(allChars,20,"");
+		parseTree(new Id("a"),20,"");
+		parseTree(new Id("d"),20,"");
+		parseTree(new Id("c"),20,"");
 
 	}
 	
 	public void addAllChars() throws Exception {
-		Node _a = env.getNode("AllChars");
+		Node _a = env.getNode(new Id("AllChars"));
 		for (int i = 65; i < 72; i++) {
-			env.link(_a,String.format("%c", i));
-			assertTrue( env.isLink(_a,String.format("%c", i)) );
+			env.link(_a,new Id(String.format("%c", i)));
+			assertTrue( env.isLink(_a,new Id(String.format("%c", i))) );
 		}
 	}
 
-	public void parseTree(String ID, int downToLevel, String whatWas) {
+	public void parseTree(Id ID, int downToLevel, String whatWas) {
 		whatWas+=ID;
 		if  (downToLevel < 0) {
 			System.out.println(whatWas+" {max level reached}");
@@ -135,7 +144,7 @@ public class Environment_L2Test {
 			return;
 		} else {
 			do {
-				String id = env.getID(parserNR.getNode());
+				Id id = env.getID(parserNR.getNode());
 				if (null == id) {
 					throw new AssertionError();
 				}
@@ -152,7 +161,7 @@ public class Environment_L2Test {
 		//this will test behavior while using an unmapped new Node() , that is: it has no ID associated with it (at least not in this environment)
 		
 		//you know, never catch Errors ... in general, if you do here things may remain inconsistent link-wise
-		assertFalse( env.link("a","b") );
+		assertFalse( env.link(ida,idb) );
 		
 		Node _boo = new Node();//a node that's not mapped ID to Node in the environment
 		boolean errored=false;
@@ -186,15 +195,15 @@ public class Environment_L2Test {
 	@Test
 	public void testNullParameters() throws Exception {
 		
-		String nullStr = null;
+		Id nullId = null;
 		Node nullNode = null;
-		String fullStr = "something";
+		Id fullId = new Id("something");
 		Node fullNode = new Node();
 		
 		boolean excepted=false;
 		
 		try {
-			env.link("a", new Node());
+			env.link(ida, new Node());
 		} catch (Error e) {
 			excepted = true;
 		}
@@ -202,7 +211,7 @@ public class Environment_L2Test {
 		
 		excepted = false;
 		try {
-			env.link(new Node(),"a");
+			env.link(new Node(),ida);
 		} catch (Error e) {
 			excepted = true;
 		}
@@ -210,7 +219,7 @@ public class Environment_L2Test {
 		
 		excepted = false;
 		try {
-			env.link(nullStr, nullStr);
+			env.link(nullId, nullId);
 		} catch (NullPointerException e) {
 			excepted = true;
 		}
@@ -226,7 +235,7 @@ public class Environment_L2Test {
 		
 		excepted=false;
 		try {
-			env.link(nullStr, nullNode);
+			env.link(nullId, nullNode);
 		} catch (NullPointerException e) {
 			excepted = true;
 		}
@@ -234,7 +243,7 @@ public class Environment_L2Test {
 		
 		excepted=false;
 		try {
-			env.link(nullNode, nullStr);
+			env.link(nullNode, nullId);
 		} catch (NullPointerException e) {
 			excepted = true;
 		}
@@ -242,7 +251,7 @@ public class Environment_L2Test {
 		
 		excepted = false;
 		try {
-			env.link(fullStr, nullStr);
+			env.link(fullId, nullId);
 		} catch (NullPointerException e) {
 			excepted = true;
 		}
@@ -250,7 +259,7 @@ public class Environment_L2Test {
 		
 		excepted = false;
 		try {
-			env.link(fullStr, nullNode);
+			env.link(fullId, nullNode);
 		} catch (NullPointerException e) {
 			excepted = true;
 		}
@@ -258,7 +267,7 @@ public class Environment_L2Test {
 		
 		excepted = false;
 		try {
-			env.link(nullStr, fullStr);
+			env.link(nullId, fullId);
 		} catch (NullPointerException e) {
 			excepted = true;
 		}
@@ -266,7 +275,7 @@ public class Environment_L2Test {
 		
 		excepted = false;
 		try {
-			env.link(nullNode, fullStr);
+			env.link(nullNode, fullId);
 		} catch (NullPointerException e) {
 			excepted = true;
 		}
@@ -274,7 +283,7 @@ public class Environment_L2Test {
 		
 		excepted = false;
 		try {
-			env.link(_a, nullStr);
+			env.link(_a, nullId);
 		} catch (NullPointerException e) {
 			excepted = true;
 		}
@@ -290,7 +299,7 @@ public class Environment_L2Test {
 		
 		excepted = false;
 		try {
-			env.link(nullStr, _a);
+			env.link(nullId, _a);
 		} catch (NullPointerException e) {
 			excepted = true;
 		}

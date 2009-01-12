@@ -21,38 +21,38 @@ package org.demlinks.javathree;
 import java.util.Iterator;
 import java.util.Map;
 
-public class IDToNodeMap {//TODO change String to a new class named ID but only after everything works
+public class IDToNodeMap {
 //the contents of the object ID are mapped to the object Node, such that two different ID objects with same content will 
 //	point to same Node object and a Node object is different if it's another object even if their contents are the same.
-	private TwoWayHashMap<String, Node> map;
+	private TwoWayHashMap<Id, Node> map;
 	
 	public IDToNodeMap() {
-		map = new TwoWayHashMap<String, Node>();
+		map = new TwoWayHashMap<Id, Node>();
 	}
 	
-	public Node getNode(String id) {
+	public Node getNode(Id id) {
 		return map.getValue(id);
 	}
 	
-	public String getID(Node node) {
+	public Id getID(Node node) {
 		return map.getKey(node);
 	}
 
 	/**
 	 * @param id
 	 * @param node
-	 * @return true if the id WAS already mapped to a node
+	 * @return false if the id WAS already mapped to a node; true if it wasn't hence it's unique
 	 * @throws Exception
 	 */
-	public boolean put(String id, Node node) {
+	public boolean put(Id id, Node node) {
 		return map.putKeyValue(id, node);
 	}
 
-	public Node removeID(String id) {
+	public Node removeID(Id id) {
 		return map.removeKey(id);
 	}
 	
-	public String removeNode(Node node) {
+	public Id removeNode(Node node) {
 		return map.removeValue(node);
 	}
 	
@@ -60,7 +60,7 @@ public class IDToNodeMap {//TODO change String to a new class named ID but only 
 		return map.size();
 	}
 	
-	public Iterator<Map.Entry<String, Node>> getKeyValueIterator() {
+	public Iterator<Map.Entry<Id, Node>> getKeyValueIterator() {
 		return map.getKeyValueIterator();
 	}
 }

@@ -18,19 +18,38 @@
 
 package org.demlinks.javathree;
 
-import org.junit.runner.*;
-import org.junit.runners.*;
+public class Id {
+	private String content=null;
+	
+	//constructor
+	Id(String givenContent) {
+		Debug.nullException(givenContent);
+		if (givenContent.isEmpty()) {
+			throw new AssertionError("bad call");
+		}
+		content = new String(givenContent);
+	}
+	
+	protected String get() {
+		return new String(content);
+	}
+	
+	@Override
+	public int hashCode() {
+		return content.hashCode();
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+//		if (super.equals(obj)) {
+//			return true;
+//		}
+		//if (obj istypeof Id) {
+		return ( ((Id)obj).get().equals( this.get() ) ); 
+	}
 
-
-@RunWith(Suite.class)
-@Suite.SuiteClasses(value={
-		NodeRefTest.class,
-		NodeTest.class,
-		Environment_L2Test.class,
-		IDToNodeMapTest.class,
-		Environment_L1Test.class
-		})
-		
-public class AllTests {
-
+	@Override
+	public String toString() {
+		return this.get();
+	}
 }

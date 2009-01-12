@@ -54,5 +54,18 @@ public class Environment_L1 {
 		return one;
 	}
 	
-	//TODO unLink
+	/**
+	 * @param parentNode
+	 * @param childNode
+	 * @return true if link existed before call; false if it didn't exist before call; either way it no longer exists after call
+	 */
+	public boolean unLink(Node parentNode, Node childNode) {
+		Debug.nullException(parentNode, childNode);
+		boolean one = parentNode.unLinkForward(childNode);
+		boolean two = childNode.unLinkBackward(parentNode);
+		if (one ^ two) {
+			throw new AssertionError("inconsistent link detected");
+		}
+		return one;
+	}
 }

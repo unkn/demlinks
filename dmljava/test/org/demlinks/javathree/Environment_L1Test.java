@@ -20,18 +20,39 @@ package org.demlinks.javathree;
 
 import static org.junit.Assert.*;
 
+import org.junit.Before;
 import org.junit.Test;
 
 public class Environment_L1Test {
 
+	Environment_L1 env1;
+	Node a,b,_a,_b,nul;
+	
+	@Before
+	public void init() {
+		env1 = new Environment_L1();
+		a = new Node();
+		b = new Node();
+		_a = a;
+		_b = b;
+		nul = null;
+	}
+	
+	@Test
+	public void unLink() {
+		assertFalse( env1.isLink(_a, _b) );
+		assertFalse(env1.unLink(a, b));
+		assertTrue(env1.link(a, b));
+		assertTrue( env1.isLink(_a, _b) );
+		assertTrue(env1.unLink(a, b));
+		assertFalse( env1.isLink(_a, _b) );
+		assertFalse(env1.unLink(a, b));
+		assertFalse( env1.isLink(_a, _b) );
+	}
+	
 	@Test
 	public void testLink() {
-		Environment_L1 env1 = new Environment_L1();
-		Node a = new Node();
-		Node b = new Node();
-		Node _a = a;
-		Node _b = b;
-		Node nul = null;
+		
 		
 		assertFalse( env1.isLink(_a, _b) );
 		assertTrue(env1.link(a, b));

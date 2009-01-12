@@ -49,7 +49,7 @@ public class Environment_L2 extends Environment_L1 {
 	/**
 	 * @return the Node object that's mapped to the ID, if it doesn't exist in the Environment then null
 	 */
-	public Node getNode(String nodeID) {
+	public Node getNode(Id nodeID) {
 		Debug.nullException(nodeID);
 		return allIDNodeTuples.getNode(nodeID);
 	}
@@ -57,21 +57,21 @@ public class Environment_L2 extends Environment_L1 {
 	/**
 	 * @return the ID that is mapped to the Node object, in this environment, or null if there's no such mapping
 	 */
-	public String getID(Node node) {
+	public Id getID(Node node) {
 		return allIDNodeTuples.getID(node);
 	}
 	
 	/**
 	 * @param nodeID
 	 * @param nodeObject
-	 * @return true if id was already mapped to a node
+	 * @return false if id was already mapped to a node; true if it wasn't
 	 * @throws Exception
 	 */
-	private boolean internalMapIDToNode(String nodeID, Node nodeObject) {
+	private boolean internalMapIDToNode(Id nodeID, Node nodeObject) {
 		return allIDNodeTuples.put(nodeID, nodeObject);
 	}
 	
-	private void internalUnMapID(String nodeID) {
+	private void internalUnMapID(Id nodeID) {
 		allIDNodeTuples.removeID(nodeID);
 	}
 	
@@ -94,11 +94,11 @@ public class Environment_L2 extends Environment_L1 {
 	 * @return if the ID is already mapped then it will return its respective Node object
 	 * @throws Exception
 	 */
-	public Node ensureNode(String nodeID) {
+	public Node ensureNode(Id nodeID) {
 		Node n = getNode(nodeID);
 		if (null == n) {
 			n = new Node();
-			if (internalMapIDToNode(nodeID, n)) {
+			if (!internalMapIDToNode(nodeID, n)) {
 				throw new AssertionError("overwritten something, which is impossible");
 			}
 		}
@@ -115,7 +115,7 @@ public class Environment_L2 extends Environment_L1 {
 	 * @throws Exception if ID to Node mapping fails
 	 * @transaction protected
 	 */
-	public boolean link(String parentID, String childID) throws Exception {
+	public boolean link(Id parentID, Id childID) throws Exception {
 		//1.it will create empty Node objects if they don't already exist
 		//2.map them to IDs
 		//3.THEN link them
@@ -169,7 +169,7 @@ public class Environment_L2 extends Environment_L1 {
 	 * @param nodeID
 	 * @return the removed Node
 	 */
-	public Node removeNode(String nodeID) {
+	public Node removeNode(Id nodeID) {
 		Node n = getNode(nodeID);
 		if (n == null) {
 			throw new AssertionError("attempt to remove a non-existing node ID");
@@ -186,8 +186,8 @@ public class Environment_L2 extends Environment_L1 {
 	 * @return
 	 * @see #removeNode(String)
 	 */
-	public String removeNode(Node node) {
-		String id = getID(node);
+	public Id removeNode(Node node) {
+		Id id = getID(node);
 		if (null == id) { //doesn't exist
 			throw new AssertionError("attempt to remove a node object that doesn't exist in this environment");
 		}
@@ -208,8 +208,8 @@ public class Environment_L2 extends Environment_L1 {
 	 * @throws Exception
 	 * @see #link(String, String)
 	 */
-	public boolean link(String parentID, Node childNode) throws Exception {
-		String childID = getID(childNode);
+	public boolean link(Id parentID, Node childNode) throws Exception {
+		Id childID = getID(childNode);
 		if (null == childID) {
 			throw new AssertionError("childNode isn't mapped in this environment");
 		}
@@ -221,8 +221,8 @@ public class Environment_L2 extends Environment_L1 {
 	 * @param childID
 	 * @throws Exception
 	 */
-	public boolean link(Node parentNode, String childID) throws Exception {
-		String parentID = getID(parentNode);
+	public boolean link(Node parentNode, Id childID) throws Exception {
+		Id parentID = getID(parentNode);
 		if (null == parentID) {
 			throw new AssertionError("parentNode isn't mapped in this environment");
 		}
@@ -245,7 +245,7 @@ public class Environment_L2 extends Environment_L1 {
 	 * @param childID
 	 * @return
 	 */
-	public boolean isLink(Node parentNode, String childID) {
+	public boolean isLink(Node parentNode, Id childID) {
 		Debug.nullException(parentNode, childID);
 		Node childNode = getNode(childID);
 		if (null != childNode) {
@@ -259,7 +259,7 @@ public class Environment_L2 extends Environment_L1 {
 	 * @param childNode
 	 * @return
 	 */
-	public boolean isLink(String parentID, Node childNode) {
+	public boolean isLink(Id parentID, Node childNode) {
 		Debug.nullException(parentID, childNode);
 		Node parentNode = getNode(parentID);
 		if (null != parentNode) {
@@ -273,7 +273,7 @@ public class Environment_L2 extends Environment_L1 {
 	 * @param childID
 	 * @return
 	 */
-	public boolean isLink(String parentID, String childID) {
+	public boolean isLink(Id parentID, Id childID) {
 		Debug.nullException(parentID, childID);
 		Node parentNode = this.getNode(parentID);
 		if (null != parentNode) {
