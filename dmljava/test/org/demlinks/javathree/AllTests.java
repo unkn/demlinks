@@ -26,9 +26,8 @@ import org.junit.runners.*;
 @Suite.SuiteClasses(value={
 		NodeRefTest.class,
 		NodeTest.class,
-		Environment_L2Test.class,
+		EnvironmentTest.class,
 		IDToNodeMapTest.class,
-		Environment_L1Test.class
 		})
 		
 public class AllTests {

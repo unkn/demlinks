@@ -90,6 +90,13 @@ public class NodeRefsList_L2 extends NodeRefsList_L1 {
 		return addLast(nr);
 	}
 
+	//TODO addFirst
+	//TODO insert(Node, Location);
+	//TODO insert(Node, Location, Node);
+	//TODO replace(Node, Node);
+	//TODO replace(Node, Location);
+	//TODO replace(Node, Location, Node);
+	//find+replace current, is not an option 
 	/**
 	 * @param node
 	 * @return true if existed; either way after call it's removed

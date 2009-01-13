@@ -29,7 +29,7 @@ package org.demlinks.javathree;
  *	parentID <- childID means: the Node identified by childID will have its parents list contain the Node object identified by parentID<br>
  *
  */
-public class Environment_L2 extends Environment_L1 {
+public class Environment {
 	//fields
 	private IDToNodeMap allIDNodeTuples; // unique elements
 	
@@ -39,7 +39,7 @@ public class Environment_L2 extends Environment_L1 {
 	 * ID is {@link String} identifier
 	 * Node is a {@link NodeLevel0} object
 	 */
-	public Environment_L2() {
+	public Environment() {
 		super();
 		allIDNodeTuples = new IDToNodeMap();
 	}
@@ -75,10 +75,6 @@ public class Environment_L2 extends Environment_L1 {
 		allIDNodeTuples.removeID(nodeID);
 	}
 	
-	private void internalUnMapNode(Node node) {
-		allIDNodeTuples.removeNode(node);
-	}
-	
 	/**
 	 * @return number of Nodes in the environment
 	 */
@@ -105,6 +101,23 @@ public class Environment_L2 extends Environment_L1 {
 		return n;
 	}
 
+	
+	/**
+	 * @param parentNode
+	 * @param childNode
+	 * @return
+	 */
+	private boolean internalLink(Node parentNode, Node childNode) {
+		//this method is here to prevent the ie. test suite calling link(node, node)
+		//assumes both Nodes exist and are not null params, else expect exceptions
+		boolean ret1 = parentNode.linkForward(childNode);
+		boolean ret2 = childNode.linkBackward(parentNode);
+		if (ret1 ^ ret2) {
+			throw new AssertionError("inconsistent link detected");
+		}
+		return ret1;
+	}
+	
 	/**
 	 * this will link the two nodes identified by those IDs<br>
 	 * if there is no Node for the specified ID it will be created and mapped to it<br>
@@ -142,17 +155,17 @@ public class Environment_L2 extends Environment_L1 {
 		
 		boolean ret=false;
 		try {
-			ret = super.link(parentNode, childNode);//link the Node objects
+			ret = internalLink(parentNode, childNode);//link the Node objects
 		} catch (Exception e) {
 			try {
 				if (parentCreated) {
 					//if it was a new Node we just created above then we need to map ID to Node
 //					internalUnMapIDToNode(parentID, parentNode);
-					removeNode(parentNode);
+					removeNode(parentID);
 				}
 
 				if (childCreated) {
-					removeNode(childNode);
+					removeNode(childID);
 				}
 			} catch (Exception f) {
 				e.printStackTrace();
@@ -180,94 +193,7 @@ public class Environment_L2 extends Environment_L1 {
 		internalUnMapID(nodeID);
 		return n;
 	}
-	
-	/**
-	 * @param node
-	 * @return
-	 * @see #removeNode(String)
-	 */
-	public Id removeNode(Node node) {
-		Id id = getID(node);
-		if (null == id) { //doesn't exist
-			throw new AssertionError("attempt to remove a node object that doesn't exist in this environment");
-		}
-		//exists
-		if (!node.isAlone()) {
-			throw new AssertionError("attempt to remove an existing node that still has children/parents");
-		}
-		//exists and is alone
-		internalUnMapNode(node);
-		return id;
-	}
-	
-
-
-	/**
-	 * @param parentID
-	 * @param childNode
-	 * @throws Exception
-	 * @see #link(String, String)
-	 */
-	public boolean link(Id parentID, Node childNode) throws Exception {
-		Id childID = getID(childNode);
-		if (null == childID) {
-			throw new AssertionError("childNode isn't mapped in this environment");
-		}
-		return link(parentID, childID);
-	}
-	
-	/**
-	 * @param parentNode
-	 * @param childID
-	 * @throws Exception
-	 */
-	public boolean link(Node parentNode, Id childID) throws Exception {
-		Id parentID = getID(parentNode);
-		if (null == parentID) {
-			throw new AssertionError("parentNode isn't mapped in this environment");
-		}
-		return link(parentID, childID);
-	}
-	
-	/**
-	 * @param parentNode
-	 * @param childNode
-	 */
-	public boolean link(Node parentNode, Node childNode) {
-		if ( (null == getID(parentNode)) || (null == getID(childNode)) ) {
-			throw new AssertionError("one or both nodes are not mapped within this environment");
-		}
-		return super.link(parentNode, childNode);
-	}
-	
-	/**
-	 * @param parentNode
-	 * @param childID
-	 * @return
-	 */
-	public boolean isLink(Node parentNode, Id childID) {
-		Debug.nullException(parentNode, childID);
-		Node childNode = getNode(childID);
-		if (null != childNode) {
-			return isLink(parentNode, childNode);
-		}
-		return false;
-	}
-	
-	/**
-	 * @param parentID
-	 * @param childNode
-	 * @return
-	 */
-	public boolean isLink(Id parentID, Node childNode) {
-		Debug.nullException(parentID, childNode);
-		Node parentNode = getNode(parentID);
-		if (null != parentNode) {
-			return isLink(parentNode, childNode);
-		}
-		return false;
-	}
-	
+		
 	/**
 	 * @param parentID
 	 * @param childID
@@ -276,11 +202,53 @@ public class Environment_L2 extends Environment_L1 {
 	public boolean isLink(Id parentID, Id childID) {
 		Debug.nullException(parentID, childID);
 		Node parentNode = this.getNode(parentID);
-		if (null != parentNode) {
-			return isLink(parentNode, childID);
+		Node childNode = this.getNode(childID);
+		if ( (null != parentNode) && (null != childNode) ) {
+			return internalIsLink(parentNode, childNode);
 		}
-		//parent doesn't exist hence neither the link
+		//parent OR child doesn't exist hence neither the link
 		return false;
 	}
 
+	/**
+	 * parentNode -> childNode<br>
+	 * parentNode <- childNode<br>
+	 * @param parentNode
+	 * @param childNode
+	 * @return true if (mutual) link between the two nodes exists
+	 */
+	private boolean internalIsLink(Node parentNode, Node childNode) {
+		Debug.nullException(parentNode, childNode);
+		boolean one = parentNode.isLinkForward(childNode);
+		boolean two = childNode.isLinkBackward(parentNode);
+		if (one ^ two) {
+			throw new AssertionError("inconsistent link detected");
+		}
+		return one;
+	}
+	
+	public boolean unLink(Id parentId, Id childId) {
+		Debug.nullException(parentId, childId);
+		Node parentNode = this.getNode(parentId);
+		Node childNode = this.getNode(childId);
+		if ((null != parentNode) && (null != childNode)) {
+			return internalUnLink(parentNode, childNode);
+		}
+		return false;
+	}
+	
+	/**
+	 * @param parentNode
+	 * @param childNode
+	 * @return true if link existed before call; false if it didn't exist before call; either way it no longer exists after call
+	 */
+	private boolean internalUnLink(Node parentNode, Node childNode) {
+		Debug.nullException(parentNode, childNode);
+		boolean one = parentNode.unLinkForward(childNode);
+		boolean two = childNode.unLinkBackward(parentNode);
+		if (one ^ two) {
+			throw new AssertionError("inconsistent link detected");
+		}
+		return one;
+	}
 }
