@@ -18,6 +18,8 @@
 
 package org.demlinks.javathree;
 
+import java.util.NoSuchElementException;
+
 
 /**
  *  at this level the Node objects are given String IDs<br>
@@ -25,8 +27,8 @@ package org.demlinks.javathree;
  *  so there's an 1 to 1 mapping between ID and Node<br>
  *	a Node will exist only if it has at least one link or rather is part of the link<br>
  *	a link is a tuple of Nodes; link is imaginary so to speak<br>
- *	parentID -> childID means: the Node object identified by parentID will have its children list contain the Node object identified by childID<br> 
- *	parentID <- childID means: the Node identified by childID will have its parents list contain the Node object identified by parentID<br>
+ *	sourceID -> destinationID means: the Node object identified by sourceID will have its forward list contain the Node object identified by destinationID<br> 
+ *	sourceID <- destinationID means: the Node identified by destinationID will have its backwards list contain the Node object identified by sourceID<br>
  *
  */
 public class Environment {
@@ -46,10 +48,20 @@ public class Environment {
 	
 	//methods
 	
+	
+	/**
+	 * @param nodeID
+	 * @return true if the node exists in this environment, doesn't matter if it has any forward/backwards
+	 */
+	public boolean isNode(Id nodeID) {
+		Debug.nullException(nodeID);
+		return (null != getNode(nodeID));
+	}
+	
 	/**
 	 * @return the Node object that's mapped to the ID, if it doesn't exist in the Environment then null
 	 */
-	public Node getNode(Id nodeID) {
+	private Node getNode(Id nodeID) {
 		Debug.nullException(nodeID);
 		return allIDNodeTuples.getNode(nodeID);
 	}
@@ -57,8 +69,9 @@ public class Environment {
 	/**
 	 * @return the ID that is mapped to the Node object, in this environment, or null if there's no such mapping
 	 */
-	public Id getID(Node node) {
-		return allIDNodeTuples.getID(node);
+	private Id getID(Node node) {
+		Debug.nullException(node);
+		return allIDNodeTuples.getID(node);//should be useful when parsing
 	}
 	
 	/**
@@ -90,7 +103,7 @@ public class Environment {
 	 * @return if the ID is already mapped then it will return its respective Node object
 	 * @throws Exception
 	 */
-	public Node ensureNode(Id nodeID) {
+	private Node ensureNode(Id nodeID) {
 		Node n = getNode(nodeID);
 		if (null == n) {
 			n = new Node();
@@ -103,15 +116,15 @@ public class Environment {
 
 	
 	/**
-	 * @param parentNode
-	 * @param childNode
+	 * @param sourceNode
+	 * @param destinationNode
 	 * @return
 	 */
-	private boolean internalLink(Node parentNode, Node childNode) {
+	private boolean internalLinkForward(Node sourceNode, Node destinationNode) {
 		//this method is here to prevent the ie. test suite calling link(node, node)
 		//assumes both Nodes exist and are not null params, else expect exceptions
-		boolean ret1 = parentNode.linkForward(childNode);
-		boolean ret2 = childNode.linkBackward(parentNode);
+		boolean ret1 = sourceNode.linkForward(destinationNode);
+		boolean ret2 = destinationNode.linkBackward(sourceNode);
 		if (ret1 ^ ret2) {
 			throw new AssertionError("inconsistent link detected");
 		}
@@ -120,52 +133,50 @@ public class Environment {
 	
 	/**
 	 * this will link the two nodes identified by those IDs<br>
+	 * this will link forward sourceID to destinationID<br>
+	 * and also link backward destinationID to sourceID<br>
 	 * if there is no Node for the specified ID it will be created and mapped to it<br>
-	 * parentID -> childID (the Node object identified by parentID will have its children list contain the Node object identified by childID)<br> 
-	 * parentID <- childID (the Node identified by childID will have its parents list contain the Node object identified by parentID)<br>
-	 * @param parentID
-	 * @param childID
+	 * there will be no linkBackward() because it would be just a matter of exchanging parameter places<br>
+	 * sourceID -> destinationID (the Node object identified by sourceID will have its forward list contain the Node object identified by destinationID)<br> 
+	 * sourceID <- destinationID (the Node identified by destinationID will have its backwards list contain the Node object identified by sourceID)<br>
+	 * @param sourceID ie. backward
+	 * @param destinationID ie. forward
 	 * @throws Exception if ID to Node mapping fails
 	 * @transaction protected
 	 */
-	public boolean link(Id parentID, Id childID) throws Exception {
+	public boolean linkForward(Id sourceID, Id destinationID) throws Exception {
 		//1.it will create empty Node objects if they don't already exist
 		//2.map them to IDs
 		//3.THEN link them
 		
-		boolean parentCreated = false;
-		Node parentNode = getNode(parentID);//fetch existing Node
-		if (null == parentNode) {
+		boolean sourceCreated = false;
+		Node sourceNode = getNode(sourceID);//fetch existing Node
+		if (null == sourceNode) {
 			//ah there was no existing Node object with that ID
 			//we create a new one
-			parentNode = ensureNode(parentID);
-//			new Node(this);
-			parentCreated = true;
-//			internalMapIDToNode(parentID, parentNode);
+			sourceNode = ensureNode(sourceID);
+			sourceCreated = true;
 		}
 		
-		boolean childCreated = false;
-		Node childNode = getNode(childID);//fetch existing Node identified by childID
-		if (null == childNode) {
+		boolean destinationCreated = false;
+		Node destinationNode = getNode(destinationID);//fetch existing Node identified by destinationID
+		if (null == destinationNode) {
 			//nothing existing? create one
-			childNode = ensureNode(childID);
-			childCreated = true;
-			//internalMapIDToNode(childID, childNode);
+			destinationNode = ensureNode(destinationID);
+			destinationCreated = true;
 		}
 		
 		boolean ret=false;
 		try {
-			ret = internalLink(parentNode, childNode);//link the Node objects
+			ret = internalLinkForward(sourceNode, destinationNode);//link the Node objects
 		} catch (Exception e) {
 			try {
-				if (parentCreated) {
-					//if it was a new Node we just created above then we need to map ID to Node
-//					internalUnMapIDToNode(parentID, parentNode);
-					removeNode(parentID);
+				if (sourceCreated) {
+					removeNode(sourceID);
 				}
 
-				if (childCreated) {
-					removeNode(childID);
+				if (destinationCreated) {
+					removeNode(destinationID);
 				}
 			} catch (Exception f) {
 				e.printStackTrace();
@@ -178,7 +189,7 @@ public class Environment {
 	
 	/**
 	 * remove the mapping between Node and its ID<br>
-	 * basically it will unmap the ID from the Node object only if the Node object has no children and no parents
+	 * basically it will unmap the ID from the Node object only if the Node object has no forward and no backwards
 	 * @param nodeID
 	 * @return the removed Node
 	 */
@@ -195,60 +206,107 @@ public class Environment {
 	}
 		
 	/**
-	 * @param parentID
-	 * @param childID
+	 * @param sourceID
+	 * @param destinationID
 	 * @return
 	 */
-	public boolean isLink(Id parentID, Id childID) {
-		Debug.nullException(parentID, childID);
-		Node parentNode = this.getNode(parentID);
-		Node childNode = this.getNode(childID);
-		if ( (null != parentNode) && (null != childNode) ) {
-			return internalIsLink(parentNode, childNode);
+	public boolean isLinkForward(Id sourceID, Id destinationID) {
+		Debug.nullException(sourceID, destinationID);
+		Node sourceNode = this.getNode(sourceID);
+		Node destinationNode = this.getNode(destinationID);
+		if ( (null != sourceNode) && (null != destinationNode) ) {
+			return internalIsLinkForward(sourceNode, destinationNode);
 		}
-		//parent OR child doesn't exist hence neither the link
+		//backward OR forward doesn't exist hence neither the link
 		return false;
 	}
 
 	/**
-	 * parentNode -> childNode<br>
-	 * parentNode <- childNode<br>
-	 * @param parentNode
-	 * @param childNode
+	 * sourceNode -> destinationNode<br>
+	 * sourceNode <- destinationNode<br>
+	 * @param sourceNode
+	 * @param destinationNode
 	 * @return true if (mutual) link between the two nodes exists
 	 */
-	private boolean internalIsLink(Node parentNode, Node childNode) {
-		Debug.nullException(parentNode, childNode);
-		boolean one = parentNode.isLinkForward(childNode);
-		boolean two = childNode.isLinkBackward(parentNode);
+	private boolean internalIsLinkForward(Node sourceNode, Node destinationNode) {
+		Debug.nullException(sourceNode, destinationNode);
+		boolean one = sourceNode.isLinkForward(destinationNode);
+		boolean two = destinationNode.isLinkBackward(sourceNode);
 		if (one ^ two) {
 			throw new AssertionError("inconsistent link detected");
 		}
 		return one;
 	}
 	
-	public boolean unLink(Id parentId, Id childId) {
-		Debug.nullException(parentId, childId);
-		Node parentNode = this.getNode(parentId);
-		Node childNode = this.getNode(childId);
-		if ((null != parentNode) && (null != childNode)) {
-			return internalUnLink(parentNode, childNode);
+	public boolean unLinkForward(Id backwardId, Id forwardId) {
+		Debug.nullException(backwardId, forwardId);
+		Node sourceNode = this.getNode(backwardId);
+		Node destinationNode = this.getNode(forwardId);
+		if ((null != sourceNode) && (null != destinationNode)) {
+			return internalUnLinkForward(sourceNode, destinationNode);
 		}
 		return false;
 	}
 	
 	/**
-	 * @param parentNode
-	 * @param childNode
+	 * @param sourceNode
+	 * @param destinationNode
 	 * @return true if link existed before call; false if it didn't exist before call; either way it no longer exists after call
 	 */
-	private boolean internalUnLink(Node parentNode, Node childNode) {
-		Debug.nullException(parentNode, childNode);
-		boolean one = parentNode.unLinkForward(childNode);
-		boolean two = childNode.unLinkBackward(parentNode);
+	private boolean internalUnLinkForward(Node sourceNode, Node destinationNode) {
+		Debug.nullException(sourceNode, destinationNode);
+		boolean one = sourceNode.unLinkForward(destinationNode);
+		boolean two = destinationNode.unLinkBackward(sourceNode);
 		if (one ^ two) {
 			throw new AssertionError("inconsistent link detected");
 		}
 		return one;
+	}
+
+	public int getSize(Id nodeID, List list) {
+		Node n = getNode(nodeID);
+		if (null == n) {
+			throw new NoSuchElementException("inexistent Node, in the environment");
+		}
+		return n.getList(list).size();
+	}
+
+	public NodeParser getParser(Id nodeID, List list, Location location) {
+		Parser p = new Parser(nodeID, list, location);
+		return p;
+	}
+	
+	private class Parser implements NodeParser {
+
+		NodeRef current = null;
+		NodeRefsList nrl = null;
+		//TODO parser for NodeRefsList
+		//TODO remove L1 and L2 from NodeRefsList by generalizing to RefsList or so
+		public Parser(Id nodeID, List list, Location location) {
+			//this(nodeID, list, location, null);
+			Debug.nullException(nodeID, list, location);
+			Node n = getNode(nodeID);
+			Debug.nullException(n);
+			nrl = n.getList(list);
+			Debug.nullException(nrl);
+			current = nrl.getNodeRefAt(location);//could be null
+		}
+
+		@Override
+		public Id getCurrentID() {
+			if (current == null) {
+				return null;
+			}
+			Node n = current.getNode();
+			Id i = getID(n);
+			return i;//could be null
+		}
+
+		@Override
+		public void go(Location location) {
+			//TODO when list is modified, add a variable that's incremented on add/replace/move in NodeRefsList_L1, copy it here
+			current = nrl.getNodeRefAt(location, current);
+		}
+		
 	}
 }

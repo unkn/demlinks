@@ -55,7 +55,7 @@ public class NodeRefsList_L2 extends NodeRefsList_L1 {
 	 * @param node_L0
 	 * @return
 	 */
-	public final NodeRef getNodeRef_L0(Node node_L0) {
+	public final NodeRef getNodeRef_L0(Node node_L0) {//TODO generalize NodeRef and NodeRefsList
 		Debug.nullException(node_L0);
 		NodeRef parser = getFirstNodeRef();
 		while (null != parser) {

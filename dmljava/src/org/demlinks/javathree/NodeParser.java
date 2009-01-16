@@ -1,5 +1,5 @@
 /*  Copyright (C) 2005-2008 AtKaaZ <atkaaz@users.sourceforge.net>
- 	
+
  	This file and its contents are part of DeMLinks.
 
     DeMLinks is free software: you can redistribute it and/or modify
@@ -14,10 +14,14 @@
 
     You should have received a copy of the GNU General Public License
     along with DeMLinks.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
 package org.demlinks.javathree;
 
-public enum List {
-	FORWARD, BACKWARD
+public interface NodeParser {
+
+	Id getCurrentID();
+
+	void go(Location location);
+
 }

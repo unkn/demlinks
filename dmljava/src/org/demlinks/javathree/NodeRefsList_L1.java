@@ -205,7 +205,7 @@ public class NodeRefsList_L1 {
 			return locationNodeRef.getNext();
 		case FIRST:
 		case LAST:
-			throw new AssertionError("use the other method.");
+			return getNodeRefAt(location);
 		default:
 			throw new AssertionError("undefined location within this context");
 		}
