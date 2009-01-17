@@ -18,6 +18,8 @@
 
 package org.demlinks.javathree;
 
+import org.demlinks.debug.Debug;
+
 public class Id {
 	private String content=null;
 	

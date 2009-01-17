@@ -77,7 +77,6 @@ public class EnvironmentTest {
 		assertFalse( env.linkForward(allChars,__A) );
 		assertFalse( env.linkForward(allChars,new Id("A")) );
 		assertFalse( env.linkForward(allChars,new Id(String.format("%c", 65))) );
-		//assertTrue( env.getNode(allChars).getForwardList().size() == 1);//TODO size of children list of AllChars must be 1 here
 		assertTrue(env.getSize(allChars, List.FORWARD) == 1);
 		addAllChars();
 		
@@ -96,7 +95,7 @@ public class EnvironmentTest {
 		}
 	}
 
-	public void parseTree(Id nodeID, int downToLevel, String whatWas) {//TODO parser
+	public void parseTree(Id nodeID, int downToLevel, String whatWas) {
 		whatWas+=nodeID;
 		if  (downToLevel < 0) {
 			System.out.println(whatWas+" {max level reached}");

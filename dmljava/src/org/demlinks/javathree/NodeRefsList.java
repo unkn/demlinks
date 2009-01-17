@@ -18,6 +18,8 @@
 
 package org.demlinks.javathree;
 
-public class NodeRefsList extends NodeRefsList_L2 {
+import org.demlinks.references.RefsList_L2;
+
+public class NodeRefsList extends RefsList_L2<Node> {
 
 }

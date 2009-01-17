@@ -16,33 +16,32 @@
     along with DeMLinks.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.demlinks.javathree;
+package org.demlinks.references;
 
 import static org.junit.Assert.*;
-
 import org.junit.Before;
 import org.junit.Test;
 
-public class NodeRefTest {
+public class ReferenceTest {
 
-	NodeRef n1,n2,n3;
-	Node nod1;
+	Reference<Object> n1,n2,n3;
+	Object obj1;
 	
 	@Before
 	public void init() {
-		n1 = new NodeRef();
-		n2 = new NodeRef();
-		n3 = new NodeRef();
-		nod1 = new Node();
+		n1 = new Reference<Object>();
+		n2 = new Reference<Object>();
+		n3 = new Reference<Object>();
+		obj1 = new Object();
 	}
 	
 	@Test
-	public void testSetNode() {
-		assertTrue(n1.getNode() == null);
-		n1.setNode(nod1);
-		assertTrue( nod1 == n1.getNode() );
-		n1.setNode(null);
-		assertTrue(null == n1.getNode());
+	public void testSetObject() {
+		assertTrue(n1.getObject() == null);
+		n1.setObject(obj1);
+		assertTrue( obj1 == n1.getObject() );
+		n1.setObject(null);
+		assertTrue(null == n1.getObject());
 	}
 	
 	@Test
@@ -50,8 +49,14 @@ public class NodeRefTest {
 		assertTrue( n1.getPrev() == null );
 		assertTrue( n1.getNext() == null );
 		assertTrue(n1.isAlone());
+		assertTrue(n1.isDead());
 		
+		assertTrue(n2.isAlone());
+		assertTrue(n2.isDead());
 		n2.setNext(n3);
+		assertFalse(n2.isAlone());
+		assertFalse(n2.isDead());
+		
 		assertTrue(n2.getNext() == n3);
 		assertFalse(n3.getPrev() == n2);
 		

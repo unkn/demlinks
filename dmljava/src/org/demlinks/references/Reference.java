@@ -16,54 +16,71 @@
     along with DeMLinks.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.demlinks.javathree;
+package org.demlinks.references;
 
-public class NodeRef {
-	private NodeRef prev=null;
-	private Node node=null;
-	private NodeRef next=null;
+public class Reference<Obj> {
+	private Reference<Obj> prev;
+	private Obj object;
+	private Reference<Obj> next;
 	
-	public void setNode(Node nod) {//even if null
-		node = nod;
+	
+	//constructor
+	public Reference() {
+		initAsDead();
+	}
+	
+	public void setObject(Obj toObject) {//even if null
+		object = toObject;
 	}
 	
 	public boolean isAlone() {
 		return ((prev == null) && (next == null));
 	}
 	
-	/**
-	 * @return the prev
-	 */
-	public NodeRef getPrev() {
+	public Reference<Obj> getPrev() {
 		return prev;
 	}
 
-	/**
-	 * @param prev the prev to set
-	 */
-	public void setPrev(NodeRef prev) {
+	public void setPrev(Reference<Obj> prev) {
 		this.prev = prev;
 	}
 
-	/**
-	 * @return the next
-	 */
-	public NodeRef getNext() {
+	public Reference<Obj> getNext() {
 		return next;
 	}
 
-	/**
-	 * @param next the next to set
-	 */
-	public void setNext(NodeRef next) {
+	public void setNext(Reference<Obj> next) {
 		this.next = next;
 	}
 
 	/**
-	 * @return the node
+	 * @return the object that this reference refers to
 	 */
-	public Node getNode() {
-		return node;
+	public Obj getObject() {
+		return object;
 	}
 
+	/**
+	 * signal that the reference has been removed/destroyed from the list
+	 */
+	public void destroy() {
+		initAsDead();
+	}
+	
+	/**
+	 * after this call, isDead() would return true
+	 */
+	private void initAsDead() {
+		next = prev = null;
+		object = null;
+	}
+	
+	/**
+	 * @return true if this reference is nolonger used in the list
+	 */
+	public boolean isDead() {
+		return (isAlone() && (null == object));
+	}
+	
+	
 }

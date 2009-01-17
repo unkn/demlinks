@@ -18,16 +18,17 @@
 
 package org.demlinks.javathree;
 
+import org.demlinks.references.ReferenceTest;
 import org.junit.runner.*;
 import org.junit.runners.*;
 
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses(value={
-		NodeRefTest.class,
 		NodeTest.class,
 		EnvironmentTest.class,
 		IDToNodeMapTest.class,
+		ReferenceTest.class,
 		})
 		
 public class AllTests {

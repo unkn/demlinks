@@ -20,6 +20,9 @@ package org.demlinks.javathree;
 
 import java.util.NoSuchElementException;
 
+import org.demlinks.debug.Debug;
+import org.demlinks.references.Reference;
+
 
 /**
  *  at this level the Node objects are given String IDs<br>
@@ -278,7 +281,7 @@ public class Environment {
 	
 	private class Parser implements NodeParser {
 
-		NodeRef current = null;
+		Reference<Node> current = null;
 		NodeRefsList nrl = null;
 		//TODO parser for NodeRefsList
 		//TODO remove L1 and L2 from NodeRefsList by generalizing to RefsList or so
@@ -297,7 +300,7 @@ public class Environment {
 			if (current == null) {
 				return null;
 			}
-			Node n = current.getNode();
+			Node n = current.getObject();
 			Id i = getID(n);
 			return i;//could be null
 		}

@@ -18,6 +18,8 @@
 
 package org.demlinks.javathree;
 
+import org.demlinks.debug.Debug;
+
 
 // at this level the Nodes don't have IDs, they're just java objects
 
@@ -53,7 +55,7 @@ public class Node {
 	 */
 	private boolean unPutNodeInList(Node node, NodeRefsList list) {
 		Debug.nullException(node, list);
-		return list.removeNode(node);
+		return list.removeObject(node);
 	}
 	
 	
@@ -100,7 +102,7 @@ public class Node {
 	 */
 	public boolean isLinkForward(Node destinationNode) {
 		Debug.nullException(destinationNode);
-		boolean ret = getList(List.FORWARD).containsNode(destinationNode);
+		boolean ret = getList(List.FORWARD).containsObject(destinationNode);
 		return ret;
 	}
 	
@@ -112,7 +114,7 @@ public class Node {
 	 */
 	public boolean isLinkBackward(Node sourceNode) {
 		Debug.nullException(sourceNode);
-		boolean ret = getList(List.BACKWARD).containsNode(sourceNode);
+		boolean ret = getList(List.BACKWARD).containsObject(sourceNode);
 		return ret;
 	}
 	

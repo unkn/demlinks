@@ -16,7 +16,7 @@
     along with DeMLinks.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package org.demlinks.javathree;
+package org.demlinks.debug;
 
 public final class Debug {
 	/**

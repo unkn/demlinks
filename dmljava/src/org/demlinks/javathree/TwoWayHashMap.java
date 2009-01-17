@@ -22,6 +22,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.demlinks.debug.Debug;
+
 /**
  * provides 1 to 1 mapping between two Objects: Key<->Value<br>
  * can find one given the other ie. get value if you know key and get key if you know value<br>
