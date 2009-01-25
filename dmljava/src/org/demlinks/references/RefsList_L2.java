@@ -1,15 +1,32 @@
+/*  Copyright (C) 2005-2008 AtKaaZ <atkaaz@users.sourceforge.net>
+
+ 	This file and its contents are part of DeMLinks.
+
+    DeMLinks is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    DeMLinks is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with DeMLinks.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package org.demlinks.references;
 
 import org.demlinks.debug.Debug;
 import org.demlinks.javathree.Location;
 
-
 /**
  * handles the NodeRef list at the Node level
- *
+ * 
  */
 public class RefsList_L2<E> extends RefsList_L1<E> {
-	
+
 	/**
 	 * @param location
 	 * @return
@@ -24,7 +41,7 @@ public class RefsList_L2<E> extends RefsList_L1<E> {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * @param obj
 	 * @return
@@ -33,9 +50,11 @@ public class RefsList_L2<E> extends RefsList_L1<E> {
 		Debug.nullException(obj);
 		return (null != this.getRef(obj));
 	}
-	
+
 	/**
-	 * creates a new NodeRef to be added to this list, but it's not added via this method
+	 * creates a new NodeRef to be added to this list, but it's not added via
+	 * this method
+	 * 
 	 * @param obj
 	 * @return
 	 */
@@ -45,7 +64,7 @@ public class RefsList_L2<E> extends RefsList_L1<E> {
 		n.setObject(obj);
 		return n;
 	}
-	
+
 	/**
 	 * @param obj
 	 * @return
@@ -80,7 +99,6 @@ public class RefsList_L2<E> extends RefsList_L1<E> {
 		return null;
 	}
 
-
 	/**
 	 * @param obj
 	 * @return
@@ -93,13 +111,13 @@ public class RefsList_L2<E> extends RefsList_L1<E> {
 		return addLast(nr);
 	}
 
-	//TODO addFirst
-	//TODO insert(Node, Location);
-	//TODO insert(Node, Location, Node);
-	//TODO replace(Node, Node);
-	//TODO replace(Node, Location);
-	//TODO replace(Node, Location, Node);
-	//find+replace current, is not an option 
+	// TODO addFirst
+	// TODO insert(Node, Location);
+	// TODO insert(Node, Location, Node);
+	// TODO replace(Node, Node);
+	// TODO replace(Node, Location);
+	// TODO replace(Node, Location, Node);
+	// find+replace current, is not an option
 	/**
 	 * @param obj
 	 * @return true if existed; either way after call it's removed
@@ -111,7 +129,5 @@ public class RefsList_L2<E> extends RefsList_L1<E> {
 		}
 		return removeRef(nr);
 	}
-	
-	
-	
+
 }

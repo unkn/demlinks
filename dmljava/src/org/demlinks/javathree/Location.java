@@ -14,13 +14,10 @@
 
     You should have received a copy of the GNU General Public License
     along with DeMLinks.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
 package org.demlinks.javathree;
 
 public enum Location {
-	BEFORE,
-	AFTER,
-	FIRST,
-	LAST
+	BEFORE, AFTER, FIRST, LAST, CURRENT
 }

@@ -21,13 +21,15 @@ package org.demlinks.references;
 import org.demlinks.debug.Debug;
 import org.demlinks.javathree.Location;
 
-
 /**
- * a double-linked list of References where no two are alike (no duplicates allowed)<br>
- * these Refs however may contain the same objects thus allowing duplicate objects<br>
- * but the list itself is comprised of unique References;
- * the Refs are unique, but there can be two different Refs pointing to same object<br>
- * no null objects allowed<br>no null Refs allowed<br>
+ * a double-linked list of References where no two are alike (no duplicates
+ * allowed)<br>
+ * these Refs however may contain the same objects thus allowing duplicate
+ * objects<br>
+ * but the list itself is comprised of unique References; the Refs are unique,
+ * but there can be two different Refs pointing to same object<br>
+ * null objects are allowed at this level<br>
+ * no null Refs allowed<br>
  * ability to insert anywhere<br>
  * 
  * this is handled at Ref level, not at object level<br>
@@ -35,10 +37,15 @@ import org.demlinks.javathree.Location;
 public class RefsList_L1<Obje> {
 
 	private int cachedSize; // cached size, prevents parsing the entire list
-	private Reference<Obje> firstRef;//points to first Ref in list, or null if the list is empty
-	private Reference<Obje> lastRef;//points to last Ref in list, or null if the list is empty
-	protected int modCount=0;//increased by 1 on each operation, useful to see if someone else modified the list while using a Parser
-	
+	private Reference<Obje> firstRef;// points to first Ref in list, or null if
+	// the list is empty
+	private Reference<Obje> lastRef;// points to last Ref in list, or null if
+	// the list is empty
+	private int modCount = 0;// increased by 1 on each operation, useful to see
+
+	// if someone else modified the list while using
+	// a Parser
+
 	// constructor
 	/**
 	 * 
@@ -46,32 +53,32 @@ public class RefsList_L1<Obje> {
 	RefsList_L1() {
 		setListToEmpty();
 	}
-	
+
 	private void setModified() {
 		modCount++;
 	}
-	
+
 	public int getModified() {
 		return modCount;
 	}
-	
+
 	/**
 	 * 
 	 */
 	private void setListToEmpty() {
-		cachedSize = 0;//increased on add, decreased on remove and related
+		cachedSize = 0;// increased on add, decreased on remove and related
 		firstRef = null;
 		lastRef = null;
 		setModified();
 	}
-	
+
 	/**
 	 * @return
 	 */
 	public int size() {
 		return cachedSize;
 	}
-	
+
 	/**
 	 * @return
 	 */
@@ -81,26 +88,28 @@ public class RefsList_L1<Obje> {
 
 	/**
 	 * @param newLastRef
-	 * @return false if already exists; true if it didn't but it does now after call
+	 * @return false if already exists; true if it didn't but it does now after
+	 *         call
 	 */
 	public boolean addLast(Reference<Obje> newLastRef) {
 		Debug.nullException(newLastRef);
 		if (containsRef(newLastRef)) {
-			return false;//already exists
+			return false;// already exists
 		}
-		if (!newLastRef.isAlone()) {//this allows null objects
-			throw new AssertionError("the new Ref must be empty, because we fill next and prev.");
+		if (!newLastRef.isAlone()) {// this allows null objects
+			throw new AssertionError(
+					"the new Ref must be empty, because we fill next and prev.");
 		}
 		setModified();
-		if (lastRef == null) {//list is initially empty
+		if (lastRef == null) {// list is initially empty
 			lastRef = firstRef = newLastRef;
-		} else {//list not empty
+		} else {// list not empty
 			lastRef.setNext(newLastRef);
 			newLastRef.setPrev(lastRef);
 			lastRef = newLastRef;
 		}
 		cachedSize++;
-		setModified();//again
+		setModified();// again
 		return true;
 	}
 
@@ -127,34 +136,35 @@ public class RefsList_L1<Obje> {
 		if (!containsRef(killRef)) {
 			return false;
 		}
-		
+
 		setModified();
-		
-		Reference<Obje> prev = killRef.getPrev();//beware if you remove this local var
+
+		Reference<Obje> prev = killRef.getPrev();// beware if you remove this
+		// local var
 		Reference<Obje> next = killRef.getNext();
 		if (prev != null) {
 			prev.setNext(next);
-			//killRef.setPrev(null);//beware
+			// killRef.setPrev(null);//beware
 		} else {
 			if (firstRef == killRef) {
-				firstRef = next;//can be null
+				firstRef = next;// can be null
 			} else {
 				throw new AssertionError("compromised integrity of list");
 			}
 		}
-		
+
 		if (next != null) {
-			next.setPrev(prev);//beware
-			//killRef.setNext(null);
+			next.setPrev(prev);// beware
+			// killRef.setNext(null);
 		} else {
 			if (lastRef == killRef) {
-				lastRef = prev;//can be null
+				lastRef = prev;// can be null
 			} else {
 				throw new AssertionError("compromised integrity of list (2)");
 			}
 		}
-		
-		//killRef.setObject(null);
+
+		// killRef.setObject(null);
 		killRef.destroy();
 		cachedSize--;
 		setModified();
@@ -163,7 +173,8 @@ public class RefsList_L1<Obje> {
 
 	/**
 	 * @param whichRef
-	 * @return true if the reference already exists; doesn't matter to what object it points to
+	 * @return true if the reference already exists; doesn't matter to what
+	 *         object it points to
 	 */
 	public boolean containsRef(Reference<Obje> whichRef) {
 		Debug.nullException(whichRef);
@@ -177,7 +188,6 @@ public class RefsList_L1<Obje> {
 		return false;
 	}
 
-	
 	public Reference<Obje> getNodeRefAt(Location location) {
 		switch (location) {
 		case FIRST:
@@ -193,33 +203,141 @@ public class RefsList_L1<Obje> {
 	 * @param location
 	 * @param locationNodeRef
 	 * @return
+	 * @throws Exception
 	 */
-	public Reference<Obje> getNodeRefAt(Location location, Reference<Obje> locationNodeRef) {
-		if (locationNodeRef != null){
-			if (!this.containsRef(locationNodeRef)) {
-				return null;
-			}
+	public Reference<Obje> getNodeRefAt(Location location,
+			Reference<Obje> locationNodeRef) throws Exception {
+
+		Debug.nullException(location, locationNodeRef);
+
+		if (!this.containsRef(locationNodeRef)) {// this will unfortunately
+			// parse the list until it
+			// finds it
+			return null;
 		}
+
 		switch (location) {
 		case BEFORE:
 			if (locationNodeRef == null) {
-				return getLastRef();
+				// return getLastRef();
+				throw new Exception();
 			}
 			return locationNodeRef.getPrev();
+
 		case AFTER:
 			if (locationNodeRef == null) {
-				return getFirstRef();
+				// return getFirstRef();
+				throw new Exception();
 			}
 			return locationNodeRef.getNext();
+
 		case FIRST:
 		case LAST:
 			return getNodeRefAt(location);
+
 		default:
 			throw new AssertionError("undefined location within this context");
 		}
 	}
-	
-	//TODO move method that will delete Ref and create a new one OR not
-	//TODO addFirst or generalize addLast to insert(whatRef, location, locationRef)
-	//TODO parser
+
+	public Parser<Obje> getParser() {
+		return new RefsListParser();
+	}
+
+	// TODO make this class public
+	private class RefsListParser implements Parser<Obje> {
+
+		// the list we're working on, is already being referred to, no need to
+		// keep a ref to it
+		Reference<Obje> current;
+		Reference<Obje> copyOfCurrent;
+		private int modCount;
+
+		// constructor
+		public RefsListParser() {
+			current = null;
+			copyCurrent();
+			updateModStatus();
+		}
+
+		private void copyCurrent() {
+			if (null == current) {
+				copyOfCurrent = null;
+				return;
+			}
+			copyOfCurrent = new Reference<Obje>(current);
+		}
+
+		/**
+		 * @return true if current is null OR current was modified
+		 */
+		@Override
+		public boolean isUndefined() {
+			// TODO
+			return ((null == current) || (!current.equals(copyOfCurrent)));
+		}
+
+		/**
+		 * tell the iterator to ignore if the list wasn't modified through
+		 * itself
+		 */
+		public void updateModStatus() {
+			this.modCount = RefsList_L1.this.modCount;
+		}
+
+		/**
+		 * @return true if the list was modified NOT using this iterator
+		 */
+		public boolean modStatus() {
+			return (this.modCount != RefsList_L1.this.modCount);
+		}
+
+		@Override
+		public Reference<Obje> getCurrentRef() {
+			return current;
+		}
+
+		@Override
+		public boolean go(Location location) throws Exception {
+			Debug.nullException(location);
+			switch (location) {
+			case FIRST:
+			case LAST:
+				current = getNodeRefAt(location);
+				break;
+
+			case BEFORE:
+			case AFTER:
+				if (isUndefined()) {
+					throw new Exception("undefined state");
+				}
+				current = getNodeRefAt(location, current);
+				break;
+			default:
+				throw new AssertionError(
+						"undefined location within this context");
+			}
+
+			copyCurrent();
+			return (null != current);
+		}
+
+		@Override
+		public boolean go(Location location, Reference<Obje> locationRef) {
+			// TODO Auto-generated method stub
+			return false;
+		}
+
+		@Override
+		public boolean remove(Location location) {
+			// TODO Auto-generated method stub
+			return false;
+		}
+
+	}
+
+	// TODO move method that will delete Ref and create a new one OR not
+	// TODO addFirst or generalize addLast to insert(whatRef, location,
+	// locationRef)
+	// TODO parser
 }

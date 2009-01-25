@@ -1,0 +1,328 @@
+The monologue of life
+or the draft that helps(?) me think.
+
+You noticed the use of an antonym as the fourth word of this filename. That's because it would very boring for anyone to read, I project not even I would (even like to) read it.
+It just helped me keep track of what my thoughts were at the time of writing it and maybe doing something aka writting helped my body stay focused on the thoughts, which may be better for me than just sitting and imagining all.
+
+
+
+So, we have an iterator
+ok well we have this list that has elements
+whatever these elements are is a little bit irrelevant
+the list is actually composed of references to these elements
+supposedly the caller(user) has a list of elements, and this list is keeping those elements by using references to them
+
+now I need an iterator to parse the list from first to last
+go to any element by stating it ie. list.find(e)
+go to next/prev of current element
+go to first/last element in list
+also operations that the list can do w/o the iterator, done thru the iterator
+list.replace(e,f)
+oh the list can contain only unique elements, there are no two elements that are the same
+hmm lmc
+certainly the references to those elements must be unique, otherwise list would cycle
+now I know from demlinks that Nodes must be unique(as elements) in this list(so list of unique elements)
+if you do iterator.goto(e) and e is more than one time in that list(e is an element, not a ref)
+then that would be problematic; go to which e? first occurence? last occurence?
+since I'm making this list be for Nodes, and by definition a list of Nodes is a list of unique Nodes that is
+each node appears only once in that list and yes we can have duplicate Nodes at the next level
+
+so, list of unique refs and unique nodes; a node can appear on many other lists; a ref can only be in one list
+this list will be double linked list, using refs that have a next and a prev ref, with first ref having null prev
+and last having null next; the refs have an object field which refs the element the reference represents
+
+if I'm doing a e = list.get(Location.LAST) and then I do list.remove(LAST) and then
+Im using e assuming it still exists in the list, well im going down the buggy road
+not even considering multi threads using the same list
+
+reading an element actually means what? caching it? making a copy of it?
+caching it and making a copy of it, are not the same thing hmm
+caching it means if the element dies so should the variable that it was read in
+copying it means the variable that it got copied into is not independent of the original element
+assuming reading and element means caching it
+e = list.get(Location.LAST) caches the element into e, supposedly.
+then if you execute list.remove(e) (sortof) and then println(e) technicly it should err at println
+actually you execute list.remove(LAST) so e still has the copy or rather the reference to the element
+but if remove did a fill of the removed element, somehow filled it with zeroes(which it probably didn't because it would only do fill the reference referring to it)
+then the println would display nothing
+yeah sure since the element was existent outside of the list why should the list.remove() attempt to destroy the element, rather than just unlink it from itself
+well ok, it will just unlink the element and not touch it, rather modify the parts that pertain to the list itself, the element is not a part of this list even if a reference of this list will point to it
+
+yadayada, now
+so we read the element with list.get() then if we use it assuming it's still in the list... not good
+in other words the caller would have to know exactly what (s)he's doing
+cannot guarantee consistency by building code inside the list if the caller, outside of list, would call get then remove then use the gotten element and assume it's still in the list
+
+how would the iterator act like? would it keep the current element at all time?
+or just get an element as a parameter and go from there like list.goto(e, AFTER), go after e, that is e.next
+which will return null or the element next to e
+that wouldn't require a parser
+but on each call the list would have to parse itself to find element e and then go AFTER
+while, holding current element inside an iterator variable or rather holding the current reference, would just mean u'd do current.next
+ofc poisoning the iterator by the caller wouldn't be allowed ie. iterator.setRef() or anything like that
+
+so bad thing with e = list.goto(e, AFTER) where initially e=null meaning get first, and repeat that goto until e is null aka at the end of list
+would parse it neatly, but on each call would have to parse it until e again
+maybe if e is the ref instead of the element, let's see
+Ref r = null;
+do {
+r = list.goto(r, AFTER);
+println(r.getElement());
+} while (r!=null);  
+
+more or less would parse the list by using r.next() now the problem with that would be
+how do we know if ref r is from this list w/o seeking it up and verying it's from this list
+we could add a variable inside the ref var that would point to the list this ref's pertaining to
+because a ref can only pertain to one list
+on the other hand this is the ref that we store in the list, and we don't want each of them having a pointer to parent list
+so we can make up a new class Iterator, that will keep in mind the ref and the list it's operating on
+
+Iterator i = null;
+do {
+i = list.goto(i, AFTER);
+println(r.getElement());
+} while (i != null);
+when executing list.goto(null, AFTER) it would get FIRST
+when (null, BEFORE) it will get LAST
+now let's see if we can use i.get(AFTER);
+Iterator i = list.getIterator(); //initially nowhere
+do {
+i.go(AFTER);//first time will get FIRST, then AFTER first
+println(i.getCurrent());
+} while (i.hasNext());
+
+can also use an i.go(FIRST) before "do" but that would mean we'd skip the first one
+we can do
+Iterator i = list.getIterator();
+i.go(FIRST);
+while (i.isCurrent()) {
+println(i.getCurrent()));
+i.go(AFTER);
+}
+
+OR
+
+Iterator i = list.getIterator(FIRST);
+while (i.isCurrent()) {
+println(i.getCurrent()));
+i.go(AFTER);
+}
+
+both variants are to be implemented/available
+or, maybe just the first one?! so to not complicate the constructors
+the i.go() would go to that element, if it exists(and return true if so) and keep the reference (the Ref class) of that element
+so a .next and .prev would be easy, w/o the need to check if it's the same list, or if the ref is in the list
+the iterator will know the list it's using ofc. ie. a field with the list (technically a ref to the list, not a copy of this list obviously)
+
+now, the issue is
+i.go(FIRST)
+i.delete(FIRST)
+i.go(AFTER)
+or even
+i.go(e)
+i.delete(e) OR i.delete(CURRENT);
+i.go(AFTER); // where would this AFTER be? e.next? or null.next which would be FIRST
+technically it should error or throw exception/assertion error unless a more specific
+i.go() would be called, after that delete
+like
+i.go(e);
+i.delete(e);
+i.go(FIRST);
+or rather
+i.go(e);
+i.go(AFTER, e);
+i.delete(e);
+hmm
+can we call i.delete(e) or should we only use i.delete() which means current
+or what can we do exactly
+i.go(e) and i.getCurrent()
+f = i.get(AFTER, e) 
+or only i.go(AFTER,e) and i.getCurrent()
+
+so far we have the Iterator class holding a ref to the list and a ref to the current Ref
+doing an i.go() would change current ref
+doing an i.get(AFTER, e) would return that item or rather, would call list.get(AFTER, e) which is valid
+but by calling list.remove(AFTER, e) instead of i.remove(AFTER, e) would make the iterator sense a modification
+which was done not via iterator and hence it should throw unless a call to a specific i.go(FIRST) or i.go(f)
+or i.go(AFTER, f) is done, even i.get(g) should be allowed though, except i.go(AFTER) as in go next
+that should throw unless well, we deleted an item other than current which should be ok to call .next then
+hmm
+too many loose ends so far, let's see
+i.remove(Location, elementLocation) may exist but it won't modify current unless
+i.go(FIRST) and FIRST is before "e" in a list of 2 elements
+then you say i.remove(BEFORE,e) which is the current element, which modifies the reference that's being referred inside Iterator
+so i.getCurrent() would return null, or rather it should throw, not only because we don't allow null elements in this list
+but, i should detect a change occured on the current element, be it replace of element or removal of it from the list, or even moving
+the element, which moving could mean, move the ref or delete and recreate the ref, the latter would leave us with a dead ref as current
+this 1D writting text is not helping with this cascading stuff :)
+would need at least 2D, tree like;
+
+so we have an iterator that holds the current ref or null if none yet, and the list it's operating on
+i.go(element), i.go(location), i.go(location, locationElement);
+these 3 all modify current, to a valid ref inside the list or to null
+and return true if succeeded or false if getCurrent() would return null
+and i.go(location) would throw exception or AssertionError if current is null or
+current was modified somehow; only i.go(AFTER/BEFORE) not FIRST/LAST
+but calling the other two i.go(element)or i.go(loc, locElem) would reset this
+and subsequent calls to i.go(location) would not throw
+
+now how would this iterator detect if the current ref has been modified
+it could hold a copy of it, remember that it currently only holds a ref to the Ref
+so if the Ref gets moved (thus having only next/prev modified) having a ref to this Ref
+the iterator wouldn't know, but holding a copy of that Ref which implies holding only
+3 refs, a ref to next a ref to prev and a ref to element; if any of these gets modified
+i.go(location) where location is AFTER/BEFORE (not FIRST/LAST) would throw.
+
+if we do a 
+i.go(e)
+and list.remove(e) or even i.remove(e)
+should be the same
+there wouldn't be a need for a list.modCount to detect modifications to the list
+why? because i.go(location, locationelement) implies that the caller knows what he's doing
+and if he's doing a i.go(AFTER) after a i.remove() of current, that will throw.
+
+we may still have an i.wasModifiedByExternals() return true if someone other than
+via this iterator variable modified this list, which will imply having a list.modCount
+and copying this modCount inside the iterator and checking the two modCounts if they
+differ, and updating the i.modCount when iterator does mod operations via itself.
+
+multiverse
+
+so what do we have
+iterator
+we may need an i.updateModStatus() which will do i.modCount = list.modCount;
+and i.modStatus() returning as above, true if if was modified using list and not i
+probably not needed though, maybe for extra bug checking, or consistency ensuring
+
+so if the caller decides to call list.remove() or any list mod operation while using
+an active iterator, he can then call i.updateModStatus() to prevent i.modStatus() to return true
+or even, any of the i methods could throw if i.modStatus() would return true
+that will depend on implementation
+
+so, iterator has a ref to current Ref, and the Ref is one of the items in the list, and Ref.object is the element
+iterator also has a ref to the list it's operating on
+also a copy of the current Ref, so it can compare the copy and the Ref and if not equal
+then assume current was changed somehow and then throw if i.go(BEFORE/AFTER) is called (only that call)
+will not throw if any other was called that reseted basically that told us that the caller knows what he's doing
+and this isn't a logical bug introduced by the caller being unaware or so
+
+there are indeed many assumption here, in my writing and in thinking.
+
+
+now, let's make this Iterator aka Parser, for the list that contains only References, at this level
+so assume there are no elements, basically the elements are the References
+so the list has unique Refs
+at this level, on the next level it will have Refs point to elements
+
+now after getting the parser p = list.getParser()
+p.go(AFTER); should this return FIRST or should it throw because it wasn't initialized?
+I think for the sake of consistency it should throw, better to have less assumptions, after all defaults are evil :) main cause of bugs?
+the code will then look like this:
+Parser<Obj> p = list.getParser();
+if (p.go(FIRST)) {
+	while (p.isCurrent()) {
+		println(p.getCurrent());
+		p.go(AFTER);
+	}
+}
+
+p.updateModStatus()
+p.modStatus();
+
+p.remove(location)
+p.remove(FIRST/LAST);
+p.remove(AFTER/BEFORE);
+p.remove();//current? tricky isn't it?!
+remove current can be done but after it, the caller should call a method that resets again
+that is, p.go(FIRST) or p.get(FIRST) but nothing like p.go(AFTER/BEFORE) 
+or p.remove(AFTER/BEFORE) no; they will throw
+ 
+Parser<Obj> p = list.getParser();
+assert true == p.isUndefined();
+
+if we remove current then assert true == p.isUndefined();
+----------
+
+if iterator.add(newe, BEFORE/AFTER);
+then the current won't change; you'll simply need to iterator.go(BEFORE/AFTER) to advance, if needed
+
+do we make RefsListParser private class or public class?
+it doesn't really need to be private class as far as I can see now
+
+so if I want to do a remove(CURRENT) and go(AFTER) all in one call, I can't
+I can workaround and do go(AFTER), remove(BEFORE), but that only if AFTER exists, 
+but if it doesn't both ways wouldn't work anyway;
+if there's only 1 element, then remove(CURRENT) must exist, just in case u were pondering not availing it.
+
+we can make another method, removeAndGo(CURRENT, AFTER); that is remove(CURRENT) and go(AFTER) all in one, w/o the need to exec
+a reset method after it(a method that sets current again)
+
+maybe we can replace remove(CURRENT) with removeCurrentAndGo(AFTER) - just for current
+ok so let's see:
+we need add, remove, replace, move, go
+ADD Elem: BEFORE/AFTER current, FIRST/LAST, BEFORE/AFTER element X
+REMOVE Elem: BEFORE/AFTER current, FIRST/LAST, BEFORE/AFTER elem X, elem X
+REMOVE CURRENT: just current, and then GO
+REPLACE: BEFORE/AFTER current, FIRST/LAST, BEFORE/AFTER elem X, CURRENT, elem X
+GO: BEFORE/AFTER current/elem X, FIRST/LAST, AT elem X
+MOVE: CURRENT, BEFORE/AFTER current/elem X, FIRST/LAST
+EXCHANGE: ...
+
+ADD:
+i.add(newE, BEFORE/AFTER) //current
+i.add(newE, FIRST/LAST)
+i.add(newE, BEFORE/AFTER, elemX);
+
+REMOVE: an element other than current
+i.remove(BEFORE/AFTER) //that element which is before/after current
+i.remove(FIRST/LAST)
+i.remove(BEFORE/AFTER, elemX); //that element which is before/after elemX
+i.remove(elemX) //specific element
+
+REMOVE: current
+i.removeCurrentAndGo(BEFORE/AFTER); //go before/after current, after removing it
+i.removeCurrentAndGo(FIRST/LAST);
+i.removeCurrentAndGo(BEFORE/AFTER, elemX);
+i.removeCurrentAndGo(elemX); //go at specific element
+
+//what happens here if go fails? maybe we can only employ BEFORE/AFTER, 
+since others can be called after removal of current via go()
+so both removeCurrentAndGo(BEFORE/AFTER) and i.remove(CURRENT) should be available
+except that aftet the latter, the cursor is undefined and must be reset by a GO maybe? or others
+
+REPLACE:
+i.replace(BEFORE/AFTER, withY);
+i.replace(FIRST/LAST, withY);
+i.replace(BEFORE/AFTER, elemX, withY);
+i.replace(elemX, withY);
+i.replace(withY); //replace current with element withY or should we use i.replace(CURRENT, withY) ?
+for the sake of easier understanding, maybe yes ^^
+
+GO:
+i.go(BEFORE/AFTER);
+i.go(FIRST/LAST);
+i.go(BEFORE/AFTER, elemX);
+i.go(elemX);
+
+MOVE:
+i.move(BEFORE/AFTER); //move current before prev elem, or after next elem
+i.move(FIRST/LAST);
+i.move(BEFORE/AFTER, elemX); //move current there
+i.move(whichY, BEFORE/AFTER);//move whichY element before/after current
+i.move(whichY, FIRST/LAST);
+i.move(whichY, BEFORE/AFTER, elemX);//whichY and elemX can be the same element here
+
+EXCHANGE:
+i.exchange(BEFORE/AFTER); //exchange current with the element that is before/after current
+i.exchange(FIRST/LAST);
+i.exchange(BEFORE/AFTER, elemX);
+i.exchange(elemX); //exchange current with elemX
+i.exchange(whichY, elemX); //exchange the two elements; they can't be the same element
+i.exchange(whichY, BEFORE/AFTER, elemX); //whichY and elemX should not be the same here
+
+//what happens after exchanging current with some other element?
+does the cursor follow current or remains in the same place, hence current elem under cursor will be the exchanged element
+in other words the cursor keeps position in the list?!
+same thing with MOVE, if you MOVE current somewhere in the list, does the cursor follow it? or it gets undefined or
+or it needs to have a method like i.removeCurrentAndGo(BEFORE/AFTER)
+

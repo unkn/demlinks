@@ -16,12 +16,23 @@
     along with DeMLinks.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.demlinks.javathree;
+package org.demlinks.references;
 
-public interface NodeParser {
+import org.demlinks.javathree.Location;
 
-	Id getCurrentID();
+public interface Parser<Obj> {
 
-	void go(Location location) throws Exception;
+	Reference<Obj> getCurrentRef();
+
+	public boolean isUndefined();
+
+	boolean go(Location location) throws Exception;
+
+	boolean go(Location location, Reference<Obj> locationRef);
+
+	/**
+	 * @return true if existed
+	 */
+	boolean remove(Location location);
 
 }

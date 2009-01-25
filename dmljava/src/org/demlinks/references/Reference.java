@@ -18,25 +18,45 @@
 
 package org.demlinks.references;
 
+import org.demlinks.debug.Debug;
+
 public class Reference<Obj> {
 	private Reference<Obj> prev;
 	private Obj object;
 	private Reference<Obj> next;
-	
-	
-	//constructor
+
+	// constructor
 	public Reference() {
 		initAsDead();
 	}
-	
-	public void setObject(Obj toObject) {//even if null
+
+	// clone constructor
+	public Reference(Reference<Obj> cloneThis) {
+		initAsDead();
+		Debug.nullException(cloneThis);
+		this.prev = cloneThis.prev;
+		this.next = cloneThis.next;
+		this.object = cloneThis.object;
+	}
+
+	public boolean equals(Reference<Obj> compareObj) {
+		if ((this.prev == compareObj.prev) && (this.next == compareObj.next)
+				&& (this.object == compareObj.object)) {
+			return true;
+		}
+		return false;
+		// I thought compareObj.prev is private, and yet I'm still able to
+		// access it O_o
+	}
+
+	public void setObject(Obj toObject) {// even if null
 		object = toObject;
 	}
-	
+
 	public boolean isAlone() {
 		return ((prev == null) && (next == null));
 	}
-	
+
 	public Reference<Obj> getPrev() {
 		return prev;
 	}
@@ -66,7 +86,7 @@ public class Reference<Obj> {
 	public void destroy() {
 		initAsDead();
 	}
-	
+
 	/**
 	 * after this call, isDead() would return true
 	 */
@@ -74,13 +94,12 @@ public class Reference<Obj> {
 		next = prev = null;
 		object = null;
 	}
-	
+
 	/**
 	 * @return true if this reference is nolonger used in the list
 	 */
 	public boolean isDead() {
 		return (isAlone() && (null == object));
 	}
-	
-	
+
 }
