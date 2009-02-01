@@ -270,14 +270,14 @@ EXCHANGE: ...
 
 ADD:
 i.add(newE, BEFORE/AFTER) //current
-i.add(newE, FIRST/LAST)
-i.add(newE, BEFORE/AFTER, elemX);
+*i.add(newE, FIRST/LAST)
+*i.add(newE, BEFORE/AFTER, elemX);
 
 REMOVE: an element other than current
 i.remove(BEFORE/AFTER) //that element which is before/after current
-i.remove(FIRST/LAST)
-i.remove(BEFORE/AFTER, elemX); //that element which is before/after elemX
-i.remove(elemX) //specific element
+*i.remove(FIRST/LAST)//this could be current though, which means an i.go() is needed just after the call
+*i.remove(BEFORE/AFTER, elemX); //that element which is before/after elemX; removed element could be the current element!!!!
+*i.remove(elemX) //specific element ; elemX could be current
 
 REMOVE: current
 i.removeCurrentAndGo(BEFORE/AFTER); //go before/after current, after removing it
@@ -292,9 +292,9 @@ except that aftet the latter, the cursor is undefined and must be reset by a GO 
 
 REPLACE:
 i.replace(BEFORE/AFTER, withY);
-i.replace(FIRST/LAST, withY);
-i.replace(BEFORE/AFTER, elemX, withY);
-i.replace(elemX, withY);
+*i.replace(FIRST/LAST, withY);
+*i.replace(BEFORE/AFTER, elemX, withY);
+*i.replace(elemX, withY);
 i.replace(withY); //replace current with element withY or should we use i.replace(CURRENT, withY) ?
 for the sake of easier understanding, maybe yes ^^
 
@@ -309,20 +309,38 @@ i.move(BEFORE/AFTER); //move current before prev elem, or after next elem
 i.move(FIRST/LAST);
 i.move(BEFORE/AFTER, elemX); //move current there
 i.move(whichY, BEFORE/AFTER);//move whichY element before/after current
-i.move(whichY, FIRST/LAST);
-i.move(whichY, BEFORE/AFTER, elemX);//whichY and elemX can be the same element here
+*i.move(whichY, FIRST/LAST);
+*i.move(whichY, BEFORE/AFTER, elemX);//whichY and elemX can be the same element here
 
 EXCHANGE:
 i.exchange(BEFORE/AFTER); //exchange current with the element that is before/after current
 i.exchange(FIRST/LAST);
 i.exchange(BEFORE/AFTER, elemX);
 i.exchange(elemX); //exchange current with elemX
-i.exchange(whichY, elemX); //exchange the two elements; they can't be the same element
-i.exchange(whichY, BEFORE/AFTER, elemX); //whichY and elemX should not be the same here
+*i.exchange(whichY, elemX); //exchange the two elements; they can't be the same element
+*i.exchange(whichY, BEFORE/AFTER, elemX); //whichY and elemX should not be the same here
 
 //what happens after exchanging current with some other element?
 does the cursor follow current or remains in the same place, hence current elem under cursor will be the exchanged element
 in other words the cursor keeps position in the list?!
 same thing with MOVE, if you MOVE current somewhere in the list, does the cursor follow it? or it gets undefined or
 or it needs to have a method like i.removeCurrentAndGo(BEFORE/AFTER)
+
+---------
+maybe we can call a method that will set some default if something happens to current that makes it unavailable
+if you do i.remove(FIRST) and current element happens to be first in list, and you don't really know when it is or if it is,
+and you don't want to be IF-ing around after or before each i.remove(), then you can set some defaults that say what will happen
+when current gets unavailable: something like i.go(AFTER)
+OR, just forget about it and let the caller do the proper i.go calls that he wants, assuming he knows what he's doing
+which implies throwing exceptions if he doesn't (or rather didn't)
+
+the methods above marked with a * star, are to be available thru list. too
+and iterator(or parser) will use them via list
+maybe those like list.exchange(whichY, BEFORE/AFTER, elemX); could be reduced to:
+list.exchange(whichY, list.get(AFTER,elemX) );
+
+--------
+methods available via list class:
+add(newE, FIRST/LAST) //wrapper for the next method:
+add(newE, BEFORE/AFTER, elemX);
 
