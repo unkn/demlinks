@@ -79,7 +79,7 @@ public class RefsList_L1Test {
 		assertTrue(refList.addLast(ref3));// null objects can be added in this
 		// list level
 
-		Parser<Object> p = refList.getParser();
+		ListCursor<Object> p = refList.getParser();
 
 		assertTrue(p.isUndefined());
 

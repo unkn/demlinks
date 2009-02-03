@@ -44,7 +44,7 @@ public class RefsList_L1<Obje> {
 	private int modCount = 0;// increased by 1 on each operation, useful to see
 
 	// if someone else modified the list while using
-	// a Parser
+	// a ListCursor
 
 	// constructor
 	/**
@@ -240,12 +240,12 @@ public class RefsList_L1<Obje> {
 		}
 	}
 
-	public Parser<Obje> getParser() {
+	public ListCursor<Obje> getParser() {
 		return new RefsListParser();
 	}
 
 	// TODO make this class public
-	private class RefsListParser implements Parser<Obje> {
+	private class RefsListParser implements ListCursor<Obje> {
 
 		// the list we're working on, is already being referred to, no need to
 		// keep a ref to it

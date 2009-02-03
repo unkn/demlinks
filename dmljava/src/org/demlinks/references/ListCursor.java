@@ -20,7 +20,7 @@ package org.demlinks.references;
 
 import org.demlinks.javathree.Location;
 
-public interface Parser<Obj> {
+public interface ListCursor<Obj> {
 
 	Reference<Obj> getCurrentRef();
 
