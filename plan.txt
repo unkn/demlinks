@@ -1,0 +1,36 @@
+Crap that has to be done
+
+Node
+======================
+NodeList parentsList
+NodeList childrenList
+----------------------
+appendChild(Node);
+appendParent(Node);
+hasChild(Node);
+hasParent(Node);
+
+NodeList
+======================
+* order counts
+getFirstNode()
+getLastNode()
+getNodeAfter(Node)
+getNodeBefore(Node)
+bool hasNode(Node)
+appendNode(Node);
+insertNode(Node, position)
+insertAfterNode(Node new, Node n)
+insertBeforeNode(Node new, Node n)
+removeNode(Node)
+
+
+ListCursor
+======================
+Node begin()
+Node end()
+goto(Node)
+next()
+prev()
+
+
