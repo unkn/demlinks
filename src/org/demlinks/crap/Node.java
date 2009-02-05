@@ -55,10 +55,11 @@ public class Node {
 	 * 
 	 * @param child
 	 * @return true if <tt>this</tt> has <tt>child</tt> in its children list   
+	 * @throws InconsistentTypeCode 
 	 */
-	public boolean hasChild(Node child) {
+	public boolean hasChild(Node child) throws InconsistentTypeCode {
 		// TODO Auto-generated method stub
-		return false;
+		throw new InconsistentTypeCode();
 	}
 
 	/**

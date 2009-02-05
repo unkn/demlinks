@@ -70,5 +70,21 @@ public class NodeTest {
 	public void testInconsistentLink() {
 		assertFalse( parent.internalAppendChild(child) );
 		assertTrue(parent.internalAppendChild(child));
+		
+		boolean excepted = false;
+		try {
+			parent.appendChild(child);
+		}catch (InconsistentTypeCode e) {
+			excepted = true;
+		}
+		assertTrue(excepted);
+		
+		excepted = false;
+		try {
+			parent.hasChild(child);
+		}catch (InconsistentTypeCode e) {
+			excepted = true;
+		}
+		assertTrue(excepted);
 	}
 }
