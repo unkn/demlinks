@@ -23,6 +23,7 @@ insertNode(Node, position)
 insertAfterNode(Node new, Node n)
 insertBeforeNode(Node new, Node n)
 removeNode(Node)
+size()
 
 
 ListCursor

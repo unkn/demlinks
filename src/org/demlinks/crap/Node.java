@@ -1,5 +1,6 @@
 package org.demlinks.crap;
 
+import org.demlinks.debug.Debug;
 import org.omg.CORBA.ORBPackage.InconsistentTypeCode;
 
 public class Node {
@@ -24,12 +25,14 @@ public class Node {
 	 * @throws InconsistentTypeCode if half of the link existed before call
 	 */
 	public boolean appendChild(Node child) throws InconsistentTypeCode {
+		Debug.nullException(child);
 		boolean existed1 = this.internalAppendChild(child);
 		boolean existed2 = child.internalAppendParent(this);
 		if (existed1 ^ existed2) {
 			//if either one existed, then inconsistent link detected
 			//somewhere something made a boo boo
 			throw new InconsistentTypeCode("inconsistent link detected");
+			//TODO make own exception here
 		}
 		return existed1;//should be same value as existed2
 	}
@@ -58,6 +61,7 @@ public class Node {
 	 * @throws InconsistentTypeCode 
 	 */
 	public boolean hasChild(Node child) throws InconsistentTypeCode {
+		Debug.nullException(child);
 		// TODO Auto-generated method stub
 		throw new InconsistentTypeCode();
 	}
@@ -69,6 +73,7 @@ public class Node {
 	 * @return true if <tt>this</tt> has <tt>parent</tt> in its parents list
 	 */
 	public boolean hasParent(Node parent) {
+		Debug.nullException(parent);
 		// TODO Auto-generated method stub
 		return false;
 	}
