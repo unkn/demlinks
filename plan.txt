@@ -13,6 +13,8 @@ hasParent(Node);
 NodeList
 ======================
 * order counts
+* no null elements
+* elements are unique
 getFirstNode()
 getLastNode()
 getNodeAfter(Node)

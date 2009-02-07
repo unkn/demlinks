@@ -106,7 +106,7 @@ public class NodeList {
 
 	public NodeListCursor getCursor() {
 		// TODO Auto-generated method stub
-		return null;
+		return new NodeListCursor(this);
 	}
 	
 

@@ -1,11 +1,16 @@
 package org.demlinks.crap;
 
-import java.util.NoSuchElementException;
 
 import org.demlinks.debug.Debug;
 
 public class NodeListCursor {
 
+	NodeList myList = null;
+	
+	public NodeListCursor(NodeList list) {
+		this.myList = list;
+	}
+	
 	public void goTo(Position position) {
 		// TODO Auto-generated method stub
 		Debug.nullException(position);
@@ -38,14 +43,12 @@ public class NodeListCursor {
 	}
 
 	/**
-	 * @return the current Node under the cursor
-	 * @throws NoSuchFieldException if current is not defined
+	 * @return the current Node under the cursor<br>
+	 * 			null is there isn't any
 	 */
-	public Node getCurrent() throws NoSuchFieldException {
+	public Node getCurrent() {
 		// TODO Auto-generated method stub
-		throw new NoSuchFieldException();
-		//TODO make own exception here
-		//return null;
+		return null;
 	}
 
 	/**
