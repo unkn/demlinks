@@ -5,7 +5,9 @@ import org.demlinks.debug.Debug;
 
 public class NodeListCursor {
 
+	//the list we're operating on
 	NodeList myList = null;
+	Node current = null;
 	
 	public NodeListCursor(NodeList list) {
 		this.myList = list;
