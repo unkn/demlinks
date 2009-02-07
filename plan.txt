@@ -27,11 +27,11 @@ size()
 isEmpty()
 
 
-ListCursor
+NodeListCursor
 ======================
 Node begin()
 Node end()
-goto(Node)
+goTo(Node)
 next()
 prev()
 

@@ -103,6 +103,11 @@ public class NodeList {
 		// TODO Auto-generated method stub
 		return false;
 	}
+
+	public NodeListCursor getCursor() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	
 
 }
