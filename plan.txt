@@ -19,11 +19,12 @@ getNodeAfter(Node)
 getNodeBefore(Node)
 bool hasNode(Node)
 appendNode(Node);
-insertNode(Node, position)
+insertNode(Node, position) - is position supposed to be only FIRST/LAST?! guess so
 insertAfterNode(Node new, Node n)
 insertBeforeNode(Node new, Node n)
 removeNode(Node)
 size()
+isEmpty()
 
 
 ListCursor
