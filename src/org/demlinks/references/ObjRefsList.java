@@ -24,7 +24,7 @@ import org.demlinks.crap.Position;
 /**
  * handles the RefsList list at the Object level
  * ie. accepting only Object parameters where Object is the type of element 
- * 		stored in list
+ * 		stored in list; that Object is E
  * DOES NOT allow adding of NULL or DUPlicate Objects
  */
 public class ObjRefsList<E> extends RefsList<E> {
