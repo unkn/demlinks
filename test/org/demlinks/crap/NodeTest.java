@@ -87,7 +87,7 @@ public class NodeTest {
 		}catch (InconsistentTypeCode e) {
 			excepted = true;
 		}
-		assertTrue(excepted);
+		assertTrue(excepted);//this fails because appendChild() up there didn't undo what it did before throwing exception
 		
 		assertTrue(parent.internalRemoveChild(child));
 		assertFalse(child.internalAppendParent(parent));

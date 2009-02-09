@@ -1,10 +1,18 @@
 package org.demlinks.crap;
 
-import javax.naming.CannotProceedException;
-
 import org.demlinks.debug.Debug;
+import org.demlinks.references.ObjRefsList;
 
-public class NodeList {
+/**
+ * if you do node1.childrenList.add(node2) then this list 
+ * won't execute node2.parentsList.add(node1) for you
+ * maybe it should, we'll see
+ */
+public class NodeList extends ObjRefsList<Node> {
+
+	protected NodeList() {
+		super();
+	}
 
 	/**
 	 * @param nodeToAppend
@@ -15,23 +23,20 @@ public class NodeList {
 	 */
 	public boolean appendNode(Node nodeToAppend) {
 		Debug.nullException(nodeToAppend);//why not assert? because param(ie. nodeToAppend) could be dynamically set on runtime
-		// TODO Auto-generated method stub
-		return false;
+		return this.addLast(nodeToAppend);
+		//nodeToAppend.getOpposingList().addLast(this.fatherNode);//in opposing list
 	}
 	
+	
+	/**
+	 * @return null or the first Node in list
+	 */
 	public Node getFirstNode() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.getObjectAt(Position.FIRST);
 	}
 	
 	public Node getLastNode() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public int size() {
-		// TODO Auto-generated method stub
-		return 0;
+		return this.getObjectAt(Position.LAST);
 	}
 
 	public boolean isEmpty() {
@@ -40,25 +45,22 @@ public class NodeList {
 
 	public Node getNodeAfter(Node node) {
 		Debug.nullException(node);
-		// TODO Auto-generated method stub
-		return null;
+		return this.getObjectAt(Position.AFTER, node);
 	}
 
 	public Node getNodeBefore(Node node) {
 		Debug.nullException(node);
-		// TODO Auto-generated method stub
-		return null;
+		return this.getObjectAt(Position.BEFORE, node);
 	}
 
 	public boolean hasNode(Node node) {
 		Debug.nullException(node);
-		// TODO Auto-generated method stub
-		return false;
+		return this.containsObject(node);
 	}
 
 	/**
 	 * @param whichNode
-	 * @param whatPos
+	 * @param whatPos only FIRST/LAST
 	 * @return true if whichNode existed before, and it's now still there, not moved<br>
 	 * 			false if, whichNode didn't exist and it's now exactly where specified
 	 * 			by call
@@ -76,17 +78,16 @@ public class NodeList {
 	}
 
 	/**
-	 * @param node2
+	 * @param node to remove
 	 * @return true if node existed before call, not anymore after the call
 	 * 			false if failed to delete because it didn't exist
-	 * @throws CannotProceedException if node still exists after call, couldn't delete it
 	 */
-	public boolean removeNode(Node node) throws CannotProceedException {
+	public boolean removeNode(Node node) {
 		Debug.nullException(node);
-		throw new CannotProceedException();
-		//TODO make own exception here
-		// TODO Auto-generated method stub
-		//return false;
+		
+		boolean ret = this.removeObject(node);
+		
+		return ret;
 	}
 
 	/**

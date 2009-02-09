@@ -1,9 +1,6 @@
 package org.demlinks.crap;
 
 import static org.junit.Assert.*;
-
-import javax.naming.CannotProceedException;
-
 import org.junit.Before;
 import org.junit.Test;
 
@@ -99,7 +96,7 @@ public class NodeListTest {
 	
 
 	@Test
-	public void testInsertAfterNode() throws CannotProceedException {
+	public void testInsertAfterNode() {
 		assertTrue(list.isEmpty());
 		assertFalse(list.appendNode(node1));
 		assertFalse(list.insertAfterNode(node2, node1));
