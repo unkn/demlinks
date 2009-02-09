@@ -7,6 +7,7 @@ public class NodeListCursor {
 
 	//the list we're operating on
 	NodeList myList = null;
+	//the current Node
 	Node current = null;
 	
 	public NodeListCursor(NodeList list) {

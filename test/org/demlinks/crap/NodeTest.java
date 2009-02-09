@@ -3,6 +3,8 @@ package org.demlinks.crap;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import javax.naming.CannotProceedException;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.omg.CORBA.ORBPackage.InconsistentTypeCode;
@@ -34,8 +36,8 @@ public class NodeTest {
 
 		assertFalse(child.hasChild(parent));
 
-		assertTrue(child.hasParent(parent));// parent<-child ?
-		assertFalse(parent.hasParent(child));// child<-parent ?
+		assertTrue(child.hasParent(parent));// parent<-child ? yes
+		assertFalse(parent.hasParent(child));// child<-parent ? no
 
 	}
 	
@@ -67,7 +69,7 @@ public class NodeTest {
 	}
 
 	@Test
-	public void testInconsistentLink() {
+	public void testInconsistentLink() throws CannotProceedException {
 		assertFalse( parent.internalAppendChild(child) );
 		assertTrue(parent.internalAppendChild(child));
 		
@@ -82,6 +84,18 @@ public class NodeTest {
 		excepted = false;
 		try {
 			parent.hasChild(child);
+		}catch (InconsistentTypeCode e) {
+			excepted = true;
+		}
+		assertTrue(excepted);
+		
+		assertTrue(parent.internalRemoveChild(child));
+		assertFalse(child.internalAppendParent(parent));
+		assertTrue(child.internalAppendParent(parent));
+		
+		excepted = false;
+		try {
+			child.hasParent(parent);
 		}catch (InconsistentTypeCode e) {
 			excepted = true;
 		}
