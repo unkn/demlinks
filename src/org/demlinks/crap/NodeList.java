@@ -39,10 +39,6 @@ public class NodeList extends ObjRefsList<Node> {
 		return this.getObjectAt(Position.LAST);
 	}
 
-	public boolean isEmpty() {
-		return this.size() == 0;
-	}
-
 	public Node getNodeAfter(Node node) {
 		Debug.nullException(node);
 		return this.getObjectAt(Position.AFTER, node);
@@ -103,11 +99,6 @@ public class NodeList extends ObjRefsList<Node> {
 		Debug.nullException(newNode, beforeNode);
 		// TODO Auto-generated method stub
 		return false;
-	}
-
-	public NodeListCursor getCursor() {
-		// TODO Auto-generated method stub
-		return new NodeListCursor(this);
 	}
 	
 

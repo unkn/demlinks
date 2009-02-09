@@ -61,16 +61,16 @@ public class Reference<Obj> {
 		return prev;
 	}
 
-	public void setPrev(Reference<Obj> prev) {
-		this.prev = prev;
+	public void setPrev(Reference<Obj> prevRef) {
+		this.prev = prevRef;
 	}
 
 	public Reference<Obj> getNext() {
 		return next;
 	}
 
-	public void setNext(Reference<Obj> next) {
-		this.next = next;
+	public void setNext(Reference<Obj> nextRef) {
+		this.next = nextRef;
 	}
 
 	/**

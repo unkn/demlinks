@@ -16,41 +16,8 @@ public class Node {
 	private void createLists() {
 		parentsList = new NodeList();
 		childrenList = new NodeList();
-		//this.subscribeTo(parentsList);
 	}
 	
-	/*private void subscribeTo(Object obj) {
-		obj.addSubscriber(this);
-	}
-	
-	*//**
-	 * @param forObject
-	 * @param whatAction
-	 * @param whatParams
-	 * @return true if allow to happen; false if not allow
-	 *//*
-	protected boolean beforeHappening(Object forObject, Action whatAction, Params whatParams) {
-		switch (forObject) {
-		case parentsList:
-		case childrenList:
-			NodeList opposingList = this.getOppositeList(forObject);
-			switch (whatAction) {
-			case REMOVE:
-				Node removeNode = whatParams.getFirst();
-				removeNode.removeFromList(this, opposingList);//remove "this" node from opposingList of the node that's about to be removed;
-				//but the above removeFromList will trigger the same call to beforeHappening but with the "this" object, and infinite loop
-				//unless removeFromList will avoid calling the subscribers
-				return true;//allow removal of "removeNode"
-				break;
-			case ADD:
-				break;
-			}
-			break;
-		default:
-			throw new Exception("invalid object");
-		}
-	}*/
-
 	/**
 	 * creates both links:<br>
 	 * this -> child  : "this" will know it has a child "child"<br>
@@ -191,5 +158,41 @@ public class Node {
 	 */
 	public boolean removeParent(Node parent) throws CannotProceedException, InconsistentTypeCode {
 		return parent.removeChild(this);
+	}
+	
+	/**
+	 * @param ofWhatNode is an existing child Node
+	 * @return null or the node following <tt>ofWhatNode</tt>
+	 */
+	public Node getChildNextOf(Node ofWhatNode) {
+		Debug.nullException(ofWhatNode);
+		return this.childrenList.getNodeAfter(ofWhatNode);
+	}
+	
+	/**
+	 * @param ofWhatNode is an existing child Node
+	 * @return null or the node before <tt>ofWhatNode</tt>
+	 */
+	public Node getChildPrevOf(Node ofWhatNode) {
+		Debug.nullException(ofWhatNode);
+		return this.childrenList.getNodeBefore(ofWhatNode);
+	}
+	
+	/**
+	 * @param ofWhatNode is an existing parent Node
+	 * @return null or the node following <tt>ofWhatNode</tt>
+	 */
+	public Node getParentNextOf(Node ofWhatNode) {
+		Debug.nullException(ofWhatNode);
+		return this.parentsList.getNodeAfter(ofWhatNode);
+	}
+	
+	/**
+	 * @param ofWhatNode is an existing parent Node
+	 * @return null or the node before <tt>ofWhatNode</tt>
+	 */
+	public Node getParentPrevOf(Node ofWhatNode) {
+		Debug.nullException(ofWhatNode);
+		return this.parentsList.getNodeBefore(ofWhatNode);
 	}
 }

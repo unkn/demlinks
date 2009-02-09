@@ -7,7 +7,6 @@ import org.junit.runners.Suite;
 @Suite.SuiteClasses(value = { 
 		NodeTest.class,  
 		NodeListTest.class,
-		NodeListCursorTest.class,
 		})
 
 public class AllTestsCrap {
