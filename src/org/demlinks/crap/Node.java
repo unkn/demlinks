@@ -10,9 +10,46 @@ public class Node {
 	private NodeList childrenList;
 
 	public Node() {
+		createLists();
+	}
+	
+	private void createLists() {
 		parentsList = new NodeList();
 		childrenList = new NodeList();
+		//this.subscribeTo(parentsList);
 	}
+	
+	/*private void subscribeTo(Object obj) {
+		obj.addSubscriber(this);
+	}
+	
+	*//**
+	 * @param forObject
+	 * @param whatAction
+	 * @param whatParams
+	 * @return true if allow to happen; false if not allow
+	 *//*
+	protected boolean beforeHappening(Object forObject, Action whatAction, Params whatParams) {
+		switch (forObject) {
+		case parentsList:
+		case childrenList:
+			NodeList opposingList = this.getOppositeList(forObject);
+			switch (whatAction) {
+			case REMOVE:
+				Node removeNode = whatParams.getFirst();
+				removeNode.removeFromList(this, opposingList);//remove "this" node from opposingList of the node that's about to be removed;
+				//but the above removeFromList will trigger the same call to beforeHappening but with the "this" object, and infinite loop
+				//unless removeFromList will avoid calling the subscribers
+				return true;//allow removal of "removeNode"
+				break;
+			case ADD:
+				break;
+			}
+			break;
+		default:
+			throw new Exception("invalid object");
+		}
+	}*/
 
 	/**
 	 * creates both links:<br>
@@ -126,5 +163,33 @@ public class Node {
 		return this.parentsList.removeNode(parent);
 	}
 	
+	/**
+	 * remove both links:<br>
+	 * this -> child<br>
+	 * this <- child
+	 * @param child
+	 * @return true if both links existed before call
+	 * @throws CannotProceedException if one or both links still exist after call
+	 * @throws InconsistentTypeCode if only one of the links existed before call, now neither should exist
+	 */
+	public boolean removeChild(Node child) throws CannotProceedException, InconsistentTypeCode {
+		boolean link1 = this.internalRemoveChild(child);
+		boolean link2 = child.internalRemoveParent(this);
+		if (link1 ^ link2) {
+			throw new InconsistentTypeCode("inconsistent link detected");
+		}
+		return link1;
+	}
 	
+	
+	/**
+	 * @param parent
+	 * @return
+	 * @throws CannotProceedException
+	 * @throws InconsistentTypeCode
+	 * @see #removeChild(Node)
+	 */
+	public boolean removeParent(Node parent) throws CannotProceedException, InconsistentTypeCode {
+		return parent.removeChild(this);
+	}
 }
