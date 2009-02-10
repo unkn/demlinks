@@ -170,8 +170,6 @@ public class ObjRefsList<E> extends RefsList<E> {
 	}
 
 	public boolean insert(E newObj, Position pos, E posObj) {
-		// TODO Auto-generated method stub
-		// TODO insert(Node, Location, Node);
 		Debug.nullException(newObj, pos, posObj);
 		Reference<E> posRef = this.getRef(posObj);
 		if (null == posRef) {

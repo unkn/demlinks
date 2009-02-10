@@ -212,4 +212,15 @@ public class Node {
 		Debug.nullException(ofWhatNode);
 		return this.parentsList.getNodeBefore(ofWhatNode);
 	}
+
+	/**
+	 * @return number of parents for this node
+	 */
+	public int numParents() {
+		return this.parentsList.size();
+	}
+
+	public int numChildren() {
+		return this.childrenList.size();
+	}
 }

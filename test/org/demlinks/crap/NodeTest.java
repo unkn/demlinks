@@ -68,14 +68,18 @@ public class NodeTest {
 		assertFalse(child.hasChild(parent));
 		assertFalse(parent.hasParent(child));
 		assertFalse(child.hasParent(parent));
+		assertTrue(child.numParents() == 0);
+		assertTrue(parent.numChildren() == 0);
 
 		assertFalse(parent.appendChild(child));// parent->child
 		assertTrue(parent.hasChild(child));
+		assertTrue(parent.numChildren() == 1);
 
 		assertTrue(parent.appendChild(child));// already exists, not re-added
 										// and not moved at rear end of list
 		assertTrue(parent.hasChild(child));
-
+		assertTrue(parent.numChildren() == 1);
+		
 		assertFalse(child.hasChild(parent));
 
 		assertTrue(child.hasParent(parent));// parent<-child ? yes
@@ -89,6 +93,7 @@ public class NodeTest {
 		}
 		assertTrue(excepted);
 		
+		assertTrue(parent.numChildren() == 1);
 	}
 	
 	@Test
@@ -156,7 +161,27 @@ public class NodeTest {
 	}
 	
 	@Test
-	public void testRemove() {
-		//TODO removeChild
+	public void testRemove() throws CannotProceedException, InconsistentTypeCode {
+		assertTrue(child.numParents() == 0);
+		assertTrue(parent.numChildren() == 0);
+		assertFalse(parent.removeChild(child));
+		
+		assertFalse(parent.appendChild(child));
+		assertTrue(parent.hasChild(child));
+		assertTrue(child.numParents() == 1);
+		
+		assertTrue(parent.removeChild(child));
+		assertFalse(parent.removeChild(child));
+		
+		assertFalse(child.removeParent(parent));
+		
+		assertFalse(parent.appendChild(child));
+		assertTrue(parent.hasChild(child));
+		assertTrue(parent.numChildren() == 1);
+		
+		assertTrue(child.removeParent(parent));
+		assertFalse(child.removeParent(parent));
+		assertTrue(child.numParents() == 0);
+		assertTrue(parent.numChildren() == 0);
 	}
 }
