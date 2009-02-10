@@ -21,6 +21,8 @@ package org.demlinks.references;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.util.NoSuchElementException;
+
 import org.demlinks.crap.Position;
 import org.junit.Before;
 import org.junit.Test;
@@ -42,9 +44,32 @@ public class RefsListTest {
 		ref2.setObject(obj2);
 		assertTrue(ref2.getObject() == obj2);
 	}
+	
+	@Test
+	public void testInsert() {
+		assertFalse(refList.addFirst(ref1));
+		assertFalse( refList.insertObjAt(ref2, Position.AFTER, ref1) );
+		Reference<Object> ref3 = new Reference<Object>();
+		assertFalse( refList.insertObjAt(ref3, Position.BEFORE, ref1) );
+		assertTrue(refList.getFirstRef() == ref3);
+		assertTrue(refList.getLastRef() == ref2);
+		assertTrue(refList.getNodeRefAt(Position.BEFORE, ref2) == ref1);
+		assertTrue(refList.size() == 3);
+		
+		assertTrue(refList.removeRef(ref3));
+		assertTrue(refList.insertObjAt(ref2, Position.BEFORE, ref3));//already exists ref2
+		
+		boolean excepted = false;
+		try {
+			refList.insertObjAt(ref3, Position.BEFORE, ref3);//3rd param, not exists
+		}catch (NoSuchElementException e) {
+			excepted = true;
+		}
+		assertTrue(excepted);
+	}
 
 	@Test
-	public void something() throws Exception {
+	public void testSomething() throws Exception {
 		assertTrue(refList.isEmpty());
 
 		assertFalse(refList.addLast(ref1));
@@ -78,53 +103,23 @@ public class RefsListTest {
 		assertTrue(ref3.isDead());
 		assertFalse(refList.addLast(ref3));// null objects can be added in this
 		// list level
-
-//		ListCursor<Object> p = refList.getParser();
-//
-//		assertTrue(p.isUndefined());
-//
-//		boolean ex = false;
-//		try {
-//			p.go(Location.AFTER);
-//		} catch (Exception e) {
-//			ex = true;
-//		}
-//		assertTrue(ex);
-//
-//		ex = false;
-//		try {
-//			p.go(Location.BEFORE);
-//		} catch (Exception e) {
-//			ex = true;
-//		}
-//		assertTrue(ex);
-//
-//		assertTrue(p.go(Location.FIRST));
-//		assertFalse(p.isUndefined());
-//
-//		ex = false;
-//		try {
-//			p.go(null);
-//		} catch (NullPointerException e) {
-//			ex = true;
-//		}
-//		assertTrue(ex);
-//
-//		assertTrue(ref1 == p.getCurrentRef());
-//		assertTrue(p.go(Location.AFTER));
-//		assertTrue(ref2 == p.getCurrentRef());
-//		assertTrue(p.go(Location.LAST));
-//		assertTrue(ref3 == p.getCurrentRef());
-//		assertFalse(p.go(Location.AFTER));
-//		assertTrue(p.isUndefined());
-//
-//		assertTrue(p.go(Location.BEFORE, ref3));
-//		assertFalse(p.isUndefined());
-//		assertTrue(ref2 == p.getCurrentRef());
-		// assertTrue(p.remove());
-		// p.remove(Location.CURRENT);
-		// p.go(Location.BEFORE);
-		//
-		// p.Parser p = refList.getParser(Location.BEFORE, ref2);
+		
+		
+		Reference<Object> ref0 = new Reference<Object>();
+		ref0.setObject(null);
+		assertTrue(ref0.isAlone());
+		assertFalse(refList.addFirst(ref0));
+		assertTrue(refList.getFirstRef() == ref0);
+		assertTrue(refList.size() == 4);
+		
+		boolean excepted = false;
+		try {
+			refList.addFirst(null);
+		}catch (NullPointerException e) {//yeah stupid, I know :)
+			excepted = true;
+		}
+		assertTrue(excepted);
+		
+		
 	}
 }

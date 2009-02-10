@@ -18,6 +18,8 @@
 
 package org.demlinks.references;
 
+import java.util.NoSuchElementException;
+
 import org.demlinks.debug.Debug;
 import org.demlinks.crap.Position;
 
@@ -65,7 +67,7 @@ public class ObjRefsList<E> extends RefsList<E> {
 		Debug.nullException(obj);
 		Reference<E> n = new Reference<E>();
 		n.setObject(obj);//is no longer null
-		return n;
+		return n;//should never return null
 	}
 
 	/**
@@ -175,10 +177,22 @@ public class ObjRefsList<E> extends RefsList<E> {
 		}
 	}
 
-	public boolean insert(E newObj, Position pos, E beforeObj) {
+	public boolean insert(E newObj, Position pos, E posObj) {
 		// TODO Auto-generated method stub
 		// TODO insert(Node, Location, Node);
-		return false;
+		Debug.nullException(newObj, pos, posObj);
+		Reference<E> posRef = this.getRef(posObj);
+		if (null == posRef) {
+			//posObj non existant? stop some bugs by throwing exception
+			throw new NoSuchElementException();
+		}
+		Reference<E> newRef = getRef(newObj);
+		if (null != newRef) {
+			//already exists, not added/moved
+			return true;
+		}
+		newRef = this.newRef(newObj);
+		return this.insertObjAt(newRef, pos, posRef);
 	}
 	
 	// TODO replace(Node, Node); old TODOs with replace

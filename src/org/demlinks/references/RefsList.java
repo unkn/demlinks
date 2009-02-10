@@ -18,6 +18,8 @@
 
 package org.demlinks.references;
 
+import java.util.NoSuchElementException;
+
 import org.demlinks.debug.Debug;
 import org.demlinks.crap.Position;
 
@@ -140,13 +142,68 @@ public class RefsList<Obje> {
 		setModified();// again
 		return false;
 	}
-
-	//TODO generalize addFirst/addLast to use a method that 
-	//		inserts newRef before/after existingRef
-	//so we could use this method in ObjRefsList.java for 
-	//insert(newNode, before/after, existingnode);
-	// TODO addFirst or generalize addLast to insert(whatRef, location,
-	// locationRef)
+	
+	/**
+	 * @param newRef
+	 * @param pos only BEFORE/AFTER allowed
+	 * @param posRef must already exists, it's what pos is referring to
+	 * @return true if already existed in list and wasn't moved as specified by call<br>
+	 * 		false if all went ok
+	 */
+	public boolean insertObjAt(Reference<Obje> newRef, Position pos, Reference<Obje> posRef) {
+		if (containsRef(newRef)) {
+			return true;// already exists
+		}
+		if (!newRef.isAlone()) {// this allows null objects
+			throw new AssertionError(
+					"the new Ref must be empty, because we fill next and prev.");
+		}
+		if (!containsRef(posRef)) {
+			throw new NoSuchElementException();
+		}
+		
+		switch (pos) {
+		case BEFORE://insert newRef BEFORE posRef:
+			//beforePosRef <-> posRef <->
+			// null <- posRef <->
+			setModified();
+			newRef.setNext(posRef);//1) newRef -> posRef
+			Reference<Obje> beforePosRef = posRef.getPrev();//could be null if posRef is first
+			newRef.setPrev(beforePosRef);//2) beforePosRef(or null) <- newRef
+			if (beforePosRef != null) {//so posRef isn't first
+				beforePosRef.setNext(newRef);//3) beforePosRef <-> newRef -> posRef,  beforePosRef<- posRef
+			} else {//is first so also set firstRef
+				this.firstRef = newRef; //a new first in list
+				//if posRef was last, then it remains last, but if it was first newRef is first now
+			}
+			posRef.setPrev(newRef);//4) beforePosRef<->newRef<->posRef
+			break;
+			
+		case AFTER:
+			//order before call: posRef <-> afterPosRef(or null)
+			//order after call: posRef <-> newRef <-> afterPosRef(or null)
+			setModified();
+			newRef.setPrev(posRef);//1) posRef <- newRef
+			Reference<Obje> afterPosRef = posRef.getNext();
+			newRef.setNext(afterPosRef);//2) newRef -> afterPosRef
+			if (afterPosRef == null) {
+				//posRef is last
+				this.lastRef = newRef; 
+			} else {
+				//posRef isn't last
+				afterPosRef.setPrev(newRef);//3) newRef <- afterPosRef
+			}
+			posRef.setNext(newRef);//4) posRef -> newRef
+			break;
+			
+		default:
+			throw new AssertionError("undefined location here.");
+		}
+		
+		cachedSize++;
+		setModified();// again
+		return false;
+	}
 	
 	/**
 	 * @return the firstNodeRef
