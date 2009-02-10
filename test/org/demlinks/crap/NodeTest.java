@@ -111,13 +111,13 @@ public class NodeTest {
 	}
 
 	@Test
-	public void testInconsistentLink() throws CannotProceedException {
+	public void testInconsistentLink() throws CannotProceedException, InconsistentTypeCode {
 		assertFalse( parent.internalAppendChild(child) );
 		assertTrue(parent.internalAppendChild(child));
 		
 		boolean excepted = false;
 		try {
-			parent.appendChild(child);
+			parent.hasChild(child);
 		}catch (InconsistentTypeCode e) {
 			excepted = true;
 		}
@@ -125,13 +125,16 @@ public class NodeTest {
 		
 		excepted = false;
 		try {
-			parent.hasChild(child);
+			parent.appendChild(child);
+			//after the above call, the link will nolonger be inconsistent
 		}catch (InconsistentTypeCode e) {
 			excepted = true;
 		}
-		assertTrue(excepted);//this fails because appendChild() up there didn't undo what it did before throwing exception
+		assertTrue(excepted);
 		
-		assertTrue(parent.internalRemoveChild(child));
+		assertTrue(parent.removeChild(child));
+		
+		//assertTrue(parent.internalRemoveChild(child));
 		assertFalse(child.internalAppendParent(parent));
 		assertTrue(child.internalAppendParent(parent));
 		

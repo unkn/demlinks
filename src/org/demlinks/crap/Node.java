@@ -38,6 +38,7 @@ public class Node {
 			//if either one existed, then inconsistent link detected
 			//somewhere something made a boo boo
 			throw new InconsistentTypeCode("inconsistent link detected");
+			//maybe undo-ing here before throwing is not a good idea
 			//TODO make own exception here
 		}
 		return existed1;//should be same value as existed2
