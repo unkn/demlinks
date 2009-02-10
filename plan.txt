@@ -34,12 +34,3 @@ size()
 isEmpty()
 
 
-NodeListCursor
-======================
-Node begin()
-Node end()
-goTo(Node)
-next()
-prev()
-
-

@@ -81,6 +81,14 @@ public class NodeTest {
 		assertTrue(child.hasParent(parent));// parent<-child ? yes
 		assertFalse(parent.hasParent(child));// child<-parent ? no
 
+		boolean excepted = false;
+		try {
+			parent.appendChild(null);
+		}catch (NullPointerException e) {
+			excepted = true;
+		}
+		assertTrue(excepted);
+		
 	}
 	
 	@Test
@@ -145,5 +153,10 @@ public class NodeTest {
 			excepted = true;
 		}
 		assertTrue(excepted);
+	}
+	
+	@Test
+	public void testRemove() {
+		//TODO removeChild
 	}
 }
