@@ -160,6 +160,22 @@ public class Node {
 		return parent.removeChild(this);
 	}
 	
+	public Node getFirstChild() {
+		return this.childrenList.getFirstNode();
+	}
+	
+	public Node getLastChild() {
+		return this.childrenList.getLastNode();
+	}
+	
+	public Node getFirstParent() {
+		return this.parentsList.getFirstNode();
+	}
+	
+	public Node getLastParent() {
+		return this.parentsList.getLastNode();
+	}
+	
 	/**
 	 * @param ofWhatNode is an existing child Node
 	 * @return null or the node following <tt>ofWhatNode</tt>

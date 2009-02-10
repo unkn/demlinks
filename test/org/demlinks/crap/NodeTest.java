@@ -20,6 +20,33 @@ public class NodeTest {
 	}
 
 	@Test
+	public void testGet() throws InconsistentTypeCode {
+		Node a,b,c,d,e,f,g;
+		a = new Node();
+		b = new Node();
+		c = new Node();
+		d = new Node();
+		e = new Node();
+		f = new Node();
+		g = new Node();
+		assertFalse(a.appendChild(b));
+		assertFalse(a.appendChild(c));
+		assertFalse(a.appendChild(d));
+		assertFalse(a.appendChild(e));
+		assertFalse(a.appendParent(f));
+		assertFalse(a.appendParent(g));
+		
+		Node parser = a.getFirstChild();
+		assertTrue(b == parser);
+		while (null != parser) {
+			System.out.println(parser);
+			parser = a.getChildNextOf(parser);
+		}
+		parser = a.getChildPrevOf(a.getLastChild());
+		assertTrue(parser == d);
+	}
+	
+	@Test
 	public void testAppendChild() throws InconsistentTypeCode {
 
 		assertFalse(parent.hasChild(child));
