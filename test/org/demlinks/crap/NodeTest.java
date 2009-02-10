@@ -44,6 +44,21 @@ public class NodeTest {
 		}
 		parser = a.getChildPrevOf(a.getLastChild());
 		assertTrue(parser == d);
+		parser = a.getChildPrevOf(parser);
+		assertTrue(parser == c);
+		parser = a.getChildPrevOf(parser);
+		assertTrue(parser == b);
+		parser = a.getChildPrevOf(parser);
+		assertTrue(parser == null);
+		
+		parser = a.getFirstParent();
+		assertTrue(parser == f);
+		parser = a.getParentNextOf(parser);
+		assertTrue(parser == g);
+		parser = a.getParentNextOf(parser);
+		assertTrue(parser == null);
+		
+		assertTrue(f == a.getParentPrevOf(a.getLastParent()));
 	}
 	
 	@Test
