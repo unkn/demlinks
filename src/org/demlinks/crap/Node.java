@@ -220,7 +220,57 @@ public class Node {
 		return this.parentsList.size();
 	}
 
+	/**
+	 * @return number of children for this node
+	 */
 	public int numChildren() {
 		return this.childrenList.size();
+	}
+	
+	
+	/**
+	 * @param inWhichList children or parents list
+	 * @param whatNewNode node that doesn't exist in "inWhichList"
+	 * @param pos BEFORE or AFTER
+	 * @param posNode a Node in "inWhichList" list, that "pos" is referring to
+	 * @return
+	 */
+	private boolean internalInsert(NodeList inWhichList,
+			Node whatNewNode,
+			Position pos,
+			Node posNode) {
+
+		Debug.nullException(inWhichList, whatNewNode, pos, posNode);
+		
+		//some people are paranoid here :-"
+		if ((inWhichList != childrenList) && (inWhichList != parentsList)) {
+			throw new AssertionError("invalid list specified");
+		}
+		
+		if ((pos != Position.BEFORE) && (pos != Position.AFTER)) {
+			throw new AssertionError("undefined location within this context");
+		}
+
+		return inWhichList.insert(whatNewNode, pos, posNode);
+	}
+	
+	public boolean insertChildAfter(Node newChild, Node afterWhatChildNode) {
+		Debug.nullException(newChild, afterWhatChildNode);
+		return internalInsert(this.childrenList, newChild, Position.AFTER, afterWhatChildNode);
+	}
+	
+	public boolean insertChildBefore(Node newChild, Node beforeWhatChildNode) {
+		Debug.nullException(newChild, beforeWhatChildNode);
+		return internalInsert(this.childrenList, newChild, Position.BEFORE, beforeWhatChildNode);
+	}
+	
+	public boolean insertParentAfter(Node newParent, Node afterWhatParentNode) {
+		Debug.nullException(newParent, afterWhatParentNode);
+		return internalInsert(this.parentsList, newParent, Position.AFTER, afterWhatParentNode);
+	}
+	
+	public boolean insertParentBefore(Node newParent, Node beforeWhatParentNode) {
+		Debug.nullException(newParent, beforeWhatParentNode);
+		return internalInsert(this.parentsList, newParent, Position.BEFORE, beforeWhatParentNode);
 	}
 }

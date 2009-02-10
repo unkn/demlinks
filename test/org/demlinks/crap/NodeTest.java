@@ -20,6 +20,37 @@ public class NodeTest {
 	}
 
 	@Test
+	public void testInsert() throws InconsistentTypeCode {
+		Node a = new Node();
+		Node b = new Node();
+		Node c = new Node();
+		Node d = new Node();
+		assertFalse(parent.appendChild(a));
+		assertTrue(parent.getLastChild() == a);
+		assertFalse(parent.insertChildAfter(c, a));
+		assertTrue(parent.getFirstChild() == a);
+		assertTrue(parent.getLastChild() == c);
+		
+		assertFalse(parent.insertChildBefore(b, c));
+		assertFalse(parent.insertChildAfter(d, c));
+		assertTrue(parent.getChildNextOf(a) == b);
+		assertTrue(parent.getChildPrevOf(d) == c);
+		assertTrue(parent.numChildren() == 4);
+		
+		assertFalse(child.appendParent(a));
+		assertTrue(child.getLastParent() == a);
+		assertFalse(child.insertParentAfter(c, a));
+		assertTrue(child.getFirstParent() == a);
+		assertTrue(child.getLastParent() == c);
+		
+		assertFalse(child.insertParentBefore(b, c));
+		assertFalse(child.insertParentAfter(d, c));
+		assertTrue(child.getParentNextOf(a) == b);
+		assertTrue(child.getParentPrevOf(d) == c);
+		assertTrue(child.numParents() == 4);
+	}
+	
+	@Test
 	public void testGet() throws InconsistentTypeCode {
 		Node a,b,c,d,e,f,g;
 		a = new Node();

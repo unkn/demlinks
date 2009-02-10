@@ -169,6 +169,13 @@ public class ObjRefsList<E> extends RefsList<E> {
 		}
 	}
 
+	/**
+	 * @param newObj
+	 * @param pos
+	 * @param posObj
+	 * @return true if newObj already exists, and nothing is done with it<br>
+	 * 		false is all went according to call
+	 */
 	public boolean insert(E newObj, Position pos, E posObj) {
 		Debug.nullException(newObj, pos, posObj);
 		Reference<E> posRef = this.getRef(posObj);
@@ -185,11 +192,6 @@ public class ObjRefsList<E> extends RefsList<E> {
 		return this.insertObjAt(newRef, pos, posRef);
 	}
 	
-	// TODO replace(Node, Node); old TODOs with replace
-	// TODO replace(Node, Location);
-	// TODO replace(Node, Location, Node);
-	// find+replace current, is not an option
-	
 	/**
 	 * @param obj
 	 * @return true if existed; either way after call it's removed
@@ -202,5 +204,6 @@ public class ObjRefsList<E> extends RefsList<E> {
 		}
 		return removeRef(nr);
 	}
+
 
 }

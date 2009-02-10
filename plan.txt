@@ -13,6 +13,10 @@ hasChild(Node);
 hasParent(Node);
 removeChild(Node);
 removeParent(Node);
+insertChildAfter(newChild, afterWhatChildNode);
+insertParentAfter(newParent, afterWhatParentNode);
+insertChildBefore...
+insertParentBefore...
 
 NodeList
 ======================

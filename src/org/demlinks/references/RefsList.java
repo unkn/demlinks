@@ -332,7 +332,5 @@ public class RefsList<Obje> {
 		}
 	}
 
-	// TODO move method that will delete Ref and create a new one OR not
-	
-	// TODO parser
+	// parser can be done using parser=getFirstRef() and parser=getNodeRefAt(Position.AFTER, parser)
 }
