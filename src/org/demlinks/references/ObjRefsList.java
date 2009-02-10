@@ -72,17 +72,9 @@ public class ObjRefsList<E> extends RefsList<E> {
 
 	/**
 	 * @param obj
-	 * @return
-	 */
-	public Reference<E> getRef(E obj) {
-		return getRef_L0(obj);
-	}
-
-	/**
-	 * @param obj
 	 * @return null or the reference containing the obj
 	 */
-	public final Reference<E> getRef_L0(E obj) {
+	public Reference<E> getRef(E obj) {
 		Debug.nullException(obj);
 		Reference<E> parser = getFirstRef();
 		while (null != parser) {
