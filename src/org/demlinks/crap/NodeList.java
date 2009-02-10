@@ -63,16 +63,35 @@ public class NodeList extends ObjRefsList<Node> {
 	 */
 	public boolean insertNode(Node whichNode, Position whatPos) {
 		Debug.nullException(whichNode, whatPos);
-		// TODO Auto-generated method stub
-		return false;
+		return this.insert(whichNode, whatPos);
 	}
 
+	/**
+	 * @param newNode
+	 * @param afterNode
+	 * @return true if newNode existed and it wasn't moved as specified<br>
+	 * 		false if everything went well
+	 * @see #insertBeforeNode(Node, Node)
+	 */
 	public boolean insertAfterNode(Node newNode, Node afterNode) {
 		Debug.nullException(newNode, afterNode);
-		// TODO Auto-generated method stub
-		return false;
+		return this.insert(newNode, Position.AFTER, afterNode);
 	}
 
+	/**
+	 * @param newNode is inserted before "beforeNode"
+	 * @param beforeNode will be after "newNode" when call is done
+	 * @return true if newNode existed before call, and it's still there
+	 * 			in the same place as before, 
+	 * 			hence it wasn't moved before beforeNode<br>
+	 * 		false is newNode didn't exist, but it does now and it's right before
+	 * 		beforeNode
+	 */
+	public boolean insertBeforeNode(Node newNode, Node beforeNode) {
+		Debug.nullException(newNode, beforeNode);
+		return this.insert(newNode, Position.BEFORE, beforeNode);
+	}
+	
 	/**
 	 * @param node to remove
 	 * @return true if node existed before call, not anymore after the call
@@ -85,21 +104,5 @@ public class NodeList extends ObjRefsList<Node> {
 		
 		return ret;
 	}
-
-	/**
-	 * @param newNode
-	 * @param beforeNode
-	 * @return true if newNode existed before call, and it's still there
-	 * 			in the same place as before, 
-	 * 			hence it wasn't moved before beforeNode<br>
-	 * 		false is newNode didn't exist, but it does now and it's right before
-	 * 		beforeNode
-	 */
-	public boolean insertBeforeNode(Node newNode, Node beforeNode) {
-		Debug.nullException(newNode, beforeNode);
-		// TODO Auto-generated method stub
-		return false;
-	}
-	
 
 }

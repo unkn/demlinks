@@ -113,7 +113,41 @@ public class RefsList<Obje> {
 		setModified();// again
 		return false;
 	}
+	
+	/**
+	 * @param newFirstRef
+	 * @return true if already exists; false if it didn't but it does now after
+	 *         call
+	 */
+	public boolean addFirst(Reference<Obje> newFirstRef) {
+		Debug.nullException(newFirstRef);
+		if (containsRef(newFirstRef)) {
+			return true;// already exists
+		}
+		if (!newFirstRef.isAlone()) {// this allows null objects
+			throw new AssertionError(
+					"the new Ref must be empty, because we fill next and prev.");
+		}
+		setModified();
+		if (firstRef == null) {// list is initially empty
+			firstRef = lastRef = newFirstRef;
+		} else {// list not empty
+			firstRef.setPrev(newFirstRef);
+			newFirstRef.setNext(firstRef);
+			firstRef = newFirstRef;
+		}
+		cachedSize++;
+		setModified();// again
+		return false;
+	}
 
+	//TODO generalize addFirst/addLast to use a method that 
+	//		inserts newRef before/after existingRef
+	//so we could use this method in ObjRefsList.java for 
+	//insert(newNode, before/after, existingnode);
+	// TODO addFirst or generalize addLast to insert(whatRef, location,
+	// locationRef)
+	
 	/**
 	 * @return the firstNodeRef
 	 */
@@ -189,6 +223,11 @@ public class RefsList<Obje> {
 		return false;
 	}
 
+	/**
+	 * @param location only FIRST/LAST allowed
+	 * @return a reference
+	 * @see #getNodeRefAt(Position, Reference)
+	 */
 	public Reference<Obje> getNodeRefAt(Position location) {
 		switch (location) {
 		case FIRST:
@@ -204,6 +243,7 @@ public class RefsList<Obje> {
 	 * @param location FIRST/LAST allowed; but BEFORE/AFTER are supposed to be used
 	 * @param locationRef the reference that location is referring to
 	 * @return the ref or null
+	 * @see #getNodeRefAt(Position)
 	 */
 	public Reference<Obje> getNodeRefAt(Position location,
 			Reference<Obje> locationRef) {
@@ -234,7 +274,6 @@ public class RefsList<Obje> {
 	}
 
 	// TODO move method that will delete Ref and create a new one OR not
-	// TODO addFirst or generalize addLast to insert(whatRef, location,
-	// locationRef)
+	
 	// TODO parser
 }

@@ -47,20 +47,20 @@ public class RefsListTest {
 	public void something() throws Exception {
 		assertTrue(refList.isEmpty());
 
-		assertTrue(refList.addLast(ref1));
-		assertTrue(refList.containsRef(ref1));
 		assertFalse(refList.addLast(ref1));
+		assertTrue(refList.containsRef(ref1));
+		assertTrue(refList.addLast(ref1));
 		assertTrue(refList.containsRef(ref1));
 
 		int mod = refList.getModified();
-		assertTrue(refList.addLast(ref2));
+		assertFalse(refList.addLast(ref2));
 		assertTrue(mod != refList.getModified());
 		mod = refList.getModified();
 		assertTrue(refList.containsRef(ref2));
 		assertFalse(mod != refList.getModified());
 
-		assertFalse(refList.addLast(ref2));
-		assertFalse(refList.addLast(ref1));// after this call ref1 mustn't move
+		assertTrue(refList.addLast(ref2));
+		assertTrue(refList.addLast(ref1));// after this call ref1 mustn't move
 		assertFalse(mod != refList.getModified());
 		// from first position
 		assertTrue(refList.getFirstRef() == ref1);
@@ -76,7 +76,7 @@ public class RefsListTest {
 		Reference<Object> ref3 = new Reference<Object>();
 		ref3.setObject(null);
 		assertTrue(ref3.isDead());
-		assertTrue(refList.addLast(ref3));// null objects can be added in this
+		assertFalse(refList.addLast(ref3));// null objects can be added in this
 		// list level
 
 //		ListCursor<Object> p = refList.getParser();

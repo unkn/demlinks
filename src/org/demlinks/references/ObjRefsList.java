@@ -64,7 +64,7 @@ public class ObjRefsList<E> extends RefsList<E> {
 	public Reference<E> newRef(E obj) {
 		Debug.nullException(obj);
 		Reference<E> n = new Reference<E>();
-		n.setObject(obj);
+		n.setObject(obj);//is no longer null
 		return n;
 	}
 
@@ -140,16 +140,52 @@ public class ObjRefsList<E> extends RefsList<E> {
 			return true;
 		}
 		nr = newRef(obj);
-		return addLast(nr);
+		return this.addLast(nr);
 	}
 
-	// TODO addFirst
-	// TODO insert(Node, Location);
-	// TODO insert(Node, Location, Node);
-	// TODO replace(Node, Node);
+	/**
+	 * @param obj that doesn't already exist; not null
+	 * @return true if object already existed and wasn't re-added or moved to end
+	 */
+	public boolean addFirst(E obj) {
+		Debug.nullException(obj);
+		Reference<E> nr = getRef(obj);
+		if (null != nr) {
+			//already exists, not added/moved
+			return true;
+		}
+		nr = newRef(obj);
+		return this.addFirst(nr);
+	}
+	
+	/**
+	 * @param node
+	 * @param location
+	 * @return true if object existed before call
+	 */
+	public boolean insert(E obj, Position position) {
+		Debug.nullException(obj, position);
+		switch (position) {
+		case FIRST:
+			return this.addFirst(obj);
+		case LAST:
+			return this.addLast(obj);
+		default:
+			throw new AssertionError("undefined location here.");
+		}
+	}
+
+	public boolean insert(E newObj, Position pos, E beforeObj) {
+		// TODO Auto-generated method stub
+		// TODO insert(Node, Location, Node);
+		return false;
+	}
+	
+	// TODO replace(Node, Node); old TODOs with replace
 	// TODO replace(Node, Location);
 	// TODO replace(Node, Location, Node);
 	// find+replace current, is not an option
+	
 	/**
 	 * @param obj
 	 * @return true if existed; either way after call it's removed
