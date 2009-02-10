@@ -57,11 +57,12 @@ public class RefsListTest {
 		assertTrue(refList.size() == 3);
 		
 		assertTrue(refList.removeRef(ref3));
-		assertTrue(refList.insertObjAt(ref2, Position.BEFORE, ref3));//already exists ref2
 		
 		boolean excepted = false;
 		try {
-			refList.insertObjAt(ref3, Position.BEFORE, ref3);//3rd param, not exists
+			//even though ref2 exists, while ref3 doesn't, the call is bugged so we alert:
+			//ref3 should exist
+			refList.insertObjAt(ref2, Position.BEFORE, ref3);//3rd param, not exists
 		}catch (NoSuchElementException e) {
 			excepted = true;
 		}

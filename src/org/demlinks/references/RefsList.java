@@ -151,6 +151,10 @@ public class RefsList<Obje> {
 	 * 		false if all went ok
 	 */
 	public boolean insertObjAt(Reference<Obje> newRef, Position pos, Reference<Obje> posRef) {
+		if (!containsRef(posRef)) {//this first for buggy calls
+			throw new NoSuchElementException();
+		}
+		
 		if (containsRef(newRef)) {
 			return true;// already exists
 		}
@@ -158,9 +162,7 @@ public class RefsList<Obje> {
 			throw new AssertionError(
 					"the new Ref must be empty, because we fill next and prev.");
 		}
-		if (!containsRef(posRef)) {
-			throw new NoSuchElementException();
-		}
+		
 		
 		switch (pos) {
 		case BEFORE://insert newRef BEFORE posRef:
