@@ -2,7 +2,7 @@
 package org.demlinks.crap;
 
 import org.demlinks.debug.Debug;
-import org.demlinks.exceptions.BugException;
+import org.demlinks.errors.BugError;
 import org.demlinks.exceptions.InconsistentLinkException;
 
 /**
@@ -28,9 +28,9 @@ public class PointerNode extends Node {
 		}
 	}
 	
-	private void integrityCheck() throws BugException {
+	private void integrityCheck() throws BugError {
 		if ( this.numChildren() > 1 ) {
-			throw new BugException(
+			throw new BugError(
 					"someone made the pointer have more than 1 child" );
 		}
 	}
@@ -40,12 +40,12 @@ public class PointerNode extends Node {
 	 *            childNode to point to
 	 * @return true if the pointee was already pointed by this pointer, nothing
 	 *         changed
-	 * @throws BugException
+	 * @throws BugError
 	 *             if more than 1 child detected OR other 2 reasons
 	 * @throws InconsistentLinkException
 	 *             half link detected
 	 */
-	public boolean pointTo( Node pointee ) throws BugException,
+	public boolean pointTo( Node pointee ) throws BugError,
 			InconsistentLinkException {
 		Debug.nullException( pointee );
 		this.integrityCheck();
@@ -56,15 +56,15 @@ public class PointerNode extends Node {
 				return true;// already has the pointee we wanted to set
 			}
 			if ( null == tmp ) {
-				throw new BugException( "can't be null here" );
+				throw new BugError( "can't be null here" );
 			}
 			if ( !this.removeChild( tmp ) ) {
-				throw new BugException( "should've removed it!" );
+				throw new BugError( "should've removed it!" );
 			}
 		}
 		// we're here the pointer points to nothing, has no child
 		if ( this.appendChild( pointee ) ) {
-			throw new BugException(
+			throw new BugError(
 					"couldn't've already existed, maybe bug in appendChild?!" );
 		}
 		return false;
