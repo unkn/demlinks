@@ -6,7 +6,7 @@ import static org.junit.Assert.assertTrue;
 
 import javax.naming.CannotProceedException;
 
-import org.demlinks.exceptions.InconsistentLinkDetected;
+import org.demlinks.exceptions.InconsistentLinkException;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -21,7 +21,7 @@ public class NodeTest {
 	}
 	
 	@Test
-	public void testInsert() throws InconsistentLinkDetected {
+	public void testInsert() throws InconsistentLinkException {
 		Node a = new Node();
 		Node b = new Node();
 		Node c = new Node();
@@ -49,7 +49,7 @@ public class NodeTest {
 	}
 	
 	@Test
-	public void testGet() throws InconsistentLinkDetected {
+	public void testGet() throws InconsistentLinkException {
 		Node a, b, c, d, e, f, g;
 		a = new Node();
 		b = new Node();
@@ -88,7 +88,7 @@ public class NodeTest {
 	}
 	
 	@Test
-	public void testAppendChild() throws InconsistentLinkDetected {
+	public void testAppendChild() throws InconsistentLinkException {
 		assertFalse( this.parent.hasChild( this.child ) );
 		assertFalse( this.child.hasChild( this.parent ) );
 		assertFalse( this.parent.hasParent( this.child ) );
@@ -117,7 +117,7 @@ public class NodeTest {
 	}
 	
 	@Test
-	public void testNullParams() throws InconsistentLinkDetected {
+	public void testNullParams() throws InconsistentLinkException {
 		boolean excepted = false;
 		try {
 			this.parent.hasChild( null );
@@ -143,13 +143,13 @@ public class NodeTest {
 	
 	@Test
 	public void testInconsistentLink() throws CannotProceedException,
-			InconsistentLinkDetected {
+			InconsistentLinkException {
 		assertFalse( this.parent.internalAppendChild( this.child ) );
 		assertTrue( this.parent.internalAppendChild( this.child ) );
 		boolean excepted = false;
 		try {
 			this.parent.hasChild( this.child );
-		} catch ( InconsistentLinkDetected e ) {
+		} catch ( InconsistentLinkException e ) {
 			excepted = true;
 		}
 		assertTrue( excepted );
@@ -157,7 +157,7 @@ public class NodeTest {
 		try {
 			this.parent.appendChild( this.child );
 			// after the above call, the link will nolonger be inconsistent
-		} catch ( InconsistentLinkDetected e ) {
+		} catch ( InconsistentLinkException e ) {
 			excepted = true;
 		}
 		assertTrue( excepted );
@@ -168,7 +168,7 @@ public class NodeTest {
 		excepted = false;
 		try {
 			this.child.hasParent( this.parent );
-		} catch ( InconsistentLinkDetected e ) {
+		} catch ( InconsistentLinkException e ) {
 			excepted = true;
 		}
 		assertTrue( excepted );
@@ -176,7 +176,7 @@ public class NodeTest {
 	
 	@Test
 	public void testRemove() throws CannotProceedException,
-			InconsistentLinkDetected {
+			InconsistentLinkException {
 		assertTrue( this.child.numParents() == 0 );
 		assertTrue( this.parent.numChildren() == 0 );
 		assertFalse( this.parent.removeChild( this.child ) );

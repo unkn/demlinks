@@ -4,7 +4,7 @@ package org.demlinks.crap;
 import javax.naming.CannotProceedException;
 
 import org.demlinks.debug.Debug;
-import org.demlinks.exceptions.InconsistentLinkDetected;
+import org.demlinks.exceptions.InconsistentLinkException;
 
 public class Node {
 	
@@ -31,17 +31,17 @@ public class Node {
 	 *         exist and it is now (after call) at the end(appended) of the list
 	 *         also note that if child existed then so did "this"(the parent)
 	 *         for the child
-	 * @throws InconsistentLinkDetected
+	 * @throws InconsistentLinkException
 	 *             if half of the link existed before call
 	 */
-	public boolean appendChild( Node child ) throws InconsistentLinkDetected {
+	public boolean appendChild( Node child ) throws InconsistentLinkException {
 		Debug.nullException( child );
 		boolean existed1 = this.internalAppendChild( child );
 		boolean existed2 = child.internalAppendParent( this );
 		if ( existed1 ^ existed2 ) {
 			// if either one existed, then inconsistent link detected
 			// somewhere something made a boo boo
-			throw new InconsistentLinkDetected( "inconsistent link detected" );
+			throw new InconsistentLinkException( "inconsistent link detected" );
 			// maybe undo-ing here before throwing is not a good idea
 			// TODO make own exception here
 		}
@@ -52,10 +52,10 @@ public class Node {
 	 * parent <- this<br>
 	 * parent -> this
 	 * 
-	 * @throws InconsistentLinkDetected
+	 * @throws InconsistentLinkException
 	 * @see {@link #appendChild(Node)}
 	 */
-	public boolean appendParent( Node parent ) throws InconsistentLinkDetected {
+	public boolean appendParent( Node parent ) throws InconsistentLinkException {
 		Debug.nullException( parent );
 		return parent.appendChild( this );
 	}
@@ -83,16 +83,16 @@ public class Node {
 	 * @param child
 	 * @return true if <tt>this</tt> has <tt>child</tt> in its children list and
 	 *         <tt>child</tt> has <tt>this</tt> in its parents list
-	 * @throws InconsistentLinkDetected
+	 * @throws InconsistentLinkException
 	 *             is only one of the links exists
 	 */
-	public boolean hasChild( Node child ) throws InconsistentLinkDetected {
+	public boolean hasChild( Node child ) throws InconsistentLinkException {
 		Debug.nullException( child );
 		boolean link1 = this.childrenList.hasNode( child );
 		boolean link2 = child.parentsList.hasNode( this );// isn't that private
 		// field?
 		if ( link1 ^ link2 ) {
-			throw new InconsistentLinkDetected( "inconsistent link detected" );
+			throw new InconsistentLinkException( "inconsistent link detected" );
 		}
 		return link1;
 	}
@@ -103,10 +103,10 @@ public class Node {
 	 * @param parent
 	 * @return true if <tt>this</tt> has <tt>parent</tt> in its parents list and
 	 *         <tt>parent</tt> has <tt>this</tt> in its children list
-	 * @throws InconsistentLinkDetected
+	 * @throws InconsistentLinkException
 	 * @see {@link #hasChild(Node)}
 	 */
-	public boolean hasParent( Node parent ) throws InconsistentLinkDetected {
+	public boolean hasParent( Node parent ) throws InconsistentLinkException {
 		Debug.nullException( parent );
 		return parent.hasChild( this );// counting on hasChild to check both
 	}
@@ -133,15 +133,15 @@ public class Node {
 	 * @return true if both links existed before call
 	 * @throws CannotProceedException
 	 *             if one or both links still exist after call
-	 * @throws InconsistentLinkDetected
+	 * @throws InconsistentLinkException
 	 *             if only one of the links existed before call, now neither
 	 *             should exist
 	 */
-	public boolean removeChild( Node child ) throws InconsistentLinkDetected {
+	public boolean removeChild( Node child ) throws InconsistentLinkException {
 		boolean link1 = this.internalRemoveChild( child );
 		boolean link2 = child.internalRemoveParent( this );
 		if ( link1 ^ link2 ) {
-			throw new InconsistentLinkDetected( "inconsistent link detected" );
+			throw new InconsistentLinkException( "inconsistent link detected" );
 		}
 		return link1;
 	}
@@ -149,10 +149,10 @@ public class Node {
 	/**
 	 * @param parent
 	 * @return
-	 * @throws InconsistentLinkDetected
+	 * @throws InconsistentLinkException
 	 * @see #removeChild(Node)
 	 */
-	public boolean removeParent( Node parent ) throws InconsistentLinkDetected {
+	public boolean removeParent( Node parent ) throws InconsistentLinkException {
 		return parent.removeChild( this );
 	}
 	

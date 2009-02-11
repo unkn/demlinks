@@ -1,9 +1,9 @@
 
 package org.demlinks.exceptions;
 
-public class BugDetected extends Exception {
+public class BugException extends Exception {
 	
-	public BugDetected( String userMsg ) {
+	public BugException( String userMsg ) {
 		super( userMsg );
 	}
 	
