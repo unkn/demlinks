@@ -18,12 +18,11 @@ public class PointerNode extends Node {
 		try {
 			existsAlready = GlobalNodes.AllPointers.appendChild( this );
 		} catch ( InconsistentLinkException e ) {// half of the link exists
-												// already
+			// already
 			existsAlready = true;// so we can throw
 		} finally {
 			if ( existsAlready ) {
-				throw new IllegalAccessError(
-						"AllPointers->this already existing?!" );
+				throw new BugError( "AllPointers->this already existing?!" );
 			}
 		}
 	}

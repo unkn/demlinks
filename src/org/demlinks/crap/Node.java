@@ -4,6 +4,7 @@ package org.demlinks.crap;
 import javax.naming.CannotProceedException;
 
 import org.demlinks.debug.Debug;
+import org.demlinks.errors.BadCallError;
 import org.demlinks.exceptions.InconsistentLinkException;
 
 public class Node {
@@ -43,7 +44,6 @@ public class Node {
 			// somewhere something made a boo boo
 			throw new InconsistentLinkException( "inconsistent link detected" );
 			// maybe undo-ing here before throwing is not a good idea
-			// TODO make own exception here
 		}
 		return existed1;// should be same value as existed2
 	}
@@ -243,10 +243,10 @@ public class Node {
 		// some people are paranoid here :-"
 		if ( ( inWhichList != this.childrenList )
 				&& ( inWhichList != this.parentsList ) ) {
-			throw new AssertionError( "invalid list specified" );
+			throw new BadCallError( "invalid list specified" );
 		}
 		if ( ( pos != Position.BEFORE ) && ( pos != Position.AFTER ) ) {
-			throw new AssertionError( "undefined location within this context" );
+			throw new BadCallError( "undefined location within this context" );
 		}
 		return inWhichList.insert( whatNewNode, pos, posNode );
 	}
