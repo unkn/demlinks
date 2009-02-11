@@ -21,85 +21,86 @@ package org.demlinks.references;
 import org.demlinks.debug.Debug;
 
 public class Reference<Obj> {
-	private Reference<Obj> prev;
-	private Obj object;
-	private Reference<Obj> next;
-
+	
+	private Reference<Obj>	prev;
+	private Obj				object;
+	private Reference<Obj>	next;
+	
 	// constructor
 	public Reference() {
-		initAsDead();
+		this.initAsDead();
 	}
-
+	
 	// clone constructor
-	public Reference(Reference<Obj> cloneThis) {
-		initAsDead();
-		Debug.nullException(cloneThis);
+	public Reference( Reference<Obj> cloneThis ) {
+		this.initAsDead();
+		Debug.nullException( cloneThis );
 		this.prev = cloneThis.prev;
 		this.next = cloneThis.next;
 		this.object = cloneThis.object;
 	}
-
-	public boolean equals(Reference<Obj> compareObj) {
-		if ((this.prev == compareObj.prev) && (this.next == compareObj.next)
-				&& (this.object == compareObj.object)) {
+	
+	public boolean equals( Reference<Obj> compareObj ) {
+		if ( ( this.prev == compareObj.prev )
+				&& ( this.next == compareObj.next )
+				&& ( this.object == compareObj.object ) ) {
 			return true;
 		}
 		return false;
 		// I thought compareObj.prev is private, and yet I'm still able to
 		// access it O_o
 	}
-
-	public void setObject(Obj toObject) {// even if null
-		object = toObject;
+	
+	public void setObject( Obj toObject ) {// even if null
+		this.object = toObject;
 	}
-
+	
 	public boolean isAlone() {
-		return ((prev == null) && (next == null));
+		return ( ( this.prev == null ) && ( this.next == null ) );
 	}
-
+	
 	public Reference<Obj> getPrev() {
-		return prev;
+		return this.prev;
 	}
-
-	public void setPrev(Reference<Obj> prevRef) {
+	
+	public void setPrev( Reference<Obj> prevRef ) {
 		this.prev = prevRef;
 	}
-
+	
 	public Reference<Obj> getNext() {
-		return next;
+		return this.next;
 	}
-
-	public void setNext(Reference<Obj> nextRef) {
+	
+	public void setNext( Reference<Obj> nextRef ) {
 		this.next = nextRef;
 	}
-
+	
 	/**
 	 * @return the object that this reference refers to
 	 */
 	public Obj getObject() {
-		return object;
+		return this.object;
 	}
-
+	
 	/**
 	 * signal that the reference has been removed/destroyed from the list
 	 */
 	public void destroy() {
-		initAsDead();
+		this.initAsDead();
 	}
-
+	
 	/**
 	 * after this call, isDead() would return true
 	 */
 	private void initAsDead() {
-		next = prev = null;
-		object = null;
+		this.next = this.prev = null;
+		this.object = null;
 	}
-
+	
 	/**
 	 * @return true if this reference is nolonger used in the list
 	 */
 	public boolean isDead() {
-		return (isAlone() && (null == object));
+		return ( this.isAlone() && ( null == this.object ) );
 	}
-
 }

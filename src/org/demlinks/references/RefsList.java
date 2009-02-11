@@ -20,8 +20,8 @@ package org.demlinks.references;
 
 import java.util.NoSuchElementException;
 
-import org.demlinks.debug.Debug;
 import org.demlinks.crap.Position;
+import org.demlinks.debug.Debug;
 
 /**
  * a double-linked list of References where no two are alike (no duplicates
@@ -37,82 +37,85 @@ import org.demlinks.crap.Position;
  * this is handled at Ref level, not at object level<br>
  */
 public class RefsList<Obje> {
-
-	private int cachedSize; // cached size, prevents parsing the entire list
-	private Reference<Obje> firstRef;// points to first Ref in list, or null if
+	
+	private int				cachedSize;		// cached size, prevents parsing
+												// the entire list
+	private Reference<Obje>	firstRef;			// points to first Ref in list,
+												// or null if
 	// the list is empty
-	private Reference<Obje> lastRef;// points to last Ref in list, or null if
+	private Reference<Obje>	lastRef;			// points to last Ref in list,
+												// or null if
 	// the list is empty
-
 	// increased by 1 on each operation, useful to see
 	// if someone else modified the list while using
 	// a ListCursor
-	private int modCount = 0;
-
+	private int				modCount	= 0;
+	
 	// constructor
 	/**
 	 * 
 	 */
 	protected RefsList() {
-		setListToEmpty();
+		this.setListToEmpty();
 	}
-
+	
 	private void setModified() {
-		modCount++;
+		this.modCount++;
 	}
-
+	
 	public int getModified() {
-		return modCount;
+		return this.modCount;
 	}
-
+	
 	/**
 	 * 
 	 */
 	private void setListToEmpty() {
-		cachedSize = 0;// increased on add, decreased on remove and related
-		firstRef = null;
-		lastRef = null;
-		setModified();
+		this.cachedSize = 0;// increased on add, decreased on remove and related
+		this.firstRef = null;
+		this.lastRef = null;
+		this.setModified();
 	}
-
+	
 	/**
 	 * @return
 	 */
 	public int size() {
-		return cachedSize;
+		return this.cachedSize;
 	}
-
+	
 	/**
 	 * @return
 	 */
 	public boolean isEmpty() {
-		return (0 == size()) || (firstRef == null) || (lastRef == null);
+		return ( 0 == this.size() ) || ( this.firstRef == null )
+				|| ( this.lastRef == null );
 	}
-
+	
 	/**
 	 * @param newLastRef
 	 * @return true if already exists; false if it didn't but it does now after
 	 *         call
 	 */
-	public boolean addLast(Reference<Obje> newLastRef) {
-		Debug.nullException(newLastRef);
-		if (containsRef(newLastRef)) {
+	public boolean addLast( Reference<Obje> newLastRef ) {
+		Debug.nullException( newLastRef );
+		if ( this.containsRef( newLastRef ) ) {
 			return true;// already exists
 		}
-		if (!newLastRef.isAlone()) {// this allows null objects
+		if ( !newLastRef.isAlone() ) {// this allows null objects
 			throw new AssertionError(
-					"the new Ref must be empty, because we fill next and prev.");
+					"the new Ref must be empty, because we fill next and prev." );
 		}
-		setModified();
-		if (lastRef == null) {// list is initially empty
-			lastRef = firstRef = newLastRef;
+		this.setModified();
+		if ( this.lastRef == null ) {// list is initially empty
+			this.lastRef = this.firstRef = newLastRef;
 		} else {// list not empty
-			lastRef.setNext(newLastRef);
-			newLastRef.setPrev(lastRef);
-			lastRef = newLastRef;
+			this.lastRef.setNext( newLastRef );
+			newLastRef.setPrev( this.lastRef );
+			this.lastRef = newLastRef;
 		}
-		cachedSize++;
-		setModified();// again
+		this.cachedSize++;
+		this.setModified();// again
 		return false;
 	}
 	
@@ -121,89 +124,90 @@ public class RefsList<Obje> {
 	 * @return true if already exists; false if it didn't but it does now after
 	 *         call
 	 */
-	public boolean addFirst(Reference<Obje> newFirstRef) {
-		Debug.nullException(newFirstRef);
-		if (containsRef(newFirstRef)) {
+	public boolean addFirst( Reference<Obje> newFirstRef ) {
+		Debug.nullException( newFirstRef );
+		if ( this.containsRef( newFirstRef ) ) {
 			return true;// already exists
 		}
-		if (!newFirstRef.isAlone()) {// this allows null objects
+		if ( !newFirstRef.isAlone() ) {// this allows null objects
 			throw new AssertionError(
-					"the new Ref must be empty, because we fill next and prev.");
+					"the new Ref must be empty, because we fill next and prev." );
 		}
-		setModified();
-		if (firstRef == null) {// list is initially empty
-			firstRef = lastRef = newFirstRef;
+		this.setModified();
+		if ( this.firstRef == null ) {// list is initially empty
+			this.firstRef = this.lastRef = newFirstRef;
 		} else {// list not empty
-			firstRef.setPrev(newFirstRef);
-			newFirstRef.setNext(firstRef);
-			firstRef = newFirstRef;
+			this.firstRef.setPrev( newFirstRef );
+			newFirstRef.setNext( this.firstRef );
+			this.firstRef = newFirstRef;
 		}
-		cachedSize++;
-		setModified();// again
+		this.cachedSize++;
+		this.setModified();// again
 		return false;
 	}
 	
 	/**
 	 * @param newRef
-	 * @param pos only BEFORE/AFTER allowed
-	 * @param posRef must already exists, it's what pos is referring to
-	 * @return true if already existed in list and wasn't moved as specified by call<br>
-	 * 		false if all went ok
+	 * @param pos
+	 *            only BEFORE/AFTER allowed
+	 * @param posRef
+	 *            must already exists, it's what pos is referring to
+	 * @return true if already existed in list and wasn't moved as specified by
+	 *         call<br>
+	 *         false if all went ok
 	 */
-	public boolean insertObjAt(Reference<Obje> newRef, Position pos, Reference<Obje> posRef) {
-		if (!containsRef(posRef)) {//this first for buggy calls
+	public boolean insertObjAt( Reference<Obje> newRef, Position pos,
+			Reference<Obje> posRef ) {
+		if ( !this.containsRef( posRef ) ) {// this first for buggy calls
 			throw new NoSuchElementException();
 		}
-		
-		if (containsRef(newRef)) {
+		if ( this.containsRef( newRef ) ) {
 			return true;// already exists
 		}
-		if (!newRef.isAlone()) {// this allows null objects
+		if ( !newRef.isAlone() ) {// this allows null objects
 			throw new AssertionError(
-					"the new Ref must be empty, because we fill next and prev.");
+					"the new Ref must be empty, because we fill next and prev." );
 		}
-		
-		
-		switch (pos) {
-		case BEFORE://insert newRef BEFORE posRef:
-			//beforePosRef <-> posRef <->
+		switch ( pos ) {
+		case BEFORE:// insert newRef BEFORE posRef:
+			// beforePosRef <-> posRef <->
 			// null <- posRef <->
-			setModified();
-			newRef.setNext(posRef);//1) newRef -> posRef
-			Reference<Obje> beforePosRef = posRef.getPrev();//could be null if posRef is first
-			newRef.setPrev(beforePosRef);//2) beforePosRef(or null) <- newRef
-			if (beforePosRef != null) {//so posRef isn't first
-				beforePosRef.setNext(newRef);//3) beforePosRef <-> newRef -> posRef,  beforePosRef<- posRef
-			} else {//is first so also set firstRef
-				this.firstRef = newRef; //a new first in list
-				//if posRef was last, then it remains last, but if it was first newRef is first now
+			this.setModified();
+			newRef.setNext( posRef );// 1) newRef -> posRef
+			Reference<Obje> beforePosRef = posRef.getPrev();// could be null if
+															// posRef is first
+			newRef.setPrev( beforePosRef );// 2) beforePosRef(or null) <- newRef
+			if ( beforePosRef != null ) {// so posRef isn't first
+				beforePosRef.setNext( newRef );// 3) beforePosRef <-> newRef ->
+												// posRef, beforePosRef<- posRef
+			} else {// is first so also set firstRef
+				this.firstRef = newRef; // a new first in list
+				// if posRef was last, then it remains last, but if it was first
+				// newRef is first now
 			}
-			posRef.setPrev(newRef);//4) beforePosRef<->newRef<->posRef
+			posRef.setPrev( newRef );// 4) beforePosRef<->newRef<->posRef
 			break;
-			
 		case AFTER:
-			//order before call: posRef <-> afterPosRef(or null)
-			//order after call: posRef <-> newRef <-> afterPosRef(or null)
-			setModified();
-			newRef.setPrev(posRef);//1) posRef <- newRef
+			// order before call: posRef <-> afterPosRef(or null)
+			// order after call: posRef <-> newRef <-> afterPosRef(or null)
+			this.setModified();
+			newRef.setPrev( posRef );// 1) posRef <- newRef
 			Reference<Obje> afterPosRef = posRef.getNext();
-			newRef.setNext(afterPosRef);//2) newRef -> afterPosRef
-			if (afterPosRef == null) {
-				//posRef is last
-				this.lastRef = newRef; 
+			newRef.setNext( afterPosRef );// 2) newRef -> afterPosRef
+			if ( afterPosRef == null ) {
+				// posRef is last
+				this.lastRef = newRef;
 			} else {
-				//posRef isn't last
-				afterPosRef.setPrev(newRef);//3) newRef <- afterPosRef
+				// posRef isn't last
+				afterPosRef.setPrev( newRef );// 3) newRef <- afterPosRef
 			}
-			posRef.setNext(newRef);//4) posRef -> newRef
+			posRef.setNext( newRef );// 4) posRef -> newRef
 			break;
-			
 		default:
-			throw new AssertionError("undefined location here.");
+			throw new AssertionError( "undefined location here." );
 		}
-		
-		cachedSize++;
-		setModified();// again
+		this.cachedSize++;
+		this.setModified();// again
 		return false;
 	}
 	
@@ -211,126 +215,119 @@ public class RefsList<Obje> {
 	 * @return the firstNodeRef
 	 */
 	protected Reference<Obje> getFirstRef() {
-		return firstRef;
+		return this.firstRef;
 	}
-
+	
 	/**
 	 * @return the lastNodeRef
 	 */
 	protected Reference<Obje> getLastRef() {
-		return lastRef;
+		return this.lastRef;
 	}
-
+	
 	/**
 	 * @param killRef
 	 * @return true if removed, false if it was already inexistent
 	 */
-	public boolean removeRef(Reference<Obje> killRef) {
-		Debug.nullException(killRef);
-		if (!containsRef(killRef)) {
+	public boolean removeRef( Reference<Obje> killRef ) {
+		Debug.nullException( killRef );
+		if ( !this.containsRef( killRef ) ) {
 			return false;
 		}
-
-		setModified();
-
+		this.setModified();
 		Reference<Obje> prev = killRef.getPrev();// beware if you remove this
 		// local var
 		Reference<Obje> next = killRef.getNext();
-		if (prev != null) {
-			prev.setNext(next);
+		if ( prev != null ) {
+			prev.setNext( next );
 			// killRef.setPrev(null);//beware
 		} else {
-			if (firstRef == killRef) {
-				firstRef = next;// can be null
+			if ( this.firstRef == killRef ) {
+				this.firstRef = next;// can be null
 			} else {
-				throw new AssertionError("compromised integrity of list");
+				throw new AssertionError( "compromised integrity of list" );
 			}
 		}
-
-		if (next != null) {
-			next.setPrev(prev);// beware
+		if ( next != null ) {
+			next.setPrev( prev );// beware
 			// killRef.setNext(null);
 		} else {
-			if (lastRef == killRef) {
-				lastRef = prev;// can be null
+			if ( this.lastRef == killRef ) {
+				this.lastRef = prev;// can be null
 			} else {
-				throw new AssertionError("compromised integrity of list (2)");
+				throw new AssertionError( "compromised integrity of list (2)" );
 			}
 		}
-
 		// killRef.setObject(null);
 		killRef.destroy();
-		cachedSize--;
-		setModified();
+		this.cachedSize--;
+		this.setModified();
 		return true;
 	}
-
+	
 	/**
 	 * @param whichRef
 	 * @return true if the reference already exists; doesn't matter to what
 	 *         object it points to
 	 */
-	public boolean containsRef(Reference<Obje> whichRef) {
-		Debug.nullException(whichRef);
-		Reference<Obje> parser = firstRef;
-		while (null != parser) {
-			if (whichRef.equals(parser)) {
+	public boolean containsRef( Reference<Obje> whichRef ) {
+		Debug.nullException( whichRef );
+		Reference<Obje> parser = this.firstRef;
+		while ( null != parser ) {
+			if ( whichRef.equals( parser ) ) {
 				return true;
 			}
 			parser = parser.getNext();
 		}
 		return false;
 	}
-
+	
 	/**
-	 * @param location only FIRST/LAST allowed
+	 * @param location
+	 *            only FIRST/LAST allowed
 	 * @return a reference
 	 * @see #getNodeRefAt(Position, Reference)
 	 */
-	public Reference<Obje> getNodeRefAt(Position location) {
-		switch (location) {
+	public Reference<Obje> getNodeRefAt( Position location ) {
+		switch ( location ) {
 		case FIRST:
-			return getFirstRef();
+			return this.getFirstRef();
 		case LAST:
-			return getLastRef();
+			return this.getLastRef();
 		default:
-			throw new AssertionError("undefined location here.");
+			throw new AssertionError( "undefined location here." );
 		}
 	}
-
+	
 	/**
-	 * @param location FIRST/LAST allowed; but BEFORE/AFTER are supposed to be used
-	 * @param locationRef the reference that location is referring to
+	 * @param location
+	 *            FIRST/LAST allowed; but BEFORE/AFTER are supposed to be used
+	 * @param locationRef
+	 *            the reference that location is referring to
 	 * @return the ref or null
 	 * @see #getNodeRefAt(Position)
 	 */
-	public Reference<Obje> getNodeRefAt(Position location,
-			Reference<Obje> locationRef) {
-
-		Debug.nullException(location, locationRef);
-
-		if (!this.containsRef(locationRef)) {// this will unfortunately
+	public Reference<Obje> getNodeRefAt( Position location,
+			Reference<Obje> locationRef ) {
+		Debug.nullException( location, locationRef );
+		if ( !this.containsRef( locationRef ) ) {// this will unfortunately
 			// parse the list until it
 			// finds it
 			return null;
 		}
-
-		//locationRef cannot be null past this point, no checks follow
-		switch (location) {
+		// locationRef cannot be null past this point, no checks follow
+		switch ( location ) {
 		case BEFORE:
 			return locationRef.getPrev();
-
 		case AFTER:
 			return locationRef.getNext();
-
 		case FIRST:
 		case LAST:
-			return getNodeRefAt(location);
-
+			return this.getNodeRefAt( location );
 		default:
-			throw new AssertionError("undefined location within this context");
+			throw new AssertionError( "undefined location within this context" );
 		}
 	}
-
-	// parser can be done using parser=getFirstRef() and parser=getNodeRefAt(Position.AFTER, parser)
+	// parser can be done using parser=getFirstRef() and
+	// parser=getNodeRefAt(Position.AFTER, parser)
 }

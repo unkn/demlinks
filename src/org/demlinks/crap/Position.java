@@ -19,6 +19,5 @@
 package org.demlinks.crap;
 
 public enum Position {
-	FIRST, LAST,
-	BEFORE, AFTER
+	FIRST, LAST, BEFORE, AFTER
 }

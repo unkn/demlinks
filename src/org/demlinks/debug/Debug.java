@@ -14,18 +14,22 @@
 
     You should have received a copy of the GNU General Public License
     along with DeMLinks.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
 package org.demlinks.debug;
 
 public final class Debug {
+	
 	/**
-	 * @param anyObject one or more objects to be tested if they're null, if so then we throw AssertionError
+	 * @param anyObject
+	 *            one or more objects to be tested if they're null, if so then
+	 *            we throw AssertionError
 	 */
-	public static void nullException(Object... anyObject) {
-		for (int i = 0; i < anyObject.length; i++) {
-			if (null == anyObject[i]) {
-				throw new NullPointerException("should never be null:"+anyObject[i]+" ["+i+"]");
+	public static void nullException( Object... anyObject ) {
+		for ( int i = 0; i < anyObject.length; i++ ) {
+			if ( null == anyObject[i] ) {
+				throw new NullPointerException( "should never be null:"
+						+ anyObject[i] + " [" + i + "]" );
 			}
 		}
 	}

@@ -1,3 +1,4 @@
+
 package org.demlinks.crap;
 
 import static org.junit.Assert.assertFalse;
@@ -10,49 +11,46 @@ import org.junit.Test;
 import org.omg.CORBA.ORBPackage.InconsistentTypeCode;
 
 public class NodeTest {
-
-	Node parent, child;
-
+	
+	Node	parent, child;
+	
 	@Before
 	public void init() {
-		parent = new Node();
-		child = new Node();
+		this.parent = new Node();
+		this.child = new Node();
 	}
-
+	
 	@Test
 	public void testInsert() throws InconsistentTypeCode {
 		Node a = new Node();
 		Node b = new Node();
 		Node c = new Node();
 		Node d = new Node();
-		assertFalse(parent.appendChild(a));
-		assertTrue(parent.getLastChild() == a);
-		assertFalse(parent.insertChildAfter(c, a));
-		assertTrue(parent.getFirstChild() == a);
-		assertTrue(parent.getLastChild() == c);
-		
-		assertFalse(parent.insertChildBefore(b, c));
-		assertFalse(parent.insertChildAfter(d, c));
-		assertTrue(parent.getChildNextOf(a) == b);
-		assertTrue(parent.getChildPrevOf(d) == c);
-		assertTrue(parent.numChildren() == 4);
-		
-		assertFalse(child.appendParent(a));
-		assertTrue(child.getLastParent() == a);
-		assertFalse(child.insertParentAfter(c, a));
-		assertTrue(child.getFirstParent() == a);
-		assertTrue(child.getLastParent() == c);
-		
-		assertFalse(child.insertParentBefore(b, c));
-		assertFalse(child.insertParentAfter(d, c));
-		assertTrue(child.getParentNextOf(a) == b);
-		assertTrue(child.getParentPrevOf(d) == c);
-		assertTrue(child.numParents() == 4);
+		assertFalse( this.parent.appendChild( a ) );
+		assertTrue( this.parent.getLastChild() == a );
+		assertFalse( this.parent.insertChildAfter( c, a ) );
+		assertTrue( this.parent.getFirstChild() == a );
+		assertTrue( this.parent.getLastChild() == c );
+		assertFalse( this.parent.insertChildBefore( b, c ) );
+		assertFalse( this.parent.insertChildAfter( d, c ) );
+		assertTrue( this.parent.getChildNextOf( a ) == b );
+		assertTrue( this.parent.getChildPrevOf( d ) == c );
+		assertTrue( this.parent.numChildren() == 4 );
+		assertFalse( this.child.appendParent( a ) );
+		assertTrue( this.child.getLastParent() == a );
+		assertFalse( this.child.insertParentAfter( c, a ) );
+		assertTrue( this.child.getFirstParent() == a );
+		assertTrue( this.child.getLastParent() == c );
+		assertFalse( this.child.insertParentBefore( b, c ) );
+		assertFalse( this.child.insertParentAfter( d, c ) );
+		assertTrue( this.child.getParentNextOf( a ) == b );
+		assertTrue( this.child.getParentPrevOf( d ) == c );
+		assertTrue( this.child.numParents() == 4 );
 	}
 	
 	@Test
 	public void testGet() throws InconsistentTypeCode {
-		Node a,b,c,d,e,f,g;
+		Node a, b, c, d, e, f, g;
 		a = new Node();
 		b = new Node();
 		c = new Node();
@@ -60,159 +58,140 @@ public class NodeTest {
 		e = new Node();
 		f = new Node();
 		g = new Node();
-		assertFalse(a.appendChild(b));
-		assertFalse(a.appendChild(c));
-		assertFalse(a.appendChild(d));
-		assertFalse(a.appendChild(e));
-		assertFalse(a.appendParent(f));
-		assertFalse(a.appendParent(g));
-		
+		assertFalse( a.appendChild( b ) );
+		assertFalse( a.appendChild( c ) );
+		assertFalse( a.appendChild( d ) );
+		assertFalse( a.appendChild( e ) );
+		assertFalse( a.appendParent( f ) );
+		assertFalse( a.appendParent( g ) );
 		Node parser = a.getFirstChild();
-		assertTrue(b == parser);
-		while (null != parser) {
-			System.out.println(parser);
-			parser = a.getChildNextOf(parser);
+		assertTrue( b == parser );
+		while ( null != parser ) {
+			System.out.println( parser );
+			parser = a.getChildNextOf( parser );
 		}
-		parser = a.getChildPrevOf(a.getLastChild());
-		assertTrue(parser == d);
-		parser = a.getChildPrevOf(parser);
-		assertTrue(parser == c);
-		parser = a.getChildPrevOf(parser);
-		assertTrue(parser == b);
-		parser = a.getChildPrevOf(parser);
-		assertTrue(parser == null);
-		
+		parser = a.getChildPrevOf( a.getLastChild() );
+		assertTrue( parser == d );
+		parser = a.getChildPrevOf( parser );
+		assertTrue( parser == c );
+		parser = a.getChildPrevOf( parser );
+		assertTrue( parser == b );
+		parser = a.getChildPrevOf( parser );
+		assertTrue( parser == null );
 		parser = a.getFirstParent();
-		assertTrue(parser == f);
-		parser = a.getParentNextOf(parser);
-		assertTrue(parser == g);
-		parser = a.getParentNextOf(parser);
-		assertTrue(parser == null);
-		
-		assertTrue(f == a.getParentPrevOf(a.getLastParent()));
+		assertTrue( parser == f );
+		parser = a.getParentNextOf( parser );
+		assertTrue( parser == g );
+		parser = a.getParentNextOf( parser );
+		assertTrue( parser == null );
+		assertTrue( f == a.getParentPrevOf( a.getLastParent() ) );
 	}
 	
 	@Test
 	public void testAppendChild() throws InconsistentTypeCode {
-
-		assertFalse(parent.hasChild(child));
-		assertFalse(child.hasChild(parent));
-		assertFalse(parent.hasParent(child));
-		assertFalse(child.hasParent(parent));
-		assertTrue(child.numParents() == 0);
-		assertTrue(parent.numChildren() == 0);
-
-		assertFalse(parent.appendChild(child));// parent->child
-		assertTrue(parent.hasChild(child));
-		assertTrue(parent.numChildren() == 1);
-
-		assertTrue(parent.appendChild(child));// already exists, not re-added
-										// and not moved at rear end of list
-		assertTrue(parent.hasChild(child));
-		assertTrue(parent.numChildren() == 1);
-		
-		assertFalse(child.hasChild(parent));
-
-		assertTrue(child.hasParent(parent));// parent<-child ? yes
-		assertFalse(parent.hasParent(child));// child<-parent ? no
-
+		assertFalse( this.parent.hasChild( this.child ) );
+		assertFalse( this.child.hasChild( this.parent ) );
+		assertFalse( this.parent.hasParent( this.child ) );
+		assertFalse( this.child.hasParent( this.parent ) );
+		assertTrue( this.child.numParents() == 0 );
+		assertTrue( this.parent.numChildren() == 0 );
+		assertFalse( this.parent.appendChild( this.child ) );// parent->child
+		assertTrue( this.parent.hasChild( this.child ) );
+		assertTrue( this.parent.numChildren() == 1 );
+		assertTrue( this.parent.appendChild( this.child ) );// already exists,
+															// not re-added
+		// and not moved at rear end of list
+		assertTrue( this.parent.hasChild( this.child ) );
+		assertTrue( this.parent.numChildren() == 1 );
+		assertFalse( this.child.hasChild( this.parent ) );
+		assertTrue( this.child.hasParent( this.parent ) );// parent<-child ? yes
+		assertFalse( this.parent.hasParent( this.child ) );// child<-parent ? no
 		boolean excepted = false;
 		try {
-			parent.appendChild(null);
-		}catch (NullPointerException e) {
+			this.parent.appendChild( null );
+		} catch ( NullPointerException e ) {
 			excepted = true;
 		}
-		assertTrue(excepted);
-		
-		assertTrue(parent.numChildren() == 1);
+		assertTrue( excepted );
+		assertTrue( this.parent.numChildren() == 1 );
 	}
 	
 	@Test
 	public void testNullParams() throws InconsistentTypeCode {
 		boolean excepted = false;
 		try {
-			parent.hasChild(null);
-		} catch (NullPointerException e) {
+			this.parent.hasChild( null );
+		} catch ( NullPointerException e ) {
 			excepted = true;
 		}
-		assertTrue(excepted);
-
+		assertTrue( excepted );
 		excepted = false;
 		try {
-			parent.hasParent(null);
-		} catch (NullPointerException e) {
+			this.parent.hasParent( null );
+		} catch ( NullPointerException e ) {
 			excepted = true;
 		}
-		assertTrue(excepted);
-		
+		assertTrue( excepted );
 		excepted = false;
 		try {
-			parent.appendChild(null);
-		} catch (NullPointerException e) {
+			this.parent.appendChild( null );
+		} catch ( NullPointerException e ) {
 			excepted = true;
 		}
-		assertTrue(excepted);
-	}
-
-	@Test
-	public void testInconsistentLink() throws CannotProceedException, InconsistentTypeCode {
-		assertFalse( parent.internalAppendChild(child) );
-		assertTrue(parent.internalAppendChild(child));
-		
-		boolean excepted = false;
-		try {
-			parent.hasChild(child);
-		}catch (InconsistentTypeCode e) {
-			excepted = true;
-		}
-		assertTrue(excepted);
-		
-		excepted = false;
-		try {
-			parent.appendChild(child);
-			//after the above call, the link will nolonger be inconsistent
-		}catch (InconsistentTypeCode e) {
-			excepted = true;
-		}
-		assertTrue(excepted);
-		
-		assertTrue(parent.removeChild(child));
-		
-		//assertTrue(parent.internalRemoveChild(child));
-		assertFalse(child.internalAppendParent(parent));
-		assertTrue(child.internalAppendParent(parent));
-		
-		excepted = false;
-		try {
-			child.hasParent(parent);
-		}catch (InconsistentTypeCode e) {
-			excepted = true;
-		}
-		assertTrue(excepted);
+		assertTrue( excepted );
 	}
 	
 	@Test
-	public void testRemove() throws CannotProceedException, InconsistentTypeCode {
-		assertTrue(child.numParents() == 0);
-		assertTrue(parent.numChildren() == 0);
-		assertFalse(parent.removeChild(child));
-		
-		assertFalse(parent.appendChild(child));
-		assertTrue(parent.hasChild(child));
-		assertTrue(child.numParents() == 1);
-		
-		assertTrue(parent.removeChild(child));
-		assertFalse(parent.removeChild(child));
-		
-		assertFalse(child.removeParent(parent));
-		
-		assertFalse(parent.appendChild(child));
-		assertTrue(parent.hasChild(child));
-		assertTrue(parent.numChildren() == 1);
-		
-		assertTrue(child.removeParent(parent));
-		assertFalse(child.removeParent(parent));
-		assertTrue(child.numParents() == 0);
-		assertTrue(parent.numChildren() == 0);
+	public void testInconsistentLink() throws CannotProceedException,
+			InconsistentTypeCode {
+		assertFalse( this.parent.internalAppendChild( this.child ) );
+		assertTrue( this.parent.internalAppendChild( this.child ) );
+		boolean excepted = false;
+		try {
+			this.parent.hasChild( this.child );
+		} catch ( InconsistentTypeCode e ) {
+			excepted = true;
+		}
+		assertTrue( excepted );
+		excepted = false;
+		try {
+			this.parent.appendChild( this.child );
+			// after the above call, the link will nolonger be inconsistent
+		} catch ( InconsistentTypeCode e ) {
+			excepted = true;
+		}
+		assertTrue( excepted );
+		assertTrue( this.parent.removeChild( this.child ) );
+		// assertTrue(parent.internalRemoveChild(child));
+		assertFalse( this.child.internalAppendParent( this.parent ) );
+		assertTrue( this.child.internalAppendParent( this.parent ) );
+		excepted = false;
+		try {
+			this.child.hasParent( this.parent );
+		} catch ( InconsistentTypeCode e ) {
+			excepted = true;
+		}
+		assertTrue( excepted );
+	}
+	
+	@Test
+	public void testRemove() throws CannotProceedException,
+			InconsistentTypeCode {
+		assertTrue( this.child.numParents() == 0 );
+		assertTrue( this.parent.numChildren() == 0 );
+		assertFalse( this.parent.removeChild( this.child ) );
+		assertFalse( this.parent.appendChild( this.child ) );
+		assertTrue( this.parent.hasChild( this.child ) );
+		assertTrue( this.child.numParents() == 1 );
+		assertTrue( this.parent.removeChild( this.child ) );
+		assertFalse( this.parent.removeChild( this.child ) );
+		assertFalse( this.child.removeParent( this.parent ) );
+		assertFalse( this.parent.appendChild( this.child ) );
+		assertTrue( this.parent.hasChild( this.child ) );
+		assertTrue( this.parent.numChildren() == 1 );
+		assertTrue( this.child.removeParent( this.parent ) );
+		assertFalse( this.child.removeParent( this.parent ) );
+		assertTrue( this.child.numParents() == 0 );
+		assertTrue( this.parent.numChildren() == 0 );
 	}
 }

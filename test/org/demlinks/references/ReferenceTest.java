@@ -18,55 +18,51 @@
 
 package org.demlinks.references;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import org.junit.Before;
 import org.junit.Test;
 
 public class ReferenceTest {
-
-	Reference<Object> n1,n2,n3;
-	Object obj1;
+	
+	Reference<Object>	n1, n2, n3;
+	Object				obj1;
 	
 	@Before
 	public void init() {
-		n1 = new Reference<Object>();
-		n2 = new Reference<Object>();
-		n3 = new Reference<Object>();
-		obj1 = new Object();
+		this.n1 = new Reference<Object>();
+		this.n2 = new Reference<Object>();
+		this.n3 = new Reference<Object>();
+		this.obj1 = new Object();
 	}
 	
 	@Test
 	public void testSetObject() {
-		assertTrue(n1.getObject() == null);
-		n1.setObject(obj1);
-		assertTrue( obj1 == n1.getObject() );
-		n1.setObject(null);
-		assertTrue(null == n1.getObject());
+		assertTrue( this.n1.getObject() == null );
+		this.n1.setObject( this.obj1 );
+		assertTrue( this.obj1 == this.n1.getObject() );
+		this.n1.setObject( null );
+		assertTrue( null == this.n1.getObject() );
 	}
 	
 	@Test
 	public void testSetNext() {
-		assertTrue( n1.getPrev() == null );
-		assertTrue( n1.getNext() == null );
-		assertTrue(n1.isAlone());
-		assertTrue(n1.isDead());
-		
-		assertTrue(n2.isAlone());
-		assertTrue(n2.isDead());
-		n2.setNext(n3);
-		assertFalse(n2.isAlone());
-		assertFalse(n2.isDead());
-		
-		assertTrue(n2.getNext() == n3);
-		assertFalse(n3.getPrev() == n2);
-		
-		n2.setPrev(n1);
-		assertTrue(n2.getPrev() == n1);
-		assertFalse(n1.getNext() == n2);
-		
-		n1.setNext(n2);
-		assertTrue(n1.getNext() == n2);
-		
+		assertTrue( this.n1.getPrev() == null );
+		assertTrue( this.n1.getNext() == null );
+		assertTrue( this.n1.isAlone() );
+		assertTrue( this.n1.isDead() );
+		assertTrue( this.n2.isAlone() );
+		assertTrue( this.n2.isDead() );
+		this.n2.setNext( this.n3 );
+		assertFalse( this.n2.isAlone() );
+		assertFalse( this.n2.isDead() );
+		assertTrue( this.n2.getNext() == this.n3 );
+		assertFalse( this.n3.getPrev() == this.n2 );
+		this.n2.setPrev( this.n1 );
+		assertTrue( this.n2.getPrev() == this.n1 );
+		assertFalse( this.n1.getNext() == this.n2 );
+		this.n1.setNext( this.n2 );
+		assertTrue( this.n1.getNext() == this.n2 );
 	}
-
 }
