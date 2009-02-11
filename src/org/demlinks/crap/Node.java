@@ -1,7 +1,5 @@
 package org.demlinks.crap;
 
-import javax.naming.CannotProceedException;
-
 import org.demlinks.debug.Debug;
 import org.omg.CORBA.ORBPackage.InconsistentTypeCode;
 
@@ -123,11 +121,11 @@ public class Node {
 	 * @return true if child existed before call
 	 * @throws CannotProceedException 
 	 */
-	protected boolean internalRemoveChild(Node child) throws CannotProceedException {
+	protected boolean internalRemoveChild(Node child) {
 		return this.childrenList.removeNode(child);
 	}
 
-	protected boolean internalRemoveParent(Node parent) throws CannotProceedException {
+	protected boolean internalRemoveParent(Node parent) {
 		return this.parentsList.removeNode(parent);
 	}
 	
@@ -140,7 +138,7 @@ public class Node {
 	 * @throws CannotProceedException if one or both links still exist after call
 	 * @throws InconsistentTypeCode if only one of the links existed before call, now neither should exist
 	 */
-	public boolean removeChild(Node child) throws CannotProceedException, InconsistentTypeCode {
+	public boolean removeChild(Node child) throws InconsistentTypeCode {
 		boolean link1 = this.internalRemoveChild(child);
 		boolean link2 = child.internalRemoveParent(this);
 		if (link1 ^ link2) {
@@ -153,11 +151,10 @@ public class Node {
 	/**
 	 * @param parent
 	 * @return
-	 * @throws CannotProceedException
 	 * @throws InconsistentTypeCode
 	 * @see #removeChild(Node)
 	 */
-	public boolean removeParent(Node parent) throws CannotProceedException, InconsistentTypeCode {
+	public boolean removeParent(Node parent) throws InconsistentTypeCode {
 		return parent.removeChild(this);
 	}
 	
