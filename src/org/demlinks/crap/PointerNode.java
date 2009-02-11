@@ -3,7 +3,7 @@ package org.demlinks.crap;
 
 import org.demlinks.debug.Debug;
 import org.demlinks.exceptions.BugDetected;
-import org.omg.CORBA.ORBPackage.InconsistentTypeCode;
+import org.demlinks.exceptions.InconsistentLinkDetected;
 
 /**
  * can have 0 or max 1 children can have any number of parents MUST have the
@@ -17,7 +17,8 @@ public class PointerNode extends Node {
 		boolean existsAlready = false;
 		try {
 			existsAlready = GlobalNodes.AllPointers.appendChild( this );
-		} catch ( InconsistentTypeCode e ) {// half of the link exists already
+		} catch ( InconsistentLinkDetected e ) {// half of the link exists
+												// already
 			existsAlready = true;// so we can throw
 		} finally {
 			if ( existsAlready ) {
@@ -41,11 +42,11 @@ public class PointerNode extends Node {
 	 *         changed
 	 * @throws BugDetected
 	 *             if more than 1 child detected OR other 2 reasons
-	 * @throws InconsistentTypeCode
+	 * @throws InconsistentLinkDetected
 	 *             half link detected
 	 */
 	public boolean pointTo( Node pointee ) throws BugDetected,
-			InconsistentTypeCode {
+			InconsistentLinkDetected {
 		Debug.nullException( pointee );
 		this.integrityCheck();
 		if ( this.numChildren() == 1 ) {
@@ -55,12 +56,11 @@ public class PointerNode extends Node {
 				return true;// already has the pointee we wanted to set
 			}
 			if ( null == tmp ) {
-				throw new NullPointerException( "can't be null here" );
+				throw new BugDetected( "can't be null here" );
 			}
 			if ( !this.removeChild( tmp ) ) {
 				throw new BugDetected( "should've removed it!" );
 			}
-			// TODO make own exceptions
 		}
 		// we're here the pointer points to nothing, has no child
 		if ( this.appendChild( pointee ) ) {

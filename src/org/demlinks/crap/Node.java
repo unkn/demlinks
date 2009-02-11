@@ -4,7 +4,7 @@ package org.demlinks.crap;
 import javax.naming.CannotProceedException;
 
 import org.demlinks.debug.Debug;
-import org.omg.CORBA.ORBPackage.InconsistentTypeCode;
+import org.demlinks.exceptions.InconsistentLinkDetected;
 
 public class Node {
 	
@@ -31,17 +31,17 @@ public class Node {
 	 *         exist and it is now (after call) at the end(appended) of the list
 	 *         also note that if child existed then so did "this"(the parent)
 	 *         for the child
-	 * @throws InconsistentTypeCode
+	 * @throws InconsistentLinkDetected
 	 *             if half of the link existed before call
 	 */
-	public boolean appendChild( Node child ) throws InconsistentTypeCode {
+	public boolean appendChild( Node child ) throws InconsistentLinkDetected {
 		Debug.nullException( child );
 		boolean existed1 = this.internalAppendChild( child );
 		boolean existed2 = child.internalAppendParent( this );
 		if ( existed1 ^ existed2 ) {
 			// if either one existed, then inconsistent link detected
 			// somewhere something made a boo boo
-			throw new InconsistentTypeCode( "inconsistent link detected" );
+			throw new InconsistentLinkDetected( "inconsistent link detected" );
 			// maybe undo-ing here before throwing is not a good idea
 			// TODO make own exception here
 		}
@@ -52,21 +52,12 @@ public class Node {
 	 * parent <- this<br>
 	 * parent -> this
 	 * 
-	 * @throws InconsistentTypeCode
+	 * @throws InconsistentLinkDetected
 	 * @see {@link #appendChild(Node)}
 	 */
-	public boolean appendParent( Node parent ) throws InconsistentTypeCode {
+	public boolean appendParent( Node parent ) throws InconsistentLinkDetected {
 		Debug.nullException( parent );
 		return parent.appendChild( this );
-		// boolean existed1 = this.internalAppendParent(parent);
-		// boolean existed2 = parent.internalAppendChild(this);
-		// if (existed1 ^ existed2) {
-		// //if either one existed, then inconsistent link detected
-		// //somewhere something made a boo boo
-		// throw new InconsistentTypeCode("inconsistent link detected");
-		// //TODO make own exception here
-		// }
-		// return existed1;//should be same value as existed2
 	}
 	
 	/**
@@ -92,16 +83,16 @@ public class Node {
 	 * @param child
 	 * @return true if <tt>this</tt> has <tt>child</tt> in its children list and
 	 *         <tt>child</tt> has <tt>this</tt> in its parents list
-	 * @throws InconsistentTypeCode
+	 * @throws InconsistentLinkDetected
 	 *             is only one of the links exists
 	 */
-	public boolean hasChild( Node child ) throws InconsistentTypeCode {
+	public boolean hasChild( Node child ) throws InconsistentLinkDetected {
 		Debug.nullException( child );
 		boolean link1 = this.childrenList.hasNode( child );
 		boolean link2 = child.parentsList.hasNode( this );// isn't that private
-															// field?
+		// field?
 		if ( link1 ^ link2 ) {
-			throw new InconsistentTypeCode( "inconsistent link detected" );
+			throw new InconsistentLinkDetected( "inconsistent link detected" );
 		}
 		return link1;
 	}
@@ -112,20 +103,12 @@ public class Node {
 	 * @param parent
 	 * @return true if <tt>this</tt> has <tt>parent</tt> in its parents list and
 	 *         <tt>parent</tt> has <tt>this</tt> in its children list
-	 * @throws InconsistentTypeCode
+	 * @throws InconsistentLinkDetected
 	 * @see {@link #hasChild(Node)}
 	 */
-	public boolean hasParent( Node parent ) throws InconsistentTypeCode {
+	public boolean hasParent( Node parent ) throws InconsistentLinkDetected {
 		Debug.nullException( parent );
 		return parent.hasChild( this );// counting on hasChild to check both
-										// links
-		// boolean link1 = this.parentsList.hasNode(parent);
-		// boolean link2 = parent.childrenList.hasNode(this);//isn't that
-		// private field?
-		// if (link1 ^ link2) {
-		// throw new InconsistentTypeCode("inconsistent link detected");
-		// }
-		// return link1;
 	}
 	
 	/**
@@ -150,15 +133,15 @@ public class Node {
 	 * @return true if both links existed before call
 	 * @throws CannotProceedException
 	 *             if one or both links still exist after call
-	 * @throws InconsistentTypeCode
+	 * @throws InconsistentLinkDetected
 	 *             if only one of the links existed before call, now neither
 	 *             should exist
 	 */
-	public boolean removeChild( Node child ) throws InconsistentTypeCode {
+	public boolean removeChild( Node child ) throws InconsistentLinkDetected {
 		boolean link1 = this.internalRemoveChild( child );
 		boolean link2 = child.internalRemoveParent( this );
 		if ( link1 ^ link2 ) {
-			throw new InconsistentTypeCode( "inconsistent link detected" );
+			throw new InconsistentLinkDetected( "inconsistent link detected" );
 		}
 		return link1;
 	}
@@ -166,10 +149,10 @@ public class Node {
 	/**
 	 * @param parent
 	 * @return
-	 * @throws InconsistentTypeCode
+	 * @throws InconsistentLinkDetected
 	 * @see #removeChild(Node)
 	 */
-	public boolean removeParent( Node parent ) throws InconsistentTypeCode {
+	public boolean removeParent( Node parent ) throws InconsistentLinkDetected {
 		return parent.removeChild( this );
 	}
 	

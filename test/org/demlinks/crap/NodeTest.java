@@ -6,9 +6,9 @@ import static org.junit.Assert.assertTrue;
 
 import javax.naming.CannotProceedException;
 
+import org.demlinks.exceptions.InconsistentLinkDetected;
 import org.junit.Before;
 import org.junit.Test;
-import org.omg.CORBA.ORBPackage.InconsistentTypeCode;
 
 public class NodeTest {
 	
@@ -21,7 +21,7 @@ public class NodeTest {
 	}
 	
 	@Test
-	public void testInsert() throws InconsistentTypeCode {
+	public void testInsert() throws InconsistentLinkDetected {
 		Node a = new Node();
 		Node b = new Node();
 		Node c = new Node();
@@ -49,7 +49,7 @@ public class NodeTest {
 	}
 	
 	@Test
-	public void testGet() throws InconsistentTypeCode {
+	public void testGet() throws InconsistentLinkDetected {
 		Node a, b, c, d, e, f, g;
 		a = new Node();
 		b = new Node();
@@ -88,7 +88,7 @@ public class NodeTest {
 	}
 	
 	@Test
-	public void testAppendChild() throws InconsistentTypeCode {
+	public void testAppendChild() throws InconsistentLinkDetected {
 		assertFalse( this.parent.hasChild( this.child ) );
 		assertFalse( this.child.hasChild( this.parent ) );
 		assertFalse( this.parent.hasParent( this.child ) );
@@ -99,7 +99,7 @@ public class NodeTest {
 		assertTrue( this.parent.hasChild( this.child ) );
 		assertTrue( this.parent.numChildren() == 1 );
 		assertTrue( this.parent.appendChild( this.child ) );// already exists,
-															// not re-added
+		// not re-added
 		// and not moved at rear end of list
 		assertTrue( this.parent.hasChild( this.child ) );
 		assertTrue( this.parent.numChildren() == 1 );
@@ -117,7 +117,7 @@ public class NodeTest {
 	}
 	
 	@Test
-	public void testNullParams() throws InconsistentTypeCode {
+	public void testNullParams() throws InconsistentLinkDetected {
 		boolean excepted = false;
 		try {
 			this.parent.hasChild( null );
@@ -143,13 +143,13 @@ public class NodeTest {
 	
 	@Test
 	public void testInconsistentLink() throws CannotProceedException,
-			InconsistentTypeCode {
+			InconsistentLinkDetected {
 		assertFalse( this.parent.internalAppendChild( this.child ) );
 		assertTrue( this.parent.internalAppendChild( this.child ) );
 		boolean excepted = false;
 		try {
 			this.parent.hasChild( this.child );
-		} catch ( InconsistentTypeCode e ) {
+		} catch ( InconsistentLinkDetected e ) {
 			excepted = true;
 		}
 		assertTrue( excepted );
@@ -157,7 +157,7 @@ public class NodeTest {
 		try {
 			this.parent.appendChild( this.child );
 			// after the above call, the link will nolonger be inconsistent
-		} catch ( InconsistentTypeCode e ) {
+		} catch ( InconsistentLinkDetected e ) {
 			excepted = true;
 		}
 		assertTrue( excepted );
@@ -168,7 +168,7 @@ public class NodeTest {
 		excepted = false;
 		try {
 			this.child.hasParent( this.parent );
-		} catch ( InconsistentTypeCode e ) {
+		} catch ( InconsistentLinkDetected e ) {
 			excepted = true;
 		}
 		assertTrue( excepted );
@@ -176,7 +176,7 @@ public class NodeTest {
 	
 	@Test
 	public void testRemove() throws CannotProceedException,
-			InconsistentTypeCode {
+			InconsistentLinkDetected {
 		assertTrue( this.child.numParents() == 0 );
 		assertTrue( this.parent.numChildren() == 0 );
 		assertFalse( this.parent.removeChild( this.child ) );
