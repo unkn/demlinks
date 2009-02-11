@@ -69,7 +69,27 @@ public class PointerNode extends Node {
 		return false;
 	}
 	
+	/**
+	 * @return null or the Node that this pointer points to
+	 */
 	public Node getPointee() {
 		return this.getLastChild();
+	}
+	
+	/**
+	 * @return true if was pointing to something before call<br>
+	 *         false if was pointing to nothing already
+	 * @throws BugError
+	 * @throws InconsistentLinkException
+	 */
+	public boolean setNull() throws InconsistentLinkException, BugError {
+		this.integrityCheck();
+		if ( this.numChildren() == 1 ) {
+			if ( !this.removeChild( this.getPointee() ) ) {
+				throw new BugError( "should've returned true" );
+			}
+			return true;
+		}
+		return false;
 	}
 }
