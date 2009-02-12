@@ -1,4 +1,4 @@
-import org.demlinks.crap.AllTestsCrap;
+import org.demlinks.node.AllTestsCrap;
 import org.demlinks.references.AllTestsReferences;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;

@@ -20,8 +20,8 @@ package org.demlinks.references;
 
 import java.util.NoSuchElementException;
 
-import org.demlinks.crap.Position;
 import org.demlinks.debug.Debug;
+import org.demlinks.node.Position;
 
 /**
  * handles the RefsList list at the Object level ie. accepting only Object

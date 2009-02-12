@@ -16,7 +16,7 @@
     along with DeMLinks.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.demlinks.crap;
+package org.demlinks.node;
 
 public enum Position {
 	FIRST, LAST, BEFORE, AFTER

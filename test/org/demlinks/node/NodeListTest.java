@@ -1,9 +1,12 @@
 
-package org.demlinks.crap;
+package org.demlinks.node;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import org.demlinks.node.Node;
+import org.demlinks.node.NodeList;
+import org.demlinks.node.Position;
 import org.junit.Before;
 import org.junit.Test;
 

@@ -20,8 +20,8 @@ package org.demlinks.references;
 
 import java.util.NoSuchElementException;
 
-import org.demlinks.crap.Position;
 import org.demlinks.debug.Debug;
+import org.demlinks.node.Position;
 
 /**
  * a double-linked list of References where no two are alike (no duplicates

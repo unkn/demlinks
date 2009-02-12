@@ -1,5 +1,5 @@
 
-package org.demlinks.crap;
+package org.demlinks.node;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;

@@ -1,5 +1,5 @@
 
-package org.demlinks.crap;
+package org.demlinks.node;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -35,5 +35,11 @@ public class PointerNodeTest {
 		assertTrue( null == this.p1.getPointee() );
 		assertFalse( this.p1.setNull() );
 		assertTrue( null == this.p1.getPointee() );
+		
+		assertTrue( GlobalNodes.isPointer( this.p1 ) );
+		Node n = new Node();
+		Node m = new PointerNode();
+		assertFalse( GlobalNodes.isPointer( n ) );
+		assertTrue( GlobalNodes.isPointer( m ) );
 	}
 }

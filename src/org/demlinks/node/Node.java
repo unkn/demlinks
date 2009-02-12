@@ -1,5 +1,5 @@
 
-package org.demlinks.crap;
+package org.demlinks.node;
 
 import javax.naming.CannotProceedException;
 

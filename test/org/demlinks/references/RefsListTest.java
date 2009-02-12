@@ -23,7 +23,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.NoSuchElementException;
 
-import org.demlinks.crap.Position;
+import org.demlinks.node.Position;
 import org.junit.Before;
 import org.junit.Test;
 

@@ -1,5 +1,5 @@
 
-package org.demlinks.crap;
+package org.demlinks.node;
 
 import org.demlinks.debug.Debug;
 import org.demlinks.references.ObjRefsList;
@@ -10,7 +10,7 @@ import org.demlinks.references.ObjRefsList;
  */
 public class NodeList extends ObjRefsList<Node> {
 	
-	protected NodeList() {
+	public NodeList() {
 		super();
 	}
 	
@@ -22,8 +22,8 @@ public class NodeList extends ObjRefsList<Node> {
 	 */
 	public boolean appendNode( Node nodeToAppend ) {
 		Debug.nullException( nodeToAppend );// why not assert? because param(ie.
-											// nodeToAppend) could be
-											// dynamically set on runtime
+		// nodeToAppend) could be
+		// dynamically set on runtime
 		return this.addLast( nodeToAppend );
 		// nodeToAppend.getOpposingList().addLast(this.fatherNode);//in opposing
 		// list
