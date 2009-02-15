@@ -268,7 +268,24 @@ public class Node {
 	}
 	
 	public void integrityCheck() {
-		// TODO Auto-generated method stub
+		Debug.nullException( this.childrenList, this.parentsList );
 		
+		Node parser = this.childrenList.getFirstNode();
+		while ( null != parser ) {
+			if ( !( ( this.hasChild( parser ) ) && ( parser.hasParent( this ) ) ) ) {
+				throw new InconsistentLinkException( "half link detected?" );
+				// basically hasChild or hasParent will throw before we do here
+			}
+			parser = this.childrenList.getNodeAfter( parser );
+		}
+		
+		parser = this.parentsList.getFirstNode();
+		while ( null != parser ) {
+			if ( !( ( this.hasParent( parser ) ) && ( parser.hasChild( this ) ) ) ) {
+				throw new InconsistentLinkException( "half link detected?" );
+				// basically hasChild or hasParent will throw before we do here
+			}
+			parser = this.parentsList.getNodeAfter( parser );
+		}
 	}
 }
