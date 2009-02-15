@@ -3,7 +3,6 @@ package org.demlinks.node;
 
 import org.demlinks.debug.Debug;
 import org.demlinks.errors.BugError;
-import org.demlinks.exceptions.InconsistentLinkException;
 
 /**
  * can have 0 or max 1 children can have any number of parents MUST have the
@@ -14,28 +13,17 @@ public class PointerNode extends Node {
 	
 	public PointerNode() {
 		super();
-		boolean existsAlready = false;
-		try {
-			existsAlready = GlobalNodes.AllPointers.appendChild( this );
-		} catch ( InconsistentLinkException e ) {// half of the link exists
-			// already
-			existsAlready = true;// so we can throw
-		} finally {
-			if ( existsAlready ) {
-				throw new BugError( "AllPointers->this already existing?!" );
-			}
-		}
+		GlobalNodes.internalCreateNodeAsChildOf( this, GlobalNodes.AllPointers );
 	}
 	
 	@Override
 	public void integrityCheck() {
+		super.integrityCheck();
 		if ( this.numChildren() > 1 ) {
 			throw new BugError(
 					"someone made the pointer have more than 1 child" );
 		}
 		if ( !this.hasParent( GlobalNodes.AllPointers ) ) {
-			// TODO if above throws InconsistentLinkException we should still
-			// throw BugError
 			throw new BugError( "somehow the parent was removed" );
 		}
 	}

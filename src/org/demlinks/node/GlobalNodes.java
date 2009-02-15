@@ -2,6 +2,8 @@
 package org.demlinks.node;
 
 import org.demlinks.debug.Debug;
+import org.demlinks.errors.BugError;
+import org.demlinks.exceptions.InconsistentLinkException;
 
 public class GlobalNodes {
 	
@@ -52,5 +54,27 @@ public class GlobalNodes {
 		Debug.nullException( whatNode );
 		whatNode.integrityCheck();
 		return whatNode.hasParent( AllIntermediaryNodes );
+	}
+	
+	/**
+	 * used in constructor
+	 * 
+	 * @param childNode
+	 * @param parentNode
+	 */
+	protected static void internalCreateNodeAsChildOf( Node childNode,
+			Node parentNode ) {
+		Debug.nullException( childNode, parentNode );
+		boolean existsAlready = false;
+		try {
+			existsAlready = parentNode.appendChild( childNode );
+		} catch ( InconsistentLinkException e ) {// half of the link exists
+			// already
+			existsAlready = true;// so we can throw
+		} finally {
+			if ( existsAlready ) {
+				throw new BugError( "parentNode->childNode already existing?!" );
+			}
+		}
 	}
 }
