@@ -13,7 +13,8 @@ public class NodeWithDupChildren extends Node {
 	 * @return true if the child exists
 	 */
 	public boolean dupHasChild( Node childNode ) {
-		// TODO Auto-generated method stub
+		// TODO basically parse all children and check if .getPointee() is
+		// childNode
 		return false;
 	}
 	

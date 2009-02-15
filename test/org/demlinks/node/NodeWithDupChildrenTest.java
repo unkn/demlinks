@@ -39,7 +39,7 @@ public class NodeWithDupChildrenTest {
 				.getIntermediaryForFirstChild( this.normalNode1 );
 		this.validateIntermediary( i );
 		assertTrue( i == this.nodeWithDups.getIntermediaryForFirstChild() );
-		assertTrue( i.getChild() == this.normalNode1 );
+		assertTrue( i.getPointee() == this.normalNode1 );
 		
 		// adding the same node again, now there's two
 		assertTrue( this.nodeWithDups.dupAppendChild( this.normalNode1 ) );
