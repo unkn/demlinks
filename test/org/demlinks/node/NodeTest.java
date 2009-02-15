@@ -7,7 +7,6 @@ import static org.junit.Assert.assertTrue;
 import javax.naming.CannotProceedException;
 
 import org.demlinks.exceptions.InconsistentLinkException;
-import org.demlinks.node.Node;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -22,7 +21,7 @@ public class NodeTest {
 	}
 	
 	@Test
-	public void testInsert() throws InconsistentLinkException {
+	public void testInsert() {
 		Node a = new Node();
 		Node b = new Node();
 		Node c = new Node();
@@ -50,7 +49,7 @@ public class NodeTest {
 	}
 	
 	@Test
-	public void testGet() throws InconsistentLinkException {
+	public void testGet() {
 		Node a, b, c, d, e, f, g;
 		a = new Node();
 		b = new Node();
@@ -89,7 +88,7 @@ public class NodeTest {
 	}
 	
 	@Test
-	public void testAppendChild() throws InconsistentLinkException {
+	public void testAppendChild() {
 		assertFalse( this.parent.hasChild( this.child ) );
 		assertFalse( this.child.hasChild( this.parent ) );
 		assertFalse( this.parent.hasParent( this.child ) );
@@ -118,7 +117,7 @@ public class NodeTest {
 	}
 	
 	@Test
-	public void testNullParams() throws InconsistentLinkException {
+	public void testNullParams() {
 		boolean excepted = false;
 		try {
 			this.parent.hasChild( null );
@@ -143,8 +142,7 @@ public class NodeTest {
 	}
 	
 	@Test
-	public void testInconsistentLink() throws CannotProceedException,
-			InconsistentLinkException {
+	public void testInconsistentLink() throws CannotProceedException {
 		assertFalse( this.parent.internalAppendChild( this.child ) );
 		assertTrue( this.parent.internalAppendChild( this.child ) );
 		boolean excepted = false;
@@ -176,8 +174,7 @@ public class NodeTest {
 	}
 	
 	@Test
-	public void testRemove() throws CannotProceedException,
-			InconsistentLinkException {
+	public void testRemove() throws CannotProceedException {
 		assertTrue( this.child.numParents() == 0 );
 		assertTrue( this.parent.numChildren() == 0 );
 		assertFalse( this.parent.removeChild( this.child ) );

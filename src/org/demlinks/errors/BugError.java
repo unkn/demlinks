@@ -1,8 +1,9 @@
 
 package org.demlinks.errors;
 
-public class BugError extends Error {
-	
+public class BugError extends AssertionError { // no need to spec "throws"
+												// anymore
+
 	public BugError( String userMsg ) {
 		super( userMsg );
 	}

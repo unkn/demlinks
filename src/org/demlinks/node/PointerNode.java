@@ -27,10 +27,16 @@ public class PointerNode extends Node {
 		}
 	}
 	
-	private void integrityCheck() throws BugError {
+	@Override
+	public void integrityCheck() {
 		if ( this.numChildren() > 1 ) {
 			throw new BugError(
 					"someone made the pointer have more than 1 child" );
+		}
+		if ( !this.hasParent( GlobalNodes.AllPointers ) ) {
+			// TODO if above throws InconsistentLinkException we should still
+			// throw BugError
+			throw new BugError( "somehow the parent was removed" );
 		}
 	}
 	
@@ -39,13 +45,8 @@ public class PointerNode extends Node {
 	 *            childNode to point to
 	 * @return true if the pointee was already pointed by this pointer, nothing
 	 *         changed
-	 * @throws BugError
-	 *             if more than 1 child detected OR other 2 reasons
-	 * @throws InconsistentLinkException
-	 *             half link detected
 	 */
-	public boolean pointTo( Node pointee ) throws BugError,
-			InconsistentLinkException {
+	public boolean pointTo( Node pointee ) {
 		Debug.nullException( pointee );
 		this.integrityCheck();
 		if ( this.numChildren() == 1 ) {
@@ -79,10 +80,8 @@ public class PointerNode extends Node {
 	/**
 	 * @return true if was pointing to something before call<br>
 	 *         false if was pointing to nothing already
-	 * @throws BugError
-	 * @throws InconsistentLinkException
 	 */
-	public boolean setNull() throws InconsistentLinkException, BugError {
+	public boolean setNull() {
 		this.integrityCheck();
 		if ( this.numChildren() == 1 ) {
 			if ( !this.removeChild( this.getPointee() ) ) {

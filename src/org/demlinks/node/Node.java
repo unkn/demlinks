@@ -32,10 +32,8 @@ public class Node {
 	 *         exist and it is now (after call) at the end(appended) of the list
 	 *         also note that if child existed then so did "this"(the parent)
 	 *         for the child
-	 * @throws InconsistentLinkException
-	 *             if half of the link existed before call
 	 */
-	public boolean appendChild( Node child ) throws InconsistentLinkException {
+	public boolean appendChild( Node child ) {
 		Debug.nullException( child );
 		boolean existed1 = this.internalAppendChild( child );
 		boolean existed2 = child.internalAppendParent( this );
@@ -52,10 +50,9 @@ public class Node {
 	 * parent <- this<br>
 	 * parent -> this
 	 * 
-	 * @throws InconsistentLinkException
 	 * @see {@link #appendChild(Node)}
 	 */
-	public boolean appendParent( Node parent ) throws InconsistentLinkException {
+	public boolean appendParent( Node parent ) {
 		Debug.nullException( parent );
 		return parent.appendChild( this );
 	}
@@ -82,11 +79,10 @@ public class Node {
 	 * 
 	 * @param child
 	 * @return true if <tt>this</tt> has <tt>child</tt> in its children list and
-	 *         <tt>child</tt> has <tt>this</tt> in its parents list
-	 * @throws InconsistentLinkException
-	 *             is only one of the links exists
+	 *         <tt>child</tt> has <tt>this</tt> in its parents list is only one
+	 *         of the links exists
 	 */
-	public boolean hasChild( Node child ) throws InconsistentLinkException {
+	public boolean hasChild( Node child ) {
 		Debug.nullException( child );
 		boolean link1 = this.childrenList.hasNode( child );
 		boolean link2 = child.parentsList.hasNode( this );// isn't that private
@@ -103,10 +99,9 @@ public class Node {
 	 * @param parent
 	 * @return true if <tt>this</tt> has <tt>parent</tt> in its parents list and
 	 *         <tt>parent</tt> has <tt>this</tt> in its children list
-	 * @throws InconsistentLinkException
 	 * @see {@link #hasChild(Node)}
 	 */
-	public boolean hasParent( Node parent ) throws InconsistentLinkException {
+	public boolean hasParent( Node parent ) {
 		Debug.nullException( parent );
 		return parent.hasChild( this );// counting on hasChild to check both
 	}
@@ -132,12 +127,10 @@ public class Node {
 	 * @param child
 	 * @return true if both links existed before call
 	 * @throws CannotProceedException
-	 *             if one or both links still exist after call
-	 * @throws InconsistentLinkException
-	 *             if only one of the links existed before call, now neither
-	 *             should exist
+	 *             if one or both links still exist after call if only one of
+	 *             the links existed before call, now neither should exist
 	 */
-	public boolean removeChild( Node child ) throws InconsistentLinkException {
+	public boolean removeChild( Node child ) {
 		boolean link1 = this.internalRemoveChild( child );
 		boolean link2 = child.internalRemoveParent( this );
 		if ( link1 ^ link2 ) {
@@ -149,10 +142,9 @@ public class Node {
 	/**
 	 * @param parent
 	 * @return
-	 * @throws InconsistentLinkException
 	 * @see #removeChild(Node)
 	 */
-	public boolean removeParent( Node parent ) throws InconsistentLinkException {
+	public boolean removeParent( Node parent ) {
 		return parent.removeChild( this );
 	}
 	
@@ -273,5 +265,10 @@ public class Node {
 		Debug.nullException( newParent, beforeWhatParentNode );
 		return this.internalInsert( this.parentsList, newParent,
 				Position.BEFORE, beforeWhatParentNode );
+	}
+	
+	public void integrityCheck() {
+		// TODO Auto-generated method stub
+		
 	}
 }

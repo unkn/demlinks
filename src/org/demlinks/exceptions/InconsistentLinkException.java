@@ -1,7 +1,11 @@
 
 package org.demlinks.exceptions;
 
-public class InconsistentLinkException extends Exception {
+/**
+ * no need to declare it using "throws"
+ * 
+ */
+public class InconsistentLinkException extends RuntimeException {
 	
 	/**
 	 * 
