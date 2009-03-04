@@ -1,9 +1,9 @@
 
 package org.demlinks.node;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import org.demlinks.constants.DO;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -25,7 +25,7 @@ public class NodeWithDupChildrenTest {
 	@Test
 	public void testOne() {
 		
-		assertFalse( this.nodeWithDups.dupAppendChild( this.normalNode1 ) );
+		this.nodeWithDups.dupAppendChild( this.normalNode1 );
 		// Node c = null;// will be filled by Solve
 		// if ( b.Solve( a, Sense.Child, c, Sense.Child, b ) ) {// a->c->b, is
 		// c?
@@ -38,28 +38,34 @@ public class NodeWithDupChildrenTest {
 		IntermediaryNode i = this.nodeWithDups
 				.getIntermediaryForFirstChild( this.normalNode1 );
 		this.validateIntermediary( i );
+		
+		// only one normalNode1 occurrence in list
+		assertTrue( i == this.nodeWithDups
+				.getIntermediaryForLastChild( this.normalNode1 ) );
+		
 		assertTrue( i == this.nodeWithDups.getIntermediaryForFirstChild() );
 		assertTrue( i.getPointee() == this.normalNode1 );
 		
+
 		// adding the same node again, now there's two
-		assertTrue( this.nodeWithDups.dupAppendChild( this.normalNode1 ) );
+		this.nodeWithDups.dupAppendChild( this.normalNode1 );
+		
 		IntermediaryNode i2 = this.nodeWithDups.getIntermediaryForNextChild(
-				this.normalNode1, i );// continue from "i" as last intermediary
-		// found
+				this.normalNode1, i, DO.SKIP );
+		// continue from "i" as last intermediary found
+		
 		this.validateIntermediary( i2 );
 		assertTrue( i2 != i );
-		assertTrue( i2 == this.nodeWithDups.getIntermediaryForNextChild( i ) );
+		assertTrue( i2 == this.nodeWithDups.getNextIntermediary( i ) );
 		assertTrue( i2 == this.nodeWithDups.getIntermediaryForLastChild() );
 		
-		assertFalse( this.nodeWithDups.dupAppendChild( this.normalNode2 ) );
-		assertFalse( this.nodeWithDups.dupAppendChild( this.normalNode3 ) );
+		this.nodeWithDups.dupAppendChild( this.normalNode2 );
+		this.nodeWithDups.dupAppendChild( this.normalNode3 );
 		
-		IntermediaryNode i3 = this.nodeWithDups
-				.getIntermediaryForNextChild( i2 );
+		IntermediaryNode i3 = this.nodeWithDups.getNextIntermediary( i2 );
 		this.validateIntermediary( i3 );
 		
-		IntermediaryNode i4 = this.nodeWithDups
-				.getIntermediaryForNextChild( i3 );
+		IntermediaryNode i4 = this.nodeWithDups.getNextIntermediary( i3 );
 		this.validateIntermediary( i4 );
 	}
 	
