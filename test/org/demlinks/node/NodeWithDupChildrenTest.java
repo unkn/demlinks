@@ -1,6 +1,7 @@
 
 package org.demlinks.node;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.demlinks.constants.DO;
@@ -24,6 +25,9 @@ public class NodeWithDupChildrenTest {
 	
 	@Test
 	public void testOne() {
+		
+		assertTrue( GlobalNodes.isNodeWithDupChildren( this.nodeWithDups ) );
+		assertFalse( GlobalNodes.isIntermediaryNode( this.normalNode1 ) );
 		
 		this.nodeWithDups.dupAppendChild( this.normalNode1 );
 		// Node c = null;// will be filled by Solve
@@ -59,6 +63,8 @@ public class NodeWithDupChildrenTest {
 		assertTrue( i2 == this.nodeWithDups.getNextIntermediary( i ) );
 		assertTrue( i2 == this.nodeWithDups.getIntermediaryForLastChild() );
 		
+		assertTrue( this.nodeWithDups.getCountOfChildren( this.normalNode2 ) == 0 );
+		assertTrue( this.nodeWithDups.getCountOfChildren( this.normalNode3 ) == 0 );
 		this.nodeWithDups.dupAppendChild( this.normalNode2 );
 		this.nodeWithDups.dupAppendChild( this.normalNode3 );
 		
@@ -67,6 +73,11 @@ public class NodeWithDupChildrenTest {
 		
 		IntermediaryNode i4 = this.nodeWithDups.getNextIntermediary( i3 );
 		this.validateIntermediary( i4 );
+		
+		assertTrue( 2 == this.nodeWithDups
+				.getCountOfChildren( this.normalNode1 ) );
+		assertTrue( this.nodeWithDups.getCountOfChildren( this.normalNode2 ) == 1 );
+		assertTrue( this.nodeWithDups.getCountOfChildren( this.normalNode3 ) == 1 );
 	}
 	
 	public void validateIntermediary( IntermediaryNode i ) {
@@ -75,5 +86,18 @@ public class NodeWithDupChildrenTest {
 		assertTrue( this.nodeWithDups.hasChild( i ) );
 		// assertTrue( i.imGetParent() == this.nodeWithDups );
 		assertTrue( i.hasParent( this.nodeWithDups ) );
+	}
+	
+	@Test
+	public void testNulls() {
+		// TODO more ?
+		
+		boolean ex = false;
+		try {
+			this.nodeWithDups.getCountOfChildren( null );
+		} catch ( NullPointerException e ) {
+			ex = true;
+		}
+		assertTrue( ex );
 	}
 }

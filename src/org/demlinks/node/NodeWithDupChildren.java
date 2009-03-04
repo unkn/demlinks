@@ -9,6 +9,12 @@ import org.demlinks.errors.BugError;
 
 public class NodeWithDupChildren extends Node {
 	
+	public NodeWithDupChildren() {
+		super();// if u forget this, it's called anyway =)
+		GlobalNodes.internalCreateNodeAsChildOf( this,
+				GlobalNodes.AllNodesWithDupChildren );
+	}
+	
 	/**
 	 * is the following true ?<br>
 	 * this -> someIntermediaryNode -> childNode
@@ -43,8 +49,11 @@ public class NodeWithDupChildren extends Node {
 	
 	@Override
 	public void integrityCheck() {
-		// TODO Auto-generated method stub
 		super.integrityCheck();
+		
+		if ( !this.hasParent( GlobalNodes.AllNodesWithDupChildren ) ) {
+			throw new BugError( "somehow the parent was removed" );
+		}
 	}
 	
 	public IntermediaryNode getIntermediaryForLastChild() {
@@ -177,11 +186,11 @@ public class NodeWithDupChildren extends Node {
 		Debug.nullException( startingFromThisIN );
 		IntermediaryNode iN = (IntermediaryNode)( this
 				.getChildNextOf( startingFromThisIN ) );
-		
-		if ( !GlobalNodes.isIntermediaryNode( iN ) ) {
-			throw new BugError( "should be!" );
+		if ( null != iN ) {
+			if ( !GlobalNodes.isIntermediaryNode( iN ) ) {
+				throw new BugError( "should be!" );
+			}
 		}
-		
 		return iN;
 	}
 	
@@ -196,12 +205,26 @@ public class NodeWithDupChildren extends Node {
 		IntermediaryNode iN = (IntermediaryNode)( this
 				.getChildPrevOf( startingFromThisIN ) );
 		
-		if ( !GlobalNodes.isIntermediaryNode( iN ) ) {
-			throw new BugError( "should be!" );
+		if ( null != iN ) {
+			if ( !GlobalNodes.isIntermediaryNode( iN ) ) {
+				throw new BugError( "should be!" );
+			}
 		}
 		
 		return iN;
 	}
 	
+	public int getCountOfChildren( Node childNode ) {
+		Debug.nullException( childNode );
+		int count = 0;
+		IntermediaryNode iN = this.getIntermediaryForFirstChild( childNode );
+		while ( iN != null ) {
+			count++;
+			iN = this.getIntermediaryForNextChild( childNode, iN, DO.SKIP );
+		}
+		return count;
+	}
+	
+
 
 }
