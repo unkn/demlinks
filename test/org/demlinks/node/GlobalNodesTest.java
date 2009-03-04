@@ -25,4 +25,29 @@ public class GlobalNodesTest {
 		assertTrue( GlobalNodes.isRandomNode( a ) );
 		assertFalse( GlobalNodes.isRandomNode( b ) );
 	}
+	
+	@Test
+	public void testAllNodesWithDupChildren() {
+		NodeWithDupChildren a = new NodeWithDupChildren();
+		assertTrue( GlobalNodes.isNodeWithDupChildren( a ) );
+		PointerNode b = new PointerNode();
+		assertFalse( GlobalNodes.isNodeWithDupChildren( b ) );
+	}
+	
+	@Test
+	public void testAllIntermediaryNodes() {
+		IntermediaryNode a = new IntermediaryNode();
+		Node b = new Node();
+		PointerNode c = new PointerNode();
+		PointerNode d = new IntermediaryNode();
+		
+		assertTrue( GlobalNodes.isIntermediaryNode( a ) );
+		assertTrue( GlobalNodes.isPointer( a ) );
+		
+		assertFalse( GlobalNodes.isIntermediaryNode( b ) );
+		assertFalse( GlobalNodes.isIntermediaryNode( c ) );
+		assertTrue( GlobalNodes.isPointer( c ) );
+		assertTrue( GlobalNodes.isPointer( d ) );
+		assertTrue( GlobalNodes.isIntermediaryNode( d ) );
+	}
 }
