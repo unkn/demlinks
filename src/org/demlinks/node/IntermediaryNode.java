@@ -20,8 +20,8 @@ public class IntermediaryNode extends PointerNode {
 	
 	public IntermediaryNode() {
 		super();
-		GlobalNodes.internalCreateNodeAsChildOf( this,
-				GlobalNodes.AllIntermediaryNodes );
+		Environment.internalCreateNodeAsChildOf( this,
+				Environment.AllIntermediaryNodes );
 	}
 	
 	@Override
@@ -32,7 +32,7 @@ public class IntermediaryNode extends PointerNode {
 		// throw new BugError(
 		// "someone made the pointer have more than 1 child" );
 		// }
-		if ( !this.hasParent( GlobalNodes.AllIntermediaryNodes ) ) {
+		if ( !this.hasParent( Environment.AllIntermediaryNodes ) ) {
 			throw new BugError( "somehow the parent was removed" );
 		}
 	}

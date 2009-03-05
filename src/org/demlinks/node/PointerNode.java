@@ -13,7 +13,7 @@ public class PointerNode extends Node {
 	
 	public PointerNode() {
 		super();
-		GlobalNodes.internalCreateNodeAsChildOf( this, GlobalNodes.AllPointers );
+		Environment.internalCreateNodeAsChildOf( this, Environment.AllPointers );
 	}
 	
 	@Override
@@ -23,7 +23,7 @@ public class PointerNode extends Node {
 			throw new BugError(
 					"someone made the pointer have more than 1 child" );
 		}
-		if ( !this.hasParent( GlobalNodes.AllPointers ) ) {
+		if ( !this.hasParent( Environment.AllPointers ) ) {
 			throw new BugError( "somehow the parent was removed" );
 		}
 	}

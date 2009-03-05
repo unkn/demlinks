@@ -11,11 +11,11 @@ import org.junit.Test;
 
 public class EnvironmentTest {
 	
-	Environment	env;
+	Environ	env;
 	
 	@Before
 	public void init() {
-		this.env = new Environment();
+		this.env = new Environ();
 	}
 	
 	@Test

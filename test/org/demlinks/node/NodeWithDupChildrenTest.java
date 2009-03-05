@@ -26,8 +26,8 @@ public class NodeWithDupChildrenTest {
 	@Test
 	public void testOne() {
 		
-		assertTrue( GlobalNodes.isNodeWithDupChildren( this.nodeWithDups ) );
-		assertFalse( GlobalNodes.isIntermediaryNode( this.normalNode1 ) );
+		assertTrue( Environment.isNodeWithDupChildren( this.nodeWithDups ) );
+		assertFalse( Environment.isIntermediaryNode( this.normalNode1 ) );
 		
 		this.nodeWithDups.dupAppendChild( this.normalNode1 );
 		// Node c = null;// will be filled by Solve
@@ -35,7 +35,7 @@ public class NodeWithDupChildrenTest {
 		// c?
 		// // there was a solution
 		// // we might need SolveNext, kind of, in case more than 1 solution
-		// assertTrue( GlobalNodes.isPointer( c ) );
+		// assertTrue( Environment.isPointer( c ) );
 		// }
 		//		 
 		assertTrue( this.nodeWithDups.dupHasChild( this.normalNode1 ) );
@@ -82,7 +82,7 @@ public class NodeWithDupChildrenTest {
 	
 	public void validateIntermediary( IntermediaryNode i ) {
 		assertTrue( i != null );
-		assertTrue( GlobalNodes.isIntermediaryNode( i ) );
+		assertTrue( Environment.isIntermediaryNode( i ) );
 		assertTrue( this.nodeWithDups.hasChild( i ) );
 		// assertTrue( i.imGetParent() == this.nodeWithDups );
 		assertTrue( i.hasParent( this.nodeWithDups ) );

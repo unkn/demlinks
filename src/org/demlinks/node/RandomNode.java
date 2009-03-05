@@ -8,14 +8,14 @@ public class RandomNode extends Node {
 	
 	public RandomNode() {
 		super();
-		GlobalNodes.internalCreateNodeAsChildOf( this,
-				GlobalNodes.AllRandomNodes );
+		Environment.internalCreateNodeAsChildOf( this,
+				Environment.AllRandomNodes );
 	}
 	
 	@Override
 	public void integrityCheck() {
 		super.integrityCheck();
-		if ( !this.hasParent( GlobalNodes.AllRandomNodes ) ) {
+		if ( !this.hasParent( Environment.AllRandomNodes ) ) {
 			throw new BugError( "somehow the parent was removed" );
 		}
 	}

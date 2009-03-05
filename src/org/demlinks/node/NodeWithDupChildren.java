@@ -11,8 +11,8 @@ public class NodeWithDupChildren extends Node {
 	
 	public NodeWithDupChildren() {
 		super();// if u forget this, it's called anyway =)
-		GlobalNodes.internalCreateNodeAsChildOf( this,
-				GlobalNodes.AllNodesWithDupChildren );
+		Environment.internalCreateNodeAsChildOf( this,
+				Environment.AllNodesWithDupChildren );
 	}
 	
 	/**
@@ -51,7 +51,7 @@ public class NodeWithDupChildren extends Node {
 	public void integrityCheck() {
 		super.integrityCheck();
 		
-		if ( !this.hasParent( GlobalNodes.AllNodesWithDupChildren ) ) {
+		if ( !this.hasParent( Environment.AllNodesWithDupChildren ) ) {
 			throw new BugError( "somehow the parent was removed" );
 		}
 	}
@@ -124,7 +124,7 @@ public class NodeWithDupChildren extends Node {
 			parser = startingFromThisIN;
 		}
 		while ( parser != null ) {
-			if ( !GlobalNodes.isIntermediaryNode( parser ) ) {
+			if ( !Environment.isIntermediaryNode( parser ) ) {
 				throw new BugError( "should be!" );
 			}
 			Node tmpChild = ( parser ).getPointee();
@@ -161,7 +161,7 @@ public class NodeWithDupChildren extends Node {
 			parser = startingFromThisIN;
 		}
 		while ( parser != null ) {
-			if ( !GlobalNodes.isIntermediaryNode( parser ) ) {
+			if ( !Environment.isIntermediaryNode( parser ) ) {
 				throw new BugError( "should be!" );
 			}
 			Node tmpChild = ( parser ).getPointee();
@@ -187,7 +187,7 @@ public class NodeWithDupChildren extends Node {
 		IntermediaryNode iN = (IntermediaryNode)( this
 				.getChildNextOf( startingFromThisIN ) );
 		if ( null != iN ) {
-			if ( !GlobalNodes.isIntermediaryNode( iN ) ) {
+			if ( !Environment.isIntermediaryNode( iN ) ) {
 				throw new BugError( "should be!" );
 			}
 		}
@@ -206,7 +206,7 @@ public class NodeWithDupChildren extends Node {
 				.getChildPrevOf( startingFromThisIN ) );
 		
 		if ( null != iN ) {
-			if ( !GlobalNodes.isIntermediaryNode( iN ) ) {
+			if ( !Environment.isIntermediaryNode( iN ) ) {
 				throw new BugError( "should be!" );
 			}
 		}

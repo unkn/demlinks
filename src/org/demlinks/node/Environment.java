@@ -5,7 +5,7 @@ import org.demlinks.debug.Debug;
 import org.demlinks.errors.BugError;
 import org.demlinks.exceptions.InconsistentLinkException;
 
-public class GlobalNodes {
+public class Environment {
 	
 	
 	// all the following are supposed to be parent nodes

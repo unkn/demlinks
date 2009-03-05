@@ -4,15 +4,15 @@ package org.demlinks.environment;
 import org.demlinks.debug.Debug;
 import org.demlinks.errors.BugError;
 import org.demlinks.exceptions.BadParameterException;
-import org.demlinks.node.GlobalNodes;
+import org.demlinks.node.Environment;
 import org.demlinks.node.Node;
 
 
-public class Environment {
+public class Environ {
 	
 	private TwoWayHashMap<String, Node>	mapAllCharsToNodes;
 	
-	public Environment() {
+	public Environ() {
 		this.init();
 	}
 	
@@ -26,11 +26,11 @@ public class Environment {
 		// int count = 0;
 		for ( char c = 0; c <= 255; c++ ) {
 			// count++;
-			Node node = new Node();
+			Node node = new CharNode( c );
 			this.mapAllCharsToNodes.putKeyValue( String.valueOf( c ), node );
 			// System.out.println( String.valueOf( (int)c ) + " "
 			// + String.valueOf( c ) + " " + node );
-			GlobalNodes.AllChars.appendChild( node );
+			Environment.AllChars.appendChild( node );
 		}
 		// System.out.println( count );
 	}
@@ -60,7 +60,7 @@ public class Environment {
 			// not all char nodes existed, so the word couldn't exist
 			// TODO make new Node for this word
 			Node wordNode = new Node();
-			GlobalNodes.AllWords.appendChild( wordNode );
+			Environment.AllWords.appendChild( wordNode );
 		}
 		return true;
 	}

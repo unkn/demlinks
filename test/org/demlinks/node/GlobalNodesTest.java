@@ -14,24 +14,24 @@ public class GlobalNodesTest {
 	public void testAllPointers() {
 		Node n = new Node();
 		Node m = new PointerNode();
-		assertFalse( GlobalNodes.isPointer( n ) );
-		assertTrue( GlobalNodes.isPointer( m ) );
+		assertFalse( Environment.isPointer( n ) );
+		assertTrue( Environment.isPointer( m ) );
 	}
 	
 	@Test
 	public void testAllRandomNodes() {
 		Node a = new RandomNode();
 		Node b = new Node();
-		assertTrue( GlobalNodes.isRandomNode( a ) );
-		assertFalse( GlobalNodes.isRandomNode( b ) );
+		assertTrue( Environment.isRandomNode( a ) );
+		assertFalse( Environment.isRandomNode( b ) );
 	}
 	
 	@Test
 	public void testAllNodesWithDupChildren() {
 		NodeWithDupChildren a = new NodeWithDupChildren();
-		assertTrue( GlobalNodes.isNodeWithDupChildren( a ) );
+		assertTrue( Environment.isNodeWithDupChildren( a ) );
 		PointerNode b = new PointerNode();
-		assertFalse( GlobalNodes.isNodeWithDupChildren( b ) );
+		assertFalse( Environment.isNodeWithDupChildren( b ) );
 	}
 	
 	@Test
@@ -41,13 +41,13 @@ public class GlobalNodesTest {
 		PointerNode c = new PointerNode();
 		PointerNode d = new IntermediaryNode();
 		
-		assertTrue( GlobalNodes.isIntermediaryNode( a ) );
-		assertTrue( GlobalNodes.isPointer( a ) );
+		assertTrue( Environment.isIntermediaryNode( a ) );
+		assertTrue( Environment.isPointer( a ) );
 		
-		assertFalse( GlobalNodes.isIntermediaryNode( b ) );
-		assertFalse( GlobalNodes.isIntermediaryNode( c ) );
-		assertTrue( GlobalNodes.isPointer( c ) );
-		assertTrue( GlobalNodes.isPointer( d ) );
-		assertTrue( GlobalNodes.isIntermediaryNode( d ) );
+		assertFalse( Environment.isIntermediaryNode( b ) );
+		assertFalse( Environment.isIntermediaryNode( c ) );
+		assertTrue( Environment.isPointer( c ) );
+		assertTrue( Environment.isPointer( d ) );
+		assertTrue( Environment.isIntermediaryNode( d ) );
 	}
 }

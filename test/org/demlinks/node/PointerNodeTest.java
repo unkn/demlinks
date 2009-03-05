@@ -18,10 +18,10 @@ public class PointerNodeTest {
 	
 	@Test
 	public void testPointerNode() {
-		// assertTrue( GlobalNodes.AllPointers.numChildren() == 1 );
-		System.out.println( GlobalNodes.AllPointers.numChildren() );
-		assertTrue( GlobalNodes.AllPointers.hasChild( this.p1 ) );
-		assertTrue( this.p1.hasParent( GlobalNodes.AllPointers ) );
+		// assertTrue( Environment.AllPointers.numChildren() == 1 );
+		System.out.println( Environment.AllPointers.numChildren() );
+		assertTrue( Environment.AllPointers.hasChild( this.p1 ) );
+		assertTrue( this.p1.hasParent( Environment.AllPointers ) );
 		
 		Node a = new Node();
 		assertTrue( this.p1.getPointee() == null );
@@ -35,10 +35,10 @@ public class PointerNodeTest {
 		assertFalse( this.p1.setNull() );
 		assertTrue( null == this.p1.getPointee() );
 		
-		assertTrue( GlobalNodes.isPointer( this.p1 ) );
+		assertTrue( Environment.isPointer( this.p1 ) );
 		Node n = new Node();
 		Node m = new PointerNode();
-		assertFalse( GlobalNodes.isPointer( n ) );
-		assertTrue( GlobalNodes.isPointer( m ) );
+		assertFalse( Environment.isPointer( n ) );
+		assertTrue( Environment.isPointer( m ) );
 	}
 }
