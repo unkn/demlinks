@@ -14,6 +14,11 @@ public class GlobalNodes {
 	public static final Node	AllRandomNodes			= new Node();
 	public static final Node	AllIntermediaryNodes	= new Node();
 	
+	public static final Node	AllChars				= new Node();
+	public static final Node	AllWords				= new Node();
+	public static final Node	AllPhrases				= new Node();
+	public static final Node	AllDelimiters			= new Node();
+	
 	/**
 	 * AllPointers -> whatNode ?
 	 * 
