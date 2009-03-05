@@ -1,9 +1,10 @@
 
-package org.demlinks.node;
+package org.demlinks.nodemaps;
 
 import org.demlinks.debug.Debug;
 import org.demlinks.errors.BugError;
 import org.demlinks.exceptions.InconsistentLinkException;
+import org.demlinks.node.Node;
 
 public class Environment {
 	

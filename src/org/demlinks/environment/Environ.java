@@ -4,8 +4,8 @@ package org.demlinks.environment;
 import org.demlinks.debug.Debug;
 import org.demlinks.errors.BugError;
 import org.demlinks.exceptions.BadParameterException;
-import org.demlinks.node.Environment;
 import org.demlinks.node.Node;
+import org.demlinks.nodemaps.Environment;
 
 
 public class Environ {

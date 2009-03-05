@@ -6,8 +6,7 @@ import org.junit.runners.Suite;
 
 @RunWith( Suite.class )
 @Suite.SuiteClasses( value = {
-		NodeListTest.class, NodeTest.class, GlobalNodesTest.class,
-		PointerNodeTest.class, NodeWithDupChildrenTest.class,
+		NodeListTest.class, NodeTest.class,
 } )
 public class AllTestsNode {
 }

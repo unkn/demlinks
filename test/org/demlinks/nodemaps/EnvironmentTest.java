@@ -1,14 +1,20 @@
 
-package org.demlinks.node;
+package org.demlinks.nodemaps;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import org.demlinks.node.Node;
+import org.demlinks.nodemaps.Environment;
+import org.demlinks.nodemaps.IntermediaryNode;
+import org.demlinks.nodemaps.NodeWithDupChildren;
+import org.demlinks.nodemaps.PointerNode;
+import org.demlinks.nodemaps.RandomNode;
 import org.junit.Test;
 
 
 
-public class GlobalNodesTest {
+public class EnvironmentTest {
 	
 	@Test
 	public void testAllPointers() {

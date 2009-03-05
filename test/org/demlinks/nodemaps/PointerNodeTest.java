@@ -1,9 +1,12 @@
 
-package org.demlinks.node;
+package org.demlinks.nodemaps;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import org.demlinks.node.Node;
+import org.demlinks.nodemaps.Environment;
+import org.demlinks.nodemaps.PointerNode;
 import org.junit.Before;
 import org.junit.Test;
 

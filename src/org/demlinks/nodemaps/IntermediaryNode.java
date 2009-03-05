@@ -1,5 +1,5 @@
 
-package org.demlinks.node;
+package org.demlinks.nodemaps;
 
 import org.demlinks.errors.BugError;
 

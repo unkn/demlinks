@@ -1,8 +1,9 @@
 
-package org.demlinks.node;
+package org.demlinks.nodemaps;
 
 import org.demlinks.debug.Debug;
 import org.demlinks.errors.BugError;
+import org.demlinks.node.Node;
 
 /**
  * can have 0 or max 1 children can have any number of parents MUST have the
