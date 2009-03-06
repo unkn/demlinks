@@ -1,47 +1,54 @@
 
+
 package org.demlinks.nodemaps;
+
+
 
 import org.demlinks.debug.Debug;
 import org.demlinks.errors.BugError;
 import org.demlinks.exceptions.InconsistentLinkException;
 import org.demlinks.node.Node;
 
+
+
 public class Environment {
 	
 	
 	// all the following are supposed to be parent nodes
-	public static final Node	AllPointers				= new Node();
-	public static final Node	AllNodesWithDupChildren	= new Node();
-	public static final Node	AllRandomNodes			= new Node();
-	public static final Node	AllIntermediaryNodes	= new Node();
+	public static final Node	AllPointerNodes				= new Node();
+	public static final Node	AllNodeWithDupChildrenNodes	= new Node();
+	public static final Node	AllRandomNodes				= new Node();
+	public static final Node	AllIntermediaryNodes		= new Node();
 	
-	public static final Node	AllChars				= new Node();
-	public static final Node	AllWords				= new Node();
-	public static final Node	AllPhrases				= new Node();
-	public static final Node	AllDelimiters			= new Node();
+	public static final Node	AllCharNodes				= new Node();
+	public static final Node	AllWordNodes				= new Node();
+	public static final Node	AllPhraseNodes				= new Node();
+	public static final Node	AllDelimiterNodes			= new Node();
 	
 	/**
-	 * AllPointers -> whatNode ?
+	 * AllPointerNodes -> whatNode ?
 	 * 
 	 * @param whatNode
 	 * @return
 	 */
 	public static boolean isPointer( Node whatNode ) {
+
 		Debug.nullException( whatNode );
 		whatNode.integrityCheck();
-		return whatNode.hasParent( AllPointers );
+		return whatNode.hasParent( AllPointerNodes );
 	}
 	
 	/**
-	 * AllNodesWithDupChildren -> whatNode ?
+	 * AllNodeWithDupChildrenNodes -> whatNode ?
 	 * 
 	 * @param whatNode
 	 * @return
 	 */
 	public static boolean isNodeWithDupChildren( Node whatNode ) {
+
 		Debug.nullException( whatNode );
 		whatNode.integrityCheck();
-		return whatNode.hasParent( AllNodesWithDupChildren );
+		return whatNode.hasParent( AllNodeWithDupChildrenNodes );
 	}
 	
 	/**
@@ -51,12 +58,14 @@ public class Environment {
 	 * @return
 	 */
 	public static boolean isRandomNode( Node whatNode ) {
+
 		Debug.nullException( whatNode );
 		whatNode.integrityCheck();
 		return whatNode.hasParent( AllRandomNodes );
 	}
 	
 	public static boolean isIntermediaryNode( Node whatNode ) {
+
 		Debug.nullException( whatNode );
 		whatNode.integrityCheck();
 		return whatNode.hasParent( AllIntermediaryNodes );
@@ -70,6 +79,7 @@ public class Environment {
 	 */
 	protected static void internalCreateNodeAsChildOf( Node childNode,
 			Node parentNode ) {
+
 		Debug.nullException( childNode, parentNode );
 		boolean existsAlready = false;
 		try {

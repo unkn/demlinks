@@ -13,7 +13,7 @@ public class NodeWithDupChildren extends Node {
 	public NodeWithDupChildren() {
 		super();// if u forget this, it's called anyway =)
 		Environment.internalCreateNodeAsChildOf( this,
-				Environment.AllNodesWithDupChildren );
+				Environment.AllNodeWithDupChildrenNodes );
 	}
 	
 	/**
@@ -52,7 +52,7 @@ public class NodeWithDupChildren extends Node {
 	public void integrityCheck() {
 		super.integrityCheck();
 		
-		if ( !this.hasParent( Environment.AllNodesWithDupChildren ) ) {
+		if ( !this.hasParent( Environment.AllNodeWithDupChildrenNodes ) ) {
 			throw new BugError( "somehow the parent was removed" );
 		}
 	}

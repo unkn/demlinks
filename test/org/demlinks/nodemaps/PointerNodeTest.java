@@ -21,10 +21,10 @@ public class PointerNodeTest {
 	
 	@Test
 	public void testPointerNode() {
-		// assertTrue( Environment.AllPointers.numChildren() == 1 );
-		System.out.println( Environment.AllPointers.numChildren() );
-		assertTrue( Environment.AllPointers.hasChild( this.p1 ) );
-		assertTrue( this.p1.hasParent( Environment.AllPointers ) );
+		// assertTrue( Environment.AllPointerNodes.numChildren() == 1 );
+		System.out.println( Environment.AllPointerNodes.numChildren() );
+		assertTrue( Environment.AllPointerNodes.hasChild( this.p1 ) );
+		assertTrue( this.p1.hasParent( Environment.AllPointerNodes ) );
 		
 		Node a = new Node();
 		assertTrue( this.p1.getPointee() == null );

@@ -1,45 +1,24 @@
 
+
 package org.demlinks.environment;
 
+
+
 import org.demlinks.debug.Debug;
-import org.demlinks.errors.BugError;
 import org.demlinks.exceptions.BadParameterException;
 import org.demlinks.node.Node;
-import org.demlinks.nodemaps.Environment;
+import org.demlinks.nodemaps.WordNode;
 
 
-public class Environ {
-	
-	private TwoWayHashMap<String, Node>	mapAllCharsToNodes;
-	
-	public Environ() {
-		this.init();
-	}
-	
-	private void init() {
-		this.mapAllChars();
-	}
-	
-	private void mapAllChars() {
-		this.mapAllCharsToNodes = new TwoWayHashMap<String, Node>();
-		
-		// int count = 0;
-		for ( char c = 0; c <= 255; c++ ) {
-			// count++;
-			Node node = new CharNode( c );
-			this.mapAllCharsToNodes.putKeyValue( String.valueOf( c ), node );
-			// System.out.println( String.valueOf( (int)c ) + " "
-			// + String.valueOf( c ) + " " + node );
-			Environment.AllChars.appendChild( node );
-		}
-		// System.out.println( count );
-	}
+
+public class WordMapping extends CharMapping {
 	
 	/**
 	 * @param word
 	 * @return true if successfully added;false if already existed;
 	 */
-	public boolean addWord( String word ) {
+	public WordNode addWord( String word ) {
+
 		Debug.nullException( word );
 		if ( !this.isGoodWord( word ) ) {
 			throw new BadParameterException();
@@ -50,59 +29,36 @@ public class Environ {
 		Node n;
 		for ( int i = 0; i < word.length(); i++ ) {
 			c = word.charAt( i );
-			if ( !this.isNodeForChar( c ) ) {
+			if ( !this.isMappedChar( c ) ) {
 				mostLikelyWordDoesntExist = true;
 			}
-			n = this.getNodeForChar( c );
+			n = this.ensureNodeForChar( c );
+			// TODO attempt to find a word that has all collected 'n' nodes in
+			// that order
+			// if exists, then this word we try to add, exists, maybe return IT
+			// instead of boolean
 		}
 		
-		if ( mostLikelyWordDoesntExist ) {
-			// not all char nodes existed, so the word couldn't exist
-			// TODO make new Node for this word
-			Node wordNode = new Node();
-			Environment.AllWords.appendChild( wordNode );
+		WordNode wordNode = null;
+		
+		if ( !mostLikelyWordDoesntExist ) {
+			// attempt to find it; it may not exist still;
+			// TODO
 		}
-		return true;
+		if ( wordNode == null ) {
+			wordNode = new WordNode();
+			// TODO and add all children 'n' nodes collected before
+		}
+		return wordNode;
 	}
 	
-	/**
-	 * @param c
-	 *            char
-	 * @return true if already a Node is mapped for char c
-	 */
-	public boolean isNodeForChar( char c ) {
-		String s = new String();
-		s += c;
-		Node n = this.mapAllCharsToNodes.getValue( s );
-		return ( null != n );
-	}
-	
-	/**
-	 * If there's no such Node, it will be created and mapped for char c
-	 * 
-	 * @param c
-	 * @return the Node that's mapped to char c; never null
-	 */
-	public Node getNodeForChar( char c ) {
-		String s = new String();
-		s += c;
-		Node n = this.mapAllCharsToNodes.getValue( s );
-		// tmp comment://TODO remove comments below
-		// if ( null == n ) {
-		// n = new Node();
-		// this.mapAllCharsToNodes.putKeyValue( s, n );
-		// }
-		if ( null == n ) {
-			throw new BugError();
-		}
-		return n;
-	}
 	
 	/**
 	 * @param word
 	 * @return
 	 */
 	public boolean isGoodWord( String word ) {
+
 		Debug.nullException( word );
 		int len = word.length();
 		if ( len <= 0 ) {
@@ -135,6 +91,7 @@ public class Environ {
 	 * @return
 	 */
 	public boolean isInWordSpecialChars( char c ) {
+
 		if ( ( c == '-' ) || ( c == '\'' ) ) {
 			return true;
 		}
@@ -146,6 +103,7 @@ public class Environ {
 	 * @return
 	 */
 	public boolean isLetter( char chr ) {
+
 		if ( ( ( chr >= 'a' ) && ( chr <= 'z' ) )
 				|| ( ( chr >= 'A' ) && ( chr <= 'Z' ) ) ) {
 			return true;
@@ -159,6 +117,7 @@ public class Environ {
 	 * @return true if successfully added; false if already existed
 	 */
 	public boolean addPhrase( String phrase ) {
+
 		Debug.nullException( phrase );
 		// TODO Auto-generated method stub
 		// split it into words and delimiters
@@ -184,6 +143,7 @@ public class Environ {
 	 * @return true if the char is used between two words
 	 */
 	public boolean isWordDelimiter( char c ) {
+
 		switch ( c ) {
 		case ' ':
 		case '/':

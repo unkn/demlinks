@@ -14,7 +14,7 @@ public class PointerNode extends Node {
 	
 	public PointerNode() {
 		super();
-		Environment.internalCreateNodeAsChildOf( this, Environment.AllPointers );
+		Environment.internalCreateNodeAsChildOf( this, Environment.AllPointerNodes );
 	}
 	
 	@Override
@@ -24,7 +24,7 @@ public class PointerNode extends Node {
 			throw new BugError(
 					"someone made the pointer have more than 1 child" );
 		}
-		if ( !this.hasParent( Environment.AllPointers ) ) {
+		if ( !this.hasParent( Environment.AllPointerNodes ) ) {
 			throw new BugError( "somehow the parent was removed" );
 		}
 	}
