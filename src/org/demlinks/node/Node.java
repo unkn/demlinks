@@ -14,6 +14,7 @@ import org.demlinks.exceptions.InconsistentLinkException;
 
 public class Node {
 	
+	// lists of unique elements(Nodes)
 	private NodeList	parentsList;
 	private NodeList	childrenList;
 	
@@ -105,12 +106,17 @@ public class Node {
 		return link1;
 	}
 	
+	/**
+	 * @param child
+	 * @param index
+	 * @return true if child is at index
+	 */
 	public boolean hasChildAtPos( Node child, int index ) {
 
 		Debug.nullException( child, index );
 		boolean link1 = this.childrenList.hasNodeAtPos( child, index );
 		boolean link2 = child.parentsList.hasNode( this );// not at pos
-		if ( link1 ^ link2 ) {
+		if ( ( link1 ) && ( !link2 ) ) {// special case IF
 			throw new InconsistentLinkException( "detected" );
 		}
 		return link1;
@@ -238,6 +244,18 @@ public class Node {
 
 		Debug.nullException( ofWhatNode );
 		return this.parentsList.getNodeBefore( ofWhatNode );
+	}
+	
+	/**
+	 * @param index
+	 *            0 based index
+	 * @return null or the parent node that's at position index in this'
+	 *         parentsList
+	 */
+	public Node getParentAt( int index ) {
+
+		Debug.nullException( index );
+		return this.parentsList.getNodeAt( index );
 	}
 	
 	/**

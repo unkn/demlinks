@@ -7,6 +7,7 @@ package org.demlinks.environment;
 import org.demlinks.debug.Debug;
 import org.demlinks.exceptions.BadParameterException;
 import org.demlinks.node.Node;
+import org.demlinks.node.NodeList;
 import org.demlinks.nodemaps.WordNode;
 
 
@@ -55,6 +56,7 @@ public class WordMapping extends CharMapping {
 
 		char c;
 		Node n;
+		NodeList nl = new NodeList();
 		for ( int i = 0; i < word.length(); i++ ) {
 			c = word.charAt( i );
 			n = this.getNodeForChar( c );
@@ -70,7 +72,25 @@ public class WordMapping extends CharMapping {
 			// basically find all parents of 'n' that have parent AllWordNodes
 			// AND have 'n' as a child at pos 'i'
 			// AllWordNodes -> X -> 'n' , X is NodeWithDupChildren
-			// i+1 actually, we may also need Node.hasChildAt(child, pos)
+			// we may also need Node.hasChildAt(child, pos)
+			// parent.hasChildAtPos(n, i);
+			nl.appendNode( n );
+		}
+		// we have them all chars in 'nl'
+		// and in effect we can parse them in any direction
+		Node parser;
+		int index = 0;
+		int[] indexes = new int[word.length()];
+		
+
+		parser = nl.getNodeAt( index );
+		indexes[index] = 0;
+		
+		parser.getParentAt( indexes[index] );
+		
+		while ( null != parser ) {
+			
+			index++;
 		}
 		return null;
 	}

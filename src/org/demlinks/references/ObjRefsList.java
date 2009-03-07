@@ -61,6 +61,12 @@ public class ObjRefsList<E> extends RefsList<E> {
 		return ( null != this.getRef( obj ) );
 	}
 	
+	/**
+	 * @param obj
+	 * @param index
+	 *            0 based index
+	 * @return true if obj is at index
+	 */
 	public boolean containsObjectAtPos( E obj, int index ) {
 
 		Debug.nullException( obj, index );
@@ -138,6 +144,21 @@ public class ObjRefsList<E> extends RefsList<E> {
 
 		Debug.nullException( pos );
 		Reference<E> ref = this.getRefAt( pos );
+		if ( ref != null ) {
+			return ref.getObject();
+		}
+		return null;
+	}
+	
+	/**
+	 * @param index
+	 *            0 based index
+	 * @return null or the object at index
+	 */
+	public E getObjectAt( int index ) {
+
+		Debug.nullException( index );
+		Reference<E> ref = this.getRefAtPos( index );
 		if ( ref != null ) {
 			return ref.getObject();
 		}

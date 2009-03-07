@@ -55,6 +55,17 @@ public class NodeList extends ObjRefsList<Node> {
 		return this.getObjectAt( Position.AFTER, node );
 	}
 	
+	/**
+	 * @param index
+	 *            0 based index
+	 * @return null or the node at index
+	 */
+	public Node getNodeAt( int index ) {
+
+		Debug.nullException( index );
+		return this.getObjectAt( index );
+	}
+	
 	public Node getNodeBefore( Node node ) {
 
 		Debug.nullException( node );
@@ -67,6 +78,12 @@ public class NodeList extends ObjRefsList<Node> {
 		return this.containsObject( node );
 	}
 	
+	/**
+	 * @param node
+	 * @param index
+	 *            0 based index
+	 * @return true if node is at index
+	 */
 	public boolean hasNodeAtPos( Node node, int index ) {
 
 		Debug.nullException( node, index );
