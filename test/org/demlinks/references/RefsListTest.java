@@ -56,7 +56,7 @@ public class RefsListTest {
 				.insertObjAt( ref3, Position.BEFORE, this.ref1 ) );
 		assertTrue( this.refList.getFirstRef() == ref3 );
 		assertTrue( this.refList.getLastRef() == this.ref2 );
-		assertTrue( this.refList.getNodeRefAt( Position.BEFORE, this.ref2 ) == this.ref1 );
+		assertTrue( this.refList.getRefAt( Position.BEFORE, this.ref2 ) == this.ref1 );
 		assertTrue( this.refList.size() == 3 );
 		assertTrue( this.refList.removeRef( ref3 ) );
 		boolean excepted = false;
@@ -94,12 +94,12 @@ public class RefsListTest {
 		// from first position
 		assertTrue( this.refList.getFirstRef() == this.ref1 );
 		assertTrue( this.refList.getLastRef() == this.ref2 );
-		assertTrue( this.refList.getNodeRefAt( Position.FIRST ) == this.refList
+		assertTrue( this.refList.getRefAt( Position.FIRST ) == this.refList
 				.getFirstRef() );
-		assertTrue( this.refList.getNodeRefAt( Position.LAST ) == this.refList
+		assertTrue( this.refList.getRefAt( Position.LAST ) == this.refList
 				.getLastRef() );
-		assertTrue( this.refList.getNodeRefAt( Position.AFTER, this.ref1 ) == this.ref2 );
-		assertTrue( this.refList.getNodeRefAt( Position.BEFORE, this.ref2 ) == this.ref1 );
+		assertTrue( this.refList.getRefAt( Position.AFTER, this.ref1 ) == this.ref2 );
+		assertTrue( this.refList.getRefAt( Position.BEFORE, this.ref2 ) == this.ref1 );
 		assertFalse( mod != this.refList.getModified() );
 		Reference<Object> ref3 = new Reference<Object>();
 		ref3.setObject( null );

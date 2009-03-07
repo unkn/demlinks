@@ -16,12 +16,17 @@
     along with DeMLinks.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+
 package org.demlinks.references;
+
+
 
 import java.util.NoSuchElementException;
 
 import org.demlinks.debug.Debug;
 import org.demlinks.node.Position;
+
+
 
 /**
  * a double-linked list of References where no two are alike (no duplicates
@@ -39,12 +44,12 @@ import org.demlinks.node.Position;
 public class RefsList<Obje> {
 	
 	private int				cachedSize;		// cached size, prevents parsing
-												// the entire list
+	// the entire list
 	private Reference<Obje>	firstRef;			// points to first Ref in list,
-												// or null if
+	// or null if
 	// the list is empty
 	private Reference<Obje>	lastRef;			// points to last Ref in list,
-												// or null if
+	// or null if
 	// the list is empty
 	// increased by 1 on each operation, useful to see
 	// if someone else modified the list while using
@@ -56,14 +61,17 @@ public class RefsList<Obje> {
 	 * 
 	 */
 	protected RefsList() {
+
 		this.setListToEmpty();
 	}
 	
 	private void setModified() {
+
 		this.modCount++;
 	}
 	
 	public int getModified() {
+
 		return this.modCount;
 	}
 	
@@ -71,6 +79,7 @@ public class RefsList<Obje> {
 	 * 
 	 */
 	private void setListToEmpty() {
+
 		this.cachedSize = 0;// increased on add, decreased on remove and related
 		this.firstRef = null;
 		this.lastRef = null;
@@ -81,6 +90,7 @@ public class RefsList<Obje> {
 	 * @return
 	 */
 	public int size() {
+
 		return this.cachedSize;
 	}
 	
@@ -88,6 +98,7 @@ public class RefsList<Obje> {
 	 * @return
 	 */
 	public boolean isEmpty() {
+
 		return ( 0 == this.size() ) || ( this.firstRef == null )
 				|| ( this.lastRef == null );
 	}
@@ -98,6 +109,7 @@ public class RefsList<Obje> {
 	 *         call
 	 */
 	public boolean addLast( Reference<Obje> newLastRef ) {
+
 		Debug.nullException( newLastRef );
 		if ( this.containsRef( newLastRef ) ) {
 			return true;// already exists
@@ -125,6 +137,7 @@ public class RefsList<Obje> {
 	 *         call
 	 */
 	public boolean addFirst( Reference<Obje> newFirstRef ) {
+
 		Debug.nullException( newFirstRef );
 		if ( this.containsRef( newFirstRef ) ) {
 			return true;// already exists
@@ -158,6 +171,7 @@ public class RefsList<Obje> {
 	 */
 	public boolean insertObjAt( Reference<Obje> newRef, Position pos,
 			Reference<Obje> posRef ) {
+
 		if ( !this.containsRef( posRef ) ) {// this first for buggy calls
 			throw new NoSuchElementException();
 		}
@@ -175,11 +189,11 @@ public class RefsList<Obje> {
 			this.setModified();
 			newRef.setNext( posRef );// 1) newRef -> posRef
 			Reference<Obje> beforePosRef = posRef.getPrev();// could be null if
-															// posRef is first
+			// posRef is first
 			newRef.setPrev( beforePosRef );// 2) beforePosRef(or null) <- newRef
 			if ( beforePosRef != null ) {// so posRef isn't first
 				beforePosRef.setNext( newRef );// 3) beforePosRef <-> newRef ->
-												// posRef, beforePosRef<- posRef
+				// posRef, beforePosRef<- posRef
 			} else {// is first so also set firstRef
 				this.firstRef = newRef; // a new first in list
 				// if posRef was last, then it remains last, but if it was first
@@ -215,6 +229,7 @@ public class RefsList<Obje> {
 	 * @return the firstNodeRef
 	 */
 	protected Reference<Obje> getFirstRef() {
+
 		return this.firstRef;
 	}
 	
@@ -222,6 +237,7 @@ public class RefsList<Obje> {
 	 * @return the lastNodeRef
 	 */
 	protected Reference<Obje> getLastRef() {
+
 		return this.lastRef;
 	}
 	
@@ -230,6 +246,7 @@ public class RefsList<Obje> {
 	 * @return true if removed, false if it was already inexistent
 	 */
 	public boolean removeRef( Reference<Obje> killRef ) {
+
 		Debug.nullException( killRef );
 		if ( !this.containsRef( killRef ) ) {
 			return false;
@@ -271,6 +288,7 @@ public class RefsList<Obje> {
 	 *         object it points to
 	 */
 	public boolean containsRef( Reference<Obje> whichRef ) {
+
 		Debug.nullException( whichRef );
 		Reference<Obje> parser = this.firstRef;
 		while ( null != parser ) {
@@ -286,9 +304,10 @@ public class RefsList<Obje> {
 	 * @param location
 	 *            only FIRST/LAST allowed
 	 * @return a reference
-	 * @see #getNodeRefAt(Position, Reference)
+	 * @see #getRefAt(Position, Reference)
 	 */
-	public Reference<Obje> getNodeRefAt( Position location ) {
+	public Reference<Obje> getRefAt( Position location ) {
+
 		switch ( location ) {
 		case FIRST:
 			return this.getFirstRef();
@@ -305,10 +324,11 @@ public class RefsList<Obje> {
 	 * @param locationRef
 	 *            the reference that location is referring to
 	 * @return the ref or null
-	 * @see #getNodeRefAt(Position)
+	 * @see #getRefAt(Position)
 	 */
-	public Reference<Obje> getNodeRefAt( Position location,
+	public Reference<Obje> getRefAt( Position location,
 			Reference<Obje> locationRef ) {
+
 		Debug.nullException( location, locationRef );
 		if ( !this.containsRef( locationRef ) ) {// this will unfortunately
 			// parse the list until it
@@ -323,7 +343,7 @@ public class RefsList<Obje> {
 			return locationRef.getNext();
 		case FIRST:
 		case LAST:
-			return this.getNodeRefAt( location );
+			return this.getRefAt( location );
 		default:
 			throw new AssertionError( "undefined location within this context" );
 		}

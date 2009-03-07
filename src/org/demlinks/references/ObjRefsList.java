@@ -16,12 +16,18 @@
     along with DeMLinks.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+
 package org.demlinks.references;
+
+
 
 import java.util.NoSuchElementException;
 
 import org.demlinks.debug.Debug;
+import org.demlinks.errors.BadCallError;
 import org.demlinks.node.Position;
+
+
 
 /**
  * handles the RefsList list at the Object level ie. accepting only Object
@@ -50,8 +56,19 @@ public class ObjRefsList<E> extends RefsList<E> {
 	 * @return
 	 */
 	public boolean containsObject( E obj ) {
+
 		Debug.nullException( obj );
 		return ( null != this.getRef( obj ) );
+	}
+	
+	public boolean containsObjectAtPos( E obj, int index ) {
+
+		Debug.nullException( obj, index );
+		Reference<E> ref = this.getRefAtPos( index );
+		if ( null == ref ) {
+			return false;// doesn't contain it
+		}
+		return ( ref.getObject() == obj );
 	}
 	
 	/**
@@ -62,6 +79,7 @@ public class ObjRefsList<E> extends RefsList<E> {
 	 * @return new reference to <tt>obj</tt>
 	 */
 	public Reference<E> newRef( E obj ) {
+
 		Debug.nullException( obj );
 		Reference<E> n = new Reference<E>();
 		n.setObject( obj );// is no longer null
@@ -73,6 +91,7 @@ public class ObjRefsList<E> extends RefsList<E> {
 	 * @return null or the reference containing the obj
 	 */
 	public Reference<E> getRef( E obj ) {
+
 		Debug.nullException( obj );
 		Reference<E> parser = this.getFirstRef();
 		while ( null != parser ) {
@@ -85,13 +104,40 @@ public class ObjRefsList<E> extends RefsList<E> {
 	}
 	
 	/**
+	 * @param index
+	 *            0 based index
+	 * @return null or the ref at position 'index'
+	 * @exception BadCallError
+	 *                if index out of bounds
+	 */
+	public Reference<E> getRefAtPos( int index ) {
+
+		Debug.nullException( index );
+		if ( ( index < 0 ) || ( index >= this.size() ) ) {
+			throw new BadCallError( "out of bounds" );
+		}
+		
+		Reference<E> parser = this.getFirstRef();
+		int pos = 0;
+		while ( null != parser ) {
+			if ( index == pos ) {
+				break;
+			}
+			parser = parser.getNext();
+			pos++;
+		}
+		return parser;
+	}
+	
+	/**
 	 * @param pos
 	 *            only FIRST/LAST
 	 * @return null or the object at specified position
 	 */
 	public E getObjectAt( Position pos ) {
+
 		Debug.nullException( pos );
-		Reference<E> ref = this.getNodeRefAt( pos );
+		Reference<E> ref = this.getRefAt( pos );
 		if ( ref != null ) {
 			return ref.getObject();
 		}
@@ -106,6 +152,7 @@ public class ObjRefsList<E> extends RefsList<E> {
 	 * @return null or the object
 	 */
 	public E getObjectAt( Position pos, E objPos ) {
+
 		Debug.nullException( pos, objPos );
 		Reference<E> refPos = this.getRef( objPos );
 		if ( refPos == null ) {
@@ -113,7 +160,7 @@ public class ObjRefsList<E> extends RefsList<E> {
 			return null;
 		}
 		// ie. what's the ref that's BEFORE(pos) ref1(refPos) ?
-		Reference<E> ref = this.getNodeRefAt( pos, refPos );
+		Reference<E> ref = this.getRefAt( pos, refPos );
 		if ( ref != null ) {
 			return ref.getObject();
 		}
@@ -127,6 +174,7 @@ public class ObjRefsList<E> extends RefsList<E> {
 	 *         end
 	 */
 	public boolean addLast( E obj ) {
+
 		Debug.nullException( obj );
 		Reference<E> nr = this.getRef( obj );
 		if ( null != nr ) {
@@ -144,6 +192,7 @@ public class ObjRefsList<E> extends RefsList<E> {
 	 *         end
 	 */
 	public boolean addFirst( E obj ) {
+
 		Debug.nullException( obj );
 		Reference<E> nr = this.getRef( obj );
 		if ( null != nr ) {
@@ -160,6 +209,7 @@ public class ObjRefsList<E> extends RefsList<E> {
 	 * @return true if object existed before call
 	 */
 	public boolean insert( E obj, Position position ) {
+
 		Debug.nullException( obj, position );
 		switch ( position ) {
 		case FIRST:
@@ -179,6 +229,7 @@ public class ObjRefsList<E> extends RefsList<E> {
 	 *         false is all went according to call
 	 */
 	public boolean insert( E newObj, Position pos, E posObj ) {
+
 		Debug.nullException( newObj, pos, posObj );
 		Reference<E> posRef = this.getRef( posObj );
 		if ( null == posRef ) {
@@ -199,6 +250,7 @@ public class ObjRefsList<E> extends RefsList<E> {
 	 * @return true if existed; either way after call it's removed
 	 */
 	public boolean removeObject( E obj ) {
+
 		Debug.nullException( obj );
 		Reference<E> nr = this.getRef( obj );
 		if ( null == nr ) {

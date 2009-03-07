@@ -1,5 +1,8 @@
 
+
 package org.demlinks.node;
+
+
 
 import javax.naming.CannotProceedException;
 
@@ -7,16 +10,20 @@ import org.demlinks.debug.Debug;
 import org.demlinks.errors.BadCallError;
 import org.demlinks.exceptions.InconsistentLinkException;
 
+
+
 public class Node {
 	
 	private NodeList	parentsList;
 	private NodeList	childrenList;
 	
 	public Node() {
+
 		this.createLists();
 	}
 	
 	private void createLists() {
+
 		this.parentsList = new NodeList();
 		this.childrenList = new NodeList();
 	}
@@ -34,6 +41,7 @@ public class Node {
 	 *         for the child
 	 */
 	public boolean appendChild( Node child ) {
+
 		Debug.nullException( child );
 		boolean existed1 = this.internalAppendChild( child );
 		boolean existed2 = child.internalAppendParent( this );
@@ -53,6 +61,7 @@ public class Node {
 	 * @see {@link #appendChild(Node)}
 	 */
 	public boolean appendParent( Node parent ) {
+
 		Debug.nullException( parent );
 		return parent.appendChild( this );
 	}
@@ -62,6 +71,7 @@ public class Node {
 	 * @return true if child didn't exist; false if it did exist before call
 	 */
 	protected boolean internalAppendChild( Node child ) {
+
 		return this.childrenList.appendNode( child );
 	}
 	
@@ -70,6 +80,7 @@ public class Node {
 	 * @return true if parent didn't exist; false if it did exist before call
 	 */
 	protected boolean internalAppendParent( Node parent ) {
+
 		return this.parentsList.appendNode( parent );
 	}
 	
@@ -83,12 +94,24 @@ public class Node {
 	 *         of the links exists
 	 */
 	public boolean hasChild( Node child ) {
+
 		Debug.nullException( child );
 		boolean link1 = this.childrenList.hasNode( child );
 		boolean link2 = child.parentsList.hasNode( this );// isn't that private
 		// field?
 		if ( link1 ^ link2 ) {
 			throw new InconsistentLinkException( "inconsistent link detected" );
+		}
+		return link1;
+	}
+	
+	public boolean hasChildAtPos( Node child, int index ) {
+
+		Debug.nullException( child, index );
+		boolean link1 = this.childrenList.hasNodeAtPos( child, index );
+		boolean link2 = child.parentsList.hasNode( this );// not at pos
+		if ( link1 ^ link2 ) {
+			throw new InconsistentLinkException( "detected" );
 		}
 		return link1;
 	}
@@ -102,6 +125,7 @@ public class Node {
 	 * @see {@link #hasChild(Node)}
 	 */
 	public boolean hasParent( Node parent ) {
+
 		Debug.nullException( parent );
 		return parent.hasChild( this );// counting on hasChild to check both
 	}
@@ -112,10 +136,12 @@ public class Node {
 	 * @throws CannotProceedException
 	 */
 	protected boolean internalRemoveChild( Node child ) {
+
 		return this.childrenList.removeNode( child );
 	}
 	
 	protected boolean internalRemoveParent( Node parent ) {
+
 		return this.parentsList.removeNode( parent );
 	}
 	
@@ -131,6 +157,7 @@ public class Node {
 	 *             the links existed before call, now neither should exist
 	 */
 	public boolean removeChild( Node child ) {
+
 		boolean link1 = this.internalRemoveChild( child );
 		boolean link2 = child.internalRemoveParent( this );
 		if ( link1 ^ link2 ) {
@@ -145,22 +172,27 @@ public class Node {
 	 * @see #removeChild(Node)
 	 */
 	public boolean removeParent( Node parent ) {
+
 		return parent.removeChild( this );
 	}
 	
 	public Node getFirstChild() {
+
 		return this.childrenList.getFirstNode();
 	}
 	
 	public Node getLastChild() {
+
 		return this.childrenList.getLastNode();
 	}
 	
 	public Node getFirstParent() {
+
 		return this.parentsList.getFirstNode();
 	}
 	
 	public Node getLastParent() {
+
 		return this.parentsList.getLastNode();
 	}
 	
@@ -170,6 +202,7 @@ public class Node {
 	 * @return null or the node following <tt>ofWhatNode</tt>
 	 */
 	public Node getChildNextOf( Node ofWhatNode ) {
+
 		Debug.nullException( ofWhatNode );
 		return this.childrenList.getNodeAfter( ofWhatNode );
 	}
@@ -180,6 +213,7 @@ public class Node {
 	 * @return null or the node before <tt>ofWhatNode</tt>
 	 */
 	public Node getChildPrevOf( Node ofWhatNode ) {
+
 		Debug.nullException( ofWhatNode );
 		return this.childrenList.getNodeBefore( ofWhatNode );
 	}
@@ -190,6 +224,7 @@ public class Node {
 	 * @return null or the node following <tt>ofWhatNode</tt>
 	 */
 	public Node getParentNextOf( Node ofWhatNode ) {
+
 		Debug.nullException( ofWhatNode );
 		return this.parentsList.getNodeAfter( ofWhatNode );
 	}
@@ -200,6 +235,7 @@ public class Node {
 	 * @return null or the node before <tt>ofWhatNode</tt>
 	 */
 	public Node getParentPrevOf( Node ofWhatNode ) {
+
 		Debug.nullException( ofWhatNode );
 		return this.parentsList.getNodeBefore( ofWhatNode );
 	}
@@ -208,6 +244,7 @@ public class Node {
 	 * @return number of parents for this node
 	 */
 	public int numParents() {
+
 		return this.parentsList.size();
 	}
 	
@@ -215,6 +252,7 @@ public class Node {
 	 * @return number of children for this node
 	 */
 	public int numChildren() {
+
 		return this.childrenList.size();
 	}
 	
@@ -231,6 +269,7 @@ public class Node {
 	 */
 	private boolean internalInsert( NodeList inWhichList, Node whatNewNode,
 			Position pos, Node posNode ) {
+
 		Debug.nullException( inWhichList, whatNewNode, pos, posNode );
 		// some people are paranoid here :-"
 		if ( ( inWhichList != this.childrenList )
@@ -244,30 +283,35 @@ public class Node {
 	}
 	
 	public boolean insertChildAfter( Node newChild, Node afterWhatChildNode ) {
+
 		Debug.nullException( newChild, afterWhatChildNode );
 		return this.internalInsert( this.childrenList, newChild,
 				Position.AFTER, afterWhatChildNode );
 	}
 	
 	public boolean insertChildBefore( Node newChild, Node beforeWhatChildNode ) {
+
 		Debug.nullException( newChild, beforeWhatChildNode );
 		return this.internalInsert( this.childrenList, newChild,
 				Position.BEFORE, beforeWhatChildNode );
 	}
 	
 	public boolean insertParentAfter( Node newParent, Node afterWhatParentNode ) {
+
 		Debug.nullException( newParent, afterWhatParentNode );
 		return this.internalInsert( this.parentsList, newParent,
 				Position.AFTER, afterWhatParentNode );
 	}
 	
 	public boolean insertParentBefore( Node newParent, Node beforeWhatParentNode ) {
+
 		Debug.nullException( newParent, beforeWhatParentNode );
 		return this.internalInsert( this.parentsList, newParent,
 				Position.BEFORE, beforeWhatParentNode );
 	}
 	
 	public void integrityCheck() {
+
 		Debug.nullException( this.childrenList, this.parentsList );
 		
 		Node parser = this.childrenList.getFirstNode();

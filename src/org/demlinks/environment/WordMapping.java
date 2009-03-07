@@ -30,43 +30,50 @@ public class WordMapping extends CharMapping {
 		if ( !this.isGoodWord( word ) ) {
 			throw new BadParameterException();
 		}
-		WordNode wn = getWord( word );
-		if ( null != wn ) {
-			return wn;// aready existed
+		
+		// if already exists, then return that one
+		WordNode wordNode = this.getNodeForWord( word );
+		if ( null != wordNode ) {
+			return wordNode;// already existed
 		}
 		// else add it now
-		wn = new WordNode();
-		// TODO Auto-generated method stub
-		boolean mostLikelyWordDoesntExist = false;
+		wordNode = new WordNode();
+		
 		char c;
 		Node n;
 		for ( int i = 0; i < word.length(); i++ ) {
 			c = word.charAt( i );
-			if ( !this.isMappedChar( c ) ) {
-				mostLikelyWordDoesntExist = true;
-			}
 			n = this.ensureNodeForChar( c );
-			// TODO attempt to find a word that has all collected 'n' nodes in
-			// that order
-			// if exists, then this word we try to add, exists, maybe return IT
-			// instead of boolean
-		}
-		
-		WordNode wordNode = null;
-		
-		if ( !mostLikelyWordDoesntExist ) {
-			// attempt to find it; it may not exist still;
-			// TODO
-		}
-		
-		if ( wordNode == null ) {
-			wordNode = new WordNode();
-			// TODO and add all children 'n' nodes collected before
+			wordNode.appendChild( n );
 		}
 		
 		return wordNode;
 	}
 	
+	
+	public WordNode getNodeForWord( String word ) {
+
+		char c;
+		Node n;
+		for ( int i = 0; i < word.length(); i++ ) {
+			c = word.charAt( i );
+			n = this.getNodeForChar( c );
+			if ( null == n ) {
+				// one of the chars doesn't exist, hence the word doesn't exist
+				return null;
+			}
+			// else
+			// TODO solve
+			// we need a parent(1) that has as parent AllWordNodes
+			// this parent(1) also has a child 'n' at position 'i'
+			// backtracking all the way
+			// basically find all parents of 'n' that have parent AllWordNodes
+			// AND have 'n' as a child at pos 'i'
+			// AllWordNodes -> X -> 'n' , X is NodeWithDupChildren
+			// i+1 actually, we may also need Node.hasChildAt(child, pos)
+		}
+		return null;
+	}
 	
 	/**
 	 * @param word
@@ -80,23 +87,24 @@ public class WordMapping extends CharMapping {
 			throw new BadParameterException();
 		}
 		
-		char firstChar = word.charAt( 0 );
-		if ( this.isLetter( firstChar ) ) {
-			if ( len > 1 ) {
-				char lastChar = word.charAt( len - 1 );
-				if ( this.isLetter( lastChar ) ) {
-					// first and last chars are letters
-					for ( int i = 1; i < len; i++ ) { // parse except first/last
-						// chars
-						char p = word.charAt( i );
-						if ( ( !this.isLetter( p ) )
-								&& ( !this.isInWordSpecialChars( p ) ) ) {
-							return false;// bad word!
-						}
-					}
-				}
+		for ( int i = 0; i < len; i++ ) {
+			char p = word.charAt( i );
+			if ( !this.isWordAllowedChar( p ) ) {
+				return false;// bad word!
 			}
-			return true;// good word;
+		}
+		return true;
+	}
+	
+	/**
+	 * @param chr
+	 * @return
+	 */
+	public boolean isWordAllowedChar( char chr ) {
+
+		if ( ( this.isLetter( chr ) ) || ( this.isInWordSpecialChars( chr ) )
+				|| ( this.isDigit( chr ) ) ) {
+			return true;
 		}
 		return false;
 	}
@@ -121,6 +129,18 @@ public class WordMapping extends CharMapping {
 
 		if ( ( ( chr >= 'a' ) && ( chr <= 'z' ) )
 				|| ( ( chr >= 'A' ) && ( chr <= 'Z' ) ) ) {
+			return true;
+		}
+		return false;
+	}
+	
+	/**
+	 * @param chr
+	 * @return
+	 */
+	public boolean isDigit( char chr ) {
+
+		if ( ( chr >= '0' ) && ( chr <= '9' ) ) {
 			return true;
 		}
 		return false;

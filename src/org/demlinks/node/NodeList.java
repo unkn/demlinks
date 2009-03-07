@@ -1,8 +1,13 @@
 
+
 package org.demlinks.node;
+
+
 
 import org.demlinks.debug.Debug;
 import org.demlinks.references.ObjRefsList;
+
+
 
 /**
  * if you do node1.childrenList.add(node2) then this list won't execute
@@ -11,6 +16,7 @@ import org.demlinks.references.ObjRefsList;
 public class NodeList extends ObjRefsList<Node> {
 	
 	public NodeList() {
+
 		super();
 	}
 	
@@ -21,6 +27,7 @@ public class NodeList extends ObjRefsList<Node> {
 	 *         it, as the function name implies; it won't be moved to end either
 	 */
 	public boolean appendNode( Node nodeToAppend ) {
+
 		Debug.nullException( nodeToAppend );// why not assert? because param(ie.
 		// nodeToAppend) could be
 		// dynamically set on runtime
@@ -33,26 +40,37 @@ public class NodeList extends ObjRefsList<Node> {
 	 * @return null or the first Node in list
 	 */
 	public Node getFirstNode() {
+
 		return this.getObjectAt( Position.FIRST );
 	}
 	
 	public Node getLastNode() {
+
 		return this.getObjectAt( Position.LAST );
 	}
 	
 	public Node getNodeAfter( Node node ) {
+
 		Debug.nullException( node );
 		return this.getObjectAt( Position.AFTER, node );
 	}
 	
 	public Node getNodeBefore( Node node ) {
+
 		Debug.nullException( node );
 		return this.getObjectAt( Position.BEFORE, node );
 	}
 	
 	public boolean hasNode( Node node ) {
+
 		Debug.nullException( node );
 		return this.containsObject( node );
+	}
+	
+	public boolean hasNodeAtPos( Node node, int index ) {
+
+		Debug.nullException( node, index );
+		return this.containsObjectAtPos( node, index );
 	}
 	
 	/**
@@ -65,6 +83,7 @@ public class NodeList extends ObjRefsList<Node> {
 	 *         specified by call
 	 */
 	public boolean insertNode( Node whichNode, Position whatPos ) {
+
 		Debug.nullException( whichNode, whatPos );
 		return this.insert( whichNode, whatPos );
 	}
@@ -77,6 +96,7 @@ public class NodeList extends ObjRefsList<Node> {
 	 * @see #insertBeforeNode(Node, Node)
 	 */
 	public boolean insertAfterNode( Node newNode, Node afterNode ) {
+
 		Debug.nullException( newNode, afterNode );
 		return this.insert( newNode, Position.AFTER, afterNode );
 	}
@@ -92,6 +112,7 @@ public class NodeList extends ObjRefsList<Node> {
 	 *         before beforeNode
 	 */
 	public boolean insertBeforeNode( Node newNode, Node beforeNode ) {
+
 		Debug.nullException( newNode, beforeNode );
 		return this.insert( newNode, Position.BEFORE, beforeNode );
 	}
@@ -103,6 +124,7 @@ public class NodeList extends ObjRefsList<Node> {
 	 *         false if failed to delete because it didn't exist
 	 */
 	public boolean removeNode( Node node ) {
+
 		Debug.nullException( node );
 		boolean ret = this.removeObject( node );
 		return ret;
