@@ -13,6 +13,13 @@ import org.demlinks.nodemaps.WordNode;
 
 public class WordMapping extends CharMapping {
 	
+	
+	public WordMapping() {
+
+		super();
+		this.mapAllCharsNow();
+	}
+	
 	/**
 	 * @param word
 	 * @return true if successfully added;false if already existed;
@@ -23,6 +30,12 @@ public class WordMapping extends CharMapping {
 		if ( !this.isGoodWord( word ) ) {
 			throw new BadParameterException();
 		}
+		WordNode wn = getWord( word );
+		if ( null != wn ) {
+			return wn;// aready existed
+		}
+		// else add it now
+		wn = new WordNode();
 		// TODO Auto-generated method stub
 		boolean mostLikelyWordDoesntExist = false;
 		char c;
@@ -45,10 +58,12 @@ public class WordMapping extends CharMapping {
 			// attempt to find it; it may not exist still;
 			// TODO
 		}
+		
 		if ( wordNode == null ) {
 			wordNode = new WordNode();
 			// TODO and add all children 'n' nodes collected before
 		}
+		
 		return wordNode;
 	}
 	

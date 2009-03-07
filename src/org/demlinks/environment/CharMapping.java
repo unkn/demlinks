@@ -19,35 +19,33 @@ public class CharMapping {
 	public CharMapping() {
 
 		this.mapCharsToNodes = new TwoWayHashMap<String, CharNode>();
-		// this.init();
-		// }
-		//	
-		// private void init() {
-		//
-		// this.mapAllChars();
 	}
 	
-	// private void mapAllChars() {
-	//
-	// this.mapCharsToNodes = new TwoWayHashMap<String, CharNode>();
-	//		
-	// // int count = 0;
-	// for ( char c = 0; c <= 255; c++ ) {// [0..255] inclusive
-	// // count++;
-	// this.mapChar( c );
-	//			
-	// // System.out.println( String.valueOf( (int)c ) + " "
-	// // + String.valueOf( c ) + " " + node );
-	//			
-	// }
-	// // System.out.println( count );
-	// }
+	protected void mapAllCharsNow() {
+
+		this.mapAllChars();
+	}
+	
+	private void mapAllChars() {
+
+		
+		// int count = 0;
+		for ( char c = 0; c <= 255; c++ ) {// [0..255] inclusive
+			// count++;
+			this.mapNewChar( c );
+			
+			// System.out.println( String.valueOf( (int)c ) + " "
+			// + String.valueOf( c ) + " " + node );
+			
+		}
+		// System.out.println( count );
+	}
 	
 	/**
 	 * will throw exception if mapping didn't exist
 	 * 
 	 * @param c
-	 * @return the node that was already mapped to char c
+	 * @return the node that was just mapped to char c
 	 * @see #isMappedChar(char)
 	 */
 	public CharNode mapNewChar( char c ) {
