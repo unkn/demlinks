@@ -36,6 +36,11 @@ import org.demlinks.node.Position;
  */
 public class ObjRefsList<E> extends RefsList<E> {
 	
+	public ObjRefsList() {
+
+		super();
+	}
+	
 	// /** unused, yet
 	// * @param position only FIRST/LAST
 	// * @return the object that was removed, or null is none was

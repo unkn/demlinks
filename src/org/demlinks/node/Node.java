@@ -236,6 +236,36 @@ public class Node {
 	}
 	
 	/**
+	 * @param thatHasThisParent
+	 *            consider only parents that have parent 'thatHasParent'<br>
+	 *            ie. thatHasParent->parentFound->this
+	 * @param continueFromNode
+	 *            skip this node; it's the last found;<br>
+	 *            if null then start from beginning
+	 * @return the next Parent where thatHasParent->Parent->child<br>
+	 *         or null
+	 */
+	public Node getNextParent( Node thatHasThisParent, Node continueFromNode ) {
+
+		Debug.nullException( thatHasThisParent );
+		
+		Node parser;
+		if ( continueFromNode == null ) {
+			parser = this.getFirstParent();
+		} else {
+			parser = this.getParentNextOf( continueFromNode );// by skipping it
+		}
+		
+		while ( parser != null ) {
+			if ( parser.hasParent( thatHasThisParent ) ) {
+				break;
+			}
+			parser = parser.getParentNextOf( parser );
+		}
+		return parser;
+	}
+	
+	/**
 	 * @param ofWhatNode
 	 *            is an existing parent Node
 	 * @return null or the node before <tt>ofWhatNode</tt>

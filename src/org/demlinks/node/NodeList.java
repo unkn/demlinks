@@ -146,4 +146,12 @@ public class NodeList extends ObjRefsList<Node> {
 		boolean ret = this.removeObject( node );
 		return ret;
 	}
+	
+	public void removeAll() {
+
+		Node n;
+		while ( ( n = this.getFirstNode() ) != null ) {
+			this.removeObject( n );
+		}
+	}
 }
