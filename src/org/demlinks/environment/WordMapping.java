@@ -96,56 +96,32 @@ public class WordMapping extends CharMapping {
 
 		boolean moreSolutions = true;
 		// -------------------------------------------
-		while (moreSolutions) {
-			recheckIF:
-			if (isNextValidParent()) {
-				thisValidParent = getNextValidParent();
-				
-				if (!weFoundAnyParentsBefore()) {
-					foundValidParentsList += thisValidParent;
-				}
+		while ( moreSolutions ) {
 			
-				if (thisValidParent inlistOf foundValidParentsList) {
-					//either that or firsttime
-					if (canGoNextChar()) {
-						goNextChar();//& clean slate
-						CleanSlateForThisNextChar();
-						continue;
-					} else {
-						//we found a solution
-						show(topmostParent of foundValidParentsList);
-						//we continue searching for next solution
-						//I guess there can't be any solutions unless u go 
-						//at word[0] and up or next of it
-					}
-				} else {
-					//it's a valid parent but not the one we need;
-					//cannot happen on first run(/time)
-					if (canGoUp()) {
-						goUp();
-						goto recheckIF;//or continue
-					} else {
-						if (canGoNext()) {
-							goNext();
-							goto recheckIF;
-						} else {
-							if (canGoBack()) {
-								goBack();
-								goto recheckIF;
-							} else {
-								//can't go back, then no more solutions
-								moreSolutions = false;
-								continue;
-							}
+			Node thisValidParent[childAtIndex] = getNextValidParent(thisValidParent[childAtIndex]);
+			if ( null != thisValidParent[childAtIndex] ) {
+				if ( nl.getNodeAt( childAtIndex ) == thisValidParent.getFirstChild() ) {
+					//found this parent to be right for that char
+					childAtIndex++;//expect next char
+					
+					getNextChildForThisParent();
+					if (found any) {
+						switch() {
+						case isWordNode:
+						case isCharNode:
+							
+						default:
+								throw new Exception();
 						}
 					}
-				}//some else
-			} else {
-				if (weCanGoBack()) {
-					goBack();
-				}else {
-					moreSolutions = false;
+					if (canGoNextChar()) {
+						goNextChar();
+					}
+				} else {
+					//no good, go next parent, horizontally
+					
 				}
+				
 			}
 		}
 		// -------------------------------------------
