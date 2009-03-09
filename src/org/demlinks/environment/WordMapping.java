@@ -85,56 +85,76 @@ public class WordMapping extends CharMapping {
 			// parent.hasChildAtPos(n, i);
 			nl.appendNode( n );
 		}
+		//list of all WordNodes that match this word
+		NodeList solutions = new NodeList();
 		// we have them all chars in 'nl'
 		// and in effect we can parse them in any direction
 		// TODO
-		int charIndex = 0;
-		int horizIndex = 0;
+		
 		int vertIndex = 0;
-		IntermediaryNode[] horiz = new IntermediaryNode[word.length()];
-recheckIF:
-		horiz[charIndex]=
-		IntermediaryNode in = this.getNextIntermediaryNodeForCharAt(
-				(CharNode)nl.getNodeAt( charIndex ), charIndex, null );
-		if ( null != in ) {
-			WordNode wordNode = (WordNode)in.getFather();
-			// so we found the wordNode that starts with word[0]
-			// now we need to get next child and see if it's word[1]
-			// unless there's no word[1] ie. length=1
-			// if (word.length())
-			charIndex++;
-			if ( charIndex >= word.length() ) {
-				// we're done here, solution is wordNode
-				return wordNode;
-			}
-			IntermediaryNode in = (IntermediaryNode)wordNode.getChildNextOf( in );
-			if (null == in) {
-				//no more? horizontally
-			}
-			if ( !Environment.isIntermediaryNode( in ) ) {
-				throw new BugError(
-						"wordNode is not trully NodeWithDupChildren"
-								+ "it should have only IntermediaryNode(s) as children" );
-			}
-			Node any2 = in.getPointee();
-			if ( Environment.isWordNode( any2 ) ) {
-				
-			}
-			if ( Environment.isCharNode( any2 ) ) {
-				if ( any2 == nl.getNodeAt( charIndex ) ) {
-					
+		IntermediaryNode inFor0=null;//intermediary nodes for word[0]
+		
+		NEXTWORDNODE:
+		int charIndex = 0;
+		//attempts to find next WordNode for word[charIndex], that's a different parent
+		inFor0 = this.getNextIntermediaryNodeForCharAt(
+				(CharNode)nl.getNodeAt( charIndex ), charIndex, inFor0 );
+		if ( null == inFor0 ) {
+			// none found, hence there's no (more)word(s) having word[0] at index 0
+			return solutions;//can be empty
+		}
+		NodeWithDupChildren wordNode = inFor0.getFather();
+		
+		IntermediaryNode in = inFor0;
+		
+		NEXTCHAR:
+		charIndex++;
+		
+		if ( charIndex >= word.length() ) {
+			// done with the wordNode, try next wordNode
+			//wordNode is one solution, but there can be more
+			solutions.addLast( wordNode );
+			goto NEXTWORDNODE;//from word[0] again
+		} else {
+			//we're on the next char,
+			
+			
+			HERE:
+			in = wordNode.getNextIntermediary( in );//for the same wordNode
+			if ( null != in ) {
+				//found one, which could be CharNode or WordNode
+				Node whatIs = in.getPointee();
+				if (Environment.isCharNode( whatIs )) {
+					//found a char, must be equal to word[charIndex]
+					if (nl.getNodeAt( charIndex ) == whatIs) {
+						//all ok, go next char
+						//charIndex++;
+						goto NEXTCHAR;
+					} else {
+						//it's another char, bad, we go back, attempt to get next IN for this char
+						goto HERE;
+					}
 				} else {
-					//not our needed char
-					charIndex--;
-					goto recheckIF;
+					//it's not charNode
+					if (Environment.isWordNode( whatIs )) {
+						//TODO
+					}else {
+						throw new BugError("should only be WordNode or CharNode");
+					}
+				}
+			} else {// no more?
+				//no more intermediaries for wordNode, but yes we have more word chars
+				//then you need to go up of this wordNode
+				if (charIndex > 0) {
+					//we're not at first char
+					charIndex--;//go prev
+					goto NEXTWORDNODE;
 				}
 			}
-			
-		} else {
-			// there's no word starting with word[0] so return null;
-			return null;
 		}
 		
+
+
 		return null;
 	}
 	
