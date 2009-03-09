@@ -7,6 +7,7 @@ package org.demlinks.environment;
 import org.demlinks.debug.Debug;
 import org.demlinks.errors.BugError;
 import org.demlinks.exceptions.BadParameterException;
+import org.demlinks.exceptions.InconsistentLinkException;
 import org.demlinks.node.Node;
 import org.demlinks.node.NodeList;
 import org.demlinks.nodemaps.Environment;
@@ -288,6 +289,10 @@ public class WordMapping extends CharMapping {
 			// we need to check if the intermediary is child of a WordNode
 			// since there can be only 1 father for an IntermediaryNode
 			NodeWithDupChildren wordNode = ( (IntermediaryNode)parser ).getFather();
+			if ( null == wordNode ) {
+				throw new InconsistentLinkException(
+						"someone removed the IN from the NodeWithDupChildren" );
+			}
 			if ( Environment.isWordNode( wordNode ) ) {
 				// so it's a WordNode
 				// now we need to check the intermediaryNode's index is

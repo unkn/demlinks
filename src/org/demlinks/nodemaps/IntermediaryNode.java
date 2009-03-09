@@ -58,9 +58,9 @@ public class IntermediaryNode extends PointerNode {
 			}
 			parser = this.getParentNextOf( parser );
 		}
-		if ( count != 1 ) {
-			throw new BugError( "IntermediaryNode should have only 1 "
-					+ "parent that's NodeWithDupChildren type" );
+		if ( count > 1 ) {
+			throw new BugError( "IntermediaryNode should have only 0..1 "
+					+ "NodeWithDupChildren type parents" );
 		}
 	}
 	
@@ -70,6 +70,7 @@ public class IntermediaryNode extends PointerNode {
 	 */
 	public NodeWithDupChildren getFather() {
 
+		// TODO test unit for this
 		this.integrityCheck();
 		return (NodeWithDupChildren)this.getNextParent(
 				Environment.AllNodeWithDupChildrenNodes, null );

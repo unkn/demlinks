@@ -1,9 +1,13 @@
 
+
 package org.demlinks.nodemaps;
+
+
 
 import org.demlinks.constants.DO;
 import org.demlinks.debug.Debug;
 import org.demlinks.errors.BugError;
+import org.demlinks.exceptions.BadParameterException;
 import org.demlinks.node.Node;
 
 
@@ -11,6 +15,7 @@ import org.demlinks.node.Node;
 public class NodeWithDupChildren extends Node {
 	
 	public NodeWithDupChildren() {
+
 		super();// if u forget this, it's called anyway =)
 		Environment.internalCreateNodeAsChildOf( this,
 				Environment.AllNodeWithDupChildrenNodes );
@@ -24,6 +29,7 @@ public class NodeWithDupChildren extends Node {
 	 * @return true if the child exists
 	 */
 	public boolean dupHasChild( Node childNode ) {
+
 		// basically parse all children and check if .getPointee() is
 		// childNode
 		return null != this.getIntermediaryForFirstChild( childNode );
@@ -36,6 +42,7 @@ public class NodeWithDupChildren extends Node {
 	 * @param childNode
 	 */
 	public void dupAppendChild( Node childNode ) {
+
 		Debug.nullException( childNode );
 		IntermediaryNode IN = new IntermediaryNode();
 		if ( IN.pointTo( childNode ) ) {
@@ -50,6 +57,7 @@ public class NodeWithDupChildren extends Node {
 	
 	@Override
 	public void integrityCheck() {
+
 		super.integrityCheck();
 		
 		if ( !this.hasParent( Environment.AllNodeWithDupChildrenNodes ) ) {
@@ -58,6 +66,7 @@ public class NodeWithDupChildren extends Node {
 	}
 	
 	public IntermediaryNode getIntermediaryForLastChild() {
+
 		return (IntermediaryNode)this.getLastChild();
 	}
 	
@@ -65,6 +74,7 @@ public class NodeWithDupChildren extends Node {
 	 * @return the IN for the first child of <tt>this</tt>
 	 */
 	public IntermediaryNode getIntermediaryForFirstChild() {
+
 		return (IntermediaryNode)this.getFirstChild();
 	}
 	
@@ -78,10 +88,10 @@ public class NodeWithDupChildren extends Node {
 	 * @return
 	 */
 	public IntermediaryNode getIntermediaryForFirstChild( Node childNode ) {
-		
+
 		Debug.nullException( childNode );
-		return this.getIntermediaryForNextChild( childNode, this
-				.getIntermediaryForFirstChild(), false );
+		return this.getIntermediaryForNextChild( childNode,
+				this.getIntermediaryForFirstChild(), false );
 	}
 	
 	/**
@@ -94,10 +104,10 @@ public class NodeWithDupChildren extends Node {
 	 * @return
 	 */
 	public IntermediaryNode getIntermediaryForLastChild( Node childNode ) {
-		
+
 		Debug.nullException( childNode );
-		return this.getIntermediaryForPrevChild( childNode, this
-				.getIntermediaryForLastChild(), DO.NOSKIP );
+		return this.getIntermediaryForPrevChild( childNode,
+				this.getIntermediaryForLastChild(), DO.NOSKIP );
 	}
 	
 	/**
@@ -113,7 +123,7 @@ public class NodeWithDupChildren extends Node {
 	 */
 	public IntermediaryNode getIntermediaryForNextChild( Node childNode,
 			IntermediaryNode startingFromThisIN, boolean skipIN ) {
-		
+
 		Debug.nullException( childNode, startingFromThisIN, skipIN );
 		// we skip startingFromThisIN because startingFromThisIN.child ==
 		// childNode already
@@ -151,7 +161,7 @@ public class NodeWithDupChildren extends Node {
 	 */
 	public IntermediaryNode getIntermediaryForPrevChild( Node childNode,
 			IntermediaryNode startingFromThisIN, boolean skipIN ) {
-		
+
 		Debug.nullException( childNode, startingFromThisIN, skipIN );
 		// we skip startingFromThisIN because startingFromThisIN.child ==
 		// childNode already
@@ -183,10 +193,9 @@ public class NodeWithDupChildren extends Node {
 	 */
 	public IntermediaryNode getNextIntermediary(
 			IntermediaryNode startingFromThisIN ) {
-		
+
 		Debug.nullException( startingFromThisIN );
-		IntermediaryNode iN = (IntermediaryNode)( this
-				.getChildNextOf( startingFromThisIN ) );
+		IntermediaryNode iN = (IntermediaryNode)( this.getChildNextOf( startingFromThisIN ) );
 		if ( null != iN ) {
 			if ( !Environment.isIntermediaryNode( iN ) ) {
 				throw new BugError( "should be!" );
@@ -201,10 +210,9 @@ public class NodeWithDupChildren extends Node {
 	 */
 	public IntermediaryNode getPrevIntermediary(
 			IntermediaryNode startingFromThisIN ) {
-		
+
 		Debug.nullException( startingFromThisIN );
-		IntermediaryNode iN = (IntermediaryNode)( this
-				.getChildPrevOf( startingFromThisIN ) );
+		IntermediaryNode iN = (IntermediaryNode)( this.getChildPrevOf( startingFromThisIN ) );
 		
 		if ( null != iN ) {
 			if ( !Environment.isIntermediaryNode( iN ) ) {
@@ -216,7 +224,9 @@ public class NodeWithDupChildren extends Node {
 	}
 	
 	public int getCountOfChildren( Node childNode ) {
+
 		Debug.nullException( childNode );
+		this.integrityCheck();
 		int count = 0;
 		IntermediaryNode iN = this.getIntermediaryForFirstChild( childNode );
 		while ( iN != null ) {
@@ -226,6 +236,28 @@ public class NodeWithDupChildren extends Node {
 		return count;
 	}
 	
+	/**
+	 * this->IN->child<br>
+	 * will unlink both links, first IN->child then this->IN
+	 * 
+	 * @param intermediaryNodeToRemove
+	 */
+	public void dupRemoveIntermediaryNode(
+			IntermediaryNode intermediaryNodeToRemove ) {
 
-
+		Debug.nullException( intermediaryNodeToRemove );
+		this.integrityCheck();
+		if ( !this.hasChild( intermediaryNodeToRemove ) ) {
+			throw new BadParameterException(
+					"the IN is not from this NodeWithDupChildren" );
+		}
+		
+		intermediaryNodeToRemove.setNull();// unlinks IN->child
+		
+		// remove this->IN:
+		if ( !this.removeChild( intermediaryNodeToRemove ) ) {
+			throw new BugError( "should've returned true" );
+		}
+	}
+	
 }

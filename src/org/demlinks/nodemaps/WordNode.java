@@ -11,4 +11,6 @@ public class WordNode extends NodeWithDupChildren {
 		super();
 		Environment.internalCreateNodeAsChildOf( this, Environment.AllWordNodes );
 	}
+	
+
 }
