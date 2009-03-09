@@ -64,6 +64,10 @@ public class Environment {
 		return whatNode.hasParent( AllRandomNodes );
 	}
 	
+	/**
+	 * @param whatNode
+	 * @return
+	 */
 	public static boolean isIntermediaryNode( Node whatNode ) {
 
 		Debug.nullException( whatNode );
@@ -92,5 +96,16 @@ public class Environment {
 				throw new BugError( "parentNode->childNode already existing?!" );
 			}
 		}
+	}
+	
+	/**
+	 * @param whatNode
+	 * @return
+	 */
+	public static boolean isWordNode( Node whatNode ) {
+
+		Debug.nullException( whatNode );
+		whatNode.integrityCheck();
+		return whatNode.hasParent( AllWordNodes );
 	}
 }
