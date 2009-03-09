@@ -37,8 +37,9 @@ public class WordMappingTest {
 		assertTrue( act.dupGetLastChild() == this.wm.getNodeForChar( 'h' ) );
 		// assertTrue( act.get == this.wm.getNodeForChar( 'c' ) );
 		// assertTrue( act.getLastChild() == this.wm.getNodeForChar( 't' ) );
-		NodeList nl = this.wm.getNodeForWord( "actah" );
+		NodeList nl = this.wm.getNodeForWord( "ac" );
 		assertFalse( nl.isEmpty() );
+		System.out.println( nl.size() );
 		assertTrue( act == this.wm.addWord( "actah" ) );
 	}
 	

@@ -90,7 +90,7 @@ public class WordMapping extends CharMapping {
 
 		char c;
 		Node n;
-		NodeList nl = new NodeList();
+		// NodeWithDupChildren theWord = new NodeWithDupChildren();
 		for ( int i = 0; i < word.length(); i++ ) {
 			c = word.charAt( i );
 			n = this.getNodeForChar( c );
@@ -108,7 +108,7 @@ public class WordMapping extends CharMapping {
 			// AllWordNodes -> X -> 'n' , X is NodeWithDupChildren
 			// we may also need Node.hasChildAt(child, pos)
 			// parent.hasChildAtPos(n, i);
-			nl.appendNode( n );
+			// theWord.dupAppendChild( n );
 		}
 		// list of all WordNodes that match this word
 		NodeList solutions = new NodeList();
@@ -119,7 +119,8 @@ public class WordMapping extends CharMapping {
 		IntermediaryNode intermediaryNodeForNodeOnPos0 = null;// intermediary
 		// nodes
 		// for word[0]
-		Node nodeThatHasToBeOnPos0 = nl.getNodeAt( 0 );// first char
+		Node nodeThatHasToBeOnPos0 = this.getNodeForChar( word.charAt( 0 ) );
+		// theWord.dupGetFirstChild();// first char
 		
 		int indexOfNextExpectedChar = 1;// 0 based though
 		while ( indexOfNextExpectedChar <= ( word.length() - 1 ) ) {
@@ -146,7 +147,7 @@ public class WordMapping extends CharMapping {
 			// we try finding next chars of word from pos 1 in wordNode
 			// continuing from pos 1
 			int backup = indexOfNextExpectedChar;
-			indexOfNextExpectedChar = this.digDeep( wordNode, nl,
+			indexOfNextExpectedChar = this.digDeep( wordNode, word,
 					indexOfNextExpectedChar, intermediaryNodeForNodeOnPos0 );
 			
 			if ( indexOfNextExpectedChar < 0 ) {
@@ -211,14 +212,14 @@ public class WordMapping extends CharMapping {
 	 *         OR -1 if there was an unexpected char encountered, which means, u
 	 *         should get another <tt>wordNode</tt>
 	 */
-	private int digDeep( NodeWithDupChildren wordNode, NodeList expectedString,
+	private int digDeep( NodeWithDupChildren wordNode, String expectedString,
 			int indexOfExpectedChar, IntermediaryNode lastINFound ) {
 
 		Debug.nullException( wordNode, expectedString, indexOfExpectedChar );
 		IntermediaryNode in = lastINFound;// can be null
 		
 		// if more chars to go, and no bad char encountered
-		while ( ( indexOfExpectedChar < ( expectedString.size() - 1 ) )
+		while ( ( indexOfExpectedChar < ( expectedString.length() ) )
 				&& ( indexOfExpectedChar >= 0 ) ) {
 			// this is like parallel on the X axis; same wordNode parent
 			in = wordNode.getNextIntermediary( in );
@@ -234,7 +235,7 @@ public class WordMapping extends CharMapping {
 				Node wordOrChar = in.getPointee();
 				if ( Environment.isCharNode( wordOrChar ) ) {
 					// is CharNode then we check if it's the expected char
-					if ( wordOrChar == expectedString.getNodeAt( indexOfExpectedChar ) ) {
+					if ( wordOrChar == this.getNodeForChar( expectedString.charAt( indexOfExpectedChar ) ) ) {
 						// good, now expect next char
 						indexOfExpectedChar++;
 						continue;
