@@ -4,15 +4,13 @@ package org.demlinks.environment;
 
 
 
-import java.util.ArrayList;
-
 import org.demlinks.debug.Debug;
 import org.demlinks.exceptions.BadParameterException;
-import org.demlinks.node.ListOfNodeLists;
 import org.demlinks.node.Node;
 import org.demlinks.node.NodeList;
 import org.demlinks.nodemaps.CharNode;
 import org.demlinks.nodemaps.Environment;
+import org.demlinks.nodemaps.IntermediaryNode;
 import org.demlinks.nodemaps.NodeWithDupChildren;
 import org.demlinks.nodemaps.WordNode;
 
@@ -58,6 +56,10 @@ public class WordMapping extends CharMapping {
 	}
 	
 	
+	/**
+	 * @param word
+	 * @return
+	 */
 	public WordNode getNodeForWord( String word ) {
 
 		char c;
@@ -84,18 +86,7 @@ public class WordMapping extends CharMapping {
 		}
 		// we have them all chars in 'nl'
 		// and in effect we can parse them in any direction
-		
-		ListOfNodeLists[] upList = new ListOfNodeLists[word.length()];
-		int charIndex = 0;// for word
-		int upIndex = 0;// down-up
-		nl.getNodeAt( charIndex );
-		upList[charIndex] = new ListOfNodeLists();
-		upList[charIndex].add( new ArrayList<Node>() );// first uplist
-		upList[charIndex].get( upIndex ).add(
-				this.getNextWordNodeForCharAt(
-						(CharNode)nl.getNodeAt( charIndex ), charIndex, null ) );
-		
-
+		// TODO
 		return null;
 	}
 	
@@ -113,31 +104,40 @@ public class WordMapping extends CharMapping {
 	 *            continue from this, skipping it; go next
 	 * @return
 	 */
-	private NodeWithDupChildren getNextWordNodeForCharAt( CharNode chrNode,
-			int indexPos, NodeWithDupChildren previouslyFound ) {
+	private IntermediaryNode getNextWordNodeForCharAt( CharNode chrNode,
+			int indexPos, IntermediaryNode previouslyFound ) {
 
 		Debug.nullException( chrNode, indexPos );
 		Node parser;
 		if ( null == previouslyFound ) {
-			parser = chrNode.getFirstParent();
+			parser = chrNode.getFirstParent();// could be just Node
 		} else {
 			parser = previouslyFound;
-			if ( !Environment.isNodeWithDupChildren( parser ) ) {
+			if ( !Environment.isIntermediaryNode( parser ) ) {
 				throw new BadParameterException( "wrong parameter" );
 			}
-			if ( !( (NodeWithDupChildren)parser ).dupHasChild( chrNode ) ) {
+			if ( ( (IntermediaryNode)parser ).getPointee() != chrNode ) {
 				throw new BadParameterException(
 						"chrNode is not a child of previouslyFound" );
 			}
-			( (NodeWithDupChildren)parser ).getIntermediaryForFirstChild( chrNode ) omfg
-			//gotta go next
-			chrNode.getNextParent( thatHasThisParent, continueFromNode )
-		}
-		while (null != parser) {
 			
+			NodeWithDupChildren wordNode = ( (IntermediaryNode)parser ).getFather();
+			// getting next intermediary node
+			parser = wordNode.getChildNextOf( parser );
+			// and thus we skipped over previouslyFound
 		}
 		
-		return previouslyFound;
+		// we're here having the next potential intermediary node, under
+		// 'parser'
+		NodeWithDupChildren wordNode;
+		while ( null != parser ) {
+			if ( Environment.isIntermediaryNode( parser ) ) {
+				wordNode = ( (IntermediaryNode)parser ).getFather();
+			}
+			parser = wordNode.getChildNextOf( parser );
+		}
+		
+		return (IntermediaryNode)parser;
 		
 	}
 	
