@@ -55,6 +55,27 @@ public class NodeWithDupChildren extends Node {
 		}
 	}
 	
+	/**
+	 * returns first child bypassing the IntermediaryNode<br>
+	 * this->IN->child0<br>
+	 * 
+	 * @return child0
+	 */
+	public Node dupGetFirstChild() {
+
+		return this.getIntermediaryForFirstChild().getPointee();
+	}
+	
+	/**
+	 * @return
+	 * @see #dupGetFirstChild()
+	 */
+	public Node dupGetLastChild() {
+
+		return this.getIntermediaryForLastChild().getPointee();
+	}
+	
+	
 	@Override
 	public void integrityCheck() {
 

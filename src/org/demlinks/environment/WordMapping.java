@@ -28,7 +28,7 @@ public class WordMapping extends CharMapping {
 	
 	/**
 	 * @param word
-	 * @return true if successfully added;false if already existed;
+	 * @return WordNode
 	 */
 	public WordNode addWord( String word ) {
 
@@ -38,28 +38,53 @@ public class WordMapping extends CharMapping {
 		}
 		
 		// if already exists, then return that one
-		WordNode wordNode = this.getNodeForWord( word );
-		if ( null != wordNode ) {
-			return wordNode;// already existed
+		NodeList manyWords = this.getNodeForWord( word );
+		if ( !manyWords.isEmpty() ) {
+			// there may be more than 1 found
+			if ( manyWords.size() > 1 ) {
+				// more than one words already found, which do we return?
+			}
+			
+			// one word found:
+			Node wordNode = manyWords.getFirstNode();// first it is then
+			if ( !Environment.isWordNode( wordNode ) ) {
+				throw new BugError(
+						"getNodeForWord or isWordNode are inconsistent" );
+			}
+			return (WordNode)wordNode;
 		}
-		// else add it now
-		wordNode = new WordNode();
+		
+		// else add it now, raw mode
+		// TODO maybe add it zip-mode, ie. as compact as possible maybe formed
+		// of two words; since one word we didn't find(above)
+		WordNode wordNode = new WordNode();
 		
 		char c;
 		Node n;
 		for ( int i = 0; i < word.length(); i++ ) {
 			c = word.charAt( i );
 			n = this.ensureNodeForChar( c );
-			wordNode.appendChild( n );
+			wordNode.dupAppendChild( n );
+			System.out.print( c );// TODO debug
 		}
+		System.out.println( "!" );// TODO debug
 		
 		return wordNode;
 	}
 	
 	
 	/**
+	 * We're looking for the WordNode(s) for the 'word' that's formed of
+	 * CharNodes at the base<br>
+	 * AllWordNodes->wn1->{a,wn2}<br>
+	 * AllWordNodes->wn2->{c,t}<br>
+	 * AllCharNodes->{a,c,t}<br>
+	 * and we're looking for word 'act' then we return 'wn1'<br>
+	 * Since there may be more word variants for 'act' we return a list of
+	 * WordNode(s)<br>
+	 * 
 	 * @param word
-	 * @return
+	 * @return a list of WordNodes as solutions for the word
 	 */
 	public NodeList getNodeForWord( String word ) {
 
@@ -130,7 +155,7 @@ public class WordMapping extends CharMapping {
 				indexOfNextExpectedChar = backup;
 				continue;
 			} else {
-				if ( indexOfNextExpectedChar < word.length() - 1 ) {
+				if ( indexOfNextExpectedChar < word.length() ) {
 					// there's still some char(s) left
 					// we would ideally go UP, and keep
 					// indexOfNextExpectedChar
@@ -155,7 +180,12 @@ public class WordMapping extends CharMapping {
 				}// else
 			}// else
 		}// while
+		// TODO check to see, when complete, if the word we found isn't longer
+		// than the word we were searching
+		// ie. we found 'acted' while searching for 'act' and we're returning
+		// that
 		
+
 		return solutions;// can be empty
 	}
 	
@@ -393,7 +423,7 @@ public class WordMapping extends CharMapping {
 	public boolean addPhrase( String phrase ) {
 
 		Debug.nullException( phrase );
-		// TODO Auto-generated method stub
+		// TODO remove or move this
 		// split it into words and delimiters
 		String word = new String();
 		for ( int i = 0; i < phrase.length(); i++ ) {

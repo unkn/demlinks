@@ -42,7 +42,7 @@ public class CharMapping {
 	}
 	
 	/**
-	 * will throw exception if mapping didn't exist
+	 * will throw exception if mapping already existed
 	 * 
 	 * @param c
 	 * @return the node that was just mapped to char c
