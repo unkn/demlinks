@@ -4,10 +4,10 @@ package org.demlinks.node;
 
 
 
-import org.demlinks.references.ObjRefsList;
+import java.util.ArrayList;
 
 
 
-public class ListOfNodeLists extends ObjRefsList<NodeList> {
+public class ListOfNodeLists extends ArrayList<ArrayList<Node>> {
 	
 }
