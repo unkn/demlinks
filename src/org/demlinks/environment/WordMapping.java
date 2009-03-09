@@ -89,6 +89,11 @@ public class WordMapping extends CharMapping {
 		// and in effect we can parse them in any direction
 		// TODO
 		int charIndex = 0;
+		int horizIndex = 0;
+		int vertIndex = 0;
+		IntermediaryNode[] horiz = new IntermediaryNode[word.length()];
+recheckIF:
+		horiz[charIndex]=
 		IntermediaryNode in = this.getNextIntermediaryNodeForCharAt(
 				(CharNode)nl.getNodeAt( charIndex ), charIndex, null );
 		if ( null != in ) {
@@ -102,7 +107,10 @@ public class WordMapping extends CharMapping {
 				// we're done here, solution is wordNode
 				return wordNode;
 			}
-			in = (IntermediaryNode)wordNode.getChildNextOf( in );
+			IntermediaryNode in = (IntermediaryNode)wordNode.getChildNextOf( in );
+			if (null == in) {
+				//no more? horizontally
+			}
 			if ( !Environment.isIntermediaryNode( in ) ) {
 				throw new BugError(
 						"wordNode is not trully NodeWithDupChildren"
@@ -115,6 +123,10 @@ public class WordMapping extends CharMapping {
 			if ( Environment.isCharNode( any2 ) ) {
 				if ( any2 == nl.getNodeAt( charIndex ) ) {
 					
+				} else {
+					//not our needed char
+					charIndex--;
+					goto recheckIF;
 				}
 			}
 			

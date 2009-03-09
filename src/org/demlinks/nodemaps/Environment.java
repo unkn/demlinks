@@ -108,4 +108,11 @@ public class Environment {
 		whatNode.integrityCheck();
 		return whatNode.hasParent( AllWordNodes );
 	}
+	
+	public static boolean isCharNode( Node whatNode ) {
+
+		Debug.nullException( whatNode );
+		whatNode.integrityCheck();
+		return whatNode.hasParent( AllCharNodes );
+	}
 }
