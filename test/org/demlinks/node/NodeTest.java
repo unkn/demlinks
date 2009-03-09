@@ -1,5 +1,8 @@
 
+
 package org.demlinks.node;
+
+
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -10,18 +13,22 @@ import org.demlinks.exceptions.InconsistentLinkException;
 import org.junit.Before;
 import org.junit.Test;
 
+
+
 public class NodeTest {
 	
 	Node	parent, child;
 	
 	@Before
 	public void init() {
+
 		this.parent = new Node();
 		this.child = new Node();
 	}
 	
 	@Test
 	public void testInsert() {
+
 		Node a = new Node();
 		Node b = new Node();
 		Node c = new Node();
@@ -50,6 +57,7 @@ public class NodeTest {
 	
 	@Test
 	public void testGet() {
+
 		Node a, b, c, d, e, f, g;
 		a = new Node();
 		b = new Node();
@@ -89,6 +97,7 @@ public class NodeTest {
 	
 	@Test
 	public void testAppendChild() {
+
 		assertFalse( this.parent.hasChild( this.child ) );
 		assertFalse( this.child.hasChild( this.parent ) );
 		assertFalse( this.parent.hasParent( this.child ) );
@@ -118,6 +127,7 @@ public class NodeTest {
 	
 	@Test
 	public void testNullParams() {
+
 		boolean excepted = false;
 		try {
 			this.parent.hasChild( null );
@@ -143,6 +153,7 @@ public class NodeTest {
 	
 	@Test
 	public void testInconsistentLink() throws CannotProceedException {
+
 		assertFalse( this.parent.internalAppendChild( this.child ) );
 		assertTrue( this.parent.internalAppendChild( this.child ) );
 		boolean excepted = false;
@@ -174,7 +185,8 @@ public class NodeTest {
 	}
 	
 	@Test
-	public void testRemove() throws CannotProceedException {
+	public void testRemove() {
+
 		assertTrue( this.child.numParents() == 0 );
 		assertTrue( this.parent.numChildren() == 0 );
 		assertFalse( this.parent.removeChild( this.child ) );
@@ -191,5 +203,43 @@ public class NodeTest {
 		assertFalse( this.child.removeParent( this.parent ) );
 		assertTrue( this.child.numParents() == 0 );
 		assertTrue( this.parent.numChildren() == 0 );
+	}
+	
+	@Test
+	public void testGetNextParent() {
+
+		Node a, b, c, d, e, f;
+		a = new Node();
+		b = new Node();
+		c = new Node();
+		d = new Node();
+		e = new Node();
+		f = new Node();
+		
+		assertFalse( this.parent.appendChild( b ) );// parent->b
+		assertFalse( this.parent.appendChild( d ) );// parent->d
+		assertFalse( this.parent.appendChild( f ) );// parent->f
+		
+		assertFalse( this.child.appendParent( a ) );// a->child
+		
+		// get first
+		assertTrue( null == this.child.getNextParent( this.parent, null ) );
+		
+
+		assertFalse( this.child.appendParent( b ) );// b->child
+		assertTrue( this.child.getFirstParent() == a );
+		Node tmp = this.child.getNextParent( this.parent, null );
+		assertFalse( null == tmp );
+		assertTrue( b == tmp );
+		assertTrue( null == this.child.getNextParent( this.parent, b ) );
+		assertFalse( this.child.appendParent( c ) );
+		assertFalse( this.child.appendParent( d ) );
+		assertFalse( this.child.appendParent( e ) );
+		assertFalse( this.child.appendParent( f ) );
+		
+		assertTrue( d == this.child.getNextParent( this.parent, b ) );
+		assertTrue( f == this.child.getNextParent( this.parent, d ) );
+		assertTrue( null == this.child.getNextParent( this.parent, f ) );
+		
 	}
 }

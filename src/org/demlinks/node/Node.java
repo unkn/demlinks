@@ -258,11 +258,11 @@ public class Node {
 		
 		while ( parser != null ) {
 			if ( parser.hasParent( thatHasThisParent ) ) {
-				break;
+				return parser;
 			}
-			parser = parser.getParentNextOf( parser );
+			parser = this.getParentNextOf( parser );
 		}
-		return parser;
+		return null;
 	}
 	
 	/**
