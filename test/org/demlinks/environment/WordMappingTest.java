@@ -31,58 +31,61 @@ public class WordMappingTest {
 	public void testAddWord() {
 
 		WordNode act = this.wm.addWord( "act" );
-		WordNode actah = new WordNode();
-		actah.dupAppendChild( this.wm.ensureNodeForChar( 'a' ) );
-		actah.dupAppendChild( this.wm.ensureNodeForChar( 'c' ) );
-		actah.dupAppendChild( this.wm.ensureNodeForChar( 't' ) );
-		actah.dupAppendChild( this.wm.ensureNodeForChar( 'a' ) );
-		actah.dupAppendChild( this.wm.ensureNodeForChar( 'h' ) );
-		// actah = this.wm.addWord( "actah" );
-		
-		NodeList nl = this.wm.getNodeForWord( "actah" );
-		assertFalse( nl.isEmpty() );
-		assertTrue( nl.getFirstNode() == actah );
-		
-		// WordNode actah = this.wm.addWord( "actah" );
-		// assertTrue( null != actah );
-		// assertTrue( actah.numChildren() == 5 );
-		// assertTrue( actah.dupGetFirstChild() == this.wm.getNodeForChar( 'a' )
-		// );
-		// assertTrue( actah.dupGetLastChild() == this.wm.getNodeForChar( 'h' )
-		// );
-		
-		nl = this.wm.getNodeForWord( "ac" );
-		assertTrue( nl.isEmpty() );
-		
-		// nl = this.wm.getNodeForWord( "actah" );
-		// assertFalse( nl.isEmpty() );
-		// System.out.println( nl.size() );
-		// assertTrue( actah == this.wm.addWord( "actah" ) );
-		
-
-		WordNode ah = this.wm.addWord( "ah" );
-		WordNode ac = this.wm.addWord( "ac" );
-		WordNode ta = this.wm.addWord( "ta" );
-		WordNode h = this.wm.addWord( "h" );
-		WordNode a = this.wm.addWord( "a" );
-		
-		WordNode newactah = new WordNode();
-		newactah.dupAppendChild( act );
-		newactah.dupAppendChild( ah );
-		
 		// WordNode actah = new WordNode();
 		// actah.dupAppendChild( this.wm.ensureNodeForChar( 'a' ) );
 		// actah.dupAppendChild( this.wm.ensureNodeForChar( 'c' ) );
 		// actah.dupAppendChild( this.wm.ensureNodeForChar( 't' ) );
 		// actah.dupAppendChild( this.wm.ensureNodeForChar( 'a' ) );
 		// actah.dupAppendChild( this.wm.ensureNodeForChar( 'h' ) );
-		actah = this.wm.addWord( "actah" );
+		// // actah = this.wm.addWord( "actah" );
+		//		
+		// NodeList nl = this.wm.getNodeForWord( "actah" );
+		// assertFalse( nl.isEmpty() );
+		// assertTrue( nl.getFirstNode() == actah );
+		//		
+		// // WordNode actah = this.wm.addWord( "actah" );
+		// // assertTrue( null != actah );
+		// // assertTrue( actah.numChildren() == 5 );
+		// // assertTrue( actah.dupGetFirstChild() == this.wm.getNodeForChar(
+		// 'a' )
+		// // );
+		// // assertTrue( actah.dupGetLastChild() == this.wm.getNodeForChar( 'h'
+		// )
+		// // );
+		//		
+		// nl = this.wm.getNodeForWord( "ac" );
+		// assertTrue( nl.isEmpty() );
+		//		
+		// // nl = this.wm.getNodeForWord( "actah" );
+		// // assertFalse( nl.isEmpty() );
+		// // System.out.println( nl.size() );
+		// // assertTrue( actah == this.wm.addWord( "actah" ) );
+		//		
 		
-		nl = this.wm.getNodeForWord( "actah" );
+		WordNode ah = this.wm.addWord( "ah" );
+		// WordNode ac = this.wm.addWord( "ac" );
+		// WordNode ta = this.wm.addWord( "ta" );
+		// WordNode h = this.wm.addWord( "h" );
+		// WordNode a = this.wm.addWord( "a" );
+		
+		WordNode newactah = new WordNode();
+		newactah.dupAppendChild( act );
+		newactah.dupAppendChild( ah );
+		
+		// // WordNode actah = new WordNode();
+		// // actah.dupAppendChild( this.wm.ensureNodeForChar( 'a' ) );
+		// // actah.dupAppendChild( this.wm.ensureNodeForChar( 'c' ) );
+		// // actah.dupAppendChild( this.wm.ensureNodeForChar( 't' ) );
+		// // actah.dupAppendChild( this.wm.ensureNodeForChar( 'a' ) );
+		// // actah.dupAppendChild( this.wm.ensureNodeForChar( 'h' ) );
+		// actah = this.wm.addWord( "actah" );
+		
+		NodeList nl = this.wm.getNodeForWord( "actah" );
 		assertFalse( nl.isEmpty() );
+		System.out.println( nl.size() );
 		// assertTrue( nl.getFirstNode() == actah );
 		assertTrue( nl.getLastNode() == newactah );
-		System.out.println( nl.size() );
+		
 	}
 	
 	@Test

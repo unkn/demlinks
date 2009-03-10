@@ -252,15 +252,19 @@ public class WordMapping extends CharMapping {
 
 		Debug.nullException( wordNode, expectedString, indexOfExpectedChar );
 		IntermediaryNode in = lastINFound;// can be null
-		if ( null == in ) {
-			in = wordNode.getIntermediaryForFirstChild();
-		}
 		
+
 		// if more chars to go, and no bad char encountered
 		while ( ( indexOfExpectedChar < ( expectedString.length() ) )
 				&& ( indexOfExpectedChar >= 0 ) ) {
 			// this is like parallel on the X axis; same wordNode parent
-			in = wordNode.getNextIntermediary( in );
+			if ( null == in ) {
+				// this should only happen once, when lastINFound is null
+				in = wordNode.getIntermediaryForFirstChild();
+			} else {
+				in = wordNode.getNextIntermediary( in );
+			}
+			
 			if ( null == in ) {
 				// no more intermediaries? then break/exit method
 				// and if word[0] has this wordNode then you should go upward,
