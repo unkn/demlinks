@@ -6,7 +6,6 @@ package org.demlinks.environment;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import org.demlinks.node.Node;
 import org.demlinks.node.NodeList;
@@ -99,12 +98,6 @@ public class WordMappingTest {
 		System.out.println( nl.size() );
 		assertTrue( nl.size() == 4 );
 		assertTrue( nl.getNodeBefore( actah2 ) == actah3 );
-	}
-	
-	@Test
-	public void testGetNodeForWord() {
-
-		fail( "Not yet implemented" );
 	}
 	
 	@Test

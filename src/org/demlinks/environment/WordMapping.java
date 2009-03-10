@@ -8,6 +8,7 @@ import java.util.ArrayList;
 
 import org.demlinks.debug.Debug;
 import org.demlinks.errors.BugError;
+import org.demlinks.errors.RecursionTooDeepError;
 import org.demlinks.exceptions.BadParameterException;
 import org.demlinks.exceptions.InconsistentLinkException;
 import org.demlinks.node.Node;
@@ -101,23 +102,11 @@ public class WordMapping extends CharMapping {
 				// one of the chars doesn't exist, hence the word doesn't exist
 				return solutions;// empty list
 			}
-			// else
-			// TODO solve
-			// we need a parent(1) that has as parent AllWordNodes
-			// this parent(1) also has a child 'n' at position 'i'
-			// backtracking all the way
-			// basically find all parents of 'n' that have parent AllWordNodes
-			// AND have 'n' as a child at pos 'i'
-			// AllWordNodes -> X -> 'n' , X is NodeWithDupChildren
-			// we may also need Node.hasChildAt(child, pos)
-			// parent.hasChildAtPos(n, i);
-			// theWord.dupAppendChild( n );
 		}
 		// list of all WordNodes that match this word
 		
 		// we have them all chars in 'nl'
 		// and in effect we can parse them in any direction
-		// TODO
 		
 		int upIndex = 0;
 		ArrayList<IntermediaryNode> intermediaryNodeForNodeOnPos0 = new ArrayList<IntermediaryNode>(
@@ -178,7 +167,7 @@ public class WordMapping extends CharMapping {
 			}
 			indexOfNextExpectedChar = this.digDeep( wordNode, word,
 					indexOfNextExpectedChar,
-					intermediaryNodeForNodeOnPos0.get( upIndex ) );
+					intermediaryNodeForNodeOnPos0.get( upIndex ), 0 );
 			
 			if ( indexOfNextExpectedChar < 0 ) {
 				// ie. -1 from encountering bad char
@@ -240,7 +229,7 @@ public class WordMapping extends CharMapping {
 	 *         should get another <tt>wordNode</tt>
 	 */
 	private int digDeep( NodeWithDupChildren wordNode, String expectedString,
-			int indexOfExpectedChar, IntermediaryNode lastINFound ) {
+			int indexOfExpectedChar, IntermediaryNode lastINFound, int level ) {
 
 		Debug.nullException( wordNode, expectedString, indexOfExpectedChar );
 		IntermediaryNode in = lastINFound;// can be null
@@ -300,10 +289,13 @@ public class WordMapping extends CharMapping {
 				} else {
 					// it's not Char
 					if ( Environment.isWordNode( wordOrChar ) ) {
-						// TODO limit depth level
+						if ( level >= Environment.DEFAULT_UPLEVEL ) {
+							throw new RecursionTooDeepError( "too deep" );
+						}
 						indexOfExpectedChar = this.digDeep(
 								(NodeWithDupChildren)wordOrChar,
-								expectedString, indexOfExpectedChar, null );
+								expectedString, indexOfExpectedChar, null,
+								++level );
 						// continue;
 					} else {
 						// not char not word?!
