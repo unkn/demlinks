@@ -1,14 +1,34 @@
+/*  Copyright (C) 2005-2008 AtKaaZ <atkaaz@users.sourceforge.net>
+ 	
+ 	This file and its contents are part of DeMLinks.
+
+    DeMLinks is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    DeMLinks is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with DeMLinks.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 
 package org.demlinks.nodemaps;
+
+
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.demlinks.node.Node;
-import org.demlinks.nodemaps.Environment;
-import org.demlinks.nodemaps.PointerNode;
 import org.junit.Before;
 import org.junit.Test;
+
+
 
 public class PointerNodeTest {
 	
@@ -16,11 +36,13 @@ public class PointerNodeTest {
 	
 	@Before
 	public void init() {
+
 		this.p1 = new PointerNode();
 	}
 	
 	@Test
 	public void testPointerNode() {
+
 		// assertTrue( Environment.AllPointerNodes.numChildren() == 1 );
 		System.out.println( Environment.AllPointerNodes.numChildren() );
 		assertTrue( Environment.AllPointerNodes.hasChild( this.p1 ) );

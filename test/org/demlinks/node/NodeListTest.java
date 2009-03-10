@@ -1,14 +1,33 @@
+/*  Copyright (C) 2005-2008 AtKaaZ <atkaaz@users.sourceforge.net>
+ 	
+ 	This file and its contents are part of DeMLinks.
+
+    DeMLinks is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    DeMLinks is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with DeMLinks.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 
 package org.demlinks.node;
+
+
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import org.demlinks.node.Node;
-import org.demlinks.node.NodeList;
-import org.demlinks.node.Position;
 import org.junit.Before;
 import org.junit.Test;
+
+
 
 public class NodeListTest {
 	
@@ -17,6 +36,7 @@ public class NodeListTest {
 	
 	@Before
 	public void init() {
+
 		this.node1 = new Node();
 		this.node2 = new Node();
 		this.node3 = new Node();
@@ -26,19 +46,20 @@ public class NodeListTest {
 	
 	@Test
 	public void testAppendNode() {
+
 		assertTrue( this.list.isEmpty() );
 		assertTrue( this.list.getFirstNode() == null );
 		assertTrue( this.list.getLastNode() == null );
 		assertFalse( this.list.hasNode( this.node1 ) );
 		assertFalse( this.list.hasNode( this.node2 ) );
 		assertFalse( this.list.appendNode( this.node1 ) ); // false= node didn't
-															// already exist
+		// already exist
 		assertTrue( this.node1 == this.list.getLastNode() );
 		assertFalse( this.list.appendNode( this.node2 ) );
 		assertTrue( this.node2 == this.list.getLastNode() );
 		assertTrue( this.list.appendNode( this.node1 ) );// already there
 		assertFalse( this.node1 == this.list.getLastNode() );// it wasn't moved
-																// last
+		// last
 		assertTrue( 2 == this.list.size() );
 		boolean excepted = false;
 		try {
@@ -64,6 +85,7 @@ public class NodeListTest {
 	
 	@Test
 	public void testInsertNode() {
+
 		assertTrue( this.list.isEmpty() );
 		assertFalse( this.list.insertNode( this.node1, Position.FIRST ) );
 		assertFalse( this.list.insertNode( this.node2, Position.LAST ) );
@@ -95,6 +117,7 @@ public class NodeListTest {
 	
 	@Test
 	public void testInsertAfterNode() {
+
 		assertTrue( this.list.isEmpty() );
 		assertFalse( this.list.appendNode( this.node1 ) );
 		assertFalse( this.list.insertAfterNode( this.node2, this.node1 ) );
@@ -108,8 +131,7 @@ public class NodeListTest {
 		assertTrue( this.list.hasNode( this.node1 ) );
 		assertTrue( this.list.hasNode( this.node3 ) );
 		assertFalse( this.list.insertBeforeNode( this.node2, this.node3 ) );
-		assertTrue( this.list.getNodeAfter( this.node1 ) == this.list
-				.getNodeBefore( this.node3 ) );
+		assertTrue( this.list.getNodeAfter( this.node1 ) == this.list.getNodeBefore( this.node3 ) );
 		assertTrue( this.list.getNodeAfter( this.node1 ) == this.node2 );
 		boolean excepted = false;
 		try {

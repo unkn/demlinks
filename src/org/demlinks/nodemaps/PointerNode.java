@@ -1,9 +1,31 @@
+/*  Copyright (C) 2005-2008 AtKaaZ <atkaaz@users.sourceforge.net>
+ 	
+ 	This file and its contents are part of DeMLinks.
+
+    DeMLinks is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    DeMLinks is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with DeMLinks.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 
 package org.demlinks.nodemaps;
+
+
 
 import org.demlinks.debug.Debug;
 import org.demlinks.errors.BugError;
 import org.demlinks.node.Node;
+
+
 
 /**
  * can have 0 or max 1 children can have any number of parents MUST have the
@@ -13,12 +35,15 @@ import org.demlinks.node.Node;
 public class PointerNode extends Node {
 	
 	public PointerNode() {
+
 		super();
-		Environment.internalCreateNodeAsChildOf( this, Environment.AllPointerNodes );
+		Environment.internalCreateNodeAsChildOf( this,
+				Environment.AllPointerNodes );
 	}
 	
 	@Override
 	public void integrityCheck() {
+
 		super.integrityCheck();
 		if ( this.numChildren() > 1 ) {
 			throw new BugError(
@@ -36,6 +61,7 @@ public class PointerNode extends Node {
 	 *         changed
 	 */
 	public boolean pointTo( Node pointee ) {
+
 		Debug.nullException( pointee );
 		this.integrityCheck();
 		if ( this.numChildren() == 1 ) {
@@ -63,6 +89,7 @@ public class PointerNode extends Node {
 	 * @return null or the Node that this pointer points to
 	 */
 	public Node getPointee() {
+
 		return this.getLastChild();
 	}
 	
@@ -71,6 +98,7 @@ public class PointerNode extends Node {
 	 *         false if was pointing to nothing already
 	 */
 	public boolean setNull() {
+
 		this.integrityCheck();
 		if ( this.numChildren() == 1 ) {
 			if ( !this.removeChild( this.getPointee() ) ) {

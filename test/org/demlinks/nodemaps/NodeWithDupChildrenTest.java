@@ -1,14 +1,31 @@
+/*  Copyright (C) 2005-2008 AtKaaZ <atkaaz@users.sourceforge.net>
+ 	
+ 	This file and its contents are part of DeMLinks.
+
+    DeMLinks is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    DeMLinks is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with DeMLinks.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 
 package org.demlinks.nodemaps;
+
+
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.demlinks.constants.DO;
 import org.demlinks.node.Node;
-import org.demlinks.nodemaps.Environment;
-import org.demlinks.nodemaps.IntermediaryNode;
-import org.demlinks.nodemaps.NodeWithDupChildren;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -21,6 +38,7 @@ public class NodeWithDupChildrenTest {
 	
 	@Before
 	public void init() {
+
 		this.nodeWithDups = new NodeWithDupChildren();
 		this.normalNode1 = new Node();
 		this.normalNode2 = new Node();
@@ -29,7 +47,7 @@ public class NodeWithDupChildrenTest {
 	
 	@Test
 	public void testOne() {
-		
+
 		assertTrue( Environment.isNodeWithDupChildren( this.nodeWithDups ) );
 		assertFalse( Environment.isIntermediaryNode( this.normalNode1 ) );
 		
@@ -43,13 +61,11 @@ public class NodeWithDupChildrenTest {
 		// }
 		//		 
 		assertTrue( this.nodeWithDups.dupHasChild( this.normalNode1 ) );
-		IntermediaryNode i = this.nodeWithDups
-				.getIntermediaryForFirstChild( this.normalNode1 );
+		IntermediaryNode i = this.nodeWithDups.getIntermediaryForFirstChild( this.normalNode1 );
 		this.validateIntermediary( i );
 		
 		// only one normalNode1 occurrence in list
-		assertTrue( i == this.nodeWithDups
-				.getIntermediaryForLastChild( this.normalNode1 ) );
+		assertTrue( i == this.nodeWithDups.getIntermediaryForLastChild( this.normalNode1 ) );
 		
 		assertTrue( i == this.nodeWithDups.getIntermediaryForFirstChild() );
 		assertTrue( i.getPointee() == this.normalNode1 );
@@ -78,13 +94,13 @@ public class NodeWithDupChildrenTest {
 		IntermediaryNode i4 = this.nodeWithDups.getNextIntermediary( i3 );
 		this.validateIntermediary( i4 );
 		
-		assertTrue( 2 == this.nodeWithDups
-				.getCountOfChildren( this.normalNode1 ) );
+		assertTrue( 2 == this.nodeWithDups.getCountOfChildren( this.normalNode1 ) );
 		assertTrue( this.nodeWithDups.getCountOfChildren( this.normalNode2 ) == 1 );
 		assertTrue( this.nodeWithDups.getCountOfChildren( this.normalNode3 ) == 1 );
 	}
 	
 	public void validateIntermediary( IntermediaryNode i ) {
+
 		assertTrue( i != null );
 		assertTrue( Environment.isIntermediaryNode( i ) );
 		assertTrue( this.nodeWithDups.hasChild( i ) );
@@ -94,6 +110,7 @@ public class NodeWithDupChildrenTest {
 	
 	@Test
 	public void testNulls() {
+
 		// TODO more ?
 		
 		boolean ex = false;
