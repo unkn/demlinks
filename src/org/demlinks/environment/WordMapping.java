@@ -132,9 +132,7 @@ public class WordMapping extends CharMapping {
 				this.getNodeForChar( word.charAt( 0 ) ) );
 		// theWord.dupGetFirstChild();// first char
 		
-		ArrayList<Integer> indexOfNextExpectedChar = new ArrayList<Integer>(
-				Environment.DEFAULT_UPLEVEL );
-		indexOfNextExpectedChar.add( upIndex, 1 );// 0 based though
+		int indexOfNextExpectedChar = 1;// 0 based though
 		
 		// TODO how's 1 char words handled again?!
 		while ( true ) {
@@ -159,8 +157,7 @@ public class WordMapping extends CharMapping {
 					// horizontal, but to continue where we left off at that
 					// level
 					upIndex--;
-					// TODO revert to index that was on that level, or not?!!
-					indexOfNextExpectedChar.set( upIndex, 1 );
+					indexOfNextExpectedChar = 1;// reset index, it's 0 based
 					continue;
 				}
 			}
@@ -175,21 +172,21 @@ public class WordMapping extends CharMapping {
 			// wordNode already has intermediaryNodeForNodeOnPos0 on pos 0, thus
 			// we try finding next chars of word from pos 1 in wordNode
 			// continuing from pos 1
-			int backup = indexOfNextExpectedChar.get( upIndex );
+			int backup = indexOfNextExpectedChar;
 			if ( null == intermediaryNodeForNodeOnPos0.get( upIndex ) ) {
 				throw new BugError( "this will never be null here" );
 			}
-			indexOfNextExpectedChar.set( upIndex, this.digDeep( wordNode, word,
-					indexOfNextExpectedChar.get( upIndex ),
-					intermediaryNodeForNodeOnPos0.get( upIndex ) ) );
+			indexOfNextExpectedChar = this.digDeep( wordNode, word,
+					indexOfNextExpectedChar,
+					intermediaryNodeForNodeOnPos0.get( upIndex ) );
 			
-			if ( indexOfNextExpectedChar.get( upIndex ) < 0 ) {
+			if ( indexOfNextExpectedChar < 0 ) {
 				// ie. -1 from encountering bad char
 				// bad wordNode, need to get next wordNode
-				indexOfNextExpectedChar.set( upIndex, backup );
+				indexOfNextExpectedChar = backup;
 				continue;
 			} else {
-				if ( indexOfNextExpectedChar.get( upIndex ) < word.length() ) {
+				if ( indexOfNextExpectedChar < word.length() ) {
 					// there's still some char(s) left
 					// we would ideally go UP, and keep
 					// indexOfNextExpectedChar where it is
@@ -197,18 +194,16 @@ public class WordMapping extends CharMapping {
 					// horizontally from where u left off
 					upIndex++;
 					nodeThatHasToBeOnPos0.add( upIndex, wordNode );
-					// dup the current index, when going UP to next level
-					indexOfNextExpectedChar.add( upIndex,
-							indexOfNextExpectedChar.get( upIndex - 1 ) );
+					// index remains
 					// start from beginning
 					intermediaryNodeForNodeOnPos0.add( upIndex, null );
 					continue;
 				} else {
-					if ( indexOfNextExpectedChar.get( upIndex ) == word.length() ) {
+					if ( indexOfNextExpectedChar == word.length() ) {
 						// we found wordNode to be one solution
 						// and we should go next wordNode
 						solutions.addLast( wordNode );
-						indexOfNextExpectedChar.set( upIndex, 1 );
+						indexOfNextExpectedChar = 1;
 						continue;// this will go to while and attempt to go next
 						// wordNode
 					} else {
@@ -218,11 +213,6 @@ public class WordMapping extends CharMapping {
 				}// else
 			}// else
 		}// while
-		// TODO check to see, when complete, if the word we found isn't longer
-		// than the word we were searching
-		// ie. we found 'acted' while searching for 'act' and we're returning
-		// that
-		// TODO unarray indexOfNextExpectedChar, array not needed
 		
 		return solutions;// can be empty
 	}

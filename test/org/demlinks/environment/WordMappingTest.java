@@ -73,20 +73,32 @@ public class WordMappingTest {
 		newactah.dupAppendChild( act );
 		newactah.dupAppendChild( ah );
 		
-		// // WordNode actah = new WordNode();
-		// // actah.dupAppendChild( this.wm.ensureNodeForChar( 'a' ) );
-		// // actah.dupAppendChild( this.wm.ensureNodeForChar( 'c' ) );
-		// // actah.dupAppendChild( this.wm.ensureNodeForChar( 't' ) );
-		// // actah.dupAppendChild( this.wm.ensureNodeForChar( 'a' ) );
-		// // actah.dupAppendChild( this.wm.ensureNodeForChar( 'h' ) );
-		// actah = this.wm.addWord( "actah" );
+		WordNode actah2 = new WordNode();
+		actah2.dupAppendChild( this.wm.ensureNodeForChar( 'a' ) );
+		actah2.dupAppendChild( this.wm.ensureNodeForChar( 'c' ) );
+		actah2.dupAppendChild( this.wm.ensureNodeForChar( 't' ) );
+		actah2.dupAppendChild( this.wm.ensureNodeForChar( 'a' ) );
+		actah2.dupAppendChild( this.wm.ensureNodeForChar( 'h' ) );
 		
 		nl = this.wm.getNodeForWord( "actah" );
 		assertFalse( nl.isEmpty() );
 		System.out.println( nl.size() );
 		assertTrue( nl.getFirstNode() == actah );
-		assertTrue( nl.getLastNode() == newactah );
+		assertTrue( nl.getNodeAfter( actah ) == newactah );
+		assertTrue( nl.getNodeAfter( newactah ) == actah2 );
+		assertTrue( nl.size() == 3 );// solutions
+		WordNode actah3 = new WordNode();
+		actah3.dupAppendChild( ac );
+		WordNode tah = new WordNode();
+		tah.dupAppendChild( ta );
+		tah.dupAppendChild( h );
+		actah3.dupAppendChild( tah );
 		
+		nl = this.wm.getNodeForWord( "actah" );
+		assertFalse( nl.isEmpty() );
+		System.out.println( nl.size() );
+		assertTrue( nl.size() == 4 );
+		assertTrue( nl.getNodeBefore( actah2 ) == actah3 );
 	}
 	
 	@Test
