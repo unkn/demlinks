@@ -11,7 +11,7 @@ import org.junit.runners.Suite;
 
 @RunWith( Suite.class )
 @Suite.SuiteClasses( value = {
-		CharMappingTest.class, WordMappingTest.class,
+		CharMappingTest.class, WordMappingTest.class, PhraseMappingTest.class,
 } )
 public class AllTestsEnvironment {
 }

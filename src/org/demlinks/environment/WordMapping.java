@@ -26,7 +26,7 @@ public class WordMapping extends CharMapping {
 	public WordMapping() {
 
 		super();
-		this.mapAllCharsNow();
+		// this.mapAllCharsNow();
 	}
 	
 	/**
@@ -68,9 +68,7 @@ public class WordMapping extends CharMapping {
 			c = word.charAt( i );
 			n = this.ensureNodeForChar( c );
 			wordNode.dupAppendChild( n );
-			System.out.print( c );// TODO debug
 		}
-		System.out.println( "!" );// TODO debug
 		
 		return wordNode;
 	}
@@ -119,7 +117,8 @@ public class WordMapping extends CharMapping {
 				Environment.DEFAULT_UPLEVEL );
 		nodeThatHasToBeOnPos0.add( upIndex,
 				this.getNodeForChar( word.charAt( 0 ) ) );
-		// theWord.dupGetFirstChild();// first char
+		// getNodeForChar above won't return null, because above we passed thru
+		// a for all chars and it existed
 		
 		int indexOfNextExpectedChar = 1;// 0 based though
 		
@@ -440,72 +439,6 @@ public class WordMapping extends CharMapping {
 		return false;
 	}
 	
-	/**
-	 * @param chr
-	 * @return
-	 */
-	public boolean isLetter( char chr ) {
 
-		if ( ( ( chr >= 'a' ) && ( chr <= 'z' ) )
-				|| ( ( chr >= 'A' ) && ( chr <= 'Z' ) ) ) {
-			return true;
-		}
-		return false;
-	}
-	
-	/**
-	 * @param chr
-	 * @return
-	 */
-	public boolean isDigit( char chr ) {
 
-		if ( ( chr >= '0' ) && ( chr <= '9' ) ) {
-			return true;
-		}
-		return false;
-	}
-	
-	/**
-	 * @param phrase
-	 *            a string containing many words and punctuation/delimiters
-	 * @return true if successfully added; false if already existed
-	 */
-	public boolean addPhrase( String phrase ) {
-
-		Debug.nullException( phrase );
-		// TODO remove or move this
-		// split it into words and delimiters
-		String word = new String();
-		for ( int i = 0; i < phrase.length(); i++ ) {
-			char c = phrase.charAt( i );
-			
-			if ( this.isWordDelimiter( c ) ) {
-				try {
-					this.addWord( word );
-				} catch ( BadParameterException e ) {
-					throw new BadParameterException( "seems the word was bad" );
-				}
-			}
-			word += c;
-		}
-		return false;
-	}
-	
-	/**
-	 * @param c
-	 *            char
-	 * @return true if the char is used between two words
-	 */
-	public boolean isWordDelimiter( char c ) {
-
-		switch ( c ) {
-		case ' ':
-		case '/':
-		case '+':
-		case '|':
-			return true;
-		default:
-			return false;
-		}
-	}
 }

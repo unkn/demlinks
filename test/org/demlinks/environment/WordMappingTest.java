@@ -42,7 +42,9 @@ public class WordMappingTest {
 		assertTrue( nl.size() == 1 );
 		
 
-
+		nl = this.wm.getNodeForWord( "jkl" );
+		assertTrue( nl.isEmpty() );
+		
 		nl = this.wm.getNodeForWord( "ac" );
 		assertTrue( nl.isEmpty() );
 		nl = this.wm.getNodeForWord( "a" );

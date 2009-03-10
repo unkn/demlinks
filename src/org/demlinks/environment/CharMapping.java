@@ -112,5 +112,30 @@ public class CharMapping {
 		return n;
 	}
 	
+	
+	/**
+	 * @param chr
+	 * @return
+	 */
+	public boolean isLetter( char chr ) {
 
+		if ( ( ( chr >= 'a' ) && ( chr <= 'z' ) )
+				|| ( ( chr >= 'A' ) && ( chr <= 'Z' ) ) ) {
+			return true;
+		}
+		return false;
+	}
+	
+	/**
+	 * @param chr
+	 * @return
+	 */
+	public boolean isDigit( char chr ) {
+
+		if ( ( chr >= '0' ) && ( chr <= '9' ) ) {
+			return true;
+		}
+		return false;
+	}
+	
 }
