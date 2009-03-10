@@ -67,6 +67,7 @@ public class WordMappingTest {
 		assertTrue( nl.isEmpty() );
 		nl = this.wm.getNodeForWord( "h" );
 		assertFalse( nl.isEmpty() );
+		assertTrue( nl.size() == 1 );
 		
 		WordNode newactah = new WordNode();
 		newactah.dupAppendChild( act );

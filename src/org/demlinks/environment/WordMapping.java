@@ -137,12 +137,12 @@ public class WordMapping extends CharMapping {
 		indexOfNextExpectedChar.add( upIndex, 1 );// 0 based though
 		
 		// TODO how's 1 char words handled again?!
-		while ( indexOfNextExpectedChar.get( upIndex ) < word.length() ) {
+		while ( true ) {
 			// the while if, will help us handle 1 char words; nothing else
 			// ie. the while will be broken only if our word is 1 char long,
 			// hence index=0
 			
-			// attempts to find next WordNode for word[charIndex], that's a
+			// attempts to find next WordNode for word[0], that's a
 			// different parent
 			// like parallel on the Z axis; same child CharNode
 			intermediaryNodeForNodeOnPos0.set( upIndex,
@@ -164,6 +164,8 @@ public class WordMapping extends CharMapping {
 					continue;
 				}
 			}
+			
+			// not null
 			NodeWithDupChildren wordNode = intermediaryNodeForNodeOnPos0.get(
 					upIndex ).getFather();
 			if ( null == wordNode ) {
@@ -220,8 +222,8 @@ public class WordMapping extends CharMapping {
 		// than the word we were searching
 		// ie. we found 'acted' while searching for 'act' and we're returning
 		// that
+		// TODO unarray indexOfNextExpectedChar, array not needed
 		
-
 		return solutions;// can be empty
 	}
 	
@@ -255,14 +257,30 @@ public class WordMapping extends CharMapping {
 		
 
 		// if more chars to go, and no bad char encountered
-		while ( ( indexOfExpectedChar < ( expectedString.length() ) )
-				&& ( indexOfExpectedChar >= 0 ) ) {
+		// while ( ( indexOfExpectedChar < ( expectedString.length() ) )
+		// && ( indexOfExpectedChar >= 0 ) ) {
+		while ( true ) {
+			
+
+
 			// this is like parallel on the X axis; same wordNode parent
 			if ( null == in ) {
 				// this should only happen once, when lastINFound is null
 				in = wordNode.getIntermediaryForFirstChild();
 			} else {
 				in = wordNode.getNextIntermediary( in );
+			}
+			
+			if ( indexOfExpectedChar == expectedString.length() ) {
+				// we completed the word, then we have to make sure
+				// there's nothing else next
+				if ( null != in ) {
+					// yes there's more
+					// then act like a bad char
+					indexOfExpectedChar = -1;
+				}
+				// else allow the while to exit it
+				break;
 			}
 			
 			if ( null == in ) {
@@ -305,19 +323,8 @@ public class WordMapping extends CharMapping {
 				}// else
 			}// else
 			
-			// instead of 'continue':
-			if ( indexOfExpectedChar == expectedString.length() ) {
-				// we completed the word, then we have to make sure
-				// there's nothing else next
-				if ( null != wordNode.getNextIntermediary( in ) ) {
-					// yes there's more
-					// then act like a bad char
-					indexOfExpectedChar = -1;
-					break;
-				}
-				// else allow the while to exit it
-			}
-			
+
+
 		}// while
 		
 		return indexOfExpectedChar;
