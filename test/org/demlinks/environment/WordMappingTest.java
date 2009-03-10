@@ -30,14 +30,14 @@ public class WordMappingTest {
 	@Test
 	public void testAddWord() {
 
-		WordNode act = this.wm.addWord( "act" );
-		// WordNode actah = new WordNode();
-		// actah.dupAppendChild( this.wm.ensureNodeForChar( 'a' ) );
-		// actah.dupAppendChild( this.wm.ensureNodeForChar( 'c' ) );
-		// actah.dupAppendChild( this.wm.ensureNodeForChar( 't' ) );
-		// actah.dupAppendChild( this.wm.ensureNodeForChar( 'a' ) );
-		// actah.dupAppendChild( this.wm.ensureNodeForChar( 'h' ) );
-		// // actah = this.wm.addWord( "actah" );
+		
+		WordNode actah = new WordNode();
+		actah.dupAppendChild( this.wm.ensureNodeForChar( 'a' ) );
+		actah.dupAppendChild( this.wm.ensureNodeForChar( 'c' ) );
+		actah.dupAppendChild( this.wm.ensureNodeForChar( 't' ) );
+		actah.dupAppendChild( this.wm.ensureNodeForChar( 'a' ) );
+		actah.dupAppendChild( this.wm.ensureNodeForChar( 'h' ) );
+		// actah = this.wm.addWord( "actah" );
 		//		
 		// NodeList nl = this.wm.getNodeForWord( "actah" );
 		// assertFalse( nl.isEmpty() );
@@ -61,7 +61,7 @@ public class WordMappingTest {
 		// // System.out.println( nl.size() );
 		// // assertTrue( actah == this.wm.addWord( "actah" ) );
 		//		
-		
+		WordNode act = this.wm.addWord( "act" );
 		WordNode ah = this.wm.addWord( "ah" );
 		// WordNode ac = this.wm.addWord( "ac" );
 		// WordNode ta = this.wm.addWord( "ta" );
@@ -83,7 +83,7 @@ public class WordMappingTest {
 		NodeList nl = this.wm.getNodeForWord( "actah" );
 		assertFalse( nl.isEmpty() );
 		System.out.println( nl.size() );
-		// assertTrue( nl.getFirstNode() == actah );
+		assertTrue( nl.getFirstNode() == actah );
 		assertTrue( nl.getLastNode() == newactah );
 		
 	}
