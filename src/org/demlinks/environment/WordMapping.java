@@ -4,6 +4,8 @@ package org.demlinks.environment;
 
 
 
+import java.util.ArrayList;
+
 import org.demlinks.debug.Debug;
 import org.demlinks.errors.BugError;
 import org.demlinks.exceptions.BadParameterException;
@@ -88,6 +90,7 @@ public class WordMapping extends CharMapping {
 	 */
 	public NodeList getNodeForWord( String word ) {
 
+		NodeList solutions = new NodeList();
 		char c;
 		Node n;
 		// NodeWithDupChildren theWord = new NodeWithDupChildren();
@@ -96,7 +99,7 @@ public class WordMapping extends CharMapping {
 			n = this.getNodeForChar( c );
 			if ( null == n ) {
 				// one of the chars doesn't exist, hence the word doesn't exist
-				return null;
+				return solutions;// empty list
 			}
 			// else
 			// TODO solve
@@ -111,19 +114,30 @@ public class WordMapping extends CharMapping {
 			// theWord.dupAppendChild( n );
 		}
 		// list of all WordNodes that match this word
-		NodeList solutions = new NodeList();
+		
 		// we have them all chars in 'nl'
 		// and in effect we can parse them in any direction
 		// TODO
 		
-		IntermediaryNode intermediaryNodeForNodeOnPos0 = null;// intermediary
-		// nodes
+		int upIndex = 0;
+		ArrayList<IntermediaryNode> intermediaryNodeForNodeOnPos0 = new ArrayList<IntermediaryNode>(
+				Environment.DEFAULT_UPLEVEL );
+		intermediaryNodeForNodeOnPos0.add( upIndex, null );// intermediary nodes
 		// for word[0]
-		Node nodeThatHasToBeOnPos0 = this.getNodeForChar( word.charAt( 0 ) );
+		
+
+		ArrayList<Node> nodeThatHasToBeOnPos0 = new ArrayList<Node>(
+				Environment.DEFAULT_UPLEVEL );
+		nodeThatHasToBeOnPos0.add( upIndex,
+				this.getNodeForChar( word.charAt( 0 ) ) );
 		// theWord.dupGetFirstChild();// first char
 		
-		int indexOfNextExpectedChar = 1;// 0 based though
-		while ( indexOfNextExpectedChar <= ( word.length() - 1 ) ) {
+		ArrayList<Integer> indexOfNextExpectedChar = new ArrayList<Integer>(
+				Environment.DEFAULT_UPLEVEL );
+		indexOfNextExpectedChar.add( upIndex, 1 );// 0 based though
+		
+		// TODO how's 1 char words handled again?!
+		while ( indexOfNextExpectedChar.get( upIndex ) < word.length() ) {
 			// the while if, will help us handle 1 char words; nothing else
 			// ie. the while will be broken only if our word is 1 char long,
 			// hence index=0
@@ -131,14 +145,27 @@ public class WordMapping extends CharMapping {
 			// attempts to find next WordNode for word[charIndex], that's a
 			// different parent
 			// like parallel on the Z axis; same child CharNode
-			intermediaryNodeForNodeOnPos0 = this.getNextIntermediaryNodeForNodeAt(
-					nodeThatHasToBeOnPos0, 0, intermediaryNodeForNodeOnPos0 );
-			if ( null == intermediaryNodeForNodeOnPos0 ) {
+			intermediaryNodeForNodeOnPos0.set( upIndex,
+					this.getNextIntermediaryNodeForNodeAt(
+							nodeThatHasToBeOnPos0.get( upIndex ), 0,
+							intermediaryNodeForNodeOnPos0.get( upIndex ) ) );
+			if ( null == intermediaryNodeForNodeOnPos0.get( upIndex ) ) {
 				// none found, hence there's no (more)word(s) having word[0] at
 				// index 0
-				break;// this is the only one that will break the while
+				if ( upIndex == 0 ) {
+					break;// this is the only one that will break the while
+				} else {
+					// we need to go down, and then right aka on
+					// horizontal, but to continue where we left off at that
+					// level
+					upIndex--;
+					// TODO revert to index that was on that level, or not?!!
+					indexOfNextExpectedChar.set( upIndex, 1 );
+					continue;
+				}
 			}
-			NodeWithDupChildren wordNode = intermediaryNodeForNodeOnPos0.getFather();
+			NodeWithDupChildren wordNode = intermediaryNodeForNodeOnPos0.get(
+					upIndex ).getFather();
 			if ( null == wordNode ) {
 				throw new BugError( "intermediary node w/o father?!" );
 			}
@@ -146,32 +173,40 @@ public class WordMapping extends CharMapping {
 			// wordNode already has intermediaryNodeForNodeOnPos0 on pos 0, thus
 			// we try finding next chars of word from pos 1 in wordNode
 			// continuing from pos 1
-			int backup = indexOfNextExpectedChar;
-			indexOfNextExpectedChar = this.digDeep( wordNode, word,
-					indexOfNextExpectedChar, intermediaryNodeForNodeOnPos0 );
+			int backup = indexOfNextExpectedChar.get( upIndex );
+			if ( null == intermediaryNodeForNodeOnPos0.get( upIndex ) ) {
+				throw new BugError( "this will never be null here" );
+			}
+			indexOfNextExpectedChar.set( upIndex, this.digDeep( wordNode, word,
+					indexOfNextExpectedChar.get( upIndex ),
+					intermediaryNodeForNodeOnPos0.get( upIndex ) ) );
 			
-			if ( indexOfNextExpectedChar < 0 ) {
+			if ( indexOfNextExpectedChar.get( upIndex ) < 0 ) {
 				// ie. -1 from encountering bad char
 				// bad wordNode, need to get next wordNode
-				indexOfNextExpectedChar = backup;
+				indexOfNextExpectedChar.set( upIndex, backup );
 				continue;
 			} else {
-				if ( indexOfNextExpectedChar < word.length() ) {
+				if ( indexOfNextExpectedChar.get( upIndex ) < word.length() ) {
 					// there's still some char(s) left
 					// we would ideally go UP, and keep
-					// indexOfNextExpectedChar
-					// where it is
-					// TODO
-					nodeThatHasToBeOnPos0 = wordNode;
-					intermediaryNodeForNodeOnPos0 = null;// start from
-					// beginning
+					// indexOfNextExpectedChar where it is
+					// but if u can't go up anymore, u come down and continue
+					// horizontally from where u left off
+					upIndex++;
+					nodeThatHasToBeOnPos0.add( upIndex, wordNode );
+					// dup the current index, when going UP to next level
+					indexOfNextExpectedChar.add( upIndex,
+							indexOfNextExpectedChar.get( upIndex - 1 ) );
+					// start from beginning
+					intermediaryNodeForNodeOnPos0.add( upIndex, null );
 					continue;
 				} else {
-					if ( indexOfNextExpectedChar == word.length() ) {
+					if ( indexOfNextExpectedChar.get( upIndex ) == word.length() ) {
 						// we found wordNode to be one solution
 						// and we should go next wordNode
 						solutions.addLast( wordNode );
-						indexOfNextExpectedChar = 1;
+						indexOfNextExpectedChar.set( upIndex, 1 );
 						continue;// this will go to while and attempt to go next
 						// wordNode
 					} else {
@@ -217,6 +252,9 @@ public class WordMapping extends CharMapping {
 
 		Debug.nullException( wordNode, expectedString, indexOfExpectedChar );
 		IntermediaryNode in = lastINFound;// can be null
+		if ( null == in ) {
+			in = wordNode.getIntermediaryForFirstChild();
+		}
 		
 		// if more chars to go, and no bad char encountered
 		while ( ( indexOfExpectedChar < ( expectedString.length() ) )
@@ -238,7 +276,7 @@ public class WordMapping extends CharMapping {
 					if ( wordOrChar == this.getNodeForChar( expectedString.charAt( indexOfExpectedChar ) ) ) {
 						// good, now expect next char
 						indexOfExpectedChar++;
-						continue;
+						// continue;
 					} else {
 						// bad char, the char we found was different than the
 						// expected char
@@ -250,10 +288,11 @@ public class WordMapping extends CharMapping {
 				} else {
 					// it's not Char
 					if ( Environment.isWordNode( wordOrChar ) ) {
+						// TODO limit depth level
 						indexOfExpectedChar = this.digDeep(
 								(NodeWithDupChildren)wordOrChar,
 								expectedString, indexOfExpectedChar, null );
-						continue;
+						// continue;
 					} else {
 						// not char not word?!
 						throw new BugError(
@@ -261,14 +300,28 @@ public class WordMapping extends CharMapping {
 					}// else
 				}// else
 			}// else
+			
+			// instead of 'continue':
+			if ( indexOfExpectedChar == expectedString.length() ) {
+				// we completed the word, then we have to make sure
+				// there's nothing else next
+				if ( null != wordNode.getNextIntermediary( in ) ) {
+					// yes there's more
+					// then act like a bad char
+					indexOfExpectedChar = -1;
+					break;
+				}
+				// else allow the while to exit it
+			}
+			
 		}// while
 		
 		return indexOfExpectedChar;
 	}
 	
 	/**
-	 * we looking for a parent NodeWithDupChildren that has AllWords as parent
-	 * AND also has forNode as child at the specified indexPos;<br>
+	 * we looking for a parent NodeWithDupChildren that has AllWordNodes as
+	 * parent AND also has forNode as child at the specified indexPos;<br>
 	 * AND we're continuing from previouslyFound IntermediaryNode, by skipping
 	 * it
 	 * 
@@ -283,7 +336,10 @@ public class WordMapping extends CharMapping {
 	 * @return an IntermediaryNode that is between IntermediaryNode.getFather()
 	 *         which you wanted AND forNode<br>
 	 *         you would append .getFather() on the return node to get the
-	 *         WordNode
+	 *         WordNode<br>
+	 *         notice: returns only INs of WordNode not of others that are not
+	 *         WordNode ie. if they don't have AllWordNodes as parent they're
+	 *         ignored
 	 */
 	protected IntermediaryNode getNextIntermediaryNodeForNodeAt( Node forNode,
 			int indexPos, IntermediaryNode previouslyFoundIN ) {

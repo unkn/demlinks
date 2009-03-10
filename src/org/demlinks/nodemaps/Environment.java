@@ -25,6 +25,9 @@ public class Environment {
 	public static final Node	AllPhraseNodes				= new Node();
 	public static final Node	AllDelimiterNodes			= new Node();
 	
+	// it's resizable, the initial allocation for array for in depth parsing
+	public static final int		DEFAULT_UPLEVEL				= 100;
+	
 	/**
 	 * AllPointerNodes -> whatNode ?
 	 * 
