@@ -21,8 +21,6 @@ package org.demlinks.environment;
 
 
 
-import java.util.ArrayList;
-
 import org.demlinks.debug.Debug;
 import org.demlinks.errors.BugError;
 import org.demlinks.errors.RecursionTooDeepError;
@@ -134,10 +132,12 @@ public class WordMapping extends CharMapping {
 		// for word[0]
 		
 
-		ArrayList<Node> nodeThatHasToBeOnPos0 = new ArrayList<Node>(
-				Environment.DEFAULT_UPLEVEL );
-		nodeThatHasToBeOnPos0.add( upIndex,
-				this.getNodeForChar( word.charAt( 0 ) ) );
+		// ArrayList<Node> nodeThatHasToBeOnPos0 = new ArrayList<Node>(
+		// Environment.DEFAULT_UPLEVEL );
+		Node nodeThatHasToBeOnPos0 = new Node();
+		if ( nodeThatHasToBeOnPos0.appendChild( this.getNodeForChar( word.charAt( 0 ) ) ) ) {
+			throw new BugError( "couldn've existed" );
+		}
 		// getNodeForChar above won't return null, because above we passed thru
 		// a for all chars and it existed
 		
@@ -154,7 +154,7 @@ public class WordMapping extends CharMapping {
 			// like parallel on the Z axis; same child CharNode
 			// intermediaryNodeForNodeOnPos0.set( upIndex,
 			tmpNode = this.getNextIntermediaryNodeForNodeAt(
-					nodeThatHasToBeOnPos0.get( upIndex ), 0, tmpNode );
+					nodeThatHasToBeOnPos0.getLastChild(), 0, tmpNode );
 			// );
 			
 			if ( null == tmpNode ) {
@@ -175,6 +175,11 @@ public class WordMapping extends CharMapping {
 						throw new BugError(
 								"should've been true aka removed existing Node" );
 					}
+					
+					if ( !nodeThatHasToBeOnPos0.removeChild( nodeThatHasToBeOnPos0.getLastChild() ) ) {
+						throw new BugError();
+					}
+					
 					indexOfNextExpectedChar = 1;// reset index, it's 0 based
 					continue;
 				}
@@ -216,7 +221,10 @@ public class WordMapping extends CharMapping {
 					// but if u can't go up anymore, u come down and continue
 					// horizontally from where u left off
 					upIndex++;
-					nodeThatHasToBeOnPos0.add( upIndex, wordNode );
+					// nodeThatHasToBeOnPos0.add( upIndex, wordNode );
+					if ( nodeThatHasToBeOnPos0.appendChild( wordNode ) ) {
+						throw new BugError( "shouldn't already exist" );
+					}
 					// index remains
 					// start from beginning
 					// intermediaryNodeForNodeOnPos0.add( upIndex, null );
