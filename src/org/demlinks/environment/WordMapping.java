@@ -30,6 +30,7 @@ import org.demlinks.node.Node;
 import org.demlinks.nodemaps.Environment;
 import org.demlinks.nodemaps.IntermediaryNode;
 import org.demlinks.nodemaps.NodeWithDupChildren;
+import org.demlinks.nodemaps.PointerNode;
 import org.demlinks.nodemaps.WordNode;
 
 
@@ -125,6 +126,7 @@ public class WordMapping extends CharMapping {
 		// ArrayList<IntermediaryNode> intermediaryNodeForNodeOnPos0 = new
 		// ArrayList<IntermediaryNode>(
 		// Environment.DEFAULT_UPLEVEL );
+		PointerNode p1 = new PointerNode();
 		Node intermediaryNodeForNodeOnPos0 = new Node();
 		IntermediaryNode tmpNode = null;
 		// intermediaryNodeForNodeOnPos0.add( upIndex, null );// intermediary
@@ -143,7 +145,6 @@ public class WordMapping extends CharMapping {
 		
 		int indexOfNextExpectedChar = 1;// 0 based though
 		
-		// TODO how's 1 char words handled again?!
 		while ( true ) {
 			// the while if, will help us handle 1 char words; nothing else
 			// ie. the while will be broken only if our word is 1 char long,
@@ -167,14 +168,19 @@ public class WordMapping extends CharMapping {
 					// horizontal, but to continue where we left off at that
 					// level
 					upIndex--;
-					tmpNode = (IntermediaryNode)intermediaryNodeForNodeOnPos0.getLastChild();
+					if ( p1.pointTo( intermediaryNodeForNodeOnPos0.getLastChild() ) ) {
+						throw new BugError(
+								"couldn't've already pointed to this same Node" );
+					}
+					tmpNode = (IntermediaryNode)p1.getPointee();
 					if ( null == tmpNode ) {
 						throw new BugError( "should never be null here" );
 					}
-					if ( !intermediaryNodeForNodeOnPos0.removeChild( tmpNode ) ) {
-						throw new BugError(
-								"should've been true aka removed existing Node" );
-					}
+					// if ( !intermediaryNodeForNodeOnPos0.removeChild( tmpNode
+					// ) ) {
+					// throw new BugError(
+					// "should've been true aka removed existing Node" );
+					// }
 					
 					if ( !nodeThatHasToBeOnPos0.removeChild( nodeThatHasToBeOnPos0.getLastChild() ) ) {
 						throw new BugError();
@@ -230,7 +236,8 @@ public class WordMapping extends CharMapping {
 					// intermediaryNodeForNodeOnPos0.add( upIndex, null );
 					// remember where we were before
 					intermediaryNodeForNodeOnPos0.appendChild( tmpNode );
-					tmpNode = null;
+					p1.setNull();
+					tmpNode = (IntermediaryNode)p1.getPointee();
 					continue;
 				} else {
 					if ( indexOfNextExpectedChar == word.length() ) {

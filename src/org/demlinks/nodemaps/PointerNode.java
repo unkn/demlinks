@@ -30,7 +30,8 @@ import org.demlinks.node.Node;
 /**
  * can have 0 or max 1 children can have any number of parents MUST have the
  * node GlobalPointers.AllPointers as parent (full link ie. this is child to
- * that, also)
+ * that, also)<br>
+ * typically when created the pointer is .setNull()
  */
 public class PointerNode extends Node {
 	
