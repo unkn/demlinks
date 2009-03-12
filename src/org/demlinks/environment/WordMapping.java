@@ -284,7 +284,16 @@ public class WordMapping extends CharMapping {
 		Debug.assertTrue( Environment.isWordNode( wordNode ) );
 		IntermediaryNode in = lastINFound;// can be null
 		
-
+		// NodeWithDupChildren expectedChar = new NodeWithDupChildren();
+		// expectedChar.dupAppendChild( this.getNodeForChar(
+		// expectedString.charAt( indexOfExpectedChar ) ) );
+		
+		Node inList = new Node();
+		Node currentNode0 = new Node();
+		
+		if ( currentNode0.appendChild( wordNode ) ) {
+			throw new BugError();
+		}
 		// if more chars to go, and no bad char encountered
 		// while ( ( indexOfExpectedChar < ( expectedString.length() ) )
 		// && ( indexOfExpectedChar >= 0 ) ) {
@@ -295,9 +304,9 @@ public class WordMapping extends CharMapping {
 			// this is like parallel on the X axis; same wordNode parent
 			if ( null == in ) {
 				// this should only happen once, when lastINFound is null
-				in = wordNode.getIntermediaryForFirstChild();
+				in = ( (NodeWithDupChildren)( currentNode0.getLastChild() ) ).getIntermediaryForFirstChild();
 			} else {
-				in = wordNode.getNextIntermediary( in );
+				in = ( (NodeWithDupChildren)( currentNode0.getLastChild() ) ).getNextIntermediary( in );
 			}
 			
 			if ( indexOfExpectedChar == expectedString.length() ) {
@@ -317,7 +326,19 @@ public class WordMapping extends CharMapping {
 				// on a parent of this wordNode that has this wordNode on
 				// position 0 and check that parent's children for next expected
 				// chars or wordNodes that contain the expected chars
-				break;
+				// break;
+				level--;
+				in = (IntermediaryNode)inList.getLastChild();
+				if ( null == in ) {
+					break;
+				}
+				if ( !inList.removeChild( in ) ) {
+					throw new BugError();
+				}
+				if ( !currentNode0.removeChild( currentNode0.getLastChild() ) ) {
+					throw new BugError();
+				}
+				continue;
 			} else {
 				// found one, whose child may be Word or Char node
 				Node wordOrChar = in.getPointee();
@@ -326,7 +347,7 @@ public class WordMapping extends CharMapping {
 					if ( wordOrChar == this.getNodeForChar( expectedString.charAt( indexOfExpectedChar ) ) ) {
 						// good, now expect next char
 						indexOfExpectedChar++;
-						// continue;
+						continue;
 					} else {
 						// bad char, the char we found was different than the
 						// expected char
@@ -341,10 +362,21 @@ public class WordMapping extends CharMapping {
 						if ( level >= Environment.DEFAULT_UPLEVEL ) {
 							throw new RecursionTooDeepError( "too deep" );
 						}
-						indexOfExpectedChar = this.digDownRight(
-								(NodeWithDupChildren)wordOrChar,
-								expectedString, indexOfExpectedChar, null,
-								++level );
+						
+						level++;
+						// indexOfExpectedChar = this.digDownRight(
+						// (NodeWithDupChildren)wordOrChar,
+						// expectedString, indexOfExpectedChar, null,
+						// ++level );
+						// expectedChar.dupAppendChild(wordOrChar);
+						if ( inList.appendChild( in ) ) {
+							throw new BugError( "couldn't've existed before" );
+						}
+						in = null;
+						if ( currentNode0.appendChild( wordOrChar ) ) {
+							throw new BugError(
+									"maybe needs to make it NodeWithDupChildren" );// TODO
+						}
 						continue;
 					} else {
 						// not char not word?!

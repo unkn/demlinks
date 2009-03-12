@@ -125,10 +125,12 @@ public class WordMappingTest {
 		
 		nl = this.wm.getNodeForWord( "actah" );
 		assertFalse( nl.numChildren() == 0 );
-		// System.out.println( nl.size() );
+		System.out.println( nl.numChildren() );
 		assertTrue( nl.numChildren() == 4 );
 		assertTrue( nl.getChildPrevOf( actah2 ) == actah3 );
 		assertTrue( nl == Environment.lastSolutionsForLastGottenWord );
+		
+
 	}
 	
 	@Test
