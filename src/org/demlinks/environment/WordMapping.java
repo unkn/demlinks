@@ -30,7 +30,6 @@ import org.demlinks.node.Node;
 import org.demlinks.nodemaps.Environment;
 import org.demlinks.nodemaps.IntermediaryNode;
 import org.demlinks.nodemaps.NodeWithDupChildren;
-import org.demlinks.nodemaps.PointerNode;
 import org.demlinks.nodemaps.WordNode;
 
 
@@ -126,7 +125,7 @@ public class WordMapping extends CharMapping {
 		// ArrayList<IntermediaryNode> intermediaryNodeForNodeOnPos0 = new
 		// ArrayList<IntermediaryNode>(
 		// Environment.DEFAULT_UPLEVEL );
-		PointerNode p1 = new PointerNode();
+		// PointerNode p1 = new PointerNode();
 		Node intermediaryNodeForNodeOnPos0 = new Node();
 		IntermediaryNode tmpNode = null;
 		// intermediaryNodeForNodeOnPos0.add( upIndex, null );// intermediary
@@ -154,11 +153,12 @@ public class WordMapping extends CharMapping {
 			// different parent
 			// like parallel on the Z axis; same child CharNode
 			// intermediaryNodeForNodeOnPos0.set( upIndex,
+			
 			tmpNode = this.getNextIntermediaryNodeForNodeAt(
 					nodeThatHasToBeOnPos0.getLastChild(), 0, tmpNode );
 			// );
-			
 			if ( null == tmpNode ) {
+				// will avoid setting p1 to null
 				// none found, hence there's no (more)word(s) having word[0] at
 				// index 0
 				if ( upIndex == 0 ) {
@@ -168,19 +168,21 @@ public class WordMapping extends CharMapping {
 					// horizontal, but to continue where we left off at that
 					// level
 					upIndex--;
-					if ( p1.pointTo( intermediaryNodeForNodeOnPos0.getLastChild() ) ) {
-						throw new BugError(
-								"couldn't've already pointed to this same Node" );
-					}
-					tmpNode = (IntermediaryNode)p1.getPointee();
+					// if ( p1.pointTo(
+					// intermediaryNodeForNodeOnPos0.getChildPrevOf(
+					// p1.getPointee() ) ) ) {
+					// throw new BugError(
+					// "couldn't've already pointed to this same Node" );
+					// }
+					// tmpNode = (IntermediaryNode)p1.getPointee();
+					tmpNode = (IntermediaryNode)intermediaryNodeForNodeOnPos0.getLastChild();
 					if ( null == tmpNode ) {
 						throw new BugError( "should never be null here" );
 					}
-					// if ( !intermediaryNodeForNodeOnPos0.removeChild( tmpNode
-					// ) ) {
-					// throw new BugError(
-					// "should've been true aka removed existing Node" );
-					// }
+					if ( !intermediaryNodeForNodeOnPos0.removeChild( tmpNode ) ) {
+						throw new BugError(
+								"should've been true aka removed existing Node" );
+					}
 					
 					if ( !nodeThatHasToBeOnPos0.removeChild( nodeThatHasToBeOnPos0.getLastChild() ) ) {
 						throw new BugError();
@@ -191,6 +193,9 @@ public class WordMapping extends CharMapping {
 				}
 				// } else {
 				// intermediaryNodeForNodeOnPos0.appendChild( tmpNode );
+			} else {
+				// p1 not null here
+				// p1.pointTo( tmpNode );
 			}
 			
 			// not null
@@ -207,12 +212,10 @@ public class WordMapping extends CharMapping {
 			int backup = indexOfNextExpectedChar;
 			if ( null == tmpNode ) {
 				// intermediaryNodeForNodeOnPos0.get( upIndex ) ) {
-				throw new BugError( "this will never be null here" );
+				throw new BugError( "this will never be null" );
 			}
 			indexOfNextExpectedChar = this.digDeep( wordNode, word,
-					indexOfNextExpectedChar,
-					// (IntermediaryNode)intermediaryNodeForNodeOnPos0.getLastChild(),
-					tmpNode, 0 );
+					indexOfNextExpectedChar, tmpNode, 0 );
 			
 			if ( indexOfNextExpectedChar < 0 ) {
 				// ie. -1 from encountering bad char
@@ -235,9 +238,18 @@ public class WordMapping extends CharMapping {
 					// start from beginning
 					// intermediaryNodeForNodeOnPos0.add( upIndex, null );
 					// remember where we were before
+					// if ( null == p1.getPointee() ) {
+					// intermediaryNodeForNodeOnPos0.appendChild( tmpNode );
+					// } else {
+					// intermediaryNodeForNodeOnPos0.insertChildAfter(
+					// tmpNode, p1.getPointee() );
+					// }
+					// p1.setNull();
+					// p1.pointTo( tmpNode );
+					// tmpNode = p1.getPointee();
 					intermediaryNodeForNodeOnPos0.appendChild( tmpNode );
-					p1.setNull();
-					tmpNode = (IntermediaryNode)p1.getPointee();
+					tmpNode = null;
+					// tmpNode = (IntermediaryNode)p1.getPointee();
 					continue;
 				} else {
 					if ( indexOfNextExpectedChar == word.length() ) {

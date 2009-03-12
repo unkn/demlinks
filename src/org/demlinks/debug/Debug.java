@@ -16,6 +16,7 @@
     along with DeMLinks.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+
 package org.demlinks.debug;
 
 public final class Debug {
@@ -26,10 +27,11 @@ public final class Debug {
 	 *            we throw AssertionError
 	 */
 	public static void nullException( Object... anyObject ) {
+
 		for ( int i = 0; i < anyObject.length; i++ ) {
 			if ( null == anyObject[i] ) {
 				throw new NullPointerException( "should never be null:"
-						+ anyObject[i] + " [" + i + "]" );
+						+ "param number: " + ( i + 1 ) + "]" );
 			}
 		}
 	}
