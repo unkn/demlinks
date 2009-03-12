@@ -25,7 +25,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.demlinks.node.Node;
-import org.demlinks.node.NodeList;
+import org.demlinks.nodemaps.Environment;
 import org.demlinks.nodemaps.IntermediaryNode;
 import org.demlinks.nodemaps.WordNode;
 import org.junit.Before;
@@ -53,19 +53,19 @@ public class WordMappingTest {
 		assertTrue( actah.dupGetFirstChild() == this.wm.getNodeForChar( 'a' ) );
 		assertTrue( actah.dupGetLastChild() == this.wm.getNodeForChar( 'h' ) );
 		
-		NodeList nl = this.wm.getNodeForWord( "actah" );
-		assertFalse( nl.isEmpty() );
-		assertTrue( nl.getFirstNode() == actah );
-		assertTrue( nl.size() == 1 );
+		Node nl = this.wm.getNodeForWord( "actah" );
+		assertFalse( nl.numChildren() == 0 );
+		assertTrue( nl.getFirstChild() == actah );
+		assertTrue( nl.numChildren() == 1 );
 		
 
 		nl = this.wm.getNodeForWord( "jkl" );
-		assertTrue( nl.isEmpty() );
+		assertTrue( nl.numChildren() == 0 );
 		
 		nl = this.wm.getNodeForWord( "ac" );
-		assertTrue( nl.isEmpty() );
+		assertTrue( nl.numChildren() == 0 );
 		nl = this.wm.getNodeForWord( "a" );
-		assertTrue( nl.isEmpty() );
+		assertTrue( nl.numChildren() == 0 );
 		
 		// nl = this.wm.getNodeForWord( "actah" );
 		// assertFalse( nl.isEmpty() );
@@ -82,10 +82,10 @@ public class WordMappingTest {
 		// nl = this.wm.getNodeForWord( "ac" );
 		// assertTrue( nl.isEmpty() );
 		nl = this.wm.getNodeForWord( "a" );
-		assertTrue( nl.isEmpty() );
+		assertTrue( nl.numChildren() == 0 );
 		nl = this.wm.getNodeForWord( "h" );
-		assertFalse( nl.isEmpty() );
-		assertTrue( nl.size() == 1 );
+		assertFalse( nl.numChildren() == 0 );
+		assertTrue( nl.numChildren() == 1 );
 		
 		WordNode newactah = new WordNode();
 		newactah.dupAppendChild( act );
@@ -99,12 +99,13 @@ public class WordMappingTest {
 		actah2.dupAppendChild( this.wm.ensureNodeForChar( 'h' ) );
 		
 		nl = this.wm.getNodeForWord( "actah" );
-		assertFalse( nl.isEmpty() );
+		assertTrue( nl == Environment.lastSolutionsForLastGottenWord );
+		assertFalse( nl.numChildren() == 0 );
 		// System.out.println( nl.size() );
-		assertTrue( nl.getFirstNode() == actah );
-		assertTrue( nl.getNodeAfter( actah ) == newactah );
-		assertTrue( nl.getNodeAfter( newactah ) == actah2 );
-		assertTrue( nl.size() == 3 );// solutions
+		assertTrue( nl.getFirstChild() == actah );
+		assertTrue( nl.getChildNextOf( actah ) == newactah );
+		assertTrue( nl.getChildNextOf( newactah ) == actah2 );
+		assertTrue( nl.numChildren() == 3 );// solutions
 		WordNode actah3 = new WordNode();
 		actah3.dupAppendChild( ac );
 		WordNode tah = new WordNode();
@@ -113,10 +114,11 @@ public class WordMappingTest {
 		actah3.dupAppendChild( tah );
 		
 		nl = this.wm.getNodeForWord( "actah" );
-		assertFalse( nl.isEmpty() );
+		assertFalse( nl.numChildren() == 0 );
 		// System.out.println( nl.size() );
-		assertTrue( nl.size() == 4 );
-		assertTrue( nl.getNodeBefore( actah2 ) == actah3 );
+		assertTrue( nl.numChildren() == 4 );
+		assertTrue( nl.getChildPrevOf( actah2 ) == actah3 );
+		assertTrue( nl == Environment.lastSolutionsForLastGottenWord );
 	}
 	
 	@Test

@@ -29,7 +29,6 @@ import org.demlinks.errors.RecursionTooDeepError;
 import org.demlinks.exceptions.BadParameterException;
 import org.demlinks.exceptions.InconsistentLinkException;
 import org.demlinks.node.Node;
-import org.demlinks.node.NodeList;
 import org.demlinks.nodemaps.Environment;
 import org.demlinks.nodemaps.IntermediaryNode;
 import org.demlinks.nodemaps.NodeWithDupChildren;
@@ -57,27 +56,28 @@ public class WordMapping extends CharMapping {
 			throw new BadParameterException();
 		}
 		
+		WordNode wordNode;
 		// if already exists, then return that one
-		NodeList manyWords = this.getNodeForWord( word );
-		if ( !manyWords.isEmpty() ) {
+		Node manyWords = this.getNodeForWord( word );
+		if ( 0 != manyWords.numChildren() ) {
 			// there may be more than 1 found
-			if ( manyWords.size() > 1 ) {
+			if ( manyWords.numChildren() > 1 ) {
 				// more than one words already found, which do we return?
 			}
 			
 			// one word found:
-			Node wordNode = manyWords.getFirstNode();// first it is then
+			wordNode = (WordNode)manyWords.getFirstChild();// first it is then
 			if ( !Environment.isWordNode( wordNode ) ) {
 				throw new BugError(
 						"getNodeForWord or isWordNode are inconsistent" );
 			}
-			return (WordNode)wordNode;
+			return wordNode;
 		}
 		
-		// else add it now, raw mode
+		// else(word doesn't exist) add it now, raw mode
 		// TODO maybe add it zip-mode, ie. as compact as possible maybe formed
 		// of two words; since one word we didn't find(above)
-		WordNode wordNode = new WordNode();
+		wordNode = new WordNode();
 		
 		char c;
 		Node n;
@@ -104,9 +104,9 @@ public class WordMapping extends CharMapping {
 	 * @param word
 	 * @return a list of WordNodes as solutions for the word
 	 */
-	public NodeList getNodeForWord( String word ) {
+	public Node getNodeForWord( String word ) {
 
-		NodeList solutions = new NodeList();
+		Environment.lastSolutionsForLastGottenWord = new Node();
 		char c;
 		Node n;
 		// NodeWithDupChildren theWord = new NodeWithDupChildren();
@@ -115,7 +115,7 @@ public class WordMapping extends CharMapping {
 			n = this.getNodeForChar( c );
 			if ( null == n ) {
 				// one of the chars doesn't exist, hence the word doesn't exist
-				return solutions;// empty list
+				return Environment.lastSolutionsForLastGottenWord;// empty list
 			}
 		}
 		// list of all WordNodes that match this word
@@ -207,7 +207,7 @@ public class WordMapping extends CharMapping {
 					if ( indexOfNextExpectedChar == word.length() ) {
 						// we found wordNode to be one solution
 						// and we should go next wordNode
-						solutions.addLast( wordNode );
+						Environment.lastSolutionsForLastGottenWord.appendChild( wordNode );
 						indexOfNextExpectedChar = 1;
 						continue;// this will go to while and attempt to go next
 						// wordNode
@@ -219,7 +219,7 @@ public class WordMapping extends CharMapping {
 			}// else
 		}// while
 		
-		return solutions;// can be empty
+		return Environment.lastSolutionsForLastGottenWord;// can be empty
 	}
 	
 	/**

@@ -42,6 +42,11 @@ public class Environment {
 	public static final Node	AllPhraseNodes				= new Node();
 	public static final Node	AllDelimiterNodes			= new Node();
 	
+	// ----------- Nodes temporarily used by methods
+	// used by WordMapping.getNodeForWord()
+	public static Node			lastSolutionsForLastGottenWord	= null;
+	// -----------
+	
 	// it's resizable, the initial allocation for array for in depth parsing
 	public static final int		DEFAULT_UPLEVEL				= 100;
 	
