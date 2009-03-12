@@ -401,15 +401,24 @@ public class Node {
 	
 	/**
 	 * remove all children
+	 * 
+	 * @return true if there was at least one child removed;<br>
+	 *         false if children list was already empty hence nothing needed to
+	 *         be removed<br>
+	 *         whatever the return, the same result is accomplished
 	 */
-	public void clearAllChildren() {
+	public boolean clearAllChildren() {
 
+		boolean ret = false;
 		Node parser = this.getFirstChild();
 		while ( null != parser ) {
 			if ( !this.removeChild( parser ) ) {
 				throw new BugError( "should always be true here" );
 			}
 			parser = this.getFirstChild();
+			ret = true;// at least one child existed
 		}
+		return ret;
+		// TODO junit test
 	}
 }
