@@ -45,6 +45,8 @@ public class Environment {
 	// ----------- Nodes temporarily used by methods
 	// used by WordMapping.getNodeForWord()
 	public static Node			lastSolutionsForLastGottenWord	= new Node();
+	public static Node			intermediaryNodeForNodeOnPos0	= new Node();
+	public static Node			nodeThatHasToBeOnPos0			= new Node();
 	// -----------
 	
 	// it's resizable, the initial allocation for array for in depth parsing

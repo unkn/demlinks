@@ -126,7 +126,6 @@ public class WordMapping extends CharMapping {
 		// ArrayList<IntermediaryNode>(
 		// Environment.DEFAULT_UPLEVEL );
 		// PointerNode p1 = new PointerNode();
-		Node intermediaryNodeForNodeOnPos0 = new Node();
 		IntermediaryNode tmpNode = null;
 		// intermediaryNodeForNodeOnPos0.add( upIndex, null );// intermediary
 		// nodes
@@ -135,8 +134,9 @@ public class WordMapping extends CharMapping {
 
 		// ArrayList<Node> nodeThatHasToBeOnPos0 = new ArrayList<Node>(
 		// Environment.DEFAULT_UPLEVEL );
-		Node nodeThatHasToBeOnPos0 = new Node();
-		if ( nodeThatHasToBeOnPos0.appendChild( this.getNodeForChar( word.charAt( 0 ) ) ) ) {
+		Environment.nodeThatHasToBeOnPos0.clearAllChildren();
+		Environment.intermediaryNodeForNodeOnPos0.clearAllChildren();
+		if ( Environment.nodeThatHasToBeOnPos0.appendChild( this.getNodeForChar( word.charAt( 0 ) ) ) ) {
 			throw new BugError( "couldn've existed" );
 		}
 		// getNodeForChar above won't return null, because above we passed thru
@@ -155,7 +155,8 @@ public class WordMapping extends CharMapping {
 			// intermediaryNodeForNodeOnPos0.set( upIndex,
 			
 			tmpNode = this.getNextIntermediaryNodeForNodeAt(
-					nodeThatHasToBeOnPos0.getLastChild(), 0, tmpNode );
+					Environment.nodeThatHasToBeOnPos0.getLastChild(), 0,
+					tmpNode );
 			// );
 			if ( null == tmpNode ) {
 				// will avoid setting p1 to null
@@ -175,16 +176,16 @@ public class WordMapping extends CharMapping {
 					// "couldn't've already pointed to this same Node" );
 					// }
 					// tmpNode = (IntermediaryNode)p1.getPointee();
-					tmpNode = (IntermediaryNode)intermediaryNodeForNodeOnPos0.getLastChild();
+					tmpNode = (IntermediaryNode)Environment.intermediaryNodeForNodeOnPos0.getLastChild();
 					if ( null == tmpNode ) {
 						throw new BugError( "should never be null here" );
 					}
-					if ( !intermediaryNodeForNodeOnPos0.removeChild( tmpNode ) ) {
+					if ( !Environment.intermediaryNodeForNodeOnPos0.removeChild( tmpNode ) ) {
 						throw new BugError(
 								"should've been true aka removed existing Node" );
 					}
 					
-					if ( !nodeThatHasToBeOnPos0.removeChild( nodeThatHasToBeOnPos0.getLastChild() ) ) {
+					if ( !Environment.nodeThatHasToBeOnPos0.removeChild( Environment.nodeThatHasToBeOnPos0.getLastChild() ) ) {
 						throw new BugError();
 					}
 					
@@ -231,7 +232,7 @@ public class WordMapping extends CharMapping {
 					// horizontally from where u left off
 					upIndex++;
 					// nodeThatHasToBeOnPos0.add( upIndex, wordNode );
-					if ( nodeThatHasToBeOnPos0.appendChild( wordNode ) ) {
+					if ( Environment.nodeThatHasToBeOnPos0.appendChild( wordNode ) ) {
 						throw new BugError( "shouldn't already exist" );
 					}
 					// index remains
@@ -247,7 +248,7 @@ public class WordMapping extends CharMapping {
 					// p1.setNull();
 					// p1.pointTo( tmpNode );
 					// tmpNode = p1.getPointee();
-					intermediaryNodeForNodeOnPos0.appendChild( tmpNode );
+					Environment.intermediaryNodeForNodeOnPos0.appendChild( tmpNode );
 					tmpNode = null;
 					// tmpNode = (IntermediaryNode)p1.getPointee();
 					continue;
