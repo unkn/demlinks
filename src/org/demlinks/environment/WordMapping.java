@@ -288,8 +288,8 @@ public class WordMapping extends CharMapping {
 		// if more chars to go, and no bad char encountered
 		// while ( ( indexOfExpectedChar < ( expectedString.length() ) )
 		// && ( indexOfExpectedChar >= 0 ) ) {
-		while ( true ) {
-			
+		while ( indexOfExpectedChar >= 0 ) {// if not bad char, do:
+		
 
 
 			// this is like parallel on the X axis; same wordNode parent
@@ -345,7 +345,7 @@ public class WordMapping extends CharMapping {
 								(NodeWithDupChildren)wordOrChar,
 								expectedString, indexOfExpectedChar, null,
 								++level );
-						// continue;
+						continue;
 					} else {
 						// not char not word?!
 						throw new BugError(
