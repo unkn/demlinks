@@ -124,9 +124,13 @@ public class WordMapping extends CharMapping {
 
 
 		int upIndex = 0;
-		ArrayList<IntermediaryNode> intermediaryNodeForNodeOnPos0 = new ArrayList<IntermediaryNode>(
-				Environment.DEFAULT_UPLEVEL );
-		intermediaryNodeForNodeOnPos0.add( upIndex, null );// intermediary nodes
+		// ArrayList<IntermediaryNode> intermediaryNodeForNodeOnPos0 = new
+		// ArrayList<IntermediaryNode>(
+		// Environment.DEFAULT_UPLEVEL );
+		Node intermediaryNodeForNodeOnPos0 = new Node();
+		IntermediaryNode tmpNode = null;
+		// intermediaryNodeForNodeOnPos0.add( upIndex, null );// intermediary
+		// nodes
 		// for word[0]
 		
 
@@ -148,11 +152,12 @@ public class WordMapping extends CharMapping {
 			// attempts to find next WordNode for word[0], that's a
 			// different parent
 			// like parallel on the Z axis; same child CharNode
-			intermediaryNodeForNodeOnPos0.set( upIndex,
-					this.getNextIntermediaryNodeForNodeAt(
-							nodeThatHasToBeOnPos0.get( upIndex ), 0,
-							intermediaryNodeForNodeOnPos0.get( upIndex ) ) );
-			if ( null == intermediaryNodeForNodeOnPos0.get( upIndex ) ) {
+			// intermediaryNodeForNodeOnPos0.set( upIndex,
+			tmpNode = this.getNextIntermediaryNodeForNodeAt(
+					nodeThatHasToBeOnPos0.get( upIndex ), 0, tmpNode );
+			// );
+			
+			if ( null == tmpNode ) {
 				// none found, hence there's no (more)word(s) having word[0] at
 				// index 0
 				if ( upIndex == 0 ) {
@@ -162,14 +167,25 @@ public class WordMapping extends CharMapping {
 					// horizontal, but to continue where we left off at that
 					// level
 					upIndex--;
+					tmpNode = (IntermediaryNode)intermediaryNodeForNodeOnPos0.getLastChild();
+					if ( null == tmpNode ) {
+						throw new BugError( "should never be null here" );
+					}
+					if ( !intermediaryNodeForNodeOnPos0.removeChild( tmpNode ) ) {
+						throw new BugError(
+								"should've been true aka removed existing Node" );
+					}
 					indexOfNextExpectedChar = 1;// reset index, it's 0 based
 					continue;
 				}
+				// } else {
+				// intermediaryNodeForNodeOnPos0.appendChild( tmpNode );
 			}
 			
 			// not null
-			NodeWithDupChildren wordNode = intermediaryNodeForNodeOnPos0.get(
-					upIndex ).getFather();
+			NodeWithDupChildren wordNode = tmpNode.getFather();
+			// ( (IntermediaryNode)intermediaryNodeForNodeOnPos0.getLastChild()
+			// ).getFather();
 			if ( null == wordNode ) {
 				throw new BugError( "intermediary node w/o father?!" );
 			}
@@ -178,12 +194,14 @@ public class WordMapping extends CharMapping {
 			// we try finding next chars of word from pos 1 in wordNode
 			// continuing from pos 1
 			int backup = indexOfNextExpectedChar;
-			if ( null == intermediaryNodeForNodeOnPos0.get( upIndex ) ) {
+			if ( null == tmpNode ) {
+				// intermediaryNodeForNodeOnPos0.get( upIndex ) ) {
 				throw new BugError( "this will never be null here" );
 			}
 			indexOfNextExpectedChar = this.digDeep( wordNode, word,
 					indexOfNextExpectedChar,
-					intermediaryNodeForNodeOnPos0.get( upIndex ), 0 );
+					// (IntermediaryNode)intermediaryNodeForNodeOnPos0.getLastChild(),
+					tmpNode, 0 );
 			
 			if ( indexOfNextExpectedChar < 0 ) {
 				// ie. -1 from encountering bad char
@@ -201,7 +219,10 @@ public class WordMapping extends CharMapping {
 					nodeThatHasToBeOnPos0.add( upIndex, wordNode );
 					// index remains
 					// start from beginning
-					intermediaryNodeForNodeOnPos0.add( upIndex, null );
+					// intermediaryNodeForNodeOnPos0.add( upIndex, null );
+					// remember where we were before
+					intermediaryNodeForNodeOnPos0.appendChild( tmpNode );
+					tmpNode = null;
 					continue;
 				} else {
 					if ( indexOfNextExpectedChar == word.length() ) {
