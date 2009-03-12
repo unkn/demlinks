@@ -106,7 +106,9 @@ public class WordMapping extends CharMapping {
 	 */
 	public Node getNodeForWord( String word ) {
 
-		Environment.lastSolutionsForLastGottenWord = new Node();
+		// list of all WordNodes that match this word
+		Environment.lastSolutionsForLastGottenWord.clearAllChildren();
+		
 		char c;
 		Node n;
 		// NodeWithDupChildren theWord = new NodeWithDupChildren();
@@ -118,11 +120,9 @@ public class WordMapping extends CharMapping {
 				return Environment.lastSolutionsForLastGottenWord;// empty list
 			}
 		}
-		// list of all WordNodes that match this word
 		
-		// we have them all chars in 'nl'
-		// and in effect we can parse them in any direction
-		
+
+
 		int upIndex = 0;
 		ArrayList<IntermediaryNode> intermediaryNodeForNodeOnPos0 = new ArrayList<IntermediaryNode>(
 				Environment.DEFAULT_UPLEVEL );

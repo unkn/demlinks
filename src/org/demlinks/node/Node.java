@@ -25,6 +25,7 @@ import javax.naming.CannotProceedException;
 
 import org.demlinks.debug.Debug;
 import org.demlinks.errors.BadCallError;
+import org.demlinks.errors.BugError;
 import org.demlinks.exceptions.InconsistentLinkException;
 
 
@@ -395,6 +396,20 @@ public class Node {
 				// basically hasChild or hasParent will throw before we do here
 			}
 			parser = this.parentsList.getNodeAfter( parser );
+		}
+	}
+	
+	/**
+	 * remove all children
+	 */
+	public void clearAllChildren() {
+
+		Node parser = this.getFirstChild();
+		while ( null != parser ) {
+			if ( !this.removeChild( parser ) ) {
+				throw new BugError( "should always be true here" );
+			}
+			parser = this.getFirstChild();
 		}
 	}
 }

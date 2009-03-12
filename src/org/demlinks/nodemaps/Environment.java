@@ -32,23 +32,23 @@ public class Environment {
 	
 	
 	// all the following are supposed to be parent nodes
-	public static final Node	AllPointerNodes				= new Node();
-	public static final Node	AllNodeWithDupChildrenNodes	= new Node();
-	public static final Node	AllRandomNodes				= new Node();
-	public static final Node	AllIntermediaryNodes		= new Node();
+	public static final Node	AllPointerNodes					= new Node();
+	public static final Node	AllNodeWithDupChildrenNodes		= new Node();
+	public static final Node	AllRandomNodes					= new Node();
+	public static final Node	AllIntermediaryNodes			= new Node();
 	
-	public static final Node	AllCharNodes				= new Node();
-	public static final Node	AllWordNodes				= new Node();
-	public static final Node	AllPhraseNodes				= new Node();
-	public static final Node	AllDelimiterNodes			= new Node();
+	public static final Node	AllCharNodes					= new Node();
+	public static final Node	AllWordNodes					= new Node();
+	public static final Node	AllPhraseNodes					= new Node();
+	public static final Node	AllDelimiterNodes				= new Node();
 	
 	// ----------- Nodes temporarily used by methods
 	// used by WordMapping.getNodeForWord()
-	public static Node			lastSolutionsForLastGottenWord	= null;
+	public static Node			lastSolutionsForLastGottenWord	= new Node();
 	// -----------
 	
 	// it's resizable, the initial allocation for array for in depth parsing
-	public static final int		DEFAULT_UPLEVEL				= 100;
+	public static final int		DEFAULT_UPLEVEL					= 100;
 	
 	/**
 	 * AllPointerNodes -> whatNode ?
