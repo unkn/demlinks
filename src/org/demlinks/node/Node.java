@@ -221,6 +221,30 @@ public class Node {
 	}
 	
 	/**
+	 * @param index
+	 *            0 based index
+	 * @return null or the child node that's at position index in this'
+	 *         childrenList
+	 */
+	public Node getChildAt( int zeroBasedIndex ) {
+
+		Debug.nullException( zeroBasedIndex );
+		return this.childrenList.getNodeAt( zeroBasedIndex );
+	}
+	
+	/**
+	 * @param index
+	 *            0 based index
+	 * @return null or the parent node that's at position index in this'
+	 *         parentsList
+	 */
+	public Node getParentAt( int zeroBasedIndex ) {
+
+		Debug.nullException( zeroBasedIndex );
+		return this.parentsList.getNodeAt( zeroBasedIndex );
+	}
+	
+	/**
 	 * @param ofWhatNode
 	 *            is an existing child Node
 	 * @return null or the node following <tt>ofWhatNode</tt>
@@ -294,18 +318,8 @@ public class Node {
 		return this.parentsList.getNodeBefore( ofWhatNode );
 	}
 	
-	/**
-	 * @param index
-	 *            0 based index
-	 * @return null or the parent node that's at position index in this'
-	 *         parentsList
-	 */
-	public Node getParentAt( int index ) {
-
-		Debug.nullException( index );
-		return this.parentsList.getNodeAt( index );
-	}
 	
+
 	/**
 	 * @return number of parents for this node
 	 */

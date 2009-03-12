@@ -40,13 +40,13 @@ public class NodeWithDupChildren extends Node {
 	}
 	
 	@Override
-	public boolean appendChild( Node child ) {
+	public Node getChildAt( int zeroBasedIndex ) {
 
 		throw new BadCallError( "use .dup* methods" );
 	}
 	
 	@Override
-	public boolean appendParent( Node parent ) {
+	public boolean appendChild( Node child ) {
 
 		throw new BadCallError( "use .dup* methods" );
 	}
@@ -64,6 +64,22 @@ public class NodeWithDupChildren extends Node {
 		// childNode
 		return null != this.getIntermediaryForFirstChild( childNode );
 	}
+	
+	/**
+	 * @param zeroBasedIndex
+	 * @return bypassing IntermediaryNode, returns the child at that index
+	 * @see #getChildAt(int)
+	 */
+	public Node dupGetChildAt( int zeroBasedIndex ) {
+
+		IntermediaryNode in = (IntermediaryNode)super.getChildAt( zeroBasedIndex );
+		if ( null != in ) {
+			return in.getPointee();
+		} else {
+			return null;
+		}
+	}
+	
 	
 	/**
 	 * make the following true: <br>

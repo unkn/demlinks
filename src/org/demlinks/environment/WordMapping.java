@@ -199,7 +199,7 @@ public class WordMapping extends CharMapping {
 				// intermediaryNodeForNodeOnPos0.get( upIndex ) ) {
 				throw new BugError( "this will never be null" );
 			}
-			indexOfNextExpectedChar = this.digDownRight( wordNode, word,
+			indexOfNextExpectedChar = this.digDownRight( wordNode, theWord,
 					indexOfNextExpectedChar, tmpNode, 0/* current level */);
 			
 			if ( indexOfNextExpectedChar < 0 ) {
@@ -277,7 +277,7 @@ public class WordMapping extends CharMapping {
 	 *         should get another <tt>wordNode</tt>
 	 */
 	private int digDownRight( NodeWithDupChildren wordNode,
-			String expectedString, int indexOfExpectedChar,
+			NodeWithDupChildren expectedString, int indexOfExpectedChar,
 			IntermediaryNode lastINFound, int level ) {
 
 		Debug.nullException( wordNode, expectedString, indexOfExpectedChar );
@@ -307,7 +307,7 @@ public class WordMapping extends CharMapping {
 				in = curr0.getNextIntermediary( in );
 			}
 			
-			if ( indexOfExpectedChar == expectedString.length() ) {
+			if ( indexOfExpectedChar == expectedString.numChildren() ) {
 				// we completed the word, then we have to make sure
 				// there's nothing else next
 				if ( null != in ) {
@@ -353,7 +353,7 @@ public class WordMapping extends CharMapping {
 				Node wordOrChar = in.getPointee();
 				if ( Environment.isCharNode( wordOrChar ) ) {
 					// is CharNode then we check if it's the expected char
-					if ( wordOrChar == this.getNodeForChar( expectedString.charAt( indexOfExpectedChar ) ) ) {
+					if ( wordOrChar == expectedString.dupGetChildAt( indexOfExpectedChar ) ) {
 						// TODO DomainPointer, indexOfExpectedChar would be
 						// pointer, expectedString would be the domain of that
 						// pointer
