@@ -104,19 +104,23 @@ public class WordMapping extends CharMapping {
 	 */
 	public Node getNodeForWord( String word ) {
 
+		
+		Debug.nullException( word );
+		if ( word.length() < 1 ) {
+			throw new BadParameterException( "word must be at least 1 char" );
+		}
 		// list of all WordNodes that match this word
 		Environment.lastSolutionsForLastGottenWord.clearAllChildren();
 		
-		char c;
-		Node n;
-		// NodeWithDupChildren theWord = new NodeWithDupChildren();
+		NodeWithDupChildren theWord = new NodeWithDupChildren();
 		for ( int i = 0; i < word.length(); i++ ) {
-			c = word.charAt( i );
-			n = this.getNodeForChar( c );
+			char c = word.charAt( i );
+			Node n = this.getNodeForChar( c );
 			if ( null == n ) {
 				// one of the chars doesn't exist, hence the word doesn't exist
 				return Environment.lastSolutionsForLastGottenWord;// empty list
 			}
+			theWord.dupAppendChild( n );
 		}
 		
 
@@ -136,7 +140,8 @@ public class WordMapping extends CharMapping {
 		Environment.intermediaryNodeForNodeOnPos0.clearAllChildren();
 		Environment.nodeThatHasToBeOnPos0.clearAllChildren();
 		
-		if ( Environment.nodeThatHasToBeOnPos0.appendChild( this.getNodeForChar( word.charAt( 0 ) ) ) ) {
+		if ( Environment.nodeThatHasToBeOnPos0.appendChild( theWord.dupGetFirstChild() ) ) {
+			// this.getNodeForChar( word.charAt( 0 ) ) ) ) {
 			throw new BugError( "couldn've existed" );
 		}
 		// getNodeForChar above won't return null, because above we passed thru

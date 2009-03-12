@@ -24,6 +24,7 @@ package org.demlinks.environment;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import org.demlinks.exceptions.BadParameterException;
 import org.demlinks.node.Node;
 import org.demlinks.nodemaps.Environment;
 import org.demlinks.nodemaps.IntermediaryNode;
@@ -47,6 +48,14 @@ public class WordMappingTest {
 	public void testAddWord() {
 
 		assertTrue( Environment.lastSolutionsForLastGottenWord.numChildren() == 0 );
+		
+		boolean ex = false;
+		try {
+			this.wm.addWord( "" );
+		} catch ( BadParameterException e ) {
+			ex = true;
+		}
+		assertTrue( ex );
 		
 		WordNode actah = this.wm.addWord( "actah" );
 		assertTrue( null != actah );

@@ -23,6 +23,7 @@ package org.demlinks.nodemaps;
 
 import org.demlinks.constants.DO;
 import org.demlinks.debug.Debug;
+import org.demlinks.errors.BadCallError;
 import org.demlinks.errors.BugError;
 import org.demlinks.exceptions.BadParameterException;
 import org.demlinks.node.Node;
@@ -36,6 +37,18 @@ public class NodeWithDupChildren extends Node {
 		super();// if u forget this, it's called anyway =)
 		Environment.internalCreateNodeAsChildOf( this,
 				Environment.AllNodeWithDupChildrenNodes );
+	}
+	
+	@Override
+	public boolean appendChild( Node child ) {
+
+		throw new BadCallError( "use .dup* methods" );
+	}
+	
+	@Override
+	public boolean appendParent( Node parent ) {
+
+		throw new BadCallError( "use .dup* methods" );
 	}
 	
 	/**
@@ -66,7 +79,7 @@ public class NodeWithDupChildren extends Node {
 			// already pointed? impossible
 			throw new BugError();
 		}
-		if ( this.appendChild( IN ) ) {
+		if ( super.appendChild( IN ) ) {
 			// IN existed? impossible
 			throw new BugError( "couldn't've existed, it was made by new" );
 		}
