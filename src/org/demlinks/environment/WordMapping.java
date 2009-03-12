@@ -121,7 +121,6 @@ public class WordMapping extends CharMapping {
 		
 
 
-		int upIndex = 0;
 		// ArrayList<IntermediaryNode> intermediaryNodeForNodeOnPos0 = new
 		// ArrayList<IntermediaryNode>(
 		// Environment.DEFAULT_UPLEVEL );
@@ -134,8 +133,9 @@ public class WordMapping extends CharMapping {
 
 		// ArrayList<Node> nodeThatHasToBeOnPos0 = new ArrayList<Node>(
 		// Environment.DEFAULT_UPLEVEL );
-		Environment.nodeThatHasToBeOnPos0.clearAllChildren();
 		Environment.intermediaryNodeForNodeOnPos0.clearAllChildren();
+		Environment.nodeThatHasToBeOnPos0.clearAllChildren();
+		
 		if ( Environment.nodeThatHasToBeOnPos0.appendChild( this.getNodeForChar( word.charAt( 0 ) ) ) ) {
 			throw new BugError( "couldn've existed" );
 		}
@@ -159,44 +159,23 @@ public class WordMapping extends CharMapping {
 					tmpNode );
 			// );
 			if ( null == tmpNode ) {
-				// will avoid setting p1 to null
 				// none found, hence there's no (more)word(s) having word[0] at
 				// index 0
-				if ( upIndex == 0 ) {
-					break;// this is the only one that will break the while
-				} else {
-					// we need to go down, and then right aka on
-					// horizontal, but to continue where we left off at that
-					// level
-					upIndex--;
-					// if ( p1.pointTo(
-					// intermediaryNodeForNodeOnPos0.getChildPrevOf(
-					// p1.getPointee() ) ) ) {
-					// throw new BugError(
-					// "couldn't've already pointed to this same Node" );
-					// }
-					// tmpNode = (IntermediaryNode)p1.getPointee();
-					tmpNode = (IntermediaryNode)Environment.intermediaryNodeForNodeOnPos0.getLastChild();
-					if ( null == tmpNode ) {
-						throw new BugError( "should never be null here" );
-					}
-					if ( !Environment.intermediaryNodeForNodeOnPos0.removeChild( tmpNode ) ) {
-						throw new BugError(
-								"should've been true aka removed existing Node" );
-					}
-					
-					if ( !Environment.nodeThatHasToBeOnPos0.removeChild( Environment.nodeThatHasToBeOnPos0.getLastChild() ) ) {
-						throw new BugError();
-					}
-					
-					indexOfNextExpectedChar = 1;// reset index, it's 0 based
-					continue;
+				tmpNode = (IntermediaryNode)Environment.intermediaryNodeForNodeOnPos0.getLastChild();
+				if ( null == tmpNode ) {
+					break;
 				}
-				// } else {
-				// intermediaryNodeForNodeOnPos0.appendChild( tmpNode );
-			} else {
-				// p1 not null here
-				// p1.pointTo( tmpNode );
+				if ( !Environment.intermediaryNodeForNodeOnPos0.removeChild( tmpNode ) ) {
+					throw new BugError(
+							"should've been true aka removed existing Node" );
+				}
+				
+				if ( !Environment.nodeThatHasToBeOnPos0.removeChild( Environment.nodeThatHasToBeOnPos0.getLastChild() ) ) {
+					throw new BugError();
+				}
+				
+				indexOfNextExpectedChar = 1;// reset index, it's 0 based
+				continue;
 			}
 			
 			// not null
@@ -216,7 +195,7 @@ public class WordMapping extends CharMapping {
 				throw new BugError( "this will never be null" );
 			}
 			indexOfNextExpectedChar = this.digDeep( wordNode, word,
-					indexOfNextExpectedChar, tmpNode, 0 );
+					indexOfNextExpectedChar, tmpNode, 0/* current level */);
 			
 			if ( indexOfNextExpectedChar < 0 ) {
 				// ie. -1 from encountering bad char
@@ -230,7 +209,6 @@ public class WordMapping extends CharMapping {
 					// indexOfNextExpectedChar where it is
 					// but if u can't go up anymore, u come down and continue
 					// horizontally from where u left off
-					upIndex++;
 					// nodeThatHasToBeOnPos0.add( upIndex, wordNode );
 					if ( Environment.nodeThatHasToBeOnPos0.appendChild( wordNode ) ) {
 						throw new BugError( "shouldn't already exist" );
