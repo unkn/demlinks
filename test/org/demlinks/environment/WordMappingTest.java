@@ -130,7 +130,32 @@ public class WordMappingTest {
 		assertTrue( nl.getChildPrevOf( actah2 ) == actah3 );
 		assertTrue( nl == Environment.lastSolutionsForLastGottenWord );
 		
-
+		WordNode z1 = this.wm.addWord( "z" );
+		WordNode z2 = this.wm.addWord( "zz" );
+		
+		WordNode z3 = this.wm.addWord( "zzz" );
+		
+		WordNode zz = new WordNode();
+		zz.dupAppendChild( z1 );
+		zz.dupAppendChild( z1 );
+		
+		WordNode zzz = new WordNode();
+		zzz.dupAppendChild( z1 );
+		zzz.dupAppendChild( zz );
+		
+		WordNode z4 = new WordNode();
+		z4.dupAppendChild( z1 );
+		z4.dupAppendChild( zz );
+		z4.dupAppendChild( z1 );
+		
+		Node gz = this.wm.getNodeForWord( "z" );
+		assertTrue( gz.numChildren() == 1 );
+		assertTrue( z1 == gz.getFirstChild() );
+		Node gz2 = this.wm.getNodeForWord( "zz" );
+		System.out.println( gz2.numChildren() );
+		assertTrue( gz.numChildren() == 2 );
+		assertTrue( zz == gz2.getFirstChild() );
+		assertTrue( z2 == gz2.getLastChild() );
 	}
 	
 	@Test

@@ -290,8 +290,8 @@ public class WordMapping extends CharMapping {
 		
 		Node inList = new Node();
 		Node currentNode0 = new Node();
-		
-		if ( currentNode0.appendChild( wordNode ) ) {
+		NodeWithDupChildren curr0 = wordNode;
+		if ( currentNode0.appendChild( curr0 ) ) {
 			throw new BugError();
 		}
 		// if more chars to go, and no bad char encountered
@@ -304,9 +304,9 @@ public class WordMapping extends CharMapping {
 			// this is like parallel on the X axis; same wordNode parent
 			if ( null == in ) {
 				// this should only happen once, when lastINFound is null
-				in = ( (NodeWithDupChildren)( currentNode0.getLastChild() ) ).getIntermediaryForFirstChild();
+				in = curr0.getIntermediaryForFirstChild();
 			} else {
-				in = ( (NodeWithDupChildren)( currentNode0.getLastChild() ) ).getNextIntermediary( in );
+				in = curr0.getNextIntermediary( in );
 			}
 			
 			if ( indexOfExpectedChar == expectedString.length() ) {
@@ -316,8 +316,8 @@ public class WordMapping extends CharMapping {
 					// yes there's more
 					// then act like a bad char
 					indexOfExpectedChar = -1;
+					break;
 				}
-				break;
 			}
 			
 			if ( null == in ) {
@@ -328,6 +328,7 @@ public class WordMapping extends CharMapping {
 				// chars or wordNodes that contain the expected chars
 				// break;
 				level--;
+				// use the last, then remove it
 				in = (IntermediaryNode)inList.getLastChild();
 				if ( null == in ) {
 					break;
@@ -335,9 +336,19 @@ public class WordMapping extends CharMapping {
 				if ( !inList.removeChild( in ) ) {
 					throw new BugError();
 				}
-				if ( !currentNode0.removeChild( currentNode0.getLastChild() ) ) {
+				// remove first, then use the one that was before the removed
+				// one
+				if ( !currentNode0.removeChild( curr0 ) ) {
 					throw new BugError();
 				}
+				curr0 = (NodeWithDupChildren)currentNode0.getLastChild();
+				if ( null == curr0 ) {
+					throw new BugError();
+				}
+				// if ( !Environment.isWordNode( curr0 ) ) {
+				// throw new BugError();
+				// }
+				
 				continue;
 			} else {
 				// found one, whose child may be Word or Char node
@@ -373,10 +384,13 @@ public class WordMapping extends CharMapping {
 							throw new BugError( "couldn't've existed before" );
 						}
 						in = null;
-						if ( currentNode0.appendChild( wordOrChar ) ) {
+						
+						curr0 = (NodeWithDupChildren)wordOrChar;
+						if ( currentNode0.appendChild( curr0 ) ) {
 							throw new BugError(
 									"maybe needs to make it NodeWithDupChildren" );// TODO
 						}
+						
 						continue;
 					} else {
 						// not char not word?!
