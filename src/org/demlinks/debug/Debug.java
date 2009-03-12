@@ -35,4 +35,12 @@ public final class Debug {
 			}
 		}
 	}
+	
+	public static void assertTrue( boolean condition ) {
+
+		if ( !condition ) {
+			throw new AssertionError( "condition was false" );
+		}
+		
+	}
 }

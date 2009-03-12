@@ -199,7 +199,7 @@ public class WordMapping extends CharMapping {
 				// intermediaryNodeForNodeOnPos0.get( upIndex ) ) {
 				throw new BugError( "this will never be null" );
 			}
-			indexOfNextExpectedChar = this.digDeep( wordNode, word,
+			indexOfNextExpectedChar = this.digDownRight( wordNode, word,
 					indexOfNextExpectedChar, tmpNode, 0/* current level */);
 			
 			if ( indexOfNextExpectedChar < 0 ) {
@@ -276,10 +276,12 @@ public class WordMapping extends CharMapping {
 	 *         OR -1 if there was an unexpected char encountered, which means, u
 	 *         should get another <tt>wordNode</tt>
 	 */
-	private int digDeep( NodeWithDupChildren wordNode, String expectedString,
-			int indexOfExpectedChar, IntermediaryNode lastINFound, int level ) {
+	private int digDownRight( NodeWithDupChildren wordNode,
+			String expectedString, int indexOfExpectedChar,
+			IntermediaryNode lastINFound, int level ) {
 
 		Debug.nullException( wordNode, expectedString, indexOfExpectedChar );
+		Debug.assertTrue( Environment.isWordNode( wordNode ) );
 		IntermediaryNode in = lastINFound;// can be null
 		
 
@@ -306,7 +308,6 @@ public class WordMapping extends CharMapping {
 					// then act like a bad char
 					indexOfExpectedChar = -1;
 				}
-				// else allow the while to exit it
 				break;
 			}
 			
@@ -340,7 +341,7 @@ public class WordMapping extends CharMapping {
 						if ( level >= Environment.DEFAULT_UPLEVEL ) {
 							throw new RecursionTooDeepError( "too deep" );
 						}
-						indexOfExpectedChar = this.digDeep(
+						indexOfExpectedChar = this.digDownRight(
 								(NodeWithDupChildren)wordOrChar,
 								expectedString, indexOfExpectedChar, null,
 								++level );

@@ -49,7 +49,9 @@ public class Environment {
 	public static Node			intermediaryNodeForNodeOnPos0	= new Node();
 	public static Node			nodeThatHasToBeOnPos0			= new Node();
 	// ==
-	
+	// public static final Node badChar = new Node();
+	// public static final Node completedWord = new Node();
+	// public static Node scanStatus = new Node();
 	// -----------
 	
 	// it's resizable, the initial allocation for array for in depth parsing
