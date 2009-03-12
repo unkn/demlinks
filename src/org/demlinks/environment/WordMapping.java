@@ -295,8 +295,6 @@ public class WordMapping extends CharMapping {
 			throw new BugError();
 		}
 		// if more chars to go, and no bad char encountered
-		// while ( ( indexOfExpectedChar < ( expectedString.length() ) )
-		// && ( indexOfExpectedChar >= 0 ) ) {
 		while ( indexOfExpectedChar >= 0 ) {// if not bad char, do:
 		
 
@@ -356,6 +354,9 @@ public class WordMapping extends CharMapping {
 				if ( Environment.isCharNode( wordOrChar ) ) {
 					// is CharNode then we check if it's the expected char
 					if ( wordOrChar == this.getNodeForChar( expectedString.charAt( indexOfExpectedChar ) ) ) {
+						// TODO DomainPointer, indexOfExpectedChar would be
+						// pointer, expectedString would be the domain of that
+						// pointer
 						// good, now expect next char
 						indexOfExpectedChar++;
 						continue;
@@ -375,10 +376,6 @@ public class WordMapping extends CharMapping {
 						}
 						
 						level++;
-						// indexOfExpectedChar = this.digDownRight(
-						// (NodeWithDupChildren)wordOrChar,
-						// expectedString, indexOfExpectedChar, null,
-						// ++level );
 						// expectedChar.dupAppendChild(wordOrChar);
 						if ( inList.appendChild( in ) ) {
 							throw new BugError( "couldn't've existed before" );
@@ -388,7 +385,8 @@ public class WordMapping extends CharMapping {
 						curr0 = (NodeWithDupChildren)wordOrChar;
 						if ( currentNode0.appendChild( curr0 ) ) {
 							throw new BugError(
-									"maybe needs to make it NodeWithDupChildren" );// TODO
+									"maybe needs to make it NodeWithDupChildren" );
+							// TODO check if this is needed, ever
 						}
 						
 						continue;

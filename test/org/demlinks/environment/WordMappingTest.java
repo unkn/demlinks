@@ -156,6 +156,26 @@ public class WordMappingTest {
 		assertTrue( gz.numChildren() == 2 );
 		assertTrue( zz == gz2.getFirstChild() );
 		assertTrue( z2 == gz2.getLastChild() );
+		
+		Node gz3 = this.wm.getNodeForWord( "zzz" );
+		System.out.println( gz3.numChildren() );
+		assertTrue( gz3.numChildren() == 2 );
+		assertTrue( zzz == gz3.getFirstChild() );
+		assertTrue( z3 == gz3.getLastChild() );
+		
+		Node gz4 = this.wm.getNodeForWord( "zzzz" );
+		System.out.println( gz4.numChildren() );
+		assertTrue( gz3.numChildren() == 1 );
+		assertTrue( z4 == gz4.getFirstChild() );
+		
+		//
+		// WordNode dup = new WordNode();
+		// dup.dupAppendChild( this.wm.ensureNodeForChar( 'd' ) );
+		// dup.dupAppendChild( dup );
+		// this.wm.ensureNodeForChar( 'e' );
+		// Node dupsol = this.wm.getNodeForWord( "de" );
+		// System.out.println( dupsol.numChildren() );
+		
 	}
 	
 	@Test
