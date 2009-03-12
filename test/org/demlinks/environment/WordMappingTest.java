@@ -46,6 +46,7 @@ public class WordMappingTest {
 	@Test
 	public void testAddWord() {
 
+		assertTrue( Environment.lastSolutionsForLastGottenWord.numChildren() == 0 );
 		
 		WordNode actah = this.wm.addWord( "actah" );
 		assertTrue( null != actah );
