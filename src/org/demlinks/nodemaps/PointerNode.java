@@ -102,6 +102,10 @@ public class PointerNode extends Node {
 	 */
 	public boolean setNull() {
 
+		// at this point, the pointer could point to something that's even from
+		// out of domain, if the pointee was removed from domain
+		// so integrityCheck()-ing the already existing pointee(from above)
+		// would fail
 		boolean ret = false;
 		if ( this.numChildren() == 1 ) {
 			if ( !this.removeChild( this.getPointee() ) ) {

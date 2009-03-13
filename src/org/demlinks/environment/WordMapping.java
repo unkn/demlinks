@@ -223,7 +223,9 @@ public class WordMapping extends CharMapping {
 				// ie. -1 from encountering bad char
 				// bad wordNode, need to get next wordNode
 				// indexOfNextExpectedChar = backup;
-				Debug.assertTrue( Environment.wordToBeProcessed == Environment.expectedChar.getDomain() );
+				// Debug.assertTrue( Environment.wordToBeProcessed ==
+				// Environment.expectedChar.getDomain() );
+				Environment.expectedChar.integrityCheck();
 				if ( null != backup ) {
 					Environment.expectedChar.pointTo( backup );
 				}
