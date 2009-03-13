@@ -332,4 +332,27 @@ public class NodeWithDupChildren extends Node {
 		}
 	}
 	
+	
+	@Override
+	public boolean clearAllChildren() {
+
+		throw new BadCallError( "use .dup*" );
+	}
+	
+	/**
+	 * @return true if there was at least 1 child that was removed<br>
+	 *         false is nothing was removed, already empty;
+	 */
+	public boolean dupClearAllChildren() {
+
+		// TODO junit test
+		IntermediaryNode parser = this.getIntermediaryForFirstChild();
+		boolean ret = false;
+		while ( null != parser ) {
+			this.dupRemoveIntermediaryNode( parser );
+			parser = this.getIntermediaryForFirstChild();
+			ret = true;
+		}
+		return ret;
+	}
 }

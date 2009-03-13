@@ -54,6 +54,8 @@ public class Environment {
 	public static final Node			badChar							= new Node();
 	public static final Node			completedWord					= new Node();
 	public static NodeWithDupChildren	wordToBeProcessed				= new NodeWithDupChildren();
+	
+	// the following will always point at the intermediary:
 	public static DomainPointerNode		expectedChar					= new DomainPointerNode(
 																				wordToBeProcessed );
 	
