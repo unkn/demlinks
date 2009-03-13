@@ -27,6 +27,7 @@ import org.demlinks.errors.RecursionTooDeepError;
 import org.demlinks.exceptions.BadParameterException;
 import org.demlinks.exceptions.InconsistentLinkException;
 import org.demlinks.node.Node;
+import org.demlinks.nodemaps.DomainPointerNode;
 import org.demlinks.nodemaps.Environment;
 import org.demlinks.nodemaps.IntermediaryNode;
 import org.demlinks.nodemaps.NodeWithDupChildren;
@@ -276,7 +277,7 @@ public class WordMapping extends CharMapping {
 	 *         OR -1 if there was an unexpected char encountered, which means, u
 	 *         should get another <tt>wordNode</tt>
 	 */
-	private int digDownRight( NodeWithDupChildren wordNode,
+	private Node digDownRight( NodeWithDupChildren wordNode,
 			NodeWithDupChildren expectedString, int indexOfExpectedChar,
 			IntermediaryNode lastINFound, int level ) {
 
@@ -284,9 +285,12 @@ public class WordMapping extends CharMapping {
 		Debug.assertTrue( Environment.isWordNode( wordNode ) );
 		IntermediaryNode in = lastINFound;// can be null
 		
-		// NodeWithDupChildren expectedChar = new NodeWithDupChildren();
-		// expectedChar.dupAppendChild( this.getNodeForChar(
-		// expectedString.charAt( indexOfExpectedChar ) ) );
+		Environment.scanStatus.setNull();
+		
+		Environment.expectedChar = new DomainPointerNode( expectedString );
+		// DomainPointerNode expectedChar = new DomainPointerNode(
+		// expectedString );
+		Environment.expectedChar.pointTo( expectedString.getChildAt( indexOfExpectedChar )/* IN */);
 		
 		Node inList = new Node();
 		Node currentNode0 = new Node();
@@ -294,9 +298,8 @@ public class WordMapping extends CharMapping {
 		if ( currentNode0.appendChild( curr0 ) ) {
 			throw new BugError();
 		}
-		// if more chars to go, and no bad char encountered
-		while ( indexOfExpectedChar >= 0 ) {// if not bad char, do:
-		
+		while ( true ) {
+			
 
 
 			// this is like parallel on the X axis; same wordNode parent
@@ -307,13 +310,16 @@ public class WordMapping extends CharMapping {
 				in = curr0.getNextIntermediary( in );
 			}
 			
-			if ( indexOfExpectedChar == expectedString.numChildren() ) {
+			if ( !Environment.expectedChar.canPointToNext() ) {
+				Environment.scanStatus.pointTo( Environment.completedWord );
+				// if ( indexOfExpectedChar == expectedString.numChildren() ) {
 				// we completed the word, then we have to make sure
 				// there's nothing else next
 				if ( null != in ) {
 					// yes there's more
 					// then act like a bad char
-					indexOfExpectedChar = -1;
+					// indexOfExpectedChar = -1;
+					Environment.scanStatus.pointTo( Environment.badChar );
 					break;
 				}
 			}
@@ -353,19 +359,20 @@ public class WordMapping extends CharMapping {
 				Node wordOrChar = in.getPointee();
 				if ( Environment.isCharNode( wordOrChar ) ) {
 					// is CharNode then we check if it's the expected char
-					if ( wordOrChar == expectedString.dupGetChildAt( indexOfExpectedChar ) ) {
-						// TODO DomainPointer, indexOfExpectedChar would be
-						// pointer, expectedString would be the domain of that
-						// pointer
+					if ( wordOrChar == ( (IntermediaryNode)Environment.expectedChar.getPointee() ).getPointee() ) {
+						// if ( wordOrChar == expectedString.dupGetChildAt(
+						// indexOfExpectedChar ) ) {
 						// good, now expect next char
-						indexOfExpectedChar++;
+						// indexOfExpectedChar++;
+						Environment.expectedChar.pointToNext();
 						continue;
 					} else {
 						// bad char, the char we found was different than the
 						// expected char
 						// therefore we must choose another wordNode,
 						// ie. next on Z axis
-						indexOfExpectedChar = -1;
+						// indexOfExpectedChar = -1;
+						Environment.scanStatus.pointTo( Environment.badChar );
 						break;
 					}
 				} else {
@@ -402,7 +409,13 @@ public class WordMapping extends CharMapping {
 
 		}// while
 		
-		return indexOfExpectedChar;
+		Node ret = new Node();
+		ret.appendChild( Environment.scanStatus );
+		if ( Environment.scanStatus.getPointee() != null ) {
+			// ie. if it's not badchar, or completed word, then it's incomplete
+			ret.appendChild( Environment.expectedChar );
+		}
+		return ret;
 	}
 	
 	/**

@@ -22,6 +22,7 @@ package org.demlinks.nodemaps;
 
 
 import org.demlinks.debug.Debug;
+import org.demlinks.errors.BadCallError;
 import org.demlinks.errors.BugError;
 import org.demlinks.node.Node;
 
@@ -79,7 +80,7 @@ public class PointerNode extends Node {
 			}
 		}
 		// we're here the pointer points to nothing, has no child
-		if ( this.appendChild( pointee ) ) {
+		if ( super.appendChild( pointee ) ) {
 			throw new BugError(
 					"couldn't've already existed, maybe bug in appendChild?!" );
 		}
@@ -108,5 +109,11 @@ public class PointerNode extends Node {
 			return true;
 		}
 		return false;
+	}
+	
+	@Override
+	public boolean appendChild( Node child ) {
+
+		throw new BadCallError( "use .pointTo()" );
 	}
 }
