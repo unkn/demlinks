@@ -65,7 +65,7 @@ public class PointerNode extends Node {
 	public boolean pointTo( Node pointee ) {
 
 		Debug.nullException( pointee );
-		this.integrityCheck();
+		
 		if ( this.numChildren() == 1 ) {
 			// already have a pointer
 			Node tmp = this.getLastChild();
@@ -84,6 +84,7 @@ public class PointerNode extends Node {
 			throw new BugError(
 					"couldn't've already existed, maybe bug in appendChild?!" );
 		}
+		this.integrityCheck();
 		return false;
 	}
 	
@@ -101,14 +102,15 @@ public class PointerNode extends Node {
 	 */
 	public boolean setNull() {
 
-		this.integrityCheck();
+		boolean ret = false;
 		if ( this.numChildren() == 1 ) {
 			if ( !this.removeChild( this.getPointee() ) ) {
 				throw new BugError( "should've returned true" );
 			}
-			return true;
+			ret = true;
 		}
-		return false;
+		this.integrityCheck();
+		return ret;
 	}
 	
 	@Override

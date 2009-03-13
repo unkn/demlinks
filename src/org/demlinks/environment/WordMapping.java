@@ -153,7 +153,11 @@ public class WordMapping extends CharMapping {
 		// a for all chars and it existed
 		
 		// next of first
-		Environment.expectedChar.pointTo( Environment.wordToBeProcessed.getIntermediaryAt( 1 )/* IN */);
+		if ( word.length() > 1 ) {
+			Environment.expectedChar.pointTo( Environment.wordToBeProcessed.getIntermediaryAt( 1 )/* IN */);
+		} else {
+			Environment.expectedChar.setNull();
+		}
 		// int indexOfNextExpectedChar = 1;// 0 based though
 		
 		while ( true ) {
@@ -204,7 +208,10 @@ public class WordMapping extends CharMapping {
 			// we try finding next chars of word from pos 1 in wordNode
 			// continuing from pos 1
 			// int backup = indexOfNextExpectedChar;
-			IntermediaryNode backup = (IntermediaryNode)Environment.expectedChar.getPointee();
+			Node backup = Environment.expectedChar.getPointee();
+			// if ( null == backup ) {
+			// throw new BugError();
+			// }
 			if ( null == tmpNode ) {
 				// intermediaryNodeForNodeOnPos0.get( upIndex ) ) {
 				throw new BugError( "this will never be null" );
@@ -216,7 +223,10 @@ public class WordMapping extends CharMapping {
 				// ie. -1 from encountering bad char
 				// bad wordNode, need to get next wordNode
 				// indexOfNextExpectedChar = backup;
-				Environment.expectedChar.pointTo( backup );
+				Debug.assertTrue( Environment.wordToBeProcessed == Environment.expectedChar.getDomain() );
+				if ( null != backup ) {
+					Environment.expectedChar.pointTo( backup );
+				}
 				continue;
 			} else {
 				if ( Environment.scanStatus.getPointee() != Environment.completedWord ) {
@@ -253,7 +263,11 @@ public class WordMapping extends CharMapping {
 						Environment.lastSolutionsForLastGottenWord.appendChild( wordNode );
 						// indexOfNextExpectedChar = 1;
 						// next of first
-						Environment.expectedChar.pointTo( Environment.wordToBeProcessed.getIntermediaryAt( 1 )/* IN */);
+						if ( word.length() > 1 ) {
+							Environment.expectedChar.pointTo( Environment.wordToBeProcessed.getIntermediaryAt( 1 )/* IN */);
+						} else {
+							Environment.expectedChar.setNull();
+						}
 						continue;// this will go to while and attempt to go next
 						// wordNode
 					} else {
@@ -326,7 +340,7 @@ public class WordMapping extends CharMapping {
 				in = curr0.getNextIntermediary( in );
 			}
 			
-			if ( !Environment.expectedChar.canPointToNext() ) {
+			if ( Environment.expectedChar.getPointee() == null ) {
 				Environment.scanStatus.pointTo( Environment.completedWord );
 				// if ( indexOfExpectedChar == expectedString.numChildren() ) {
 				// we completed the word, then we have to make sure
@@ -380,7 +394,9 @@ public class WordMapping extends CharMapping {
 						// indexOfExpectedChar ) ) {
 						// good, now expect next char
 						// indexOfExpectedChar++;
-						Environment.expectedChar.pointToNext();
+						if ( !Environment.expectedChar.pointToNext() ) {
+							Environment.expectedChar.setNull();
+						}
 						continue;
 					} else {
 						// bad char, the char we found was different than the

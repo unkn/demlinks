@@ -14,7 +14,7 @@ import org.demlinks.node.Node;
 public class DomainPointerNode extends PointerNode {
 	
 	// can point to children only from this domain
-	Node	domain;
+	private final Node	domain;
 	
 	public DomainPointerNode( Node domain1 ) {
 
@@ -65,7 +65,8 @@ public class DomainPointerNode extends PointerNode {
 			return false;
 		}
 		
-		return this.pointTo( this.domain.getChildNextOf( this.getPointee() ) );
+		this.pointTo( this.domain.getChildNextOf( this.getPointee() ) );
+		return true;
 	}
 	
 	/**
@@ -102,5 +103,13 @@ public class DomainPointerNode extends PointerNode {
 			}
 		}
 		return false;
+	}
+	
+	/**
+	 * @return the domain this pointer is defined upon
+	 */
+	public Node getDomain() {
+
+		return this.domain;
 	}
 }
