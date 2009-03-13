@@ -64,6 +64,7 @@ public class WordMappingTest {
 		assertTrue( actah.dupGetLastChild() == this.wm.getNodeForChar( 'h' ) );
 		
 		Node nl = this.wm.getNodeForWord( "actah" );
+		System.out.println( nl.numChildren() );
 		assertFalse( nl.numChildren() == 0 );
 		assertTrue( nl.getFirstChild() == actah );
 		assertTrue( nl.numChildren() == 1 );

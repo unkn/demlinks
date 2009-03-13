@@ -27,7 +27,6 @@ import org.demlinks.errors.RecursionTooDeepError;
 import org.demlinks.exceptions.BadParameterException;
 import org.demlinks.exceptions.InconsistentLinkException;
 import org.demlinks.node.Node;
-import org.demlinks.nodemaps.DomainPointerNode;
 import org.demlinks.nodemaps.Environment;
 import org.demlinks.nodemaps.IntermediaryNode;
 import org.demlinks.nodemaps.NodeWithDupChildren;
@@ -113,7 +112,7 @@ public class WordMapping extends CharMapping {
 		// list of all WordNodes that match this word
 		Environment.lastSolutionsForLastGottenWord.clearAllChildren();
 		
-		NodeWithDupChildren theWord = new NodeWithDupChildren();
+		// NodeWithDupChildren theWord = new NodeWithDupChildren();
 		for ( int i = 0; i < word.length(); i++ ) {
 			char c = word.charAt( i );
 			Node n = this.getNodeForChar( c );
@@ -121,11 +120,11 @@ public class WordMapping extends CharMapping {
 				// one of the chars doesn't exist, hence the word doesn't exist
 				return Environment.lastSolutionsForLastGottenWord;// empty list
 			}
-			theWord.dupAppendChild( n );
+			Environment.wordToBeProcessed.dupAppendChild( n );
 		}
 		
-
-
+		// Environment.expectedChar = new DomainPointerNode( expectedString );
+		
 		// ArrayList<IntermediaryNode> intermediaryNodeForNodeOnPos0 = new
 		// ArrayList<IntermediaryNode>(
 		// Environment.DEFAULT_UPLEVEL );
@@ -141,14 +140,16 @@ public class WordMapping extends CharMapping {
 		Environment.intermediaryNodeForNodeOnPos0.clearAllChildren();
 		Environment.nodeThatHasToBeOnPos0.clearAllChildren();
 		
-		if ( Environment.nodeThatHasToBeOnPos0.appendChild( theWord.dupGetFirstChild() ) ) {
+		if ( Environment.nodeThatHasToBeOnPos0.appendChild( Environment.wordToBeProcessed.dupGetFirstChild() ) ) {
 			// this.getNodeForChar( word.charAt( 0 ) ) ) ) {
 			throw new BugError( "couldn've existed" );
 		}
 		// getNodeForChar above won't return null, because above we passed thru
 		// a for all chars and it existed
 		
-		int indexOfNextExpectedChar = 1;// 0 based though
+		// next of first
+		Environment.expectedChar.pointTo( Environment.wordToBeProcessed.getIntermediaryAt( 1 )/* IN */);
+		// int indexOfNextExpectedChar = 1;// 0 based though
 		
 		while ( true ) {
 			// the while if, will help us handle 1 char words; nothing else
@@ -180,7 +181,9 @@ public class WordMapping extends CharMapping {
 					throw new BugError();
 				}
 				
-				indexOfNextExpectedChar = 1;// reset index, it's 0 based
+				// next of first
+				Environment.expectedChar.pointTo( Environment.wordToBeProcessed.getChildAt( 1 )/* IN */);
+				// indexOfNextExpectedChar = 1;// reset index, it's 0 based
 				continue;
 			}
 			
@@ -195,21 +198,21 @@ public class WordMapping extends CharMapping {
 			// wordNode already has intermediaryNodeForNodeOnPos0 on pos 0, thus
 			// we try finding next chars of word from pos 1 in wordNode
 			// continuing from pos 1
-			int backup = indexOfNextExpectedChar;
+			// int backup = indexOfNextExpectedChar;
 			if ( null == tmpNode ) {
 				// intermediaryNodeForNodeOnPos0.get( upIndex ) ) {
 				throw new BugError( "this will never be null" );
 			}
-			indexOfNextExpectedChar = this.digDownRight( wordNode, theWord,
-					indexOfNextExpectedChar, tmpNode, 0/* current level */);
+			// indexOfNextExpectedChar;
+			this.digDownRight( wordNode, tmpNode, 0 );
 			
-			if ( indexOfNextExpectedChar < 0 ) {
+			if ( Environment.scanStatus.getPointee() == Environment.badChar ) {
 				// ie. -1 from encountering bad char
 				// bad wordNode, need to get next wordNode
-				indexOfNextExpectedChar = backup;
+				// indexOfNextExpectedChar = backup;
 				continue;
 			} else {
-				if ( indexOfNextExpectedChar < word.length() ) {
+				if ( Environment.scanStatus.getPointee() != Environment.completedWord ) {
 					// there's still some char(s) left
 					// we would ideally go UP, and keep
 					// indexOfNextExpectedChar where it is
@@ -237,16 +240,19 @@ public class WordMapping extends CharMapping {
 					// tmpNode = (IntermediaryNode)p1.getPointee();
 					continue;
 				} else {
-					if ( indexOfNextExpectedChar == word.length() ) {
+					if ( Environment.scanStatus.getPointee() == Environment.completedWord ) {
 						// we found wordNode to be one solution
 						// and we should go next wordNode
 						Environment.lastSolutionsForLastGottenWord.appendChild( wordNode );
-						indexOfNextExpectedChar = 1;
+						// indexOfNextExpectedChar = 1;
+						// next of first
+						Environment.expectedChar.pointTo( Environment.wordToBeProcessed.getChildAt( 1 )/* IN */);
 						continue;// this will go to while and attempt to go next
 						// wordNode
 					} else {
 						// indexOfNextExpectedChar > word.length()
-						throw new BugError( "went over bounds" );
+						throw new BugError(
+								"Environment.scanStatus has unexpected/unhandled pointee" );
 					}// else
 				}// else
 			}// else
@@ -277,20 +283,21 @@ public class WordMapping extends CharMapping {
 	 *         OR -1 if there was an unexpected char encountered, which means, u
 	 *         should get another <tt>wordNode</tt>
 	 */
-	private Node digDownRight( NodeWithDupChildren wordNode,
-			NodeWithDupChildren expectedString, int indexOfExpectedChar,
+	private void digDownRight( NodeWithDupChildren wordNode,
 			IntermediaryNode lastINFound, int level ) {
 
-		Debug.nullException( wordNode, expectedString, indexOfExpectedChar );
+		Debug.nullException( wordNode, level );
 		Debug.assertTrue( Environment.isWordNode( wordNode ) );
 		IntermediaryNode in = lastINFound;// can be null
 		
 		Environment.scanStatus.setNull();
 		
-		Environment.expectedChar = new DomainPointerNode( expectedString );
+		// Environment.expectedChar = new DomainPointerNode( expectedString );
 		// DomainPointerNode expectedChar = new DomainPointerNode(
 		// expectedString );
-		Environment.expectedChar.pointTo( expectedString.getChildAt( indexOfExpectedChar )/* IN */);
+		// Environment.expectedChar.pointTo(
+		// Environment.wordToBeProcessed.getChildAt( indexOfExpectedChar )/* IN
+		// */);
 		
 		Node inList = new Node();
 		Node currentNode0 = new Node();
@@ -409,13 +416,6 @@ public class WordMapping extends CharMapping {
 
 		}// while
 		
-		Node ret = new Node();
-		ret.appendChild( Environment.scanStatus );
-		if ( Environment.scanStatus.getPointee() != null ) {
-			// ie. if it's not badchar, or completed word, then it's incomplete
-			ret.appendChild( Environment.expectedChar );
-		}
-		return ret;
 	}
 	
 	/**

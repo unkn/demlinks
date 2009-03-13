@@ -65,11 +65,7 @@ public class DomainPointerNode extends PointerNode {
 			return false;
 		}
 		
-		if ( !this.pointTo( this.domain.getChildNextOf( this.getPointee() ) ) ) {
-			throw new BugError( "should be true since a pointee existed before" );
-		}
-		return true;
-		
+		return this.pointTo( this.domain.getChildNextOf( this.getPointee() ) );
 	}
 	
 	/**

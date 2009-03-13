@@ -51,6 +51,11 @@ public class NodeWithDupChildren extends Node {
 		throw new BadCallError( "use .dup* methods" );
 	}
 	
+	public IntermediaryNode getIntermediaryAt( int zeroBasedIndex ) {
+
+		return (IntermediaryNode)super.getChildAt( zeroBasedIndex );
+	}
+	
 	/**
 	 * is the following true ?<br>
 	 * this -> someIntermediaryNode -> childNode
