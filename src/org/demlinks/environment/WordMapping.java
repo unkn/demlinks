@@ -114,7 +114,7 @@ public class WordMapping extends CharMapping {
 		Environment.wordToBeProcessed.dupClearAllChildren();
 		Debug.assertTrue( Environment.wordToBeProcessed.numChildren() == 0 );
 		Debug.assertTrue( Environment.lastSolutionsForLastGottenWord.numChildren() == 0 );
-		
+		// TODO split this in two: bool init(), bool nextStep()
 		// NodeWithDupChildren theWord = new NodeWithDupChildren();
 		for ( int i = 0; i < word.length(); i++ ) {
 			char c = word.charAt( i );
@@ -153,7 +153,7 @@ public class WordMapping extends CharMapping {
 		// a for all chars and it existed
 		
 		// next of first
-		if ( word.length() > 1 ) {
+		if ( Environment.wordToBeProcessed.numChildren() > 1 ) {
 			Environment.expectedChar.pointTo( Environment.wordToBeProcessed.getIntermediaryAt( 1 )/* IN */);
 		} else {
 			Environment.expectedChar.setNull();
@@ -265,7 +265,7 @@ public class WordMapping extends CharMapping {
 						Environment.lastSolutionsForLastGottenWord.appendChild( wordNode );
 						// indexOfNextExpectedChar = 1;
 						// next of first
-						if ( word.length() > 1 ) {
+						if ( Environment.wordToBeProcessed.numChildren() > 1 ) {
 							Environment.expectedChar.pointTo( Environment.wordToBeProcessed.getIntermediaryAt( 1 )/* IN */);
 						} else {
 							Environment.expectedChar.setNull();
