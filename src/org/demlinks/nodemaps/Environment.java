@@ -41,7 +41,7 @@ public class Environment {
 	public static final Node			AllCharNodes					= new Node();
 	public static final Node			AllWordNodes					= new Node();
 	public static final Node			AllPhraseNodes					= new Node();
-	public static final Node			AllDelimiterNodes				= new Node();
+	public static final Node			AllWordDelimiterNodes				= new Node();
 	
 	// ----------- Nodes temporarily used by methods
 	// used by WordMapping.getNodeForWord()
@@ -115,12 +115,13 @@ public class Environment {
 	}
 	
 	/**
-	 * used in constructor
+	 * used in constructor<br>
+	 * makes parentNode -> childNode
 	 * 
 	 * @param childNode
 	 * @param parentNode
 	 */
-	protected static void internalCreateNodeAsChildOf( Node childNode,
+	public static void internalEnsureNodeIsChildOf( Node childNode,
 			Node parentNode ) {
 
 		Debug.nullException( childNode, parentNode );
@@ -153,5 +154,12 @@ public class Environment {
 		Debug.nullException( whatNode );
 		whatNode.integrityCheck();
 		return whatNode.hasParent( AllCharNodes );
+	}
+	
+	public static boolean isWordDelimiter( Node whatNode ) {
+
+		Debug.nullException( whatNode );
+		whatNode.integrityCheck();
+		return whatNode.hasParent( AllWordDelimiterNodes );
 	}
 }

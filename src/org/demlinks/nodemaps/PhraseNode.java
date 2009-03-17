@@ -26,7 +26,7 @@ public class PhraseNode extends NodeWithDupChildren {
 	public PhraseNode() {
 
 		super();
-		Environment.internalCreateNodeAsChildOf( this,
+		Environment.internalEnsureNodeIsChildOf( this,
 				Environment.AllPhraseNodes );
 	}
 	

@@ -43,7 +43,7 @@ public class IntermediaryNode extends PointerNode {
 	public IntermediaryNode() {
 
 		super();
-		Environment.internalCreateNodeAsChildOf( this,
+		Environment.internalEnsureNodeIsChildOf( this,
 				Environment.AllIntermediaryNodes );
 	}
 	

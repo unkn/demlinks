@@ -24,10 +24,11 @@ package org.demlinks.environment;
 import org.demlinks.debug.Debug;
 import org.demlinks.errors.BugError;
 import org.demlinks.exceptions.BadParameterException;
+import org.demlinks.nodemaps.CharNode;
+import org.demlinks.nodemaps.Environment;
 import org.demlinks.nodemaps.IntermediaryNode;
 import org.demlinks.nodemaps.NodeWithDupChildren;
 import org.demlinks.nodemaps.PhraseNode;
-import org.demlinks.nodemaps.WordDelimiterNode;
 import org.demlinks.nodemaps.WordNode;
 
 
@@ -47,7 +48,7 @@ public class PhraseMapping extends WordMapping {
 	public PhraseNode addPhrase( String phrase ) {
 
 		Debug.nullException( phrase );
-		NodeWithDupChildren dupList = new NodeWithDupChildren();
+		NodeWithDupChildren dupListOfWordsAndDelims = new NodeWithDupChildren();
 		// split it into words and delimiters
 		String word = new String();
 		for ( int i = 0; i < phrase.length(); i++ ) {
@@ -55,21 +56,23 @@ public class PhraseMapping extends WordMapping {
 			
 			boolean isDelim = this.isWordDelimiter( c );
 			if ( !isDelim ) {
-				word += c;
+				if ( this.isWordAllowedChar( c ) ) {
+					// continue building the word
+					word += c;
+				} else {
+					throw new BugError(
+							"not word and not delimiter char, unexpected char" );
+				}
 			}
 			if ( ( isDelim ) || ( i == phrase.length() - 1 ) ) {
-				try {
-					WordNode n = this.addWord( word );
-					dupList.dupAppendChild( n );
-					if ( isDelim ) {
-						WordDelimiterNode wdn = this.addWordDelimiter( c );
-						// TODO a delimiter may be more than 1 char ?!
-						dupList.dupAppendChild( wdn );
-						// this.ensureNodeForChar( c )
-						// );
-					}
-				} catch ( BadParameterException e ) {
-					throw new BadParameterException( "seems the word was bad" );
+				WordNode n = this.addWord( word );
+				System.out.println( "|" + word + "|" );
+				dupListOfWordsAndDelims.dupAppendChild( n );
+				if ( isDelim ) {
+					// WordDelimiterNode wdn = this.addWordDelimiter( c );
+					// TODO a delimiter may be more than 1 char! like '...'
+					dupListOfWordsAndDelims.dupAppendChild( this.ensureNodeForDelimiter( c ) );
+					System.out.println( "!" + c + "!" );
 				}
 				word = "";
 			}
@@ -78,15 +81,53 @@ public class PhraseMapping extends WordMapping {
 		// TODO check if phrase exists already and return it
 		// if not, raw add it:
 		PhraseNode pn = new PhraseNode();
-		IntermediaryNode parser = dupList.getIntermediaryForFirstChild();
+		IntermediaryNode parser = dupListOfWordsAndDelims.getIntermediaryForFirstChild();
 		if ( null == parser ) {
 			throw new BugError( "somehow" );
 		}
 		while ( null != parser ) {
 			pn.dupAppendChild( parser.getPointee() );
-			parser = dupList.getNextIntermediary( parser );
+			parser = dupListOfWordsAndDelims.getNextIntermediary( parser );
 		}
 		return pn;
+	}
+	
+	/**
+	 * @param delim
+	 * @return
+	 */
+	public CharNode ensureNodeForDelimiter( char delim ) {
+
+		Debug.nullException( delim );
+		if ( !this.isWordDelimiter( delim ) ) {
+			throw new BadParameterException();
+		}
+		
+		CharNode n = this.getNodeForDelimiter( delim );
+		if ( null == n ) {
+			n = this.ensureNodeForChar( delim );// make new
+			Environment.internalEnsureNodeIsChildOf( n,
+					Environment.AllWordDelimiterNodes );
+		}
+		if ( null == n ) {
+			throw new BugError( "'ensureNodeForChar' doesn't work as designed" );
+		}
+		return n;
+	}
+	
+	public CharNode getNodeForDelimiter( char delim ) {
+
+		Debug.nullException( delim );
+		if ( !this.isWordDelimiter( delim ) ) {
+			throw new BadParameterException();
+		}
+		CharNode cn = this.getNodeForChar( delim );
+		if ( null != cn ) {
+			if ( !Environment.isWordDelimiter( cn ) ) {
+				throw new BugError();
+			}
+		}
+		return cn;
 	}
 	
 	/**
@@ -101,6 +142,12 @@ public class PhraseMapping extends WordMapping {
 		case '/':
 		case '+':
 		case '|':
+		case '.':
+		case ',':
+		case '"':
+		case '\'':
+		case '@':
+		case '!':
 			return true;
 		default:
 			return false;

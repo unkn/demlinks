@@ -35,7 +35,7 @@ public class NodeWithDupChildren extends Node {
 	public NodeWithDupChildren() {
 
 		super();// if u forget this, it's called anyway =)
-		Environment.internalCreateNodeAsChildOf( this,
+		Environment.internalEnsureNodeIsChildOf( this,
 				Environment.AllNodeWithDupChildrenNodes );
 	}
 	

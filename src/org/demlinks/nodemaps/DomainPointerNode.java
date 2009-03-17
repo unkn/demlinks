@@ -20,7 +20,7 @@ public class DomainPointerNode extends PointerNode {
 
 		super();
 		Debug.nullException( domain1 );
-		Environment.internalCreateNodeAsChildOf( this,
+		Environment.internalEnsureNodeIsChildOf( this,
 				Environment.AllDomainPointerNodes );
 		this.domain = domain1;
 	}

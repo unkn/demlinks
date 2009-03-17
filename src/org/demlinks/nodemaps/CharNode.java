@@ -30,7 +30,7 @@ public class CharNode extends ChildlessNode {
 	public CharNode() {
 
 		super();
-		Environment.internalCreateNodeAsChildOf( this, Environment.AllCharNodes );
+		Environment.internalEnsureNodeIsChildOf( this, Environment.AllCharNodes );
 	}
 	
 	@Override

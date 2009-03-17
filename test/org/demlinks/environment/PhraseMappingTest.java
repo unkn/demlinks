@@ -23,7 +23,7 @@ package org.demlinks.environment;
 
 import static org.junit.Assert.assertTrue;
 
-import org.demlinks.node.NodeList;
+import org.demlinks.node.Node;
 import org.demlinks.nodemaps.PhraseNode;
 import org.junit.Before;
 import org.junit.Test;
@@ -45,12 +45,12 @@ public class PhraseMappingTest {
 
 		PhraseNode pn = this.pm.addPhrase( "Not yet implemented" );
 		System.out.println( pn.numChildren() );
-		NodeList not = this.pm.getNodeForWord( "Not" );
-		assertTrue( not.size() == 1 );
-		NodeList yet = this.pm.getNodeForWord( "yet" );
-		assertTrue( yet.size() == 1 );
-		NodeList implemented = this.pm.getNodeForWord( "implemented" );
-		assertTrue( implemented.size() == 1 );
+		Node not = this.pm.getNodeForWord( "Not" );
+		assertTrue( not.numChildren() == 1 );
+		Node yet = this.pm.getNodeForWord( "yet" );
+		assertTrue( yet.numChildren() == 1 );
+		Node implemented = this.pm.getNodeForWord( "implemented" );
+		assertTrue( implemented.numChildren() == 1 );
 	}
 	
 }

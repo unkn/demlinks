@@ -31,7 +31,7 @@ public class RandomNode extends Node {
 	public RandomNode() {
 
 		super();
-		Environment.internalCreateNodeAsChildOf( this,
+		Environment.internalEnsureNodeIsChildOf( this,
 				Environment.AllRandomNodes );
 	}
 	

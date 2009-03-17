@@ -39,7 +39,7 @@ public class PointerNode extends Node {
 	public PointerNode() {
 
 		super();
-		Environment.internalCreateNodeAsChildOf( this,
+		Environment.internalEnsureNodeIsChildOf( this,
 				Environment.AllPointerNodes );
 	}
 	
