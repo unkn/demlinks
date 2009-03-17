@@ -112,4 +112,5 @@ public class DomainPointerNode extends PointerNode {
 
 		return this.domain;
 	}
+	// TODO junit test for this class
 }
