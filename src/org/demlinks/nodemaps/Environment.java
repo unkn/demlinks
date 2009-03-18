@@ -343,7 +343,7 @@ public class Environment {
 			if ( null == tmpNode ) {
 				throw new BugError( "this will never be null" );
 			}
-			this.digDownRight( wordNode, tmpNode, 0 );
+			this.digDownRightForWord( wordNode, tmpNode, 0 );
 			
 			if ( Environment.scanStatus.getPointee() == Environment.badChar ) {
 				// ie. -1 from encountering bad char
@@ -394,15 +394,12 @@ public class Environment {
 	}
 	
 	/**
-	 * recursive method
+	 * non-recursive method
 	 * 
 	 * @param wordNode
-	 * @param expectedString
-	 *            the chars in the order in which they're expected to be found
-	 * @param indexOfExpectedChar
-	 *            the index of the next char that is to be expected to exist<br>
-	 *            this index is only applied on <tt>expectedString</tt>
+	 *            continuing from wordNode->lastINFound
 	 * @param lastINFound
+	 *            IntermediaryNode<br>
 	 *            we're skipping this, and the next IntermediaryNode found will
 	 *            be either CharNode or WordNode<br>
 	 *            if CharNode then it must be equal to expectedString[charIndex]
@@ -411,11 +408,8 @@ public class Environment {
 	 *            should choose another wordNode<br>
 	 *            else if WordNode, digDeep() until u find a CharNode then apply
 	 *            what we said above for CharNode<br>
-	 * @return the index of the next char that needs to be checked for<br>
-	 *         OR -1 if there was an unexpected char encountered, which means, u
-	 *         should get another <tt>wordNode</tt>
 	 */
-	private void digDownRight( NodeWithDupChildren wordNode,
+	private void digDownRightForWord( NodeWithDupChildren wordNode,
 			IntermediaryNode lastINFound, int level ) {
 
 		Debug.nullException( wordNode, level );
@@ -699,6 +693,13 @@ public class Environment {
 		return whatNode.hasParent( AllPointerNodes );
 	}
 	
+	public static boolean isPhrase( Node whatNode ) {
+
+		Debug.nullException( whatNode );
+		whatNode.integrityCheck();
+		return whatNode.hasParent( AllPhraseNodes );
+	}
+	
 	/**
 	 * AllNodeWithDupChildrenNodes -> whatNode ?
 	 * 
@@ -743,7 +744,7 @@ public class Environment {
 	 * @param childNode
 	 * @param parentNode
 	 */
-	public static void internalEnsureNodeIsChildOf( Node childNode,
+	protected static void internalEnsureNodeIsChildOf( Node childNode,
 			Node parentNode ) {
 
 		Debug.nullException( childNode, parentNode );
@@ -795,38 +796,53 @@ public class Environment {
 	public PhraseNode addPhrase( String phrase ) {
 
 		Debug.nullException( phrase );
+		Debug.assertTrue( !phrase.isEmpty() );
+		
+
+		Node manyPhrases = this.getNodeForPhrase( phrase );
+		if ( manyPhrases.numChildren() != 0 ) {
+			PhraseNode phraseNode = (PhraseNode)manyPhrases.getFirstChild();
+			if ( !isPhrase( phraseNode ) ) {
+				throw new BugError();
+			}
+			return phraseNode;
+		}
+		// else, doesn't exist already
+		
 		NodeWithDupChildren dupListOfWordsAndDelims = new NodeWithDupChildren();
 		// split it into words and delimiters
 		String word = new String();
-		for ( int i = 0; i < phrase.length(); i++ ) {
+		int len = phrase.length();
+		for ( int i = 0; i < len; i++ ) {
 			char c = phrase.charAt( i );
 			
-			boolean isDelim = this.isWordDelimiter( c );
+			boolean isDelim = this.isDelimiter( c );
 			if ( !isDelim ) {
 				if ( this.isWordAllowedChar( c ) ) {
 					// continue building the word
 					word += c;
 				} else {
 					throw new BugError(
-							"not word and not delimiter char, unexpected char" );
+							"not word char and not delimiter char => unexpected char" );
 				}
-			}
+			}// not else!
+			
 			if ( ( isDelim ) || ( i == phrase.length() - 1 ) ) {
-				WordNode n = this.addWord( word );
-				System.out.println( "|" + word + "|" );
-				dupListOfWordsAndDelims.dupAppendChild( n );
+				if ( !word.isEmpty() ) {
+					// System.out.println( "|" + word + "|" );
+					dupListOfWordsAndDelims.dupAppendChild( this.addWord( word ) );
+					word = "";
+				}
 				if ( isDelim ) {
-					// WordDelimiterNode wdn = this.addWordDelimiter( c );
 					// TODO a delimiter may be more than 1 char! like '...'
 					dupListOfWordsAndDelims.dupAppendChild( this.ensureNodeForDelimiter( c ) );
-					System.out.println( "!" + c + "!" );
+					// System.out.println( "!" + c + "!" );
 				}
-				word = "";
+				
 			}
 		}
 		
-		// TODO check if phrase exists already and return it
-		// if not, raw add it:
+		// raw add it:
 		PhraseNode pn = new PhraseNode();
 		IntermediaryNode parser = dupListOfWordsAndDelims.getIntermediaryForFirstChild();
 		if ( null == parser ) {
@@ -839,6 +855,15 @@ public class Environment {
 		return pn;
 	}
 	
+	
+
+	public Node getNodeForPhrase( String phrase ) {
+
+		// TODO Auto-generated method stub
+		Node p = new Node();
+		return p;
+	}
+	
 	/**
 	 * @param delim
 	 * @return
@@ -846,7 +871,7 @@ public class Environment {
 	public CharNode ensureNodeForDelimiter( char delim ) {
 
 		Debug.nullException( delim );
-		if ( !this.isWordDelimiter( delim ) ) {
+		if ( !this.isDelimiter( delim ) ) {
 			throw new BadParameterException();
 		}
 		
@@ -869,7 +894,7 @@ public class Environment {
 	public CharNode getNodeForDelimiter( char delim ) {
 
 		Debug.nullException( delim );
-		if ( !this.isWordDelimiter( delim ) ) {
+		if ( !this.isDelimiter( delim ) ) {
 			throw new BadParameterException();
 		}
 		CharNode cn = this.getNodeForChar( delim );
@@ -882,12 +907,18 @@ public class Environment {
 	}
 	
 	/**
+	 * isWordDelimiter
+	 * 
 	 * @param c
 	 *            char
 	 * @return true if the char is used between two words
 	 */
-	public boolean isWordDelimiter( char c ) {
+	public boolean isDelimiter( char c ) {
 
+		if ( this.isWordAllowedChar( c ) ) {
+			return false;
+		}
+		
 		switch ( c ) {
 		case ' ':
 		case '/':
@@ -896,7 +927,7 @@ public class Environment {
 		case '.':
 		case ',':
 		case '"':
-		case '\'':
+			// case '\'':
 		case '@':
 		case '!':
 			return true;

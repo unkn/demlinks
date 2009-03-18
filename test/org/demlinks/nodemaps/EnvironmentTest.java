@@ -158,7 +158,7 @@ public class EnvironmentTest {
 		assertTrue( actah.dupGetLastChild() == this.env.getNodeForChar( 'h' ) );
 		
 		Node nl = this.env.getNodeForWord( "actah" );
-		System.out.println( nl.numChildren() );
+		// System.out.println( nl.numChildren() );
 		assertFalse( nl.numChildren() == 0 );
 		assertTrue( nl.getFirstChild() == actah );
 		assertTrue( nl.numChildren() == 1 );
@@ -220,7 +220,7 @@ public class EnvironmentTest {
 		
 		nl = this.env.getNodeForWord( "actah" );
 		assertFalse( nl.numChildren() == 0 );
-		System.out.println( nl.numChildren() );
+		// System.out.println( nl.numChildren() );
 		assertTrue( nl.numChildren() == 4 );
 		assertTrue( nl.getChildPrevOf( actah2 ) == actah3 );
 		assertTrue( nl == Environment.lastSolutionsForLastGottenWord );
@@ -247,19 +247,19 @@ public class EnvironmentTest {
 		assertTrue( gz.numChildren() == 1 );
 		assertTrue( z1 == gz.getFirstChild() );
 		Node gz2 = this.env.getNodeForWord( "zz" );
-		System.out.println( gz2.numChildren() );
+		// System.out.println( gz2.numChildren() );
 		assertTrue( gz.numChildren() == 2 );
 		assertTrue( zz == gz2.getFirstChild() );
 		assertTrue( z2 == gz2.getLastChild() );
 		
 		Node gz3 = this.env.getNodeForWord( "zzz" );
-		System.out.println( gz3.numChildren() );
+		// System.out.println( gz3.numChildren() );
 		assertTrue( gz3.numChildren() == 2 );
 		assertTrue( zzz == gz3.getFirstChild() );
 		assertTrue( z3 == gz3.getLastChild() );
 		
 		Node gz4 = this.env.getNodeForWord( "zzzz" );
-		System.out.println( gz4.numChildren() );
+		// System.out.println( gz4.numChildren() );
 		assertTrue( gz3.numChildren() == 1 );
 		assertTrue( z4 == gz4.getFirstChild() );
 		
@@ -345,8 +345,9 @@ public class EnvironmentTest {
 	@Test
 	public void testAddPhrase() {
 
-		PhraseNode pn = this.env.addPhrase( "Not yet implemented" );
-		System.out.println( pn.numChildren() );
+		PhraseNode pn = this.env.addPhrase( "Not yet implemented..." );
+		// System.out.println( pn.numChildren() );
+		assertTrue( pn.numChildren() == 8 );
 		Node not = this.env.getNodeForWord( "Not" );
 		assertTrue( not.numChildren() == 1 );
 		Node yet = this.env.getNodeForWord( "yet" );

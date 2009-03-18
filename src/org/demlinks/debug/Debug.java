@@ -38,6 +38,7 @@ public final class Debug {
 	
 	public static void assertTrue( boolean condition ) {
 
+		// this is not to be disabled though
 		if ( !condition ) {
 			throw new AssertionError( "condition was false" );
 		}
