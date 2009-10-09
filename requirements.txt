@@ -1,0 +1,6 @@
+* eclipse galileo SR1
+* ...
+* get junit jar and src.jar, put both in /lib/junit/*
+* get berkeley DB java edition put it in /lib/je/*  (ie. je-3.3.87.jar)
+* unpack bdb JE src folder into /lib/je/*
+
