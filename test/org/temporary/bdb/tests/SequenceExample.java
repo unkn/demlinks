@@ -38,8 +38,8 @@ import com.sleepycat.je.SequenceConfig;
  * of the sequence only exists once
  * 
  */
-public class SequenceExample {
-	
+public class SequenceExample { // arg should be "bin" w/o quotes
+
 	private static final int	EXIT_SUCCESS	= 0;
 	private static final int	EXIT_FAILURE	= 1;
 	private static final String	DB_NAME			= "sequence.db";
@@ -51,7 +51,8 @@ public class SequenceExample {
 	
 	public static void usage() {
 
-		System.out.println( "usage: java " + "je.SequenceExample " + "<dbEnvHomeDirectory>" );
+		System.out.println( "usage: java " + "je.SequenceExample "
+				+ "<dbEnvHomeDirectory>" );
 		System.exit( EXIT_FAILURE );
 	}
 	
@@ -73,7 +74,8 @@ public class SequenceExample {
 		System.exit( EXIT_SUCCESS );
 	}
 	
-	public void run( File envHomeDirectory ) throws DatabaseException, IOException {
+	public void run( File envHomeDirectory ) throws DatabaseException,
+			IOException {
 
 		/* Create the environment object. */
 		EnvironmentConfig envConfig = new EnvironmentConfig();
