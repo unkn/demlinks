@@ -25,6 +25,7 @@ package org.dml.database.bdb;
 
 
 
+import com.sleepycat.je.SequenceConfig;
 
 
 

@@ -27,10 +27,15 @@ package org.dml.database.bdb;
 
 import java.util.HashSet;
 
-import javax.sound.midi.Sequence;
-
 import org.dml.tools.RunTime;
 import org.javapart.logger.Log;
+
+import com.sleepycat.je.Database;
+import com.sleepycat.je.DatabaseConfig;
+import com.sleepycat.je.DatabaseEntry;
+import com.sleepycat.je.DatabaseException;
+import com.sleepycat.je.Sequence;
+import com.sleepycat.je.SequenceConfig;
 
 
 

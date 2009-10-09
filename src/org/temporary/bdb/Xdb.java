@@ -27,7 +27,10 @@ package org.temporary.bdb;
 
 import java.io.File;
 
-import org.omg.CORBA.Environment;
+import com.sleepycat.je.DatabaseException;
+import com.sleepycat.je.Environment;
+import com.sleepycat.je.EnvironmentConfig;
+import com.sleepycat.je.EnvironmentLockedException;
 
 
 

@@ -25,6 +25,9 @@ package org.dml.database.bdb;
 
 
 
+import com.sleepycat.je.DatabaseException;
+import com.sleepycat.je.Transaction;
+import com.sleepycat.je.TransactionConfig;
 
 
 

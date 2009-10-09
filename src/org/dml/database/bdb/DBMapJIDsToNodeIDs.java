@@ -31,6 +31,9 @@ import org.dml.tools.BugError;
 import org.dml.tools.RunTime;
 import org.javapart.logger.Log;
 
+import com.sleepycat.je.DatabaseException;
+import com.sleepycat.je.OperationStatus;
+
 
 
 /**

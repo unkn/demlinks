@@ -30,6 +30,8 @@ import org.dml.level1.NodeJID;
 import org.dml.level2.NodeID;
 import org.dml.tools.RunTime;
 
+import com.sleepycat.je.DatabaseException;
+
 
 
 /**
