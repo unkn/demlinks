@@ -27,6 +27,8 @@ package org.dml.database.bdb;
 
 import org.dml.tools.RunTime;
 
+import com.sleepycat.je.DatabaseConfig;
+
 
 
 /**

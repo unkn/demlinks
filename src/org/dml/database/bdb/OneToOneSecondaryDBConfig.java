@@ -27,6 +27,12 @@ package org.dml.database.bdb;
 
 import org.dml.tools.RunTime;
 
+import com.sleepycat.je.DatabaseEntry;
+import com.sleepycat.je.DatabaseException;
+import com.sleepycat.je.SecondaryConfig;
+import com.sleepycat.je.SecondaryDatabase;
+import com.sleepycat.je.SecondaryKeyCreator;
+
 
 
 /**

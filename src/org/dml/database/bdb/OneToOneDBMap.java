@@ -28,6 +28,12 @@ package org.dml.database.bdb;
 import org.dml.tools.RunTime;
 import org.javapart.logger.Log;
 
+import com.sleepycat.je.Database;
+import com.sleepycat.je.DatabaseEntry;
+import com.sleepycat.je.DatabaseException;
+import com.sleepycat.je.OperationStatus;
+import com.sleepycat.je.SecondaryDatabase;
+
 
 
 /**

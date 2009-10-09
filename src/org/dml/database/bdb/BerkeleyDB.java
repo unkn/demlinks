@@ -29,7 +29,14 @@ import java.io.File;
 
 import org.dml.tools.RunTime;
 import org.javapart.logger.Log;
-import org.omg.CORBA.Environment;
+
+import com.sleepycat.bind.tuple.StringBinding;
+import com.sleepycat.je.Database;
+import com.sleepycat.je.DatabaseEntry;
+import com.sleepycat.je.DatabaseException;
+import com.sleepycat.je.Environment;
+import com.sleepycat.je.EnvironmentConfig;
+import com.sleepycat.je.SecondaryDatabase;
 
 
 

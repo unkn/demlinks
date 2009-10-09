@@ -25,10 +25,17 @@ package org.dml.database;
 
 
 
+import static org.junit.Assert.assertTrue;
+
 import java.io.UnsupportedEncodingException;
 
 import org.dml.database.bdb.BerkeleyDB;
 import org.dml.database.bdb.OneToOneDBMap;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+import com.sleepycat.je.DatabaseException;
 
 
 
