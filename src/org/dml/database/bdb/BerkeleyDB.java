@@ -46,7 +46,7 @@ import com.sleepycat.je.SecondaryDatabase;
  */
 public class BerkeleyDB {
 	
-	private static final String				DB_ENVIRONMENT_HOMEDIR	= "c:\\sometmp";
+	private static final String				DB_ENVIRONMENT_HOMEDIR	= ".\\bin";
 	private static final EnvironmentConfig	environmentConfig		= new EnvironmentConfig();
 	private static Environment				env						= null;
 	private static DBMapJIDsToNodeIDs		db1						= null;
