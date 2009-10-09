@@ -25,7 +25,6 @@ package org.dml.database;
 
 
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -74,8 +73,8 @@ public class DBMapTupleNodeIDsTest {
 		NodeID _b = NodeID.ensureNode( NodeJID.ensureJIDFor( "B" + new Object() ) );
 		assertNotNull( _a );
 		assertNotNull( _b );
-		assertFalse( tdb.isGroup( _a, _b ) );
-		assertFalse( tdb.ensureGroup( _a, _b ) );
+		org.junit.Assert.assertFalse( tdb.isGroup( _a, _b ) );
+		org.junit.Assert.assertFalse( tdb.ensureGroup( _a, _b ) );
 		
 		assertTrue( tdb.isGroup( _a, _b ) );
 		assertTrue( tdb.ensureGroup( _a, _b ) );
