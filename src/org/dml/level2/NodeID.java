@@ -34,7 +34,14 @@ import org.dml.tools.RunTime;
 
 /**
  * is stored in Storage<br>
+ * so basically, NodeID is a long, in Storage
+ * and it's one2one associated with a NodeJID (which is basically a String in
+ * java)<br>
+ * it's not really important what NodeID is, rather it's important this one2one
+ * association between the two<br>
  * 
+ * in Storage, a Sequence is used to generate a new NodeID that won't equate
+ * with any other already existent<br>
  */
 public class NodeID {
 	
