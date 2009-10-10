@@ -8,4 +8,4 @@
    do this: Window->Preferences->Java->Installed JREs->Search, tick one, Ok
 
    
-the above were tested under Win7 64bit, jdk1.6.0 u16
+the above were tested under Win7 ultimate 64bit, jdk1.6.0 u16
