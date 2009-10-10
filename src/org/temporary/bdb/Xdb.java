@@ -41,7 +41,7 @@ import com.sleepycat.je.EnvironmentLockedException;
 public class Xdb {
 	
 	Environment			env;
-	static final String	homeDir	= "c:/sometmp";
+	static final String	homeDir	= ".\bin";
 	
 	/**
 	 * @param args
