@@ -1,4 +1,4 @@
-* eclipse galileo SR1
+* eclipse galileo SR1 for java developers (not EE)
 * ...
 * get junit jar and src.jar, put both in /lib/junit/*
 * get berkeley DB java edition put it in /lib/je/*  (ie. je-3.3.87.jar)
@@ -6,6 +6,7 @@
 
 * if you get java.lang.NoClassDefFoundError
    do this: Window->Preferences->Java->Installed JREs->Search, tick one, Ok
+   also do a Clean
 
    
 the above were tested under Win7 ultimate 64bit, jdk1.6.0 u16

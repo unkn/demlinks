@@ -8,4 +8,4 @@ Things that are depreciated or obsolete won't be here.
 	- it's presumably easier than implementing a Btree
 	
 	 
-2. using DejaVu Sans Mono 14, in eclipse for editing
+2. using DejaVu Sans Mono 14, in eclipse for editing (General->Appearance->Colors and Fonts)
