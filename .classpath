@@ -6,5 +6,6 @@
 	<classpathentry kind="lib" path="lib/je/je-3.3.87.jar" sourcepath="lib/je/src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk1.6.0_16(1)"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jme"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/jME Physics 2"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

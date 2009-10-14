@@ -59,6 +59,10 @@ try using 32 bit JRE (Project->Properties->Java Build Path->Libraries->JRE Syste
 
 ---------//jme2
 
+---- jme2 physics
+similarly as jme2
+http://jmephysics.googlecode.com/svn/
+----
 
 the above were tested under Win7 ultimate 64bit, jdk1.6.0 u16, 64bit and 32bit JREs
 
