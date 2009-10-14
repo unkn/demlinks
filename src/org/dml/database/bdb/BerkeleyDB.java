@@ -53,6 +53,8 @@ public class BerkeleyDB {
 	
 	
 	/**
+	 * singleton
+	 * 
 	 * @return the database handling the one to one mapping between JIDs and
 	 *         NodeIDs
 	 */
@@ -93,7 +95,7 @@ public class BerkeleyDB {
 	}
 	
 	/**
-	 * @return
+	 * @return singleton of the BDB Environment
 	 * @throws DatabaseException
 	 */
 	public static final Environment getEnvironment() throws DatabaseException {

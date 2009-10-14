@@ -1,5 +1,14 @@
+* get http://msysgit.googlecode.com/files/Git-1.6.4-preview20090730.exe
+from http://code.google.com/p/msysgit/downloads/list
+use it to get all the source code:(read-only) [this url is not for developers]
+git://demlinks.git.sourceforge.net/gitroot/demlinks/demlinks
+
+New->Java Project->Create Project from existing source: browse for folder u just cloned in.
+Finish
+====
 * eclipse galileo SR1 for java developers (not EE)
 * ...
+* create folder "lib" inside project dir
 * get junit jar and src.jar, put both in /lib/junit/*
 * get berkeley DB java edition put it in /lib/je/*  (ie. je-3.3.87.jar)
 * unpack bdb JE src folder into /lib/je/*  (afterwards it's /lib/je/src/com/*)
@@ -8,5 +17,48 @@
    do this: Window->Preferences->Java->Installed JREs->Search, tick one, Ok
    also do a Clean
 
-   
-the above were tested under Win7 ultimate 64bit, jdk1.6.0 u16
+---------- jme2
+Check out jME2 from SVN using Eclipse Galileo SR1
+
+Help->Install New Software... 
+Work with: Galileo - http://download.eclipse.org/releases/galileo
+expand Collaboration
+    Subversive SVN Team Provider (Incubation) 0.7.8.I20090904-1300 
+...
+restart eclipse
+
+Window->Show View->Other, SVN->SVN Repositories
+
+Install Connectors window appears
+tick SVN Kit 1.3.0, Finish
+
+restart eclipse
+
+in SVN Repositories, rightclick, New->Repository Location 
+URL: http://jmonkeyengine.googlecode.com/svn 
+Finish 
+expand it 
+rightclick on "trunk" 
+Find/Check Out As
+
+Check out as a project with the name specified
+
+Finish
+
+(at the time of this writing:) in package com.g3d.renderer.lwjgl file: LwjglRenderer?.java line: 98 uncomment this line:
+
+    private Camera camera; 
+
+then /src/g3dtest/TestDebugShapes.java should compile and run ok
+
+
+- if you get this:
+java.lang.UnsatisfiedLinkError: O:\eclipse.workspace\jme\lib\lwjgl\native\windows\lwjgl.dll: Can't load IA 32-bit .dll on a AMD 64-bit platform
+try using 32 bit JRE (Project->Properties->Java Build Path->Libraries->JRE System Library... Edit)
+// the other fix is, to add JRE to PATH, so lwjgl64.dll can find jawt.dll while retaining JRE 64bit
+
+---------//jme2
+
+
+the above were tested under Win7 ultimate 64bit, jdk1.6.0 u16, 64bit and 32bit JREs
+
