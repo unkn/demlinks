@@ -109,7 +109,7 @@ public class HelloIntersection extends SimpleFixedLogicrateGame {
 	@Override
 	protected void simpleInitGame() {
 
-		this.setLogicTicksPerSecond( 10 );// seems this class is already running
+		this.setLogicTicksPerSecond( 60 );// seems this class is already running
 		// at a fixed rate; thus setting this to 10 emulates crappy computer
 		
 		display.setVSyncEnabled( true );

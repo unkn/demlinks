@@ -25,7 +25,8 @@ package org.dml.storagewrapper;
 
 
 /**
- * here you can change which storage engine to use only by changing the extends
+ * here you can change which storage engine to use only by changing the extends<br>
+ * cannot be changed on runtime
  * 
  */
 public class Storage extends BerkeleyDBStorage {
