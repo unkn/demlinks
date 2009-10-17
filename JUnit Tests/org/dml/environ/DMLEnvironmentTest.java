@@ -25,12 +25,11 @@ package org.dml.environ;
 
 
 
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import org.dml.level1.NodeJID;
 import org.dml.level2.NodeID;
-import org.dml.storagewrapper.StorageException;
 import org.junit.Test;
 
 
@@ -42,7 +41,7 @@ import org.junit.Test;
 public class DMLEnvironmentTest {
 	
 	@Test
-	public void multiple() throws StorageException {
+	public void multiple() throws Exception {
 
 		DMLEnvironment d1 = DMLEnvironment.getNew( ".\\bin\\JUnitTests\\1&2",
 				true );
@@ -51,6 +50,9 @@ public class DMLEnvironmentTest {
 		DMLEnvironment d3 = DMLEnvironment.getNew( ".\\bin\\JUnitTests\\3",
 				true );
 		try {
+			// if ( 1 == 1 ) {
+			// throw new Exception( "blah" );
+			// }
 			String test1 = "test1";
 			String test2 = "test2";
 			NodeJID j1 = NodeJID.ensureJIDFor( test1 );
@@ -64,8 +66,10 @@ public class DMLEnvironmentTest {
 			// in same dir
 			assertTrue( n2.equals( d2.getNodeID( j2 ) ) );
 			
-			assertFalse( n1.equals( d3.getNodeID( j1 ) ) );// d3 is diff
-			assertFalse( n2.equals( d3.getNodeID( j2 ) ) );
+			NodeID n3 = d3.getNodeID( j1 );// d3 is in diff dir
+			assertNull( n3 );
+			n3 = d3.getNodeID( j2 );
+			assertNull( n3 );
 			System.out.println( d3.getJIDFor( n1 ) );
 		} finally {
 			d1.done();

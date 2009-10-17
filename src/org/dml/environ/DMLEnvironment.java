@@ -25,6 +25,8 @@ package org.dml.environ;
 
 
 
+import java.util.Iterator;
+
 import org.dml.level1.NodeJID;
 import org.dml.level2.NodeID;
 import org.dml.storagewrapper.BerkeleyDBStorage;
@@ -98,10 +100,12 @@ public class DMLEnvironment {
 	public static final void deInitAll() {
 
 		Log.entry();
-		for ( DMLEnvironment env : ALL_INSTANCES ) {
-			env.done();
-			RunTime.assertTrue( ALL_INSTANCES.remove( env ) );
+		Iterator<DMLEnvironment> i = ALL_INSTANCES.iterator();
+		while ( i.hasNext() ) {
+			i.next().done();
+			i.remove();
 		}
+		i = null;
 		RunTime.assertTrue( ALL_INSTANCES.isEmpty() );
 	}
 	
