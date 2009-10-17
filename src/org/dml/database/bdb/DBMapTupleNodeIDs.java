@@ -43,6 +43,9 @@ import com.sleepycat.je.DatabaseException;
  * A-D<br>
  * A-B<br>
  * A-C<br>
+ * insertion order is irrelevant as there will be no order(well it's actually
+ * sorted but should not be counted on). The only thing you'd need to know here
+ * is whether the tuple exists or not.<br>
  */
 public class DBMapTupleNodeIDs extends OneToManyDBMap {
 	

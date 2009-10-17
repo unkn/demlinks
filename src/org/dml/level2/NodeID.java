@@ -25,9 +25,6 @@ package org.dml.level2;
 
 
 
-import org.dml.level1.NodeJID;
-import org.dml.storagewrapper.Storage;
-import org.dml.storagewrapper.StorageException;
 import org.dml.tools.RunTime;
 
 
@@ -47,43 +44,6 @@ public class NodeID {
 	
 	
 	private final long	itself;
-	
-	/**
-	 * @param fromJID
-	 * @return
-	 * @throws StorageException
-	 */
-	public static NodeID createNode( NodeJID fromJID ) throws StorageException {
-
-		return Storage.createNodeID( fromJID );
-	}
-	
-	/**
-	 * @param identifiedByThisJID
-	 * @return
-	 * @throws StorageException
-	 */
-	public static NodeID getNode( NodeJID identifiedByThisJID )
-			throws StorageException {
-
-		return Storage.getNodeID( identifiedByThisJID );
-	}
-	
-	/**
-	 * eget=ensure get<br>
-	 * make a new one if it doesn't exist<br>
-	 * but if exists don't complain<br>
-	 * 
-	 * @param theJID
-	 *            this JID and this Node will be mapped 1 to 1
-	 * @return never null
-	 * @throws StorageException
-	 */
-	public static NodeID ensureNode( NodeJID theJID ) throws StorageException {
-
-		RunTime.assertNotNull( theJID );
-		return Storage.ensureNodeID( theJID );
-	}
 	
 	/**
 	 * constructor, call only internally

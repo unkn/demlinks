@@ -25,9 +25,9 @@ package org.dml.level3;
 
 
 
+import org.dml.environ.DMLEnvironment;
 import org.dml.level1.NodeJID;
 import org.dml.level2.NodeID;
-import org.dml.storagewrapper.Storage;
 import org.dml.storagewrapper.StorageException;
 import org.junit.After;
 import org.junit.Before;
@@ -45,23 +45,24 @@ public class TupleOfNodeIDsTest {
 	NodeID	n1, n2, n3;
 	
 	@Before
-	public void setUp() {
+	public void setUp() throws StorageException {
 
-		Storage.init();
+		DMLEnvironment.init();
 	}
 	
 	@After
 	public void tearDown() {
 
-		Storage.deInit();
+		DMLEnvironment.deInit();
 	}
 	
 	@Test
 	public void test1() throws StorageException {
 
-		n1 = NodeID.ensureNode( NodeJID.ensureJIDFor( "A" ) );
-		n2 = NodeID.ensureNode( NodeJID.ensureJIDFor( "B" ) );
+		n1 = DMLEnvironment.ensureNodeID( NodeJID.ensureJIDFor( "A" ) );
+		n2 = DMLEnvironment.ensureNodeID( NodeJID.ensureJIDFor( "B" ) );
 		// one = TupleOfNodeIDs.groupAsKeyValue( n1, n2 );
+		
 		System.out.println( n1 + "!" + n2 );
 		
 	}

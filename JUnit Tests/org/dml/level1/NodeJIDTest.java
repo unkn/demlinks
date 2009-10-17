@@ -29,6 +29,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.dml.environ.DMLEnvironment;
 import org.dml.storagewrapper.StorageException;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -43,11 +44,18 @@ public class NodeJIDTest {
 	NodeJID	a, b, c;
 	
 	@Before
-	public void init() {
+	public void init() throws StorageException {
 
+		// DMLEnvironment.init();
 		a = NodeJID.ensureJIDFor( "A" );
 		b = NodeJID.ensureJIDFor( "B" );
 		c = NodeJID.ensureJIDFor( "C" );
+	}
+	
+	@After
+	public void tearDown() {
+
+		// DMLEnvironment.deInit();
 	}
 	
 	@Test
@@ -100,7 +108,7 @@ public class NodeJIDTest {
 		
 		aeGot = false;
 		try {
-			NodeJID.getJIDFor( null );
+			DMLEnvironment.getJIDFor( null );
 		} catch ( AssertionError e ) {
 			aeGot = true;
 		}

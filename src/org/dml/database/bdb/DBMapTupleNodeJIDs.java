@@ -35,7 +35,7 @@ public class DBMapTupleNodeJIDs extends DBMapTupleNodeIDs {
 	 */
 	public DBMapTupleNodeJIDs( String dbName1 ) {
 
-		super( dbName1, mapJIDs2IDs );
+		super( dbName1, BerkeleyDB.getDBMapJIDsToNodeIDs() );
 	}
 	
 }

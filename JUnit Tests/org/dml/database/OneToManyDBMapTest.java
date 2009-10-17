@@ -52,9 +52,9 @@ public class OneToManyDBMapTest {
 	final String	_c	= "C" + new Object();
 	
 	@Before
-	public void setUp() {
+	public void setUp() throws DatabaseException {
 
-		BerkeleyDB.initAll();
+		BerkeleyDB.init( ".\\bin" );
 		o2m = new OneToManyDBMap( "one to many" + new Object() );
 	}
 	
@@ -62,7 +62,7 @@ public class OneToManyDBMapTest {
 	public void tearDown() {
 
 		o2m.silentClose();
-		BerkeleyDB.deInitAll();
+		BerkeleyDB.deInit();
 	}
 	
 	/**

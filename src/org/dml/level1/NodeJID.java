@@ -25,9 +25,6 @@ package org.dml.level1;
 
 import java.util.HashMap;
 
-import org.dml.level2.NodeID;
-import org.dml.storagewrapper.Storage;
-import org.dml.storagewrapper.StorageException;
 import org.dml.tools.RunTime;
 
 
@@ -78,27 +75,6 @@ public class NodeJID {
 		return curr;
 	}
 	
-	/**
-	 * there's a one to one mapping between NodeID and NodeJID<br>
-	 * given the NodeID return its NodeJID<br>
-	 * NodeIDs are on some kind of Storage<br>
-	 * FIXME: should this method be here?
-	 * 
-	 * @param nodeID
-	 * @return NodeJID
-	 * @throws StorageException
-	 */
-	public static NodeJID getJIDFor( NodeID nodeID ) throws StorageException {
-
-		RunTime.assertNotNull( nodeID );
-		return Storage.getNodeJID( nodeID );
-	}
-	
-	@Override
-	public String toString() {
-
-		return this.getClass().getSimpleName() + ":" + this.getAsString();
-	}
 	
 	/**
 	 * private constructor to prevent usage via new
@@ -114,6 +90,15 @@ public class NodeJID {
 		
 	}
 	
+	@Override
+	public String toString() {
+
+		return this.getClass().getSimpleName() + ":" + this.getAsString();
+	}
+	
+	/**
+	 * @return
+	 */
 	public String getAsString() {
 
 		RunTime.assertNotNull( stringID );// safety check?
@@ -121,7 +106,7 @@ public class NodeJID {
 	}
 	
 	
-	/*
+	/**
 	 * (non-Javadoc)
 	 * 
 	 * @see java.lang.Object#equals(java.lang.Object)

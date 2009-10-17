@@ -35,20 +35,13 @@ import com.sleepycat.je.DatabaseException;
 
 
 /**
- * should throw only StorageException
- * 
+ * should throw only StorageException.<br>
+ * this is done mostly for wrapping Exceptions under StorageException<br>
  */
-public class BerkeleyDBStorage {
+public class BerkeleyDBStorage implements StorageWrapper {
 	
-	/**
-	 * returns the NodeJID associated with the given NodeID<br>
-	 * it's a 1 to 1 mapping<br>
-	 * 
-	 * @param identifiedByThisNodeID
-	 * @return NodeJID
-	 * @throws StorageException
-	 */
-	public final static NodeJID getNodeJID( NodeID identifiedByThisNodeID )
+	
+	public final NodeJID getNodeJID( NodeID identifiedByThisNodeID )
 			throws StorageException {
 
 		RunTime.assertNotNull( identifiedByThisNodeID );
@@ -60,15 +53,7 @@ public class BerkeleyDBStorage {
 		}
 	}
 	
-	/**
-	 * returns the NodeID associated with the given NodeJID<br>
-	 * it's a 1 to 1 mapping<br>
-	 * 
-	 * @param identifiedByThisJID
-	 * @return NodeID
-	 * @throws StorageException
-	 */
-	public final static NodeID getNodeID( NodeJID identifiedByThisJID )
+	public final NodeID getNodeID( NodeJID identifiedByThisJID )
 			throws StorageException {
 
 		RunTime.assertNotNull( identifiedByThisJID );
@@ -80,13 +65,7 @@ public class BerkeleyDBStorage {
 		}
 	}
 	
-	/**
-	 * @param fromJID
-	 * @return
-	 * @throws StorageException
-	 */
-	public final static NodeID createNodeID( NodeJID fromJID )
-			throws StorageException {
+	public final NodeID createNodeID( NodeJID fromJID ) throws StorageException {
 
 		RunTime.assertNotNull( fromJID );
 		try {
@@ -96,13 +75,8 @@ public class BerkeleyDBStorage {
 		}
 	}
 	
-	/**
-	 * @param theJID
-	 * @return
-	 * @throws StorageException
-	 */
-	public final static NodeID ensureNodeID( NodeJID theJID )
-			throws StorageException {
+	
+	public final NodeID ensureNodeID( NodeJID theJID ) throws StorageException {
 
 		RunTime.assertNotNull( theJID );
 		try {
@@ -113,18 +87,26 @@ public class BerkeleyDBStorage {
 	}
 	
 	/**
-	 * no throwing
+	 * construct
+	 * 
+	 * @param envHomeDir
+	 * @throws StorageException
 	 */
-	public static final void init() {
+	public BerkeleyDBStorage( String envHomeDir ) throws StorageException {
 
-		BerkeleyDB.initAll();
+		RunTime.assertNotNull( envHomeDir );
+		try {
+			BerkeleyDB.init( envHomeDir );
+		} catch ( DatabaseException de ) {
+			throw new StorageException( de );
+		}
 	}
 	
 	/**
 	 * no throwing
 	 */
-	public static final void deInit() {
+	public final void deInit() {
 
-		BerkeleyDB.deInitAll();
+		BerkeleyDB.deInit();
 	}
 }// end of class

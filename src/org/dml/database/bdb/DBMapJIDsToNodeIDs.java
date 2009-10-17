@@ -110,16 +110,8 @@ public class DBMapJIDsToNodeIDs extends OneToOneDBMap {
 		return this.internal_getNodeIDFromJID( fromJID );
 	}
 	
-	/**
-	 * @param nodeID
-	 * @return null if not found
-	 * @throws DatabaseException
-	 */
-	public NodeJID getNodeJID( NodeID nodeID ) throws DatabaseException {
-
-		return this.internal_getJIDFromNodeID( nodeID );
-	}
 	
+
 	/**
 	 * @param fromJID
 	 * @return
@@ -211,8 +203,12 @@ public class DBMapJIDsToNodeIDs extends OneToOneDBMap {
 	 * @return null if not found
 	 * @throws DatabaseException
 	 */
-	private NodeJID internal_getJIDFromNodeID( NodeID fromNodeID )
-			throws DatabaseException {
+	/**
+	 * @param nodeID
+	 * @return null if not found
+	 * @throws DatabaseException
+	 */
+	public NodeJID getNodeJID( NodeID fromNodeID ) throws DatabaseException {
 
 		RunTime.assertNotNull( fromNodeID );
 		String jidAsStr = this.getKey( fromNodeID.getAsString() );

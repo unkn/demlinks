@@ -30,6 +30,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.sleepycat.je.DatabaseException;
+
 
 
 /**
@@ -39,15 +41,15 @@ import org.junit.Test;
 public class DBTest {
 	
 	@Before
-	public void setUp() {
+	public void setUp() throws DatabaseException {
 
-		BerkeleyDB.initAll();
+		BerkeleyDB.init( ".\\bin" );
 	}
 	
 	@After
 	public void tearDown() {
 
-		BerkeleyDB.deInitAll();
+		BerkeleyDB.deInit();
 	}
 	
 	@Test

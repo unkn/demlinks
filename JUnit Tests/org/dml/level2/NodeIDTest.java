@@ -27,8 +27,8 @@ package org.dml.level2;
 
 import static org.junit.Assert.assertTrue;
 
+import org.dml.environ.DMLEnvironment;
 import org.dml.level1.NodeJID;
-import org.dml.storagewrapper.Storage;
 import org.dml.storagewrapper.StorageException;
 import org.junit.After;
 import org.junit.Before;
@@ -50,26 +50,26 @@ public class NodeIDTest {
 	@Before
 	public void setUp() throws Exception {
 
-		Storage.init();
-		a = NodeID.ensureNode( NodeJID.ensureJIDFor( "A" ) );
-		b = NodeID.ensureNode( NodeJID.ensureJIDFor( "B" ) );
-		c = NodeID.ensureNode( NodeJID.ensureJIDFor( "C" ) );
+		DMLEnvironment.init();
+		a = DMLEnvironment.ensureNodeID( NodeJID.ensureJIDFor( "A" ) );
+		b = DMLEnvironment.ensureNodeID( NodeJID.ensureJIDFor( "B" ) );
+		c = DMLEnvironment.ensureNodeID( NodeJID.ensureJIDFor( "C" ) );
 		assertTrue( a != null );
 	}
 	
 	@After
 	public void tearDown() {
 
-		Storage.deInit();
+		DMLEnvironment.deInit();
 	}
 	
 	@Test
 	public void someTest() throws StorageException {
 
 		
-		assertTrue( a.equals( NodeID.getNode( NodeJID.ensureJIDFor( "A" ) ) ) );
-		assertTrue( b.equals( NodeID.getNode( NodeJID.ensureJIDFor( "B" ) ) ) );
-		assertTrue( c.equals( NodeID.getNode( NodeJID.ensureJIDFor( "C" ) ) ) );
+		assertTrue( a.equals( DMLEnvironment.getNodeID( NodeJID.ensureJIDFor( "A" ) ) ) );
+		assertTrue( b.equals( DMLEnvironment.getNodeID( NodeJID.ensureJIDFor( "B" ) ) ) );
+		assertTrue( c.equals( DMLEnvironment.getNodeID( NodeJID.ensureJIDFor( "C" ) ) ) );
 		
 	}
 	

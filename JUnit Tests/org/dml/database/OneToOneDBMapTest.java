@@ -31,9 +31,7 @@ import java.io.UnsupportedEncodingException;
 
 import org.dml.database.bdb.BerkeleyDB;
 import org.dml.database.bdb.OneToOneDBMap;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 
 import com.sleepycat.je.DatabaseException;
 
@@ -50,9 +48,9 @@ public class OneToOneDBMapTest {
 	final String	_b	= "BBBBBBBBBBBBBBBBBBBBBBBBB";
 	
 	@Before
-	public void setUp() {
+	public void setUp() throws DatabaseException {
 
-		BerkeleyDB.initAll();
+		BerkeleyDB.init( ".\\bin" );
 		x = new OneToOneDBMap( "someMap" );
 	}
 	
@@ -61,7 +59,7 @@ public class OneToOneDBMapTest {
 
 		x = x.silentClose();
 		assertTrue( null == x );
-		BerkeleyDB.deInitAll();
+		BerkeleyDB.deInit();
 	}
 	
 	

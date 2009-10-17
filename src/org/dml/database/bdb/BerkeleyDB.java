@@ -46,10 +46,10 @@ import com.sleepycat.je.SecondaryDatabase;
  */
 public class BerkeleyDB {
 	
-	private static final String				DB_ENVIRONMENT_HOMEDIR	= ".\\bin";
-	private static final EnvironmentConfig	environmentConfig		= new EnvironmentConfig();
-	private static Environment				env						= null;
-	private static DBMapJIDsToNodeIDs		db1						= null;
+	private static String					envHomeDir;
+	private static final EnvironmentConfig	environmentConfig	= new EnvironmentConfig();
+	private static Environment				env					= null;
+	private static DBMapJIDsToNodeIDs		db1					= null;
 	
 	
 	/**
@@ -69,10 +69,18 @@ public class BerkeleyDB {
 	
 	/**
 	 * call before all
+	 * 
+	 * @throws DatabaseException
 	 */
-	public static final void initAll() {
+	public static final void init( String envHomeDir1 )
+			throws DatabaseException {
 
+		// maybe it would be needed to set the envhome dir
+		RunTime.assertNotNull( envHomeDir1 );
+		envHomeDir = envHomeDir1;
+		
 		// Environment init isn't needed, only deInit();
+		getEnvironment();// forces env open or create
 		// DBSequence init isn't needed, only deInit()
 		
 		// getDBMapJIDsToNodeIDs() is initing that when needed
@@ -85,7 +93,7 @@ public class BerkeleyDB {
 	/**
 	 *call when all done
 	 */
-	public static final void deInitAll() {
+	public static final void deInit() {
 
 		if ( null != db1 ) {
 			db1 = db1.deInit();
@@ -153,11 +161,12 @@ public class BerkeleyDB {
 		environmentConfig.setConfigParam( EnvironmentConfig.TRACE_DB, "false" );
 		
 		// perform other environment configurations
-		File file = new File( DB_ENVIRONMENT_HOMEDIR );
+		File file = new File( envHomeDir );
 		try {
 			env = new Environment( file, environmentConfig );
 		} catch ( DatabaseException de ) {
-			Log.thro( "when creating BerkeleyDB Environment" );
+			Log.thro( "when creating BerkeleyDB Environment: "
+					+ de.getCause().getMessage() );
 			throw de;
 		}
 		
@@ -233,7 +242,8 @@ public class BerkeleyDB {
 				env.close();
 				Log.exit( "BerkeleyDB env closed" );
 			} catch ( DatabaseException de ) {
-				Log.thro( "failed BerkeleyDB environment close" );
+				Log.thro( "failed BerkeleyDB environment close:"
+						+ de.getCause().getLocalizedMessage() );
 				// ignore
 			} finally {
 				env = null;
