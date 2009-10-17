@@ -25,6 +25,7 @@ package org.dml.level3;
 
 
 
+import org.dml.JUnits.Consts;
 import org.dml.environ.DMLEnvironment;
 import org.dml.level1.NodeJID;
 import org.dml.level2.NodeID;
@@ -42,25 +43,26 @@ import org.junit.Test;
 public class TupleOfNodeIDsTest {
 	
 	// TupleOfNodeIDs one, two, three;
-	NodeID	n1, n2, n3;
+	NodeID			n1, n2, n3;
+	DMLEnvironment	dml;
 	
 	@Before
 	public void setUp() throws StorageException {
 
-		DMLEnvironment.init();
+		dml = DMLEnvironment.getNew( Consts.BDB_ENV_PATH, true );
 	}
 	
 	@After
 	public void tearDown() {
 
-		DMLEnvironment.deInit();
+		dml.done();
 	}
 	
 	@Test
 	public void test1() throws StorageException {
 
-		n1 = DMLEnvironment.ensureNodeID( NodeJID.ensureJIDFor( "A" ) );
-		n2 = DMLEnvironment.ensureNodeID( NodeJID.ensureJIDFor( "B" ) );
+		n1 = dml.ensureNodeID( NodeJID.ensureJIDFor( "A" ) );
+		n2 = dml.ensureNodeID( NodeJID.ensureJIDFor( "B" ) );
 		// one = TupleOfNodeIDs.groupAsKeyValue( n1, n2 );
 		
 		System.out.println( n1 + "!" + n2 );

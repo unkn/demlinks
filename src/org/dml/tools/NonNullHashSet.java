@@ -1,5 +1,5 @@
 /**
- * File creation: Jun 3, 2009 8:57:07 PM
+ * File creation: Oct 17, 2009 8:03:04 AM
  * 
  * Copyright (C) 2005-2009 AtKaaZ <atkaaz@users.sourceforge.net>
  * Copyright (C) 2005-2009 UnKn <unkn@users.sourceforge.net>
@@ -21,17 +21,7 @@
  */
 
 
-package org.dml.database;
-
-
-
-import org.dml.JUnits.Consts;
-import org.dml.database.bdb.BerkeleyDB;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
-import com.sleepycat.je.DatabaseException;
+package org.dml.tools;
 
 
 
@@ -39,28 +29,26 @@ import com.sleepycat.je.DatabaseException;
  * 
  *
  */
-public class DBTest {
+public class NonNullHashSet<E> extends java.util.HashSet<E> {
 	
-	BerkeleyDB	bdb;
-	
-	@Before
-	public void setUp() throws DatabaseException {
+	@Override
+	public boolean add( E e ) {
 
-		bdb = new BerkeleyDB( Consts.BDB_ENV_PATH );
-		
-	}
+		RunTime.assertNotNull( e );
+		return super.add( e );
+	};
 	
-	@After
-	public void tearDown() {
+	@Override
+	public boolean remove( Object o ) {
 
-		bdb.deInit();
-	}
+		RunTime.assertNotNull( o );
+		return super.remove( o );
+	};
 	
-	@Test
-	public void testInitDeInit() {
-
-		// @Before and @After kicking in;
-	}
 	
-
+	/**
+	 * 
+	 */
+	private static final long	serialVersionUID	= 4064736535983636086L;
+	
 }

@@ -31,6 +31,7 @@ import org.javapart.logger.Log;
 import com.sleepycat.je.Database;
 import com.sleepycat.je.DatabaseConfig;
 import com.sleepycat.je.DatabaseException;
+import com.sleepycat.je.Environment;
 
 
 
@@ -41,19 +42,23 @@ import com.sleepycat.je.DatabaseException;
  */
 public class DatabaseCapsule {
 	
-	private String			dbName;
-	private Database		db		= null;
-	private DatabaseConfig	dbConf	= null;
+	private String				dbName;
+	private Database			db		= null;
+	private DatabaseConfig		dbConf	= null;
+	private final Environment	env;
 	
 	/**
 	 * @param string
 	 */
-	public DatabaseCapsule( @SuppressWarnings( "hiding" ) String dbName,
+	public DatabaseCapsule( Environment env1,
+			@SuppressWarnings( "hiding" ) String dbName,
 			@SuppressWarnings( "hiding" ) DatabaseConfig dbConf ) {
 
+		RunTime.assertNotNull( env1 );
 		RunTime.assertNotNull( dbName );
 		RunTime.assertFalse( dbName.isEmpty() );
 		
+		env = env1;
 		this.dbName = dbName;
 		this.dbConf = dbConf;// can be null
 	}
@@ -66,7 +71,7 @@ public class DatabaseCapsule {
 
 		if ( null == db ) {
 			// first time init:
-			db = BerkeleyDB.getEnvironment().openDatabase( null, dbName, dbConf );
+			db = env.openDatabase( null, dbName, dbConf );
 			RunTime.assertNotNull( db );
 			// Runtime.getRuntime().addShutdownHook(null); bad idea:
 			// concurrently called

@@ -40,6 +40,9 @@ public class RunTime {
 		throw new BugError( "Bug detected: " + msg );
 	}
 	
+	/**
+	 * @param b
+	 */
 	public static void assertTrue( boolean b ) {
 
 		if ( !b ) {

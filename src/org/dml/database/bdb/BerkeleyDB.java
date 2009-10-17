@@ -27,11 +27,13 @@ package org.dml.database.bdb;
 
 import java.io.File;
 
+import org.dml.tools.NonNullHashSet;
 import org.dml.tools.RunTime;
 import org.javapart.logger.Log;
 
 import com.sleepycat.bind.tuple.StringBinding;
 import com.sleepycat.je.Database;
+import com.sleepycat.je.DatabaseConfig;
 import com.sleepycat.je.DatabaseEntry;
 import com.sleepycat.je.DatabaseException;
 import com.sleepycat.je.Environment;
@@ -46,25 +48,79 @@ import com.sleepycat.je.SecondaryDatabase;
  */
 public class BerkeleyDB {
 	
-	private static String					envHomeDir;
-	private static final EnvironmentConfig	environmentConfig	= new EnvironmentConfig();
-	private static Environment				env					= null;
-	private static DBMapJIDsToNodeIDs		db1					= null;
+	private String								envHomeDir;
+	private final EnvironmentConfig				environmentConfig	= new EnvironmentConfig();
+	private Environment							env					= null;
+	private DBMapJIDsToNodeIDs					db1					= null;
 	
+	// a database where all sequences will be stored:(only 1 db per bdb env)
+	private Database							seqDb				= null;
+	private final static String					seqDb_NAME			= "db5_AllSequences";
+	private DatabaseConfig						seqDbConf			= null;
+	
+	private final NonNullHashSet<DBSequence>	ALL_SEQ_INSTANCES	= new NonNullHashSet<DBSequence>();
 	
 	/**
 	 * singleton
 	 * 
 	 * @return the database handling the one to one mapping between JIDs and
 	 *         NodeIDs
+	 * @throws DatabaseException
 	 */
-	public static DBMapJIDsToNodeIDs getDBMapJIDsToNodeIDs() {
+	public DBMapJIDsToNodeIDs getDBMapJIDsToNodeIDs() throws DatabaseException {
 
 		if ( null == db1 ) {
-			db1 = new DBMapJIDsToNodeIDs( "map(JID<->NodeID)" );
+			db1 = new DBMapJIDsToNodeIDs( this, "map(JID<->NodeID)" );
 			RunTime.assertNotNull( db1 );
 		}
 		return db1;
+	}
+	
+	
+	public BerkeleyDB( String envHomeDir1 ) throws DatabaseException {
+
+		this.init( envHomeDir1, false );
+	}
+	
+	/**
+	 * @param envHomeDir2
+	 * @param internalDestroyBeforeInit
+	 * @throws DatabaseException
+	 */
+	public BerkeleyDB( String envHomeDir1, boolean internalDestroyBeforeInit )
+			throws DatabaseException {
+
+		this.init( envHomeDir1, internalDestroyBeforeInit );
+	}
+	
+	/**
+	 * intended to be used for JUnit testing when a clean start is required ie.
+	 * no leftovers from previous JUnits or runs in the database<br>
+	 * this should wipe all logs and locks of BDB Environment (which is
+	 * supposedly everything incl. DBs)<br>
+	 * <br>
+	 * <code>envHomeDir</code> must be set before calling this
+	 */
+	private void internalWipeEnv() {
+
+		File dir = new File( envHomeDir );
+		String[] allThoseInDir = dir.list();
+		if ( null != allThoseInDir ) {
+			for ( String element : allThoseInDir ) {
+				File n = new File( envHomeDir + File.separator + element );
+				if ( !n.isFile() ) {
+					continue;
+				}
+				if ( ( !n.getPath().matches( ".*\\.jdb" ) )
+						&& ( !( n.getPath().matches( ".*\\.lck" ) ) ) ) {
+					continue;
+				}
+				Log.special( "removing " + n.getPath() );
+				if ( !n.delete() ) {
+					Log.warn( "Failed removing " + n.getAbsolutePath() );
+				}
+			}
+		}
 	}
 	
 	/**
@@ -72,15 +128,17 @@ public class BerkeleyDB {
 	 * 
 	 * @throws DatabaseException
 	 */
-	public static final void init( String envHomeDir1 )
-			throws DatabaseException {
+	private final void init( String envHomeDir1,
+			boolean internalDestroyBeforeInit ) throws DatabaseException {
 
 		// maybe it would be needed to set the envhome dir
 		RunTime.assertNotNull( envHomeDir1 );
 		envHomeDir = envHomeDir1;
-		
+		if ( internalDestroyBeforeInit ) {
+			this.internalWipeEnv();
+		}
 		// Environment init isn't needed, only deInit();
-		getEnvironment();// forces env open or create
+		this.getEnvironment();// forces env open or create
 		// DBSequence init isn't needed, only deInit()
 		
 		// getDBMapJIDsToNodeIDs() is initing that when needed
@@ -93,24 +151,24 @@ public class BerkeleyDB {
 	/**
 	 *call when all done
 	 */
-	public static final void deInit() {
+	public final void deInit() {
 
 		if ( null != db1 ) {
 			db1 = db1.deInit();
 		}
-		DBSequence.deInitAll();
-		BerkeleyDB.closeDBEnvironment();
+		this.deInitSeqSystem();
+		this.closeDBEnvironment();
 	}
 	
 	/**
 	 * @return singleton of the BDB Environment
 	 * @throws DatabaseException
 	 */
-	public static final Environment getEnvironment() throws DatabaseException {
+	public final Environment getEnvironment() throws DatabaseException {
 
 		if ( null == env ) {
 			// make new now:
-			firstTimeCreateEnvironment();
+			this.firstTimeCreateEnvironment();
 			RunTime.assertNotNull( env );
 		}
 		
@@ -144,8 +202,7 @@ public class BerkeleyDB {
 	 * @throws DatabaseException
 	 * 
 	 */
-	private static final void firstTimeCreateEnvironment()
-			throws DatabaseException {
+	private final void firstTimeCreateEnvironment() throws DatabaseException {
 
 		environmentConfig.setAllowCreate( true );
 		environmentConfig.setLocking( true );
@@ -163,10 +220,11 @@ public class BerkeleyDB {
 		// perform other environment configurations
 		File file = new File( envHomeDir );
 		try {
+			file.mkdirs();
 			env = new Environment( file, environmentConfig );
 		} catch ( DatabaseException de ) {
 			Log.thro( "when creating BerkeleyDB Environment: "
-					+ de.getCause().getMessage() );
+					+ de.getMessage() );
 			throw de;
 		}
 		
@@ -174,15 +232,6 @@ public class BerkeleyDB {
 	
 	
 
-	// /**
-	// * @param db1
-	// */
-	// @SuppressWarnings( "unused" )
-	// private static final void closeAnyDB( Database db1 ) {
-	//
-	// closeAnyDB( db1, "not specified" );
-	// }
-	
 	/**
 	 * silently closing database
 	 * no throws
@@ -235,7 +284,7 @@ public class BerkeleyDB {
 	/**
 	 * 
 	 */
-	public static final void closeDBEnvironment() {
+	public final void closeDBEnvironment() {
 
 		if ( null != env ) {
 			try {
@@ -253,6 +302,106 @@ public class BerkeleyDB {
 		}
 	}
 	
+	
+	/**
+	 * new instance of DBSequence
+	 * 
+	 * @param seqName1
+	 *            name of the Sequence
+	 * @return
+	 */
+	public final DBSequence newDBSequence( String seqName1 ) {
 
+		DBSequence dbs = new DBSequence( this, seqName1 );
+		if ( !ALL_SEQ_INSTANCES.add( dbs ) ) {
+			RunTime.Bug( "couldn't have already existed!" );
+		}
+		RunTime.assertNotNull( dbs );
+		return dbs;
+	}
+	
+	/**
+	 * 
+	 */
+	private final void silentCloseAllSequences() {
 
+		Log.entry();
+		for ( DBSequence dbs : ALL_SEQ_INSTANCES ) {
+			dbs.silentCloseSeq();
+			ALL_SEQ_INSTANCES.remove( dbs );
+		}
+		RunTime.assertTrue( ALL_SEQ_INSTANCES.isEmpty() );
+	}
+	
+	/**
+	 * closing all sequences first, then the BerkeleyDB
+	 */
+	private void silentCloseAllSequencesAndTheirDB() {
+
+		Log.entry();
+		if ( !ALL_SEQ_INSTANCES.isEmpty() ) {
+			this.silentCloseAllSequences();
+		}
+		
+		if ( !ALL_SEQ_INSTANCES.isEmpty() ) {
+			// BUG, avoiding throw because it's silent
+			Log.bug( "should be empty now" );
+		}
+		
+		if ( null != seqDb ) {
+			seqDb = BerkeleyDB.silentCloseAnyDB( seqDb, seqDb_NAME );
+		} else {
+			Log.warn( "close() called on a not yet inited/open database" );
+		}
+	}
+	
+	/**
+	 * safely closes all active sequences and the database holding them<br>
+	 * for the current environment only
+	 */
+	public final void deInitSeqSystem() {
+
+		this.silentCloseAllSequencesAndTheirDB();
+	}
+	
+	/**
+	 * @return
+	 * @throws DatabaseException
+	 */
+	protected Database getSeqsDB() throws DatabaseException {
+
+		if ( null == seqDb ) {
+			// init first time:
+			seqDb = this.openSeqDB();
+			RunTime.assertNotNull( seqDb );
+		}
+		return seqDb;
+	}
+	
+	/**
+	 * one time open the database containing all stored sequences, and future
+	 * ones
+	 * 
+	 * @param dbName
+	 * @return
+	 * @throws DatabaseException
+	 */
+	private final Database openSeqDB() throws DatabaseException {
+
+		RunTime.assertNotNull( seqDb_NAME );
+		RunTime.assertFalse( seqDb_NAME.isEmpty() );
+		
+		if ( null == seqDbConf ) {
+			// init once:
+			seqDbConf = new DatabaseConfig();
+			seqDbConf.setAllowCreate( true );
+			seqDbConf.setDeferredWrite( false );
+			seqDbConf.setKeyPrefixing( true );
+			seqDbConf.setSortedDuplicates( false );//
+			seqDbConf.setTransactional( true );
+		}
+		
+		return this.getEnvironment().openDatabase( null, seqDb_NAME, seqDbConf );
+	}
+	
 }// class

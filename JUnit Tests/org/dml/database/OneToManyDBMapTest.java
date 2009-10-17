@@ -28,6 +28,7 @@ package org.dml.database;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import org.dml.JUnits.Consts;
 import org.dml.database.bdb.BerkeleyDB;
 import org.dml.database.bdb.OneToManyDBMap;
 import org.junit.After;
@@ -50,19 +51,20 @@ public class OneToManyDBMapTest {
 	final String	_a	= "A" + new Object();
 	final String	_b	= "B" + new Object();
 	final String	_c	= "C" + new Object();
+	BerkeleyDB		bdb;
 	
 	@Before
 	public void setUp() throws DatabaseException {
 
-		BerkeleyDB.init( ".\\bin" );
-		o2m = new OneToManyDBMap( "one to many" + new Object() );
+		bdb = new BerkeleyDB( Consts.BDB_ENV_PATH, true );
+		o2m = new OneToManyDBMap( bdb, "one to many" );// + new Object() );
 	}
 	
 	@After
 	public void tearDown() {
 
 		o2m.silentClose();
-		BerkeleyDB.deInit();
+		bdb.deInit();
 	}
 	
 	/**
@@ -80,7 +82,6 @@ public class OneToManyDBMapTest {
 		System.out.println( _c );
 		System.out.println( o2m.getName() );
 		
-		// FIXME: if tests fail here, remember to delete the database
 		assertFalse( o2m.isGroup( _a, _b ) );
 		assertFalse( o2m.ensureGroup( _a, _b ) );
 		assertTrue( o2m.isGroup( _a, _b ) );

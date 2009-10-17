@@ -60,9 +60,10 @@ public class DBMapTupleNodeIDs extends OneToManyDBMap {
 	 *            the database holding the JIDs to NodeIDs 1to1 mappings,
 	 *            that's currently BerkeleyDB.getDBMapJIDsToNodeIDs()
 	 */
-	public DBMapTupleNodeIDs( String dbName1, DBMapJIDsToNodeIDs db ) {
+	public DBMapTupleNodeIDs( BerkeleyDB bdb1, String dbName1,
+			DBMapJIDsToNodeIDs db ) {
 
-		super( dbName1 );
+		super( bdb1, dbName1 );
 		RunTime.assertNotNull( db );
 		mapJIDs2IDs = db;
 	}

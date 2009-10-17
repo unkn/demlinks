@@ -28,6 +28,7 @@ package org.dml.database;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import org.dml.JUnits.Consts;
 import org.dml.database.bdb.BerkeleyDB;
 import org.dml.database.bdb.DBMapTupleNodeIDs;
 import org.dml.environ.DMLEnvironment;
@@ -49,13 +50,15 @@ import com.sleepycat.je.DatabaseException;
 public class DBMapTupleNodeIDsTest {
 	
 	DBMapTupleNodeIDs	tdb;
+	DMLEnvironment		dmlEnv;
+	BerkeleyDB			bdb;
 	
 	@Before
-	public void setUp() throws StorageException {
+	public void setUp() throws DatabaseException {
 
-		DMLEnvironment.init();
-		tdb = new DBMapTupleNodeIDs( "tupleIDs" + new Object(),
-				BerkeleyDB.getDBMapJIDsToNodeIDs() );
+		bdb = new BerkeleyDB( Consts.BDB_ENV_PATH, true );
+		tdb = new DBMapTupleNodeIDs( bdb, "tupleIDs",// + new Object(),
+				bdb.getDBMapJIDsToNodeIDs() );
 		
 	}
 	
@@ -64,16 +67,16 @@ public class DBMapTupleNodeIDsTest {
 
 		tdb.silentClose();
 		tdb = null;
-		DMLEnvironment.deInit();
+		bdb.deInit();
 	}
 	
 	@Test
-	public void test1() throws StorageException, DatabaseException {
+	public void test1() throws DatabaseException, StorageException {
 
-		NodeID _a = DMLEnvironment.ensureNodeID( NodeJID.ensureJIDFor( "A"
-				+ new Object() ) );
-		NodeID _b = DMLEnvironment.ensureNodeID( NodeJID.ensureJIDFor( "B"
-				+ new Object() ) );
+		NodeID _a = bdb.getDBMapJIDsToNodeIDs().ensureNodeID(
+				NodeJID.ensureJIDFor( "A" ) );
+		NodeID _b = bdb.getDBMapJIDsToNodeIDs().ensureNodeID(
+				NodeJID.ensureJIDFor( "B" ) );
 		assertNotNull( _a );
 		assertNotNull( _b );
 		org.junit.Assert.assertFalse( tdb.isGroup( _a, _b ) );

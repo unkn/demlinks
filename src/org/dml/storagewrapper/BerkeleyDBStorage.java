@@ -40,13 +40,14 @@ import com.sleepycat.je.DatabaseException;
  */
 public class BerkeleyDBStorage implements StorageWrapper {
 	
+	private BerkeleyDB	bdb	= null;
 	
 	public final NodeJID getNodeJID( NodeID identifiedByThisNodeID )
 			throws StorageException {
 
 		RunTime.assertNotNull( identifiedByThisNodeID );
 		try {
-			return BerkeleyDB.getDBMapJIDsToNodeIDs().getNodeJID(
+			return bdb.getDBMapJIDsToNodeIDs().getNodeJID(
 					identifiedByThisNodeID );
 		} catch ( DatabaseException ex ) {
 			throw new StorageException( ex );
@@ -58,8 +59,7 @@ public class BerkeleyDBStorage implements StorageWrapper {
 
 		RunTime.assertNotNull( identifiedByThisJID );
 		try {
-			return BerkeleyDB.getDBMapJIDsToNodeIDs().getNodeID(
-					identifiedByThisJID );
+			return bdb.getDBMapJIDsToNodeIDs().getNodeID( identifiedByThisJID );
 		} catch ( DatabaseException dbe ) {
 			throw new StorageException( dbe );
 		}
@@ -69,7 +69,7 @@ public class BerkeleyDBStorage implements StorageWrapper {
 
 		RunTime.assertNotNull( fromJID );
 		try {
-			return BerkeleyDB.getDBMapJIDsToNodeIDs().createNodeID( fromJID );
+			return bdb.getDBMapJIDsToNodeIDs().createNodeID( fromJID );
 		} catch ( DatabaseException dbe ) {
 			throw new StorageException( dbe );
 		}
@@ -80,10 +80,20 @@ public class BerkeleyDBStorage implements StorageWrapper {
 
 		RunTime.assertNotNull( theJID );
 		try {
-			return BerkeleyDB.getDBMapJIDsToNodeIDs().ensureNodeID( theJID );
+			return bdb.getDBMapJIDsToNodeIDs().ensureNodeID( theJID );
 		} catch ( DatabaseException de ) {
 			throw new StorageException( de );
 		}
+	}
+	
+	
+	/**
+	 * @param envHomeDir
+	 * @throws StorageException
+	 */
+	public BerkeleyDBStorage( String envHomeDir ) throws StorageException {
+
+		this( envHomeDir, false );
 	}
 	
 	/**
@@ -92,21 +102,35 @@ public class BerkeleyDBStorage implements StorageWrapper {
 	 * @param envHomeDir
 	 * @throws StorageException
 	 */
-	public BerkeleyDBStorage( String envHomeDir ) throws StorageException {
+	public BerkeleyDBStorage( String envHomeDir,
+			boolean internalDestroyBeforeInit ) throws StorageException {
+
+		this.init( envHomeDir, internalDestroyBeforeInit );
+	}
+	
+	/**
+	 * @param envHomeDir
+	 * @param internalDestroyBeforeInit
+	 * @throws StorageException
+	 */
+	private void init( String envHomeDir, boolean internalDestroyBeforeInit )
+			throws StorageException {
 
 		RunTime.assertNotNull( envHomeDir );
 		try {
-			BerkeleyDB.init( envHomeDir );
+			bdb = new BerkeleyDB( envHomeDir, internalDestroyBeforeInit );
 		} catch ( DatabaseException de ) {
 			throw new StorageException( de );
 		}
 	}
 	
+	
+
 	/**
 	 * no throwing
 	 */
 	public final void deInit() {
 
-		BerkeleyDB.deInit();
+		bdb.deInit();
 	}
 }// end of class

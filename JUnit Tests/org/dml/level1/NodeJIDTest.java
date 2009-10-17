@@ -27,7 +27,6 @@ package org.dml.level1;
 
 import static org.junit.Assert.assertTrue;
 
-import org.dml.environ.DMLEnvironment;
 import org.dml.storagewrapper.StorageException;
 import org.junit.After;
 import org.junit.Before;
@@ -70,7 +69,7 @@ public class NodeJIDTest {
 
 		assertTrue( a == NodeJID.ensureJIDFor( "A" ) );
 		assertTrue( NodeJID.all_Level1_NodeJIDs.size() == 3 );
-		assertTrue( null != DMLEnvironment.AllWords );
+		// assertTrue( null != DMLEnvironment.AllWords );
 		assertTrue( NodeJID.all_Level1_NodeJIDs.size() == 4 );
 		System.out.println( NodeJID.all_Level1_NodeJIDs );
 		// NodeJID.forgetJIDFor( "A" );
@@ -106,13 +105,13 @@ public class NodeJIDTest {
 		}
 		assertTrue( aeGot );
 		
-		aeGot = false;
-		try {
-			DMLEnvironment.getJIDFor( null );
-		} catch ( AssertionError e ) {
-			aeGot = true;
-		}
-		assertTrue( aeGot );
+		// aeGot = false;
+		// try {
+		// DMLEnvironment.getJIDFor( null );
+		// } catch ( AssertionError e ) {
+		// aeGot = true;
+		// }
+		// assertTrue( aeGot );
 		
 		// aeGot = false;
 		// try {

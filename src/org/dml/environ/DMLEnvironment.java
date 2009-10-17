@@ -29,8 +29,9 @@ import org.dml.level1.NodeJID;
 import org.dml.level2.NodeID;
 import org.dml.storagewrapper.BerkeleyDBStorage;
 import org.dml.storagewrapper.StorageException;
-import org.dml.storagewrapper.StorageWrapper;
+import org.dml.tools.NonNullHashSet;
 import org.dml.tools.RunTime;
+import org.javapart.logger.Log;
 
 
 
@@ -40,19 +41,76 @@ import org.dml.tools.RunTime;
  */
 public class DMLEnvironment {
 	
-	public static final NodeJID		AllWords				= NodeJID.ensureJIDFor( "AllWords" );
+	// public static final NodeJID AllWords = NodeJID.ensureJIDFor( "AllWords"
+	// );
 	
-	public static final String		BDB_ENVIRONMENT_HOMEDIR	= ".\\bin";
-	public static StorageWrapper	Storage;
+	public final static String							DEFAULT_BDB_ENVIRONMENT_HOMEDIR	= ".\\bin";
+	private final BerkeleyDBStorage						Storage;
+	private final static NonNullHashSet<DMLEnvironment>	ALL_INSTANCES					= new NonNullHashSet<DMLEnvironment>();
 	
-	public static final void init() throws StorageException {
+	/**
+	 * @param envHomeDir
+	 * @param wipeEnvFirst
+	 *            true if to erase all data prior to init!
+	 * @throws StorageException
+	 */
+	public static final DMLEnvironment getNew( String envHomeDir,
+			boolean wipeEnvFirst ) throws StorageException {
 
-		Storage = new BerkeleyDBStorage( BDB_ENVIRONMENT_HOMEDIR );
-		// Storage.init( BDB_ENVIRONMENT_HOMEDIR );
+		DMLEnvironment env = new DMLEnvironment( envHomeDir, wipeEnvFirst );
+		if ( !ALL_INSTANCES.add( env ) ) {
+			RunTime.Bug( "couldn't have already existed!" );
+		}
+		return env;
 	}
 	
-	public static final void deInit() {
+	/**
+	 * generic constructor using default BDB environment
+	 * 
+	 * @throws StorageException
+	 */
+	public static DMLEnvironment getNew() throws StorageException {
 
+		return getNew( DEFAULT_BDB_ENVIRONMENT_HOMEDIR, false );
+	}
+	
+	public static DMLEnvironment getNew( boolean wipeEnvFirst )
+			throws StorageException {
+
+		return getNew( DEFAULT_BDB_ENVIRONMENT_HOMEDIR, wipeEnvFirst );
+	}
+	
+	/**
+	 * private constructor
+	 * 
+	 * @param envHomeDir
+	 * @param wipeEnvFirst
+	 *            this should be false, unless inside a JUnit; will delete all
+	 *            data
+	 * @throws StorageException
+	 */
+	private DMLEnvironment( String envHomeDir, boolean wipeEnvFirst )
+			throws StorageException {
+
+		Storage = new BerkeleyDBStorage( envHomeDir, wipeEnvFirst );
+	}
+	
+	public static final void deInitAll() {
+
+		Log.entry();
+		for ( DMLEnvironment env : ALL_INSTANCES ) {
+			env.done();
+			RunTime.assertTrue( ALL_INSTANCES.remove( env ) );
+		}
+		RunTime.assertTrue( ALL_INSTANCES.isEmpty() );
+	}
+	
+	/**
+	 * 
+	 */
+	public void done() {
+
+		Log.entry();
 		Storage.deInit();
 	}
 	
@@ -65,10 +123,10 @@ public class DMLEnvironment {
 	 * @return NodeJID
 	 * @throws StorageException
 	 */
-	public static NodeJID getJIDFor( NodeID nodeID ) throws StorageException {
+	public NodeJID getJIDFor( NodeID nodeID ) throws StorageException {
 
 		RunTime.assertNotNull( nodeID );
-		return DMLEnvironment.Storage.getNodeJID( nodeID );
+		return Storage.getNodeJID( nodeID );
 	}
 	
 	/**
@@ -81,10 +139,10 @@ public class DMLEnvironment {
 	 * @return never null
 	 * @throws StorageException
 	 */
-	public static NodeID ensureNodeID( NodeJID theJID ) throws StorageException {
+	public NodeID ensureNodeID( NodeJID theJID ) throws StorageException {
 
 		RunTime.assertNotNull( theJID );
-		return DMLEnvironment.Storage.ensureNodeID( theJID );
+		return Storage.ensureNodeID( theJID );
 	}
 	
 	/**
@@ -92,10 +150,10 @@ public class DMLEnvironment {
 	 * @return
 	 * @throws StorageException
 	 */
-	public static NodeID getNodeID( NodeJID identifiedByThisJID )
+	public NodeID getNodeID( NodeJID identifiedByThisJID )
 			throws StorageException {
 
-		return DMLEnvironment.Storage.getNodeID( identifiedByThisJID );
+		return Storage.getNodeID( identifiedByThisJID );
 	}
 	
 	/**
@@ -103,10 +161,9 @@ public class DMLEnvironment {
 	 * @return
 	 * @throws StorageException
 	 */
-	public static NodeID createNodeID( NodeJID fromJID )
-			throws StorageException {
+	public NodeID createNodeID( NodeJID fromJID ) throws StorageException {
 
-		return DMLEnvironment.Storage.createNodeID( fromJID );
+		return Storage.createNodeID( fromJID );
 	}
 	
 }

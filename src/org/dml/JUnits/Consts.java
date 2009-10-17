@@ -1,5 +1,5 @@
 /**
- * File creation: Jun 3, 2009 8:57:07 PM
+ * File creation: Oct 17, 2009 8:44:01 AM
  * 
  * Copyright (C) 2005-2009 AtKaaZ <atkaaz@users.sourceforge.net>
  * Copyright (C) 2005-2009 UnKn <unkn@users.sourceforge.net>
@@ -21,17 +21,7 @@
  */
 
 
-package org.dml.database;
-
-
-
-import org.dml.JUnits.Consts;
-import org.dml.database.bdb.BerkeleyDB;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
-import com.sleepycat.je.DatabaseException;
+package org.dml.JUnits;
 
 
 
@@ -39,28 +29,7 @@ import com.sleepycat.je.DatabaseException;
  * 
  *
  */
-public class DBTest {
+public class Consts {
 	
-	BerkeleyDB	bdb;
-	
-	@Before
-	public void setUp() throws DatabaseException {
-
-		bdb = new BerkeleyDB( Consts.BDB_ENV_PATH );
-		
-	}
-	
-	@After
-	public void tearDown() {
-
-		bdb.deInit();
-	}
-	
-	@Test
-	public void testInitDeInit() {
-
-		// @Before and @After kicking in;
-	}
-	
-
+	public static final String	BDB_ENV_PATH	= ".\\bin\\JUnitTests\\";
 }

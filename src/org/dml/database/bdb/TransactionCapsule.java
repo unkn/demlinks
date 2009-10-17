@@ -48,7 +48,7 @@ public class TransactionCapsule {
 	 * @return never null
 	 * @throws DatabaseException
 	 */
-	public final static TransactionCapsule getNewTransaction()
+	public final static TransactionCapsule getNewTransaction( BerkeleyDB bdb )
 			throws DatabaseException {
 
 		TransactionCapsule txn = new TransactionCapsule();
@@ -62,7 +62,7 @@ public class TransactionCapsule {
 		txn.txConf.setSync( true );
 		txn.txConf.setWriteNoSync( false );
 		
-		txn.tx = BerkeleyDB.getEnvironment().beginTransaction( null, txn.txConf );
+		txn.tx = bdb.getEnvironment().beginTransaction( null, txn.txConf );
 		
 		return txn;
 	}

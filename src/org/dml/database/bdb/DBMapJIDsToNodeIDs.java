@@ -49,10 +49,12 @@ public class DBMapJIDsToNodeIDs extends OneToOneDBMap {
 	
 	/**
 	 * @param dbName1
+	 * @throws DatabaseException
 	 */
-	public DBMapJIDsToNodeIDs( String dbName1 ) {
+	public DBMapJIDsToNodeIDs( BerkeleyDB bdb1, String dbName1 )
+			throws DatabaseException {
 
-		super( dbName1 );
+		super( bdb1, dbName1 );
 		seq_KEYNAME = dbName1;
 	}
 	
@@ -64,7 +66,7 @@ public class DBMapJIDsToNodeIDs extends OneToOneDBMap {
 
 		if ( null == seq ) {
 			// init once:
-			seq = DBSequence.newDBSequence( seq_KEYNAME );
+			seq = bdb.newDBSequence( seq_KEYNAME );
 			RunTime.assertNotNull( seq );
 		}
 		return seq;

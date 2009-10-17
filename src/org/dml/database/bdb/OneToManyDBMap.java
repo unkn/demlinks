@@ -32,6 +32,7 @@ import org.javapart.logger.Log;
 import com.sleepycat.je.Database;
 import com.sleepycat.je.DatabaseEntry;
 import com.sleepycat.je.DatabaseException;
+import com.sleepycat.je.Environment;
 import com.sleepycat.je.OperationStatus;
 
 
@@ -53,16 +54,24 @@ public class OneToManyDBMap {
 	private DatabaseCapsule		forwardDB		= null;
 	private DatabaseCapsule		backwardDB		= null;
 	private final String		dbName;
+	private final BerkeleyDB	bdb;
 	
 	/**
 	 * constructor
 	 * 
 	 * @param dbName1
 	 */
-	public OneToManyDBMap( String dbName1 ) {
+	public OneToManyDBMap( BerkeleyDB bdb1, String dbName1 ) {
 
+		RunTime.assertNotNull( bdb1 );
 		RunTime.assertNotNull( dbName1 );
+		bdb = bdb1;
 		dbName = dbName1;
+	}
+	
+	private Environment getEnv() throws DatabaseException {
+
+		return bdb.getEnvironment();
 	}
 	
 	/**
@@ -80,7 +89,8 @@ public class OneToManyDBMap {
 	private Database getForwardDB() throws DatabaseException {
 
 		if ( null == forwardDB ) {
-			forwardDB = new DatabaseCapsule( dbName, new OneToManyDBConfig() );
+			forwardDB = new DatabaseCapsule( this.getEnv(), dbName,
+					new OneToManyDBConfig() );
 			RunTime.assertNotNull( forwardDB );
 		}
 		return forwardDB.getDB();
@@ -93,8 +103,8 @@ public class OneToManyDBMap {
 	private Database getBackwardDB() throws DatabaseException {
 
 		if ( null == backwardDB ) {
-			backwardDB = new DatabaseCapsule( dbName + backwardSuffix,
-					new OneToManyDBConfig() );
+			backwardDB = new DatabaseCapsule( this.getEnv(), dbName
+					+ backwardSuffix, new OneToManyDBConfig() );
 			RunTime.assertNotNull( backwardDB );
 		}
 		return backwardDB.getDB();
@@ -147,7 +157,7 @@ public class OneToManyDBMap {
 
 		// FIXME: maybe a transaction here is unnecessary, however we don't want
 		// another transaction (supposedly) to interlace between the two gets
-		TransactionCapsule txc = TransactionCapsule.getNewTransaction();
+		TransactionCapsule txc = TransactionCapsule.getNewTransaction( this.getBDB() );
 		DatabaseEntry key = new DatabaseEntry();
 		DatabaseEntry data = new DatabaseEntry();
 		BerkeleyDB.stringToEntry( first, key );
@@ -167,6 +177,14 @@ public class OneToManyDBMap {
 		}
 		
 		return ( OperationStatus.SUCCESS == ret1 );
+	}
+	
+	/**
+	 * @return
+	 */
+	private BerkeleyDB getBDB() {
+
+		return bdb;
 	}
 	
 	/**
@@ -201,7 +219,7 @@ public class OneToManyDBMap {
 			throws DatabaseException {
 
 		RunTime.assertNotNull( first, second );
-		TransactionCapsule txc = TransactionCapsule.getNewTransaction();
+		TransactionCapsule txc = TransactionCapsule.getNewTransaction( this.getBDB() );
 		DatabaseEntry key = new DatabaseEntry();
 		DatabaseEntry data = new DatabaseEntry();
 		BerkeleyDB.stringToEntry( first, key );
