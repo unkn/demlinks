@@ -28,6 +28,7 @@ package org.dml.environ;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import org.dml.JUnits.Consts;
 import org.dml.level1.NodeJID;
 import org.dml.level2.NodeID;
 import org.junit.Test;
@@ -43,11 +44,11 @@ public class DMLEnvironmentTest {
 	@Test
 	public void multiple() throws Exception {
 
-		DMLEnvironment d1 = DMLEnvironment.getNew( ".\\bin\\JUnitTests\\1&2",
+		DMLEnvironment d1 = DMLEnvironment.getNew( Consts.BDB_ENV_PATH + "1&2",
 				true );
-		DMLEnvironment d2 = DMLEnvironment.getNew( ".\\bin\\JUnitTests\\1&2",
+		DMLEnvironment d2 = DMLEnvironment.getNew( Consts.BDB_ENV_PATH + "1&2",
 				false );
-		DMLEnvironment d3 = DMLEnvironment.getNew( ".\\bin\\JUnitTests\\3",
+		DMLEnvironment d3 = DMLEnvironment.getNew( Consts.BDB_ENV_PATH + "3",
 				true );
 		try {
 			// if ( 1 == 1 ) {
