@@ -46,7 +46,7 @@ public class DMLEnvironment {
 	// public static final NodeJID AllWords = NodeJID.ensureJIDFor( "AllWords"
 	// );
 	
-	public final static String							DEFAULT_BDB_ENVIRONMENT_HOMEDIR	= ".\\bin";
+	public final static String							DEFAULT_BDB_ENVIRONMENT_HOMEDIR	= ".\\bin\\mainEnv\\";
 	private final BerkeleyDBStorage						Storage;
 	private final static NonNullHashSet<DMLEnvironment>	ALL_INSTANCES					= new NonNullHashSet<DMLEnvironment>();
 	

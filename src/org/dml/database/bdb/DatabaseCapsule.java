@@ -31,7 +31,6 @@ import org.javapart.logger.Log;
 import com.sleepycat.je.Database;
 import com.sleepycat.je.DatabaseConfig;
 import com.sleepycat.je.DatabaseException;
-import com.sleepycat.je.Environment;
 
 
 
@@ -45,22 +44,21 @@ public class DatabaseCapsule {
 	private String				dbName;
 	private Database			db		= null;
 	private DatabaseConfig		dbConf	= null;
-	private final Environment	env;
+	private final BerkeleyDB	bdb;
 	
 	/**
 	 * @param string
 	 */
-	public DatabaseCapsule( Environment env1,
-			@SuppressWarnings( "hiding" ) String dbName,
-			@SuppressWarnings( "hiding" ) DatabaseConfig dbConf ) {
+	public DatabaseCapsule( BerkeleyDB bdb1, String dbName1,
+			DatabaseConfig dbConf1 ) {
 
-		RunTime.assertNotNull( env1 );
-		RunTime.assertNotNull( dbName );
-		RunTime.assertFalse( dbName.isEmpty() );
+		RunTime.assertNotNull( bdb1 );
+		RunTime.assertNotNull( dbName1 );
+		RunTime.assertFalse( dbName1.isEmpty() );
 		
-		env = env1;
-		this.dbName = dbName;
-		this.dbConf = dbConf;// can be null
+		bdb = bdb1;
+		dbName = dbName1;
+		dbConf = dbConf1;// can be null
 	}
 	
 	/**
@@ -71,10 +69,8 @@ public class DatabaseCapsule {
 
 		if ( null == db ) {
 			// first time init:
-			db = env.openDatabase( null, dbName, dbConf );
+			db = bdb.openAnyDatabase( null, dbName, dbConf );
 			RunTime.assertNotNull( db );
-			// Runtime.getRuntime().addShutdownHook(null); bad idea:
-			// concurrently called
 		}
 		return db;
 	}
@@ -99,7 +95,7 @@ public class DatabaseCapsule {
 	 */
 	public void silentClose() {
 
-		db = BerkeleyDB.silentCloseAnyDB( db, dbName );
+		db = bdb.silentCloseAnyDB( db );// , dbName );
 	}
 	
 }

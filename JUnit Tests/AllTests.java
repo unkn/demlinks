@@ -1,8 +1,5 @@
-/**
- * File creation: Jun 7, 2009 6:42:00 PM
- * 
- * Copyright (C) 2005-2009 AtKaaZ <atkaaz@users.sourceforge.net>
- * Copyright (C) 2005-2009 UnKn <unkn@users.sourceforge.net>
+/*
+ * Copyright (C) 2005-2008 AtKaaZ <atkaaz@users.sourceforge.net>
  * 
  * This file and its contents are part of DeMLinks.
  * 
@@ -20,22 +17,16 @@
  * along with DeMLinks. If not, see <http://www.gnu.org/licenses/>.
  */
 
+import org.dml.database.AllTestsDatabase;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
+import org.references.AllTestsReferences;
 
-package org.dml.database.bdb;
 
 
-/**
- * FIXME: not sure yet if we need this<br>
- * 
- */
-public class DBMapTupleNodeJIDs extends DBMapTupleNodeIDs {
-	
-	/**
-	 * @param dbName1
-	 */
-	public DBMapTupleNodeJIDs( String dbName1 ) {
-
-		super( dbName1, BerkeleyDB.getDBMapJIDsToNodeIDs() );
-	}
-	
+@RunWith( Suite.class )
+@Suite.SuiteClasses( value = {
+		AllTestsReferences.class, AllTestsDatabase.class,
+} )
+public class AllTests {
 }

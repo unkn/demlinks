@@ -22,6 +22,8 @@
 
 package org.dml.tools;
 
+import org.dml.error.BugError;
+
 
 /**
  * these mustn't be disabled, because they're sometimes calling methods as

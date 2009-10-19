@@ -49,8 +49,6 @@ import com.sleepycat.je.DatabaseException;
  */
 public class DBMapTupleNodeIDs extends OneToManyDBMap {
 	
-	private final DBMapJIDsToNodeIDs	mapJIDs2IDs;
-	
 	/**
 	 * constructor
 	 * 
@@ -60,12 +58,9 @@ public class DBMapTupleNodeIDs extends OneToManyDBMap {
 	 *            the database holding the JIDs to NodeIDs 1to1 mappings,
 	 *            that's currently BerkeleyDB.getDBMapJIDsToNodeIDs()
 	 */
-	public DBMapTupleNodeIDs( BerkeleyDB bdb1, String dbName1,
-			DBMapJIDsToNodeIDs db ) {
+	public DBMapTupleNodeIDs( BerkeleyDB bdb1, String dbName1 ) {
 
 		super( bdb1, dbName1 );
-		RunTime.assertNotNull( db );
-		mapJIDs2IDs = db;
 	}
 	
 	/**
@@ -119,7 +114,7 @@ public class DBMapTupleNodeIDs extends OneToManyDBMap {
 	private void throwIfNotExist( NodeID nid ) throws DatabaseException {
 
 		RunTime.assertNotNull( nid );
-		if ( null == mapJIDs2IDs.getNodeJID( nid ) ) {
+		if ( null == bdb.getDBMapJIDsToNodeIDs().getNodeJID( nid ) ) {
 			RunTime.Bug( "NodeID doesn't exist, and it's assumed it should" );
 		}
 	}

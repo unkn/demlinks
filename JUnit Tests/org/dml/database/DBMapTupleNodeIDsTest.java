@@ -25,6 +25,7 @@ package org.dml.database;
 
 
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -57,15 +58,14 @@ public class DBMapTupleNodeIDsTest {
 	public void setUp() throws DatabaseException {
 
 		bdb = new BerkeleyDB( Consts.BDB_ENV_PATH, true );
-		tdb = new DBMapTupleNodeIDs( bdb, "tupleIDs",// + new Object(),
-				bdb.getDBMapJIDsToNodeIDs() );
+		tdb = new DBMapTupleNodeIDs( bdb, "tupleIDs" );
 		
 	}
 	
 	@After
 	public void tearDown() {
 
-		tdb.silentClose();
+		// tdb.silentClose();
 		tdb = null;
 		bdb.deInit();
 	}
@@ -84,5 +84,6 @@ public class DBMapTupleNodeIDsTest {
 		
 		assertTrue( tdb.isGroup( _a, _b ) );
 		assertTrue( tdb.ensureGroup( _a, _b ) );
+		assertFalse( tdb.ensureGroup( "D", "E" ) );
 	}
 }

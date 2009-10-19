@@ -25,14 +25,13 @@ package org.dml.database.bdb;
 
 
 
-import org.dml.tools.BugError;
+import org.dml.error.BugError;
 import org.dml.tools.RunTime;
 import org.javapart.logger.Log;
 
 import com.sleepycat.je.Database;
 import com.sleepycat.je.DatabaseEntry;
 import com.sleepycat.je.DatabaseException;
-import com.sleepycat.je.Environment;
 import com.sleepycat.je.OperationStatus;
 
 
@@ -54,7 +53,7 @@ public class OneToManyDBMap {
 	private DatabaseCapsule		forwardDB		= null;
 	private DatabaseCapsule		backwardDB		= null;
 	private final String		dbName;
-	private final BerkeleyDB	bdb;
+	protected final BerkeleyDB	bdb;
 	
 	/**
 	 * constructor
@@ -67,11 +66,6 @@ public class OneToManyDBMap {
 		RunTime.assertNotNull( dbName1 );
 		bdb = bdb1;
 		dbName = dbName1;
-	}
-	
-	private Environment getEnv() throws DatabaseException {
-
-		return bdb.getEnvironment();
 	}
 	
 	/**
@@ -89,7 +83,7 @@ public class OneToManyDBMap {
 	private Database getForwardDB() throws DatabaseException {
 
 		if ( null == forwardDB ) {
-			forwardDB = new DatabaseCapsule( this.getEnv(), dbName,
+			forwardDB = new DatabaseCapsule( bdb, dbName,
 					new OneToManyDBConfig() );
 			RunTime.assertNotNull( forwardDB );
 		}
@@ -103,8 +97,8 @@ public class OneToManyDBMap {
 	private Database getBackwardDB() throws DatabaseException {
 
 		if ( null == backwardDB ) {
-			backwardDB = new DatabaseCapsule( this.getEnv(), dbName
-					+ backwardSuffix, new OneToManyDBConfig() );
+			backwardDB = new DatabaseCapsule( bdb, dbName + backwardSuffix,
+					new OneToManyDBConfig() );
 			RunTime.assertNotNull( backwardDB );
 		}
 		return backwardDB.getDB();
@@ -173,7 +167,7 @@ public class OneToManyDBMap {
 				RunTime.Bug( "one exists, the other doesn't; but should either both exist, or both not exist" );
 			}
 		} finally {
-			txc.abort();
+			txc.commit();
 		}
 		
 		return ( OperationStatus.SUCCESS == ret1 );

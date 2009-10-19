@@ -67,7 +67,7 @@ public class DBSequence {
 	
 	
 	/**
-	 * private constructor, use getSeq() instead
+	 * constructor, use BerkeleyDB.newDBSequence() instead
 	 * 
 	 * @param seqName
 	 */

@@ -31,7 +31,6 @@ import org.javapart.logger.Log;
 import com.sleepycat.je.Database;
 import com.sleepycat.je.DatabaseEntry;
 import com.sleepycat.je.DatabaseException;
-import com.sleepycat.je.Environment;
 import com.sleepycat.je.OperationStatus;
 import com.sleepycat.je.SecondaryDatabase;
 
@@ -66,11 +65,6 @@ public class OneToOneDBMap {
 		dbName = dbName1;
 	}
 	
-	private Environment getEnv() throws DatabaseException {
-
-		return bdb.getEnvironment();
-	}
-	
 	/**
 	 * this init doesn't need to be called from an external caller, it's called
 	 * internally when needed
@@ -79,11 +73,10 @@ public class OneToOneDBMap {
 	 */
 	private void internal_initBoth() throws DatabaseException {
 
-		forwardDB = new DatabaseCapsule( this.getEnv(), dbName,
-				new OneToOneDBConfig() );
+		forwardDB = new DatabaseCapsule( bdb, dbName, new OneToOneDBConfig() );
 		
-		backwardDB = new SecondaryDatabaseCapsule( this.getEnv(), secPrefix
-				+ dbName, new OneToOneSecondaryDBConfig(), forwardDB.getDB() );
+		backwardDB = new SecondaryDatabaseCapsule( bdb, secPrefix + dbName,
+				new OneToOneSecondaryDBConfig(), forwardDB.getDB() );
 		
 		// must make sure second BerkeleyDB is also open!! because all inserts
 		// are done

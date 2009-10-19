@@ -1,8 +1,5 @@
-/**
- * File creation: May 30, 2009 12:09:58 AM
- * 
- * Copyright (C) 2005-2009 AtKaaZ <atkaaz@users.sourceforge.net>
- * Copyright (C) 2005-2009 UnKn <unkn@users.sourceforge.net>
+/*
+ * Copyright (C) 2005-2008 AtKaaZ <atkaaz@users.sourceforge.net>
  * 
  * This file and its contents are part of DeMLinks.
  * 
@@ -21,27 +18,22 @@
  */
 
 
-package org.dml.tools;
+package org.dml.error;
 
-
-/**
- * thrown when a programming error is detected<br>
- *such as bad parameter value specified on call or other unexpected logic
- * errors
- */
-public class BugError extends AssertionError {
+public class BadCallError extends Error {
 	
 	/**
 	 * 
 	 */
-	private static final long	serialVersionUID	= -4056461933723398830L;
+	private static final long	serialVersionUID	= 1975911903344951011L;
 	
-	/**
-	 * @param string
-	 */
-	public BugError( String msg ) {
+	public BadCallError() {
 
-		super( msg );
+		super();
 	}
 	
+	public BadCallError( String userMsg ) {
+
+		super( userMsg );
+	}
 }

@@ -30,7 +30,6 @@ import org.javapart.logger.Log;
 
 import com.sleepycat.je.Database;
 import com.sleepycat.je.DatabaseException;
-import com.sleepycat.je.Environment;
 import com.sleepycat.je.SecondaryConfig;
 import com.sleepycat.je.SecondaryDatabase;
 
@@ -47,29 +46,25 @@ public class SecondaryDatabaseCapsule {
 	private SecondaryDatabase		secDb	= null;
 	private final SecondaryConfig	secDbConf;
 	private final Database			primaryDb;
-	private final Environment		env;
+	private final BerkeleyDB		bdb;
 	
 	/**
 	 * @param string
 	 */
-	public SecondaryDatabaseCapsule( Environment env1, String dbName,
+	public SecondaryDatabaseCapsule( BerkeleyDB bdb1, String dbName,
 			SecondaryConfig secConf,
 			@SuppressWarnings( "hiding" ) Database primaryDb ) {
 
-		RunTime.assertNotNull( env1 );
+		RunTime.assertNotNull( bdb1 );
 		RunTime.assertNotNull( dbName );
 		RunTime.assertFalse( dbName.isEmpty() );
 		
-		env = env1;
+		bdb = bdb1;
 		secDbName = dbName;
 		this.primaryDb = primaryDb;
 		secDbConf = secConf;// can be null if defaults are to be used
 	}
 	
-	private Environment getEnv() {
-
-		return env;
-	}
 	
 	/**
 	 * @return
@@ -79,8 +74,9 @@ public class SecondaryDatabaseCapsule {
 
 		if ( null == secDb ) {
 			// first time init:
-			secDb = this.getEnv().openSecondaryDatabase( null, secDbName,
-					primaryDb, secDbConf );
+			// FIXME: list of secDBs that are open, in case of Exception
+			secDb = bdb.getEnvironment().openSecondaryDatabase( null,
+					secDbName, primaryDb, secDbConf );
 			RunTime.assertNotNull( secDb );
 			// Runtime.getRuntime().addShutdownHook(null); bad idea:
 			// concurrently called

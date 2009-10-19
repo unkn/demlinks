@@ -30,6 +30,8 @@ import java.io.File;
 import org.dml.tools.NonNullHashSet;
 import org.dml.tools.RunTime;
 import org.javapart.logger.Log;
+import org.references.ObjRefsList;
+import org.references.Position;
 
 import com.sleepycat.bind.tuple.StringBinding;
 import com.sleepycat.je.Database;
@@ -59,6 +61,7 @@ public class BerkeleyDB {
 	private DatabaseConfig						seqDbConf			= null;
 	
 	private final NonNullHashSet<DBSequence>	ALL_SEQ_INSTANCES	= new NonNullHashSet<DBSequence>();
+	private final ObjRefsList<Database>			ALL_OPEN_DATABASES	= new ObjRefsList<Database>();
 	
 	/**
 	 * singleton
@@ -77,6 +80,7 @@ public class BerkeleyDB {
 	}
 	
 	
+
 	public BerkeleyDB( String envHomeDir1 ) throws DatabaseException {
 
 		this.init( envHomeDir1, false );
@@ -233,30 +237,6 @@ public class BerkeleyDB {
 	
 
 	/**
-	 * silently closing database
-	 * no throws
-	 * 
-	 * @return null
-	 * @param db
-	 */
-	public static final Database silentCloseAnyDB( Database db, String dbname ) {
-
-		if ( null != db ) {
-			try {
-				db.close();
-				Log.mid( "closed BerkeleyDB with name: " + dbname );
-			} catch ( DatabaseException de ) {
-				Log.thro( "failed closing BerkeleyDB with specified name: '"
-						+ dbname );
-				// ignore
-			}
-		} else {
-			Log.mid( "wasn't open BerkeleyDB with name: " + dbname );
-		}
-		return null;
-	}
-	
-	/**
 	 * silently closing SecondaryDatabase
 	 * no throws
 	 * 
@@ -284,7 +264,7 @@ public class BerkeleyDB {
 	/**
 	 * 
 	 */
-	public final void closeDBEnvironment() {
+	private final void closeDBEnvironment() {
 
 		if ( null != env ) {
 			try {
@@ -292,7 +272,7 @@ public class BerkeleyDB {
 				Log.exit( "BerkeleyDB env closed" );
 			} catch ( DatabaseException de ) {
 				Log.thro( "failed BerkeleyDB environment close:"
-						+ de.getCause().getLocalizedMessage() );
+						+ de.getLocalizedMessage() );
 				// ignore
 			} finally {
 				env = null;
@@ -304,7 +284,8 @@ public class BerkeleyDB {
 	
 	
 	/**
-	 * new instance of DBSequence
+	 * new instance of DBSequence, keeping track of it inside BerkeleyDB class
+	 * just in case we need to shutdown all when Exception detected
 	 * 
 	 * @param seqName1
 	 *            name of the Sequence
@@ -349,7 +330,7 @@ public class BerkeleyDB {
 		}
 		
 		if ( null != seqDb ) {
-			seqDb = BerkeleyDB.silentCloseAnyDB( seqDb, seqDb_NAME );
+			seqDb = this.silentCloseAnyDB( seqDb );// , seqDb_NAME );
 		} else {
 			Log.warn( "close() called on a not yet inited/open database" );
 		}
@@ -361,8 +342,29 @@ public class BerkeleyDB {
 	 */
 	public final void deInitSeqSystem() {
 
-		this.silentCloseAllSequencesAndTheirDB();
+		this.silentCloseAllSequencesAndTheirDB();// first
+		this.silentCloseAllOpenDatabases();// second
 	}
+	
+	/**
+	 * 
+	 */
+	private void silentCloseAllOpenDatabases() {
+
+		// TODO Auto-generated method stub
+		// FIXME:
+		// Iterator<Database> i = ALL_OPEN_DATABASES.iterator();
+		// while ( ALL_OPEN_DATABASES.size() > 0 ) {
+		// this.silentCloseAnyDB( i.next() );
+		// }
+		Database iter = ALL_OPEN_DATABASES.getObjectAt( Position.FIRST );
+		while ( null != iter ) {
+			this.silentCloseAnyDB( iter );
+			ALL_OPEN_DATABASES.removeObject( iter );
+			iter = ALL_OPEN_DATABASES.getObjectAt( Position.FIRST );
+		}
+	}
+	
 	
 	/**
 	 * @return
@@ -401,7 +403,64 @@ public class BerkeleyDB {
 			seqDbConf.setTransactional( true );
 		}
 		
-		return this.getEnvironment().openDatabase( null, seqDb_NAME, seqDbConf );
+		return this.openAnyDatabase( null, seqDb_NAME, seqDbConf );
+	}
+	
+	
+	/**
+	 * @param env2
+	 * @param object
+	 * @param dbName
+	 * @param dbConf
+	 * @return
+	 * @throws DatabaseException
+	 */
+	public Database openAnyDatabase( Object object, String dbName,
+			DatabaseConfig dbConf ) throws DatabaseException {
+
+		
+		// should not use this openDatabase() method anywhere else
+		Database db = this.getEnvironment().openDatabase( null, dbName, dbConf );
+		if ( ALL_OPEN_DATABASES.addFirst( db ) ) {
+			RunTime.Bug( "couldn't have already existed!" );
+		}
+		return db;
+		// this should be the only method doing open on any database in this
+		// environment
+	}
+	
+	/**
+	 * silently closing database
+	 * no throws
+	 * 
+	 * @return null
+	 * @param db
+	 *            just for information
+	 */
+	public final Database silentCloseAnyDB( Database db ) {
+
+		
+		if ( null != db ) {
+			String dbname = null;
+			try {
+				dbname = db.getDatabaseName();
+				Log.mid( "closing dbname: " + dbname );
+				db.close();// the only place this should be used is this line
+				Log.mid( "closed BerkeleyDB with name: " + dbname );
+			} catch ( DatabaseException de ) {
+				Log.thro( "failed closing BerkeleyDB with specified name: '"
+						+ dbname );
+				// ignore
+			} finally {
+				if ( !ALL_OPEN_DATABASES.removeObject( db ) ) {
+					RunTime.Bug( "should've succeeded" );
+				}
+			}
+		} else {
+			Log.mid( "close db was called on null db object" );
+		}
+		
+		return null;
 	}
 	
 }// class
