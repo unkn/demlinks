@@ -73,9 +73,14 @@ public interface StorageWrapper {
 	public NodeID ensureNodeID( NodeJID theJID ) throws StorageException;
 	
 	/**
-	 * @param bdbEnvironmentHomedir
+	 * @param first
+	 * @param second
+	 * @return
+	 * @throws StorageException
 	 */
-	// public void init( String envHomeDir ) throws StorageException;
+	public boolean ensureGroup( NodeID first, NodeID second )
+			throws StorageException;
+	
 	/**
 	 * 
 	 */

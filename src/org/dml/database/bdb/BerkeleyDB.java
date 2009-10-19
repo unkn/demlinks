@@ -56,6 +56,7 @@ public class BerkeleyDB {
 	private final EnvironmentConfig					environmentConfig			= new EnvironmentConfig();
 	private Environment								env							= null;
 	private DBMapJIDsToNodeIDs						dbJID2NID					= null;
+	private DBMapTupleNodeIDs						dbTupleNIDs					= null;
 	
 	// a database where all sequences will be stored:(only 1 db per bdb env)
 	private Database								seqDb						= null;
@@ -67,6 +68,8 @@ public class BerkeleyDB {
 	private final ObjRefsList<Sequence>				allSequenceInstances		= new ObjRefsList<Sequence>();
 	private final ObjRefsList<Database>				allOpenPrimaryDatabases		= new ObjRefsList<Database>();
 	private final ObjRefsList<SecondaryDatabase>	allOpenSecondaryDatabases	= new ObjRefsList<SecondaryDatabase>();
+	private final static String						dbTupleNIDs_NAME			= "tuple(NodeID<->NodeID)";
+	private static final String						dbJID2NID_NAME				= "map(JID<->NodeID)";
 	private final static String						UNINITIALIZED_STRING		= "uninitializedString";
 	
 	/**
@@ -79,14 +82,24 @@ public class BerkeleyDB {
 	public DBMapJIDsToNodeIDs getDBMapJIDsToNodeIDs() throws DatabaseException {
 
 		if ( null == dbJID2NID ) {
-			dbJID2NID = new DBMapJIDsToNodeIDs( this, "map(JID<->NodeID)" );
+			dbJID2NID = new DBMapJIDsToNodeIDs( this, dbJID2NID_NAME );
 			RunTime.assertNotNull( dbJID2NID );
 		}
 		return dbJID2NID;
 	}
 	
-	
+	/**
+	 * @return
+	 */
+	public DBMapTupleNodeIDs getDBMapTupleNodeIDs() {
 
+		if ( null == dbTupleNIDs ) {
+			dbTupleNIDs = new DBMapTupleNodeIDs( this, dbTupleNIDs_NAME );
+			RunTime.assertNotNull( dbTupleNIDs );
+		}
+		return dbTupleNIDs;
+	}
+	
 	public BerkeleyDB( String envHomeDir1 ) throws DatabaseException {
 
 		this.init( envHomeDir1, false );

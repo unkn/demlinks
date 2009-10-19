@@ -31,6 +31,7 @@ import org.dml.level1.NodeJID;
 import org.dml.level2.NodeID;
 import org.dml.storagewrapper.BerkeleyDBStorage;
 import org.dml.storagewrapper.StorageException;
+import org.dml.storagewrapper.StorageWrapper;
 import org.dml.tools.RunTime;
 import org.javapart.logger.Log;
 import org.references.ObjRefsList;
@@ -42,7 +43,7 @@ import org.references.Position;
  * 
  *
  */
-public class DMLEnvironment {
+public class DMLEnvironment implements StorageWrapper {
 	
 	// public static final NodeJID AllWords = NodeJID.ensureJIDFor( "AllWords"
 	// );
@@ -108,7 +109,7 @@ public class DMLEnvironment {
 		Log.entry();
 		DMLEnvironment iter;
 		while ( null != ( iter = ALL_INSTANCES.getObjectAt( Position.FIRST ) ) ) {
-			iter.done();
+			iter.deInit();
 			ALL_INSTANCES.removeObject( iter );
 		}
 		RunTime.assertTrue( ALL_INSTANCES.isEmpty() );
@@ -117,7 +118,7 @@ public class DMLEnvironment {
 	/**
 	 * 
 	 */
-	public void done() {
+	public void deInit() {
 
 		Log.entry();
 		Storage.deInit();
@@ -132,7 +133,7 @@ public class DMLEnvironment {
 	 * @return NodeJID
 	 * @throws StorageException
 	 */
-	public NodeJID getJIDFor( NodeID nodeID ) throws StorageException {
+	public NodeJID getNodeJID( NodeID nodeID ) throws StorageException {
 
 		RunTime.assertNotNull( nodeID );
 		return Storage.getNodeJID( nodeID );
@@ -175,4 +176,15 @@ public class DMLEnvironment {
 		return Storage.createNodeID( fromJID );
 	}
 	
+	/**
+	 * (non-Javadoc)
+	 * 
+	 * @see org.dml.storagewrapper.StorageWrapper#ensureGroup(org.dml.level2.NodeID,
+	 *      org.dml.level2.NodeID)
+	 */
+	public boolean ensureGroup( NodeID first, NodeID second )
+			throws StorageException {
+
+		return Storage.ensureGroup( first, second );
+	}
 }

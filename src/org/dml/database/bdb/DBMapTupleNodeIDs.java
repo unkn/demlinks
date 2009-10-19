@@ -69,7 +69,7 @@ public class DBMapTupleNodeIDs extends OneToManyDBMap {
 	 * 
 	 * @param first
 	 * @param second
-	 * @return
+	 * @return true if existed already; false if it didn't exist before call
 	 * @throws DatabaseException
 	 */
 	public boolean ensureGroup( NodeID first, NodeID second )

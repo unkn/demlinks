@@ -25,6 +25,7 @@ package org.dml.environ;
 
 
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -71,10 +72,15 @@ public class DMLEnvironmentTest {
 			assertNull( n3 );
 			n3 = d3.getNodeID( j2 );
 			assertNull( n3 );
-			System.out.println( d3.getJIDFor( n1 ) );
+			System.out.println( d3.getNodeJID( n1 ) );
+			assertFalse( d1.ensureGroup( n1, n2 ) );
+			assertFalse( d1.ensureGroup( n1, n1 ) );
+			assertTrue( d1.ensureGroup( n1, n2 ) );
+			assertTrue( d1.ensureGroup( n1, n1 ) );
+			
 		} finally {
-			d1.done();
-			d2.done();
+			d1.deInit();
+			d2.deInit();
 			DMLEnvironment.deInitAll();
 		}
 	}

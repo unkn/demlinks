@@ -133,4 +133,23 @@ public class BerkeleyDBStorage implements StorageWrapper {
 
 		bdb.deInit();
 	}
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.dml.storagewrapper.StorageWrapper#ensureGroup(org.dml.level2.NodeID,
+	 * org.dml.level2.NodeID)
+	 */
+	@Override
+	public boolean ensureGroup( NodeID first, NodeID second )
+			throws StorageException {
+
+		RunTime.assertNotNull( first, second );
+		try {
+			return bdb.getDBMapTupleNodeIDs().ensureGroup( first, second );
+		} catch ( DatabaseException de ) {
+			throw new StorageException( de );
+		}
+	}
 }// end of class

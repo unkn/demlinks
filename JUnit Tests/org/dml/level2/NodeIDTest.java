@@ -62,7 +62,7 @@ public class NodeIDTest {
 	@After
 	public void tearDown() {
 
-		dml.done();
+		dml.deInit();
 	}
 	
 	@Test
