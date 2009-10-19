@@ -54,7 +54,9 @@ public class DMLEnvironment implements StorageWrapper {
 																								+ File.separator
 																								+ "mainEnv"
 																								+ File.separator;
+	// FIXME: should be StorageWrapper type but upsets my F3 key
 	private final BerkeleyDBStorage						Storage;
+	
 	private final static ObjRefsList<DMLEnvironment>	ALL_INSTANCES					= new ObjRefsList<DMLEnvironment>();
 	
 	/**
@@ -98,9 +100,10 @@ public class DMLEnvironment implements StorageWrapper {
 	 *            data
 	 * @throws StorageException
 	 */
-	private DMLEnvironment( String envHomeDir, boolean wipeEnvFirst )
+	protected DMLEnvironment( String envHomeDir, boolean wipeEnvFirst )
 			throws StorageException {
 
+		RunTime.assertNotNull( envHomeDir, wipeEnvFirst );
 		Storage = new BerkeleyDBStorage( envHomeDir, wipeEnvFirst );
 	}
 	
@@ -177,10 +180,7 @@ public class DMLEnvironment implements StorageWrapper {
 	}
 	
 	/**
-	 * (non-Javadoc)
-	 * 
-	 * @see org.dml.storagewrapper.StorageWrapper#ensureGroup(org.dml.level2.NodeID,
-	 *      org.dml.level2.NodeID)
+	 * level 3
 	 */
 	public boolean ensureGroup( NodeID first, NodeID second )
 			throws StorageException {

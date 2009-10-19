@@ -1,5 +1,5 @@
 /**
- * File creation: Oct 17, 2009 8:03:04 AM
+ * File creation: Oct 19, 2009 11:30:51 PM
  * 
  * Copyright (C) 2005-2009 AtKaaZ <atkaaz@users.sourceforge.net>
  * Copyright (C) 2005-2009 UnKn <unkn@users.sourceforge.net>
@@ -21,34 +21,17 @@
  */
 
 
-package org.dml.tools;
-
+package org.dml.level4;
 
 
 /**
- * unused yet
- * 
+ * list of NodeIDs in which order matters and it's known<br>
+ * should be able to hold any number of NodeIDs even if they repeat inside the
+ * list<br>
+ * the order of insertion is kept<br>
+ * this will be a double linked list represented in DMLEnvironment<br>
+ * this is level 4
  */
-public class NonNullHashSet<E> extends java.util.HashSet<E> {
-	
-	@Override
-	public boolean add( E e ) {
-
-		RunTime.assertNotNull( e );
-		return super.add( e );
-	};
-	
-	@Override
-	public boolean remove( Object o ) {
-
-		RunTime.assertNotNull( o );
-		return super.remove( o );
-	};
-	
-	
-	/**
-	 * 
-	 */
-	private static final long	serialVersionUID	= 4064736535983636086L;
+public class ListID {
 	
 }

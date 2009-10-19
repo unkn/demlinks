@@ -80,7 +80,7 @@ public class DMLEnvironmentTest {
 			
 		} finally {
 			d1.deInit();
-			d2.deInit();
+			// d2.deInit();
 			DMLEnvironment.deInitAll();
 		}
 	}

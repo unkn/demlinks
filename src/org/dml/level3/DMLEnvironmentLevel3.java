@@ -1,5 +1,5 @@
 /**
- * File creation: Oct 17, 2009 8:03:04 AM
+ * File creation: Oct 19, 2009 11:39:43 PM
  * 
  * Copyright (C) 2005-2009 AtKaaZ <atkaaz@users.sourceforge.net>
  * Copyright (C) 2005-2009 UnKn <unkn@users.sourceforge.net>
@@ -21,34 +21,23 @@
  */
 
 
-package org.dml.tools;
+package org.dml.level3;
+
+
+
+import org.dml.environ.DMLEnvironment;
+import org.dml.storagewrapper.StorageException;
 
 
 
 /**
- * unused yet
  * 
+ *
  */
-public class NonNullHashSet<E> extends java.util.HashSet<E> {
+public class DMLEnvironmentLevel3 extends DMLEnvironment {
 	
-	@Override
-	public boolean add( E e ) {
+	protected DMLEnvironmentLevel3() throws StorageException {
 
-		RunTime.assertNotNull( e );
-		return super.add( e );
-	};
-	
-	@Override
-	public boolean remove( Object o ) {
-
-		RunTime.assertNotNull( o );
-		return super.remove( o );
-	};
-	
-	
-	/**
-	 * 
-	 */
-	private static final long	serialVersionUID	= 4064736535983636086L;
-	
+		super( DEFAULT_BDB_ENVIRONMENT_HOMEDIR, false );
+	}
 }

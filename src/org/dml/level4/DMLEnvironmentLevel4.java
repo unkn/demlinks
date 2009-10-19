@@ -1,5 +1,5 @@
 /**
- * File creation: Jun 4, 2009 10:51:08 AM
+ * File creation: Oct 19, 2009 11:38:38 PM
  * 
  * Copyright (C) 2005-2009 AtKaaZ <atkaaz@users.sourceforge.net>
  * Copyright (C) 2005-2009 UnKn <unkn@users.sourceforge.net>
@@ -21,11 +21,7 @@
  */
 
 
-package org.dml.level3;
-
-
-
-import org.dml.level2.NodeID;
+package org.dml.level4;
 
 
 
@@ -33,11 +29,6 @@ import org.dml.level2.NodeID;
  * 
  *
  */
-public class TupleOfNodeIDs {
+public class DMLEnvironmentLevel4 extends org.dml.environ.DMLEnvironment {
 	
-	NodeID	key, data;
-	
-	public TupleOfNodeIDs() {
-
-	}
 }
