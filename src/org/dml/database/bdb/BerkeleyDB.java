@@ -54,13 +54,15 @@ public class BerkeleyDB {
 	private String						envHomeDir;
 	private final EnvironmentConfig		environmentConfig		= new EnvironmentConfig();
 	private Environment					env						= null;
-	private DBMapJIDsToNodeIDs			db1						= null;
+	private DBMapJIDsToNodeIDs			dbJID2NID				= null;
 	
 	// a database where all sequences will be stored:(only 1 db per bdb env)
 	private Database					seqDb					= null;
 	private final static String			seqDb_NAME				= "db5_AllSequences";
 	private DatabaseConfig				seqDbConf				= null;
 	
+	// we keep track of open stuffs just in case we need to emergency shutdown
+	// ie. on Exception
 	private final ObjRefsList<Sequence>	allSequenceInstances	= new ObjRefsList<Sequence>();
 	private final ObjRefsList<Database>	allOpenPrimaryDatabases	= new ObjRefsList<Database>();
 	
@@ -73,11 +75,11 @@ public class BerkeleyDB {
 	 */
 	public DBMapJIDsToNodeIDs getDBMapJIDsToNodeIDs() throws DatabaseException {
 
-		if ( null == db1 ) {
-			db1 = new DBMapJIDsToNodeIDs( this, "map(JID<->NodeID)" );
-			RunTime.assertNotNull( db1 );
+		if ( null == dbJID2NID ) {
+			dbJID2NID = new DBMapJIDsToNodeIDs( this, "map(JID<->NodeID)" );
+			RunTime.assertNotNull( dbJID2NID );
 		}
-		return db1;
+		return dbJID2NID;
 	}
 	
 	
@@ -158,8 +160,8 @@ public class BerkeleyDB {
 	 */
 	public final void deInit() {
 
-		if ( null != db1 ) {
-			db1 = db1.deInit();
+		if ( null != dbJID2NID ) {
+			dbJID2NID = dbJID2NID.deInit();
 		}
 		this.deInitSeqSystem();// first
 		this.silentCloseAllOpenDatabases();// second
@@ -351,6 +353,7 @@ public class BerkeleyDB {
 			// NULL ie. inside a DBSequence instance, but I'm guessing that
 			// there won't be any calls to DBSequence.done() before
 			// closeEnvironment() finishes anyway; same goes for DatabaseCapsule
+			// and SecondaryDatabaseCapsule
 			this.silentCloseAnySeq( iter, "autoclosing..." );// we don't know
 			// the name here
 			if ( allSequenceInstances.removeObject( iter ) ) {

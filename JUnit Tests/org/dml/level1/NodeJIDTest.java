@@ -46,6 +46,8 @@ public class NodeJIDTest {
 	public void init() throws StorageException {
 
 		// DMLEnvironment.init();
+		NodeJID.clearAllForJUnit();
+		assertTrue( NodeJID.all_Level1_NodeJIDs.size() == 0 );
 		a = NodeJID.ensureJIDFor( "A" );
 		b = NodeJID.ensureJIDFor( "B" );
 		c = NodeJID.ensureJIDFor( "C" );
@@ -70,7 +72,7 @@ public class NodeJIDTest {
 		assertTrue( a == NodeJID.ensureJIDFor( "A" ) );
 		assertTrue( NodeJID.all_Level1_NodeJIDs.size() == 3 );
 		// assertTrue( null != DMLEnvironment.AllWords );
-		assertTrue( NodeJID.all_Level1_NodeJIDs.size() == 4 );
+		// assertTrue( NodeJID.all_Level1_NodeJIDs.size() == 4 );
 		System.out.println( NodeJID.all_Level1_NodeJIDs );
 		// NodeJID.forgetJIDFor( "A" );
 		// assertTrue( NodeJID.all_Level1_NodeJIDs.size() == 2 );

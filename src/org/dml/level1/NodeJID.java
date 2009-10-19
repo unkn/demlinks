@@ -47,10 +47,17 @@ import org.dml.tools.RunTime;
  */
 public class NodeJID {
 	
-	public static final HashMap<String, NodeJID>	all_Level1_NodeJIDs	= new HashMap<String, NodeJID>();
+	protected static final HashMap<String, NodeJID>	all_Level1_NodeJIDs	= new HashMap<String, NodeJID>();
 	// string representation of the ID
 	private String									stringID			= null;
 	
+	protected static final void clearAllForJUnit() {
+
+		if ( null != all_Level1_NodeJIDs ) {
+			all_Level1_NodeJIDs.clear();
+		}
+		// all_Level1_NodeJIDs = new HashMap<String, NodeJID>();
+	}
 	
 	/**
 	 * get the JID for this string<br>

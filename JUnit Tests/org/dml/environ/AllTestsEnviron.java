@@ -17,22 +17,19 @@
  * along with DeMLinks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import org.dml.database.AllTestsDatabase;
-import org.dml.environ.AllTestsEnviron;
-import org.dml.level1.AllTestsL1;
-import org.dml.level2.AllTestsL2;
-import org.dml.level3.AllTestsL3;
+
+package org.dml.environ;
+
+
+
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
-import org.references.AllTestsReferences;
 
 
 
 @RunWith( Suite.class )
 @Suite.SuiteClasses( value = {
-		AllTestsReferences.class, AllTestsDatabase.class,
-		AllTestsEnviron.class, AllTestsL1.class, AllTestsL2.class,
-		AllTestsL3.class
+	DMLEnvironmentTest.class
 } )
-public class AllTests {
+public class AllTestsEnviron {
 }
