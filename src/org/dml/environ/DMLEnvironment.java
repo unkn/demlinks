@@ -25,6 +25,8 @@ package org.dml.environ;
 
 
 
+import java.io.File;
+
 import org.dml.level1.NodeJID;
 import org.dml.level2.NodeID;
 import org.dml.storagewrapper.BerkeleyDBStorage;
@@ -45,7 +47,12 @@ public class DMLEnvironment {
 	// public static final NodeJID AllWords = NodeJID.ensureJIDFor( "AllWords"
 	// );
 	
-	public final static String							DEFAULT_BDB_ENVIRONMENT_HOMEDIR	= ".\\bin\\mainEnv\\";
+	public final static String							DEFAULT_BDB_ENVIRONMENT_HOMEDIR	= "."
+																								+ File.separator
+																								+ "bin"
+																								+ File.separator
+																								+ "mainEnv"
+																								+ File.separator;
 	private final BerkeleyDBStorage						Storage;
 	private final static ObjRefsList<DMLEnvironment>	ALL_INSTANCES					= new ObjRefsList<DMLEnvironment>();
 	

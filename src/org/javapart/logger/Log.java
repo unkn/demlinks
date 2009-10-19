@@ -44,10 +44,6 @@ public class Log {
 																				};
 	private final static boolean		alsoShowChildrenMethods					= true;
 	
-	// private final static String logFile = "c:\\j.log";
-	// private final static PrintStream logStream = new PrintStream(
-	// logFile );
-	
 	private static StackTraceElement[]	stea									= null;
 	
 	private static final Integer		currentMethodLocation					= 5;

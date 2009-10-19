@@ -25,11 +25,18 @@ package org.dml.JUnits;
 
 
 
+import java.io.File;
+
+
+
 /**
  * 
  *
  */
 public class Consts {
 	
-	public static final String	BDB_ENV_PATH	= ".\\bin\\JUnitTests\\";
+	public static final String	BDB_ENV_PATH	= "." + File.separator + "bin"
+														+ File.separator
+														+ "JUnitTests"
+														+ File.separator;
 }
