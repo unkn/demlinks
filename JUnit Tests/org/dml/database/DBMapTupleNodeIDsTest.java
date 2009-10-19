@@ -85,5 +85,13 @@ public class DBMapTupleNodeIDsTest {
 		assertTrue( tdb.isGroup( _a, _b ) );
 		assertTrue( tdb.ensureGroup( _a, _b ) );
 		assertFalse( tdb.ensureGroup( "D", "E" ) );
+		NodeID _c = bdb.getDBMapJIDsToNodeIDs().ensureNodeID(
+				NodeJID.ensureJIDFor( "C" ) );
+		assertFalse( tdb.ensureGroup( _a, _c ) );
+		assertTrue( tdb.isGroup( _a, _c ) );
+		assertFalse( tdb.ensureGroup( _c, _a ) );
+		assertFalse( tdb.ensureGroup( _c, _b ) );
+		assertTrue( tdb.isGroup( _c, _a ) );
+		assertTrue( tdb.isGroup( _c, _b ) );
 	}
 }
