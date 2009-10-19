@@ -66,7 +66,7 @@ public class DBMapJIDsToNodeIDs extends OneToOneDBMap {
 
 		if ( null == seq ) {
 			// init once:
-			seq = bdb.newDBSequence( seq_KEYNAME );
+			seq = new DBSequence( bdb, seq_KEYNAME );
 			RunTime.assertNotNull( seq );
 		}
 		return seq;
@@ -80,7 +80,7 @@ public class DBMapJIDsToNodeIDs extends OneToOneDBMap {
 		
 		// close seq
 		if ( null != seq ) {
-			seq = seq.silentCloseSeq();
+			seq = seq.done();
 		}
 		
 		// close DBs

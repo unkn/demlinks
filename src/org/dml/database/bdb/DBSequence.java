@@ -26,9 +26,7 @@ package org.dml.database.bdb;
 
 
 import org.dml.tools.RunTime;
-import org.javapart.logger.Log;
 
-import com.sleepycat.je.DatabaseEntry;
 import com.sleepycat.je.DatabaseException;
 import com.sleepycat.je.Sequence;
 import com.sleepycat.je.SequenceConfig;
@@ -70,6 +68,7 @@ public class DBSequence {
 	 * constructor, use BerkeleyDB.newDBSequence() instead
 	 * 
 	 * @param seqName
+	 * @throws DatabaseException
 	 */
 	public DBSequence( BerkeleyDB bdb1, String seqName ) {
 
@@ -80,56 +79,34 @@ public class DBSequence {
 		thisSeqName = seqPrefix + seqName + seqSuffix;
 	}
 	
-	
-
 	@Override
 	protected void finalize() {
 
-		this.silentCloseSeq();
+		this.done();
 	}
 	
-	
-
 	/**
-	 * @return null
-	 */
-	public DBSequence silentCloseSeq() {
-
-		Log.entry( "attempting to close sequence: " + thisSeqName );
-		if ( null != thisSeq ) {
-			try {
-				thisSeq.close();
-				Log.exit( "closed seq with name: " + thisSeqName );
-			} catch ( DatabaseException de ) {
-				Log.thro( "failed closing seq with specified name: '"
-						+ thisSeqName );
-				// ignore
-			} finally {
-				thisSeq = null;
-			}
-		} else {
-			Log.mid( "seq was already closed with name: " + thisSeqName );
-		}
-		
-		return null;
-	}
-	
-	
-	/**
-	 * @return never null
+	 * @return
 	 * @throws DatabaseException
 	 */
 	public Sequence getSequence() throws DatabaseException {
 
 		if ( null == thisSeq ) {
-			// init once:
-			DatabaseEntry deKey = new DatabaseEntry();
-			BerkeleyDB.stringToEntry( thisSeqName, deKey );
-			thisSeq = bdb.getSeqsDB().openSequence( null, deKey,
-					allSequencesConfig );
+			thisSeq = bdb.getNewSequence( thisSeqName, allSequencesConfig );
 			RunTime.assertNotNull( thisSeq );
 		}
 		return thisSeq;
 	}
 	
+	/**
+	 * 
+	 */
+	/**
+	 * @return null
+	 */
+	public DBSequence done() {
+
+		thisSeq = bdb.silentCloseAnySeq( thisSeq, thisSeqName );
+		return null;
+	}
 }

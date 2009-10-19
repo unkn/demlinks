@@ -87,7 +87,7 @@ public class SecondaryDatabaseCapsule {
 	@Override
 	protected void finalize() throws Throwable {
 
-		Log.exit( "in finalize() for secDbName:" + secDbName );
+		Log.entry( "in finalize() for secDbName:" + secDbName );
 		this.silentClose();
 		super.finalize();
 	}

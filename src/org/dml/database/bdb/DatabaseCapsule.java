@@ -78,7 +78,7 @@ public class DatabaseCapsule {
 	@Override
 	protected void finalize() throws Throwable {
 
-		Log.exit( "in finalize() for dbName:" + dbName );
+		Log.entry( "in finalize() for dbName:" + dbName );
 		if ( null != db ) {
 			Log.thro( "the DB object was lost but the DB wasn't closed!" );
 		}
@@ -95,7 +95,8 @@ public class DatabaseCapsule {
 	 */
 	public void silentClose() {
 
-		db = bdb.silentCloseAnyDB( db );// , dbName );
+		Log.entry();
+		db = bdb.silentClosePriDB( db );// , dbName );
 	}
 	
 }

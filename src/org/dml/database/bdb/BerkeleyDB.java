@@ -27,7 +27,6 @@ package org.dml.database.bdb;
 
 import java.io.File;
 
-import org.dml.tools.NonNullHashSet;
 import org.dml.tools.RunTime;
 import org.javapart.logger.Log;
 import org.references.ObjRefsList;
@@ -41,6 +40,8 @@ import com.sleepycat.je.DatabaseException;
 import com.sleepycat.je.Environment;
 import com.sleepycat.je.EnvironmentConfig;
 import com.sleepycat.je.SecondaryDatabase;
+import com.sleepycat.je.Sequence;
+import com.sleepycat.je.SequenceConfig;
 
 
 
@@ -50,18 +51,18 @@ import com.sleepycat.je.SecondaryDatabase;
  */
 public class BerkeleyDB {
 	
-	private String								envHomeDir;
-	private final EnvironmentConfig				environmentConfig	= new EnvironmentConfig();
-	private Environment							env					= null;
-	private DBMapJIDsToNodeIDs					db1					= null;
+	private String						envHomeDir;
+	private final EnvironmentConfig		environmentConfig		= new EnvironmentConfig();
+	private Environment					env						= null;
+	private DBMapJIDsToNodeIDs			db1						= null;
 	
 	// a database where all sequences will be stored:(only 1 db per bdb env)
-	private Database							seqDb				= null;
-	private final static String					seqDb_NAME			= "db5_AllSequences";
-	private DatabaseConfig						seqDbConf			= null;
+	private Database					seqDb					= null;
+	private final static String			seqDb_NAME				= "db5_AllSequences";
+	private DatabaseConfig				seqDbConf				= null;
 	
-	private final NonNullHashSet<DBSequence>	ALL_SEQ_INSTANCES	= new NonNullHashSet<DBSequence>();
-	private final ObjRefsList<Database>			ALL_OPEN_DATABASES	= new ObjRefsList<Database>();
+	private final ObjRefsList<Sequence>	allSequenceInstances	= new ObjRefsList<Sequence>();
+	private final ObjRefsList<Database>	allOpenPrimaryDatabases	= new ObjRefsList<Database>();
 	
 	/**
 	 * singleton
@@ -160,7 +161,8 @@ public class BerkeleyDB {
 		if ( null != db1 ) {
 			db1 = db1.deInit();
 		}
-		this.deInitSeqSystem();
+		this.deInitSeqSystem();// first
+		this.silentCloseAllOpenDatabases();// second
 		this.closeDBEnvironment();
 	}
 	
@@ -284,21 +286,56 @@ public class BerkeleyDB {
 	
 	
 	/**
-	 * new instance of DBSequence, keeping track of it inside BerkeleyDB class
+	 * new instance of Sequence, keeping track of it inside BerkeleyDB class
 	 * just in case we need to shutdown all when Exception detected
 	 * 
-	 * @param seqName1
-	 *            name of the Sequence
-	 * @return
+	 * @return never null
+	 * @throws DatabaseException
 	 */
-	public final DBSequence newDBSequence( String seqName1 ) {
+	public Sequence getNewSequence( String thisSeqName,
+			SequenceConfig allSequencesConfig ) throws DatabaseException {
 
-		DBSequence dbs = new DBSequence( this, seqName1 );
-		if ( !ALL_SEQ_INSTANCES.add( dbs ) ) {
+		// if ( null == thisSeq ) {
+		// init once:
+		DatabaseEntry deKey = new DatabaseEntry();
+		BerkeleyDB.stringToEntry( thisSeqName, deKey );
+		Sequence seq = this.getSeqsDB().openSequence( null, deKey,
+				allSequencesConfig );
+		if ( allSequenceInstances.addFirst( seq ) ) {
 			RunTime.Bug( "couldn't have already existed!" );
 		}
-		RunTime.assertNotNull( dbs );
-		return dbs;
+		RunTime.assertNotNull( seq );
+		return seq;
+		// RunTime.assertNotNull( thisSeq );
+		// }
+		// return thisSeq;
+	}
+	
+	/**
+	 * @return null
+	 */
+	public Sequence silentCloseAnySeq( Sequence thisSeq, String thisSeqName ) {
+
+		Log.entry( "attempting to close sequence: " + thisSeqName );
+		// System.err.println( allSequenceInstances.size() );
+		if ( null != thisSeq ) {
+			try {
+				thisSeq.close();
+				Log.exit( "closed seq with name: " + thisSeqName );
+			} catch ( DatabaseException de ) {
+				Log.thro( "failed closing seq with specified name: '"
+						+ thisSeqName );
+				// ignore
+			} finally {
+				if ( !allSequenceInstances.removeObject( thisSeq ) ) {
+					RunTime.Bug( "should've existed" );
+				}
+			}
+		} else {
+			Log.mid( "seq was already closed with name: " + thisSeqName );
+		}
+		
+		return null;
 	}
 	
 	/**
@@ -307,30 +344,42 @@ public class BerkeleyDB {
 	private final void silentCloseAllSequences() {
 
 		Log.entry();
-		for ( DBSequence dbs : ALL_SEQ_INSTANCES ) {
-			dbs.silentCloseSeq();
-			ALL_SEQ_INSTANCES.remove( dbs );
+		Sequence iter;
+		// int count = 0;
+		while ( null != ( iter = allSequenceInstances.getObjectAt( Position.FIRST ) ) ) {
+			// FIXME: the bad part is that whoever owns iter cannot set it to
+			// NULL ie. inside a DBSequence instance, but I'm guessing that
+			// there won't be any calls to DBSequence.done() before
+			// closeEnvironment() finishes anyway; same goes for DatabaseCapsule
+			this.silentCloseAnySeq( iter, "autoclosing..." );// we don't know
+			// the name here
+			if ( allSequenceInstances.removeObject( iter ) ) {
+				RunTime.Bug( "should've already been removed by above statement" );
+			}
+			// count++;
 		}
-		RunTime.assertTrue( ALL_SEQ_INSTANCES.isEmpty() );
+		// System.out.println( count );
+		RunTime.assertTrue( allSequenceInstances.isEmpty() );
+		Log.exit();
 	}
 	
 	/**
-	 * closing all sequences first, then the BerkeleyDB
+	 * closing all sequences first, then the BerkeleyDB holding them
 	 */
 	private void silentCloseAllSequencesAndTheirDB() {
 
 		Log.entry();
-		if ( !ALL_SEQ_INSTANCES.isEmpty() ) {
+		if ( !allSequenceInstances.isEmpty() ) {
 			this.silentCloseAllSequences();
 		}
 		
-		if ( !ALL_SEQ_INSTANCES.isEmpty() ) {
+		if ( !allSequenceInstances.isEmpty() ) {
 			// BUG, avoiding throw because it's silent
 			Log.bug( "should be empty now" );
 		}
 		
 		if ( null != seqDb ) {
-			seqDb = this.silentCloseAnyDB( seqDb );// , seqDb_NAME );
+			seqDb = this.silentClosePriDB( seqDb );// , seqDb_NAME );
 		} else {
 			Log.warn( "close() called on a not yet inited/open database" );
 		}
@@ -342,26 +391,27 @@ public class BerkeleyDB {
 	 */
 	public final void deInitSeqSystem() {
 
-		this.silentCloseAllSequencesAndTheirDB();// first
-		this.silentCloseAllOpenDatabases();// second
+		Log.entry();
+		this.silentCloseAllSequencesAndTheirDB();
+		
 	}
 	
 	/**
-	 * 
+	 * FIXME: include secondaries
 	 */
 	private void silentCloseAllOpenDatabases() {
 
-		// TODO Auto-generated method stub
-		// FIXME:
-		// Iterator<Database> i = ALL_OPEN_DATABASES.iterator();
-		// while ( ALL_OPEN_DATABASES.size() > 0 ) {
-		// this.silentCloseAnyDB( i.next() );
-		// }
-		Database iter = ALL_OPEN_DATABASES.getObjectAt( Position.FIRST );
+		Log.entry();
+		// FIXME: close secondaries first!
+		
+		// closing primaries:
+		Database iter = allOpenPrimaryDatabases.getObjectAt( Position.FIRST );
 		while ( null != iter ) {
-			this.silentCloseAnyDB( iter );
-			ALL_OPEN_DATABASES.removeObject( iter );
-			iter = ALL_OPEN_DATABASES.getObjectAt( Position.FIRST );
+			this.silentClosePriDB( iter );
+			if ( allOpenPrimaryDatabases.removeObject( iter ) ) {
+				RunTime.Bug( "should've already been removed by above cmd" );
+			}
+			iter = allOpenPrimaryDatabases.getObjectAt( Position.FIRST );
 		}
 	}
 	
@@ -421,7 +471,7 @@ public class BerkeleyDB {
 		
 		// should not use this openDatabase() method anywhere else
 		Database db = this.getEnvironment().openDatabase( null, dbName, dbConf );
-		if ( ALL_OPEN_DATABASES.addFirst( db ) ) {
+		if ( allOpenPrimaryDatabases.addFirst( db ) ) {
 			RunTime.Bug( "couldn't have already existed!" );
 		}
 		return db;
@@ -437,9 +487,9 @@ public class BerkeleyDB {
 	 * @param db
 	 *            just for information
 	 */
-	public final Database silentCloseAnyDB( Database db ) {
+	public final Database silentClosePriDB( Database db ) {
 
-		
+		Log.entry();
 		if ( null != db ) {
 			String dbname = null;
 			try {
@@ -452,7 +502,7 @@ public class BerkeleyDB {
 						+ dbname );
 				// ignore
 			} finally {
-				if ( !ALL_OPEN_DATABASES.removeObject( db ) ) {
+				if ( !allOpenPrimaryDatabases.removeObject( db ) ) {
 					RunTime.Bug( "should've succeeded" );
 				}
 			}

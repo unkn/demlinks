@@ -25,15 +25,14 @@ package org.dml.environ;
 
 
 
-import java.util.Iterator;
-
 import org.dml.level1.NodeJID;
 import org.dml.level2.NodeID;
 import org.dml.storagewrapper.BerkeleyDBStorage;
 import org.dml.storagewrapper.StorageException;
-import org.dml.tools.NonNullHashSet;
 import org.dml.tools.RunTime;
 import org.javapart.logger.Log;
+import org.references.ObjRefsList;
+import org.references.Position;
 
 
 
@@ -48,7 +47,7 @@ public class DMLEnvironment {
 	
 	public final static String							DEFAULT_BDB_ENVIRONMENT_HOMEDIR	= ".\\bin\\mainEnv\\";
 	private final BerkeleyDBStorage						Storage;
-	private final static NonNullHashSet<DMLEnvironment>	ALL_INSTANCES					= new NonNullHashSet<DMLEnvironment>();
+	private final static ObjRefsList<DMLEnvironment>	ALL_INSTANCES					= new ObjRefsList<DMLEnvironment>();
 	
 	/**
 	 * @param envHomeDir
@@ -60,7 +59,7 @@ public class DMLEnvironment {
 			boolean wipeEnvFirst ) throws StorageException {
 
 		DMLEnvironment env = new DMLEnvironment( envHomeDir, wipeEnvFirst );
-		if ( !ALL_INSTANCES.add( env ) ) {
+		if ( ALL_INSTANCES.addFirst( env ) ) {
 			RunTime.Bug( "couldn't have already existed!" );
 		}
 		return env;
@@ -100,12 +99,11 @@ public class DMLEnvironment {
 	public static final void deInitAll() {
 
 		Log.entry();
-		Iterator<DMLEnvironment> i = ALL_INSTANCES.iterator();
-		while ( i.hasNext() ) {
-			i.next().done();
-			i.remove();
+		DMLEnvironment iter;
+		while ( null != ( iter = ALL_INSTANCES.getObjectAt( Position.FIRST ) ) ) {
+			iter.done();
+			ALL_INSTANCES.removeObject( iter );
 		}
-		i = null;
 		RunTime.assertTrue( ALL_INSTANCES.isEmpty() );
 	}
 	
