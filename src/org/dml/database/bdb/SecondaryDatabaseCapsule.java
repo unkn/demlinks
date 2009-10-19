@@ -74,9 +74,7 @@ public class SecondaryDatabaseCapsule {
 
 		if ( null == secDb ) {
 			// first time init:
-			// FIXME: list of secDBs that are open, in case of Exception
-			secDb = bdb.getEnvironment().openSecondaryDatabase( null,
-					secDbName, primaryDb, secDbConf );
+			secDb = bdb.openAnySecDatabase( secDbName, primaryDb, secDbConf );
 			RunTime.assertNotNull( secDb );
 			// Runtime.getRuntime().addShutdownHook(null); bad idea:
 			// concurrently called
@@ -97,7 +95,8 @@ public class SecondaryDatabaseCapsule {
 	 */
 	public void silentClose() {
 
-		secDb = BerkeleyDB.silentCloseAnySecDB( secDb, secDbName );
+		Log.entry();
+		secDb = bdb.silentCloseAnySecDB( secDb );
 	}
 	
 }

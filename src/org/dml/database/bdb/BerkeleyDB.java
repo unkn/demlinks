@@ -39,6 +39,7 @@ import com.sleepycat.je.DatabaseEntry;
 import com.sleepycat.je.DatabaseException;
 import com.sleepycat.je.Environment;
 import com.sleepycat.je.EnvironmentConfig;
+import com.sleepycat.je.SecondaryConfig;
 import com.sleepycat.je.SecondaryDatabase;
 import com.sleepycat.je.Sequence;
 import com.sleepycat.je.SequenceConfig;
@@ -51,20 +52,22 @@ import com.sleepycat.je.SequenceConfig;
  */
 public class BerkeleyDB {
 	
-	private String						envHomeDir;
-	private final EnvironmentConfig		environmentConfig		= new EnvironmentConfig();
-	private Environment					env						= null;
-	private DBMapJIDsToNodeIDs			dbJID2NID				= null;
+	private String									envHomeDir;
+	private final EnvironmentConfig					environmentConfig			= new EnvironmentConfig();
+	private Environment								env							= null;
+	private DBMapJIDsToNodeIDs						dbJID2NID					= null;
 	
 	// a database where all sequences will be stored:(only 1 db per bdb env)
-	private Database					seqDb					= null;
-	private final static String			seqDb_NAME				= "db5_AllSequences";
-	private DatabaseConfig				seqDbConf				= null;
+	private Database								seqDb						= null;
+	private final static String						seqDb_NAME					= "db5_AllSequences";
+	private DatabaseConfig							seqDbConf					= null;
 	
 	// we keep track of open stuffs just in case we need to emergency shutdown
 	// ie. on Exception
-	private final ObjRefsList<Sequence>	allSequenceInstances	= new ObjRefsList<Sequence>();
-	private final ObjRefsList<Database>	allOpenPrimaryDatabases	= new ObjRefsList<Database>();
+	private final ObjRefsList<Sequence>				allSequenceInstances		= new ObjRefsList<Sequence>();
+	private final ObjRefsList<Database>				allOpenPrimaryDatabases		= new ObjRefsList<Database>();
+	private final ObjRefsList<SecondaryDatabase>	allOpenSecondaryDatabases	= new ObjRefsList<SecondaryDatabase>();
+	private final static String						UNINITIALIZED_STRING		= "uninitializedString";
 	
 	/**
 	 * singleton
@@ -247,20 +250,26 @@ public class BerkeleyDB {
 	 * @return null
 	 * @param secDb
 	 */
-	public static final SecondaryDatabase silentCloseAnySecDB(
-			SecondaryDatabase secDb, String secDbName ) {
+	public final SecondaryDatabase silentCloseAnySecDB( SecondaryDatabase secDb ) {
 
+		Log.entry();
 		if ( null != secDb ) {
+			String secDbName = UNINITIALIZED_STRING;
 			try {
+				secDbName = secDb.getDatabaseName();
 				secDb.close();
 				Log.mid( "closed SecDB with name: " + secDbName );
 			} catch ( DatabaseException de ) {
 				Log.thro( "failed closing SecDB with specified name: '"
 						+ secDbName );
 				// ignore
+			} finally {
+				if ( !allOpenSecondaryDatabases.removeObject( secDb ) ) {
+					RunTime.Bug( "should've existed" );
+				}
 			}
 		} else {
-			Log.mid( "wasn't open SecDB with name: " + secDbName );
+			Log.mid( "wasn't open SecDB" );
 		}
 		return null;
 	}
@@ -383,8 +392,8 @@ public class BerkeleyDB {
 		
 		if ( null != seqDb ) {
 			seqDb = this.silentClosePriDB( seqDb );// , seqDb_NAME );
-		} else {
-			Log.warn( "close() called on a not yet inited/open database" );
+			// } else {
+			// Log.warn( "close() called on a not yet inited/open database" );
 		}
 	}
 	
@@ -400,12 +409,20 @@ public class BerkeleyDB {
 	}
 	
 	/**
-	 * FIXME: include secondaries
+	 * closing secondary then primary databases
 	 */
 	private void silentCloseAllOpenDatabases() {
 
 		Log.entry();
-		// FIXME: close secondaries first!
+		// close secondaries first!
+		SecondaryDatabase iterSec;
+		while ( null != ( iterSec = allOpenSecondaryDatabases.getObjectAt( Position.FIRST ) ) ) {
+			this.silentCloseAnySecDB( iterSec );
+			if ( allOpenSecondaryDatabases.removeObject( iterSec ) ) {
+				RunTime.Bug( "should've already been removed by above cmd" );
+			}
+			iterSec = allOpenSecondaryDatabases.getObjectAt( Position.FIRST );
+		}
 		
 		// closing primaries:
 		Database iter = allOpenPrimaryDatabases.getObjectAt( Position.FIRST );
@@ -456,7 +473,7 @@ public class BerkeleyDB {
 			seqDbConf.setTransactional( true );
 		}
 		
-		return this.openAnyDatabase( null, seqDb_NAME, seqDbConf );
+		return this.openAnyDatabase( seqDb_NAME, seqDbConf );
 	}
 	
 	
@@ -468,10 +485,10 @@ public class BerkeleyDB {
 	 * @return
 	 * @throws DatabaseException
 	 */
-	public Database openAnyDatabase( Object object, String dbName,
-			DatabaseConfig dbConf ) throws DatabaseException {
+	public Database openAnyDatabase( String dbName, DatabaseConfig dbConf )
+			throws DatabaseException {
 
-		
+		Log.entry( dbName );
 		// should not use this openDatabase() method anywhere else
 		Database db = this.getEnvironment().openDatabase( null, dbName, dbConf );
 		if ( allOpenPrimaryDatabases.addFirst( db ) ) {
@@ -480,6 +497,26 @@ public class BerkeleyDB {
 		return db;
 		// this should be the only method doing open on any database in this
 		// environment
+	}
+	
+	/**
+	 * @param secDbName
+	 * @param primaryDb
+	 * @param secDbConf
+	 * @return
+	 * @throws DatabaseException
+	 */
+	public SecondaryDatabase openAnySecDatabase( String secDbName,
+			Database primaryDb, SecondaryConfig secDbConf )
+			throws DatabaseException {
+
+		Log.entry( secDbName );
+		SecondaryDatabase secDb = this.getEnvironment().openSecondaryDatabase(
+				null, secDbName, primaryDb, secDbConf );
+		if ( allOpenSecondaryDatabases.addFirst( secDb ) ) {
+			RunTime.Bug( "couldn't have already existed" );
+		}
+		return secDb;
 	}
 	
 	/**
@@ -494,7 +531,7 @@ public class BerkeleyDB {
 
 		Log.entry();
 		if ( null != db ) {
-			String dbname = null;
+			String dbname = UNINITIALIZED_STRING;
 			try {
 				dbname = db.getDatabaseName();
 				Log.mid( "closing dbname: " + dbname );

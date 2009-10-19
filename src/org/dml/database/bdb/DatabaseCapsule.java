@@ -69,7 +69,7 @@ public class DatabaseCapsule {
 
 		if ( null == db ) {
 			// first time init:
-			db = bdb.openAnyDatabase( null, dbName, dbConf );
+			db = bdb.openAnyDatabase( dbName, dbConf );
 			RunTime.assertNotNull( db );
 		}
 		return db;
