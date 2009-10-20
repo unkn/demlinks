@@ -40,7 +40,7 @@ public abstract class StaticInstanceTracker {
 	
 	// LIFO list tracking
 	private final static ObjRefsList<StaticInstanceTracker>	ALL_INSTANCES	= new ObjRefsList<StaticInstanceTracker>();
-	private static boolean									inited			= false;
+	private boolean											inited			= false;
 	
 	/**
 	 * do not use this outside
