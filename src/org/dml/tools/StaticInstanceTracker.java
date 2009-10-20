@@ -32,33 +32,44 @@ import org.references.Position;
 
 
 /**
- * you must not use a constructor when creating new instance, instead implement
- * a getNew() static method and use init() inside it
  * 
+ * 1. implement start() and done() but call init() and deInit() instead; because
+ * init() calls start() inside it; same for deInit() calling done()<br>
+ * 2. use constructor to create, and then call init()<br>
+ * 3. sometime when done with it, you have to use deInit()<br>
+ * 4. use deInitAll() in a finally block just in case some exception is going
+ * to shutdown the application
+ * you can init() again but only if u previously used deInit()<br>
+ * NEVER call init() inside a constructor<br>
  */
 public abstract class StaticInstanceTracker {
 	
 	// LIFO list tracking
 	private final static ObjRefsList<StaticInstanceTracker>	ALL_INSTANCES	= new ObjRefsList<StaticInstanceTracker>();
 	private boolean											inited			= false;
+	private boolean											deInited		= true;
 	
-	/**
-	 * do not use this outside
-	 */
-	protected StaticInstanceTracker() {
+	public StaticInstanceTracker() {
 
 	}
 	
 	/**
 	 * LIFO manner deinit
 	 */
-	public static void deInitAll() {
+	public final static void deInitAll() {
 
+		Log.entry();
 		StaticInstanceTracker iter;
 		while ( null != ( iter = ALL_INSTANCES.getObjectAt( Position.FIRST ) ) ) {
 			iter.deInit();
 		}
+		RunTime.assertTrue( ALL_INSTANCES.isEmpty() );
 	}
+	
+	/**
+	 * implement this start(), but use init() instead
+	 */
+	protected abstract void start();
 	
 	/**
 	 * implement this done(), but use deInit() instead
@@ -68,34 +79,41 @@ public abstract class StaticInstanceTracker {
 	/**
 	 * do not use <code>this</code> again after calling this method
 	 */
-	public void deInit() {
+	public final void deInit() {
 
 		if ( !inited ) {
-			RunTime.Bug( this.toString()
-					+ " was never inited properly, or if it was, it was deInited already" );
+			RunTime.Bug( this.toString() + " was not already init()-ed" );
 		}
-		this.done();
+		if ( deInited ) {
+			
+			RunTime.Bug( this + " was already deInit()-ed!" );
+		}
+		
+		deInited = true;
 		inited = false;
 		removeOldInstance( this );
+		this.done();
 	}
 	
-	public void init() {
+	public final void init() {
 
-		if ( inited ) {
+		if ( inited || !deInited ) {
 			RunTime.Bug( "already inited" );
 		}
 		addNewInstance( this );
 		inited = true;
+		deInited = false;
+		this.start();
 	}
 	
-	private static void addNewInstance( StaticInstanceTracker instance ) {
+	private final static void addNewInstance( StaticInstanceTracker instance ) {
 
 		if ( ALL_INSTANCES.addFirst( instance ) ) {
 			RunTime.Bug( "should not have existed" );
 		}
 	}
 	
-	private static void removeOldInstance( StaticInstanceTracker instance ) {
+	private final static void removeOldInstance( StaticInstanceTracker instance ) {
 
 		Log.entry( instance.toString() );
 		if ( !ALL_INSTANCES.removeObject( instance ) ) {

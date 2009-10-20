@@ -1,5 +1,5 @@
 /**
- * File creation: Oct 20, 2009 12:36:58 AM
+ * File creation: Oct 20, 2009 1:34:29 AM
  * 
  * Copyright (C) 2005-2009 AtKaaZ <atkaaz@users.sourceforge.net>
  * Copyright (C) 2005-2009 UnKn <unkn@users.sourceforge.net>
@@ -25,51 +25,21 @@ package org.dml.tools;
 
 
 
+
+
+
 /**
  * 
  *
  */
-public class Testy extends StaticInstanceTracker {
+public class Testy2 extends Testy {
 	
-	String	home;
-	
-	public void show() {
+	public static Testy2 getNew() {
 
-		System.out.println( this.getName() + " shows home=" + home );
-	}
-	
-	public boolean init( String home1 ) {
-
-		home = home1;
-		// if something throws before below init() ...
-		super.init();
-		return true;
-	}
-	
-	public static Testy getNew() {
-
-		Testy t = new Testy();
-		t.init( "one/" + new Object() );
-		return t;
-	}
-	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.dml.tools.StaticInstanceTracker#done()
-	 */
-	@Override
-	protected void done() {
-
-		System.out.println( this.getName() + " is done." );
-	}
-	
-	/**
-	 * @return
-	 */
-	public String getName() {
-
-		return this.getClass().getName();
+		Testy2 t2 = new Testy2();
+		t2.init( "two" + new Object() );
+		return t2;
+		
 	}
 	
 }

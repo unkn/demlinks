@@ -21,13 +21,13 @@
  */
 
 
-package org.temporary.tests;
+package org.dml.tools;
 
 
 
-import org.dml.storagewrapper.Testy2;
-import org.dml.tools.StaticInstanceTracker;
-import org.dml.tools.Testy;
+import static org.junit.Assert.assertTrue;
+
+import org.dml.error.BugError;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -41,15 +41,16 @@ import org.junit.Test;
 public class StaticInstanceTrackerTest {
 	
 	Testy	t, tt;
-	Testy2	t2;
+	Testy2	t2, tt2;
 	
 	@Before
 	public void setUp() {
 
-		t = Testy.getNew();
+		t = new Testy();
 		
 		t2 = Testy2.getNew();
 		tt = Testy.getNew();
+		tt2 = new Testy2();
 	}
 	
 	@After
@@ -57,19 +58,66 @@ public class StaticInstanceTrackerTest {
 
 		// t.deInit();
 		// t2.deInit();
-		// StaticInstanceTracker.deInitAll();
+		StaticInstanceTracker.deInitAll();
 	}
 	
 	@Test
 	public void test1() throws Exception {
 
 		try {
+			t.init( "1/2" );
 			t.show();
+			t.deInit();
+			t.init( "2/2" );
+			t.show();
+			t.deInit();
+			
 			tt.show();
 			t2.show();
-			throw new Exception();
+			
+			tt2.init( "3+ 1/2" );
+			tt2.show();
+			tt2.deInit();
+			tt2.init( "3+ 2/2" );
+			tt2.show();
+			tt2.deInit();
+			// throw new Exception();
 		} finally {
 			StaticInstanceTracker.deInitAll();
+		}
+	}
+	
+	@Test
+	public void test2() {
+
+		boolean errored = false;
+		try {
+			t.init();
+			t.init();
+		} catch ( BugError be ) {
+			errored = true;
+		} finally {
+			assertTrue( errored );
+		}
+		
+		errored = false;
+		try {
+			t.deInit();
+			t.deInit();
+		} catch ( BugError be ) {
+			errored = true;
+		} finally {
+			assertTrue( errored );
+		}
+		
+		errored = false;
+		try {
+			Testy2 r = new Testy2();
+			r.deInit();
+		} catch ( BugError be ) {
+			errored = true;
+		} finally {
+			assertTrue( errored );
 		}
 	}
 	

@@ -27,6 +27,7 @@ package org.dml.level1;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Test;
 
 
 
@@ -43,7 +44,6 @@ public class DMLEnvironmentLevel1Test {
 
 		dml1 = new DMLEnvironmentLevel1();
 		dml1.init();
-		DMLEnvironmentLevel1.getNew();
 		
 	}
 	
@@ -52,5 +52,10 @@ public class DMLEnvironmentLevel1Test {
 
 		dml1.deInit();
 		dml1 = null;
+	}
+	
+	@Test
+	public void test1() {
+
 	}
 }

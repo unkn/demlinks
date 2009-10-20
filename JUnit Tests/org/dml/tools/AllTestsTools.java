@@ -1,8 +1,5 @@
-/**
- * File creation: Oct 20, 2009 1:34:29 AM
- * 
- * Copyright (C) 2005-2009 AtKaaZ <atkaaz@users.sourceforge.net>
- * Copyright (C) 2005-2009 UnKn <unkn@users.sourceforge.net>
+/*
+ * Copyright (C) 2005-2008 AtKaaZ <atkaaz@users.sourceforge.net>
  * 
  * This file and its contents are part of DeMLinks.
  * 
@@ -21,26 +18,18 @@
  */
 
 
-package org.dml.storagewrapper;
+package org.dml.tools;
 
 
 
-import org.dml.tools.Testy;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
 
 
 
-/**
- * 
- *
- */
-public class Testy2 extends Testy {
-	
-	public static Testy2 getNew() {
-
-		Testy2 t2 = new Testy2();
-		t2.init( "two" );
-		return t2;
-		
-	}
-	
+@RunWith( Suite.class )
+@Suite.SuiteClasses( value = {
+	StaticInstanceTrackerTest.class,
+} )
+public class AllTestsTools {
 }

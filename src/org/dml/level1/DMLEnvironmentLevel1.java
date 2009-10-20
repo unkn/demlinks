@@ -27,10 +27,7 @@ package org.dml.level1;
 
 import org.dml.storagewrapper.BerkeleyDBStorageLevel1;
 import org.dml.storagewrapper.StorageWrapperLevel1;
-import org.dml.tools.RunTime;
-import org.javapart.logger.Log;
-import org.references.ObjRefsList;
-import org.references.Position;
+import org.dml.tools.StaticInstanceTracker;
 
 
 
@@ -38,62 +35,79 @@ import org.references.Position;
  * 
  *
  */
-public class DMLEnvironmentLevel1 implements StorageWrapperLevel1 {
+public class DMLEnvironmentLevel1 extends StaticInstanceTracker implements
+		StorageWrapperLevel1 {
 	
 	
-	private final StorageWrapperLevel1						Storage;
+	private StorageWrapperLevel1	Storage	= null;
 	
-	private final static ObjRefsList<DMLEnvironmentLevel1>	ALL_INSTANCES	= new ObjRefsList<DMLEnvironmentLevel1>();
+	// private final static ObjRefsList<DMLEnvironmentLevel1> ALL_INSTANCES =
+	// new ObjRefsList<DMLEnvironmentLevel1>();
 	
-	/**
-	 */
-	public static DMLEnvironmentLevel1 getNew() {
+	public DMLEnvironmentLevel1() {
 
-		return new DMLEnvironmentLevel1();
-		
 	}
 	
-	protected DMLEnvironmentLevel1() {
-
-		Storage = new BerkeleyDBStorageLevel1();
-		this.init();
-	}
-	
-	public static final void deInitAll() {
-
-		Log.entry();
-		DMLEnvironmentLevel1 iter;
-		while ( null != ( iter = ALL_INSTANCES.getObjectAt( Position.FIRST ) ) ) {
-			iter.deInit();
-			if ( ALL_INSTANCES.removeObject( iter ) ) {
-				RunTime.Bug( "should not have existed; was removed by a prior call" );
-			}
-		}
-		RunTime.assertTrue( ALL_INSTANCES.isEmpty() );
-	}
-	
-	/**
-	 * must not use this environment after a call to this
-	 */
-	public void deInit() {
-
-		Log.entry();
-		Storage.deInit();
-		if ( !ALL_INSTANCES.removeObject( this ) ) {
-			RunTime.Bug( "should've existed" );
-		}
-	}
+	// public static final void deInitAll() {
+	//
+	// Log.entry();
+	// DMLEnvironmentLevel1 iter;
+	// while ( null != ( iter = ALL_INSTANCES.getObjectAt( Position.FIRST ) ) )
+	// {
+	// iter.deInit();
+	// if ( ALL_INSTANCES.removeObject( iter ) ) {
+	// RunTime.Bug( "should not have existed; was removed by a prior call" );
+	// }
+	// }
+	// RunTime.assertTrue( ALL_INSTANCES.isEmpty() );
+	// }
+	//	
+	// /**
+	// * must not use this environment after a call to this
+	// */
+	// @Override
+	// public void deInit() {
+	//
+	// Log.entry();
+	// Storage.deInit();
+	// if ( !ALL_INSTANCES.removeObject( this ) ) {
+	// RunTime.Bug( "should've existed" );
+	// }
+	// }
 	
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see org.dml.storagewrapper.StorageWrapperLevel1#init()
 	 */
+	// @Override
+	// public void init() {
+	//
+	// Storage.init();
+	//		
+	// }
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.dml.tools.StaticInstanceTracker#done()
+	 */
 	@Override
-	public void init() {
+	protected void done() {
 
+		Storage.deInit();
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.dml.tools.StaticInstanceTracker#start()
+	 */
+	@Override
+	protected void start() {
+
+		Storage = new BerkeleyDBStorageLevel1();
 		Storage.init();
-		
 	}
 	
 }
