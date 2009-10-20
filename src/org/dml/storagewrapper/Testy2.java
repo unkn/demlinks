@@ -38,7 +38,7 @@ public class Testy2 extends Testy {
 	public static Testy2 getNew() {
 
 		Testy2 t2 = new Testy2();
-		t2.init();
+		t2.init( "two" );
 		return t2;
 		
 	}

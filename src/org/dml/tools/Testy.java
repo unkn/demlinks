@@ -31,22 +31,25 @@ package org.dml.tools;
  */
 public class Testy extends StaticInstanceTracker {
 	
+	String	home;
 	
 	public void show() {
 
-		System.out.println( this.getName() + " shows." );
+		System.out.println( this.getName() + " shows home=" + home );
 	}
 	
-	public boolean init( String home ) {
+	public boolean init( String home1 ) {
 
+		home = home1;
+		// if something throws before below init() ...
 		super.init();
-		return false;
+		return true;
 	}
 	
 	public static Testy getNew() {
 
 		Testy t = new Testy();
-		t.init( "one" );
+		t.init( "one/" + new Object() );
 		return t;
 	}
 	

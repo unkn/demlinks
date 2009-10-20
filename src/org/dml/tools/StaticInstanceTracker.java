@@ -80,6 +80,9 @@ public abstract class StaticInstanceTracker {
 	
 	public void init() {
 
+		if ( inited ) {
+			RunTime.Bug( "already inited" );
+		}
 		addNewInstance( this );
 		inited = true;
 	}

@@ -38,9 +38,9 @@ import org.junit.Test;
  * 
  *
  */
-public class InstanceTrackerTest {
+public class StaticInstanceTrackerTest {
 	
-	Testy	t;
+	Testy	t, tt;
 	Testy2	t2;
 	
 	@Before
@@ -49,12 +49,13 @@ public class InstanceTrackerTest {
 		t = Testy.getNew();
 		
 		t2 = Testy2.getNew();
+		tt = Testy.getNew();
 	}
 	
 	@After
 	public void tearDown() {
 
-		// t.deInit();
+		t.deInit();
 		// t2.deInit();
 		StaticInstanceTracker.deInitAll();
 	}
@@ -63,6 +64,7 @@ public class InstanceTrackerTest {
 	public void test1() {
 
 		t.show();
+		tt.show();
 		t2.show();
 	}
 	
