@@ -55,17 +55,22 @@ public class StaticInstanceTrackerTest {
 	@After
 	public void tearDown() {
 
-		t.deInit();
+		// t.deInit();
 		// t2.deInit();
-		StaticInstanceTracker.deInitAll();
+		// StaticInstanceTracker.deInitAll();
 	}
 	
 	@Test
-	public void test1() {
+	public void test1() throws Exception {
 
-		t.show();
-		tt.show();
-		t2.show();
+		try {
+			t.show();
+			tt.show();
+			t2.show();
+			throw new Exception();
+		} finally {
+			StaticInstanceTracker.deInitAll();
+		}
 	}
 	
 }

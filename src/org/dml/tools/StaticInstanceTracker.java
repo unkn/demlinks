@@ -71,7 +71,8 @@ public abstract class StaticInstanceTracker {
 	public void deInit() {
 
 		if ( !inited ) {
-			RunTime.Bug( this.toString() + " was never inited properly" );
+			RunTime.Bug( this.toString()
+					+ " was never inited properly, or if it was, it was deInited already" );
 		}
 		this.done();
 		inited = false;
