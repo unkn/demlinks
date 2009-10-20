@@ -21,17 +21,16 @@
  */
 
 
-package org.dml.environ;
+package org.dml.level2;
 
 
 
 import java.io.File;
 
 import org.dml.level1.NodeJID;
-import org.dml.level2.NodeID;
-import org.dml.storagewrapper.BerkeleyDBStorage;
+import org.dml.storagewrapper.BerkeleyDBStorageLevel1;
 import org.dml.storagewrapper.StorageException;
-import org.dml.storagewrapper.StorageWrapper;
+import org.dml.storagewrapper.StorageWrapperLevel2;
 import org.dml.tools.RunTime;
 import org.javapart.logger.Log;
 import org.references.ObjRefsList;
@@ -43,21 +42,18 @@ import org.references.Position;
  * 
  *
  */
-public class DMLEnvironment implements StorageWrapper {
+public class DMLEnvironmentLevel2 implements StorageWrapperLevel2 {
 	
-	// public static final NodeJID AllWords = NodeJID.ensureJIDFor( "AllWords"
-	// );
-	
-	public final static String							DEFAULT_BDB_ENVIRONMENT_HOMEDIR	= "."
-																								+ File.separator
-																								+ "bin"
-																								+ File.separator
-																								+ "mainEnv"
-																								+ File.separator;
+	public final static String								DEFAULT_BDB_ENVIRONMENT_HOMEDIR	= "."
+																									+ File.separator
+																									+ "bin"
+																									+ File.separator
+																									+ "mainEnv"
+																									+ File.separator;
 	// FIXME: should be StorageWrapper type but upsets my F3 key
-	private final BerkeleyDBStorage						Storage;
+	private final BerkeleyDBStorageLevel1							Storage;
 	
-	private final static ObjRefsList<DMLEnvironment>	ALL_INSTANCES					= new ObjRefsList<DMLEnvironment>();
+	private final static ObjRefsList<DMLEnvironmentLevel2>	ALL_INSTANCES					= new ObjRefsList<DMLEnvironmentLevel2>();
 	
 	/**
 	 * @param envHomeDir
@@ -65,10 +61,11 @@ public class DMLEnvironment implements StorageWrapper {
 	 *            true if to erase all data prior to init!
 	 * @throws StorageException
 	 */
-	public static final DMLEnvironment getNew( String envHomeDir,
+	public static final DMLEnvironmentLevel2 getNew( String envHomeDir,
 			boolean wipeEnvFirst ) throws StorageException {
 
-		DMLEnvironment env = new DMLEnvironment( envHomeDir, wipeEnvFirst );
+		DMLEnvironmentLevel2 env = new DMLEnvironmentLevel2( envHomeDir,
+				wipeEnvFirst );
 		if ( ALL_INSTANCES.addFirst( env ) ) {
 			RunTime.Bug( "couldn't have already existed!" );
 		}
@@ -80,12 +77,12 @@ public class DMLEnvironment implements StorageWrapper {
 	 * 
 	 * @throws StorageException
 	 */
-	public static DMLEnvironment getNew() throws StorageException {
+	public static DMLEnvironmentLevel2 getNew() throws StorageException {
 
 		return getNew( DEFAULT_BDB_ENVIRONMENT_HOMEDIR, false );
 	}
 	
-	public static DMLEnvironment getNew( boolean wipeEnvFirst )
+	public static DMLEnvironmentLevel2 getNew( boolean wipeEnvFirst )
 			throws StorageException {
 
 		return getNew( DEFAULT_BDB_ENVIRONMENT_HOMEDIR, wipeEnvFirst );
@@ -100,17 +97,17 @@ public class DMLEnvironment implements StorageWrapper {
 	 *            data
 	 * @throws StorageException
 	 */
-	protected DMLEnvironment( String envHomeDir, boolean wipeEnvFirst )
+	protected DMLEnvironmentLevel2( String envHomeDir, boolean wipeEnvFirst )
 			throws StorageException {
 
 		RunTime.assertNotNull( envHomeDir, wipeEnvFirst );
-		Storage = new BerkeleyDBStorage( envHomeDir, wipeEnvFirst );
+		Storage = new BerkeleyDBStorageLevel1( envHomeDir, wipeEnvFirst );
 	}
 	
 	public static final void deInitAll() {
 
 		Log.entry();
-		DMLEnvironment iter;
+		DMLEnvironmentLevel2 iter;
 		while ( null != ( iter = ALL_INSTANCES.getObjectAt( Position.FIRST ) ) ) {
 			iter.deInit();
 			ALL_INSTANCES.removeObject( iter );

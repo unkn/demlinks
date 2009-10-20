@@ -28,7 +28,7 @@ package org.dml.level2;
 import static org.junit.Assert.assertTrue;
 
 import org.dml.JUnits.Consts;
-import org.dml.environ.DMLEnvironment;
+import org.dml.level1.DMLEnvironmentLevel1;
 import org.dml.level1.NodeJID;
 import org.dml.storagewrapper.StorageException;
 import org.junit.After;
@@ -43,7 +43,7 @@ import org.junit.Test;
  */
 public class NodeIDTest {
 	
-	DMLEnvironment	dml;
+	DMLEnvironmentLevel1	dml;
 	NodeID			a, b, c;
 	
 	/**
@@ -52,7 +52,7 @@ public class NodeIDTest {
 	@Before
 	public void setUp() throws Exception {
 
-		dml = DMLEnvironment.getNew( Consts.BDB_ENV_PATH, true );
+		dml = DMLEnvironmentLevel1.getNew( Consts.BDB_ENV_PATH, true );
 		a = dml.ensureNodeID( NodeJID.ensureJIDFor( "A" ) );
 		b = dml.ensureNodeID( NodeJID.ensureJIDFor( "B" ) );
 		c = dml.ensureNodeID( NodeJID.ensureJIDFor( "C" ) );

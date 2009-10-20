@@ -1,5 +1,5 @@
 /**
- * File creation: Oct 19, 2009 11:38:38 PM
+ * File creation: Oct 20, 2009 12:22:26 AM
  * 
  * Copyright (C) 2005-2009 AtKaaZ <atkaaz@users.sourceforge.net>
  * Copyright (C) 2005-2009 UnKn <unkn@users.sourceforge.net>
@@ -21,7 +21,12 @@
  */
 
 
-package org.dml.level4;
+package org.dml.level1;
+
+
+
+import org.junit.After;
+import org.junit.Before;
 
 
 
@@ -29,6 +34,23 @@ package org.dml.level4;
  * 
  *
  */
-public class DMLEnvironmentLevel4 extends org.dml.level1.DMLEnvironmentLevel1 {
+public class DMLEnvironmentLevel1Test {
 	
+	DMLEnvironmentLevel1	dml1;
+	
+	@Before
+	public void setUp() {
+
+		dml1 = new DMLEnvironmentLevel1();
+		dml1.init();
+		DMLEnvironmentLevel1.getNew();
+		
+	}
+	
+	@After
+	public void tearDown() {
+
+		dml1.deInit();
+		dml1 = null;
+	}
 }

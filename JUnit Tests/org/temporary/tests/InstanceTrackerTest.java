@@ -1,5 +1,5 @@
 /**
- * File creation: Oct 19, 2009 11:38:38 PM
+ * File creation: Oct 20, 2009 1:44:39 AM
  * 
  * Copyright (C) 2005-2009 AtKaaZ <atkaaz@users.sourceforge.net>
  * Copyright (C) 2005-2009 UnKn <unkn@users.sourceforge.net>
@@ -21,7 +21,16 @@
  */
 
 
-package org.dml.level4;
+package org.temporary.tests;
+
+
+
+import org.dml.storagewrapper.Testy2;
+import org.dml.tools.StaticInstanceTracker;
+import org.dml.tools.Testy;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 
 
@@ -29,6 +38,32 @@ package org.dml.level4;
  * 
  *
  */
-public class DMLEnvironmentLevel4 extends org.dml.level1.DMLEnvironmentLevel1 {
+public class InstanceTrackerTest {
+	
+	Testy	t;
+	Testy2	t2;
+	
+	@Before
+	public void setUp() {
+
+		t = Testy.getNew();
+		
+		t2 = Testy2.getNew();
+	}
+	
+	@After
+	public void tearDown() {
+
+		// t.deInit();
+		// t2.deInit();
+		StaticInstanceTracker.deInitAll();
+	}
+	
+	@Test
+	public void test1() {
+
+		t.show();
+		t2.show();
+	}
 	
 }

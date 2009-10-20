@@ -25,7 +25,7 @@ package org.dml.level3;
 
 
 
-import org.dml.environ.DMLEnvironment;
+import org.dml.level1.DMLEnvironmentLevel1;
 import org.dml.storagewrapper.StorageException;
 
 
@@ -34,7 +34,7 @@ import org.dml.storagewrapper.StorageException;
  * 
  *
  */
-public class DMLEnvironmentLevel3 extends DMLEnvironment {
+public class DMLEnvironmentLevel3 extends DMLEnvironmentLevel1 {
 	
 	protected DMLEnvironmentLevel3() throws StorageException {
 

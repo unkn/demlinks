@@ -1,5 +1,5 @@
 /**
- * File creation: Oct 19, 2009 11:38:38 PM
+ * File creation: Oct 20, 2009 1:34:29 AM
  * 
  * Copyright (C) 2005-2009 AtKaaZ <atkaaz@users.sourceforge.net>
  * Copyright (C) 2005-2009 UnKn <unkn@users.sourceforge.net>
@@ -21,7 +21,11 @@
  */
 
 
-package org.dml.level4;
+package org.dml.storagewrapper;
+
+
+
+import org.dml.tools.Testy;
 
 
 
@@ -29,6 +33,14 @@ package org.dml.level4;
  * 
  *
  */
-public class DMLEnvironmentLevel4 extends org.dml.level1.DMLEnvironmentLevel1 {
+public class Testy2 extends Testy {
+	
+	public static Testy2 getNew() {
+
+		Testy2 t2 = new Testy2();
+		t2.init();
+		return t2;
+		
+	}
 	
 }

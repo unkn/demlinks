@@ -1,5 +1,5 @@
 /**
- * File creation: Oct 19, 2009 11:38:38 PM
+ * File creation: Jun 17, 2009 6:54:03 PM
  * 
  * Copyright (C) 2005-2009 AtKaaZ <atkaaz@users.sourceforge.net>
  * Copyright (C) 2005-2009 UnKn <unkn@users.sourceforge.net>
@@ -21,14 +21,29 @@
  */
 
 
-package org.dml.level4;
+package org.dml.storagewrapper;
+
+
+
 
 
 
 /**
- * 
- *
+ * should throw only StorageException.<br>
+ * this is done mostly for wrapping Exceptions under StorageException<br>
  */
-public class DMLEnvironmentLevel4 extends org.dml.level1.DMLEnvironmentLevel1 {
+public class BerkeleyDBStorageLevel1 implements StorageWrapperLevel1 {
 	
-}
+	public BerkeleyDBStorageLevel1() {
+
+	}
+	
+	/**
+	 * no throwing
+	 */
+	public void deInit() {
+
+	}
+	
+
+}// end of class

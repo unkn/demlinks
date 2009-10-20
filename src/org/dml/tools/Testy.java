@@ -1,5 +1,5 @@
 /**
- * File creation: Oct 19, 2009 11:38:38 PM
+ * File creation: Oct 20, 2009 12:36:58 AM
  * 
  * Copyright (C) 2005-2009 AtKaaZ <atkaaz@users.sourceforge.net>
  * Copyright (C) 2005-2009 UnKn <unkn@users.sourceforge.net>
@@ -21,7 +21,7 @@
  */
 
 
-package org.dml.level4;
+package org.dml.tools;
 
 
 
@@ -29,6 +29,44 @@ package org.dml.level4;
  * 
  *
  */
-public class DMLEnvironmentLevel4 extends org.dml.level1.DMLEnvironmentLevel1 {
+public class Testy extends StaticInstanceTracker {
+	
+	
+	public void show() {
+
+		System.out.println( this.getName() + " shows." );
+	}
+	
+	public boolean init( String home ) {
+
+		super.init();
+		return false;
+	}
+	
+	public static Testy getNew() {
+
+		Testy t = new Testy();
+		t.init( "one" );
+		return t;
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.dml.tools.StaticInstanceTracker#done()
+	 */
+	@Override
+	protected void done() {
+
+		System.out.println( this.getName() + " is done." );
+	}
+	
+	/**
+	 * @return
+	 */
+	public String getName() {
+
+		return this.getClass().getName();
+	}
 	
 }

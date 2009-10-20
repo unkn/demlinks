@@ -34,7 +34,7 @@ import org.dml.level2.NodeID;
  * 
  *
  */
-public interface StorageWrapper {
+public interface StorageWrapperLevel2 extends StorageWrapperLevel1 {
 	
 	/**
 	 * returns the NodeJID associated with the given NodeID<br>
@@ -72,17 +72,5 @@ public interface StorageWrapper {
 	 */
 	public NodeID ensureNodeID( NodeJID theJID ) throws StorageException;
 	
-	/**
-	 * @param first
-	 * @param second
-	 * @return
-	 * @throws StorageException
-	 */
-	public boolean ensureGroup( NodeID first, NodeID second )
-			throws StorageException;
-	
-	/**
-	 * 
-	 */
-	public void deInit();
+
 }

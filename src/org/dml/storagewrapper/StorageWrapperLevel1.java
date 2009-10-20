@@ -1,5 +1,5 @@
 /**
- * File creation: Oct 19, 2009 11:38:38 PM
+ * File creation: Oct 16, 2009 3:26:32 PM
  * 
  * Copyright (C) 2005-2009 AtKaaZ <atkaaz@users.sourceforge.net>
  * Copyright (C) 2005-2009 UnKn <unkn@users.sourceforge.net>
@@ -21,7 +21,7 @@
  */
 
 
-package org.dml.level4;
+package org.dml.storagewrapper;
 
 
 
@@ -29,6 +29,14 @@ package org.dml.level4;
  * 
  *
  */
-public class DMLEnvironmentLevel4 extends org.dml.level1.DMLEnvironmentLevel1 {
+public interface StorageWrapperLevel1 {
 	
+	public void init();
+	
+	/**
+	 * 
+	 */
+	public void deInit();
+	
+
 }

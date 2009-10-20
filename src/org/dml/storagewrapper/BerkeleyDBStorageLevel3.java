@@ -38,10 +38,12 @@ import com.sleepycat.je.DatabaseException;
  * should throw only StorageException.<br>
  * this is done mostly for wrapping Exceptions under StorageException<br>
  */
-public class BerkeleyDBStorage implements StorageWrapper {
+public class BerkeleyDBStorageLevel3 extends BerkeleyDBStorageLevel2 implements
+		StorageWrapperLevel3 {
 	
 	private BerkeleyDB	bdb	= null;
 	
+	@Override
 	public final NodeJID getNodeJID( NodeID identifiedByThisNodeID )
 			throws StorageException {
 
@@ -54,6 +56,7 @@ public class BerkeleyDBStorage implements StorageWrapper {
 		}
 	}
 	
+	@Override
 	public final NodeID getNodeID( NodeJID identifiedByThisJID )
 			throws StorageException {
 
@@ -65,6 +68,7 @@ public class BerkeleyDBStorage implements StorageWrapper {
 		}
 	}
 	
+	@Override
 	public final NodeID createNodeID( NodeJID fromJID ) throws StorageException {
 
 		RunTime.assertNotNull( fromJID );
@@ -76,6 +80,7 @@ public class BerkeleyDBStorage implements StorageWrapper {
 	}
 	
 	
+	@Override
 	public final NodeID ensureNodeID( NodeJID theJID ) throws StorageException {
 
 		RunTime.assertNotNull( theJID );
@@ -91,7 +96,7 @@ public class BerkeleyDBStorage implements StorageWrapper {
 	 * @param envHomeDir
 	 * @throws StorageException
 	 */
-	public BerkeleyDBStorage( String envHomeDir ) throws StorageException {
+	public BerkeleyDBStorageLevel3( String envHomeDir ) throws StorageException {
 
 		this( envHomeDir, false );
 	}
@@ -102,7 +107,7 @@ public class BerkeleyDBStorage implements StorageWrapper {
 	 * @param envHomeDir
 	 * @throws StorageException
 	 */
-	public BerkeleyDBStorage( String envHomeDir,
+	public BerkeleyDBStorageLevel3( String envHomeDir,
 			boolean internalDestroyBeforeInit ) throws StorageException {
 
 		this.init( envHomeDir, internalDestroyBeforeInit );
@@ -129,6 +134,7 @@ public class BerkeleyDBStorage implements StorageWrapper {
 	/**
 	 * no throwing
 	 */
+	@Override
 	public final void deInit() {
 
 		bdb.deInit();
