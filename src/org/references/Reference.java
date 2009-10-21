@@ -50,9 +50,9 @@ public class Reference<Obj> {
 	
 	public boolean equals( Reference<Obj> compareObj ) {
 
-		if ( ( this.prev == compareObj.prev )
-				&& ( this.next == compareObj.next )
-				&& ( this.object == compareObj.object ) ) {
+		if ( ( super.equals( compareObj ) )
+				|| ( ( this.prev == compareObj.prev )
+						&& ( this.next == compareObj.next ) && ( this.object == compareObj.object ) ) ) {
 			return true;
 		}
 		return false;

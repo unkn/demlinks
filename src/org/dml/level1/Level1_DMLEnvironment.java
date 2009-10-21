@@ -38,53 +38,14 @@ import org.dml.tools.StaticInstanceTracker;
 public class Level1_DMLEnvironment extends StaticInstanceTracker {
 	
 	
-	private Level1_DMLStorageWrapper	Storage	= null;
+	private final Level1_DMLStorageWrapper	Storage	= new Level1_BerkeleyDBStorage();
 	
-	// private final static ObjRefsList<DMLEnvironmentLevel1> ALL_INSTANCES =
-	// new ObjRefsList<DMLEnvironmentLevel1>();
-	
+	/**
+	 * construct, don't forget to call init()
+	 */
 	public Level1_DMLEnvironment() {
 
 	}
-	
-	// public static final void deInitAll() {
-	//
-	// Log.entry();
-	// DMLEnvironmentLevel1 iter;
-	// while ( null != ( iter = ALL_INSTANCES.getObjectAt( Position.FIRST ) ) )
-	// {
-	// iter.deInit();
-	// if ( ALL_INSTANCES.removeObject( iter ) ) {
-	// RunTime.Bug( "should not have existed; was removed by a prior call" );
-	// }
-	// }
-	// RunTime.assertTrue( ALL_INSTANCES.isEmpty() );
-	// }
-	//	
-	// /**
-	// * must not use this environment after a call to this
-	// */
-	// @Override
-	// public void deInit() {
-	//
-	// Log.entry();
-	// Storage.deInit();
-	// if ( !ALL_INSTANCES.removeObject( this ) ) {
-	// RunTime.Bug( "should've existed" );
-	// }
-	// }
-	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.dml.storagewrapper.StorageWrapperLevel1#init()
-	 */
-	// @Override
-	// public void init() {
-	//
-	// Storage.init();
-	//		
-	// }
 	
 	/*
 	 * (non-Javadoc)
@@ -94,7 +55,7 @@ public class Level1_DMLEnvironment extends StaticInstanceTracker {
 	@Override
 	protected void done() {
 
-		Storage.deInitStorage();
+		Storage.deInit();
 	}
 	
 	/*
@@ -105,8 +66,6 @@ public class Level1_DMLEnvironment extends StaticInstanceTracker {
 	@Override
 	protected void start() {
 
-		Storage = new Level1_BerkeleyDBStorage();
-		Storage.initStorage();
+		Storage.init();
 	}
-	
 }

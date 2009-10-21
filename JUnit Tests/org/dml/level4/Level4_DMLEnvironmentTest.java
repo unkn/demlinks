@@ -21,7 +21,7 @@
  */
 
 
-package org.dml.environ;
+package org.dml.level4;
 
 
 
@@ -33,7 +33,7 @@ import org.dml.JUnits.Consts;
 import org.dml.level1.Level1_DMLEnvironment;
 import org.dml.level1.NodeJID;
 import org.dml.level2.NodeID;
-import org.dml.level4.DMLEnvironmentLevel4;
+import org.dml.level4.Level4_DMLEnvironment;
 import org.junit.Test;
 
 
@@ -47,11 +47,11 @@ public class Level4_DMLEnvironmentTest {
 	@Test
 	public void multiple() throws Exception {
 
-		DMLEnvironmentLevel4 d1 = DMLEnvironmentLevel4.getNew(
+		Level4_DMLEnvironment d1 = Level4_DMLEnvironment.getNew(
 				Consts.BDB_ENV_PATH + "1&2", true );
-		DMLEnvironmentLevel4 d2 = DMLEnvironmentLevel4.getNew(
+		Level4_DMLEnvironment d2 = Level4_DMLEnvironment.getNew(
 				Consts.BDB_ENV_PATH + "1&2", false );
-		DMLEnvironmentLevel4 d3 = DMLEnvironmentLevel4.getNew(
+		Level4_DMLEnvironment d3 = Level4_DMLEnvironment.getNew(
 				Consts.BDB_ENV_PATH + "3", true );
 		try {
 			// if ( 1 == 1 ) {

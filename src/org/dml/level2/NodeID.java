@@ -97,10 +97,9 @@ public class NodeID {
 	public boolean equals( NodeID nid ) {
 
 		RunTime.assertNotNull( nid );
-		if ( !super.equals( nid ) ) {
-			if ( this.getAsString().equals( nid.getAsString() ) ) {
-				return true;
-			}
+		if ( ( super.equals( nid ) )
+				|| ( this.getAsString().equals( nid.getAsString() ) ) ) {
+			return true;
 		}
 		return false;
 	}

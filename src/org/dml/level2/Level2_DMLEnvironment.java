@@ -29,8 +29,8 @@ import java.io.File;
 
 import org.dml.level1.NodeJID;
 import org.dml.storagewrapper.Level1_BerkeleyDBStorage;
-import org.dml.storagewrapper.StorageException;
 import org.dml.storagewrapper.Level2_DMLStorageWrapper;
+import org.dml.storagewrapper.StorageException;
 import org.dml.tools.RunTime;
 import org.javapart.logger.Log;
 import org.references.ObjRefsList;
@@ -51,7 +51,7 @@ public class Level2_DMLEnvironment implements Level2_DMLStorageWrapper {
 																									+ "mainEnv"
 																									+ File.separator;
 	// FIXME: should be StorageWrapper type but upsets my F3 key
-	private final Level1_BerkeleyDBStorage							Storage;
+	private final Level1_BerkeleyDBStorage					Storage;
 	
 	private final static ObjRefsList<Level2_DMLEnvironment>	ALL_INSTANCES					= new ObjRefsList<Level2_DMLEnvironment>();
 	
@@ -115,14 +115,6 @@ public class Level2_DMLEnvironment implements Level2_DMLStorageWrapper {
 		RunTime.assertTrue( ALL_INSTANCES.isEmpty() );
 	}
 	
-	/**
-	 * 
-	 */
-	public void deInit() {
-
-		Log.entry();
-		Storage.deInit();
-	}
 	
 	/**
 	 * there's a one to one mapping between NodeID and NodeJID<br>

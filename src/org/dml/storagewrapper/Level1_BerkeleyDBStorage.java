@@ -39,7 +39,7 @@ public class Level1_BerkeleyDBStorage implements Level1_DMLStorageWrapper {
 	 * no throwing
 	 */
 	@Override
-	public void deInitStorage() {
+	public void deInit() {
 
 	}
 	
@@ -49,10 +49,8 @@ public class Level1_BerkeleyDBStorage implements Level1_DMLStorageWrapper {
 	 * @see org.dml.storagewrapper.Level1_DMLStorageWrapper#init()
 	 */
 	@Override
-	public void initStorage() {
+	public void init() {
 
-		// TODO Auto-generated method stub
-		
 	}
 	
 

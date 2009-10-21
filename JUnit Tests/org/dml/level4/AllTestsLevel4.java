@@ -1,8 +1,5 @@
-/**
- * File creation: Oct 19, 2009 11:38:38 PM
- * 
- * Copyright (C) 2005-2009 AtKaaZ <atkaaz@users.sourceforge.net>
- * Copyright (C) 2005-2009 UnKn <unkn@users.sourceforge.net>
+/*
+ * Copyright (C) 2005-2008 AtKaaZ <atkaaz@users.sourceforge.net>
  * 
  * This file and its contents are part of DeMLinks.
  * 
@@ -25,10 +22,14 @@ package org.dml.level4;
 
 
 
-/**
- * 
- *
- */
-public class DMLEnvironmentLevel4 extends org.dml.level1.Level1_DMLEnvironment {
-	
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
+
+
+
+@RunWith( Suite.class )
+@Suite.SuiteClasses( value = {
+	Level4_DMLEnvironmentTest.class
+} )
+public class AllTestsLevel4 {
 }

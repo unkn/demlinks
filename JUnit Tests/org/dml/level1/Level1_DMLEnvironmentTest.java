@@ -25,6 +25,9 @@ package org.dml.level1;
 
 
 
+import static org.junit.Assert.assertTrue;
+
+import org.dml.error.BadCallError;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -44,19 +47,34 @@ public class Level1_DMLEnvironmentTest {
 
 		dml1 = new Level1_DMLEnvironment();
 		dml1.init();
-		
+		NodeJID.clearAllForJUnit();
 	}
 	
 	@After
 	public void tearDown() {
 
-		dml1.deInit();
-		dml1.deInit();
+		try {
+			dml1.deInit();
+		} catch ( BadCallError bce ) {
+			// ignore
+		}
 		dml1 = null;
 	}
 	
 	@Test
 	public void test1() {
 
+		try {
+			String test = "test";
+			NodeJID j1 = NodeJID.ensureJIDFor( test );
+			NodeJID j2 = NodeJID.ensureJIDFor( test );
+			assertTrue( j1 == j2 );
+			System.out.println( "!" + j1.getAsString() + "!" + j2.getAsString()
+					+ "!" );
+			assertTrue( j1.equals( j2 ) );
+			
+		} finally {
+			dml1.deInit();
+		}
 	}
 }

@@ -31,12 +31,12 @@ package org.dml.storagewrapper;
  */
 public interface Level1_DMLStorageWrapper {
 	
-	public void initStorage();
+	public void init();
 	
 	/**
 	 * 
 	 */
-	public void deInitStorage();
+	public void deInit();
 	
 
 }

@@ -123,10 +123,9 @@ public class NodeJID {
 	public boolean equals( NodeJID jid ) {
 
 		RunTime.assertNotNull( jid );
-		if ( !super.equals( jid ) ) {
-			if ( this.getAsString().equals( jid.getAsString() ) ) {
-				return true;
-			}
+		if ( ( super.equals( jid ) )
+				|| ( this.getAsString() ).equals( jid.getAsString() ) ) {
+			return true;
 		}
 		return false;
 	}

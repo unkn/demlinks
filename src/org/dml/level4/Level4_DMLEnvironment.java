@@ -1,5 +1,8 @@
-/*
- * Copyright (C) 2005-2008 AtKaaZ <atkaaz@users.sourceforge.net>
+/**
+ * File creation: Oct 19, 2009 11:38:38 PM
+ * 
+ * Copyright (C) 2005-2009 AtKaaZ <atkaaz@users.sourceforge.net>
+ * Copyright (C) 2005-2009 UnKn <unkn@users.sourceforge.net>
  * 
  * This file and its contents are part of DeMLinks.
  * 
@@ -18,18 +21,28 @@
  */
 
 
-package org.dml.environ;
+package org.dml.level4;
 
 
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
+import org.dml.level3.Level3_DMLEnvironment;
+import org.dml.storagewrapper.StorageException;
 
 
 
-@RunWith( Suite.class )
-@Suite.SuiteClasses( value = {
-	Level4_DMLEnvironmentTest.class
-} )
-public class AllTestsEnviron {
+/**
+ * 
+ *
+ */
+public class Level4_DMLEnvironment extends Level3_DMLEnvironment {
+	
+	/**
+	 * @throws StorageException
+	 */
+	protected Level4_DMLEnvironment() throws StorageException {
+
+		super();
+		// TODO Auto-generated constructor stub
+	}
+	
 }
