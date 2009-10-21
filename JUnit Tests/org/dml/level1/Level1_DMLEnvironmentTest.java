@@ -67,6 +67,7 @@ public class Level1_DMLEnvironmentTest {
 		try {
 			String test = "test";
 			NodeJID j1 = NodeJID.ensureJIDFor( test );
+			NodeJID.ensureJIDFor( "middle" );
 			NodeJID j2 = NodeJID.ensureJIDFor( test );
 			assertTrue( j1 == j2 );
 			System.out.println( "!" + j1.getAsString() + "!" + j2.getAsString()

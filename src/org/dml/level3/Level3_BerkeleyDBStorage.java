@@ -21,13 +21,15 @@
  */
 
 
-package org.dml.storagewrapper;
+package org.dml.level3;
 
 
 
 import org.dml.database.bdb.BerkeleyDB;
 import org.dml.level1.NodeJID;
+import org.dml.level2.Level2_BerkeleyDBStorage;
 import org.dml.level2.NodeID;
+import org.dml.storagewrapper.StorageException;
 import org.dml.tools.RunTime;
 
 import com.sleepycat.je.DatabaseException;
@@ -38,8 +40,8 @@ import com.sleepycat.je.DatabaseException;
  * should throw only StorageException.<br>
  * this is done mostly for wrapping Exceptions under StorageException<br>
  */
-public class Level2_BerkeleyDBStorage extends Level1_BerkeleyDBStorage implements
-		Level2_DMLStorageWrapper {
+public class Level3_BerkeleyDBStorage extends Level2_BerkeleyDBStorage implements
+		Level3_DMLStorageWrapper {
 	
 	private BerkeleyDB	bdb	= null;
 	
@@ -96,7 +98,7 @@ public class Level2_BerkeleyDBStorage extends Level1_BerkeleyDBStorage implement
 	 * @param envHomeDir
 	 * @throws StorageException
 	 */
-	public Level2_BerkeleyDBStorage( String envHomeDir ) throws StorageException {
+	public Level3_BerkeleyDBStorage( String envHomeDir ) throws StorageException {
 
 		this( envHomeDir, false );
 	}
@@ -107,7 +109,7 @@ public class Level2_BerkeleyDBStorage extends Level1_BerkeleyDBStorage implement
 	 * @param envHomeDir
 	 * @throws StorageException
 	 */
-	public Level2_BerkeleyDBStorage( String envHomeDir,
+	public Level3_BerkeleyDBStorage( String envHomeDir,
 			boolean internalDestroyBeforeInit ) throws StorageException {
 
 		this.init( envHomeDir, internalDestroyBeforeInit );
@@ -147,6 +149,7 @@ public class Level2_BerkeleyDBStorage extends Level1_BerkeleyDBStorage implement
 	 * org.dml.storagewrapper.StorageWrapper#ensureGroup(org.dml.level2.NodeID,
 	 * org.dml.level2.NodeID)
 	 */
+	@Override
 	public boolean ensureGroup( NodeID first, NodeID second )
 			throws StorageException {
 

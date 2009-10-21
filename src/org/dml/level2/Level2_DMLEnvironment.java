@@ -25,16 +25,10 @@ package org.dml.level2;
 
 
 
-import java.io.File;
-
+import org.dml.level1.Level1_DMLEnvironment;
 import org.dml.level1.NodeJID;
-import org.dml.storagewrapper.Level1_BerkeleyDBStorage;
-import org.dml.storagewrapper.Level2_DMLStorageWrapper;
 import org.dml.storagewrapper.StorageException;
 import org.dml.tools.RunTime;
-import org.javapart.logger.Log;
-import org.references.ObjRefsList;
-import org.references.Position;
 
 
 
@@ -42,77 +36,93 @@ import org.references.Position;
  * 
  *
  */
-public class Level2_DMLEnvironment implements Level2_DMLStorageWrapper {
+public class Level2_DMLEnvironment extends Level1_DMLEnvironment implements
+		Level2_DMLStorageWrapper {
 	
-	public final static String								DEFAULT_BDB_ENVIRONMENT_HOMEDIR	= "."
-																									+ File.separator
-																									+ "bin"
-																									+ File.separator
-																									+ "mainEnv"
-																									+ File.separator;
-	// FIXME: should be StorageWrapper type but upsets my F3 key
-	private final Level1_BerkeleyDBStorage					Storage;
 	
-	private final static ObjRefsList<Level2_DMLEnvironment>	ALL_INSTANCES					= new ObjRefsList<Level2_DMLEnvironment>();
+
+	protected Level2_DMLStorageWrapper	Storage			= null;
+	
+	private boolean						inited			= false;
+	
+	// temporary:
+	private String						envHomeDir		= null;
+	
+	private boolean						wipeEnvFirst	= false;
 	
 	/**
-	 * @param envHomeDir
-	 * @param wipeEnvFirst
-	 *            true if to erase all data prior to init!
-	 * @throws StorageException
+	 * construct, don't forget to call init(with param/s)
 	 */
-	public static final Level2_DMLEnvironment getNew( String envHomeDir,
-			boolean wipeEnvFirst ) throws StorageException {
+	public Level2_DMLEnvironment() {
 
-		Level2_DMLEnvironment env = new Level2_DMLEnvironment( envHomeDir,
-				wipeEnvFirst );
-		if ( ALL_INSTANCES.addFirst( env ) ) {
-			RunTime.Bug( "couldn't have already existed!" );
+	}
+	
+	@Override
+	protected void start() {
+
+		// to prevent user from using just init(),
+		// TODO: ? too bad we can't use a default init() w/o params
+		if ( !inited ) {
+			RunTime.BadCallError( "must use the other init()s" );
 		}
-		return env;
+		super.start();
+	}
+	
+	@Override
+	protected void done() {
+
+		inited = false;
+		super.done();
 	}
 	
 	/**
-	 * generic constructor using default BDB environment
-	 * 
+	 * @param envHomeDir1
+	 * @param wipeEnvFirst1
 	 * @throws StorageException
 	 */
-	public static Level2_DMLEnvironment getNew() throws StorageException {
-
-		return getNew( DEFAULT_BDB_ENVIRONMENT_HOMEDIR, false );
-	}
-	
-	public static Level2_DMLEnvironment getNew( boolean wipeEnvFirst )
+	private void Level2_DMLinit( String envHomeDir1, boolean wipeEnvFirst1 )
 			throws StorageException {
 
-		return getNew( DEFAULT_BDB_ENVIRONMENT_HOMEDIR, wipeEnvFirst );
+		RunTime.assertNotNull( envHomeDir1, wipeEnvFirst1 );
+		envHomeDir = envHomeDir1;
+		wipeEnvFirst = wipeEnvFirst1;
+	}
+	
+	
+	@Override
+	protected void storageInit() {
+
+		if ( null == Storage ) {
+			Storage = new Level2_BerkeleyDBStorage();
+			
+		}
+		Storage.init( envHomeDir, wipeEnvFirst );
+		// won't call super, because we get rid of that level of storage since
+		// it's missing new features
 	}
 	
 	/**
-	 * private constructor
-	 * 
-	 * @param envHomeDir
+	 * @param envHomeDir1
 	 * @param wipeEnvFirst
 	 *            this should be false, unless inside a JUnit; will delete all
 	 *            data
 	 * @throws StorageException
 	 */
-	protected Level2_DMLEnvironment( String envHomeDir, boolean wipeEnvFirst )
+	public void init( String envHomeDir1, boolean wipeEnvFirst )
 			throws StorageException {
 
-		RunTime.assertNotNull( envHomeDir, wipeEnvFirst );
-		Storage = new Level1_BerkeleyDBStorage( envHomeDir, wipeEnvFirst );
+		this.Level2_DMLinit( envHomeDir1, wipeEnvFirst );
+		inited = true;
+		super.init();
 	}
 	
-	public static final void deInitAll() {
+	/**
+	 * @param envHomeDir1
+	 * @throws StorageException
+	 */
+	public void init( String envHomeDir1 ) throws StorageException {
 
-		Log.entry();
-		Level2_DMLEnvironment iter;
-		while ( null != ( iter = ALL_INSTANCES.getObjectAt( Position.FIRST ) ) ) {
-			iter.deInit();
-			ALL_INSTANCES.removeObject( iter );
-		}
-		RunTime.assertTrue( ALL_INSTANCES.isEmpty() );
+		this.init( envHomeDir1, false );
 	}
 	
 	
@@ -168,12 +178,4 @@ public class Level2_DMLEnvironment implements Level2_DMLStorageWrapper {
 		return Storage.createNodeID( fromJID );
 	}
 	
-	/**
-	 * level 3
-	 */
-	public boolean ensureGroup( NodeID first, NodeID second )
-			throws StorageException {
-
-		return Storage.ensureGroup( first, second );
-	}
 }

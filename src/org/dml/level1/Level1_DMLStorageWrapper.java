@@ -21,11 +21,7 @@
  */
 
 
-package org.dml.storagewrapper;
-
-
-
-import org.dml.level2.NodeID;
+package org.dml.level1;
 
 
 
@@ -33,15 +29,14 @@ import org.dml.level2.NodeID;
  * 
  *
  */
-public interface Level3_DMLStorageWrapper extends Level2_DMLStorageWrapper {
+public interface Level1_DMLStorageWrapper {
+	
+	public void init();
 	
 	/**
-	 * @param first
-	 * @param second
-	 * @return
-	 * @throws StorageException
+	 * 
 	 */
-	public boolean ensureGroup( NodeID first, NodeID second )
-			throws StorageException;
+	public void deInit();
 	
+
 }

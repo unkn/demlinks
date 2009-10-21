@@ -25,8 +25,6 @@ package org.dml.level1;
 
 
 
-import org.dml.storagewrapper.Level1_BerkeleyDBStorage;
-import org.dml.storagewrapper.Level1_DMLStorageWrapper;
 import org.dml.tools.StaticInstanceTracker;
 
 
@@ -38,7 +36,7 @@ import org.dml.tools.StaticInstanceTracker;
 public class Level1_DMLEnvironment extends StaticInstanceTracker {
 	
 	
-	private final Level1_DMLStorageWrapper	Storage	= new Level1_BerkeleyDBStorage();
+	protected Level1_DMLStorageWrapper	Storage	= null;
 	
 	/**
 	 * construct, don't forget to call init()
@@ -55,7 +53,21 @@ public class Level1_DMLEnvironment extends StaticInstanceTracker {
 	@Override
 	protected void done() {
 
+		this.storageDeInit();
+	}
+	
+	protected void storageInit() {
+
+		if ( null == Storage ) {
+			Storage = new Level1_BerkeleyDBStorage();
+		}
+		Storage.init();
+	}
+	
+	protected void storageDeInit() {
+
 		Storage.deInit();
+		// Storage = null;
 	}
 	
 	/*
@@ -66,6 +78,6 @@ public class Level1_DMLEnvironment extends StaticInstanceTracker {
 	@Override
 	protected void start() {
 
-		Storage.init();
+		this.storageInit();
 	}
 }

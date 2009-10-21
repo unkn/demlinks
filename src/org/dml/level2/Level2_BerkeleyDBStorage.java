@@ -21,13 +21,14 @@
  */
 
 
-package org.dml.storagewrapper;
+package org.dml.level2;
 
 
 
 import org.dml.database.bdb.BerkeleyDB;
+import org.dml.level1.Level1_BerkeleyDBStorage;
 import org.dml.level1.NodeJID;
-import org.dml.level2.NodeID;
+import org.dml.storagewrapper.StorageException;
 import org.dml.tools.RunTime;
 
 import com.sleepycat.je.DatabaseException;
@@ -38,8 +39,8 @@ import com.sleepycat.je.DatabaseException;
  * should throw only StorageException.<br>
  * this is done mostly for wrapping Exceptions under StorageException<br>
  */
-public class Level3_BerkeleyDBStorage extends Level2_BerkeleyDBStorage implements
-		Level3_DMLStorageWrapper {
+public class Level2_BerkeleyDBStorage extends Level1_BerkeleyDBStorage
+		implements Level2_DMLStorageWrapper {
 	
 	private BerkeleyDB	bdb	= null;
 	
@@ -91,26 +92,20 @@ public class Level3_BerkeleyDBStorage extends Level2_BerkeleyDBStorage implement
 		}
 	}
 	
-	
 	/**
-	 * @param envHomeDir
-	 * @throws StorageException
+	 * constructor, don't forget to call init(...)
 	 */
-	public Level3_BerkeleyDBStorage( String envHomeDir ) throws StorageException {
+	public Level2_BerkeleyDBStorage() {
 
-		this( envHomeDir, false );
 	}
 	
 	/**
-	 * construct
-	 * 
 	 * @param envHomeDir
 	 * @throws StorageException
 	 */
-	public Level3_BerkeleyDBStorage( String envHomeDir,
-			boolean internalDestroyBeforeInit ) throws StorageException {
+	public void init( String envHomeDir ) throws StorageException {
 
-		this.init( envHomeDir, internalDestroyBeforeInit );
+		this.init( envHomeDir, false );
 	}
 	
 	/**
@@ -118,7 +113,8 @@ public class Level3_BerkeleyDBStorage extends Level2_BerkeleyDBStorage implement
 	 * @param internalDestroyBeforeInit
 	 * @throws StorageException
 	 */
-	private void init( String envHomeDir, boolean internalDestroyBeforeInit )
+	@Override
+	public void init( String envHomeDir, boolean internalDestroyBeforeInit )
 			throws StorageException {
 
 		RunTime.assertNotNull( envHomeDir );
@@ -135,27 +131,10 @@ public class Level3_BerkeleyDBStorage extends Level2_BerkeleyDBStorage implement
 	 * no throwing
 	 */
 	@Override
-	public final void deInit() {
+	public final void done() {
 
 		bdb.deInit();
+		super.done();
 	}
 	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.dml.storagewrapper.StorageWrapper#ensureGroup(org.dml.level2.NodeID,
-	 * org.dml.level2.NodeID)
-	 */
-	@Override
-	public boolean ensureGroup( NodeID first, NodeID second )
-			throws StorageException {
-
-		RunTime.assertNotNull( first, second );
-		try {
-			return bdb.getDBMapTupleNodeIDs().ensureGroup( first, second );
-		} catch ( DatabaseException de ) {
-			throw new StorageException( de );
-		}
-	}
 }// end of class

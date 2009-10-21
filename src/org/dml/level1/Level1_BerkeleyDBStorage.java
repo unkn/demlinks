@@ -21,7 +21,11 @@
  */
 
 
-package org.dml.storagewrapper;
+package org.dml.level1;
+
+
+
+import org.dml.tools.StaticInstanceTracker;
 
 
 
@@ -29,28 +33,35 @@ package org.dml.storagewrapper;
  * should throw only StorageException.<br>
  * this is done mostly for wrapping Exceptions under StorageException<br>
  */
-public class Level1_BerkeleyDBStorage implements Level1_DMLStorageWrapper {
+public class Level1_BerkeleyDBStorage extends StaticInstanceTracker implements
+		Level1_DMLStorageWrapper {
 	
 	public Level1_BerkeleyDBStorage() {
-
-	}
-	
-	/**
-	 * no throwing
-	 */
-	@Override
-	public void deInit() {
 
 	}
 	
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.dml.storagewrapper.Level1_DMLStorageWrapper#init()
+	 * @see org.dml.tools.StaticInstanceTracker#done()
 	 */
 	@Override
-	public void init() {
+	protected void done() {
 
+		// TODO Auto-generated method stub
+		
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.dml.tools.StaticInstanceTracker#start()
+	 */
+	@Override
+	protected void start() {
+
+		// TODO Auto-generated method stub
+		
 	}
 	
 

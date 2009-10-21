@@ -21,12 +21,13 @@
  */
 
 
-package org.dml.storagewrapper;
+package org.dml.level2;
 
 
 
+import org.dml.level1.Level1_DMLStorageWrapper;
 import org.dml.level1.NodeJID;
-import org.dml.level2.NodeID;
+import org.dml.storagewrapper.StorageException;
 
 
 
@@ -72,5 +73,8 @@ public interface Level2_DMLStorageWrapper extends Level1_DMLStorageWrapper {
 	 */
 	public NodeID ensureNodeID( NodeJID theJID ) throws StorageException;
 	
-
+	
+	public void init( String envHomeDir, boolean internalDestroyBeforeInit )
+			throws StorageException;
+	
 }
