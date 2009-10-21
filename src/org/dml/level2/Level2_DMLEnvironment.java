@@ -90,7 +90,7 @@ public class Level2_DMLEnvironment extends Level1_DMLEnvironment implements
 	
 	
 	@Override
-	protected void storageInit() {
+	protected void storageInit() throws StorageException {
 
 		if ( null == Storage ) {
 			Storage = new Level2_BerkeleyDBStorage();
@@ -103,15 +103,15 @@ public class Level2_DMLEnvironment extends Level1_DMLEnvironment implements
 	
 	/**
 	 * @param envHomeDir1
-	 * @param wipeEnvFirst
+	 * @param wipeEnvFirst1
 	 *            this should be false, unless inside a JUnit; will delete all
 	 *            data
 	 * @throws StorageException
 	 */
-	public void init( String envHomeDir1, boolean wipeEnvFirst )
+	public void init( String envHomeDir1, boolean wipeEnvFirst1 )
 			throws StorageException {
 
-		this.Level2_DMLinit( envHomeDir1, wipeEnvFirst );
+		this.Level2_DMLinit( envHomeDir1, wipeEnvFirst1 );
 		inited = true;
 		super.init();
 	}
@@ -125,7 +125,7 @@ public class Level2_DMLEnvironment extends Level1_DMLEnvironment implements
 		this.init( envHomeDir1, false );
 	}
 	
-	
+	// ---------------------------------------------
 	/**
 	 * there's a one to one mapping between NodeID and NodeJID<br>
 	 * given the NodeID return its NodeJID<br>

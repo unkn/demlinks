@@ -26,10 +26,12 @@ package org.dml.storagewrapper;
 
 
 /**
+ * this is now an unchecked exception<br>
+ * extending RuntimeException allows unchecked exceptions ie. no need to specify
+ * "throws" on method definition
  * 
- *
  */
-public class StorageException extends Exception {
+public class StorageException extends RuntimeException {
 	
 	public StorageException( Throwable cause ) {
 
