@@ -28,9 +28,9 @@ package org.dml.level2;
 import java.io.File;
 
 import org.dml.level1.NodeJID;
-import org.dml.storagewrapper.BerkeleyDBStorageLevel1;
+import org.dml.storagewrapper.Level1_BerkeleyDBStorage;
 import org.dml.storagewrapper.StorageException;
-import org.dml.storagewrapper.StorageWrapperLevel2;
+import org.dml.storagewrapper.Level2_DMLStorageWrapper;
 import org.dml.tools.RunTime;
 import org.javapart.logger.Log;
 import org.references.ObjRefsList;
@@ -42,7 +42,7 @@ import org.references.Position;
  * 
  *
  */
-public class DMLEnvironmentLevel2 implements StorageWrapperLevel2 {
+public class Level2_DMLEnvironment implements Level2_DMLStorageWrapper {
 	
 	public final static String								DEFAULT_BDB_ENVIRONMENT_HOMEDIR	= "."
 																									+ File.separator
@@ -51,9 +51,9 @@ public class DMLEnvironmentLevel2 implements StorageWrapperLevel2 {
 																									+ "mainEnv"
 																									+ File.separator;
 	// FIXME: should be StorageWrapper type but upsets my F3 key
-	private final BerkeleyDBStorageLevel1							Storage;
+	private final Level1_BerkeleyDBStorage							Storage;
 	
-	private final static ObjRefsList<DMLEnvironmentLevel2>	ALL_INSTANCES					= new ObjRefsList<DMLEnvironmentLevel2>();
+	private final static ObjRefsList<Level2_DMLEnvironment>	ALL_INSTANCES					= new ObjRefsList<Level2_DMLEnvironment>();
 	
 	/**
 	 * @param envHomeDir
@@ -61,10 +61,10 @@ public class DMLEnvironmentLevel2 implements StorageWrapperLevel2 {
 	 *            true if to erase all data prior to init!
 	 * @throws StorageException
 	 */
-	public static final DMLEnvironmentLevel2 getNew( String envHomeDir,
+	public static final Level2_DMLEnvironment getNew( String envHomeDir,
 			boolean wipeEnvFirst ) throws StorageException {
 
-		DMLEnvironmentLevel2 env = new DMLEnvironmentLevel2( envHomeDir,
+		Level2_DMLEnvironment env = new Level2_DMLEnvironment( envHomeDir,
 				wipeEnvFirst );
 		if ( ALL_INSTANCES.addFirst( env ) ) {
 			RunTime.Bug( "couldn't have already existed!" );
@@ -77,12 +77,12 @@ public class DMLEnvironmentLevel2 implements StorageWrapperLevel2 {
 	 * 
 	 * @throws StorageException
 	 */
-	public static DMLEnvironmentLevel2 getNew() throws StorageException {
+	public static Level2_DMLEnvironment getNew() throws StorageException {
 
 		return getNew( DEFAULT_BDB_ENVIRONMENT_HOMEDIR, false );
 	}
 	
-	public static DMLEnvironmentLevel2 getNew( boolean wipeEnvFirst )
+	public static Level2_DMLEnvironment getNew( boolean wipeEnvFirst )
 			throws StorageException {
 
 		return getNew( DEFAULT_BDB_ENVIRONMENT_HOMEDIR, wipeEnvFirst );
@@ -97,17 +97,17 @@ public class DMLEnvironmentLevel2 implements StorageWrapperLevel2 {
 	 *            data
 	 * @throws StorageException
 	 */
-	protected DMLEnvironmentLevel2( String envHomeDir, boolean wipeEnvFirst )
+	protected Level2_DMLEnvironment( String envHomeDir, boolean wipeEnvFirst )
 			throws StorageException {
 
 		RunTime.assertNotNull( envHomeDir, wipeEnvFirst );
-		Storage = new BerkeleyDBStorageLevel1( envHomeDir, wipeEnvFirst );
+		Storage = new Level1_BerkeleyDBStorage( envHomeDir, wipeEnvFirst );
 	}
 	
 	public static final void deInitAll() {
 
 		Log.entry();
-		DMLEnvironmentLevel2 iter;
+		Level2_DMLEnvironment iter;
 		while ( null != ( iter = ALL_INSTANCES.getObjectAt( Position.FIRST ) ) ) {
 			iter.deInit();
 			ALL_INSTANCES.removeObject( iter );

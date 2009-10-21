@@ -1,5 +1,5 @@
 /**
- * File creation: Oct 16, 2009 3:26:32 PM
+ * File creation: Oct 20, 2009 12:22:26 AM
  * 
  * Copyright (C) 2005-2009 AtKaaZ <atkaaz@users.sourceforge.net>
  * Copyright (C) 2005-2009 UnKn <unkn@users.sourceforge.net>
@@ -21,7 +21,13 @@
  */
 
 
-package org.dml.storagewrapper;
+package org.dml.level1;
+
+
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 
 
@@ -29,14 +35,28 @@ package org.dml.storagewrapper;
  * 
  *
  */
-public interface StorageWrapperLevel1 {
+public class Level1_DMLEnvironmentTest {
 	
-	public void init();
+	Level1_DMLEnvironment	dml1;
 	
-	/**
-	 * 
-	 */
-	public void deInit();
-	
+	@Before
+	public void setUp() {
 
+		dml1 = new Level1_DMLEnvironment();
+		dml1.init();
+		
+	}
+	
+	@After
+	public void tearDown() {
+
+		dml1.deInit();
+		dml1.deInit();
+		dml1 = null;
+	}
+	
+	@Test
+	public void test1() {
+
+	}
 }

@@ -34,7 +34,7 @@ import org.dml.level2.NodeID;
  * 
  *
  */
-public interface StorageWrapperLevel2 extends StorageWrapperLevel1 {
+public interface Level2_DMLStorageWrapper extends Level1_DMLStorageWrapper {
 	
 	/**
 	 * returns the NodeJID associated with the given NodeID<br>

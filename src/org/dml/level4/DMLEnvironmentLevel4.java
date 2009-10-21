@@ -29,6 +29,6 @@ package org.dml.level4;
  * 
  *
  */
-public class DMLEnvironmentLevel4 extends org.dml.level1.DMLEnvironmentLevel1 {
+public class DMLEnvironmentLevel4 extends org.dml.level1.Level1_DMLEnvironment {
 	
 }

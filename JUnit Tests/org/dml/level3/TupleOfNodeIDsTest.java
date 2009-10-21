@@ -26,7 +26,7 @@ package org.dml.level3;
 
 
 import org.dml.JUnits.Consts;
-import org.dml.level1.DMLEnvironmentLevel1;
+import org.dml.level1.Level1_DMLEnvironment;
 import org.dml.level1.NodeJID;
 import org.dml.level2.NodeID;
 import org.dml.storagewrapper.StorageException;
@@ -44,12 +44,12 @@ public class TupleOfNodeIDsTest {
 	
 	// TupleOfNodeIDs one, two, three;
 	NodeID			n1, n2, n3;
-	DMLEnvironmentLevel1	dml;
+	Level1_DMLEnvironment	dml;
 	
 	@Before
 	public void setUp() throws StorageException {
 
-		dml = DMLEnvironmentLevel1.getNew( Consts.BDB_ENV_PATH, true );
+		dml = Level1_DMLEnvironment.getNew( Consts.BDB_ENV_PATH, true );
 	}
 	
 	@After

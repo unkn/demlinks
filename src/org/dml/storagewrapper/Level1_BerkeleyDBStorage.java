@@ -25,24 +25,34 @@ package org.dml.storagewrapper;
 
 
 
-
-
-
 /**
  * should throw only StorageException.<br>
  * this is done mostly for wrapping Exceptions under StorageException<br>
  */
-public class BerkeleyDBStorageLevel1 implements StorageWrapperLevel1 {
+public class Level1_BerkeleyDBStorage implements Level1_DMLStorageWrapper {
 	
-	public BerkeleyDBStorageLevel1() {
+	public Level1_BerkeleyDBStorage() {
 
 	}
 	
 	/**
 	 * no throwing
 	 */
-	public void deInit() {
+	@Override
+	public void deInitStorage() {
 
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.dml.storagewrapper.Level1_DMLStorageWrapper#init()
+	 */
+	@Override
+	public void initStorage() {
+
+		// TODO Auto-generated method stub
+		
 	}
 	
 

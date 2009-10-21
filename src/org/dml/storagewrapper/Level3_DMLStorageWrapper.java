@@ -1,5 +1,5 @@
 /**
- * File creation: Oct 19, 2009 11:39:43 PM
+ * File creation: Oct 16, 2009 3:26:32 PM
  * 
  * Copyright (C) 2005-2009 AtKaaZ <atkaaz@users.sourceforge.net>
  * Copyright (C) 2005-2009 UnKn <unkn@users.sourceforge.net>
@@ -21,12 +21,11 @@
  */
 
 
-package org.dml.level3;
+package org.dml.storagewrapper;
 
 
 
-import org.dml.level1.DMLEnvironmentLevel1;
-import org.dml.storagewrapper.StorageException;
+import org.dml.level2.NodeID;
 
 
 
@@ -34,10 +33,15 @@ import org.dml.storagewrapper.StorageException;
  * 
  *
  */
-public class DMLEnvironmentLevel3 extends DMLEnvironmentLevel1 {
+public interface Level3_DMLStorageWrapper extends Level2_DMLStorageWrapper {
 	
-	protected DMLEnvironmentLevel3() throws StorageException {
-
-		super( DEFAULT_BDB_ENVIRONMENT_HOMEDIR, false );
-	}
+	/**
+	 * @param first
+	 * @param second
+	 * @return
+	 * @throws StorageException
+	 */
+	public boolean ensureGroup( NodeID first, NodeID second )
+			throws StorageException;
+	
 }

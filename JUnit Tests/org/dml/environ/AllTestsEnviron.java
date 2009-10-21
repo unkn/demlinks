@@ -29,7 +29,7 @@ import org.junit.runners.Suite;
 
 @RunWith( Suite.class )
 @Suite.SuiteClasses( value = {
-	DMLEnvironmentTest.class
+	Level4_DMLEnvironmentTest.class
 } )
 public class AllTestsEnviron {
 }

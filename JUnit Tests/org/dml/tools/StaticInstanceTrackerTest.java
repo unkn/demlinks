@@ -27,7 +27,7 @@ package org.dml.tools;
 
 import static org.junit.Assert.assertTrue;
 
-import org.dml.error.BugError;
+import org.dml.error.BadCallError;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -94,7 +94,7 @@ public class StaticInstanceTrackerTest {
 		try {
 			t.init();
 			t.init();
-		} catch ( BugError be ) {
+		} catch ( BadCallError bce ) {
 			errored = true;
 		} finally {
 			assertTrue( errored );
@@ -104,7 +104,7 @@ public class StaticInstanceTrackerTest {
 		try {
 			t.deInit();
 			t.deInit();
-		} catch ( BugError be ) {
+		} catch ( BadCallError bce ) {
 			errored = true;
 		} finally {
 			assertTrue( errored );
@@ -114,7 +114,7 @@ public class StaticInstanceTrackerTest {
 		try {
 			Testy2 r = new Testy2();
 			r.deInit();
-		} catch ( BugError be ) {
+		} catch ( BadCallError bce ) {
 			errored = true;
 		} finally {
 			assertTrue( errored );

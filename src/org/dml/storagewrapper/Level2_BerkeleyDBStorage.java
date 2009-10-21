@@ -38,8 +38,8 @@ import com.sleepycat.je.DatabaseException;
  * should throw only StorageException.<br>
  * this is done mostly for wrapping Exceptions under StorageException<br>
  */
-public class BerkeleyDBStorageLevel3 extends BerkeleyDBStorageLevel2 implements
-		StorageWrapperLevel3 {
+public class Level2_BerkeleyDBStorage extends Level1_BerkeleyDBStorage implements
+		Level2_DMLStorageWrapper {
 	
 	private BerkeleyDB	bdb	= null;
 	
@@ -96,7 +96,7 @@ public class BerkeleyDBStorageLevel3 extends BerkeleyDBStorageLevel2 implements
 	 * @param envHomeDir
 	 * @throws StorageException
 	 */
-	public BerkeleyDBStorageLevel3( String envHomeDir ) throws StorageException {
+	public Level2_BerkeleyDBStorage( String envHomeDir ) throws StorageException {
 
 		this( envHomeDir, false );
 	}
@@ -107,7 +107,7 @@ public class BerkeleyDBStorageLevel3 extends BerkeleyDBStorageLevel2 implements
 	 * @param envHomeDir
 	 * @throws StorageException
 	 */
-	public BerkeleyDBStorageLevel3( String envHomeDir,
+	public Level2_BerkeleyDBStorage( String envHomeDir,
 			boolean internalDestroyBeforeInit ) throws StorageException {
 
 		this.init( envHomeDir, internalDestroyBeforeInit );
@@ -147,7 +147,6 @@ public class BerkeleyDBStorageLevel3 extends BerkeleyDBStorageLevel2 implements
 	 * org.dml.storagewrapper.StorageWrapper#ensureGroup(org.dml.level2.NodeID,
 	 * org.dml.level2.NodeID)
 	 */
-	@Override
 	public boolean ensureGroup( NodeID first, NodeID second )
 			throws StorageException {
 

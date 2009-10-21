@@ -30,9 +30,10 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import org.dml.JUnits.Consts;
-import org.dml.level1.DMLEnvironmentLevel1;
+import org.dml.level1.Level1_DMLEnvironment;
 import org.dml.level1.NodeJID;
 import org.dml.level2.NodeID;
+import org.dml.level4.DMLEnvironmentLevel4;
 import org.junit.Test;
 
 
@@ -41,17 +42,17 @@ import org.junit.Test;
  * 
  *
  */
-public class DMLEnvironmentTest {
+public class Level4_DMLEnvironmentTest {
 	
 	@Test
 	public void multiple() throws Exception {
 
-		DMLEnvironmentLevel1 d1 = DMLEnvironmentLevel1.getNew( Consts.BDB_ENV_PATH + "1&2",
-				true );
-		DMLEnvironmentLevel1 d2 = DMLEnvironmentLevel1.getNew( Consts.BDB_ENV_PATH + "1&2",
-				false );
-		DMLEnvironmentLevel1 d3 = DMLEnvironmentLevel1.getNew( Consts.BDB_ENV_PATH + "3",
-				true );
+		DMLEnvironmentLevel4 d1 = DMLEnvironmentLevel4.getNew(
+				Consts.BDB_ENV_PATH + "1&2", true );
+		DMLEnvironmentLevel4 d2 = DMLEnvironmentLevel4.getNew(
+				Consts.BDB_ENV_PATH + "1&2", false );
+		DMLEnvironmentLevel4 d3 = DMLEnvironmentLevel4.getNew(
+				Consts.BDB_ENV_PATH + "3", true );
 		try {
 			// if ( 1 == 1 ) {
 			// throw new Exception( "blah" );
@@ -82,7 +83,7 @@ public class DMLEnvironmentTest {
 		} finally {
 			d1.deInit();
 			// d2.deInit();
-			DMLEnvironmentLevel1.deInitAll();
+			Level1_DMLEnvironment.deInitAll();
 		}
 	}
 }

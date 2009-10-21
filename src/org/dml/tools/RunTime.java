@@ -22,7 +22,11 @@
 
 package org.dml.tools;
 
+
+
+import org.dml.error.BadCallError;
 import org.dml.error.BugError;
+
 
 
 /**
@@ -40,6 +44,16 @@ public class RunTime {
 	public static void Bug( String msg ) {
 
 		throw new BugError( "Bug detected: " + msg );
+	}
+	
+	public static void BadCallError() {
+
+		BadCallError( "" );
+	}
+	
+	public static void BadCallError( String msg ) {
+
+		throw new BadCallError( "BADCALL: " + msg );
 	}
 	
 	/**

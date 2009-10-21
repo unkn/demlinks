@@ -78,15 +78,18 @@ public abstract class StaticInstanceTracker {
 	
 	/**
 	 * do not use <code>this</code> again after calling this method
+	 * 
+	 * @return
 	 */
 	public final void deInit() {
 
 		if ( !inited ) {
-			RunTime.Bug( this.toString() + " was not already init()-ed" );
+			RunTime.BadCallError( this.toString()
+					+ " was not already init()-ed" );
 		}
 		if ( deInited ) {
 			
-			RunTime.Bug( this + " was already deInit()-ed!" );
+			RunTime.BadCallError( this + " was already deInit()-ed!" );
 		}
 		
 		deInited = true;
@@ -98,7 +101,7 @@ public abstract class StaticInstanceTracker {
 	public final void init() {
 
 		if ( inited || !deInited ) {
-			RunTime.Bug( "already inited" );
+			RunTime.BadCallError( "already inited" );
 		}
 		addNewInstance( this );
 		inited = true;

@@ -47,6 +47,8 @@ import org.dml.tools.RunTime;
  */
 public class NodeJID {
 	
+	// this will keep track of all NodeJIDs of all environments
+	// there's no point of having same JID twice for diff environments
 	protected static final HashMap<String, NodeJID>	all_Level1_NodeJIDs	= new HashMap<String, NodeJID>();
 	// string representation of the ID
 	private String									stringID			= null;
