@@ -46,7 +46,7 @@ import org.references.Position;
 public abstract class StaticInstanceTracker {
 	
 	// LIFO list tracking
-	private final static ObjRefsList<StaticInstanceTracker>	ALL_INSTANCES	= new ObjRefsList<StaticInstanceTracker>();
+	public final static ObjRefsList<StaticInstanceTracker>	ALL_INSTANCES	= new ObjRefsList<StaticInstanceTracker>();
 	private boolean											inited			= false;
 	private boolean											deInited		= true;
 	

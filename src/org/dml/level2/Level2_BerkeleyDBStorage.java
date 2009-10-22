@@ -102,12 +102,12 @@ public class Level2_BerkeleyDBStorage extends Level1_BerkeleyDBStorage
 	}
 	
 	/**
-	 * @param envHomeDir
+	 * @param envHomeDir1
 	 * @throws StorageException
 	 */
-	public void init( String envHomeDir ) throws StorageException {
+	public void init( String envHomeDir1 ) throws StorageException {
 
-		this.init( envHomeDir, false );
+		this.init( envHomeDir1, false );
 	}
 	
 	/**

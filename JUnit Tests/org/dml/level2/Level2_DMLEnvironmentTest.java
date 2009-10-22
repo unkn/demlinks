@@ -92,6 +92,10 @@ public class Level2_DMLEnvironmentTest {
 			// dml2.deInit();
 			// dml2.init( Consts.DEFAULT_BDB_ENV_PATH );
 		} finally {
+			for ( int i = 0; i < StaticInstanceTracker.ALL_INSTANCES.size(); i++ ) {
+				System.out.println( StaticInstanceTracker.ALL_INSTANCES.getObjectAt( i ) );
+			}
+			System.out.println();
 			StaticInstanceTracker.deInitAll();
 		}
 	}
