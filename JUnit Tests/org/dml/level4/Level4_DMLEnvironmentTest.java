@@ -83,7 +83,7 @@ public class Level4_DMLEnvironmentTest {
 		} finally {
 			d1.deInit();
 			// d2.deInit();
-			Level1_DMLEnvironment.deInitAll();
+			Level1_DMLEnvironment.deInitAllLikeMe();
 		}
 	}
 }

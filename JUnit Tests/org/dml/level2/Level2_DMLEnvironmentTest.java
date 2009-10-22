@@ -31,7 +31,6 @@ import org.dml.JUnits.Consts;
 import org.dml.error.BadCallError;
 import org.dml.level1.NodeJID;
 import org.dml.storagewrapper.StorageException;
-import org.dml.tools.StaticInstanceTracker;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -92,11 +91,7 @@ public class Level2_DMLEnvironmentTest {
 			// dml2.deInit();
 			// dml2.init( Consts.DEFAULT_BDB_ENV_PATH );
 		} finally {
-			for ( int i = 0; i < StaticInstanceTracker.ALL_INSTANCES.size(); i++ ) {
-				System.out.println( StaticInstanceTracker.ALL_INSTANCES.getObjectAt( i ) );
-			}
-			System.out.println();
-			StaticInstanceTracker.deInitAll();
+			dml2.deInitAllLikeMe();
 		}
 	}
 }

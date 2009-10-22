@@ -25,6 +25,7 @@ package org.dml.tools;
 
 
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.dml.error.BadCallError;
@@ -40,8 +41,9 @@ import org.junit.Test;
  */
 public class StaticInstanceTrackerTest {
 	
-	Testy	t, tt;
-	Testy2	t2, tt2;
+	Testy					t, tt;
+	Testy2					t2, tt2;
+	ProperSubClassingOfSIT	psc;
 	
 	@Before
 	public void setUp() {
@@ -58,7 +60,8 @@ public class StaticInstanceTrackerTest {
 
 		// t.deInit();
 		// t2.deInit();
-		StaticInstanceTracker.deInitAll();
+		StaticInstanceTracker.deInitAllThatExtendMe();
+		
 	}
 	
 	@Test
@@ -83,7 +86,8 @@ public class StaticInstanceTrackerTest {
 			tt2.deInit();
 			// throw new Exception();
 		} finally {
-			StaticInstanceTracker.deInitAll();
+			tt.deInitAllLikeMe();
+			t2.deInitAllLikeMe();
 		}
 	}
 	
@@ -121,4 +125,67 @@ public class StaticInstanceTrackerTest {
 		}
 	}
 	
+	@Test
+	public void testDeInitAllExtenders() {
+
+		System.out.println( "===============" );
+		t.init();
+		tt2.init();
+	}
+	
+	@Test
+	public void testSilent() {
+
+		boolean excepted = false;
+		try {
+			t2.silentDeInit();
+			t2.silentDeInit();
+		} catch ( BadCallError bce ) {
+			excepted = true;
+		} finally {
+			assertFalse( excepted );
+		}
+		
+		excepted = false;
+		try {
+			t2.init();
+			t2.deInit();
+			t2.silentDeInit();
+		} catch ( BadCallError bce ) {
+			excepted = true;
+		} finally {
+			assertFalse( excepted );
+		}
+		
+	}
+	
+	@Test
+	public void testPSC() {
+
+		psc = new ProperSubClassingOfSIT();
+		
+		try {
+			psc.init();
+			psc.exec();
+		} finally {
+			boolean rted = false;
+			boolean excepted = false;
+			try {
+				psc.deInit();
+			} catch ( RuntimeException re ) {
+				// ignore
+				rted = true;
+			} finally {
+				try {
+					psc.deInit();
+				} catch ( BadCallError bce ) {
+					excepted = true;
+				} finally {
+					assertTrue( excepted );
+				}
+			}
+			assertTrue( excepted );
+			assertTrue( rted );
+		}
+	}
 }

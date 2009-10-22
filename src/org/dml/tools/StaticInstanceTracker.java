@@ -45,8 +45,8 @@ import org.references.Position;
  */
 public abstract class StaticInstanceTracker {
 	
-	// LIFO list tracking
-	public final static ObjRefsList<StaticInstanceTracker>	ALL_INSTANCES	= new ObjRefsList<StaticInstanceTracker>();
+	// LIFO list tracking all instances of ALL subclasses
+	private final static ObjRefsList<StaticInstanceTracker>	ALL_INSTANCES	= new ObjRefsList<StaticInstanceTracker>();
 	private boolean											inited			= false;
 	private boolean											deInited		= true;
 	
@@ -55,9 +55,33 @@ public abstract class StaticInstanceTracker {
 	}
 	
 	/**
-	 * LIFO manner deinit
+	 * LIFO manner deinit, only for the same subclass type
 	 */
-	public final static void deInitAll() {
+	public final void deInitAllLikeMe() {
+
+		Log.entry();
+		StaticInstanceTracker iter = ALL_INSTANCES.getObjectAt( Position.FIRST );
+		while ( null != iter ) {
+			StaticInstanceTracker next = ALL_INSTANCES.getObjectAt(
+					Position.AFTER, iter );
+			
+			if ( this.getClass() == iter.getClass() ) {
+				iter.deInit();
+			}
+			
+			iter = next;
+		}
+		// it can be not empty here, since it holds list of ALL subclasses'
+		// instances
+		// RunTime.assertTrue( ALL_INSTANCES.isEmpty() );
+	}
+	
+	/**
+	 * LIFO manner deinit, for ALL subclass types<br>
+	 * you may consider this as silent, as it won't deInit those that are
+	 * already deInited since they're not in the list anymore
+	 */
+	public static final void deInitAllThatExtendMe() {
 
 		Log.entry();
 		StaticInstanceTracker iter;
@@ -66,6 +90,7 @@ public abstract class StaticInstanceTracker {
 		}
 		RunTime.assertTrue( ALL_INSTANCES.isEmpty() );
 	}
+	
 	
 	/**
 	 * implement this start(), but use init() instead
@@ -93,10 +118,22 @@ public abstract class StaticInstanceTracker {
 			RunTime.BadCallError( this + " was already deInit()-ed!" );
 		}
 		
-		deInited = true;
-		inited = false;
-		removeOldInstance( this );
-		this.done();
+		this.silentDeInit();
+	}
+	
+	/**
+	 * this will not except if already deInit()-ed
+	 * 
+	 * @see #deInit()
+	 */
+	public final void silentDeInit() {
+
+		if ( ( inited ) && ( !deInited ) ) {
+			deInited = true;
+			inited = false;
+			removeOldInstance( this );
+			this.done();
+		}
 	}
 	
 	public final void init() {
