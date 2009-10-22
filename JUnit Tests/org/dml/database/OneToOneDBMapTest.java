@@ -30,7 +30,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.UnsupportedEncodingException;
 
 import org.dml.JUnits.Consts;
-import org.dml.database.bdb.BerkeleyDB;
+import org.dml.database.bdb.Level2_BerkeleyDB;
 import org.dml.database.bdb.OneToOneDBMap;
 import org.junit.After;
 import org.junit.Before;
@@ -49,12 +49,12 @@ public class OneToOneDBMapTest {
 	OneToOneDBMap	x;
 	final String	_a	= "AAAAAAAAAAAAAAAAAAA";
 	final String	_b	= "BBBBBBBBBBBBBBBBBBBBBBBBB";
-	BerkeleyDB		bdb;
+	Level2_BerkeleyDB		bdb;
 	
 	@Before
 	public void setUp() throws DatabaseException {
 
-		bdb = new BerkeleyDB( Consts.BDB_ENV_PATH, true );
+		bdb = new Level2_BerkeleyDB( Consts.BDB_ENV_PATH, true );
 		x = new OneToOneDBMap( bdb, "someMap" );
 	}
 	

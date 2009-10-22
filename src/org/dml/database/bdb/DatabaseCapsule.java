@@ -44,12 +44,12 @@ public class DatabaseCapsule {
 	private String				dbName;
 	private Database			db		= null;
 	private DatabaseConfig		dbConf	= null;
-	private final BerkeleyDB	bdb;
+	private final Level2_BerkeleyDB	bdb;
 	
 	/**
 	 * @param string
 	 */
-	public DatabaseCapsule( BerkeleyDB bdb1, String dbName1,
+	public DatabaseCapsule( Level2_BerkeleyDB bdb1, String dbName1,
 			DatabaseConfig dbConf1 ) {
 
 		RunTime.assertNotNull( bdb1 );

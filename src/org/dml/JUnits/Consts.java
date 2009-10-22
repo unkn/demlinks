@@ -35,16 +35,9 @@ import java.io.File;
  */
 public class Consts {
 	
-	public static final String	BDB_ENV_PATH					= "."
-																		+ File.separator
-																		+ "bin"
-																		+ File.separator
-																		+ "JUnitTests"
-																		+ File.separator;
-	public final static String	BDB_ENV_MAINPATH	= "."
-																		+ File.separator
-																		+ "bin"
-																		+ File.separator
-																		+ "mainEnv"
-																		+ File.separator;
+	public static final String	BDB_ENV_PATH	= "." + File.separator + "bin"
+														+ File.separator
+														+ "JUnitTests"
+														+ File.separator;
+	
 }

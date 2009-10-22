@@ -74,8 +74,8 @@ public class Level2_DMLEnvironmentTest {
 			b = dml2.ensureNodeID( NodeJID.ensureJIDFor( "B" ) );
 			c = dml2.ensureNodeID( NodeJID.ensureJIDFor( "C" ) );
 			assertTrue( a != null );
-			assertTrue( a == dml2.getNodeID( NodeJID.ensureJIDFor( "A" ) ) );
 			assertTrue( a.equals( dml2.getNodeID( NodeJID.ensureJIDFor( "A" ) ) ) );
+			assertTrue( a != dml2.getNodeID( NodeJID.ensureJIDFor( "A" ) ) );
 			assertTrue( b.equals( dml2.getNodeID( NodeJID.ensureJIDFor( "B" ) ) ) );
 			assertTrue( c.equals( dml2.getNodeID( NodeJID.ensureJIDFor( "C" ) ) ) );
 		} finally {
@@ -89,8 +89,8 @@ public class Level2_DMLEnvironmentTest {
 		try {
 			dml2.deInit();
 			dml2.init( Consts.BDB_ENV_PATH );
-			dml2.deInit();
-			dml2.init( Consts.BDB_ENV_MAINPATH );
+			// dml2.deInit();
+			// dml2.init( Consts.DEFAULT_BDB_ENV_PATH );
 		} finally {
 			StaticInstanceTracker.deInitAll();
 		}

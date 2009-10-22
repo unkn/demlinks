@@ -25,7 +25,6 @@ package org.dml.level1;
 
 
 
-import org.dml.storagewrapper.StorageException;
 import org.dml.tools.StaticInstanceTracker;
 
 
@@ -61,7 +60,7 @@ public class Level1_DMLEnvironment extends StaticInstanceTracker {
 	 * override this in subclasses without calling super<br>
 	 * this method is called by start() which in turn is called by init()
 	 */
-	protected void storageInit() throws StorageException {
+	protected void storageInit() {
 
 		if ( null == Storage ) {
 			Storage = new Level1_BerkeleyDBStorage();

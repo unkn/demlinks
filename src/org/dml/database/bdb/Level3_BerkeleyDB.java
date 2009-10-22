@@ -50,7 +50,7 @@ import com.sleepycat.je.SequenceConfig;
  * 
  *
  */
-public class BerkeleyDB {
+public class Level3_BerkeleyDB {
 	
 	private String									envHomeDir;
 	private final EnvironmentConfig					environmentConfig			= new EnvironmentConfig();
@@ -100,7 +100,7 @@ public class BerkeleyDB {
 		return dbTupleNIDs;
 	}
 	
-	public BerkeleyDB( String envHomeDir1 ) throws DatabaseException {
+	public Level3_BerkeleyDB( String envHomeDir1 ) throws DatabaseException {
 
 		this.init( envHomeDir1, false );
 	}
@@ -110,7 +110,7 @@ public class BerkeleyDB {
 	 * @param internalDestroyBeforeInit
 	 * @throws DatabaseException
 	 */
-	public BerkeleyDB( String envHomeDir1, boolean internalDestroyBeforeInit )
+	public Level3_BerkeleyDB( String envHomeDir1, boolean internalDestroyBeforeInit )
 			throws DatabaseException {
 
 		this.init( envHomeDir1, internalDestroyBeforeInit );
@@ -322,7 +322,7 @@ public class BerkeleyDB {
 		// if ( null == thisSeq ) {
 		// init once:
 		DatabaseEntry deKey = new DatabaseEntry();
-		BerkeleyDB.stringToEntry( thisSeqName, deKey );
+		Level3_BerkeleyDB.stringToEntry( thisSeqName, deKey );
 		Sequence seq = this.getSeqsDB().openSequence( null, deKey,
 				allSequencesConfig );
 		if ( allSequenceInstances.addFirst( seq ) ) {

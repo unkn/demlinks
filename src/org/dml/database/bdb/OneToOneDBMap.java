@@ -50,14 +50,14 @@ public class OneToOneDBMap {
 	private DatabaseCapsule				forwardDB	= null;
 	private SecondaryDatabaseCapsule	backwardDB	= null;
 	protected String					dbName;
-	protected final BerkeleyDB			bdb;
+	protected final Level2_BerkeleyDB			bdb;
 	
 	/**
 	 * constructor
 	 * 
 	 * @param dbName1
 	 */
-	public OneToOneDBMap( BerkeleyDB bdb1, String dbName1 ) {
+	public OneToOneDBMap( Level2_BerkeleyDB bdb1, String dbName1 ) {
 
 		RunTime.assertNotNull( bdb1 );
 		RunTime.assertNotNull( dbName1 );
@@ -182,8 +182,8 @@ public class OneToOneDBMap {
 		// e.printStackTrace();
 		// RunTime.Bug( "encoding was set wrong, use UTF-8" );
 		// }
-		BerkeleyDB.stringToEntry( key, deKey );
-		BerkeleyDB.stringToEntry( data, deData );
+		Level2_BerkeleyDB.stringToEntry( key, deKey );
+		Level2_BerkeleyDB.stringToEntry( data, deData );
 		OperationStatus ret = this.getForwardDB().putNoOverwrite( null, deKey,
 				deData );
 		return ret;
@@ -197,7 +197,7 @@ public class OneToOneDBMap {
 	public String getKey( String data ) throws DatabaseException {
 
 		DatabaseEntry deData = new DatabaseEntry();
-		BerkeleyDB.stringToEntry( data, deData );
+		Level2_BerkeleyDB.stringToEntry( data, deData );
 		DatabaseEntry deKey = new DatabaseEntry();
 		DatabaseEntry pKey = new DatabaseEntry();
 		// deData=new DatabaseEntry(data.getBytes(BerkeleyDB.ENCODING));
@@ -208,7 +208,7 @@ public class OneToOneDBMap {
 		}
 		RunTime.assertTrue( deData.equals( deKey ) );
 		
-		return BerkeleyDB.entryToString( pKey );
+		return Level2_BerkeleyDB.entryToString( pKey );
 	}
 	
 	/**
@@ -219,7 +219,7 @@ public class OneToOneDBMap {
 	public String getData( String key ) throws DatabaseException {
 
 		DatabaseEntry deKey = new DatabaseEntry();
-		BerkeleyDB.stringToEntry( key, deKey );
+		Level2_BerkeleyDB.stringToEntry( key, deKey );
 		DatabaseEntry deData = new DatabaseEntry();
 		OperationStatus ret;
 		ret = this.getForwardDB().get( null, deKey, deData, null );
@@ -227,7 +227,7 @@ public class OneToOneDBMap {
 			return null;
 		}
 		
-		return BerkeleyDB.entryToString( deData );
+		return Level2_BerkeleyDB.entryToString( deData );
 	}
 	
 

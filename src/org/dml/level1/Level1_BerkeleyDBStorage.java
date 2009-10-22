@@ -40,6 +40,14 @@ public class Level1_BerkeleyDBStorage extends StaticInstanceTracker implements
 
 	}
 	
+	/**
+	 * override this in subclasses without calling super<br>
+	 * this method is called by done() which in turn is called by deInit()
+	 */
+	protected void storageDeInit() {
+
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -48,8 +56,15 @@ public class Level1_BerkeleyDBStorage extends StaticInstanceTracker implements
 	@Override
 	protected void done() {
 
-		// TODO Auto-generated method stub
-		
+		this.storageDeInit();
+	}
+	
+	/**
+	 * override this in subclasses without calling super<br>
+	 * this method is called by start() which in turn is called by init()
+	 */
+	protected void storageInit() {
+
 	}
 	
 	/*
@@ -60,8 +75,7 @@ public class Level1_BerkeleyDBStorage extends StaticInstanceTracker implements
 	@Override
 	protected void start() {
 
-		// TODO Auto-generated method stub
-		
+		this.storageInit();
 	}
 	
 

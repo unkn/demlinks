@@ -25,7 +25,7 @@ package org.dml.level3;
 
 
 
-import org.dml.database.bdb.BerkeleyDB;
+import org.dml.database.bdb.Level2_BerkeleyDB;
 import org.dml.level1.NodeJID;
 import org.dml.level2.Level2_BerkeleyDBStorage;
 import org.dml.level2.NodeID;
@@ -43,7 +43,7 @@ import com.sleepycat.je.DatabaseException;
 public class Level3_BerkeleyDBStorage extends Level2_BerkeleyDBStorage implements
 		Level3_DMLStorageWrapper {
 	
-	private BerkeleyDB	bdb	= null;
+	private Level2_BerkeleyDB	bdb	= null;
 	
 	@Override
 	public final NodeJID getNodeJID( NodeID identifiedByThisNodeID )
@@ -125,7 +125,7 @@ public class Level3_BerkeleyDBStorage extends Level2_BerkeleyDBStorage implement
 
 		RunTime.assertNotNull( envHomeDir );
 		try {
-			bdb = new BerkeleyDB( envHomeDir, internalDestroyBeforeInit );
+			bdb = new Level2_BerkeleyDB( envHomeDir, internalDestroyBeforeInit );
 		} catch ( DatabaseException de ) {
 			throw new StorageException( de );
 		}

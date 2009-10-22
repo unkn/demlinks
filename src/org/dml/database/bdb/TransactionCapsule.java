@@ -48,7 +48,7 @@ public class TransactionCapsule {
 	 * @return never null
 	 * @throws DatabaseException
 	 */
-	public final static TransactionCapsule getNewTransaction( BerkeleyDB bdb )
+	public final static TransactionCapsule getNewTransaction( Level2_BerkeleyDB bdb )
 			throws DatabaseException {
 
 		TransactionCapsule txn = new TransactionCapsule();

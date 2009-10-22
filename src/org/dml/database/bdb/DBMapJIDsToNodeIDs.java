@@ -51,7 +51,7 @@ public class DBMapJIDsToNodeIDs extends OneToOneDBMap {
 	 * @param dbName1
 	 * @throws DatabaseException
 	 */
-	public DBMapJIDsToNodeIDs( BerkeleyDB bdb1, String dbName1 )
+	public DBMapJIDsToNodeIDs( Level2_BerkeleyDB bdb1, String dbName1 )
 			throws DatabaseException {
 
 		super( bdb1, dbName1 );

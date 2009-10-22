@@ -25,10 +25,13 @@ package org.dml.level2;
 
 
 
+import java.io.File;
+
 import org.dml.level1.Level1_DMLEnvironment;
 import org.dml.level1.NodeJID;
 import org.dml.storagewrapper.StorageException;
 import org.dml.tools.RunTime;
+import org.javapart.logger.Log;
 
 
 
@@ -39,16 +42,21 @@ import org.dml.tools.RunTime;
 public class Level2_DMLEnvironment extends Level1_DMLEnvironment implements
 		Level2_DMLStorageWrapper {
 	
+	private final static String			DEFAULT_BDB_ENV_PATH	= "."
+																		+ File.separator
+																		+ "bin"
+																		+ File.separator
+																		+ "mainEnv"
+																		+ File.separator;
 	
-
-	protected Level2_DMLStorageWrapper	Storage			= null;
+	protected Level2_DMLStorageWrapper	Storage					= null;
 	
-	private boolean						inited			= false;
+	private boolean						inited					= false;
 	
 	// temporary:
-	private String						envHomeDir		= null;
+	private String						envHomeDir				= null;
 	
-	private boolean						wipeEnvFirst	= false;
+	private boolean						wipeEnvFirst			= false;
 	
 	/**
 	 * construct, don't forget to call init(with param/s)
@@ -61,9 +69,9 @@ public class Level2_DMLEnvironment extends Level1_DMLEnvironment implements
 	protected void start() {
 
 		// to prevent user from using just init(),
-		// TODO: ? too bad we can't use a default init() w/o params
-		if ( !inited ) {
-			RunTime.BadCallError( "must use the other init()s" );
+		if ( !inited ) {// this means caller used init() w/o params
+			this.Level2_DMLinit( DEFAULT_BDB_ENV_PATH, false );
+			// RunTime.BadCallError( "must use the other init()s" );
 		}
 		super.start();
 	}
@@ -86,12 +94,14 @@ public class Level2_DMLEnvironment extends Level1_DMLEnvironment implements
 		RunTime.assertNotNull( envHomeDir1, wipeEnvFirst1 );
 		envHomeDir = envHomeDir1;
 		wipeEnvFirst = wipeEnvFirst1;
+		inited = true;
 	}
 	
 	
 	@Override
 	protected void storageInit() throws StorageException {
 
+		Log.entry();
 		if ( null == Storage ) {
 			Storage = new Level2_BerkeleyDBStorage();
 			
@@ -99,6 +109,13 @@ public class Level2_DMLEnvironment extends Level1_DMLEnvironment implements
 		Storage.init( envHomeDir, wipeEnvFirst );
 		// won't call super, because we get rid of that level of storage since
 		// it's missing new features
+	}
+	
+	@Override
+	protected void storageDeInit() {
+
+		Log.entry();
+		Storage.deInit();
 	}
 	
 	/**
@@ -112,8 +129,7 @@ public class Level2_DMLEnvironment extends Level1_DMLEnvironment implements
 			throws StorageException {
 
 		this.Level2_DMLinit( envHomeDir1, wipeEnvFirst1 );
-		inited = true;
-		super.init();
+		super.init();// this will call start() from this class
 	}
 	
 	/**

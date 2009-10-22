@@ -46,12 +46,12 @@ public class SecondaryDatabaseCapsule {
 	private SecondaryDatabase		secDb	= null;
 	private final SecondaryConfig	secDbConf;
 	private final Database			primaryDb;
-	private final BerkeleyDB		bdb;
+	private final Level2_BerkeleyDB		bdb;
 	
 	/**
 	 * @param string
 	 */
-	public SecondaryDatabaseCapsule( BerkeleyDB bdb1, String dbName,
+	public SecondaryDatabaseCapsule( Level2_BerkeleyDB bdb1, String dbName,
 			SecondaryConfig secConf,
 			@SuppressWarnings( "hiding" ) Database primaryDb ) {
 

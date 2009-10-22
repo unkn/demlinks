@@ -26,7 +26,7 @@ package org.temporary.bdb;
 
 
 import org.dml.JUnits.Consts;
-import org.dml.database.bdb.BerkeleyDB;
+import org.dml.database.bdb.Level2_BerkeleyDB;
 import org.dml.level1.NodeJID;
 
 import com.sleepycat.je.DatabaseException;
@@ -41,7 +41,7 @@ public class BDBTest {
 	
 	public static void main( String[] args ) throws DatabaseException {
 
-		BerkeleyDB b = new BerkeleyDB( Consts.BDB_ENV_PATH, true );
+		Level2_BerkeleyDB b = new Level2_BerkeleyDB( Consts.BDB_ENV_PATH, true );
 		try {
 			b.getDBMapJIDsToNodeIDs().createNodeID(
 					NodeJID.ensureJIDFor( "duh" ) );

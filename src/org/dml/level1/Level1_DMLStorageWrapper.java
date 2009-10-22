@@ -38,5 +38,4 @@ public interface Level1_DMLStorageWrapper {
 	 */
 	public void deInit();
 	
-
 }

@@ -25,7 +25,7 @@ package org.dml.level2;
 
 
 
-import org.dml.database.bdb.BerkeleyDB;
+import org.dml.database.bdb.Level2_BerkeleyDB;
 import org.dml.level1.Level1_BerkeleyDBStorage;
 import org.dml.level1.NodeJID;
 import org.dml.storagewrapper.StorageException;
@@ -42,7 +42,9 @@ import com.sleepycat.je.DatabaseException;
 public class Level2_BerkeleyDBStorage extends Level1_BerkeleyDBStorage
 		implements Level2_DMLStorageWrapper {
 	
-	private BerkeleyDB	bdb	= null;
+	private Level2_BerkeleyDB	bdb	= null;
+	private String				envHomeDir;
+	private boolean				internalDestroyBeforeInit;
 	
 	@Override
 	public final NodeJID getNodeJID( NodeID identifiedByThisNodeID )
@@ -109,31 +111,55 @@ public class Level2_BerkeleyDBStorage extends Level1_BerkeleyDBStorage
 	}
 	
 	/**
-	 * @param envHomeDir
-	 * @param internalDestroyBeforeInit
+	 * @param envHomeDir1
+	 * @param internalDestroyBeforeInit1
 	 * @throws StorageException
 	 */
 	@Override
-	public void init( String envHomeDir, boolean internalDestroyBeforeInit )
+	public void init( String envHomeDir1, boolean internalDestroyBeforeInit1 )
 			throws StorageException {
 
-		RunTime.assertNotNull( envHomeDir );
+		RunTime.assertNotNull( envHomeDir1 );
+		envHomeDir = envHomeDir1;
+		internalDestroyBeforeInit = internalDestroyBeforeInit1;
+		super.init();
+	}
+	
+	/**
+	 * override this in subclasses without calling super<br>
+	 * this method is called by start() which in turn is called by init()
+	 */
+	@Override
+	protected void storageInit() {
+
+		if ( null == bdb ) {
+			bdb = new Level2_BerkeleyDB();
+		}
+		
 		try {
-			bdb = new BerkeleyDB( envHomeDir, internalDestroyBeforeInit );
+			bdb.init( envHomeDir, internalDestroyBeforeInit );
 		} catch ( DatabaseException de ) {
 			throw new StorageException( de );
 		}
 	}
 	
-	
+	/**
+	 * override this in subclasses without calling super<br>
+	 * this method is called by done() which in turn is called by deInit()
+	 */
+	@Override
+	protected void storageDeInit() {
 
+		bdb.deInit();
+	}
+	
 	/**
 	 * no throwing
 	 */
 	@Override
 	public final void done() {
 
-		bdb.deInit();
+		
 		super.done();
 	}
 	
