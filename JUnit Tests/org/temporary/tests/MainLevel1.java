@@ -37,35 +37,31 @@ import org.dml.tools.StaticInstanceTracker;
 public class MainLevel1 extends StaticInstanceTracker implements
 		VarLevel1Interface {
 	
-	private VarLevel1Interface	var	= null;
+	protected VarLevel1Interface	var		= null;
+	private boolean					inited	= false;
 	
 	public MainLevel1() {
 
 	}
 	
-	protected void VarNew() {
+	/**
+	 * @param var1
+	 *            must be already .init() -ed
+	 */
+	public void init( VarLevel1Interface var1 ) {
 
-		var = new VarLevel1();
-	}
-	
-	protected void VarInit( VarLevel1Interface var1 ) {
-
-		// var1 = new VarLevel1();
 		RunTime.assertNotNull( var1 );
 		var = var1;
-		var.init();
-	}
-	
-	protected void VarDeInit() {
-
-		var.deInit();
+		inited = true;
+		this.init();
 	}
 	
 	@Override
 	public void start() {
 
-		this.VarNew();
-		this.VarInit( var );
+		if ( !inited ) {
+			RunTime.BadCallError( "you should not call init() w/o params" );
+		}
 	}
 	
 	/*
@@ -76,6 +72,22 @@ public class MainLevel1 extends StaticInstanceTracker implements
 	@Override
 	protected void done() {
 
-		this.VarDeInit();
+		if ( null != var ) {
+			var.deInit();
+		}
+		var = null;
+		System.out.println( this.getClass().getSimpleName() + " done." );
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.temporary.tests.VarLevel1Interface#sayHello()
+	 */
+	@Override
+	public void sayHello() {
+
+		var.sayHello();
+		
 	}
 }

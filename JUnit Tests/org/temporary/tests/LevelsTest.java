@@ -43,10 +43,23 @@ public class LevelsTest {
 
 		ml1 = new MainLevel1();
 		ml2 = new MainLevel2();
+		
+		VarLevel1 v1 = new VarLevel1();
+		v1.init();
+		
+		ml1.init( v1 );
+		
 		try {
-			ml1.init();
-			ml2.init();
+			
+			VarLevel2 v2 = new VarLevel2();
+			v2.init( "zHOME" );
+			
+			ml2.init( v2 );
+			
+			ml1.sayHello();
+			ml2.sayHello();
 			ml2.showHome();
+			
 		} finally {
 			ml1.deInit();
 			ml2.deInit();

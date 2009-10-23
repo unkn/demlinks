@@ -29,38 +29,12 @@ package org.temporary.tests;
  * 
  *
  */
-public class MainLevel2 extends MainLevel1 implements VarLevel2Interface {
+public class MainLevel2 extends MainLevel1 {
 	
-	private VarLevel2Interface	var	= null;
+	protected VarLevel2Interface	var2;
 	
 	public MainLevel2() {
 
-	}
-	
-	public void init( String homeDir ) {
-
-		super.init();
-	}
-	
-	@Override
-	protected void VarNew() {
-
-		var = new VarLevel2();
-	}
-	
-	@Override
-	protected void VarInit( VarLevel1Interface var1 ) {
-
-		var = (VarLevel2Interface)var1;
-		var.init( "mainLevel2homedir" );
-	}
-	
-	@Override
-	protected void VarDeInit() {
-
-		if ( null != var ) {
-			var.deInit();
-		}
 	}
 	
 	/*
@@ -68,10 +42,16 @@ public class MainLevel2 extends MainLevel1 implements VarLevel2Interface {
 	 * 
 	 * @see org.temporary.tests.VarLevel2Interface#showHome()
 	 */
-	@Override
 	public void showHome() {
 
-		var.showHome();
+		var2.showHome();
 		
+	}
+	
+	@Override
+	public void start() {
+
+		var2 = (VarLevel2Interface)var;
+		super.start();
 	}
 }

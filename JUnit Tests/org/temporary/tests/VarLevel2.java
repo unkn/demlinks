@@ -41,6 +41,6 @@ public class VarLevel2 extends VarLevel1 implements VarLevel2Interface {
 	
 	public void showHome() {
 
-		System.out.println( "Home is: " + homeDir );
+		System.out.println( this.getName() + "'s home is: " + homeDir );
 	}
 }

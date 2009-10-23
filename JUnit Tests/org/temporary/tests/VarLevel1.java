@@ -39,9 +39,9 @@ public class VarLevel1 implements VarLevel1Interface {
 		System.out.println( this.getName() + " inited." );
 	}
 	
-	private String getName() {
+	public String getName() {
 
-		return this.getClass().getCanonicalName();
+		return this.getClass().getSimpleName();
 	}
 	
 	/*
@@ -55,4 +55,8 @@ public class VarLevel1 implements VarLevel1Interface {
 		System.out.println( this.getName() + " DeInited." );
 	}
 	
+	public void sayHello() {
+
+		System.out.println( this.getName() + " says Hello." );
+	}
 }
