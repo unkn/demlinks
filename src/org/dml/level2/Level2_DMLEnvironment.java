@@ -42,14 +42,18 @@ import org.javapart.logger.Log;
 public class Level2_DMLEnvironment extends Level1_DMLEnvironment implements
 		Level2_DMLStorageWrapper {
 	
+	protected Level2_DMLStorageWrapper	Storage					= null;						// is
+																							// this
+																							// hiding
+																							// or
+																							// not?
+																							
 	private final static String			DEFAULT_BDB_ENV_PATH	= "."
 																		+ File.separator
 																		+ "bin"
 																		+ File.separator
 																		+ "mainEnv"
 																		+ File.separator;
-	
-	protected Level2_DMLStorageWrapper	Storage					= null;
 	
 	private boolean						inited					= false;
 	
