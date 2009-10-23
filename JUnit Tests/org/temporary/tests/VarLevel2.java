@@ -25,18 +25,32 @@ package org.temporary.tests;
 
 
 
+import org.dml.tools.RunTime;
+
+
+
 /**
  * 
  *
  */
 public class VarLevel2 extends VarLevel1 implements VarLevel2Interface {
 	
-	String	homeDir;
+	String			homeDir;
+	private boolean	inited	= false;
 	
 	public void init( String homeDir1 ) {
 
 		homeDir = homeDir1;
+		inited = true;
 		super.init();
+	}
+	
+	@Override
+	protected void start() {
+
+		if ( !inited ) {
+			RunTime.BadCallError( "please don't use init() w/o params" );
+		}
 	}
 	
 	public void showHome() {

@@ -25,38 +25,49 @@ package org.temporary.tests;
 
 
 
+import org.dml.tools.StaticInstanceTracker;
+
+
+
 /**
  * 
  *
  */
-public class VarLevel1 implements VarLevel1Interface {
+public class VarLevel1 extends StaticInstanceTracker implements
+		VarLevel1Interface {
 	
-	/**
-	 * 
-	 */
-	public void init() {
-
-		System.out.println( this.getName() + " inited." );
-	}
 	
 	public String getName() {
 
 		return this.getClass().getSimpleName();
 	}
 	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.temporary.tests.VarLevel1Interface#deInit()
-	 */
-	@Override
-	public void deInit() {
-
-		System.out.println( this.getName() + " DeInited." );
-	}
-	
 	public void sayHello() {
 
 		System.out.println( this.getName() + " says Hello." );
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.dml.tools.StaticInstanceTracker#done()
+	 */
+	@Override
+	protected void done() {
+
+		System.out.println( this.getName() + " DeInited." );
+		
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.dml.tools.StaticInstanceTracker#start()
+	 */
+	@Override
+	protected void start() {
+
+		System.out.println( this.getName() + " inited." );
+		
 	}
 }

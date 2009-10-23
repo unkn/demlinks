@@ -25,6 +25,7 @@ package org.temporary.tests;
 
 
 
+import org.dml.error.BadCallError;
 import org.junit.Test;
 
 
@@ -52,7 +53,12 @@ public class LevelsTest {
 		try {
 			
 			VarLevel2 v2 = new VarLevel2();
-			v2.init( "zHOME" );
+			try {
+				v2.init();
+			} catch ( BadCallError bce ) {
+				v2.deInit();
+				v2.init( "zHOME" );
+			}
 			
 			ml2.init( v2 );
 			
@@ -61,8 +67,8 @@ public class LevelsTest {
 			ml2.showHome();
 			
 		} finally {
-			ml1.deInit();
-			ml2.deInit();
+			ml1.silentDeInit();
+			ml2.silentDeInit();
 		}
 	}
 }
