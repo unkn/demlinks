@@ -188,4 +188,19 @@ public class StaticInstanceTrackerTest {
 			assertTrue( rted );
 		}
 	}
+	
+	@Test
+	public void testExceptionOnStart() {
+
+		Testy3StartThrower t3 = new Testy3StartThrower();
+		boolean threw = false;
+		try {
+			t3.init();
+		} catch ( RuntimeException rte ) {
+			threw = true;
+		} finally {
+			assertTrue( threw );
+			t3.deInit();
+		}
+	}
 }

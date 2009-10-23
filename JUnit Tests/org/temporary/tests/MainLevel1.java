@@ -50,6 +50,13 @@ public class MainLevel1 extends StaticInstanceTracker implements
 	 */
 	public void init( VarLevel1Interface var1 ) {
 
+		// FIXME: if the var here is already inited, what happens when I run
+		// this.deInit() and this.init() again
+		// FIXME: then again if it's not inited, I would need to pass to
+		// this.init(var1,...) params to var1.init(...) to init it which means a
+		// lot of overloading methods if some params are optional in 3 places +
+		// with var1 combination: here, in interface and in var1, also here with
+		// var1 combination; assuming w/o var1 would just use the defaults
 		RunTime.assertNotNull( var1 );
 		var = var1;
 		inited = true;
@@ -60,7 +67,11 @@ public class MainLevel1 extends StaticInstanceTracker implements
 	public void start() {
 
 		if ( !inited ) {
-			RunTime.BadCallError( "you should not call init() w/o params" );
+			// called via .init()
+			var = new VarLevel1();
+			var.init();
+			inited = true;
+			// RunTime.BadCallError( "you should not call init() w/o params" );
 		}
 	}
 	
@@ -75,7 +86,7 @@ public class MainLevel1 extends StaticInstanceTracker implements
 		if ( null != var ) {
 			var.deInit();
 		}
-		var = null;
+		// var = null;
 		System.out.println( this.getClass().getSimpleName() + " done." );
 	}
 	

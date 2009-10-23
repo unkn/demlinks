@@ -26,6 +26,7 @@ package org.dml.tools;
 
 import org.dml.error.BadCallError;
 import org.dml.error.BugError;
+import org.javapart.logger.Log;
 
 
 
@@ -55,6 +56,21 @@ public class RunTime {
 
 		throw new BadCallError( "BADCALL: " + msg );
 	}
+	
+	public static void thro( Exception ex ) throws Exception {
+
+		Log.thro( ex.getLocalizedMessage() );
+		throw new Exception( ex );
+	}
+	
+	public static void thro( RuntimeException rtex ) {
+
+		// FIXME: maybe here show the level before this, ie. the line and file
+		// prior to this call
+		Log.thro( rtex.getLocalizedMessage() );
+		throw new RuntimeException( rtex );
+	}
+	
 	
 	/**
 	 * @param b

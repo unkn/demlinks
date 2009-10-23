@@ -1,5 +1,5 @@
 /**
- * File creation: Oct 23, 2009 9:45:39 AM
+ * File creation: Oct 20, 2009 1:34:29 AM
  * 
  * Copyright (C) 2005-2009 AtKaaZ <atkaaz@users.sourceforge.net>
  * Copyright (C) 2005-2009 UnKn <unkn@users.sourceforge.net>
@@ -21,12 +21,7 @@
  */
 
 
-package org.temporary.tests;
-
-
-
-import org.dml.error.BadCallError;
-import org.junit.Test;
+package org.dml.tools;
 
 
 
@@ -34,44 +29,20 @@ import org.junit.Test;
  * 
  *
  */
-public class LevelsTest {
+public class Testy3StartThrower extends Testy {
 	
-	MainLevel1	ml1;
-	MainLevel2	ml2;
-	
-	@Test
-	public void test1() {
+	public static Testy3StartThrower getNew() {
 
-		ml1 = new MainLevel1();
-		ml2 = new MainLevel2();
+		Testy3StartThrower t2 = new Testy3StartThrower();
+		t2.init( "two" + new Object() );
+		return t2;
 		
-		VarLevel1 v1 = new VarLevel1();
-		v1.init();
-		
-		ml1.init( v1 );
-		
-		try {
-			
-			VarLevel2 v2 = new VarLevel2();
-			try {
-				v2.init();
-			} catch ( BadCallError bce ) {
-				v2.deInit();
-				v2.init( "zHOME" );
-			}
-			
-			ml2.init( v2 );
-			
-			ml1.sayHello();
-			ml2.sayHello();
-			ml2.showHome();
-			ml1.deInit();
-			ml1.init();
-			ml1.sayHello();
-			
-		} finally {
-			ml1.silentDeInit();
-			ml2.silentDeInit();
-		}
 	}
+	
+	@Override
+	public void start() {
+
+		RunTime.thro( new RuntimeException( "start" ) );
+	}
+	
 }
