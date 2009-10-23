@@ -24,6 +24,7 @@
 package org.temporary.tests;
 
 
+
 /**
  * 
  *
@@ -35,8 +36,23 @@ public class VarLevel1 implements VarLevel1Interface {
 	 */
 	public void init() {
 
-		// TODO Auto-generated method stub
-		
+		System.out.println( this.getName() + " inited." );
+	}
+	
+	private String getName() {
+
+		return this.getClass().getCanonicalName();
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.temporary.tests.VarLevel1Interface#deInit()
+	 */
+	@Override
+	public void deInit() {
+
+		System.out.println( this.getName() + " DeInited." );
 	}
 	
 }

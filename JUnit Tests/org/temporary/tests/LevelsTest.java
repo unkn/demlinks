@@ -1,5 +1,5 @@
 /**
- * File creation: Oct 23, 2009 8:45:52 AM
+ * File creation: Oct 23, 2009 9:45:39 AM
  * 
  * Copyright (C) 2005-2009 AtKaaZ <atkaaz@users.sourceforge.net>
  * Copyright (C) 2005-2009 UnKn <unkn@users.sourceforge.net>
@@ -24,16 +24,32 @@
 package org.temporary.tests;
 
 
+
+import org.junit.Test;
+
+
+
 /**
  * 
  *
  */
-public interface VarLevel1Interface {
+public class LevelsTest {
 	
-	public void init();
+	MainLevel1	ml1;
+	MainLevel2	ml2;
 	
-	/**
-	 * 
-	 */
-	public void deInit();
+	@Test
+	public void test1() {
+
+		ml1 = new MainLevel1();
+		ml2 = new MainLevel2();
+		try {
+			ml1.init();
+			ml2.init();
+			ml2.showHome();
+		} finally {
+			ml1.deInit();
+			ml2.deInit();
+		}
+	}
 }

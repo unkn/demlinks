@@ -24,21 +24,58 @@
 package org.temporary.tests;
 
 
+
+import org.dml.tools.RunTime;
+import org.dml.tools.StaticInstanceTracker;
+
+
+
 /**
  * 
  *
  */
-public class MainLevel1 implements VarLevel1Interface {
+public class MainLevel1 extends StaticInstanceTracker implements
+		VarLevel1Interface {
 	
-	protected VarLevel1Interface	var	= null;
+	private VarLevel1Interface	var	= null;
 	
 	public MainLevel1() {
 
 	}
 	
-	public void init() {
+	protected void VarNew() {
 
 		var = new VarLevel1();
+	}
+	
+	protected void VarInit( VarLevel1Interface var1 ) {
+
+		// var1 = new VarLevel1();
+		RunTime.assertNotNull( var1 );
+		var = var1;
 		var.init();
+	}
+	
+	protected void VarDeInit() {
+
+		var.deInit();
+	}
+	
+	@Override
+	public void start() {
+
+		this.VarNew();
+		this.VarInit( var );
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.dml.tools.StaticInstanceTracker#done()
+	 */
+	@Override
+	protected void done() {
+
+		this.VarDeInit();
 	}
 }

@@ -24,11 +24,12 @@
 package org.temporary.tests;
 
 
+
 /**
  * 
  *
  */
-public class VarLevel2 extends VarLevel1 {
+public class VarLevel2 extends VarLevel1 implements VarLevel2Interface {
 	
 	String	homeDir;
 	
@@ -36,5 +37,10 @@ public class VarLevel2 extends VarLevel1 {
 
 		homeDir = homeDir1;
 		super.init();
+	}
+	
+	public void showHome() {
+
+		System.out.println( "Home is: " + homeDir );
 	}
 }

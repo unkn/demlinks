@@ -24,6 +24,7 @@
 package org.temporary.tests;
 
 
+
 /**
  * 
  *
@@ -31,4 +32,6 @@ package org.temporary.tests;
 public interface VarLevel2Interface extends VarLevel1Interface {
 	
 	public void init( String homeDir1 );
+	
+	public void showHome();
 }
