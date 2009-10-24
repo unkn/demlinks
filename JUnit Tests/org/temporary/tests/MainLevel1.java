@@ -68,10 +68,10 @@ public class MainLevel1 extends StaticInstanceTracker implements
 
 		if ( !inited ) {
 			// called via .init()
-			var = new VarLevel1();
-			var.init();
-			inited = true;
-			// RunTime.BadCallError( "you should not call init() w/o params" );
+			// var = new VarLevel1();
+			// var.init();
+			// inited = true;
+			RunTime.BadCallError( "you should not call init() w/o params" );
 		}
 	}
 	

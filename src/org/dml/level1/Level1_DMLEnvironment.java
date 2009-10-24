@@ -30,8 +30,8 @@ import org.dml.tools.StaticInstanceTracker;
 
 
 /**
+ * facade dessign pattern
  * 
- *
  */
 public class Level1_DMLEnvironment extends StaticInstanceTracker {
 	
