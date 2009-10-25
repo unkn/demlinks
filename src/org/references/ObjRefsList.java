@@ -32,7 +32,11 @@ import org.dml.tools.RunTime;
 /**
  * handles the RefsList list at the Object level ie. accepting only Object
  * parameters where Object is the type of element stored in list; that Object is
- * E DOES NOT allow adding of NULL or DUPlicate Objects
+ * E DOES NOT allow adding of NULL or DUPlicate Objects<br>
+ * DUPlicate objects are those that == OR .equals(), in other words if two
+ * different objects ie. a != b, have same contents ie. a.equals(b) == true then
+ * if a is already in list, b can't be added (it already exists as a)<br>
+ * for that to work, you need to override .equals() or else it defaults to ==
  */
 public class ObjRefsList<E> extends RefsList<E> {
 	
@@ -259,7 +263,7 @@ public class ObjRefsList<E> extends RefsList<E> {
 		RunTime.assertNotNull( newObj, pos, posObj );
 		Reference<E> posRef = this.getRef( posObj );
 		if ( null == posRef ) {
-			// posObj non existant? stop some bugs by throwing exception
+			// posObj non existent? stop some bugs by throwing exception
 			throw new NoSuchElementException();
 		}
 		Reference<E> newRef = this.getRef( newObj );
@@ -284,4 +288,6 @@ public class ObjRefsList<E> extends RefsList<E> {
 		}
 		return this.removeRef( nr );
 	}
+	
+	// TODO add replace methods
 }

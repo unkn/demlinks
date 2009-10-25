@@ -38,6 +38,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import org.junit.Test;
+import org.references.ObjRefsList;
 
 
 
@@ -135,5 +136,13 @@ public class EncapsulatedTest {
 		assertTrue( one != two );
 		assertTrue( one.equals( two ) );
 		assertTrue( one.hashCode() == two.hashCode() );
+		
+		// this tests the list
+		ObjRefsList<Encapsulated<String>> list = new ObjRefsList<Encapsulated<String>>();
+		assertFalse( list.addFirst( one ) );
+		assertTrue( list.addLast( two ) );// true it wasn't added
+		assertTrue( one != two );
+		assertTrue( one.equals( two ) );
+		assertTrue( list.size() == 1 );
 	}
 }

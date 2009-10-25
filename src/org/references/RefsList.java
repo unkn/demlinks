@@ -51,6 +51,8 @@ public class RefsList<Obje> {
 	private Reference<Obje>	lastRef;			// points to last Ref in list,
 	// or null if
 	// the list is empty
+	
+
 	// increased by 1 on each operation, useful to see
 	// if someone else modified the list while using
 	// a ListCursor
