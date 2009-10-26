@@ -25,6 +25,9 @@ package org.temporary.tests;
 
 
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import org.dml.error.BadCallError;
 import org.junit.Test;
 
@@ -48,30 +51,47 @@ public class LevelsTest {
 		VarLevel1 v1 = new VarLevel1();
 		v1.init();
 		
-		ml1.init( v1 );
+		ml1.initLevel1( v1 );
+		ml1.do1();
+		
+		VarLevel2 v2 = new VarLevel2();
+		v2.init( "home2" );
+		boolean threw = false;
+		try {
+			ml2.initLevel1( v2 );
+		} catch ( BadCallError bce ) {
+			threw = true;
+		} finally {
+			assertFalse( threw );
+		}
+		
+		ml2.initLevel2( v2 );
+		ml2.showHome();
 		
 		try {
-			
-			VarLevel2 v2 = new VarLevel2();
-			try {
-				v2.init();
-			} catch ( BadCallError bce ) {
-				v2.deInit();
-				v2.init( "zHOME" );
-			}
-			
-			ml2.init( v2 );
-			
-			ml1.sayHello();
-			ml2.sayHello();
-			ml2.showHome();
-			ml1.deInit();
-			ml1.init();
-			ml1.sayHello();
-			
+			threw = false;
+			ml2.initLevel1();
+		} catch ( BadCallError bce ) {
+			threw = true;
 		} finally {
-			ml1.silentDeInit();
-			ml2.silentDeInit();
+			assertTrue( threw );
 		}
+		
+		try {
+			threw = false;
+			ml2.initLevel1( v1 );
+		} catch ( BadCallError bce ) {
+			threw = true;
+		} finally {
+			assertTrue( threw );
+		}
+		
+
+		ml2.showHome();
+		ml2.initLevel2( "home3" );
+		ml2.showHome();
+		
+		ml2.initLevel2();
+		ml2.showHome();
 	}
 }

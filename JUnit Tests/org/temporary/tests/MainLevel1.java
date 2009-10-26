@@ -26,7 +26,6 @@ package org.temporary.tests;
 
 
 import org.dml.tools.RunTime;
-import org.dml.tools.StaticInstanceTracker;
 
 
 
@@ -34,11 +33,9 @@ import org.dml.tools.StaticInstanceTracker;
  * 
  *
  */
-public class MainLevel1 extends StaticInstanceTracker implements
-		VarLevel1Interface {
+public class MainLevel1 {
 	
-	protected VarLevel1Interface	var		= null;
-	private boolean					inited	= false;
+	protected VarLevel1	var	= null;
 	
 	public MainLevel1() {
 
@@ -48,57 +45,33 @@ public class MainLevel1 extends StaticInstanceTracker implements
 	 * @param var1
 	 *            must be already .init() -ed
 	 */
-	public void init( VarLevel1Interface var1 ) {
+	public void initLevel1( VarLevel1 varL1 ) {
 
-		// FIXME: if the var here is already inited, what happens when I run
-		// this.deInit() and this.init() again
-		// FIXME: then again if it's not inited, I would need to pass to
-		// this.init(var1,...) params to var1.init(...) to init it which means a
-		// lot of overloading methods if some params are optional in 3 places +
-		// with var1 combination: here, in interface and in var1, also here with
-		// var1 combination; assuming w/o var1 would just use the defaults
-		RunTime.assertNotNull( var1 );
-		var = var1;
-		inited = true;
-		this.init();
-	}
-	
-	@Override
-	public void start() {
-
-		if ( !inited ) {
-			// called via .init()
-			// var = new VarLevel1();
-			// var.init();
-			// inited = true;
-			RunTime.BadCallError( "you should not call init() w/o params" );
+		RunTime.assertNotNull( varL1 );
+		if ( !( varL1 instanceof VarLevel1 ) ) {
+			RunTime.BadCallError( "wrong type passed" );
 		}
+		var = varL1;
 	}
 	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.dml.tools.StaticInstanceTracker#done()
+	/**
+	 * using defaults
 	 */
-	@Override
-	protected void done() {
+	public void initLevel1() {
 
-		if ( null != var ) {
-			var.deInit();
-		}
-		// var = null;
-		System.out.println( this.getClass().getSimpleName() + " done." );
+		this.initLevel1( new VarLevel1() );
 	}
 	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.temporary.tests.VarLevel1Interface#sayHello()
-	 */
-	@Override
-	public void sayHello() {
+	public void do1() {
 
 		var.sayHello();
-		
+	}
+	
+	/**
+	 * @return
+	 */
+	public String getName() {
+
+		return this.getClass().getName();
 	}
 }

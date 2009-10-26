@@ -25,33 +25,81 @@ package org.temporary.tests;
 
 
 
+import org.dml.error.BadCallError;
+import org.dml.tools.RunTime;
+
+
+
 /**
  * 
  *
  */
 public class MainLevel2 extends MainLevel1 {
 	
-	protected VarLevel2Interface	var2;
+	private VarLevel2	var2;
 	
 	public MainLevel2() {
 
 	}
 	
+	
+	public void initLevel2() {
+
+		// maybe use some defaults ie. homeDir value to default
+		this.initLevel2( "defaultHomeDir" );
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.temporary.tests.VarLevel2Interface#showHome()
+	 * @see org.temporary.tests.MainLevel1#init(org.temporary.tests.VarLevel1)
+	 */
+	public void initLevel2( VarLevel2 varL2 ) {
+
+		RunTime.assertNotNull( varL2 );
+		if ( !( varL2 instanceof VarLevel2 ) ) {
+			RunTime.BadCallError( "wrong type passed" );
+		}
+		// var2 = varL2;
+		this.initLevel1( varL2 );
+	}
+	
+	/**
+	 * particularized init to support private variable (ie. inside the class)
+	 * 
+	 * @param homeDir
+	 */
+	public void initLevel2( String homeDir ) {
+
+		VarLevel2 var21 = new VarLevel2();
+		// var2 = (VarLevel2)var1;
+		var21.init( homeDir );
+		this.initLevel1( var21 );
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.temporary.tests.MainLevel1#initLevel1(org.temporary.tests.VarLevel1)
+	 */
+	@Override
+	public void initLevel1( VarLevel1 varL1 ) {
+
+		super.initLevel1( varL1 );
+		try {
+			var2 = (VarLevel2)var;
+		} catch ( ClassCastException cce ) {
+			throw new BadCallError(
+					"wrong method called, use initLevelX for the same X level" );
+		}
+	}
+	
+	/**
+	 * 
 	 */
 	public void showHome() {
 
 		var2.showHome();
-		
-	}
-	
-	@Override
-	public void start() {
-
-		var2 = (VarLevel2Interface)var;
-		super.start();
 	}
 }

@@ -25,6 +25,7 @@ package org.dml.level1;
 
 import java.util.HashMap;
 
+import org.dml.tools.Encapsulated;
 import org.dml.tools.RunTime;
 
 
@@ -45,13 +46,18 @@ import org.dml.tools.RunTime;
  * 
  * - NodeJIDs(Level1) != NodeIDs(Level2)
  */
-public class NodeJID {
+public class NodeJID extends Encapsulated<String> {
 	
+	/**
+	 * 
+	 */
+	private static final long						serialVersionUID	= 7988354223875468191L;
 	// this will keep track of all NodeJIDs of all environments
 	// there's no point of having same JID twice for diff environments
 	protected static final HashMap<String, NodeJID>	all_Level1_NodeJIDs	= new HashMap<String, NodeJID>();
+	
 	// string representation of the ID
-	private String									stringID			= null;
+	// private String stringID = null;
 	
 	protected static final void clearAllForJUnit() {
 
@@ -76,6 +82,7 @@ public class NodeJID {
 		RunTime.assertNotNull( strID );
 		NodeJID curr = all_Level1_NodeJIDs.get( strID );
 		if ( null == curr ) {
+			// create new
 			curr = new NodeJID( strID );
 			if ( all_Level1_NodeJIDs.put( strID, curr ) != null ) {
 				RunTime.Bug( "a value already existed?!! wicked! it means that .get() is bugged?!" );
@@ -94,8 +101,7 @@ public class NodeJID {
 
 		RunTime.assertNotNull( strID );
 		
-		// since strings are immutable...
-		stringID = strID;
+		this.encapsulateThis( strID );
 		
 	}
 	
@@ -110,23 +116,24 @@ public class NodeJID {
 	 */
 	public String getAsString() {
 
-		RunTime.assertNotNull( stringID );// safety check?
-		return stringID;
+		String temp = this.getEncapsulated();
+		RunTime.assertNotNull( temp );// safety check?
+		return temp;
 	}
 	
-	
-	/**
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	public boolean equals( NodeJID jid ) {
 
-		RunTime.assertNotNull( jid );
-		if ( ( super.equals( jid ) )
-				|| ( this.getAsString() ).equals( jid.getAsString() ) ) {
-			return true;
-		}
-		return false;
-	}
+	// /**
+	// * (non-Javadoc)
+	// *
+	// * @see java.lang.Object#equals(java.lang.Object)
+	// */
+	// public boolean equals( NodeJID jid ) {
+	//
+	// RunTime.assertNotNull( jid );
+	// if ( ( super.equals( jid ) )
+	// || ( this.getAsString() ).equals( jid.getAsString() ) ) {
+	// return true;
+	// }
+	// return false;
+	// }
 }

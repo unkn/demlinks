@@ -50,7 +50,7 @@ public class OneToOneDBMap {
 	private DatabaseCapsule				forwardDB	= null;
 	private SecondaryDatabaseCapsule	backwardDB	= null;
 	protected String					dbName;
-	protected final Level2_BerkeleyDB			bdb;
+	protected final Level2_BerkeleyDB	bdb;
 	
 	/**
 	 * constructor
@@ -170,18 +170,9 @@ public class OneToOneDBMap {
 	public OperationStatus link( String key, String data )
 			throws DatabaseException {
 
-		// DatabaseEntry deKey = null, deData = null;
-		// try {
-		DatabaseEntry deKey = new DatabaseEntry();// key.getBytes(
-		// BerkeleyDB.ENCODING )
-		// );
-		DatabaseEntry deData = new DatabaseEntry();// data.getBytes(
-		// BerkeleyDB.ENCODING
-		// ) );
-		// } catch ( UnsupportedEncodingException e ) {
-		// e.printStackTrace();
-		// RunTime.Bug( "encoding was set wrong, use UTF-8" );
-		// }
+		// TODO FIXME key/data should be able to do any object
+		DatabaseEntry deKey = new DatabaseEntry();
+		DatabaseEntry deData = new DatabaseEntry();
 		Level2_BerkeleyDB.stringToEntry( key, deKey );
 		Level2_BerkeleyDB.stringToEntry( data, deData );
 		OperationStatus ret = this.getForwardDB().putNoOverwrite( null, deKey,
