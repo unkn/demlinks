@@ -29,7 +29,7 @@ import java.io.File;
 
 import org.dml.tools.RunTime;
 import org.javapart.logger.Log;
-import org.references.ObjRefsList;
+import org.references.ListOfObjects;
 import org.references.Position;
 
 import com.sleepycat.bind.tuple.StringBinding;
@@ -65,9 +65,9 @@ public class Level3_BerkeleyDB {
 	
 	// we keep track of open stuffs just in case we need to emergency shutdown
 	// ie. on Exception
-	private final ObjRefsList<Sequence>				allSequenceInstances		= new ObjRefsList<Sequence>();
-	private final ObjRefsList<Database>				allOpenPrimaryDatabases		= new ObjRefsList<Database>();
-	private final ObjRefsList<SecondaryDatabase>	allOpenSecondaryDatabases	= new ObjRefsList<SecondaryDatabase>();
+	private final ListOfObjects<Sequence>				allSequenceInstances		= new ListOfObjects<Sequence>();
+	private final ListOfObjects<Database>				allOpenPrimaryDatabases		= new ListOfObjects<Database>();
+	private final ListOfObjects<SecondaryDatabase>	allOpenSecondaryDatabases	= new ListOfObjects<SecondaryDatabase>();
 	private final static String						dbTupleNIDs_NAME			= "tuple(NodeID<->NodeID)";
 	private static final String						dbJID2NID_NAME				= "map(JID<->NodeID)";
 	private final static String						UNINITIALIZED_STRING		= "uninitializedString";

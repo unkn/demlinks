@@ -41,14 +41,20 @@ import org.dml.tools.RunTime;
  * 
  * this is handled at Ref level, not at object level<br>
  */
-public class RefsList<Obje> {
+public class ListOfReferences<Obje> {
 	
-	private int				cachedSize;		// cached size, prevents parsing
+	// TODO cachedLast would remember last successful Ref accessed, and use it
+	// before any access, to try speed up some common things
+	
+	private int						cachedSize;		// cached size, prevents
+	// parsing
 	// the entire list
-	private Reference<Obje>	firstRef;			// points to first Ref in list,
+	private ChainedReference<Obje>	firstRef;			// points to first Ref
+	// in list,
 	// or null if
 	// the list is empty
-	private Reference<Obje>	lastRef;			// points to last Ref in list,
+	private ChainedReference<Obje>	lastRef;			// points to last Ref in
+	// list,
 	// or null if
 	// the list is empty
 	
@@ -56,13 +62,13 @@ public class RefsList<Obje> {
 	// increased by 1 on each operation, useful to see
 	// if someone else modified the list while using
 	// a ListCursor
-	private int				modCount	= 0;
+	private int						modCount	= 0;
 	
 	// constructor
 	/**
 	 * 
 	 */
-	protected RefsList() {
+	protected ListOfReferences() {
 
 		this.setListToEmpty();
 	}
@@ -110,7 +116,7 @@ public class RefsList<Obje> {
 	 * @return true if already exists; false if it didn't but it does now after
 	 *         call
 	 */
-	public boolean addLast( Reference<Obje> newLastRef ) {
+	public boolean addLast( ChainedReference<Obje> newLastRef ) {
 
 		RunTime.assertNotNull( newLastRef );
 		if ( this.containsRef( newLastRef ) ) {
@@ -138,7 +144,7 @@ public class RefsList<Obje> {
 	 * @return true if already exists; false if it didn't but it does now after
 	 *         call
 	 */
-	public boolean addFirst( Reference<Obje> newFirstRef ) {
+	public boolean addFirstRef( ChainedReference<Obje> newFirstRef ) {
 
 		RunTime.assertNotNull( newFirstRef );
 		if ( this.containsRef( newFirstRef ) ) {
@@ -171,8 +177,8 @@ public class RefsList<Obje> {
 	 *         call<br>
 	 *         false if all went ok
 	 */
-	public boolean insertObjAt( Reference<Obje> newRef, Position pos,
-			Reference<Obje> posRef ) {
+	public boolean insertObjAt( ChainedReference<Obje> newRef, Position pos,
+			ChainedReference<Obje> posRef ) {
 
 		if ( !this.containsRef( posRef ) ) {// this first for buggy calls
 			throw new NoSuchElementException();
@@ -190,7 +196,8 @@ public class RefsList<Obje> {
 			// null <- posRef <->
 			this.setModified();
 			newRef.setNext( posRef );// 1) newRef -> posRef
-			Reference<Obje> beforePosRef = posRef.getPrev();// could be null if
+			ChainedReference<Obje> beforePosRef = posRef.getPrev();// could be
+			// null if
 			// posRef is first
 			newRef.setPrev( beforePosRef );// 2) beforePosRef(or null) <- newRef
 			if ( beforePosRef != null ) {// so posRef isn't first
@@ -208,7 +215,7 @@ public class RefsList<Obje> {
 			// order after call: posRef <-> newRef <-> afterPosRef(or null)
 			this.setModified();
 			newRef.setPrev( posRef );// 1) posRef <- newRef
-			Reference<Obje> afterPosRef = posRef.getNext();
+			ChainedReference<Obje> afterPosRef = posRef.getNext();
 			newRef.setNext( afterPosRef );// 2) newRef -> afterPosRef
 			if ( afterPosRef == null ) {
 				// posRef is last
@@ -230,7 +237,7 @@ public class RefsList<Obje> {
 	/**
 	 * @return the firstNodeRef
 	 */
-	protected Reference<Obje> getFirstRef() {
+	protected ChainedReference<Obje> getFirstRef() {
 
 		return this.firstRef;
 	}
@@ -238,7 +245,7 @@ public class RefsList<Obje> {
 	/**
 	 * @return the lastNodeRef
 	 */
-	protected Reference<Obje> getLastRef() {
+	protected ChainedReference<Obje> getLastRef() {
 
 		return this.lastRef;
 	}
@@ -247,16 +254,17 @@ public class RefsList<Obje> {
 	 * @param killRef
 	 * @return true if removed, false if it was already inexistent
 	 */
-	public boolean removeRef( Reference<Obje> killRef ) {
+	public boolean removeRef( ChainedReference<Obje> killRef ) {
 
 		RunTime.assertNotNull( killRef );
 		if ( !this.containsRef( killRef ) ) {
 			return false;
 		}
 		this.setModified();
-		Reference<Obje> prev = killRef.getPrev();// beware if you remove this
+		ChainedReference<Obje> prev = killRef.getPrev();// beware if you remove
+		// this
 		// local var
-		Reference<Obje> next = killRef.getNext();
+		ChainedReference<Obje> next = killRef.getNext();
 		if ( prev != null ) {
 			prev.setNext( next );
 			// killRef.setPrev(null);//beware
@@ -289,10 +297,10 @@ public class RefsList<Obje> {
 	 * @return true if the reference already exists; doesn't matter to what
 	 *         object it points to
 	 */
-	public boolean containsRef( Reference<Obje> whichRef ) {
+	public boolean containsRef( ChainedReference<Obje> whichRef ) {
 
 		RunTime.assertNotNull( whichRef );
-		Reference<Obje> parser = this.firstRef;
+		ChainedReference<Obje> parser = this.getFirstRef();
 		while ( null != parser ) {
 			if ( whichRef.equals( parser ) ) {
 				return true;
@@ -306,9 +314,9 @@ public class RefsList<Obje> {
 	 * @param location
 	 *            only FIRST/LAST allowed
 	 * @return a reference
-	 * @see #getRefAt(Position, Reference)
+	 * @see #getRefAt(Position, ChainedReference)
 	 */
-	public Reference<Obje> getRefAt( Position location ) {
+	public ChainedReference<Obje> getRefAt( Position location ) {
 
 		switch ( location ) {
 		case FIRST:
@@ -328,8 +336,8 @@ public class RefsList<Obje> {
 	 * @return the ref or null
 	 * @see #getRefAt(Position)
 	 */
-	public Reference<Obje> getRefAt( Position location,
-			Reference<Obje> locationRef ) {
+	public ChainedReference<Obje> getRefAt( Position location,
+			ChainedReference<Obje> locationRef ) {
 
 		RunTime.assertNotNull( location, locationRef );
 		if ( !this.containsRef( locationRef ) ) {// this will unfortunately

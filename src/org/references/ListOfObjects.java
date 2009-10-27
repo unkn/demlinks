@@ -38,9 +38,9 @@ import org.dml.tools.RunTime;
  * if a is already in list, b can't be added (it already exists as a)<br>
  * for that to work, you need to override .equals() or else it defaults to ==
  */
-public class ObjRefsList<E> extends RefsList<E> {
+public class ListOfObjects<E> extends ListOfReferences<E> {
 	
-	public ObjRefsList() {
+	public ListOfObjects() {
 
 		super();
 	}
@@ -79,7 +79,7 @@ public class ObjRefsList<E> extends RefsList<E> {
 	public boolean containsObjectAtPos( E obj, int index ) {
 
 		RunTime.assertNotNull( obj, index );
-		Reference<E> ref = this.getRefAtPos( index );
+		ChainedReference<E> ref = this.getRefAtPos( index );
 		if ( null == ref ) {
 			return false;// doesn't contain it
 		}
@@ -93,10 +93,10 @@ public class ObjRefsList<E> extends RefsList<E> {
 	 * @param obj
 	 * @return new reference to <tt>obj</tt>
 	 */
-	public Reference<E> newRef( E obj ) {
+	public ChainedReference<E> newRef( E obj ) {
 
 		RunTime.assertNotNull( obj );
-		Reference<E> n = new Reference<E>();
+		ChainedReference<E> n = new ChainedReference<E>();
 		n.setObject( obj );// is no longer null
 		return n;// should never return null
 	}
@@ -105,10 +105,10 @@ public class ObjRefsList<E> extends RefsList<E> {
 	 * @param obj
 	 * @return null or the reference containing the obj
 	 */
-	public Reference<E> getRef( E obj ) {
+	public ChainedReference<E> getRef( E obj ) {
 
 		RunTime.assertNotNull( obj );
-		Reference<E> parser = this.getFirstRef();
+		ChainedReference<E> parser = this.getFirstRef();
 		while ( null != parser ) {
 			if ( obj.equals( parser.getObject() ) ) {
 				break;
@@ -125,14 +125,14 @@ public class ObjRefsList<E> extends RefsList<E> {
 	 * @exception BadCallError
 	 *                if index out of bounds
 	 */
-	public Reference<E> getRefAtPos( int index ) {
+	public ChainedReference<E> getRefAtPos( int index ) {
 
 		RunTime.assertNotNull( index );
 		if ( ( index < 0 ) || ( index >= this.size() ) ) {
 			throw new BadCallError( "out of bounds" );
 		}
 		
-		Reference<E> parser = this.getFirstRef();
+		ChainedReference<E> parser = this.getFirstRef();
 		int pos = 0;
 		while ( null != parser ) {
 			if ( index == pos ) {
@@ -152,7 +152,7 @@ public class ObjRefsList<E> extends RefsList<E> {
 	public E getObjectAt( Position pos ) {
 
 		RunTime.assertNotNull( pos );
-		Reference<E> ref = this.getRefAt( pos );
+		ChainedReference<E> ref = this.getRefAt( pos );
 		if ( ref != null ) {
 			return ref.getObject();
 		}
@@ -167,7 +167,7 @@ public class ObjRefsList<E> extends RefsList<E> {
 	public E getObjectAt( int index ) {
 
 		RunTime.assertNotNull( index );
-		Reference<E> ref = this.getRefAtPos( index );
+		ChainedReference<E> ref = this.getRefAtPos( index );
 		if ( ref != null ) {
 			return ref.getObject();
 		}
@@ -184,13 +184,13 @@ public class ObjRefsList<E> extends RefsList<E> {
 	public E getObjectAt( Position pos, E objPos ) {
 
 		RunTime.assertNotNull( pos, objPos );
-		Reference<E> refPos = this.getRef( objPos );
+		ChainedReference<E> refPos = this.getRef( objPos );
 		if ( refPos == null ) {
 			// couldn't find objPos
 			return null;
 		}
 		// ie. what's the ref that's BEFORE(pos) ref1(refPos) ?
-		Reference<E> ref = this.getRefAt( pos, refPos );
+		ChainedReference<E> ref = this.getRefAt( pos, refPos );
 		if ( ref != null ) {
 			return ref.getObject();
 		}
@@ -206,7 +206,7 @@ public class ObjRefsList<E> extends RefsList<E> {
 	public boolean addLast( E obj ) {
 
 		RunTime.assertNotNull( obj );
-		Reference<E> nr = this.getRef( obj );
+		ChainedReference<E> nr = this.getRef( obj );
 		if ( null != nr ) {
 			// already exists, not added/moved
 			return true;
@@ -224,13 +224,13 @@ public class ObjRefsList<E> extends RefsList<E> {
 	public boolean addFirst( E obj ) {
 
 		RunTime.assertNotNull( obj );
-		Reference<E> nr = this.getRef( obj );
+		ChainedReference<E> nr = this.getRef( obj );
 		if ( null != nr ) {
 			// already exists, not added/moved
 			return true;
 		}
 		nr = this.newRef( obj );
-		return this.addFirst( nr );
+		return this.addFirstRef( nr );
 	}
 	
 	/**
@@ -261,12 +261,12 @@ public class ObjRefsList<E> extends RefsList<E> {
 	public boolean insert( E newObj, Position pos, E posObj ) {
 
 		RunTime.assertNotNull( newObj, pos, posObj );
-		Reference<E> posRef = this.getRef( posObj );
+		ChainedReference<E> posRef = this.getRef( posObj );
 		if ( null == posRef ) {
 			// posObj non existent? stop some bugs by throwing exception
 			throw new NoSuchElementException();
 		}
-		Reference<E> newRef = this.getRef( newObj );
+		ChainedReference<E> newRef = this.getRef( newObj );
 		if ( null != newRef ) {
 			// already exists, not added/moved
 			return true;
@@ -282,7 +282,7 @@ public class ObjRefsList<E> extends RefsList<E> {
 	public boolean removeObject( E obj ) {
 
 		RunTime.assertNotNull( obj );
-		Reference<E> nr = this.getRef( obj );
+		ChainedReference<E> nr = this.getRef( obj );
 		if ( null == nr ) {
 			return false;
 		}

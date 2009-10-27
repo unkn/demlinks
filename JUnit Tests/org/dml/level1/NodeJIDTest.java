@@ -69,7 +69,10 @@ public class NodeJIDTest {
 	@Test
 	public void duplicatesNotAllowedTest() {
 
-		assertTrue( a == NodeJID.ensureJIDFor( "A" ) );
+		String _a = "ABCDEDFASA".substring( 0, 1 );
+		assertTrue( "A" != _a );
+		assertTrue( "A".equals( _a ) );
+		assertTrue( a == NodeJID.ensureJIDFor( _a ) );
 		assertTrue( NodeJID.all_Level1_NodeJIDs.size() == 3 );
 		// assertTrue( null != DMLEnvironment.AllWords );
 		// assertTrue( NodeJID.all_Level1_NodeJIDs.size() == 4 );

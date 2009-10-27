@@ -26,7 +26,7 @@ package org.temporary.tests;
 
 
 import org.junit.Test;
-import org.references.ObjRefsList;
+import org.references.ListOfObjects;
 import org.references.Position;
 
 
@@ -157,5 +157,5 @@ class BaseList {
 		}
 	}
 	
-	protected ObjRefsList<Base>	_list	= new ObjRefsList<Base>();
+	protected ListOfObjects<Base>	_list	= new ListOfObjects<Base>();
 }

@@ -34,18 +34,18 @@ import org.junit.Test;
 
 public class RefsListTest {
 	
-	RefsList<Object>	refList;
+	ListOfReferences<Object>	refList;
 	Object				obj1, obj2;
-	Reference<Object>	ref1, ref2;
+	ChainedReference<Object>	ref1, ref2;
 	
 	@Before
 	public void init() {
 
-		refList = new RefsList<Object>();
+		refList = new ListOfReferences<Object>();
 		obj1 = new Object();
 		obj2 = new Object();
-		ref1 = new Reference<Object>();
-		ref2 = new Reference<Object>();
+		ref1 = new ChainedReference<Object>();
+		ref2 = new ChainedReference<Object>();
 		ref1.setObject( obj1 );
 		assertTrue( ref1.getObject() == obj1 );
 		ref2.setObject( obj2 );
@@ -55,9 +55,9 @@ public class RefsListTest {
 	@Test
 	public void testInsert() {
 
-		assertFalse( refList.addFirst( ref1 ) );
+		assertFalse( refList.addFirstRef( ref1 ) );
 		assertFalse( refList.insertObjAt( ref2, Position.AFTER, ref1 ) );
-		Reference<Object> ref3 = new Reference<Object>();
+		ChainedReference<Object> ref3 = new ChainedReference<Object>();
 		assertFalse( refList.insertObjAt( ref3, Position.BEFORE, ref1 ) );
 		assertTrue( refList.getFirstRef() == ref3 );
 		assertTrue( refList.getLastRef() == ref2 );
@@ -105,16 +105,16 @@ public class RefsListTest {
 		assertTrue( refList.getRefAt( Position.AFTER, ref1 ) == ref2 );
 		assertTrue( refList.getRefAt( Position.BEFORE, ref2 ) == ref1 );
 		assertFalse( mod != refList.getModified() );
-		Reference<Object> ref3 = new Reference<Object>();
+		ChainedReference<Object> ref3 = new ChainedReference<Object>();
 		ref3.setObject( null );
 		assertTrue( ref3.isDead() );
 		assertFalse( refList.addLast( ref3 ) );// null objects can be added
 		// in this
 		// list level
-		Reference<Object> ref0 = new Reference<Object>();
+		ChainedReference<Object> ref0 = new ChainedReference<Object>();
 		ref0.setObject( null );
 		assertTrue( ref0.isAlone() );
-		assertFalse( refList.addFirst( ref0 ) );
+		assertFalse( refList.addFirstRef( ref0 ) );
 		assertTrue( refList.getFirstRef() == ref0 );
 		assertTrue( refList.size() == 4 );
 		// boolean excepted = false;

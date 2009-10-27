@@ -1,5 +1,8 @@
-/*
- * Copyright (C) 2005-2008 AtKaaZ <atkaaz@users.sourceforge.net>
+/**
+ * File creation: Oct 27, 2009 6:23:12 AM
+ * 
+ * Copyright (C) 2005-2009 AtKaaZ <atkaaz@users.sourceforge.net>
+ * Copyright (C) 2005-2009 UnKn <unkn@users.sourceforge.net>
  * 
  * This file and its contents are part of DeMLinks.
  * 
@@ -22,104 +25,79 @@ package org.references;
 
 
 
-import org.dml.tools.RunTime;
+import java.io.Serializable;
 
 
 
-public class Reference<Obj> {
+/**
+ * 
+ *
+ */
+public class Reference<T> implements Serializable {
 	
-	private Reference<Obj>	prev;
-	private Obj				object;
-	private Reference<Obj>	next;
-	
-	// constructor
-	public Reference() {
-
-		this.initAsDead();
-	}
-	
-	// clone constructor
-	public Reference( Reference<Obj> cloneThis ) {
-
-		this.initAsDead();
-		RunTime.assertNotNull( cloneThis );
-		this.prev = cloneThis.prev;
-		this.next = cloneThis.next;
-		this.object = cloneThis.object;
-	}
-	
-	public boolean equals( Reference<Obj> compareObj ) {
-
-		if ( ( super.equals( compareObj ) )
-				|| ( ( this.prev == compareObj.prev )
-						&& ( this.next == compareObj.next ) && ( this.object == compareObj.object ) ) ) {
-			return true;
-		}
-		return false;
-		// I thought compareObj.prev is private, and yet I'm still able to
-		// access it O_o
-	}
-	
-	public void setObject( Obj toObject ) {// even if null
-	
-		this.object = toObject;
-	}
-	
-	public boolean isAlone() {
-
-		return ( ( this.prev == null ) && ( this.next == null ) );
-	}
-	
-	public Reference<Obj> getPrev() {
-
-		return this.prev;
-	}
-	
-	public void setPrev( Reference<Obj> prevRef ) {
-
-		this.prev = prevRef;
-	}
-	
-	public Reference<Obj> getNext() {
-
-		return this.next;
-	}
-	
-	public void setNext( Reference<Obj> nextRef ) {
-
-		this.next = nextRef;
-	}
+	/**
+	 * 
+	 */
+	private static final long	serialVersionUID	= 4067289925841216474L;
+	private T					object				= null;
 	
 	/**
 	 * @return the object that this reference refers to
 	 */
-	public Obj getObject() {
+	public void setObject( T obj ) {
 
-		return this.object;
+		object = obj;
 	}
 	
-	/**
-	 * signal that the reference has been removed/destroyed from the list
-	 */
-	public void destroy() {
+	public T getObject() {
 
-		this.initAsDead();
+		return object;
 	}
 	
-	/**
-	 * after this call, isDead() would return true
+	@SuppressWarnings( "unchecked" )
+	// @Override
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
-	private void initAsDead() {
+	public boolean equalsByContent( Object obj1 ) {
 
-		this.next = this.prev = null;
-		this.object = null;
+		boolean ret = true;
+		if ( !super.equals( obj1 ) ) {
+			ret = false;
+			if ( null != obj1 ) {
+				if ( obj1.getClass() == this.getClass() ) {
+					T thisObj = this.getObject();
+					T thatO = ( (Reference<T>)obj1 ).getObject();
+					if ( thisObj == thatO ) {
+						ret = true;
+					} else {
+						if ( thisObj != null ) {
+							if ( thisObj.equals( thatO ) ) {
+								ret = true;
+							}
+						}
+					}
+				}
+			}
+		}
+		return ret;
 	}
 	
-	/**
-	 * @return true if this reference is nolonger used in the list
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#hashCode()
 	 */
-	public boolean isDead() {
+	@Override
+	public int hashCode() {
 
-		return ( this.isAlone() && ( null == this.object ) );
+		// TODO: maybe add hashCode() to all other .equals() that are overridden
+		if ( null != this.getObject() ) {
+			return this.getObject().hashCode();
+		} else {
+			return super.hashCode();
+		}
 	}
 }

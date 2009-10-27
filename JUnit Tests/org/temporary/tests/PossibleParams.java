@@ -1,5 +1,5 @@
 /**
- * File creation: Oct 25, 2009 1:54:21 AM
+ * File creation: Oct 27, 2009 3:45:28 AM
  * 
  * Copyright (C) 2005-2009 AtKaaZ <atkaaz@users.sourceforge.net>
  * Copyright (C) 2005-2009 UnKn <unkn@users.sourceforge.net>
@@ -21,14 +21,31 @@
  */
 
 
-package org.references;
+package org.temporary.tests;
+
+
+
+import org.references.ListOfObjects;
+
 
 
 /**
- * this will hold a field maxSize and will not exceed this size<br>
- * mainly useful for replaceLast() since we know the size of list, assuming it's
- * empty initially<br>
+ * 
+ *this will have fields that are lists of objects that are references to real
+ * instances like String<br>
+ * 
  */
-public class ObjRefsFixedSizeList<E> extends ListOfObjects<E> {
+public class PossibleParams {
+	
+	// these paramNames will point to objects in the list of MethodParams, but
+	// these objects are the references that point to the real instances such as
+	// String
+	// these lists can hold objects but the objects that they will hold are the
+	// references from similar typed list, not the instances that these refs
+	// point at
+	public static ListOfObjects<Object>	varLevel3	= null;
+	public static ListOfObjects<Object>	homeDir;
+	// each object in the above lists is a Reference<Object> from a MethodParams
+	// ListOfObjects<Object> list
 	
 }

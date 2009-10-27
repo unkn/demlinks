@@ -26,7 +26,7 @@ package org.dml.tools;
 
 
 import org.javapart.logger.Log;
-import org.references.ObjRefsList;
+import org.references.ListOfObjects;
 import org.references.Position;
 
 
@@ -46,7 +46,7 @@ import org.references.Position;
 public abstract class StaticInstanceTracker {
 	
 	// LIFO list tracking all instances of ALL subclasses
-	private final static ObjRefsList<StaticInstanceTracker>	ALL_INSTANCES	= new ObjRefsList<StaticInstanceTracker>();
+	private final static ListOfObjects<StaticInstanceTracker>	ALL_INSTANCES	= new ListOfObjects<StaticInstanceTracker>();
 	private boolean											inited			= false;
 	private boolean											deInited		= true;
 	

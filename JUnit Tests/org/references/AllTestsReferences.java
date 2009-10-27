@@ -29,7 +29,8 @@ import org.junit.runners.Suite;
 
 @RunWith( Suite.class )
 @Suite.SuiteClasses( value = {
-		ReferenceTest.class, RefsListTest.class,
+		ChainedReferenceTest.class, RefsListTest.class, ObjRefsListTest.class,
+		ReferenceTest.class,
 } )
 public class AllTestsReferences {
 }

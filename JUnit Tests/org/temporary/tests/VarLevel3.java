@@ -1,5 +1,5 @@
 /**
- * File creation: Oct 25, 2009 1:54:21 AM
+ * File creation: Oct 26, 2009 10:06:55 AM
  * 
  * Copyright (C) 2005-2009 AtKaaZ <atkaaz@users.sourceforge.net>
  * Copyright (C) 2005-2009 UnKn <unkn@users.sourceforge.net>
@@ -21,14 +21,13 @@
  */
 
 
-package org.references;
+package org.temporary.tests;
 
 
 /**
- * this will hold a field maxSize and will not exceed this size<br>
- * mainly useful for replaceLast() since we know the size of list, assuming it's
- * empty initially<br>
+ * 
+ *
  */
-public class ObjRefsFixedSizeList<E> extends ListOfObjects<E> {
+public class VarLevel3 extends VarLevel2 {
 	
 }

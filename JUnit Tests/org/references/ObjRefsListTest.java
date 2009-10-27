@@ -39,12 +39,12 @@ import org.junit.Test;
  */
 public class ObjRefsListTest {
 	
-	ObjRefsList<String>	ol;
+	ListOfObjects<String>	ol;
 	
 	@Before
 	public void setUp() {
 
-		ol = new ObjRefsList<String>();
+		ol = new ListOfObjects<String>();
 	}
 	
 	@After

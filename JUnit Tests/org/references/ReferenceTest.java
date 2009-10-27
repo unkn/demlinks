@@ -1,5 +1,8 @@
-/*
- * Copyright (C) 2005-2008 AtKaaZ <atkaaz@users.sourceforge.net>
+/**
+ * File creation: Oct 24, 2009 12:08:08 PM
+ * 
+ * Copyright (C) 2005-2009 AtKaaZ <atkaaz@users.sourceforge.net>
+ * Copyright (C) 2005-2009 UnKn <unkn@users.sourceforge.net>
  * 
  * This file and its contents are part of DeMLinks.
  * 
@@ -23,55 +26,123 @@ package org.references;
 
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import org.junit.Before;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
 import org.junit.Test;
 
 
 
+/**
+ * 
+ *
+ */
 public class ReferenceTest {
 	
-	Reference<Object>	n1, n2, n3;
-	Object				obj1;
+	Reference<String>	es;
+	Reference<String>	ess, ess2;
+	static String		str		= "stuff";
+	final String		str2	= "stuffy";
+	String				str3;
 	
-	@Before
-	public void init() {
+	
 
-		n1 = new Reference<Object>();
-		n2 = new Reference<Object>();
-		n3 = new Reference<Object>();
-		obj1 = new Object();
+	@Test
+	public void test1() {
+
+		es = new Reference<String>();
+		
+		es.setObject( str );
+		assertTrue( str == es.getObject() );
+		
+
+	}
+	
+	@SuppressWarnings( "unchecked" )
+	@Test
+	public void testStream() throws IOException, ClassNotFoundException {
+
+		ess = new Reference<String>();
+		ess.setObject( str );
+		assertTrue( str == ess.getObject() );
+		
+		File randomFile = File.createTempFile( "JUnit", "test", new File( "."
+				+ File.separator ) );
+		FileOutputStream fos = new FileOutputStream( randomFile );
+		ObjectOutputStream out = new ObjectOutputStream( fos );
+		out.writeObject( ess );
+		out.close();
+		
+		FileInputStream fis = new FileInputStream( randomFile );
+		ObjectInputStream in = new ObjectInputStream( fis );
+		ess2 = null;
+		ess2 = (Reference<String>)in.readObject();
+		in.close();
+		randomFile.delete();
+		assertNotNull( ess2 );
+		assertTrue( str.equals( ess2.getObject() ) );
+		assertTrue( ess.equalsByContent( ess2 ) );
+		assertTrue( ess.hashCode() == ess2.hashCode() );
 	}
 	
 	@Test
-	public void testSetObject() {
+	public void testEmpty() {
 
-		assertTrue( n1.getObject() == null );
-		n1.setObject( obj1 );
-		assertTrue( obj1 == n1.getObject() );
-		n1.setObject( null );
-		assertTrue( null == n1.getObject() );
-	}
-	
-	@Test
-	public void testSetNext() {
+		Reference<String> one, two;
+		one = new Reference<String>();
+		two = new Reference<String>();
+		assertTrue( one.equalsByContent( two ) );
+		assertTrue( one.getObject() == two.getObject() );
+		assertNull( one.getObject() );
+		
 
-		assertTrue( n1.getPrev() == null );
-		assertTrue( n1.getNext() == null );
-		assertTrue( n1.isAlone() );
-		assertTrue( n1.isDead() );
-		assertTrue( n2.isAlone() );
-		assertTrue( n2.isDead() );
-		n2.setNext( n3 );
-		assertFalse( n2.isAlone() );
-		assertFalse( n2.isDead() );
-		assertTrue( n2.getNext() == n3 );
-		assertFalse( n3.getPrev() == n2 );
-		n2.setPrev( n1 );
-		assertTrue( n2.getPrev() == n1 );
-		assertFalse( n1.getNext() == n2 );
-		n1.setNext( n2 );
-		assertTrue( n1.getNext() == n2 );
+		assertTrue( one.hashCode() == one.hashCode() );
+		assertFalse( one.hashCode() == two.hashCode() );
+		
+
+		// same string objects and thus contents
+		assertTrue( one.equals( one ) );
+		one.setObject( str );
+		assertTrue( one.equals( one ) );
+		assertFalse( one.equals( two ) );
+		assertTrue( one.hashCode() == one.hashCode() );
+		assertFalse( one.hashCode() == two.hashCode() );
+		
+		two.setObject( str );
+		assertTrue( one.hashCode() == two.hashCode() );
+		assertTrue( one.equalsByContent( two ) );
+		assertFalse( one == two );
+		two.setObject( null );
+		assertNull( two.getObject() );
+		
+		// same string content but different string objects:
+		assertFalse( str == str2 );
+		str3 = str2.substring( 0, str2.length() - 1 );
+		assertFalse( str == str3 );
+		assertFalse( str2 == str3 );
+		assertTrue( str.equals( str3 ) );
+		assertTrue( str.hashCode() == str3.hashCode() );
+		two.setObject( str3 );
+		assertTrue( two.getObject() == str3 );
+		assertTrue( one != two );
+		assertTrue( one.equalsByContent( two ) );
+		assertTrue( one.hashCode() == two.hashCode() );
+		
+		// this tests the list
+		ListOfObjects<Reference<String>> list = new ListOfObjects<Reference<String>>();
+		assertFalse( list.addFirst( one ) );
+		assertFalse( list.addLast( two ) );// false= it was added
+		assertTrue( one != two );
+		assertTrue( one.equalsByContent( two ) );// same content
+		assertFalse( one.equals( two ) );// different references
+		assertTrue( list.size() == 2 );
 	}
 }

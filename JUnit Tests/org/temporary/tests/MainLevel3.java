@@ -1,5 +1,5 @@
 /**
- * File creation: Oct 25, 2009 1:54:21 AM
+ * File creation: Oct 26, 2009 10:04:39 AM
  * 
  * Copyright (C) 2005-2009 AtKaaZ <atkaaz@users.sourceforge.net>
  * Copyright (C) 2005-2009 UnKn <unkn@users.sourceforge.net>
@@ -21,14 +21,36 @@
  */
 
 
-package org.references;
+package org.temporary.tests;
 
 
 /**
- * this will hold a field maxSize and will not exceed this size<br>
- * mainly useful for replaceLast() since we know the size of list, assuming it's
- * empty initially<br>
+ * 
+ *
  */
-public class ObjRefsFixedSizeList<E> extends ListOfObjects<E> {
+public class MainLevel3 extends MainLevel2 {
+	
+	private VarLevel3	var3;
+	
+	public MainLevel3() {
+
+	}
+	
+	public void initLevel3() {
+
+		this.initLevel3( defaults );
+	}
+	
+	public void initLevel3( MethodParams ap ) {
+
+		// last param is saying it must exist(true), if not just throw exception
+		var3 = ap.get( PossibleParams.varLevel3, false );
+		if ( null != var3 ) {
+			this.initLevel2( var3 );
+		} else {
+			var3 = new VarLevel3();
+			var3.init( ap.get( PossibleParams.homeDir, true ) );
+		}
+	}
 	
 }

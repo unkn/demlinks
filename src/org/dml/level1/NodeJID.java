@@ -25,8 +25,8 @@ package org.dml.level1;
 
 import java.util.HashMap;
 
-import org.dml.tools.Encapsulated;
 import org.dml.tools.RunTime;
+import org.references.Reference;
 
 
 
@@ -46,7 +46,7 @@ import org.dml.tools.RunTime;
  * 
  * - NodeJIDs(Level1) != NodeIDs(Level2)
  */
-public class NodeJID extends Encapsulated<String> {
+public class NodeJID extends Reference<String> {
 	
 	/**
 	 * 
@@ -101,7 +101,7 @@ public class NodeJID extends Encapsulated<String> {
 
 		RunTime.assertNotNull( strID );
 		
-		this.encapsulateThis( strID );
+		this.setObject( strID );
 		
 	}
 	
@@ -116,7 +116,7 @@ public class NodeJID extends Encapsulated<String> {
 	 */
 	public String getAsString() {
 
-		String temp = this.getEncapsulated();
+		String temp = this.getObject();
 		RunTime.assertNotNull( temp );// safety check?
 		return temp;
 	}
