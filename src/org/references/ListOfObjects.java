@@ -180,25 +180,25 @@ public class ListOfObjects<E> extends ListOfReferences<E> {
 	/**
 	 * @param obj
 	 *            can be null and can exist already(a new dup would be added)
-	 * @return false
+	 * @return ChainedReference
 	 */
-	public boolean addLast( E obj ) {
+	public ChainedReference<E> addLast( E obj ) {
 
 		ChainedReference<E> nr = this.newRef( obj );
 		this.addLastRef( nr );
-		return false;
+		return nr;
 	}
 	
 	/**
 	 * @param obj
-	 *            that doesn't already exist; not null
-	 * @return false
+	 *            that could already exist in list; even null
+	 * @return ChainedReference to this object
 	 */
-	public boolean addFirst( E obj ) {
+	public ChainedReference<E> addFirst( E obj ) {
 
 		ChainedReference<E> nr = this.newRef( obj );
 		this.addFirstRef( nr );
-		return false;
+		return nr;
 	}
 	
 	/**
@@ -206,7 +206,7 @@ public class ListOfObjects<E> extends ListOfReferences<E> {
 	 * @param location
 	 * @return true if object existed before call
 	 */
-	public boolean insert( E obj, Position position ) {
+	public ChainedReference<E> insert( E obj, Position position ) {
 
 		RunTime.assertNotNull( obj, position );
 		switch ( position ) {

@@ -27,7 +27,6 @@ package org.temporary.tests;
 
 import org.dml.tools.RunTime;
 import org.references.ListOfUniqueNonNullObjects;
-import org.references.Position;
 import org.references.Reference;
 
 
@@ -38,9 +37,11 @@ import org.references.Reference;
  *each object in this list is a Reference<Object> from one or more
  * {MethodParams ListOfObjects<Object> list}
  */
-public class ParamName {
+public class ParamName<T> {
 	
-	ListOfUniqueNonNullObjects<Reference<Object>>	listOfValues	= new ListOfUniqueNonNullObjects<Reference<Object>>();
+	// all the values that this ParamName has, which means each value is in a
+	// different MethodParams instance
+	ListOfUniqueNonNullObjects<Reference<T>>	listOfValues	= new ListOfUniqueNonNullObjects<Reference<T>>();
 	
 	/**
 	 * 
@@ -48,41 +49,30 @@ public class ParamName {
 	 * <code>refToValue</code>
 	 * 
 	 * @param refToValue
-	 * @return true if ref already existed in list and wasn't re-added or moved
-	 *         to end
 	 */
-	public boolean add( Reference<Object> refToValue ) {
+	public void add( Reference<T> refToValue ) {
 
 		RunTime.assertNotNull( refToValue );
-		return listOfValues.addFirst( refToValue );
+		listOfValues.addFirst( refToValue );
 	}
 	
 	/**
 	 * @param refToValue
 	 * @return true if existed; either way after call it's removed
 	 */
-	public boolean remove( Reference<Object> refToValue ) {
+	public boolean remove( Reference<T> refToValue ) {
 
 		RunTime.assertNotNull( refToValue );
 		return listOfValues.removeObject( refToValue );
 	}
 	
 	/**
-	 * @param value
-	 *            object
-	 * @return reference to that value, or null
+	 * @param refToValue
+	 * @return
 	 */
-	public Reference<Object> get( Object value ) {
+	public boolean contains( Reference<T> refToValue ) {
 
-		RunTime.assertNotNull( value );
-		
-		Reference<Object> iter = listOfValues.getObjectAt( Position.FIRST );
-		while ( null != iter ) {
-			if ( value.equals( iter ) ) {
-				return iter;
-			}
-			iter = listOfValues.getObjectAt( Position.AFTER, iter );
-		}
-		return null;
+		return listOfValues.containsObject( refToValue );
 	}
+	
 }

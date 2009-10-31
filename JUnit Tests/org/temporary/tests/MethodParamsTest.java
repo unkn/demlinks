@@ -25,6 +25,7 @@ package org.temporary.tests;
 
 
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
@@ -38,29 +39,35 @@ import org.junit.Test;
  */
 public class MethodParamsTest {
 	
-	MethodParams	mp;
-	ParamName		p1, p2, p3;
+	MethodParams<Object>	mp1, mp2, mp3;
+	ParamName<Object>		paramString1, paramNull2, paramInteger3,
+			paramBoolean4;
 	
 	@Before
 	public void setUp() {
 
-		p1 = new ParamName();
-		p2 = new ParamName();
-		p3 = new ParamName();
-		mp = new MethodParams();
+		paramString1 = new ParamName<Object>();
+		paramNull2 = new ParamName<Object>();
+		paramInteger3 = new ParamName<Object>();
+		paramBoolean4 = new ParamName<Object>();
+		mp1 = new MethodParams<Object>();
 	}
 	
 	@Test
 	public void test1() {
 
-		String s1 = "s1";
-		int i3 = 10;
-		mp.set( p1, s1 );
-		mp.set( p2, null );
-		mp.set( p3, i3 );
+		String string1 = "s1";
+		Integer integer3 = 10;
+		Boolean boolean4 = true;
+		mp1.set( paramString1, string1 );
+		mp1.set( paramNull2, null );
+		mp1.set( paramInteger3, integer3 );
+		mp1.set( paramBoolean4, boolean4 );
 		
-		assertTrue( null == mp.get( p2, true ) );
-		assertTrue( i3 == (int)mp.get( p3, true ) );
-		assertTrue( s1 == mp.get( p1, true ) );
+		assertFalse( null == mp1.get( paramNull2 ) );
+		assertTrue( null == mp1.get( paramNull2 ).getObject() );
+		assertTrue( integer3 == (Integer)mp1.get( paramInteger3 ).getObject() );
+		assertTrue( string1 == mp1.get( paramString1 ).getObject() );
+		assertTrue( boolean4 == mp1.get( paramBoolean4 ).getObject() );
 	}
 }

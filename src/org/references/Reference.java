@@ -27,6 +27,8 @@ package org.references;
 
 import java.io.Serializable;
 
+import org.dml.tools.RunTime;
+
 
 
 /**
@@ -40,6 +42,19 @@ public class Reference<T> implements Serializable {
 	 */
 	private static final long	serialVersionUID	= 4067289925841216474L;
 	private T					object				= null;
+	
+	public Reference() {
+
+	}
+	
+	/**
+	 * @param clone
+	 */
+	public Reference( Reference<T> clone ) {
+
+		RunTime.assertNotNull( clone );
+		object = clone.getObject();
+	}
 	
 	/**
 	 * @return the object that this reference refers to

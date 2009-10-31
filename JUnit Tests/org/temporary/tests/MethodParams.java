@@ -26,6 +26,9 @@ package org.temporary.tests;
 
 
 import org.dml.tools.RunTime;
+import org.references.ChainedReference;
+import org.references.ListOfObjects;
+import org.references.Position;
 import org.references.Reference;
 
 
@@ -40,33 +43,63 @@ import org.references.Reference;
  * 
  * same ParamName cannot have two objects in the same MethodParams list<br>
  */
-public class MethodParams {
+public class MethodParams<T> {
 	
-	
-	private ParamsList	listOfParams;
+	// a list of instances ie. String, Integer, or even null(s) which can repeat
+	// ie. A==B
+	// objects of this list are the values
+	private final ListOfObjects<T>	listOfParams	= new ListOfObjects<T>();
 	
 	/**
 	 * this method will search for paramName and return it's value Object<br>
 	 * 
 	 * @param paramName
-	 * @param throwIfNotFound
-	 * @return
+	 * @return null if not found; use .getObject() to get the value
 	 */
-	public Object get( ParamName paramName, boolean throwIfNotFound ) {
+	public Reference<T> get( ParamName<T> paramName ) {
 
-		// TODO what this does is get the list paramName and intersect it with
+		// what this does is get the list paramName and intersect it with
 		// the MethodParams list and should find 0 or 1 elements in common, if
 		// more than 1 then maybe throw BadCallError or Bug
 		
-		return null;
+		RunTime.assertNotNull( paramName );
+		
+		int foundCounter = 0;// should not exceed 1
+		Reference<T> found = null;
+		// parse listOfParams and check each element(the reference of each)
+		// against ParamName list
+		ChainedReference<T> iter = listOfParams.getRefAt( Position.FIRST );
+		while ( null != iter ) {
+			// paramName list can have only 1 reference from a MethodParams
+			if ( paramName.contains( iter ) ) {
+				foundCounter++;
+				found = new Reference<T>( iter );// clone
+				// we could do a break; here but we want to make sure that it's
+				// not found more than 1 times, that would mean Bug
+				// can't have the same ParamName listed twice in the same params
+				// list for same method
+			}
+			// go next
+			iter = listOfParams.getRefAt( Position.AFTER, iter );
+		}
+		RunTime.assertTrue( foundCounter <= 1 );
+		return found;
 	}
 	
-	public void set( ParamName paramName, Object value ) {
+	/**
+	 * @param paramName
+	 * @param value
+	 *            can be null or an object that was already used as a parameter
+	 *            one or more times
+	 */
+	public void set( ParamName<T> paramName, T value ) {
 
-		// TODO
 		RunTime.assertNotNull( paramName );
-		Reference<Object> ref;
-		listOfParams.addFirst( value );
+		
+		Reference<T> ref = this.get( paramName );
+		if ( null == ref ) {
+			ref = listOfParams.addFirst( value );
+		}
 		paramName.add( ref );
 	}
 	
@@ -74,11 +107,16 @@ public class MethodParams {
 	 * easy cast wrapper
 	 * 
 	 * @param paramName
-	 * @param throwIfNotFound
 	 * @return
 	 */
-	public String getString( ParamName paramName, boolean throwIfNotFound ) {
+	public String getString( ParamName<T> paramName ) {
 
-		return (String)this.get( paramName, throwIfNotFound );
+		RunTime.assertNotNull( paramName );
+		Reference<T> ref = this.get( paramName );
+		if ( null == ref ) {
+			return null;
+		} else {
+			return (String)ref.getObject();
+		}
 	}
 }

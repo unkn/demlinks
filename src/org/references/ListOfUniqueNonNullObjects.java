@@ -171,29 +171,32 @@ public class ListOfUniqueNonNullObjects<E> extends ListOfObjects<E> {
 	 *         end
 	 */
 	@Override
-	public boolean addLast( E obj ) {
+	public ChainedReference<E> addLast( E obj ) {
 
 		RunTime.assertNotNull( obj );
-		if ( null != this.getRef( obj ) ) {
+		ChainedReference<E> ref = this.getRef( obj );
+		if ( null != ref ) {
 			// already exists, not added/moved
-			return true;
+			return ref;
 		}
 		return super.addLast( obj );
 	}
 	
 	/**
 	 * @param obj
-	 *            that doesn't already exist; not null
-	 * @return true if object already existed and wasn't re-added or moved to
-	 *         end
+	 *            that doesn't already exist; not allowing null
+	 * @return the ref to the object, if it existed; or the new ref if it didn't
+	 *         exist
 	 */
 	@Override
-	public boolean addFirst( E obj ) {
+	public ChainedReference<E> addFirst( E obj ) {
 
 		RunTime.assertNotNull( obj );
-		if ( null != this.getRef( obj ) ) {
+		
+		ChainedReference<E> ref = this.getRef( obj );
+		if ( null != ref ) {
 			// already exists, not added/moved
-			return true;
+			return ref;
 		}
 		return super.addFirst( obj );
 	}
@@ -201,10 +204,10 @@ public class ListOfUniqueNonNullObjects<E> extends ListOfObjects<E> {
 	/**
 	 * @param node
 	 * @param location
-	 * @return true if object existed before call
+	 * @return ref to the object that existed, or was just added
 	 */
 	@Override
-	public boolean insert( E obj, Position position ) {
+	public ChainedReference<E> insert( E obj, Position position ) {
 
 		RunTime.assertNotNull( obj, position );
 		switch ( position ) {

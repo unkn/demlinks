@@ -39,6 +39,7 @@ public class ChainedReference<Obj> extends Reference<Obj> {
 	// constructor
 	public ChainedReference() {
 
+		super();
 		this.initAsDead();
 	}
 	
