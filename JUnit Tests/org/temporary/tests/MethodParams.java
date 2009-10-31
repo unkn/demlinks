@@ -73,7 +73,7 @@ public class MethodParams<T> {
 			// paramName list can have only 1 reference from a MethodParams
 			if ( paramName.contains( iter ) ) {
 				foundCounter++;
-				found = new Reference<T>( iter );// clone
+				found = iter;// don't clone; new Reference<T>( iter );// clone
 				// we could do a break; here but we want to make sure that it's
 				// not found more than 1 times, that would mean Bug
 				// can't have the same ParamName listed twice in the same params
@@ -99,8 +99,11 @@ public class MethodParams<T> {
 		Reference<T> ref = this.get( paramName );
 		if ( null == ref ) {
 			ref = listOfParams.addFirst( value );
+			paramName.add( ref );
+		} else {// already exists, must change
+			ref.setObject( value );
 		}
-		paramName.add( ref );
+		
 	}
 	
 	/**

@@ -27,8 +27,6 @@ package org.references;
 
 import java.io.Serializable;
 
-import org.dml.tools.RunTime;
-
 
 
 /**
@@ -45,15 +43,6 @@ public class Reference<T> implements Serializable {
 	
 	public Reference() {
 
-	}
-	
-	/**
-	 * @param clone
-	 */
-	public Reference( Reference<T> clone ) {
-
-		RunTime.assertNotNull( clone );
-		object = clone.getObject();
 	}
 	
 	/**

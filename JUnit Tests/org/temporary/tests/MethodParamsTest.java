@@ -51,6 +51,8 @@ public class MethodParamsTest {
 		paramInteger3 = new ParamName<Object>();
 		paramBoolean4 = new ParamName<Object>();
 		mp1 = new MethodParams<Object>();
+		mp2 = new MethodParams<Object>();
+		mp3 = new MethodParams<Object>();
 	}
 	
 	@Test
@@ -69,5 +71,21 @@ public class MethodParamsTest {
 		assertTrue( integer3 == (Integer)mp1.get( paramInteger3 ).getObject() );
 		assertTrue( string1 == mp1.get( paramString1 ).getObject() );
 		assertTrue( boolean4 == mp1.get( paramBoolean4 ).getObject() );
+		
+		mp1.set( paramNull2, string1 );
+		Object o = mp1.get( paramNull2 ).getObject();
+		System.out.println( o );
+		assertTrue( string1 == o );
+	}
+	
+	@Test
+	public void testMulti() {
+
+		String s1 = "s1";
+		String s2 = "s2";
+		String s3 = "s3";
+		mp1.set( paramString1, s1 );
+		mp2.set( paramString1, s2 );
+		mp3.set( paramString1, s3 );
 	}
 }
