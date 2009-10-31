@@ -1,5 +1,5 @@
 /**
- * File creation: Oct 26, 2009 10:04:39 AM
+ * File creation: Oct 27, 2009 6:21:10 PM
  * 
  * Copyright (C) 2005-2009 AtKaaZ <atkaaz@users.sourceforge.net>
  * Copyright (C) 2005-2009 UnKn <unkn@users.sourceforge.net>
@@ -24,36 +24,17 @@
 package org.temporary.tests;
 
 
+
+import org.references.ListOfObjects;
+
+
+
 /**
+ * a list of instances ie. String, Integer, or even null(s) which can repeat ie.
+ * A==B
  * 
- *
  */
-public class MainLevel3 extends MainLevel2 {
-	
-	private VarLevel3			var3;
-	private final MethodParams	defaults	= new MethodParams();
-	
-	public MainLevel3() {
-
-	}
-	
-	public void initLevel3() {
-
-		defaults.set( PossibleParams.homeDir, "defaultHomeDir" );
-		// defaults.set(PossibleParams.varLevel3, );
-		this.initLevel3( defaults );
-	}
-	
-	public void initLevel3( MethodParams ap ) {
-
-		// last param is saying it must exist(true), if not just throw exception
-		var3 = (VarLevel3)ap.get( PossibleParams.varLevel3, false );
-		if ( null != var3 ) {
-			this.initLevel2( var3 );
-		} else {
-			var3 = new VarLevel3();
-			var3.init( ap.getString( PossibleParams.homeDir, true ) );
-		}
-	}
-	
+public class ParamsList extends ListOfObjects<Object> {
+	// the param values, not their name
+	// can't have same ref twice, but 2 diff refs can point to same object
 }

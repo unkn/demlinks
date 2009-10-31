@@ -1,5 +1,5 @@
 /**
- * File creation: Oct 26, 2009 10:04:39 AM
+ * File creation: Oct 31, 2009 7:28:10 AM
  * 
  * Copyright (C) 2005-2009 AtKaaZ <atkaaz@users.sourceforge.net>
  * Copyright (C) 2005-2009 UnKn <unkn@users.sourceforge.net>
@@ -24,36 +24,43 @@
 package org.temporary.tests;
 
 
+
+import static org.junit.Assert.assertTrue;
+
+import org.junit.Before;
+import org.junit.Test;
+
+
+
 /**
  * 
  *
  */
-public class MainLevel3 extends MainLevel2 {
+public class MethodParamsTest {
 	
-	private VarLevel3			var3;
-	private final MethodParams	defaults	= new MethodParams();
+	MethodParams	mp;
+	ParamName		p1, p2, p3;
 	
-	public MainLevel3() {
+	@Before
+	public void setUp() {
 
+		p1 = new ParamName();
+		p2 = new ParamName();
+		p3 = new ParamName();
+		mp = new MethodParams();
 	}
 	
-	public void initLevel3() {
+	@Test
+	public void test1() {
 
-		defaults.set( PossibleParams.homeDir, "defaultHomeDir" );
-		// defaults.set(PossibleParams.varLevel3, );
-		this.initLevel3( defaults );
+		String s1 = "s1";
+		int i3 = 10;
+		mp.set( p1, s1 );
+		mp.set( p2, null );
+		mp.set( p3, i3 );
+		
+		assertTrue( null == mp.get( p2, true ) );
+		assertTrue( i3 == (int)mp.get( p3, true ) );
+		assertTrue( s1 == mp.get( p1, true ) );
 	}
-	
-	public void initLevel3( MethodParams ap ) {
-
-		// last param is saying it must exist(true), if not just throw exception
-		var3 = (VarLevel3)ap.get( PossibleParams.varLevel3, false );
-		if ( null != var3 ) {
-			this.initLevel2( var3 );
-		} else {
-			var3 = new VarLevel3();
-			var3.init( ap.getString( PossibleParams.homeDir, true ) );
-		}
-	}
-	
 }

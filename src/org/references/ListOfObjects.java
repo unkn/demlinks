@@ -32,11 +32,7 @@ import org.dml.tools.RunTime;
 /**
  * handles the RefsList list at the Object level ie. accepting only Object
  * parameters where Object is the type of element stored in list; that Object is
- * E DOES NOT allow adding of NULL or DUPlicate Objects<br>
- * DUPlicate objects are those that == OR .equals(), in other words if two
- * different objects ie. a != b, have same contents ie. a.equals(b) == true then
- * if a is already in list, b can't be added (it already exists as a)<br>
- * for that to work, you need to override .equals() or else it defaults to ==
+ * E DOES YES allow adding of NULL or DUPlicate Objects<br>
  */
 public class ListOfObjects<E> extends ListOfReferences<E> {
 	
@@ -45,28 +41,12 @@ public class ListOfObjects<E> extends ListOfReferences<E> {
 		super();
 	}
 	
-	// /** unused, yet
-	// * @param position only FIRST/LAST
-	// * @return the object that was removed, or null is none was
-	// */
-	// public E removeObject(Position position) {
-	// Debug.nullException(position);
-	// Reference<E> nr = getNodeRefAt(position);
-	// if (null != nr) {
-	// E nod = nr.getObject();
-	// if (removeRef(nr)) {
-	// return nod;
-	// }
-	// }
-	// return null;
-	// }
 	/**
 	 * @param obj
 	 * @return
 	 */
 	public boolean containsObject( E obj ) {
 
-		RunTime.assertNotNull( obj );
 		return ( null != this.getRef( obj ) );
 	}
 	
@@ -78,8 +58,7 @@ public class ListOfObjects<E> extends ListOfReferences<E> {
 	 */
 	public boolean containsObjectAtPos( E obj, int index ) {
 
-		RunTime.assertNotNull( obj, index );
-		ChainedReference<E> ref = this.getRefAtPos( index );
+		ChainedReference<E> ref = this.getRefAtIndex( index );
 		if ( null == ref ) {
 			return false;// doesn't contain it
 		}
@@ -95,7 +74,6 @@ public class ListOfObjects<E> extends ListOfReferences<E> {
 	 */
 	public ChainedReference<E> newRef( E obj ) {
 
-		RunTime.assertNotNull( obj );
 		ChainedReference<E> n = new ChainedReference<E>();
 		n.setObject( obj );// is no longer null
 		return n;// should never return null
@@ -107,7 +85,6 @@ public class ListOfObjects<E> extends ListOfReferences<E> {
 	 */
 	public ChainedReference<E> getRef( E obj ) {
 
-		RunTime.assertNotNull( obj );
 		ChainedReference<E> parser = this.getFirstRef();
 		while ( null != parser ) {
 			if ( obj.equals( parser.getObject() ) ) {
@@ -125,9 +102,8 @@ public class ListOfObjects<E> extends ListOfReferences<E> {
 	 * @exception BadCallError
 	 *                if index out of bounds
 	 */
-	public ChainedReference<E> getRefAtPos( int index ) {
+	public ChainedReference<E> getRefAtIndex( int index ) {
 
-		RunTime.assertNotNull( index );
 		if ( ( index < 0 ) || ( index >= this.size() ) ) {
 			throw new BadCallError( "out of bounds" );
 		}
@@ -147,31 +123,34 @@ public class ListOfObjects<E> extends ListOfReferences<E> {
 	/**
 	 * @param pos
 	 *            only FIRST/LAST
-	 * @return null or the object at specified position
+	 * @return the object at specified position(which can be null)
+	 * @throws NoSuchElementException
+	 *             if no such object is found
 	 */
 	public E getObjectAt( Position pos ) {
 
 		RunTime.assertNotNull( pos );
 		ChainedReference<E> ref = this.getRefAt( pos );
-		if ( ref != null ) {
-			return ref.getObject();
+		if ( null == ref ) {
+			throw new NoSuchElementException();
 		}
-		return null;
+		return ref.getObject();
 	}
 	
 	/**
 	 * @param index
 	 *            0 based index
-	 * @return null or the object at index
+	 * @return the object at index which could be a null object
+	 * @throws NoSuchElementException
+	 *             if no such object is found
 	 */
 	public E getObjectAt( int index ) {
 
-		RunTime.assertNotNull( index );
-		ChainedReference<E> ref = this.getRefAtPos( index );
-		if ( ref != null ) {
-			return ref.getObject();
+		ChainedReference<E> ref = this.getRefAtIndex( index );
+		if ( null == ref ) {
+			throw new NoSuchElementException();
 		}
-		return null;
+		return ref.getObject();
 	}
 	
 	/**
@@ -179,58 +158,47 @@ public class ListOfObjects<E> extends ListOfReferences<E> {
 	 *            BEFORE/AFTER...of...
 	 * @param objPos
 	 *            ...which object
-	 * @return null or the object
+	 * @return the object(which can be null)
+	 * @throws NoSuchElementException
 	 */
 	public E getObjectAt( Position pos, E objPos ) {
 
-		RunTime.assertNotNull( pos, objPos );
+		RunTime.assertNotNull( pos );
 		ChainedReference<E> refPos = this.getRef( objPos );
-		if ( refPos == null ) {
+		if ( null == refPos ) {
 			// couldn't find objPos
-			return null;
+			throw new BadCallError( "position object not found" );
 		}
 		// ie. what's the ref that's BEFORE(pos) ref1(refPos) ?
 		ChainedReference<E> ref = this.getRefAt( pos, refPos );
-		if ( ref != null ) {
-			return ref.getObject();
+		if ( null == ref ) {
+			throw new NoSuchElementException();
 		}
-		return null;
+		return ref.getObject();
 	}
 	
 	/**
 	 * @param obj
-	 *            that doesn't already exist; not null
-	 * @return true if object already existed and wasn't re-added or moved to
-	 *         end
+	 *            can be null and can exist already(a new dup would be added)
+	 * @return false
 	 */
 	public boolean addLast( E obj ) {
 
-		RunTime.assertNotNull( obj );
-		ChainedReference<E> nr = this.getRef( obj );
-		if ( null != nr ) {
-			// already exists, not added/moved
-			return true;
-		}
-		nr = this.newRef( obj );
-		return this.addLast( nr );
+		ChainedReference<E> nr = this.newRef( obj );
+		this.addLastRef( nr );
+		return false;
 	}
 	
 	/**
 	 * @param obj
 	 *            that doesn't already exist; not null
-	 * @return true if object already existed and wasn't re-added or moved to
-	 *         end
+	 * @return false
 	 */
 	public boolean addFirst( E obj ) {
 
-		RunTime.assertNotNull( obj );
-		ChainedReference<E> nr = this.getRef( obj );
-		if ( null != nr ) {
-			// already exists, not added/moved
-			return true;
-		}
-		nr = this.newRef( obj );
-		return this.addFirstRef( nr );
+		ChainedReference<E> nr = this.newRef( obj );
+		this.addFirstRef( nr );
+		return false;
 	}
 	
 	/**
@@ -255,24 +223,21 @@ public class ListOfObjects<E> extends ListOfReferences<E> {
 	 * @param newObj
 	 * @param pos
 	 * @param posObj
-	 * @return true if newObj already exists, and nothing is done with it<br>
-	 *         false is all went according to call
+	 * @return false
+	 * @throws NoSuchElementException
+	 *             if posObj doesn't exist
 	 */
 	public boolean insert( E newObj, Position pos, E posObj ) {
 
-		RunTime.assertNotNull( newObj, pos, posObj );
+		RunTime.assertNotNull( pos );
 		ChainedReference<E> posRef = this.getRef( posObj );
 		if ( null == posRef ) {
 			// posObj non existent? stop some bugs by throwing exception
 			throw new NoSuchElementException();
 		}
-		ChainedReference<E> newRef = this.getRef( newObj );
-		if ( null != newRef ) {
-			// already exists, not added/moved
-			return true;
-		}
-		newRef = this.newRef( newObj );
-		return this.insertObjAt( newRef, pos, posRef );
+		ChainedReference<E> newRef = this.newRef( newObj );
+		this.insertObjAt( newRef, pos, posRef );
+		return false;
 	}
 	
 	/**
@@ -281,7 +246,6 @@ public class ListOfObjects<E> extends ListOfReferences<E> {
 	 */
 	public boolean removeObject( E obj ) {
 
-		RunTime.assertNotNull( obj );
 		ChainedReference<E> nr = this.getRef( obj );
 		if ( null == nr ) {
 			return false;

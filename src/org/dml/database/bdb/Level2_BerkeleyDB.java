@@ -30,7 +30,7 @@ import java.io.File;
 import org.dml.tools.RunTime;
 import org.dml.tools.StaticInstanceTracker;
 import org.javapart.logger.Log;
-import org.references.ListOfObjects;
+import org.references.ListOfUniqueNonNullObjects;
 import org.references.Position;
 
 import com.sleepycat.bind.tuple.StringBinding;
@@ -66,9 +66,9 @@ public class Level2_BerkeleyDB extends StaticInstanceTracker {
 	
 	// we keep track of open stuffs just in case we need to emergency shutdown
 	// ie. on Exception
-	private final ListOfObjects<Sequence>				allSequenceInstances		= new ListOfObjects<Sequence>();
-	private final ListOfObjects<Database>				allOpenPrimaryDatabases		= new ListOfObjects<Database>();
-	private final ListOfObjects<SecondaryDatabase>	allOpenSecondaryDatabases	= new ListOfObjects<SecondaryDatabase>();
+	private final ListOfUniqueNonNullObjects<Sequence>				allSequenceInstances		= new ListOfUniqueNonNullObjects<Sequence>();
+	private final ListOfUniqueNonNullObjects<Database>				allOpenPrimaryDatabases		= new ListOfUniqueNonNullObjects<Database>();
+	private final ListOfUniqueNonNullObjects<SecondaryDatabase>	allOpenSecondaryDatabases	= new ListOfUniqueNonNullObjects<SecondaryDatabase>();
 	private final static String						dbTupleNIDs_NAME			= "tuple(NodeID<->NodeID)";
 	private static final String						dbJID2NID_NAME				= "map(JID<->NodeID)";
 	private final static String						UNINITIALIZED_STRING		= "uninitializedString";

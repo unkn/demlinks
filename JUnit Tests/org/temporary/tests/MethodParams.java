@@ -25,7 +25,8 @@ package org.temporary.tests;
 
 
 
-import org.references.ListOfObjects;
+import org.dml.tools.RunTime;
+import org.references.Reference;
 
 
 
@@ -36,13 +37,13 @@ import org.references.ListOfObjects;
  * String<br>
  * you may have the same object twice, acting as two different parameters, but
  * this object is in fact a referent to the real instance which is ie. String,
- * so
+ * 
+ * same ParamName cannot have two objects in the same MethodParams list<br>
  */
 public class MethodParams {
 	
-	// the param values, not their name
-	// can't have same ref twice, but 2 diff refs can point to same object
-	private ListOfObjects<Object>	listOfParams;
+	
+	private ParamsList	listOfParams;
 	
 	/**
 	 * this method will search for paramName and return it's value Object<br>
@@ -51,11 +52,33 @@ public class MethodParams {
 	 * @param throwIfNotFound
 	 * @return
 	 */
-	public Object get( Object paramName, boolean throwIfNotFound ) {
+	public Object get( ParamName paramName, boolean throwIfNotFound ) {
 
 		// TODO what this does is get the list paramName and intersect it with
 		// the MethodParams list and should find 0 or 1 elements in common, if
-		// more than 1 then maybe throw BadCallError
+		// more than 1 then maybe throw BadCallError or Bug
+		
 		return null;
+	}
+	
+	public void set( ParamName paramName, Object value ) {
+
+		// TODO
+		RunTime.assertNotNull( paramName );
+		Reference<Object> ref;
+		listOfParams.addFirst( value );
+		paramName.add( ref );
+	}
+	
+	/**
+	 * easy cast wrapper
+	 * 
+	 * @param paramName
+	 * @param throwIfNotFound
+	 * @return
+	 */
+	public String getString( ParamName paramName, boolean throwIfNotFound ) {
+
+		return (String)this.get( paramName, throwIfNotFound );
 	}
 }

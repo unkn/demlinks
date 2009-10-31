@@ -116,7 +116,7 @@ public class ListOfReferences<Obje> {
 	 * @return true if already exists; false if it didn't but it does now after
 	 *         call
 	 */
-	public boolean addLast( ChainedReference<Obje> newLastRef ) {
+	public boolean addLastRef( ChainedReference<Obje> newLastRef ) {
 
 		RunTime.assertNotNull( newLastRef );
 		if ( this.containsRef( newLastRef ) ) {

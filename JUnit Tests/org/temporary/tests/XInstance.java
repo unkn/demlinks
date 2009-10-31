@@ -26,7 +26,7 @@ package org.temporary.tests;
 
 
 import org.junit.Test;
-import org.references.ListOfObjects;
+import org.references.ListOfUniqueNonNullObjects;
 import org.references.Position;
 
 
@@ -157,5 +157,5 @@ class BaseList {
 		}
 	}
 	
-	protected ListOfObjects<Base>	_list	= new ListOfObjects<Base>();
+	protected ListOfUniqueNonNullObjects<Base>	_list	= new ListOfUniqueNonNullObjects<Base>();
 }

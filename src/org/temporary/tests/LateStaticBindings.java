@@ -1,5 +1,5 @@
 /**
- * File creation: Oct 26, 2009 10:04:39 AM
+ * File creation: Oct 29, 2009 4:19:51 PM
  * 
  * Copyright (C) 2005-2009 AtKaaZ <atkaaz@users.sourceforge.net>
  * Copyright (C) 2005-2009 UnKn <unkn@users.sourceforge.net>
@@ -28,32 +28,38 @@ package org.temporary.tests;
  * 
  *
  */
-public class MainLevel3 extends MainLevel2 {
+public class LateStaticBindings {
 	
-	private VarLevel3			var3;
-	private final MethodParams	defaults	= new MethodParams();
 	
-	public MainLevel3() {
+	public static void main( String[] args ) {
 
+		A a = new A();
+		B b = new B();
+		A.test();
+	}
+}
+
+
+
+class A {
+	
+	public static void who() {
+
+		System.out.println( "A" );
 	}
 	
-	public void initLevel3() {
+	public static void test() {
 
-		defaults.set( PossibleParams.homeDir, "defaultHomeDir" );
-		// defaults.set(PossibleParams.varLevel3, );
-		this.initLevel3( defaults );
+		who();// B.who();
 	}
-	
-	public void initLevel3( MethodParams ap ) {
+}
 
-		// last param is saying it must exist(true), if not just throw exception
-		var3 = (VarLevel3)ap.get( PossibleParams.varLevel3, false );
-		if ( null != var3 ) {
-			this.initLevel2( var3 );
-		} else {
-			var3 = new VarLevel3();
-			var3.init( ap.getString( PossibleParams.homeDir, true ) );
-		}
-	}
+
+
+class B extends A {
 	
+	public static void who() {
+
+		System.out.println( "B" );
+	}
 }

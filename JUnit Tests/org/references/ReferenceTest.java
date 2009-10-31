@@ -137,7 +137,7 @@ public class ReferenceTest {
 		assertTrue( one.hashCode() == two.hashCode() );
 		
 		// this tests the list
-		ListOfObjects<Reference<String>> list = new ListOfObjects<Reference<String>>();
+		ListOfUniqueNonNullObjects<Reference<String>> list = new ListOfUniqueNonNullObjects<Reference<String>>();
 		assertFalse( list.addFirst( one ) );
 		assertFalse( list.addLast( two ) );// false= it was added
 		assertTrue( one != two );

@@ -26,7 +26,7 @@ package org.temporary.tests;
 
 
 import org.dml.tools.RunTime;
-import org.references.ListOfObjects;
+import org.references.ListOfUniqueNonNullObjects;
 import org.references.Position;
 
 
@@ -37,7 +37,7 @@ import org.references.Position;
  */
 public class GenericLister<T> {
 	
-	protected final ListOfObjects<T>	list	= new ListOfObjects<T>();
+	protected final ListOfUniqueNonNullObjects<T>	list	= new ListOfUniqueNonNullObjects<T>();
 	
 	/**
 	 * @param s

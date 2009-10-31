@@ -25,7 +25,6 @@ package org.temporary.tests;
 
 
 
-import org.references.ListOfObjects;
 
 
 
@@ -43,9 +42,8 @@ public class PossibleParams {
 	// these lists can hold objects but the objects that they will hold are the
 	// references from similar typed list, not the instances that these refs
 	// point at
-	public static ListOfObjects<Object>	varLevel3	= null;
-	public static ListOfObjects<Object>	homeDir;
-	// each object in the above lists is a Reference<Object> from a MethodParams
-	// ListOfObjects<Object> list
+	public static ParamName	varLevel3	= null;
+	public static ParamName	homeDir;
 	
+
 }

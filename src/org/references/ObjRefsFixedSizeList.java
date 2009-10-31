@@ -29,6 +29,6 @@ package org.references;
  * mainly useful for replaceLast() since we know the size of list, assuming it's
  * empty initially<br>
  */
-public class ObjRefsFixedSizeList<E> extends ListOfObjects<E> {
+public class ObjRefsFixedSizeList<E> extends ListOfUniqueNonNullObjects<E> {
 	
 }

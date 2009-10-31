@@ -83,18 +83,18 @@ public class RefsListTest {
 	public void testSomething() throws Exception {
 
 		assertTrue( refList.isEmpty() );
-		assertFalse( refList.addLast( ref1 ) );
+		assertFalse( refList.addLastRef( ref1 ) );
 		assertTrue( refList.containsRef( ref1 ) );
-		assertTrue( refList.addLast( ref1 ) );
+		assertTrue( refList.addLastRef( ref1 ) );
 		assertTrue( refList.containsRef( ref1 ) );
 		int mod = refList.getModified();
-		assertFalse( refList.addLast( ref2 ) );
+		assertFalse( refList.addLastRef( ref2 ) );
 		assertTrue( mod != refList.getModified() );
 		mod = refList.getModified();
 		assertTrue( refList.containsRef( ref2 ) );
 		assertFalse( mod != refList.getModified() );
-		assertTrue( refList.addLast( ref2 ) );
-		assertTrue( refList.addLast( ref1 ) );// after this call ref1
+		assertTrue( refList.addLastRef( ref2 ) );
+		assertTrue( refList.addLastRef( ref1 ) );// after this call ref1
 		// mustn't move
 		assertFalse( mod != refList.getModified() );
 		// from first position
@@ -108,7 +108,7 @@ public class RefsListTest {
 		ChainedReference<Object> ref3 = new ChainedReference<Object>();
 		ref3.setObject( null );
 		assertTrue( ref3.isDead() );
-		assertFalse( refList.addLast( ref3 ) );// null objects can be added
+		assertFalse( refList.addLastRef( ref3 ) );// null objects can be added
 		// in this
 		// list level
 		ChainedReference<Object> ref0 = new ChainedReference<Object>();
