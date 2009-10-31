@@ -60,6 +60,8 @@ public class ListOfUniqueNonNullObjects<E> extends ListOfObjects<E> {
 	// return null;
 	// }
 	/**
+	 * not by content comparison
+	 * 
 	 * @param obj
 	 * @return
 	 */

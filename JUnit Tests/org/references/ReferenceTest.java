@@ -138,8 +138,13 @@ public class ReferenceTest {
 		
 		// this tests the list
 		ListOfUniqueNonNullObjects<Reference<String>> list = new ListOfUniqueNonNullObjects<Reference<String>>();
-		assertFalse( list.addFirst( one ) );
-		assertFalse( list.addLast( two ) );// false= it was added
+		assertFalse( list.containsObject( one ) );
+		list.addFirst( one );
+		assertTrue( list.containsObject( one ) );
+		assertFalse( list.containsObject( two ) );
+		list.addLast( two );
+		assertTrue( list.containsObject( two ) );
+		
 		assertTrue( one != two );
 		assertTrue( one.equalsByContent( two ) );// same content
 		assertFalse( one.equals( two ) );// different references

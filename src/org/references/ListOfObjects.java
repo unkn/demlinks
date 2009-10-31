@@ -42,6 +42,8 @@ public class ListOfObjects<E> extends ListOfReferences<E> {
 	}
 	
 	/**
+	 * doesn't compare by content
+	 * 
 	 * @param obj
 	 * @return
 	 */
@@ -80,6 +82,8 @@ public class ListOfObjects<E> extends ListOfReferences<E> {
 	}
 	
 	/**
+	 * doesn't compare by content
+	 * 
 	 * @param obj
 	 * @return null or the reference containing the obj
 	 */
