@@ -295,7 +295,7 @@ public class ListOfReferences<Obje> {
 	/**
 	 * @param whichRef
 	 * @return true if the reference already exists; doesn't matter to what
-	 *         object it points to
+	 *         object it points to; identity check only
 	 */
 	public boolean containsRef( ChainedReference<Obje> whichRef ) {
 

@@ -21,7 +21,7 @@
  */
 
 
-package org.temporary.tests;
+package org.references.method;
 
 
 
@@ -50,9 +50,10 @@ public class ParamName<T> {
 	 * 
 	 * @param refToValue
 	 */
-	public void add( Reference<T> refToValue ) {
+	protected void add( Reference<T> refToValue ) {
 
 		RunTime.assertNotNull( refToValue );
+		RunTime.assertFalse( listOfValues.containsObject( refToValue ) );
 		listOfValues.addFirst( refToValue );
 	}
 	
@@ -60,7 +61,7 @@ public class ParamName<T> {
 	 * @param refToValue
 	 * @return true if existed; either way after call it's removed
 	 */
-	public boolean remove( Reference<T> refToValue ) {
+	protected boolean remove( Reference<T> refToValue ) {
 
 		RunTime.assertNotNull( refToValue );
 		return listOfValues.removeObject( refToValue );
@@ -70,7 +71,7 @@ public class ParamName<T> {
 	 * @param refToValue
 	 * @return
 	 */
-	public boolean contains( Reference<T> refToValue ) {
+	protected boolean contains( Reference<T> refToValue ) {
 
 		return listOfValues.containsObject( refToValue );
 	}

@@ -21,7 +21,8 @@
  */
 
 
-package org.temporary.tests;
+package org.references.method;
+
 
 
 

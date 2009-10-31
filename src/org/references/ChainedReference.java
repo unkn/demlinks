@@ -57,7 +57,18 @@ public class ChainedReference<Obj> extends Reference<Obj> {
 		this.setObject( cloneThis.getObject() );
 	}
 	
-	public boolean equals( ChainedReference<Obj> compareObj ) {
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals( Object obj ) {
+
+		return super.equals( obj );
+	}
+	
+	public boolean equalsContents( ChainedReference<Obj> compareObj ) {
 
 		if ( ( super.equals( compareObj ) )
 				|| ( ( this.getPrev() == compareObj.getPrev() )

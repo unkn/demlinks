@@ -23,6 +23,9 @@
 
 package org.temporary.tests;
 
+import org.references.method.MethodParams;
+import org.references.method.PossibleParams;
+
 
 /**
  * 

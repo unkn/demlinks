@@ -21,7 +21,7 @@
  */
 
 
-package org.temporary.tests;
+package org.references.method;
 
 
 
@@ -49,6 +49,12 @@ public class MethodParams<T> {
 	// ie. A==B
 	// objects of this list are the values
 	private final ListOfObjects<T>	listOfParams	= new ListOfObjects<T>();
+	
+	
+	protected int size() {
+
+		return listOfParams.size();
+	}
 	
 	/**
 	 * this method will search for paramName and return it's value Object<br>

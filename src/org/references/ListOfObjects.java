@@ -197,7 +197,9 @@ public class ListOfObjects<E> extends ListOfReferences<E> {
 	public ChainedReference<E> addFirst( E obj ) {
 
 		ChainedReference<E> nr = this.newRef( obj );
-		this.addFirstRef( nr );
+		if ( this.addFirstRef( nr ) ) {
+			RunTime.Bug( "must not compare by contents" );
+		}
 		return nr;
 	}
 	

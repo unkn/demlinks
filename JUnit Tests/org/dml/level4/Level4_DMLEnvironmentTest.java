@@ -63,12 +63,12 @@ public class Level4_DMLEnvironmentTest {
 			NodeJID j2 = NodeJID.ensureJIDFor( test2 );
 			NodeID n1 = d1.createNodeID( j1 );
 			NodeID n2 = d1.createNodeID( j2 );
-			assertTrue( n1.equals( d1.getNodeID( j1 ) ) );
-			assertTrue( n2.equals( d1.getNodeID( j2 ) ) );
-			assertTrue( n1.equals( d2.getNodeID( j1 ) ) );// d2 is d1 inside BDB
+			assertTrue( n1.equalsContents( d1.getNodeID( j1 ) ) );
+			assertTrue( n2.equalsContents( d1.getNodeID( j2 ) ) );
+			assertTrue( n1.equalsContents( d2.getNodeID( j1 ) ) );// d2 is d1 inside BDB
 			// because they're
 			// in same dir
-			assertTrue( n2.equals( d2.getNodeID( j2 ) ) );
+			assertTrue( n2.equalsContents( d2.getNodeID( j2 ) ) );
 			
 			NodeID n3 = d3.getNodeID( j1 );// d3 is in diff dir
 			assertNull( n3 );

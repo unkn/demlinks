@@ -21,11 +21,13 @@
  */
 
 
-package org.temporary.tests;
+package org.references.method;
 
 
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
@@ -42,6 +44,33 @@ public class MethodParamsTest {
 	MethodParams<Object>	mp1, mp2, mp3;
 	ParamName<Object>		paramString1, paramNull2, paramInteger3,
 			paramBoolean4;
+	ParamName<Object>		compulsoryParam1	= new ParamName<Object>();
+	ParamName<Object>		compulsoryParam2	= new ParamName<Object>();
+	ParamName<Object>		optionalParam1		= new ParamName<Object>();
+	
+	@Test
+	public void caller() {
+
+		MethodParams<Object> params = new MethodParams<Object>();
+		
+		assertTrue( 0 == params.size() );
+		params.set( compulsoryParam1, null );
+		assertTrue( 1 == params.size() );
+		params.set( compulsoryParam2, null );
+		assertTrue( 2 == params.size() );
+		this.someMethod1( params );
+	}
+	
+	public void someMethod1( MethodParams<Object> allParams ) {
+
+		assertNull( allParams.get( optionalParam1 ) );
+		
+		assertNotNull( allParams.get( compulsoryParam1 ) );
+		assertNull( allParams.get( compulsoryParam1 ).getObject() );
+		
+		assertNotNull( allParams.get( compulsoryParam2 ) );
+		assertNull( allParams.get( compulsoryParam2 ).getObject() );
+	}
 	
 	@Before
 	public void setUp() {
@@ -74,7 +103,6 @@ public class MethodParamsTest {
 		
 		mp1.set( paramNull2, string1 );
 		Object o = mp1.get( paramNull2 ).getObject();
-		System.out.println( o );
 		assertTrue( string1 == o );
 	}
 	
@@ -87,5 +115,29 @@ public class MethodParamsTest {
 		mp1.set( paramString1, s1 );
 		mp2.set( paramString1, s2 );
 		mp3.set( paramString1, s3 );
+		
+		assertTrue( s1 == mp1.get( paramString1 ).getObject() );
+		assertTrue( s2 == mp2.get( paramString1 ).getObject() );
+		assertTrue( s3 == mp3.get( paramString1 ).getObject() );
+		
+		mp1.set( paramString1, null );
+		
+
+		assertNull( mp1.get( paramString1 ).getObject() );
+		assertTrue( s2 == mp2.get( paramString1 ).getObject() );
+		assertTrue( s3 == mp3.get( paramString1 ).getObject() );
+		
+
+
+		mp2.set( paramString1, null );
+		assertNull( mp2.get( paramString1 ).getObject() );
+		assertNull( mp1.get( paramString1 ).getObject() );
+		assertTrue( s3 == mp3.get( paramString1 ).getObject() );
+		
+
+		mp3.set( paramString1, null );
+		assertNull( mp2.get( paramString1 ).getObject() );
+		assertNull( mp1.get( paramString1 ).getObject() );
+		assertNull( mp3.get( paramString1 ).getObject() );
 	}
 }
