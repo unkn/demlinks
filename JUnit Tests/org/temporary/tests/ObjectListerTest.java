@@ -28,8 +28,8 @@ package org.temporary.tests;
 import static org.junit.Assert.assertTrue;
 
 import org.dml.error.BadCallError;
-import org.dml.tools.Encapsulated;
 import org.junit.Test;
+import org.references.Reference;
 
 
 
@@ -47,8 +47,8 @@ public class ObjectListerTest {
 
 		l = new ObjectLister();
 		String s = "one";
-		Encapsulated<String> es = new Encapsulated<String>();
-		es.encapsulateThis( s );
+		Reference<String> es = new Reference<String>();
+		es.setObject( s );
 		l.addFirst( s );
 		l.append( es );
 		
@@ -80,7 +80,7 @@ public class ObjectListerTest {
 		StringToJIDLink a = new StringToJIDLink();
 		JID j = new JID();
 		String str = "strONe";
-		j.encapsulateThis( str );
+		j.setObject( str );
 		a.setFirst( str );
 		a.setSecond( j );
 		System.out.println( a.toString() );

@@ -42,19 +42,19 @@ public class GenericLister<T> {
 	/**
 	 * @param s
 	 */
-	public boolean addFirst( T obj ) {
+	public void addFirst( T obj ) {
 
 		this.checkInvariants();
-		return list.addFirst( obj );
+		list.addFirst( obj );
 	}
 	
 	/**
 	 * @param es
 	 */
-	public boolean append( T obj ) {
+	public void append( T obj ) {
 
 		this.checkInvariants();
-		return list.addLast( obj );
+		list.addLast( obj );
 	}
 	
 	public void checkInvariants() {

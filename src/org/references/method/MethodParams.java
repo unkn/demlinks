@@ -25,6 +25,8 @@ package org.references.method;
 
 
 
+import java.util.NoSuchElementException;
+
 import org.dml.tools.RunTime;
 import org.references.ChainedReference;
 import org.references.ListOfObjects;
@@ -43,8 +45,8 @@ import org.references.Reference;
  * 
  * same ParamName cannot have two objects in the same MethodParams list<br>
  */
-public class MethodParams<T> {
-	
+public class MethodParams<T> {// T= base class, usually just Object
+
 	// a list of instances ie. String, Integer, or even null(s) which can repeat
 	// ie. A==B
 	// objects of this list are the values
@@ -54,6 +56,18 @@ public class MethodParams<T> {
 	protected int size() {
 
 		return listOfParams.size();
+	}
+	
+	
+	public T getEx( ParamName<T> paramName ) {
+
+		Reference<T> ref = this.get( paramName );
+		if ( null == ref ) {
+			throw new NoSuchElementException(
+					"a certain parameter was expected but was not specified by caller" );
+		} else {
+			return ref.getObject();
+		}
 	}
 	
 	/**
@@ -118,14 +132,9 @@ public class MethodParams<T> {
 	 * @param paramName
 	 * @return
 	 */
-	public String getString( ParamName<T> paramName ) {
+	public String getExString( ParamName<T> paramName ) {
 
 		RunTime.assertNotNull( paramName );
-		Reference<T> ref = this.get( paramName );
-		if ( null == ref ) {
-			return null;
-		} else {
-			return (String)ref.getObject();
-		}
+		return (String)this.getEx( paramName );
 	}
 }

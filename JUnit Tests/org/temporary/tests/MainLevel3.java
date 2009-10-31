@@ -23,8 +23,10 @@
 
 package org.temporary.tests;
 
+
+
 import org.references.method.MethodParams;
-import org.references.method.PossibleParams;
+
 
 
 /**
@@ -33,8 +35,8 @@ import org.references.method.PossibleParams;
  */
 public class MainLevel3 extends MainLevel2 {
 	
-	private VarLevel3			var3;
-	private final MethodParams	defaults	= new MethodParams();
+	private VarLevel3					var3;
+	private final MethodParams<Object>	defaults	= new MethodParams<Object>();
 	
 	public MainLevel3() {
 
@@ -47,15 +49,15 @@ public class MainLevel3 extends MainLevel2 {
 		this.initLevel3( defaults );
 	}
 	
-	public void initLevel3( MethodParams ap ) {
+	public void initLevel3( MethodParams<Object> ap ) {
 
 		// last param is saying it must exist(true), if not just throw exception
-		var3 = (VarLevel3)ap.get( PossibleParams.varLevel3, false );
+		var3 = (VarLevel3)ap.getEx( PossibleParams.varLevel3 );
 		if ( null != var3 ) {
 			this.initLevel2( var3 );
 		} else {
 			var3 = new VarLevel3();
-			var3.init( ap.getString( PossibleParams.homeDir, true ) );
+			var3.init( ap.getExString( PossibleParams.homeDir ) );
 		}
 	}
 	

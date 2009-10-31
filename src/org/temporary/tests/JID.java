@@ -25,7 +25,7 @@ package org.temporary.tests;
 
 
 
-import org.dml.tools.Encapsulated;
+import org.references.Reference;
 
 
 
@@ -33,7 +33,7 @@ import org.dml.tools.Encapsulated;
  * 
  *
  */
-public class JID extends Encapsulated<String> {
+public class JID extends Reference<String> {
 	
 	/**
 	 * 

@@ -21,11 +21,11 @@
  */
 
 
-package org.references.method;
+package org.temporary.tests;
 
 
 
-
+import org.references.method.ParamName;
 
 
 
@@ -43,8 +43,8 @@ public class PossibleParams {
 	// these lists can hold objects but the objects that they will hold are the
 	// references from similar typed list, not the instances that these refs
 	// point at
-	public static ParamName	varLevel3	= null;
-	public static ParamName	homeDir;
+	public static ParamName<Object>	varLevel3	= new ParamName<Object>();
+	public static ParamName<Object>	homeDir		= new ParamName<Object>();
 	
 
 }
