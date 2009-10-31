@@ -41,12 +41,14 @@ public class LevelsTest {
 	
 	MainLevel1	ml1;
 	MainLevel2	ml2;
+	MainLevel3	ml3;
 	
 	@Test
 	public void test1() {
 
 		ml1 = new MainLevel1();
 		ml2 = new MainLevel2();
+		ml3 = new MainLevel3();
 		
 		VarLevel1 v1 = new VarLevel1();
 		v1.init();

@@ -52,25 +52,25 @@ import com.sleepycat.je.SequenceConfig;
  */
 public class Level3_BerkeleyDB {
 	
-	private String									envHomeDir;
-	private final EnvironmentConfig					environmentConfig			= new EnvironmentConfig();
-	private Environment								env							= null;
-	private DBMapJIDsToNodeIDs						dbJID2NID					= null;
-	private DBMapTupleNodeIDs						dbTupleNIDs					= null;
+	private String												envHomeDir;
+	private final EnvironmentConfig								environmentConfig			= new EnvironmentConfig();
+	private Environment											env							= null;
+	private DBMapJIDsToNodeIDs									dbJID2NID					= null;
+	private DBMapTupleNodeIDs									dbTupleNIDs					= null;
 	
 	// a database where all sequences will be stored:(only 1 db per bdb env)
-	private Database								seqDb						= null;
-	private final static String						seqDb_NAME					= "db5_AllSequences";
-	private DatabaseConfig							seqDbConf					= null;
+	private Database											seqDb						= null;
+	private final static String									seqDb_NAME					= "db5_AllSequences";
+	private DatabaseConfig										seqDbConf					= null;
 	
 	// we keep track of open stuffs just in case we need to emergency shutdown
 	// ie. on Exception
-	private final ListOfUniqueNonNullObjects<Sequence>				allSequenceInstances		= new ListOfUniqueNonNullObjects<Sequence>();
-	private final ListOfUniqueNonNullObjects<Database>				allOpenPrimaryDatabases		= new ListOfUniqueNonNullObjects<Database>();
+	private final ListOfUniqueNonNullObjects<Sequence>			allSequenceInstances		= new ListOfUniqueNonNullObjects<Sequence>();
+	private final ListOfUniqueNonNullObjects<Database>			allOpenPrimaryDatabases		= new ListOfUniqueNonNullObjects<Database>();
 	private final ListOfUniqueNonNullObjects<SecondaryDatabase>	allOpenSecondaryDatabases	= new ListOfUniqueNonNullObjects<SecondaryDatabase>();
-	private final static String						dbTupleNIDs_NAME			= "tuple(NodeID<->NodeID)";
-	private static final String						dbJID2NID_NAME				= "map(JID<->NodeID)";
-	private final static String						UNINITIALIZED_STRING		= "uninitializedString";
+	private final static String									dbTupleNIDs_NAME			= "tuple(NodeID<->NodeID)";
+	private static final String									dbJID2NID_NAME				= "map(JID<->NodeID)";
+	private final static String									UNINITIALIZED_STRING		= "uninitializedString";
 	
 	/**
 	 * singleton
@@ -110,8 +110,8 @@ public class Level3_BerkeleyDB {
 	 * @param internalDestroyBeforeInit
 	 * @throws DatabaseException
 	 */
-	public Level3_BerkeleyDB( String envHomeDir1, boolean internalDestroyBeforeInit )
-			throws DatabaseException {
+	public Level3_BerkeleyDB( String envHomeDir1,
+			boolean internalDestroyBeforeInit ) throws DatabaseException {
 
 		this.init( envHomeDir1, internalDestroyBeforeInit );
 	}
@@ -325,7 +325,7 @@ public class Level3_BerkeleyDB {
 		Level3_BerkeleyDB.stringToEntry( thisSeqName, deKey );
 		Sequence seq = this.getSeqsDB().openSequence( null, deKey,
 				allSequencesConfig );
-		if ( allSequenceInstances.addFirst( seq ) ) {
+		if ( allSequenceInstances.addFirstQ( seq ) ) {
 			RunTime.Bug( "couldn't have already existed!" );
 		}
 		RunTime.assertNotNull( seq );
@@ -504,7 +504,7 @@ public class Level3_BerkeleyDB {
 		Log.entry( dbName );
 		// should not use this openDatabase() method anywhere else
 		Database db = this.getEnvironment().openDatabase( null, dbName, dbConf );
-		if ( allOpenPrimaryDatabases.addFirst( db ) ) {
+		if ( allOpenPrimaryDatabases.addFirstQ( db ) ) {
 			RunTime.Bug( "couldn't have already existed!" );
 		}
 		return db;
@@ -526,7 +526,7 @@ public class Level3_BerkeleyDB {
 		Log.entry( secDbName );
 		SecondaryDatabase secDb = this.getEnvironment().openSecondaryDatabase(
 				null, secDbName, primaryDb, secDbConf );
-		if ( allOpenSecondaryDatabases.addFirst( secDb ) ) {
+		if ( allOpenSecondaryDatabases.addFirstQ( secDb ) ) {
 			RunTime.Bug( "couldn't have already existed" );
 		}
 		return secDb;

@@ -204,6 +204,24 @@ public class ListOfUniqueNonNullObjects<E> extends ListOfObjects<E> {
 	}
 	
 	/**
+	 * @param obj
+	 * @return true if existed and nothing was changed; false if it didn't
+	 *         exist, but it does now
+	 */
+	public boolean addFirstQ( E obj ) {
+
+		RunTime.assertNotNull( obj );
+		
+		ChainedReference<E> ref = this.getRef( obj );
+		if ( null != ref ) {
+			// already exists, not added/moved
+			return true;
+		}
+		super.addFirst( obj );
+		return false;
+	}
+	
+	/**
 	 * @param node
 	 * @param location
 	 * @return ref to the object that existed, or was just added

@@ -47,8 +47,8 @@ public abstract class StaticInstanceTracker {
 	
 	// LIFO list tracking all instances of ALL subclasses
 	private final static ListOfUniqueNonNullObjects<StaticInstanceTracker>	ALL_INSTANCES	= new ListOfUniqueNonNullObjects<StaticInstanceTracker>();
-	private boolean											inited			= false;
-	private boolean											deInited		= true;
+	private boolean															inited			= false;
+	private boolean															deInited		= true;
 	
 	public StaticInstanceTracker() {
 
@@ -149,7 +149,7 @@ public abstract class StaticInstanceTracker {
 	
 	private final static void addNewInstance( StaticInstanceTracker instance ) {
 
-		if ( ALL_INSTANCES.addFirst( instance ) ) {
+		if ( ALL_INSTANCES.addFirstQ( instance ) ) {
 			RunTime.Bug( "should not have existed" );
 		}
 	}

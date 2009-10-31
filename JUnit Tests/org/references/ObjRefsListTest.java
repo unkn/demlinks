@@ -25,6 +25,7 @@ package org.references;
 
 
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.After;
@@ -58,8 +59,8 @@ public class ObjRefsListTest {
 	public void test1() {
 
 		assertTrue( ol.isEmpty() );
-		ol.addFirst( "second" );
-		ol.addFirst( "first" );
+		assertFalse( ol.addFirstQ( "second" ) );
+		assertFalse( ol.addFirstQ( "first" ) );
 		ol.addLast( "last" );
 		ol.insert( "antelast", Position.BEFORE, ol.getObjectAt( Position.LAST ) );
 		ol.insert( "middle", Position.AFTER, ol.getObjectAt( 1 ) );
