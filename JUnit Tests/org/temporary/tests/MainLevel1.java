@@ -26,6 +26,8 @@ package org.temporary.tests;
 
 
 import org.dml.tools.RunTime;
+import org.references.Reference;
+import org.references.method.MethodParams;
 
 
 
@@ -35,31 +37,52 @@ import org.dml.tools.RunTime;
  */
 public class MainLevel1 {
 	
-	protected VarLevel1	var	= null;
+	private VarLevel1				var			= null;
+	protected MethodParams<Object>	defaults	= null;
 	
 	public MainLevel1() {
 
 	}
 	
 	/**
-	 * @param var1
-	 *            must be already .init() -ed
+	 * @return default parameters for this Level
 	 */
-	public void initLevel1( VarLevel1 varL1 ) {
+	protected MethodParams<Object> getDefaults() {
 
-		RunTime.assertNotNull( varL1 );
-		if ( !( varL1 instanceof VarLevel1 ) ) {
-			RunTime.BadCallError( "wrong type passed" );
+		if ( null == defaults ) {
+			defaults = new MethodParams<Object>();
 		}
-		var = varL1;
+		return defaults;
 	}
 	
 	/**
-	 * using defaults
+	 * @param params
 	 */
-	public void initLevel1() {
+	public void initMainLevel( MethodParams<Object> params ) {
 
-		this.initLevel1( new VarLevel1() );
+		if ( null == params ) {
+			// using defaults for this MainLevel1
+			params = this.getDefaults();
+		}
+		RunTime.assertNotNull( params );
+		
+		// optional:
+		Reference<Object> ref = params.get( PossibleParams.varLevelAll );
+		VarLevel1 varL1;
+		if ( null == ref ) {
+			// no VarLevel1 given thus must use defaults for VarLevel1
+			varL1 = new VarLevel1();
+			varL1.init();
+		} else {
+			Object obj = ref.getObject();
+			RunTime.assertNotNull( obj );
+			if ( !( obj instanceof VarLevel1 ) ) {
+				RunTime.BadCallError( "wrong type passed" );
+			}
+			varL1 = (VarLevel1)obj;
+		}
+		
+		var = varL1;
 	}
 	
 	public void do1() {

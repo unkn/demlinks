@@ -84,23 +84,30 @@ public class MethodParams<T> {// T= base class, usually just Object
 		
 		RunTime.assertNotNull( paramName );
 		
+		return this.internalGet( paramName );
+	}
+	
+	private ChainedReference<T> internalGet( ParamName<T> paramName ) {
+
+		RunTime.assertNotNull( paramName );
+		
 		int foundCounter = 0;// should not exceed 1
-		Reference<T> found = null;
+		ChainedReference<T> found = null;
 		// parse listOfParams and check each element(the reference of each)
 		// against ParamName list
-		ChainedReference<T> iter = listOfParams.getRefAt( Position.FIRST );
-		while ( null != iter ) {
+		ChainedReference<T> citer = listOfParams.getRefAt( Position.FIRST );
+		while ( null != citer ) {
 			// paramName list can have only 1 reference from a MethodParams
-			if ( paramName.contains( iter ) ) {
+			if ( paramName.contains( citer ) ) {
 				foundCounter++;
-				found = iter;// don't clone; new Reference<T>( iter );// clone
+				found = citer;// don't clone; new Reference<T>( iter );// clone
 				// we could do a break; here but we want to make sure that it's
 				// not found more than 1 times, that would mean Bug
 				// can't have the same ParamName listed twice in the same params
 				// list for same method
 			}
 			// go next
-			iter = listOfParams.getRefAt( Position.AFTER, iter );
+			citer = listOfParams.getRefAt( Position.AFTER, citer );
 		}
 		RunTime.assertTrue( foundCounter <= 1 );
 		return found;
@@ -116,12 +123,12 @@ public class MethodParams<T> {// T= base class, usually just Object
 
 		RunTime.assertNotNull( paramName );
 		
-		Reference<T> ref = this.get( paramName );
-		if ( null == ref ) {
-			ref = listOfParams.addFirst( value );
-			paramName.add( ref );
+		ChainedReference<T> cref = this.internalGet( paramName );
+		if ( null == cref ) {
+			cref = listOfParams.addFirst( value );
+			paramName.add( cref );
 		} else {// already exists, must change
-			ref.setObject( value );
+			cref.setObject( value );
 		}
 		
 	}
@@ -136,5 +143,26 @@ public class MethodParams<T> {// T= base class, usually just Object
 
 		RunTime.assertNotNull( paramName );
 		return (String)this.getEx( paramName );
+	}
+	
+	
+	/**
+	 * @param varLevelAll
+	 * @return false if didn't exist; true if it didn't; but it doesn't now
+	 *         after call
+	 */
+	public boolean remove( ParamName<T> paramName ) {
+
+		RunTime.assertNotNull( paramName );
+		
+		ChainedReference<T> cref = this.internalGet( paramName );
+		if ( null == cref ) {
+			return false;// not found
+		} else {// already exists
+			boolean ret = listOfParams.removeRef( cref );
+			RunTime.assertTrue( ret );
+			paramName.remove( cref );
+			return ret;
+		}
 	}
 }

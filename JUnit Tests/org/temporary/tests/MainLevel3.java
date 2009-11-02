@@ -53,11 +53,12 @@ public class MainLevel3 extends MainLevel2 {
 
 		// last param is saying it must exist(true), if not just throw exception
 		var3 = (VarLevel3)ap.getEx( PossibleParams.varLevel3 );
-		if ( null != var3 ) {
-			this.initLevel2( var3 );
-		} else {
+		if ( null == var3 ) {
+			// must use defaults
 			var3 = new VarLevel3();
 			var3.init( ap.getExString( PossibleParams.homeDir ) );
+		} else {
+			this.initLevel2( var3 );
 		}
 	}
 	

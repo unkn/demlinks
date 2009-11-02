@@ -30,6 +30,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.dml.error.BadCallError;
 import org.junit.Test;
+import org.references.method.MethodParams;
 
 
 
@@ -52,48 +53,84 @@ public class LevelsTest {
 		
 		VarLevel1 v1 = new VarLevel1();
 		v1.init();
-		
-		ml1.initLevel1( v1 );
+		MethodParams<Object> params1 = new MethodParams<Object>();
+		params1.set( PossibleParams.varLevelAll, v1 );
+		ml1.initMainLevel( params1 );
 		ml1.do1();
 		
 		VarLevel2 v2 = new VarLevel2();
 		v2.init( "home2" );
+		
+		MethodParams<Object> params2 = new MethodParams<Object>();
+		params2.set( PossibleParams.varLevelAll, v2 );
+		
 		boolean threw = false;
 		try {
-			ml2.initLevel1( v2 );
+			ml2.initMainLevel( params2 );
 		} catch ( BadCallError bce ) {
 			threw = true;
 		} finally {
 			assertFalse( threw );
 		}
 		
-		ml2.initLevel2( v2 );
+		ml2.initMainLevel( params2 );
 		ml2.showHome();
 		
 		try {
 			threw = false;
-			ml2.initLevel1();
+			ml1.initMainLevel( params2 );
+		} catch ( BadCallError bce ) {
+			threw = true;
+		} finally {
+			assertFalse( threw );
+		}
+		
+		try {
+			threw = false;
+			ml2.initMainLevel( params1 );
 		} catch ( BadCallError bce ) {
 			threw = true;
 		} finally {
 			assertTrue( threw );
 		}
 		
+		params1.set( PossibleParams.varLevelAll, "something" );
 		try {
 			threw = false;
-			ml2.initLevel1( v1 );
+			ml2.initMainLevel( params1 );
 		} catch ( BadCallError bce ) {
 			threw = true;
 		} finally {
 			assertTrue( threw );
 		}
 		
-
+		params1.set( PossibleParams.varLevelAll, null );
+		try {
+			threw = false;
+			ml2.initMainLevel( params1 );
+		} catch ( AssertionError ae ) {
+			threw = true;
+		} finally {
+			assertTrue( threw );
+		}
+		
 		ml2.showHome();
-		ml2.initLevel2( "home3" );
+		params2.set( PossibleParams.homeDir, "home3" );
+		params2.remove( PossibleParams.varLevelAll );
+		ml2.initMainLevel( params2 );
 		ml2.showHome();
 		
-		ml2.initLevel2();
+		ml2.initMainLevel( params2 );
 		ml2.showHome();
+		
+		params2.set( PossibleParams.varLevelAll, null );
+		try {
+			threw = false;
+			ml1.initMainLevel( params2 );
+		} catch ( AssertionError ae ) {
+			threw = true;
+		} finally {
+			assertTrue( threw );
+		}
 	}
 }
