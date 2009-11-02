@@ -132,5 +132,49 @@ public class LevelsTest {
 		} finally {
 			assertTrue( threw );
 		}
+		
+		// Level 3:
+		VarLevel3 v3 = new VarLevel3();
+		v3.init( "homedirL3" );
+		
+		MethodParams<Object> params3 = new MethodParams<Object>();
+		params3.set( PossibleParams.varLevelAll, null );
+		try {
+			threw = false;
+			ml3.initMainLevel( params3 );
+		} catch ( AssertionError ae ) {
+			threw = true;
+		} finally {
+			assertTrue( threw );
+		}
+		
+		params3.set( PossibleParams.varLevelAll, v2 );
+		try {
+			threw = false;
+			ml3.initMainLevel( params3 );
+		} catch ( BadCallError bce ) {
+			threw = true;
+		} finally {
+			assertTrue( threw );
+		}
+		
+		params3.set( PossibleParams.varLevelAll, v1 );
+		try {
+			threw = false;
+			ml3.initMainLevel( params3 );
+		} catch ( BadCallError bce ) {
+			threw = true;
+		} finally {
+			assertTrue( threw );
+		}
+		
+		params3.set( PossibleParams.varLevelAll, v3 );
+		ml3.initMainLevel( params3 );
+		ml3.showHome();
+		
+		params3.remove( PossibleParams.varLevelAll );
+		params3.set( PossibleParams.homeDir, "L3nondefaultHomeDir" );
+		ml3.initMainLevel( params3 );
+		ml3.showHome();
 	}
 }

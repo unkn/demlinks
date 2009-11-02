@@ -25,6 +25,8 @@ package org.temporary.tests;
 
 
 
+import org.dml.tools.RunTime;
+import org.references.Reference;
 import org.references.method.MethodParams;
 
 
@@ -35,31 +37,57 @@ import org.references.method.MethodParams;
  */
 public class MainLevel3 extends MainLevel2 {
 	
-	private VarLevel3					var3;
-	private final MethodParams<Object>	defaults	= new MethodParams<Object>();
+	private VarLevel3	var3;
 	
 	public MainLevel3() {
 
 	}
 	
-	public void initLevel3() {
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @seeorg.temporary.tests.MainLevel2#initMainLevel(org.references.method.
+	 * MethodParams)
+	 */
+	@Override
+	public void initMainLevel( MethodParams<Object> params ) {
 
-		defaults.set( PossibleParams.homeDir, "defaultHomeDir" );
-		// defaults.set(PossibleParams.varLevel3, );
-		this.initLevel3( defaults );
-	}
-	
-	public void initLevel3( MethodParams<Object> ap ) {
-
-		// last param is saying it must exist(true), if not just throw exception
-		var3 = (VarLevel3)ap.getEx( PossibleParams.varLevel3 );
-		if ( null == var3 ) {
-			// must use defaults
-			var3 = new VarLevel3();
-			var3.init( ap.getExString( PossibleParams.homeDir ) );
-		} else {
-			this.initLevel2( var3 );
+		if ( null == params ) {
+			// using defaults for this MainLevel1
+			params = this.getDefaults();
 		}
+		RunTime.assertNotNull( params );
+		
+		// optional:
+		Reference<Object> ref = params.get( PossibleParams.varLevelAll );
+		VarLevel3 varL3;
+		if ( null == ref ) {
+			// no VarLevel1 given thus must use defaults for VarLevel1
+			// maybe use some defaults ie. homeDir value to default
+			varL3 = new VarLevel3();
+			Reference<Object> ref2 = params.get( PossibleParams.homeDir );
+			if ( null == ref2 ) {
+				// home not specified, using default
+				varL3.init( "defaultHomeDir3" );
+			} else {
+				// home was specified
+				varL3.init( (String)ref2.getObject() );
+			}
+			// set this for Level1
+			params.set( PossibleParams.varLevelAll, varL3 );
+		} else {
+			Object obj = ref.getObject();
+			RunTime.assertNotNull( obj );
+			if ( !( obj instanceof VarLevel3 ) ) {
+				RunTime.BadCallError( "wrong type passed" );
+			}
+			varL3 = (VarLevel3)obj;
+			
+		}
+		
+		var3 = varL3;
+		super.initMainLevel( params );
 	}
 	
+
 }

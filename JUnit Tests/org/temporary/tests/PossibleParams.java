@@ -44,7 +44,6 @@ public class PossibleParams {
 	// references from similar typed list, not the instances that these refs
 	// point at
 	public static ParamName<Object>	varLevelAll	= new ParamName<Object>();
-	public static ParamName<Object>	varLevel3	= new ParamName<Object>();
 	public static ParamName<Object>	homeDir		= new ParamName<Object>();
 	
 
