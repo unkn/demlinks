@@ -26,10 +26,17 @@ package org.temporary.tests;
 
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import org.dml.error.BadCallError;
+import org.dml.error.BugError;
+import org.dml.tools.StaticInstanceTracker;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
+import org.references.Reference;
 import org.references.method.MethodParams;
 
 
@@ -44,13 +51,29 @@ public class LevelsTest {
 	MainLevel2	ml2;
 	MainLevel3	ml3;
 	
-	@Test
-	public void test1() {
+	@Before
+	public void setUp() {
 
 		ml1 = new MainLevel1();
 		ml2 = new MainLevel2();
 		ml3 = new MainLevel3();
+	}
+	
+	@After
+	public void tearDown() {
+
+		ml1.deInitSilently();
+		ml2.deInitSilently();
+		ml3.deInitSilently();
 		
+		StaticInstanceTracker.deInitAllThatExtendMe();
+	}
+	
+	@Test
+	public void test1() {
+
+		
+
 		VarLevel1 v1 = new VarLevel1();
 		v1.init();
 		MethodParams<Object> params1 = new MethodParams<Object>();
@@ -73,9 +96,11 @@ public class LevelsTest {
 			assertFalse( threw );
 		}
 		
+		ml2.deInit();
 		ml2.initMainLevel( params2 );
 		ml2.showHome();
 		
+		ml1.deInit();
 		try {
 			threw = false;
 			ml1.initMainLevel( params2 );
@@ -84,6 +109,7 @@ public class LevelsTest {
 		} finally {
 			assertFalse( threw );
 		}
+		ml1.do1();// level2
 		
 		try {
 			threw = false;
@@ -117,11 +143,14 @@ public class LevelsTest {
 		ml2.showHome();
 		params2.set( PossibleParams.homeDir, "home3" );
 		params2.remove( PossibleParams.varLevelAll );
+		ml2.deInit();
 		ml2.initMainLevel( params2 );
 		ml2.showHome();
 		
+		ml2.deInit();
 		ml2.initMainLevel( params2 );
 		ml2.showHome();
+		ml2.do1();
 		
 		params2.set( PossibleParams.varLevelAll, null );
 		try {
@@ -174,7 +203,77 @@ public class LevelsTest {
 		
 		params3.remove( PossibleParams.varLevelAll );
 		params3.set( PossibleParams.homeDir, "L3nondefaultHomeDir" );
+		ml3.deInit();
 		ml3.initMainLevel( params3 );
+		ml3.showHome();
+		ml3.do1();
+		ml3.deInit();
+	}
+	
+	@Test
+	public void test2() {
+
+		
+		ml2.initMainLevel( null );
+		VarLevel1 v1 = ml2.junitGetVar();
+		assertNotNull( v1 );
+		ml2.deInit();
+		assertNull( ml3.junitGetVar() );
+		
+		ml2.initMainLevel( null );
+		VarLevel1 v1_1 = ml2.junitGetVar();
+		ml2.deInit();
+		
+		assertTrue( v1 != v1_1 );
+		assertNull( ml2.junitGetVar() );// null after deInit
+	}
+	
+	@Test
+	public void test3() {
+
+		// the parameters won't get modified
+		MethodParams<Object> mp = new MethodParams<Object>();
+		assertTrue( 0 == mp.size() );
+		ml2.initMainLevel( mp );
+		assertTrue( 0 == mp.size() );
+		ml1.initMainLevel( mp );
+		assertTrue( 0 == mp.size() );
+		ml3.initMainLevel( mp );
+		assertTrue( 0 == mp.size() );
+		
+		StaticInstanceTracker.deInitAllThatExtendMe();
+		VarLevel3 vl3 = new VarLevel3();
+		vl3.init( "homeDir1" );
+		mp.set( PossibleParams.varLevelAll, vl3 );
+		assertTrue( 1 == mp.size() );
+		ml3.initMainLevel( mp );
+		assertTrue( 1 == mp.size() );
+		Reference<Object> ref = mp.get( PossibleParams.varLevelAll );
+		assertNotNull( ref );
+		assertTrue( vl3 == ref.getObject() );
+		assertTrue( ml3.junitGetVar() == vl3 );
+		ml3.deInit();
+		assertNull( ml3.junitGetVar() );
+		
+		boolean ex = false;
+		try {
+			ml3.init();
+		} catch ( BugError be ) {
+			ex = true;
+		} finally {
+			assertTrue( ex );
+			ml3.deInit();
+		}
+		
+		assertNull( ml3.junitGetVar() );
+		ml3.initMainLevel( mp );
+		assertTrue( ml3.junitGetVar() == vl3 );
+		ml3.deInit();
+		assertNull( ml3.junitGetVar() );
+		vl3.deInitSilently();
+		ml3.initMainLevel( null );
+		assertTrue( ml3.junitGetVar() != vl3 );
+		assertNotNull( ml3.junitGetVar() );
 		ml3.showHome();
 	}
 }

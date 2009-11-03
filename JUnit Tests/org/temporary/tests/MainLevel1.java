@@ -26,6 +26,7 @@ package org.temporary.tests;
 
 
 import org.dml.tools.RunTime;
+import org.dml.tools.StaticInstanceTracker;
 import org.references.Reference;
 import org.references.method.MethodParams;
 
@@ -35,10 +36,14 @@ import org.references.method.MethodParams;
  * 
  *
  */
-public class MainLevel1 {
+public class MainLevel1 extends StaticInstanceTracker {
 	
 	private VarLevel1				var			= null;
 	protected MethodParams<Object>	defaults	= null;
+	private boolean					inited		= false;
+	
+	// true if we inited a default 'var' so we know to deInit it
+	protected boolean				initedVL	= false;
 	
 	public MainLevel1() {
 
@@ -71,8 +76,10 @@ public class MainLevel1 {
 		VarLevel1 varL1;
 		if ( null == ref ) {
 			// no VarLevel1 given thus must use defaults for VarLevel1
+			RunTime.assertTrue( null == var );
 			varL1 = new VarLevel1();
 			varL1.init();
+			initedVL = true;
 		} else {
 			Object obj = ref.getObject();
 			RunTime.assertNotNull( obj );
@@ -83,6 +90,8 @@ public class MainLevel1 {
 		}
 		
 		var = varL1;
+		inited = true;
+		this.init();
 	}
 	
 	public void do1() {
@@ -95,6 +104,52 @@ public class MainLevel1 {
 	 */
 	public String getName() {
 
-		return this.getClass().getName();
+		return this.getClass().getSimpleName();
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.dml.tools.StaticInstanceTracker#done()
+	 */
+	@Override
+	protected void done() {
+
+		inited = false;
+		System.out.println( this.getName() + " deiniting..." );
+		if ( null != var ) {
+			// could be not yet inited due to throws in initMainLevel()
+			if ( initedVL ) {
+				// we inited it, then we deinit it
+				var.deInit();
+				initedVL = false;
+				
+			}
+			var = null;
+		}
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.dml.tools.StaticInstanceTracker#start()
+	 */
+	@Override
+	protected void start() {
+
+		System.out.println( this.getName() + " Initing..." );
+		if ( !inited ) {
+			// called init()
+			RunTime.Bug( "please don't use init() w/o params" );
+			// this.initMainLevel( null );this won't work, init() recursion
+		}
+	}
+	
+	/**
+	 * @return the var
+	 */
+	public VarLevel1 junitGetVar() {
+
+		return var;
 	}
 }

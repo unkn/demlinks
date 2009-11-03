@@ -55,7 +55,8 @@ public abstract class StaticInstanceTracker {
 	}
 	
 	/**
-	 * LIFO manner deinit, only for the same subclass type
+	 * LIFO manner deinit, only for the same class type<br>
+	 * instances with same class name as this instance, will be deinited<br>
 	 */
 	public final void deInitAllLikeMe() {
 
@@ -77,9 +78,11 @@ public abstract class StaticInstanceTracker {
 	}
 	
 	/**
-	 * LIFO manner deinit, for ALL subclass types<br>
+	 * LIFO manner deinit, for ALL class types<br>
 	 * you may consider this as silent, as it won't deInit those that are
-	 * already deInited since they're not in the list anymore
+	 * already deInited since they're not in the list anymore<br>
+	 * this will deinit all instances that were ever inited, no matter how
+	 * different they are; different name classes included<br>
 	 */
 	public static final void deInitAllThatExtendMe() {
 
@@ -118,7 +121,7 @@ public abstract class StaticInstanceTracker {
 			RunTime.BadCallError( this + " was already deInit()-ed!" );
 		}
 		
-		this.silentDeInit();
+		this.deInitSilently();
 	}
 	
 	/**
@@ -126,7 +129,7 @@ public abstract class StaticInstanceTracker {
 	 * 
 	 * @see #deInit()
 	 */
-	public final void silentDeInit() {
+	public final void deInitSilently() {
 
 		if ( ( inited ) && ( !deInited ) ) {
 			deInited = true;

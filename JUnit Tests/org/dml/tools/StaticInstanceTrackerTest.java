@@ -138,8 +138,8 @@ public class StaticInstanceTrackerTest {
 
 		boolean excepted = false;
 		try {
-			t2.silentDeInit();
-			t2.silentDeInit();
+			t2.deInitSilently();
+			t2.deInitSilently();
 		} catch ( BadCallError bce ) {
 			excepted = true;
 		} finally {
@@ -150,7 +150,7 @@ public class StaticInstanceTrackerTest {
 		try {
 			t2.init();
 			t2.deInit();
-			t2.silentDeInit();
+			t2.deInitSilently();
 		} catch ( BadCallError bce ) {
 			excepted = true;
 		} finally {

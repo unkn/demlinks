@@ -53,7 +53,7 @@ public class MethodParams<T> {// T= base class, usually just Object
 	private final ListOfObjects<T>	listOfParams	= new ListOfObjects<T>();
 	
 	
-	protected int size() {
+	public int size() {
 
 		return listOfParams.size();
 	}

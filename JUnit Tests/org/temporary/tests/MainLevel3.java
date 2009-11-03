@@ -64,7 +64,9 @@ public class MainLevel3 extends MainLevel2 {
 		if ( null == ref ) {
 			// no VarLevel1 given thus must use defaults for VarLevel1
 			// maybe use some defaults ie. homeDir value to default
+			RunTime.assertTrue( null == var3 );
 			varL3 = new VarLevel3();
+			
 			Reference<Object> ref2 = params.get( PossibleParams.homeDir );
 			if ( null == ref2 ) {
 				// home not specified, using default
@@ -74,7 +76,11 @@ public class MainLevel3 extends MainLevel2 {
 				varL3.init( (String)ref2.getObject() );
 			}
 			// set this for Level1
-			params.set( PossibleParams.varLevelAll, varL3 );
+			initedVL = true;
+			synchronized ( temporaryLevel1Params ) {
+				temporaryLevel1Params.set( PossibleParams.varLevelAll, varL3 );
+				super.initMainLevel( temporaryLevel1Params );
+			}
 		} else {
 			Object obj = ref.getObject();
 			RunTime.assertNotNull( obj );
@@ -82,12 +88,22 @@ public class MainLevel3 extends MainLevel2 {
 				RunTime.BadCallError( "wrong type passed" );
 			}
 			varL3 = (VarLevel3)obj;
-			
+			super.initMainLevel( params );
 		}
 		
 		var3 = varL3;
-		super.initMainLevel( params );
+		
 	}
 	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.temporary.tests.MainLevel2#done()
+	 */
+	@Override
+	protected void done() {
 
+		super.done();
+		var3 = null;
+	}
 }

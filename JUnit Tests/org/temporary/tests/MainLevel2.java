@@ -37,7 +37,10 @@ import org.references.method.MethodParams;
  */
 public class MainLevel2 extends MainLevel1 {
 	
-	private VarLevel2	var2;
+	private VarLevel2							var2;
+	// true if we did new var2
+	// private final boolean defaultVar = false;
+	protected static final MethodParams<Object>	temporaryLevel1Params	= new MethodParams<Object>();
 	
 	public MainLevel2() {
 
@@ -64,7 +67,9 @@ public class MainLevel2 extends MainLevel1 {
 		if ( null == ref ) {
 			// no VarLevel1 given thus must use defaults for VarLevel1
 			// maybe use some defaults ie. homeDir value to default
+			RunTime.assertTrue( null == var2 );
 			varL2 = new VarLevel2();
+			
 			Reference<Object> ref2 = params.get( PossibleParams.homeDir );
 			if ( null == ref2 ) {
 				// home not specified, using default
@@ -73,8 +78,14 @@ public class MainLevel2 extends MainLevel1 {
 				// home was specified
 				varL2.init( (String)ref2.getObject() );
 			}
+			initedVL = true;
+			
 			// set this for Level1
-			params.set( PossibleParams.varLevelAll, varL2 );
+			synchronized ( temporaryLevel1Params ) {
+				temporaryLevel1Params.set( PossibleParams.varLevelAll, varL2 );
+				// defaultVar = true;
+				super.initMainLevel( temporaryLevel1Params );
+			}
 		} else {
 			Object obj = ref.getObject();
 			RunTime.assertNotNull( obj );
@@ -82,15 +93,15 @@ public class MainLevel2 extends MainLevel1 {
 				RunTime.BadCallError( "wrong type passed" );
 			}
 			varL2 = (VarLevel2)obj;
-			
+			// defaultVar = false;
+			super.initMainLevel( params );
 		}
 		
 		var2 = varL2;
 		
-		// set this for Level1
-		// MethodParams<Object> lowerParams = new MethodParams<Object>();
-		// lowerParams.set( PossibleParams.varLevelAll, varL2 );
-		super.initMainLevel( params );
+		// if ( defaultVar ) {
+		// params.remove( PossibleParams.varLevelAll );
+		// }
 	}
 	
 	/*
@@ -117,5 +128,17 @@ public class MainLevel2 extends MainLevel1 {
 	public void showHome() {
 
 		var2.showHome();
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.temporary.tests.MainLevel1#done()
+	 */
+	@Override
+	protected void done() {
+
+		super.done();
+		var2 = null;
 	}
 }

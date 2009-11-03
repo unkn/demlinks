@@ -51,10 +51,24 @@ public class VarLevel2 extends VarLevel1 implements VarLevel2Interface {
 		if ( !inited ) {
 			RunTime.BadCallError( "please don't use init() w/o params" );
 		}
+		super.start();
 	}
 	
 	public void showHome() {
 
+		RunTime.assertTrue( inited );
 		System.out.println( this.getName() + "'s home is: " + homeDir );
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.temporary.tests.VarLevel1#done()
+	 */
+	@Override
+	protected void done() {
+
+		inited = false;
+		super.done();
 	}
 }
