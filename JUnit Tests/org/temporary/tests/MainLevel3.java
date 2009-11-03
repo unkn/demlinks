@@ -54,7 +54,7 @@ public class MainLevel3 extends MainLevel2 {
 
 		if ( null == params ) {
 			// using defaults for this MainLevel1
-			params = this.getDefaults();
+			params = defaults;
 		}
 		RunTime.assertNotNull( params );
 		

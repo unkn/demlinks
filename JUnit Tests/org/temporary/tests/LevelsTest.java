@@ -243,7 +243,7 @@ public class LevelsTest {
 		
 		StaticInstanceTracker.deInitAllThatExtendMe();
 		VarLevel3 vl3 = new VarLevel3();
-		vl3.init( "homeDir1" );
+		vl3.init( "homeDir3" );
 		mp.set( PossibleParams.varLevelAll, vl3 );
 		assertTrue( 1 == mp.size() );
 		ml3.initMainLevel( mp );
@@ -275,5 +275,30 @@ public class LevelsTest {
 		assertTrue( ml3.junitGetVar() != vl3 );
 		assertNotNull( ml3.junitGetVar() );
 		ml3.showHome();
+	}
+	
+	@Test
+	public void test4() {
+
+		MethodParams<Object> mp = new MethodParams<Object>();
+		VarLevel3 vl3 = new VarLevel3();
+		vl3.init( "homeDir3" );
+		mp.set( PossibleParams.varLevelAll, vl3 );
+		assertTrue( vl3.isInited() );
+		ml3.initMainLevel( mp );
+		assertTrue( vl3.isInited() );
+		assertTrue( ml3.junitGetVar() == vl3 );
+		ml3.deInit();
+		assertTrue( vl3.isInited() );
+		
+
+		ml3.initMainLevel( null );
+		vl3 = null;
+		vl3 = (VarLevel3)ml3.junitGetVar();
+		assertNotNull( vl3 );
+		assertTrue( vl3.isInited() );
+		ml3.deInit();
+		assertFalse( vl3.isInited() );
+		assertNull( ml3.junitGetVar() );
 	}
 }

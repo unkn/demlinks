@@ -38,26 +38,20 @@ import org.references.method.MethodParams;
  */
 public class MainLevel1 extends StaticInstanceTracker {
 	
-	private VarLevel1				var			= null;
-	protected MethodParams<Object>	defaults	= null;
-	private boolean					inited		= false;
+	private VarLevel1							var			= null;
+	
+	// defaults are no params, or no params means use defaults
+	protected static final MethodParams<Object>	defaults	= new MethodParams<Object>();
+	
+	// var to see if we used init() instead of initMainLevel(...)
+	private boolean								inited		= false;
 	
 	// true if we inited a default 'var' so we know to deInit it
-	protected boolean				initedVL	= false;
+	// we won't deInit passed 'var' param
+	protected boolean							initedVL	= false;
 	
 	public MainLevel1() {
 
-	}
-	
-	/**
-	 * @return default parameters for this Level
-	 */
-	protected MethodParams<Object> getDefaults() {
-
-		if ( null == defaults ) {
-			defaults = new MethodParams<Object>();
-		}
-		return defaults;
 	}
 	
 	/**
@@ -67,7 +61,7 @@ public class MainLevel1 extends StaticInstanceTracker {
 
 		if ( null == params ) {
 			// using defaults for this MainLevel1
-			params = this.getDefaults();
+			params = defaults;
 		}
 		RunTime.assertNotNull( params );
 		

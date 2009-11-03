@@ -71,4 +71,9 @@ public class VarLevel2 extends VarLevel1 implements VarLevel2Interface {
 		inited = false;
 		super.done();
 	}
+	
+	public boolean isInited() {
+
+		return inited;
+	}
 }
