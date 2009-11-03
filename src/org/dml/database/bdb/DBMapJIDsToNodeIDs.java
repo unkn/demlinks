@@ -124,7 +124,7 @@ public class DBMapJIDsToNodeIDs extends OneToOneDBMap {
 
 		if ( null != this.internal_getNodeIDFromJID( fromJID ) ) {
 			// already exists
-			RunTime.Bug( "bad programming" );// throws
+			RunTime.bug( "bad programming" );// throws
 		}
 		// doesn't exist, make it:
 		return this.internal_makeNewNodeID( fromJID );
@@ -145,7 +145,7 @@ public class DBMapJIDsToNodeIDs extends OneToOneDBMap {
 		RunTime.assertNotNull( fromJID );
 		NodeID nid = new NodeID( this.getUniqueNodeID() );
 		if ( OperationStatus.SUCCESS != this.internal_Link( fromJID, nid ) ) {
-			RunTime.Bug( "should've succeeded, maybe JID already existed?" );
+			RunTime.bug( "should've succeeded, maybe JID already existed?" );
 		}
 		RunTime.assertNotNull( nid );
 		return nid;

@@ -25,13 +25,17 @@ package org.temporary.tests;
 
 
 
+import org.references.method.MethodParams;
+
+
+
 /**
  * 
  *
  */
 public interface VarLevel2Interface extends VarLevel1Interface {
 	
-	public void init( String homeDir1 );
+	public void init( MethodParams<Object> params );
 	
 	public void showHome();
 }

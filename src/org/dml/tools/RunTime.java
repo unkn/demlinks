@@ -39,20 +39,20 @@ public class RunTime {
 	
 	public static void Bug() {
 
-		Bug( "Bug detected." );
+		bug( "Bug detected." );
 	}
 	
-	public static void Bug( String msg ) {
+	public static void bug( String msg ) {
 
 		throw new BugError( "Bug detected: " + msg );
 	}
 	
 	public static void BadCallError() {
 
-		BadCallError( "" );
+		badCall( "" );
 	}
 	
-	public static void BadCallError( String msg ) {
+	public static void badCall( String msg ) {
 
 		throw new BadCallError( "BADCALL: " + msg );
 	}

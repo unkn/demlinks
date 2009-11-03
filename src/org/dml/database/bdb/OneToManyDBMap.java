@@ -164,7 +164,7 @@ public class OneToManyDBMap {
 					null );
 			if ( ( ( OperationStatus.SUCCESS == ret1 ) && ( OperationStatus.SUCCESS != ret2 ) )
 					|| ( ( OperationStatus.SUCCESS != ret1 ) && ( OperationStatus.SUCCESS == ret2 ) ) ) {
-				RunTime.Bug( "one exists, the other doesn't; but should either both exist, or both not exist" );
+				RunTime.bug( "one exists, the other doesn't; but should either both exist, or both not exist" );
 			}
 		} finally {
 			txc.commit();
@@ -229,7 +229,7 @@ public class OneToManyDBMap {
 			} else {
 				if ( ( ( OperationStatus.KEYEXIST == ret1 ) && ( OperationStatus.KEYEXIST != ret2 ) )
 						|| ( ( OperationStatus.KEYEXIST != ret1 ) && ( OperationStatus.KEYEXIST == ret2 ) ) ) {
-					RunTime.Bug( "one link exists and the other does not" );
+					RunTime.bug( "one link exists and the other does not" );
 				}
 			}
 			

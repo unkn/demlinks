@@ -150,7 +150,7 @@ public class OneToOneDBMap {
 		}
 		
 		if ( one ^ two ) {
-			RunTime.Bug( "they should both be the same value, otherwise one of "
+			RunTime.bug( "they should both be the same value, otherwise one of "
 					+ "backwardDB and forwardDB was open and the other closed "
 					+ "and we should've had both open always" );
 		} else {

@@ -165,4 +165,19 @@ public class MethodParams<T> {// T= base class, usually just Object
 			return ret;
 		}
 	}
+	
+	/**
+	 * this will overwrite those parameters that exist in <code>this</code> with
+	 * those that exist in <code>withThisNewOnes</code><br>
+	 * in other words, it's a merge between 'this' and 'withThisNewOnes' with
+	 * the priority on 'withThisNewOnes'<br>
+	 * so, old parameters that don't exist in 'withThisNewOnes' will still
+	 * remain<br>
+	 * 
+	 * @param withThisNewOnes
+	 */
+	public void overwrite( MethodParams<T> withThisNewOnes ) {
+
+		// TODO
+	}
 }

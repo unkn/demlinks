@@ -115,7 +115,7 @@ public class DBMapTupleNodeIDs extends OneToManyDBMap {
 
 		RunTime.assertNotNull( nid );
 		if ( null == bdb.getDBMapJIDsToNodeIDs().getNodeJID( nid ) ) {
-			RunTime.Bug( "NodeID doesn't exist, and it's assumed it should" );
+			RunTime.bug( "NodeID doesn't exist, and it's assumed it should" );
 		}
 	}
 }

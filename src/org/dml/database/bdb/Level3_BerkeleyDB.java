@@ -278,7 +278,7 @@ public class Level3_BerkeleyDB {
 				// ignore
 			} finally {
 				if ( !allOpenSecondaryDatabases.removeObject( secDb ) ) {
-					RunTime.Bug( "should've existed" );
+					RunTime.bug( "should've existed" );
 				}
 			}
 		} else {
@@ -326,7 +326,7 @@ public class Level3_BerkeleyDB {
 		Sequence seq = this.getSeqsDB().openSequence( null, deKey,
 				allSequencesConfig );
 		if ( allSequenceInstances.addFirstQ( seq ) ) {
-			RunTime.Bug( "couldn't have already existed!" );
+			RunTime.bug( "couldn't have already existed!" );
 		}
 		RunTime.assertNotNull( seq );
 		return seq;
@@ -352,7 +352,7 @@ public class Level3_BerkeleyDB {
 				// ignore
 			} finally {
 				if ( !allSequenceInstances.removeObject( thisSeq ) ) {
-					RunTime.Bug( "should've existed" );
+					RunTime.bug( "should've existed" );
 				}
 			}
 		} else {
@@ -379,7 +379,7 @@ public class Level3_BerkeleyDB {
 			this.silentCloseAnySeq( iter, "autoclosing..." );// we don't know
 			// the name here
 			if ( allSequenceInstances.removeObject( iter ) ) {
-				RunTime.Bug( "should've already been removed by above statement" );
+				RunTime.bug( "should've already been removed by above statement" );
 			}
 			// count++;
 		}
@@ -432,7 +432,7 @@ public class Level3_BerkeleyDB {
 		while ( null != ( iterSec = allOpenSecondaryDatabases.getObjectAt( Position.FIRST ) ) ) {
 			this.silentCloseAnySecDB( iterSec );
 			if ( allOpenSecondaryDatabases.removeObject( iterSec ) ) {
-				RunTime.Bug( "should've already been removed by above cmd" );
+				RunTime.bug( "should've already been removed by above cmd" );
 			}
 			iterSec = allOpenSecondaryDatabases.getObjectAt( Position.FIRST );
 		}
@@ -442,7 +442,7 @@ public class Level3_BerkeleyDB {
 		while ( null != iter ) {
 			this.silentClosePriDB( iter );
 			if ( allOpenPrimaryDatabases.removeObject( iter ) ) {
-				RunTime.Bug( "should've already been removed by above cmd" );
+				RunTime.bug( "should've already been removed by above cmd" );
 			}
 			iter = allOpenPrimaryDatabases.getObjectAt( Position.FIRST );
 		}
@@ -505,7 +505,7 @@ public class Level3_BerkeleyDB {
 		// should not use this openDatabase() method anywhere else
 		Database db = this.getEnvironment().openDatabase( null, dbName, dbConf );
 		if ( allOpenPrimaryDatabases.addFirstQ( db ) ) {
-			RunTime.Bug( "couldn't have already existed!" );
+			RunTime.bug( "couldn't have already existed!" );
 		}
 		return db;
 		// this should be the only method doing open on any database in this
@@ -527,7 +527,7 @@ public class Level3_BerkeleyDB {
 		SecondaryDatabase secDb = this.getEnvironment().openSecondaryDatabase(
 				null, secDbName, primaryDb, secDbConf );
 		if ( allOpenSecondaryDatabases.addFirstQ( secDb ) ) {
-			RunTime.Bug( "couldn't have already existed" );
+			RunTime.bug( "couldn't have already existed" );
 		}
 		return secDb;
 	}
@@ -556,7 +556,7 @@ public class Level3_BerkeleyDB {
 				// ignore
 			} finally {
 				if ( !allOpenPrimaryDatabases.removeObject( db ) ) {
-					RunTime.Bug( "should've succeeded" );
+					RunTime.bug( "should've succeeded" );
 				}
 			}
 		} else {

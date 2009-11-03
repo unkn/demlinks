@@ -52,47 +52,40 @@ public class MainLevel3 extends MainLevel2 {
 	@Override
 	public void initMainLevel( MethodParams<Object> params ) {
 
-		if ( null == params ) {
+		// TODO: should not modify contents of 'params'; maybe clone?
+		MethodParams<Object> temporaryParams = params;
+		if ( null == temporaryParams ) {
 			// using defaults for this MainLevel1
-			params = defaults;
+			temporaryParams = defaults;
 		}
-		RunTime.assertNotNull( params );
+		RunTime.assertNotNull( temporaryParams );
 		
+
+
 		// optional:
-		Reference<Object> ref = params.get( PossibleParams.varLevelAll );
-		VarLevel3 varL3;
+		Reference<Object> ref = temporaryParams.get( PossibleParams.varLevelAll );
 		if ( null == ref ) {
 			// no VarLevel1 given thus must use defaults for VarLevel1
 			// maybe use some defaults ie. homeDir value to default
 			RunTime.assertTrue( null == var3 );
-			varL3 = new VarLevel3();
+			var3 = new VarLevel3();// 1
+			usingOwnVarLevel = true;// 2
+			var3.init( temporaryParams );// 3
 			
-			Reference<Object> ref2 = params.get( PossibleParams.homeDir );
-			if ( null == ref2 ) {
-				// home not specified, using default
-				varL3.init( "defaultHomeDir3" );
-			} else {
-				// home was specified
-				varL3.init( (String)ref2.getObject() );
-			}
-			// set this for Level1
-			initedVL = true;
 			synchronized ( temporaryLevel1Params ) {
-				temporaryLevel1Params.set( PossibleParams.varLevelAll, varL3 );
-				super.initMainLevel( temporaryLevel1Params );
+				temporaryLevel1Params.set( PossibleParams.varLevelAll, var3 );
+				temporaryParams = temporaryLevel1Params;
 			}
 		} else {
 			Object obj = ref.getObject();
 			RunTime.assertNotNull( obj );
 			if ( !( obj instanceof VarLevel3 ) ) {
-				RunTime.BadCallError( "wrong type passed" );
+				RunTime.badCall( "wrong type passed" );
 			}
-			varL3 = (VarLevel3)obj;
-			super.initMainLevel( params );
+			var3 = (VarLevel3)obj;
 		}
 		
-		var3 = varL3;
-		
+		super.initMainLevel( temporaryParams );
 	}
 	
 	/*
@@ -103,7 +96,10 @@ public class MainLevel3 extends MainLevel2 {
 	@Override
 	protected void done() {
 
-		super.done();
-		var3 = null;
+		if ( !usingOwnVarLevel ) {// first
+			var3 = null;
+		}
+		
+		super.done();// second
 	}
 }

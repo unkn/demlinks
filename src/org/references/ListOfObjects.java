@@ -202,7 +202,7 @@ public class ListOfObjects<E> extends ListOfReferences<E> {
 
 		ChainedReference<E> nr = this.newRef( obj );
 		if ( this.addFirstRef( nr ) ) {
-			RunTime.Bug( "must not compare by contents" );
+			RunTime.bug( "must not compare by contents" );
 		}
 		return nr;
 	}

@@ -85,7 +85,7 @@ public class NodeJID extends Reference<String> {
 			// create new
 			curr = new NodeJID( strID );
 			if ( all_Level1_NodeJIDs.put( strID, curr ) != null ) {
-				RunTime.Bug( "a value already existed?!! wicked! it means that .get() is bugged?!" );
+				RunTime.bug( "a value already existed?!! wicked! it means that .get() is bugged?!" );
 			}
 		}
 		return curr;

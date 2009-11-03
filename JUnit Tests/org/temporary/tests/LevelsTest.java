@@ -282,7 +282,9 @@ public class LevelsTest {
 
 		MethodParams<Object> mp = new MethodParams<Object>();
 		VarLevel3 vl3 = new VarLevel3();
-		vl3.init( "homeDir3" );
+		MethodParams<Object> vl3mp = new MethodParams<Object>();
+		vl3mp.set( PossibleParams.homeDir, "homeDir3" );
+		vl3.init( vl3mp );
 		mp.set( PossibleParams.varLevelAll, vl3 );
 		assertTrue( vl3.isInited() );
 		ml3.initMainLevel( mp );

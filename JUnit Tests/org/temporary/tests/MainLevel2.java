@@ -55,72 +55,55 @@ public class MainLevel2 extends MainLevel1 {
 	@Override
 	public void initMainLevel( MethodParams<Object> params ) {
 
-		if ( null == params ) {
+		MethodParams<Object> temporaryParams = params;
+		if ( null == temporaryParams ) {
 			// using defaults for this MainLevel1
-			params = defaults;
+			temporaryParams = defaults;
 		}
-		RunTime.assertNotNull( params );
+		RunTime.assertNotNull( temporaryParams );
 		
+
+
 		// optional:
-		Reference<Object> ref = params.get( PossibleParams.varLevelAll );
-		VarLevel2 varL2;
+		Reference<Object> ref = temporaryParams.get( PossibleParams.varLevelAll );
 		if ( null == ref ) {
 			// no VarLevel1 given thus must use defaults for VarLevel1
 			// maybe use some defaults ie. homeDir value to default
 			RunTime.assertTrue( null == var2 );
-			varL2 = new VarLevel2();
+			var2 = new VarLevel2();// 1 // TODO don't set to null on deInit
+			usingOwnVarLevel = true;// 2
 			
-			Reference<Object> ref2 = params.get( PossibleParams.homeDir );
-			if ( null == ref2 ) {
-				// home not specified, using default
-				varL2.init( "defaultHomeDir" );
-			} else {
-				// home was specified
-				varL2.init( (String)ref2.getObject() );
-			}
-			initedVL = true;
+			// TODO mix with defaults overwriting with params
+			var2.init( temporaryParams );// 3
+			// Reference<Object> ref2 = params.get( PossibleParams.homeDir );
+			// if ( null == ref2 ) {
+			// // home not specified, using default
+			// var2.init( "defaultHomeDir" );
+			// } else {
+			// // home was specified
+			// var2.init( (String)ref2.getObject() );
+			// }
 			
+
 			// set this for Level1
 			synchronized ( temporaryLevel1Params ) {
-				temporaryLevel1Params.set( PossibleParams.varLevelAll, varL2 );
-				// defaultVar = true;
-				super.initMainLevel( temporaryLevel1Params );
+				temporaryLevel1Params.set( PossibleParams.varLevelAll, var2 );
 			}
+			temporaryParams = temporaryLevel1Params;
 		} else {
 			Object obj = ref.getObject();
 			RunTime.assertNotNull( obj );
 			if ( !( obj instanceof VarLevel2 ) ) {
-				RunTime.BadCallError( "wrong type passed" );
+				RunTime.badCall( "wrong type passed" );
 			}
-			varL2 = (VarLevel2)obj;
-			// defaultVar = false;
-			super.initMainLevel( params );
+			// varL2 = (VarLevel2)obj;
+			var2 = (VarLevel2)obj;
 		}
 		
-		var2 = varL2;
-		
-		// if ( defaultVar ) {
-		// params.remove( PossibleParams.varLevelAll );
-		// }
+
+
+		super.initMainLevel( temporaryParams );
 	}
-	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.temporary.tests.MainLevel1#initLevel1(org.temporary.tests.VarLevel1)
-	 */
-	// @Override
-	// public void initLevel1( VarLevel1 varL1 ) {
-	//
-	// super.initLevel1( varL1 );
-	// try {
-	// var2 = (VarLevel2)var;
-	// } catch ( ClassCastException cce ) {
-	// throw new BadCallError(
-	// "wrong method called, use initLevelX for the same X level" );
-	// }
-	// }
 	
 	/**
 	 * 
@@ -138,7 +121,9 @@ public class MainLevel2 extends MainLevel1 {
 	@Override
 	protected void done() {
 
-		super.done();
-		var2 = null;
+		if ( !usingOwnVarLevel ) {// first
+			var2 = null;
+		}
+		super.done();// second
 	}
 }

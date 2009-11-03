@@ -26,6 +26,7 @@ package org.temporary.tests;
 
 
 import org.dml.tools.RunTime;
+import org.references.method.MethodParams;
 
 
 
@@ -38,18 +39,18 @@ public class VarLevel2 extends VarLevel1 implements VarLevel2Interface {
 	String			homeDir;
 	private boolean	inited	= false;
 	
-	public void init( String homeDir1 ) {
-
-		homeDir = homeDir1;
-		inited = true;
-		super.init();
-	}
+	// public void init( String homeDir1 ) {
+	//
+	// homeDir = homeDir1;
+	// inited = true;
+	// super.init();
+	// }
 	
 	@Override
 	protected void start() {
 
 		if ( !inited ) {
-			RunTime.BadCallError( "please don't use init() w/o params" );
+			RunTime.badCall( "please don't use init() w/o params" );
 		}
 		super.start();
 	}
@@ -75,5 +76,16 @@ public class VarLevel2 extends VarLevel1 implements VarLevel2Interface {
 	public boolean isInited() {
 
 		return inited;
+	}
+	
+	/**
+	 * @param params
+	 */
+	public void init( MethodParams<Object> params ) {
+
+		RunTime.assertNotNull( params );
+		homeDir = params.getExString( PossibleParams.homeDir );
+		inited = true;
+		super.init();
 	}
 }

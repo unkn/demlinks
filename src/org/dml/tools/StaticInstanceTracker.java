@@ -113,12 +113,12 @@ public abstract class StaticInstanceTracker {
 	public final void deInit() {
 
 		if ( !inited ) {
-			RunTime.BadCallError( this.toString()
+			RunTime.badCall( this.toString()
 					+ " was not already init()-ed" );
 		}
 		if ( deInited ) {
 			
-			RunTime.BadCallError( this + " was already deInit()-ed!" );
+			RunTime.badCall( this + " was already deInit()-ed!" );
 		}
 		
 		this.deInitSilently();
@@ -142,7 +142,7 @@ public abstract class StaticInstanceTracker {
 	public final void init() {
 
 		if ( inited || !deInited ) {
-			RunTime.BadCallError( "already inited" );
+			RunTime.badCall( "already inited" );
 		}
 		addNewInstance( this );
 		inited = true;
@@ -153,7 +153,7 @@ public abstract class StaticInstanceTracker {
 	private final static void addNewInstance( StaticInstanceTracker instance ) {
 
 		if ( ALL_INSTANCES.addFirstQ( instance ) ) {
-			RunTime.Bug( "should not have existed" );
+			RunTime.bug( "should not have existed" );
 		}
 	}
 	
@@ -161,7 +161,7 @@ public abstract class StaticInstanceTracker {
 
 		Log.entry( instance.toString() );
 		if ( !ALL_INSTANCES.removeObject( instance ) ) {
-			RunTime.Bug( "should've existed" );
+			RunTime.bug( "should've existed" );
 		}
 	}
 }

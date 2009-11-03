@@ -33,22 +33,27 @@ import org.references.method.MethodParams;
 
 
 /**
- * 
- *
+ * 1. can use initMainLevel and deInit multiple times
+ * 2. can use initMainLevel(null) or with empty params to use defaults which
+ * means own VarLevel variable inited/deInited with the MainLevel, and also can
+ * pass parameters to the init of this VarLevel if it supports
+ * 3. when using own VarLevel, this won't be new-ed on each call to init, unless
+ * it's intermixed with a passed VarLevel then the first own VarLevel was
+ * clearly forgotten
  */
 public class MainLevel1 extends StaticInstanceTracker {
 	
-	private VarLevel1							var			= null;
+	private VarLevel1							var1				= null;
 	
 	// defaults are no params, or no params means use defaults
-	protected static final MethodParams<Object>	defaults	= new MethodParams<Object>();
+	protected static final MethodParams<Object>	defaults			= new MethodParams<Object>();
 	
 	// var to see if we used init() instead of initMainLevel(...)
-	private boolean								inited		= false;
+	private boolean								inited				= false;
 	
 	// true if we inited a default 'var' so we know to deInit it
 	// we won't deInit passed 'var' param
-	protected boolean							initedVL	= false;
+	protected boolean							usingOwnVarLevel	= false;
 	
 	public MainLevel1() {
 
@@ -61,36 +66,34 @@ public class MainLevel1 extends StaticInstanceTracker {
 
 		if ( null == params ) {
 			// using defaults for this MainLevel1
-			params = defaults;
+			params = defaults;// TODO methodify this again
 		}
 		RunTime.assertNotNull( params );
 		
 		// optional:
 		Reference<Object> ref = params.get( PossibleParams.varLevelAll );
-		VarLevel1 varL1;
 		if ( null == ref ) {
 			// no VarLevel1 given thus must use defaults for VarLevel1
-			RunTime.assertTrue( null == var );
-			varL1 = new VarLevel1();
-			varL1.init();
-			initedVL = true;
+			RunTime.assertTrue( null == var1 );
+			var1 = new VarLevel1();// first
+			usingOwnVarLevel = true;// second
+			var1.init();// third
 		} else {
 			Object obj = ref.getObject();
 			RunTime.assertNotNull( obj );
 			if ( !( obj instanceof VarLevel1 ) ) {
-				RunTime.BadCallError( "wrong type passed" );
+				RunTime.badCall( "wrong type passed" );
 			}
-			varL1 = (VarLevel1)obj;
+			var1 = (VarLevel1)obj;
 		}
 		
-		var = varL1;
-		inited = true;
-		this.init();
+		inited = true;// first
+		this.init();// second
 	}
 	
 	public void do1() {
 
-		var.sayHello();
+		var1.sayHello();
 	}
 	
 	/**
@@ -109,17 +112,17 @@ public class MainLevel1 extends StaticInstanceTracker {
 	@Override
 	protected void done() {
 
-		inited = false;
+		inited = false;// first
 		System.out.println( this.getName() + " deiniting..." );
-		if ( null != var ) {
+		if ( null != var1 ) {
 			// could be not yet inited due to throws in initMainLevel()
-			if ( initedVL ) {
+			if ( usingOwnVarLevel ) {
 				// we inited it, then we deinit it
-				var.deInit();
-				initedVL = false;
-				
+				var1.deInit();
+				usingOwnVarLevel = false;
+			} else {
+				var1 = null;
 			}
-			var = null;
 		}
 	}
 	
@@ -133,8 +136,8 @@ public class MainLevel1 extends StaticInstanceTracker {
 
 		System.out.println( this.getName() + " Initing..." );
 		if ( !inited ) {
-			// called init()
-			RunTime.Bug( "please don't use init() w/o params" );
+			// called init() which is not supported
+			RunTime.badCall( "please don't use init() w/o params" );
 			// this.initMainLevel( null );this won't work, init() recursion
 		}
 	}
@@ -144,6 +147,6 @@ public class MainLevel1 extends StaticInstanceTracker {
 	 */
 	public VarLevel1 junitGetVar() {
 
-		return var;
+		return var1;
 	}
 }
