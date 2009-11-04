@@ -124,6 +124,7 @@ public class MainLevel1 extends MainLevel0 {
 	 */
 	public VarLevel1 junitGetVar() {
 
+		// FIXME: should this be true?
 		RunTime.assertTrue( var1 == this.getVarLevelX() );
 		return (VarLevel1)this.getVarLevelX();
 	}
@@ -137,6 +138,9 @@ public class MainLevel1 extends MainLevel0 {
 	protected void done() {
 
 		System.out.println( this.getName() + " deiniting..." );
+		if ( !usingOwnVarLevel ) {
+			var1 = null;
+		}
 		super.done();
 	}
 }

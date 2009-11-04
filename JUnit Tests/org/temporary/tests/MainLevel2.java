@@ -176,6 +176,7 @@ public class MainLevel2 extends MainLevel1 {
 	protected void setVarLevelX( Object obj ) {
 
 		var2 = (VarLevel2)obj;
+		super.setVarLevelX( obj );
 	}
 	
 	/*

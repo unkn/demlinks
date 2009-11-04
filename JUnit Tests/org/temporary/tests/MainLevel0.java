@@ -42,7 +42,8 @@ import org.references.method.MethodParams;
  * 3. there is only one VarLevel instance no matter at which level we are, once
  * the class is instantiated
  * 4. as said in 2. you must override w/o calling super, the following methods:
- * getVarLevelX, checkVarLevelX, newVarLevelX, setVarLevelX
+ * getVarLevelX, checkVarLevelX, newVarLevelX;
+ * 5. always call super on setVarLevelX and always override it
  */
 public abstract class MainLevel0 extends StaticInstanceTracker {
 	
@@ -82,7 +83,7 @@ public abstract class MainLevel0 extends StaticInstanceTracker {
 	}
 	
 	/**
-	 * must override this in each level w/o calling super
+	 * must override this in each level AND call super at end or beginning<br>
 	 * 
 	 * @param obj
 	 */
