@@ -26,6 +26,7 @@ package org.temporary.tests;
 
 
 import org.dml.tools.StaticInstanceTracker;
+import org.references.method.MethodParams;
 
 
 
@@ -69,5 +70,18 @@ public class VarLevel1 extends StaticInstanceTracker implements
 
 		System.out.println( this.getName() + " inited." );
 		
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @seeorg.temporary.tests.VarLevel1Interface#init(org.references.method.
+	 * MethodParams)
+	 */
+	@Override
+	public void init( MethodParams<Object> params ) {
+
+		// ignoring at this level
+		super.init();
 	}
 }

@@ -26,8 +26,6 @@ package org.temporary.tests;
 
 
 import org.dml.tools.RunTime;
-import org.dml.tools.StaticInstanceTracker;
-import org.references.Reference;
 import org.references.method.MethodParams;
 
 
@@ -43,64 +41,57 @@ import org.references.method.MethodParams;
  * 4. can use supplied VarLevel, which must be inited/deInited by caller
  * 5. call to init() w/o params (not initMainLevel()) is prevented
  */
-public class MainLevel1 extends StaticInstanceTracker {
+public class MainLevel1 extends MainLevel0 {
 	
-	private VarLevel1						var1				= null;
+	private VarLevel1	var1	= null;
 	
-	// defaults are no params, or no params means use defaults
-	protected static MethodParams<Object>	emptyParamList		= null;
 	
-	// var to see if we used init() instead of initMainLevel(...)
-	private boolean							inited				= false;
-	
-	// true if we inited a default 'var' so we know to deInit it
-	// we won't deInit passed 'var' param
-	protected boolean						usingOwnVarLevel	= false;
-	
+
 	public MainLevel1() {
 
-		// since this is static:
-		if ( null == emptyParamList ) {
-			emptyParamList = new MethodParams<Object>();
-			emptyParamList.init();
-			// FIXME: when is this deInited? should be when last instance is
-			// deInited, but can't compare class names, could be Level3 and
-			// Level2 classes, but we can't deInit on last Level3.deInit
-			// true that a deInit is not really needed, but as a concept...when?
+		super();
+		
+	}
+	
+	
+	@Override
+	public void initMainLevel( MethodParams<Object> params ) {
+
+		super.initMainLevel( this.internalInit( var1, params ) );
+	}
+	
+	
+	@Override
+	protected void setVarLevelX( Object obj ) {
+
+		var1 = (VarLevel1)obj;
+	}
+	
+	@Override
+	protected Object newVarLevelX() {
+
+		var1 = new VarLevel1();
+		return var1;
+	}
+	
+	@Override
+	protected void checkVarLevelX( Object obj ) {
+
+		if ( !( obj instanceof VarLevel1 ) ) {
+			// cannot be under VarLevel1, can be above tho
+			RunTime.badCall( "wrong type passed" );
 		}
 	}
 	
-	/**
-	 * @param params
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.temporary.tests.MainLevel0#getVarLevelX()
 	 */
-	public void initMainLevel( MethodParams<Object> params ) {
+	@Override
+	protected Object getVarLevelX() {
 
-		if ( null == params ) {
-			// using defaults for this MainLevel1
-			params = emptyParamList;
-		}
-		RunTime.assertNotNull( params );
-		
-		// optional:
-		Reference<Object> ref = params.get( PossibleParams.varLevelAll );
-		if ( null == ref ) {
-			// no VarLevel1 given thus must use defaults for VarLevel1
-			if ( null == var1 ) {
-				var1 = new VarLevel1();// first
-			}
-			usingOwnVarLevel = true;// second
-			var1.init();// third
-		} else {
-			Object obj = ref.getObject();
-			RunTime.assertNotNull( obj );
-			if ( !( obj instanceof VarLevel1 ) ) {
-				RunTime.badCall( "wrong type passed" );
-			}
-			var1 = (VarLevel1)obj;
-		}
-		
-		inited = true;// first
-		this.init();// second
+		return var1;
 	}
 	
 	public void do1() {
@@ -119,41 +110,13 @@ public class MainLevel1 extends StaticInstanceTracker {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.dml.tools.StaticInstanceTracker#done()
-	 */
-	@Override
-	protected void done() {
-
-		inited = false;// first
-		System.out.println( this.getName() + " deiniting..." );
-		if ( null != var1 ) {
-			// could be not yet inited due to throws in initMainLevel()
-			if ( usingOwnVarLevel ) {
-				// we inited it, then we deinit it
-				usingOwnVarLevel = false;// 1 //this did the trick
-				var1.deInit();// 2
-				// not setting it to null, since we might use it on the next
-				// call
-			} else {
-				var1 = null;
-			}
-		}
-	}
-	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.dml.tools.StaticInstanceTracker#start()
+	 * @see org.temporary.tests.MainLevel0#start()
 	 */
 	@Override
 	protected void start() {
 
 		System.out.println( this.getName() + " Initing..." );
-		if ( !inited ) {
-			// called init() which is not supported
-			RunTime.badCall( "please don't use init() w/o params" );
-			// this.initMainLevel( null );this won't work, init() recursion
-		}
+		super.start();
 	}
 	
 	/**
@@ -161,6 +124,19 @@ public class MainLevel1 extends StaticInstanceTracker {
 	 */
 	public VarLevel1 junitGetVar() {
 
-		return var1;
+		RunTime.assertTrue( var1 == this.getVarLevelX() );
+		return (VarLevel1)this.getVarLevelX();
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.temporary.tests.MainLevel0#done()
+	 */
+	@Override
+	protected void done() {
+
+		System.out.println( this.getName() + " deiniting..." );
+		super.done();
 	}
 }

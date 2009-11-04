@@ -24,11 +24,18 @@
 package org.temporary.tests;
 
 
+
+import org.references.method.MethodParams;
+
+
+
 /**
  * 
  *
  */
 public interface VarLevel1Interface {
+	
+	public void init( MethodParams<Object> params );
 	
 	public void init();
 	

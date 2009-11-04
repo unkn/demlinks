@@ -26,7 +26,6 @@ package org.temporary.tests;
 
 
 import org.dml.tools.RunTime;
-import org.references.Reference;
 import org.references.method.MethodParams;
 
 
@@ -37,32 +36,27 @@ import org.references.method.MethodParams;
  */
 public class MainLevel2 extends MainLevel1 {
 	
-	private VarLevel2						var2;
+	private VarLevel2	var2;
+	
 	// true if we did new var2
 	// private final boolean defaultVar = false;
-	protected static MethodParams<Object>	temporaryLevel1Params	= null;
-	protected static MethodParams<Object>	defaults				= null;
 	
+
 	public MainLevel2() {
 
-		if ( null == temporaryLevel1Params ) {
-			temporaryLevel1Params = new MethodParams<Object>();
-			temporaryLevel1Params.init();
-			// FIXME: when's this deInited also?
-		}
+		super();
+		
 	}
 	
+	@Override
 	protected MethodParams<Object> getDefaults() {
 
-		if ( null == defaults ) {
-			defaults = new MethodParams<Object>();
-			defaults.init();
-		}
+		MethodParams<Object> def = super.getDefaults();
+		def.set( PossibleParams.homeDir, "level2defaultHOME" );
 		
-		defaults.set( PossibleParams.homeDir, "level2defaultHOME" );
-		
-		return defaults;
+		return def;
 	}
+	
 	
 	/*
 	 * (non-Javadoc)
@@ -73,53 +67,56 @@ public class MainLevel2 extends MainLevel1 {
 	@Override
 	public void initMainLevel( MethodParams<Object> params ) {
 
-		MethodParams<Object> refToParams = params;
-		if ( null == refToParams ) {
-			// empty means use defaults
-			refToParams = emptyParamList;
-		}
-		RunTime.assertNotNull( refToParams );
+		super.initMainLevel( this.internalInit( var2, params ) );
+		// MethodParams<Object> refToParams = params;
+		// if ( null == refToParams ) {
+		// // empty means use defaults
+		// refToParams = emptyParamList;
+		// }
+		// RunTime.assertNotNull( refToParams );
+		//		
+		//
+		//
+		// // optional param, but the top level will supply this if toplevel
+		// exists
+		// // or the user will supply this if it is so desired but he will be
+		// // responsible for it being inited/deinited
+		// Reference<Object> ref = refToParams.get( PossibleParams.varLevelAll
+		// );
+		// if ( null == ref ) {
+		// // no VarLevel1 given thus must use defaults for VarLevel1
+		// // maybe use some defaults ie. homeDir value to default
+		// if ( null == var2 ) {
+		// var2 = new VarLevel2();// 1
+		// }
+		// usingOwnVarLevel = true;// 2
+		//			
+		//
+		// // TODO avoid new-ing this every time; clone does the new
+		// MethodParams<Object> moo = this.getDefaults().getClone();
+		// // using defaults but overwriting them with params
+		// moo.mergeWith( refToParams, true );
+		// var2.init( moo );// 3
+		// moo.deInit();
+		//			
+		// // set this for Level1
+		// synchronized ( temporaryLevel1Params ) {
+		// temporaryLevel1Params.set( PossibleParams.varLevelAll, var2 );
+		// }
+		// refToParams = temporaryLevel1Params;
+		// } else {
+		// Object obj = ref.getObject();
+		// RunTime.assertNotNull( obj );
+		// if ( !( obj instanceof VarLevel2 ) ) {
+		// // cannot be under VarLevel2, can be above tho
+		// RunTime.badCall( "wrong type passed" );
+		// }
+		// var2 = (VarLevel2)obj;
+		// }
+		//		
 		
-
-
-		// optional param, but the top level will supply this if toplevel exists
-		// or the user will supply this if it is so desired but he will be
-		// responsible for it being inited/deinited
-		Reference<Object> ref = refToParams.get( PossibleParams.varLevelAll );
-		if ( null == ref ) {
-			// no VarLevel1 given thus must use defaults for VarLevel1
-			// maybe use some defaults ie. homeDir value to default
-			if ( null == var2 ) {
-				var2 = new VarLevel2();// 1
-			}
-			usingOwnVarLevel = true;// 2
-			
-
-			// TODO avoid new-ing this every time; clone does the new
-			MethodParams<Object> moo = this.getDefaults().getClone();
-			// using defaults but overwriting them with params
-			moo.mergeWith( refToParams, true );
-			var2.init( moo );// 3
-			moo.deInit();
-			
-			// set this for Level1
-			synchronized ( temporaryLevel1Params ) {
-				temporaryLevel1Params.set( PossibleParams.varLevelAll, var2 );
-			}
-			refToParams = temporaryLevel1Params;
-		} else {
-			Object obj = ref.getObject();
-			RunTime.assertNotNull( obj );
-			if ( !( obj instanceof VarLevel2 ) ) {
-				// cannot be under VarLevel2, can be above tho
-				RunTime.badCall( "wrong type passed" );
-			}
-			var2 = (VarLevel2)obj;
-		}
-		
-
-
-		super.initMainLevel( refToParams );
+		// this.internalInit2of2();
+		// super.initMainLevel( refToParams );
 	}
 	
 	/**
@@ -139,8 +136,56 @@ public class MainLevel2 extends MainLevel1 {
 	protected void done() {
 
 		if ( !usingOwnVarLevel ) {// first
-			var2 = null;
+			var2 = null;// FIXME: do I need this in every level?
 		}
 		super.done();// second
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.temporary.tests.MainLevel1#checkVarLevelX(java.lang.Object)
+	 */
+	@Override
+	protected void checkVarLevelX( Object obj ) {
+
+		if ( !( obj instanceof VarLevel2 ) ) {
+			// cannot be under VarLevel2, can be above tho
+			RunTime.badCall( "wrong type passed" );
+		}
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.temporary.tests.MainLevel1#newVarLevelX()
+	 */
+	@Override
+	protected Object newVarLevelX() {
+
+		var2 = new VarLevel2();
+		return var2;
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.temporary.tests.MainLevel1#setVarLevelX(java.lang.Object)
+	 */
+	@Override
+	protected void setVarLevelX( Object obj ) {
+
+		var2 = (VarLevel2)obj;
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.temporary.tests.MainLevel1#getVarLevelX()
+	 */
+	@Override
+	protected Object getVarLevelX() {
+
+		return var2;
 	}
 }

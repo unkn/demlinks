@@ -26,7 +26,6 @@ package org.temporary.tests;
 
 
 import org.dml.tools.RunTime;
-import org.references.Reference;
 import org.references.method.MethodParams;
 
 
@@ -41,6 +40,7 @@ public class MainLevel3 extends MainLevel2 {
 	
 	public MainLevel3() {
 
+		super();
 	}
 	
 	/*
@@ -68,50 +68,53 @@ public class MainLevel3 extends MainLevel2 {
 	@Override
 	public void initMainLevel( MethodParams<Object> params ) {
 
-		// should not modify contents of 'params';
-		MethodParams<Object> referenceToParams = params;
-		if ( null == referenceToParams ) {
-			// using defaults for this MainLevel1
-			referenceToParams = emptyParamList;
-		}
-		RunTime.assertNotNull( referenceToParams );
+		super.initMainLevel( this.internalInit( var3, params ) );
 		
-
-
-		// optional:
-		Reference<Object> ref = referenceToParams.get( PossibleParams.varLevelAll );
-		if ( null == ref ) {
-			// no VarLevel1 given thus must use defaults for VarLevel1
-			// maybe use some defaults ie. homeDir value to default
-			// RunTime.assertTrue( null == var3 );isn't always null
-			// here
-			if ( null == var3 ) {
-				// if we're here, this means we previously used init with
-				// default var, else we previously used a given var from params
-				var3 = new VarLevel3();// 1
-			}
-			usingOwnVarLevel = true;// 2
-			
-			MethodParams<Object> moo = this.getDefaults().getClone();
-			moo.mergeWith( referenceToParams, true );
-			var3.init( moo );// 3
-			moo.deInit();
-			// TODO mix moo with temporaryLevel1Params ?? or not
-			
-			synchronized ( temporaryLevel1Params ) {
-				temporaryLevel1Params.set( PossibleParams.varLevelAll, var3 );
-				referenceToParams = temporaryLevel1Params;
-			}
-		} else {
-			Object obj = ref.getObject();
-			RunTime.assertNotNull( obj );
-			if ( !( obj instanceof VarLevel3 ) ) {
-				RunTime.badCall( "wrong type passed" );
-			}
-			var3 = (VarLevel3)obj;
-		}
-		
-		super.initMainLevel( referenceToParams );
+		// // should not modify contents of 'params';
+		// MethodParams<Object> referenceToParams = params;
+		// if ( null == referenceToParams ) {
+		// // using defaults for this MainLevel1
+		// referenceToParams = emptyParamList;
+		// }
+		// RunTime.assertNotNull( referenceToParams );
+		//		
+		//
+		//
+		// // optional:
+		// Reference<Object> ref = referenceToParams.get(
+		// PossibleParams.varLevelAll );
+		// if ( null == ref ) {
+		// // no VarLevel1 given thus must use defaults for VarLevel1
+		// // maybe use some defaults ie. homeDir value to default
+		// // RunTime.assertTrue( null == var3 );isn't always null
+		// // here
+		// if ( null == var3 ) {
+		// // if we're here, this means we previously used init with
+		// // default var, else we previously used a given var from params
+		// var3 = new VarLevel3();// 1
+		// }
+		// usingOwnVarLevel = true;// 2
+		//			
+		// MethodParams<Object> moo = this.getDefaults().getClone();
+		// moo.mergeWith( referenceToParams, true );
+		// var3.init( moo );// 3
+		// moo.deInit();
+		// // TODO mix moo with temporaryLevel1Params ?? or not
+		//			
+		// synchronized ( temporaryLevel1Params ) {
+		// temporaryLevel1Params.set( PossibleParams.varLevelAll, var3 );
+		// referenceToParams = temporaryLevel1Params;
+		// }
+		// } else {
+		// Object obj = ref.getObject();
+		// RunTime.assertNotNull( obj );
+		// if ( !( obj instanceof VarLevel3 ) ) {
+		// RunTime.badCall( "wrong type passed" );
+		// }
+		// var3 = (VarLevel3)obj;
+		// }
+		//		
+		// super.initMainLevel( referenceToParams );
 	}
 	
 	/*
@@ -127,5 +130,54 @@ public class MainLevel3 extends MainLevel2 {
 		}
 		
 		super.done();// second
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.temporary.tests.MainLevel2#checkVarLevelX(java.lang.Object)
+	 */
+	@Override
+	protected void checkVarLevelX( Object obj ) {
+
+		
+		if ( !( obj instanceof VarLevel3 ) ) {
+			// cannot be under VarLevel3, can be above tho
+			RunTime.badCall( "wrong type passed" );
+		}
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.temporary.tests.MainLevel2#newVarLevelX()
+	 */
+	@Override
+	protected Object newVarLevelX() {
+
+		var3 = new VarLevel3();
+		return var3;
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.temporary.tests.MainLevel2#setVarLevelX(java.lang.Object)
+	 */
+	@Override
+	protected void setVarLevelX( Object obj ) {
+
+		var3 = (VarLevel3)obj;
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.temporary.tests.MainLevel2#getVarLevelX()
+	 */
+	@Override
+	protected Object getVarLevelX() {
+
+		return var3;
 	}
 }

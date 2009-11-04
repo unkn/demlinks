@@ -81,11 +81,12 @@ public class VarLevel2 extends VarLevel1 implements VarLevel2Interface {
 	/**
 	 * @param params
 	 */
+	@Override
 	public void init( MethodParams<Object> params ) {
 
 		RunTime.assertNotNull( params );
 		homeDir = params.getExString( PossibleParams.homeDir );
 		inited = true;
-		super.init();
+		super.init( params );
 	}
 }
