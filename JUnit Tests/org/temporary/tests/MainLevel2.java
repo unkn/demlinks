@@ -26,7 +26,6 @@ package org.temporary.tests;
 
 
 import org.dml.tools.RunTime;
-import org.javapart.logger.Log;
 import org.references.Reference;
 import org.references.method.MethodParams;
 
@@ -94,7 +93,7 @@ public class MainLevel2 extends MainLevel1 {
 			moo.mergeWith( refToParams, true );
 			// TODO mix with defaults overwriting with params
 			var2.init( moo );// 3
-			moo.clear();
+			moo.clear();// TODO MethodParams extends StaticInstanceTracker
 			
 			// set this for Level1
 			synchronized ( temporaryLevel1Params ) {
@@ -102,10 +101,10 @@ public class MainLevel2 extends MainLevel1 {
 			}
 			refToParams = temporaryLevel1Params;
 		} else {
-			if ( usingOwnVarLevel ) {
-				Log.warn( "lost old instance" );
-				usingOwnVarLevel = false;
-			}
+			// if ( usingOwnVarLevel ) {
+			// Log.warn( "lost old instance" );
+			// usingOwnVarLevel = false;// FIXME
+			// }
 			Object obj = ref.getObject();
 			RunTime.assertNotNull( obj );
 			if ( !( obj instanceof VarLevel2 ) ) {

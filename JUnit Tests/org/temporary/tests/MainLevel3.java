@@ -26,7 +26,6 @@ package org.temporary.tests;
 
 
 import org.dml.tools.RunTime;
-import org.javapart.logger.Log;
 import org.references.Reference;
 import org.references.method.MethodParams;
 
@@ -84,22 +83,30 @@ public class MainLevel3 extends MainLevel2 {
 		if ( null == ref ) {
 			// no VarLevel1 given thus must use defaults for VarLevel1
 			// maybe use some defaults ie. homeDir value to default
-			RunTime.assertTrue( null == var3 );
+			// RunTime.assertTrue( null == var3 );// FIXME: isn't always null
+			// here
 			if ( null == var3 ) {
+				// if we're here, this means we previously used init with
+				// default var, else we previously used a given var from params
 				var3 = new VarLevel3();// 1
 			}
 			usingOwnVarLevel = true;// 2
-			var3.init( referenceToParams );// 3
+			
+			MethodParams<Object> moo = this.getDefaults().getClone();
+			moo.mergeWith( referenceToParams, true );
+			var3.init( moo );// 3
+			moo.clear();
+			// TODO mix moo with temporaryLevel1Params ?? or not
 			
 			synchronized ( temporaryLevel1Params ) {
 				temporaryLevel1Params.set( PossibleParams.varLevelAll, var3 );
 				referenceToParams = temporaryLevel1Params;
 			}
 		} else {
-			if ( usingOwnVarLevel ) {
-				Log.warn( "lost old instance" );
-				usingOwnVarLevel = false;
-			}
+			// if ( usingOwnVarLevel ) {
+			// Log.warn( "lost old instance" );
+			// usingOwnVarLevel = false;
+			// }
 			
 			Object obj = ref.getObject();
 			RunTime.assertNotNull( obj );

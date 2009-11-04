@@ -31,7 +31,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import org.dml.error.BadCallError;
-import org.dml.error.BugError;
 import org.dml.tools.StaticInstanceTracker;
 import org.junit.After;
 import org.junit.Before;
@@ -215,6 +214,53 @@ public class LevelsTest {
 	}
 	
 	@Test
+	public void testOwn() {
+
+		VarLevel3 old = null;
+		int count2 = 3;
+		while ( count2 > 0 ) {
+			ml3.initMainLevel( null );// using own VarLevel
+			VarLevel3 vl3 = (VarLevel3)ml3.junitGetVar();
+			if ( null == old ) {
+				old = vl3;
+			}
+			
+			assertNotNull( vl3 );
+			assertTrue( vl3.isInited() );
+			ml3.deInit();// will deInit it
+			assertFalse( vl3.isInited() );
+			assertNotNull( ml3.junitGetVar() );// not null if it's own
+			assertTrue( ml3.junitGetVar() == old );
+			old = (VarLevel3)ml3.junitGetVar();
+			count2--;
+		}
+		
+		// now using not own, after used own
+		VarLevel3 notOwn = new VarLevel3();
+		MethodParams<Object> params = new MethodParams<Object>();
+		String homeDir = "homeNotOwn";
+		params.set( PossibleParams.homeDir, homeDir );
+		notOwn.init( params );
+		assertTrue( notOwn.isInited() );
+		
+		MethodParams<Object> mlParams = new MethodParams<Object>();
+		mlParams.set( PossibleParams.varLevelAll, notOwn );
+		
+		int count = 3;
+		while ( count > 0 ) {
+			ml3.initMainLevel( mlParams );
+			VarLevel3 newVL3 = (VarLevel3)ml3.junitGetVar();
+			assertNotNull( newVL3 );
+			assertTrue( newVL3.isInited() );
+			ml3.deInit();
+			assertTrue( newVL3.isInited() );
+			assertNull( ml3.junitGetVar() );// null if it's now own
+			assertTrue( newVL3 == notOwn );
+			count--;
+		}
+	}
+	
+	@Test
 	public void test2() {
 
 		
@@ -228,8 +274,10 @@ public class LevelsTest {
 		VarLevel1 v1_1 = ml2.junitGetVar();
 		ml2.deInit();
 		
-		assertTrue( v1 != v1_1 );
-		assertNull( ml2.junitGetVar() );// null after deInit
+		assertTrue( v1 == v1_1 );// same var used on consecutive inits using
+		// defaults
+		assertNotNull( ml2.junitGetVar() );// not null after deInit because it's
+		// own var
 	}
 	
 	@Test
@@ -264,7 +312,7 @@ public class LevelsTest {
 		boolean ex = false;
 		try {
 			ml3.init();
-		} catch ( BugError be ) {
+		} catch ( BadCallError bce ) {
 			ex = true;
 		} finally {
 			assertTrue( ex );
@@ -298,15 +346,18 @@ public class LevelsTest {
 		assertTrue( ml3.junitGetVar() == vl3 );
 		ml3.deInit();
 		assertTrue( vl3.isInited() );
-		
-
-		ml3.initMainLevel( null );
-		vl3 = null;
-		vl3 = (VarLevel3)ml3.junitGetVar();
-		assertNotNull( vl3 );
-		assertTrue( vl3.isInited() );
-		ml3.deInit();
+		vl3.deInit();
 		assertFalse( vl3.isInited() );
-		assertNull( ml3.junitGetVar() );
+		vl3 = null;
+		
+		ml3.initMainLevel( null );
+		VarLevel3 intern = (VarLevel3)ml3.junitGetVar();
+		assertNotNull( intern );
+		assertTrue( intern.isInited() );
+		ml3.deInit();
+		assertFalse( intern.isInited() );
+		assertNotNull( ml3.junitGetVar() );// not null when using own var
 	}
+	
+
 }

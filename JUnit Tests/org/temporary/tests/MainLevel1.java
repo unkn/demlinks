@@ -27,7 +27,6 @@ package org.temporary.tests;
 
 import org.dml.tools.RunTime;
 import org.dml.tools.StaticInstanceTracker;
-import org.javapart.logger.Log;
 import org.references.Reference;
 import org.references.method.MethodParams;
 
@@ -75,17 +74,17 @@ public class MainLevel1 extends StaticInstanceTracker {
 		Reference<Object> ref = params.get( PossibleParams.varLevelAll );
 		if ( null == ref ) {
 			// no VarLevel1 given thus must use defaults for VarLevel1
-			RunTime.assertTrue( null == var1 );
+			// RunTime.assertTrue( null == var1 );
 			if ( null == var1 ) {
 				var1 = new VarLevel1();// first
 			}
 			usingOwnVarLevel = true;// second
 			var1.init();// third
 		} else {
-			if ( usingOwnVarLevel ) {
-				Log.warn( "lost old instance" );
-				usingOwnVarLevel = false;
-			}
+			// if ( usingOwnVarLevel ) {
+			// Log.warn( "lost old instance" );
+			// usingOwnVarLevel = false;
+			// }
 			Object obj = ref.getObject();
 			RunTime.assertNotNull( obj );
 			if ( !( obj instanceof VarLevel1 ) ) {
