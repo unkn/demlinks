@@ -230,6 +230,7 @@ public class LevelsTest {
 			ml3.deInit();// will deInit it
 			assertFalse( vl3.isInited() );
 			assertNotNull( ml3.junitGetVar() );// not null if it's own
+			assertTrue( ml3.junitGetVar() == vl3 );
 			assertTrue( ml3.junitGetVar() == old );
 			old = (VarLevel3)ml3.junitGetVar();
 			count2--;
@@ -258,6 +259,16 @@ public class LevelsTest {
 			assertTrue( newVL3 == notOwn );
 			count--;
 		}
+		
+		ml3.initMainLevel( null );
+		VarLevel3 own = (VarLevel3)ml3.junitGetVar();
+		assertNotNull( own );
+		assertTrue( own.isInited() );
+		assertFalse( own == notOwn );
+		ml3.deInit();
+		assertNotNull( ml3.junitGetVar() );
+		assertTrue( ml3.junitGetVar() == own );
+		assertFalse( own.isInited() );
 	}
 	
 	@Test

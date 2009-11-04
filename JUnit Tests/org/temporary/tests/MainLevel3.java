@@ -83,7 +83,7 @@ public class MainLevel3 extends MainLevel2 {
 		if ( null == ref ) {
 			// no VarLevel1 given thus must use defaults for VarLevel1
 			// maybe use some defaults ie. homeDir value to default
-			// RunTime.assertTrue( null == var3 );// FIXME: isn't always null
+			// RunTime.assertTrue( null == var3 );isn't always null
 			// here
 			if ( null == var3 ) {
 				// if we're here, this means we previously used init with
@@ -103,11 +103,6 @@ public class MainLevel3 extends MainLevel2 {
 				referenceToParams = temporaryLevel1Params;
 			}
 		} else {
-			// if ( usingOwnVarLevel ) {
-			// Log.warn( "lost old instance" );
-			// usingOwnVarLevel = false;
-			// }
-			
 			Object obj = ref.getObject();
 			RunTime.assertNotNull( obj );
 			if ( !( obj instanceof VarLevel3 ) ) {

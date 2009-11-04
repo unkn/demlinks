@@ -66,7 +66,7 @@ public class MainLevel1 extends StaticInstanceTracker {
 
 		if ( null == params ) {
 			// using defaults for this MainLevel1
-			params = emptyParamList;// TODO methodify this again
+			params = emptyParamList;
 		}
 		RunTime.assertNotNull( params );
 		
@@ -74,17 +74,12 @@ public class MainLevel1 extends StaticInstanceTracker {
 		Reference<Object> ref = params.get( PossibleParams.varLevelAll );
 		if ( null == ref ) {
 			// no VarLevel1 given thus must use defaults for VarLevel1
-			// RunTime.assertTrue( null == var1 );
 			if ( null == var1 ) {
 				var1 = new VarLevel1();// first
 			}
 			usingOwnVarLevel = true;// second
 			var1.init();// third
 		} else {
-			// if ( usingOwnVarLevel ) {
-			// Log.warn( "lost old instance" );
-			// usingOwnVarLevel = false;
-			// }
 			Object obj = ref.getObject();
 			RunTime.assertNotNull( obj );
 			if ( !( obj instanceof VarLevel1 ) ) {
@@ -124,8 +119,10 @@ public class MainLevel1 extends StaticInstanceTracker {
 			// could be not yet inited due to throws in initMainLevel()
 			if ( usingOwnVarLevel ) {
 				// we inited it, then we deinit it
-				var1.deInit();
-				usingOwnVarLevel = false;
+				usingOwnVarLevel = false;// 1 //this did the trick
+				var1.deInit();// 2
+				// not setting it to null, since we might use it on the next
+				// call
 			} else {
 				var1 = null;
 			}

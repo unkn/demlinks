@@ -81,17 +81,16 @@ public class MainLevel2 extends MainLevel1 {
 		if ( null == ref ) {
 			// no VarLevel1 given thus must use defaults for VarLevel1
 			// maybe use some defaults ie. homeDir value to default
-			// RunTime.assertTrue( null == var2 );
 			if ( null == var2 ) {
-				var2 = new VarLevel2();// 1 // TODO don't set to null on deInit
+				var2 = new VarLevel2();// 1
 			}
 			usingOwnVarLevel = true;// 2
 			
 
 			// TODO avoid new-ing this every time; clone does the new
 			MethodParams<Object> moo = this.getDefaults().getClone();
+			// using defaults but overwriting them with params
 			moo.mergeWith( refToParams, true );
-			// TODO mix with defaults overwriting with params
 			var2.init( moo );// 3
 			moo.clear();// TODO MethodParams extends StaticInstanceTracker
 			
@@ -101,16 +100,11 @@ public class MainLevel2 extends MainLevel1 {
 			}
 			refToParams = temporaryLevel1Params;
 		} else {
-			// if ( usingOwnVarLevel ) {
-			// Log.warn( "lost old instance" );
-			// usingOwnVarLevel = false;// FIXME
-			// }
 			Object obj = ref.getObject();
 			RunTime.assertNotNull( obj );
 			if ( !( obj instanceof VarLevel2 ) ) {
 				RunTime.badCall( "wrong type passed" );
 			}
-			// varL2 = (VarLevel2)obj;
 			var2 = (VarLevel2)obj;
 		}
 		
