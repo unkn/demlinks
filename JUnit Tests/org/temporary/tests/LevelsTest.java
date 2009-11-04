@@ -81,8 +81,10 @@ public class LevelsTest {
 		ml1.initMainLevel( params1 );
 		ml1.do1();
 		
+		MethodParams<Object> v2params = new MethodParams<Object>();
+		v2params.set( PossibleParams.homeDir, "home2" );
 		VarLevel2 v2 = new VarLevel2();
-		v2.init( "home2" );
+		v2.init( v2params );
 		
 		MethodParams<Object> params2 = new MethodParams<Object>();
 		params2.set( PossibleParams.varLevelAll, v2 );
@@ -163,8 +165,10 @@ public class LevelsTest {
 		}
 		
 		// Level 3:
+		MethodParams<Object> v3params = new MethodParams<Object>();
+		v3params.set( PossibleParams.homeDir, "homedirL3" );
 		VarLevel3 v3 = new VarLevel3();
-		v3.init( "homedirL3" );
+		v3.init( v3params );
 		
 		MethodParams<Object> params3 = new MethodParams<Object>();
 		params3.set( PossibleParams.varLevelAll, null );
@@ -243,7 +247,9 @@ public class LevelsTest {
 		
 		StaticInstanceTracker.deInitAllThatExtendMe();
 		VarLevel3 vl3 = new VarLevel3();
-		vl3.init( "homeDir3" );
+		MethodParams<Object> v3params = new MethodParams<Object>();
+		v3params.set( PossibleParams.homeDir, "homeDir3" );
+		vl3.init( v3params );
 		mp.set( PossibleParams.varLevelAll, vl3 );
 		assertTrue( 1 == mp.size() );
 		ml3.initMainLevel( mp );

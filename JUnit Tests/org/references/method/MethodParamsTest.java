@@ -32,6 +32,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.references.Reference;
 
 
 
@@ -139,5 +140,35 @@ public class MethodParamsTest {
 		assertNull( mp2.get( paramString1 ).getObject() );
 		assertNull( mp1.get( paramString1 ).getObject() );
 		assertNull( mp3.get( paramString1 ).getObject() );
+	}
+	
+	@Test
+	public void testClone() {
+
+		mp1.set( paramString1, null );
+		mp1.set( paramBoolean4, true );
+		assertTrue( 2 == mp1.size() );
+		MethodParams<Object> clone = mp1.getClone();
+		assertTrue( 2 == clone.size() );
+		Reference<Object> ref = mp1.get( paramString1 );
+		Reference<Object> cref = clone.get( paramString1 );
+		assertTrue( ref != cref );
+		assertTrue( ref.getObject() == cref.getObject() );
+		
+		ref = mp1.get( paramBoolean4 );
+		cref = clone.get( paramBoolean4 );
+		assertTrue( ref != cref );
+		assertTrue( ref.getObject() == cref.getObject() );
+		
+		assertTrue( mp1 != clone );
+		
+		mp1.set( paramNull2, null );
+		assertTrue( mp1.size() == 3 );
+		assertTrue( 2 == clone.size() );
+		mp1.clear();
+		clone.clear();
+		
+		assertTrue( mp1.size() == 0 );
+		assertTrue( clone.size() == 0 );
 	}
 }

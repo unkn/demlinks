@@ -35,7 +35,8 @@ import org.references.Position;
  * 
  * 1. implement start() and done() but call init() and deInit() instead; because
  * init() calls start() inside it; same for deInit() calling done()<br>
- * 2. use constructor to create, and then call init()<br>
+ * 2. use constructor to create, and then call init() don't call init() from
+ * within the constructor<br>
  * 3. sometime when done with it, you have to use deInit()<br>
  * 4. use deInitAll() in a finally block just in case some exception is going
  * to shutdown the application
@@ -113,8 +114,7 @@ public abstract class StaticInstanceTracker {
 	public final void deInit() {
 
 		if ( !inited ) {
-			RunTime.badCall( this.toString()
-					+ " was not already init()-ed" );
+			RunTime.badCall( this.toString() + " was not already init()-ed" );
 		}
 		if ( deInited ) {
 			

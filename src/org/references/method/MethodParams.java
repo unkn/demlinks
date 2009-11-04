@@ -30,6 +30,7 @@ import java.util.NoSuchElementException;
 import org.dml.tools.RunTime;
 import org.references.ChainedReference;
 import org.references.ListOfObjects;
+import org.references.ListOfUniqueNonNullObjects;
 import org.references.Position;
 import org.references.Reference;
 
@@ -50,9 +51,13 @@ public class MethodParams<T> {// T= base class, usually just Object
 	// a list of instances ie. String, Integer, or even null(s) which can repeat
 	// ie. A==B
 	// objects of this list are the values
-	private final ListOfObjects<T>	listOfParams	= new ListOfObjects<T>();
+	private final ListOfObjects<T>							listOfParams			= new ListOfObjects<T>();
+	private final ListOfUniqueNonNullObjects<ParamName<T>>	redundantListOfNames	= new ListOfUniqueNonNullObjects<ParamName<T>>();
 	
+	// can't use a Set or HashSet or TwoWayHashSet because we need to parse the
+	// list, which could be done with an Iterator but I forgot why can't
 	
+
 	public int size() {
 
 		return listOfParams.size();
@@ -87,6 +92,16 @@ public class MethodParams<T> {// T= base class, usually just Object
 		return this.internalGet( paramName );
 	}
 	
+	private ChainedReference<T> internalGetFirst() {
+
+		return listOfParams.getRefAt( Position.FIRST );
+	}
+	
+	private ChainedReference<T> internalGetNextOf( ChainedReference<T> afterThis ) {
+
+		return listOfParams.getRefAt( Position.AFTER, afterThis );
+	}
+	
 	private ChainedReference<T> internalGet( ParamName<T> paramName ) {
 
 		RunTime.assertNotNull( paramName );
@@ -95,7 +110,9 @@ public class MethodParams<T> {// T= base class, usually just Object
 		ChainedReference<T> found = null;
 		// parse listOfParams and check each element(the reference of each)
 		// against ParamName list
-		ChainedReference<T> citer = listOfParams.getRefAt( Position.FIRST );
+		ChainedReference<T> citer = this.internalGetFirst();
+		// listOfParams.getRefAt(
+		// Position.FIRST );
 		while ( null != citer ) {
 			// paramName list can have only 1 reference from a MethodParams
 			if ( paramName.contains( citer ) ) {
@@ -107,7 +124,8 @@ public class MethodParams<T> {// T= base class, usually just Object
 				// list for same method
 			}
 			// go next
-			citer = listOfParams.getRefAt( Position.AFTER, citer );
+			citer = this.internalGetNextOf( citer );
+			// listOfParams.getRefAt( Position.AFTER, citer );
 		}
 		RunTime.assertTrue( foundCounter <= 1 );
 		return found;
@@ -127,6 +145,8 @@ public class MethodParams<T> {// T= base class, usually just Object
 		if ( null == cref ) {
 			cref = listOfParams.addFirst( value );
 			paramName.add( cref );
+			redundantListOfNames.addFirst( paramName );
+			// FIXME: transaction needed
 		} else {// already exists, must change
 			cref.setObject( value );
 		}
@@ -162,22 +182,99 @@ public class MethodParams<T> {// T= base class, usually just Object
 			boolean ret = listOfParams.removeRef( cref );
 			RunTime.assertTrue( ret );
 			paramName.remove( cref );
+			redundantListOfNames.removeObject( paramName );
+			// FIXME: transaction needed
 			return ret;
 		}
 	}
 	
 	/**
-	 * this will overwrite those parameters that exist in <code>this</code> with
-	 * those that exist in <code>withThisNewOnes</code><br>
-	 * in other words, it's a merge between 'this' and 'withThisNewOnes' with
-	 * the priority on 'withThisNewOnes'<br>
-	 * so, old parameters that don't exist in 'withThisNewOnes' will still
-	 * remain<br>
+	 * this will merge the two, such as <code>this</code> will have both<br>
 	 * 
 	 * @param withThisNewOnes
+	 *            the contents of this parameter will be copied to
+	 *            <code>this</code>
+	 * @param overwrite
+	 *            if true then overwrite the params that already exist in
+	 *            <code>this</code> with those that exist in
+	 *            <code>withThisNewOnes</code><br>
+	 *            clearly this means that those that don't exist in
+	 *            <code>this</code> will be added, but those that do exist in
+	 *            <code>this</code> will be lost
 	 */
-	public void overwrite( MethodParams<T> withThisNewOnes ) {
+	public void mergeWith( MethodParams<T> withThisNewOnes, boolean overwrite ) {
 
 		// TODO
+	}
+	
+	public void clear() {
+
+		ParamName<T> iter = this.getFirstParamName();
+		while ( null != iter ) {
+			ParamName<T> next = this.getNextParamName( iter );
+			this.remove( iter );
+			iter = next;
+		}
+		RunTime.assertTrue( this.size() == 0 );
+		RunTime.assertTrue( redundantListOfNames.size() == 0 );
+		
+	}
+	
+	private ParamName<T> getFirstParamName() {
+
+		return redundantListOfNames.getObjectAt( Position.FIRST );
+	}
+	
+	private ParamName<T> getNextParamName( ParamName<T> nextOfThis ) {
+
+		return redundantListOfNames.getObjectAt( Position.AFTER, nextOfThis );
+	}
+	
+	private ParamName<T> internalGetParamName(
+			ChainedReference<T> thatPointsToThisRef ) {
+
+		RunTime.assertNotNull( thatPointsToThisRef );
+		
+		ParamName<T> ret = null;
+		// we need to find the paramname who's value this is
+		ParamName<T> namesIter = this.getFirstParamName();
+		int count = 0;
+		while ( null != namesIter ) {
+			if ( namesIter.contains( thatPointsToThisRef ) ) {
+				// found it, and since it can be only one...we should break;
+				// break; but we won't break , we try find bugs if any
+				count++;
+				// two params cannot contain same ref, even thos
+				// ref.getObject() can be same; so we detect Bug here
+				RunTime.assertTrue( count <= 1 );
+				ret = namesIter;
+			}
+			
+			// fetch next ParamName
+			namesIter = this.getNextParamName( namesIter );
+		}
+		
+		return ret;
+	}
+	
+	/**
+	 * @return
+	 */
+	public MethodParams<T> getClone() {
+
+		MethodParams<T> clone = new MethodParams<T>();
+		
+		// we parse all ref to values, which are in 'this' and add each to the
+		// cloned
+		ChainedReference<T> ref = this.internalGetFirst();
+		while ( null != ref ) {
+			ParamName<T> pName = this.internalGetParamName( ref );
+			RunTime.assertNotNull( pName );
+			clone.set( pName, ref.getObject() );
+			// fetch next ref to value
+			ref = this.internalGetNextOf( ref );
+		}
+		
+		return clone;
 	}
 }

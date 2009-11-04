@@ -26,6 +26,7 @@ package org.temporary.tests;
 
 
 import org.dml.tools.RunTime;
+import org.javapart.logger.Log;
 import org.references.Reference;
 import org.references.method.MethodParams;
 
@@ -46,6 +47,22 @@ public class MainLevel3 extends MainLevel2 {
 	/*
 	 * (non-Javadoc)
 	 * 
+	 * @see org.temporary.tests.MainLevel2#getDefaults()
+	 */
+	@Override
+	protected MethodParams<Object> getDefaults() {
+
+		MethodParams<Object> ret = super.getDefaults();
+		
+		// the following will overwrite prev param set in Level2
+		ret.set( PossibleParams.homeDir, "level3HOMEDir" );
+		
+		return ret;
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @seeorg.temporary.tests.MainLevel2#initMainLevel(org.references.method.
 	 * MethodParams)
 	 */
@@ -53,30 +70,37 @@ public class MainLevel3 extends MainLevel2 {
 	public void initMainLevel( MethodParams<Object> params ) {
 
 		// TODO: should not modify contents of 'params'; maybe clone?
-		MethodParams<Object> temporaryParams = params;
-		if ( null == temporaryParams ) {
+		MethodParams<Object> referenceToParams = params;
+		if ( null == referenceToParams ) {
 			// using defaults for this MainLevel1
-			temporaryParams = defaults;
+			referenceToParams = emptyParamList;
 		}
-		RunTime.assertNotNull( temporaryParams );
+		RunTime.assertNotNull( referenceToParams );
 		
 
 
 		// optional:
-		Reference<Object> ref = temporaryParams.get( PossibleParams.varLevelAll );
+		Reference<Object> ref = referenceToParams.get( PossibleParams.varLevelAll );
 		if ( null == ref ) {
 			// no VarLevel1 given thus must use defaults for VarLevel1
 			// maybe use some defaults ie. homeDir value to default
 			RunTime.assertTrue( null == var3 );
-			var3 = new VarLevel3();// 1
+			if ( null == var3 ) {
+				var3 = new VarLevel3();// 1
+			}
 			usingOwnVarLevel = true;// 2
-			var3.init( temporaryParams );// 3
+			var3.init( referenceToParams );// 3
 			
 			synchronized ( temporaryLevel1Params ) {
 				temporaryLevel1Params.set( PossibleParams.varLevelAll, var3 );
-				temporaryParams = temporaryLevel1Params;
+				referenceToParams = temporaryLevel1Params;
 			}
 		} else {
+			if ( usingOwnVarLevel ) {
+				Log.warn( "lost old instance" );
+				usingOwnVarLevel = false;
+			}
+			
 			Object obj = ref.getObject();
 			RunTime.assertNotNull( obj );
 			if ( !( obj instanceof VarLevel3 ) ) {
@@ -85,7 +109,7 @@ public class MainLevel3 extends MainLevel2 {
 			var3 = (VarLevel3)obj;
 		}
 		
-		super.initMainLevel( temporaryParams );
+		super.initMainLevel( referenceToParams );
 	}
 	
 	/*

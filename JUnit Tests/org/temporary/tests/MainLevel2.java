@@ -26,6 +26,7 @@ package org.temporary.tests;
 
 
 import org.dml.tools.RunTime;
+import org.javapart.logger.Log;
 import org.references.Reference;
 import org.references.method.MethodParams;
 
@@ -41,9 +42,21 @@ public class MainLevel2 extends MainLevel1 {
 	// true if we did new var2
 	// private final boolean defaultVar = false;
 	protected static final MethodParams<Object>	temporaryLevel1Params	= new MethodParams<Object>();
+	protected static MethodParams<Object>		defaults				= null;
 	
 	public MainLevel2() {
 
+	}
+	
+	protected MethodParams<Object> getDefaults() {
+
+		if ( null == defaults ) {
+			defaults = new MethodParams<Object>();
+		}
+		
+		defaults.set( PossibleParams.homeDir, "level2defaultHOME" );
+		
+		return defaults;
 	}
 	
 	/*
@@ -55,42 +68,44 @@ public class MainLevel2 extends MainLevel1 {
 	@Override
 	public void initMainLevel( MethodParams<Object> params ) {
 
-		MethodParams<Object> temporaryParams = params;
-		if ( null == temporaryParams ) {
-			// using defaults for this MainLevel1
-			temporaryParams = defaults;
+		MethodParams<Object> refToParams = params;
+		if ( null == refToParams ) {
+			// empty means use defaults
+			refToParams = emptyParamList;
 		}
-		RunTime.assertNotNull( temporaryParams );
+		RunTime.assertNotNull( refToParams );
 		
 
 
 		// optional:
-		Reference<Object> ref = temporaryParams.get( PossibleParams.varLevelAll );
+		Reference<Object> ref = refToParams.get( PossibleParams.varLevelAll );
 		if ( null == ref ) {
 			// no VarLevel1 given thus must use defaults for VarLevel1
 			// maybe use some defaults ie. homeDir value to default
-			RunTime.assertTrue( null == var2 );
-			var2 = new VarLevel2();// 1 // TODO don't set to null on deInit
+			// RunTime.assertTrue( null == var2 );
+			if ( null == var2 ) {
+				var2 = new VarLevel2();// 1 // TODO don't set to null on deInit
+			}
 			usingOwnVarLevel = true;// 2
 			
-			// TODO mix with defaults overwriting with params
-			var2.init( temporaryParams );// 3
-			// Reference<Object> ref2 = params.get( PossibleParams.homeDir );
-			// if ( null == ref2 ) {
-			// // home not specified, using default
-			// var2.init( "defaultHomeDir" );
-			// } else {
-			// // home was specified
-			// var2.init( (String)ref2.getObject() );
-			// }
-			
 
+			// TODO avoid new-ing this every time; clone does the new
+			MethodParams<Object> moo = this.getDefaults().getClone();
+			moo.mergeWith( refToParams, true );
+			// TODO mix with defaults overwriting with params
+			var2.init( moo );// 3
+			moo.clear();
+			
 			// set this for Level1
 			synchronized ( temporaryLevel1Params ) {
 				temporaryLevel1Params.set( PossibleParams.varLevelAll, var2 );
 			}
-			temporaryParams = temporaryLevel1Params;
+			refToParams = temporaryLevel1Params;
 		} else {
+			if ( usingOwnVarLevel ) {
+				Log.warn( "lost old instance" );
+				usingOwnVarLevel = false;
+			}
 			Object obj = ref.getObject();
 			RunTime.assertNotNull( obj );
 			if ( !( obj instanceof VarLevel2 ) ) {
@@ -102,7 +117,7 @@ public class MainLevel2 extends MainLevel1 {
 		
 
 
-		super.initMainLevel( temporaryParams );
+		super.initMainLevel( refToParams );
 	}
 	
 	/**
