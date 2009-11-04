@@ -164,4 +164,5 @@ public abstract class StaticInstanceTracker {
 			RunTime.bug( "should've existed" );
 		}
 	}
+	
 }

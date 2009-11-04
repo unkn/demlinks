@@ -28,6 +28,7 @@ package org.references.method;
 import java.util.NoSuchElementException;
 
 import org.dml.tools.RunTime;
+import org.dml.tools.StaticInstanceTracker;
 import org.references.ChainedReference;
 import org.references.ListOfObjects;
 import org.references.ListOfUniqueNonNullObjects;
@@ -46,8 +47,11 @@ import org.references.Reference;
  * 
  * same ParamName cannot have two objects in the same MethodParams list<br>
  */
-public class MethodParams<T> {// T= base class, usually just Object
+public class MethodParams<T> extends StaticInstanceTracker {// T= base class,
 
+	// usually just
+	// Object
+	
 	// a list of instances ie. String, Integer, or even null(s) which can repeat
 	// ie. A==B
 	// objects of this list are the values
@@ -58,6 +62,14 @@ public class MethodParams<T> {// T= base class, usually just Object
 	// list, which could be done with an Iterator but I forgot why can't
 	
 
+	/**
+	 * don't forget to call init() and deInit() when done
+	 */
+	public MethodParams() {
+
+		super();
+	}
+	
 	public int size() {
 
 		return listOfParams.size();
@@ -86,7 +98,6 @@ public class MethodParams<T> {// T= base class, usually just Object
 		// what this does is get the list paramName and intersect it with
 		// the MethodParams list and should find 0 or 1 elements in common, if
 		// more than 1 then maybe throw BadCallError or Bug
-		
 		RunTime.assertNotNull( paramName );
 		
 		return this.internalGet( paramName );
@@ -273,7 +284,7 @@ public class MethodParams<T> {// T= base class, usually just Object
 	public MethodParams<T> getClone() {
 
 		MethodParams<T> clone = new MethodParams<T>();
-		
+		clone.init();
 		// we parse all ref to values, which are in 'this' and add each to the
 		// cloned
 		ChainedReference<T> ref = this.internalGetFirst();
@@ -286,5 +297,32 @@ public class MethodParams<T> {// T= base class, usually just Object
 		}
 		
 		return clone;
+	}
+	
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.dml.tools.StaticInstanceTracker#done()
+	 */
+	@Override
+	protected void done() {
+
+		this.clear();
+		RunTime.assertTrue( this.size() == 0 );
+		RunTime.assertTrue( redundantListOfNames.size() == 0 );
+	}
+	
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.dml.tools.StaticInstanceTracker#start()
+	 */
+	@Override
+	protected void start() {
+
+		RunTime.assertTrue( this.size() == 0 );
+		RunTime.assertTrue( redundantListOfNames.size() == 0 );
 	}
 }

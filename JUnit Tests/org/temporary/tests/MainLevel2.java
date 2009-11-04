@@ -37,20 +37,26 @@ import org.references.method.MethodParams;
  */
 public class MainLevel2 extends MainLevel1 {
 	
-	private VarLevel2							var2;
+	private VarLevel2						var2;
 	// true if we did new var2
 	// private final boolean defaultVar = false;
-	protected static final MethodParams<Object>	temporaryLevel1Params	= new MethodParams<Object>();
-	protected static MethodParams<Object>		defaults				= null;
+	protected static MethodParams<Object>	temporaryLevel1Params	= null;
+	protected static MethodParams<Object>	defaults				= null;
 	
 	public MainLevel2() {
 
+		if ( null == temporaryLevel1Params ) {
+			temporaryLevel1Params = new MethodParams<Object>();
+			temporaryLevel1Params.init();
+			// FIXME: when's this deInited also?
+		}
 	}
 	
 	protected MethodParams<Object> getDefaults() {
 
 		if ( null == defaults ) {
 			defaults = new MethodParams<Object>();
+			defaults.init();
 		}
 		
 		defaults.set( PossibleParams.homeDir, "level2defaultHOME" );
@@ -76,7 +82,9 @@ public class MainLevel2 extends MainLevel1 {
 		
 
 
-		// optional:
+		// optional param, but the top level will supply this if toplevel exists
+		// or the user will supply this if it is so desired but he will be
+		// responsible for it being inited/deinited
 		Reference<Object> ref = refToParams.get( PossibleParams.varLevelAll );
 		if ( null == ref ) {
 			// no VarLevel1 given thus must use defaults for VarLevel1
@@ -92,7 +100,7 @@ public class MainLevel2 extends MainLevel1 {
 			// using defaults but overwriting them with params
 			moo.mergeWith( refToParams, true );
 			var2.init( moo );// 3
-			moo.clear();// TODO MethodParams extends StaticInstanceTracker
+			moo.deInit();
 			
 			// set this for Level1
 			synchronized ( temporaryLevel1Params ) {
@@ -103,6 +111,7 @@ public class MainLevel2 extends MainLevel1 {
 			Object obj = ref.getObject();
 			RunTime.assertNotNull( obj );
 			if ( !( obj instanceof VarLevel2 ) ) {
+				// cannot be under VarLevel2, can be above tho
 				RunTime.badCall( "wrong type passed" );
 			}
 			var2 = (VarLevel2)obj;

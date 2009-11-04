@@ -68,7 +68,7 @@ public class MainLevel3 extends MainLevel2 {
 	@Override
 	public void initMainLevel( MethodParams<Object> params ) {
 
-		// TODO: should not modify contents of 'params'; maybe clone?
+		// should not modify contents of 'params';
 		MethodParams<Object> referenceToParams = params;
 		if ( null == referenceToParams ) {
 			// using defaults for this MainLevel1
@@ -95,7 +95,7 @@ public class MainLevel3 extends MainLevel2 {
 			MethodParams<Object> moo = this.getDefaults().getClone();
 			moo.mergeWith( referenceToParams, true );
 			var3.init( moo );// 3
-			moo.clear();
+			moo.deInit();
 			// TODO mix moo with temporaryLevel1Params ?? or not
 			
 			synchronized ( temporaryLevel1Params ) {

@@ -40,23 +40,34 @@ import org.references.method.MethodParams;
  * 3. when using own VarLevel, this won't be new-ed on each call to init, unless
  * it's intermixed with a passed VarLevel then the first own VarLevel was
  * clearly forgotten
+ * 4. can use supplied VarLevel, which must be inited/deInited by caller
+ * 5. call to init() w/o params (not initMainLevel()) is prevented
  */
 public class MainLevel1 extends StaticInstanceTracker {
 	
-	private VarLevel1							var1				= null;
+	private VarLevel1						var1				= null;
 	
 	// defaults are no params, or no params means use defaults
-	protected static final MethodParams<Object>	emptyParamList		= new MethodParams<Object>();
+	protected static MethodParams<Object>	emptyParamList		= null;
 	
 	// var to see if we used init() instead of initMainLevel(...)
-	private boolean								inited				= false;
+	private boolean							inited				= false;
 	
 	// true if we inited a default 'var' so we know to deInit it
 	// we won't deInit passed 'var' param
-	protected boolean							usingOwnVarLevel	= false;
+	protected boolean						usingOwnVarLevel	= false;
 	
 	public MainLevel1() {
 
+		// since this is static:
+		if ( null == emptyParamList ) {
+			emptyParamList = new MethodParams<Object>();
+			emptyParamList.init();
+			// FIXME: when is this deInited? should be when last instance is
+			// deInited, but can't compare class names, could be Level3 and
+			// Level2 classes, but we can't deInit on last Level3.deInit
+			// true that a deInit is not really needed, but as a concept...when?
+		}
 	}
 	
 	/**

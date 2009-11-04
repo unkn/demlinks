@@ -265,6 +265,7 @@ public class LevelsTest {
 		assertNotNull( own );
 		assertTrue( own.isInited() );
 		assertFalse( own == notOwn );
+		ml3.showHome();
 		ml3.deInit();
 		assertNotNull( ml3.junitGetVar() );
 		assertTrue( ml3.junitGetVar() == own );
