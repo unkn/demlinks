@@ -26,6 +26,7 @@ package org.temporary.tests;
 
 
 import org.dml.tools.RunTime;
+import org.dml.tools.StaticInstanceTrackerWithMethodParams;
 import org.references.method.MethodParams;
 
 
@@ -89,7 +90,7 @@ public class MainLevel1 extends MainLevel0 {
 	 * @see org.temporary.tests.MainLevel0#getVarLevelX()
 	 */
 	@Override
-	protected Object getVarLevelX() {
+	protected StaticInstanceTrackerWithMethodParams getVarLevelX() {
 
 		return var1;
 	}
@@ -138,9 +139,6 @@ public class MainLevel1 extends MainLevel0 {
 	protected void done() {
 
 		System.out.println( this.getName() + " deiniting..." );
-		// if ( !usingOwnVarLevel ) {
-		// var1 = null;
-		// }
 		super.done();
 	}
 }

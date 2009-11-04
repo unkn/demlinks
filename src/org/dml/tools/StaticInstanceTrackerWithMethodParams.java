@@ -1,5 +1,5 @@
 /**
- * File creation: Oct 23, 2009 8:42:08 AM
+ * File creation: Nov 4, 2009 7:00:07 PM
  * 
  * Copyright (C) 2005-2009 AtKaaZ <atkaaz@users.sourceforge.net>
  * Copyright (C) 2005-2009 UnKn <unkn@users.sourceforge.net>
@@ -21,11 +21,10 @@
  */
 
 
-package org.temporary.tests;
+package org.dml.tools;
 
 
 
-import org.dml.tools.StaticInstanceTrackerWithMethodParams;
 import org.references.method.MethodParams;
 
 
@@ -34,54 +33,18 @@ import org.references.method.MethodParams;
  * 
  *
  */
-public class VarLevel1 extends StaticInstanceTrackerWithMethodParams implements
-		VarLevel1Interface {
+public abstract class StaticInstanceTrackerWithMethodParams extends
+		StaticInstanceTracker {
 	
-	
-	public String getName() {
-
-		return this.getClass().getSimpleName();
-	}
-	
-	public void sayHello() {
-
-		System.out.println( this.getName() + " says Hello." );
-	}
-	
-	/*
-	 * (non-Javadoc)
+	/**
+	 * you should override this and also call super or at least super.init()
 	 * 
-	 * @see org.dml.tools.StaticInstanceTracker#done()
+	 * @param params
 	 */
-	@Override
-	protected void done() {
-
-		System.out.println( this.getName() + " DeInited." );
-		
-	}
-	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.dml.tools.StaticInstanceTracker#start()
-	 */
-	@Override
-	protected void start() {
-
-		System.out.println( this.getName() + " inited." );
-		
-	}
-	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @seeorg.temporary.tests.VarLevel1Interface#init(org.references.method.
-	 * MethodParams)
-	 */
-	@Override
 	public void init( MethodParams<Object> params ) {
 
-		// ignoring at this level
+		// ignoring params at this level
 		super.init();
 	}
+	
 }

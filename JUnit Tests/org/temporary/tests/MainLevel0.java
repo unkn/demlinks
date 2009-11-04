@@ -27,6 +27,7 @@ package org.temporary.tests;
 
 import org.dml.tools.RunTime;
 import org.dml.tools.StaticInstanceTracker;
+import org.dml.tools.StaticInstanceTrackerWithMethodParams;
 import org.references.Reference;
 import org.references.method.MethodParams;
 
@@ -44,6 +45,7 @@ import org.references.method.MethodParams;
  * 4. as said in 2. you must override w/o calling super, the following methods:
  * getVarLevelX, checkVarLevelX, newVarLevelX;
  * 5. always call super on setVarLevelX and always override it
+ * 6. VarLevelX variable must extend StaticInstanceTrackerWithMethodParams
  */
 public abstract class MainLevel0 extends StaticInstanceTracker {
 	
@@ -112,7 +114,7 @@ public abstract class MainLevel0 extends StaticInstanceTracker {
 	 * 
 	 * @return
 	 */
-	abstract protected Object getVarLevelX();
+	abstract protected StaticInstanceTrackerWithMethodParams getVarLevelX();
 	
 	/**
 	 * DO NOT override this, ever
@@ -139,7 +141,7 @@ public abstract class MainLevel0 extends StaticInstanceTracker {
 		// responsible for it being inited/deinited
 		Reference<Object> ref = refToParams.get( PossibleParams.varLevelAll );
 		if ( null == ref ) {
-			// no VarLevel1 given thus must use defaults for VarLevel1
+			// no VarLevelX given thus must use defaults for VarLevelX
 			// maybe use some defaults ie. homeDir value to default
 			if ( null == this.getVarLevelX() ) {
 				// refToVarAny =
@@ -153,8 +155,7 @@ public abstract class MainLevel0 extends StaticInstanceTracker {
 			MethodParams<Object> moo = this.getDefaults().getClone();
 			// using defaults but overwriting them with params
 			moo.mergeWith( refToParams, true );
-			( (VarLevel1)this.getVarLevelX() ).init( moo );// 3 FIXME: do not
-			// spec type
+			( this.getVarLevelX() ).init( moo );// 3
 			moo.deInit();
 			
 			// set this for Level1
@@ -218,7 +219,6 @@ public abstract class MainLevel0 extends StaticInstanceTracker {
 				// not setting it to null, since we might use it on the next
 				// call
 			} else {
-				// var1 = null;
 				this.setVarLevelX( null );
 			}
 		}

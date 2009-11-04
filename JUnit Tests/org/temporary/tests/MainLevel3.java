@@ -26,6 +26,7 @@ package org.temporary.tests;
 
 
 import org.dml.tools.RunTime;
+import org.dml.tools.StaticInstanceTrackerWithMethodParams;
 import org.references.method.MethodParams;
 
 
@@ -120,21 +121,6 @@ public class MainLevel3 extends MainLevel2 {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.temporary.tests.MainLevel2#done()
-	 */
-	@Override
-	protected void done() {
-
-		// if ( !usingOwnVarLevel ) {// first
-		// var3 = null;
-		// }
-		
-		super.done();// second
-	}
-	
-	/*
-	 * (non-Javadoc)
-	 * 
 	 * @see org.temporary.tests.MainLevel2#checkVarLevelX(java.lang.Object)
 	 */
 	@Override
@@ -177,7 +163,7 @@ public class MainLevel3 extends MainLevel2 {
 	 * @see org.temporary.tests.MainLevel2#getVarLevelX()
 	 */
 	@Override
-	protected Object getVarLevelX() {
+	protected StaticInstanceTrackerWithMethodParams getVarLevelX() {
 
 		return var3;
 	}
