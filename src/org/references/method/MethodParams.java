@@ -204,7 +204,17 @@ public class MethodParams<T> {// T= base class, usually just Object
 	 */
 	public void mergeWith( MethodParams<T> withThisNewOnes, boolean overwrite ) {
 
-		// TODO
+		RunTime.assertNotNull( withThisNewOnes );
+		
+		ParamName<T> iter = withThisNewOnes.getFirstParamName();
+		while ( null != iter ) {
+			boolean already = this.get( iter ) != null;
+			if ( ( already && overwrite ) || ( !already ) ) {
+				this.set( iter, withThisNewOnes.getEx( iter ) );
+			}
+			iter = withThisNewOnes.getNextParamName( iter );
+		}
+		
 	}
 	
 	public void clear() {

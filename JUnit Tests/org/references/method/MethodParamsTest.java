@@ -171,4 +171,34 @@ public class MethodParamsTest {
 		assertTrue( mp1.size() == 0 );
 		assertTrue( clone.size() == 0 );
 	}
+	
+	@Test
+	public void testMerge() {
+
+		assertTrue( mp1.size() == 0 );
+		mp1.set( paramNull2, null );
+		String some = "some";
+		mp1.set( compulsoryParam2, some );
+		assertTrue( mp2.size() == 0 );
+		
+		mp2.mergeWith( mp1, false );
+		assertTrue( mp2.size() == mp1.size() );
+		
+		assertTrue( mp3.size() == 0 );
+		mp3.set( paramNull2, new Object() );
+		assertNotNull( mp3.getEx( paramNull2 ) );
+		assertNull( mp1.getEx( paramNull2 ) );
+		
+		mp2.clear();
+		assertTrue( mp2.size() == 0 );
+		mp2 = mp3.getClone();
+		mp3.mergeWith( mp1, false );
+		assertNotNull( mp3.getEx( paramNull2 ) );
+		mp3.mergeWith( mp1, true );
+		assertNull( mp3.getEx( paramNull2 ) );
+		
+		assertNotNull( mp2.getEx( paramNull2 ) );
+		mp2.mergeWith( mp1, true );
+		assertNull( mp2.getEx( paramNull2 ) );
+	}
 }
