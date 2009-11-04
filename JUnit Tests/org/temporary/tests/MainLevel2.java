@@ -135,9 +135,9 @@ public class MainLevel2 extends MainLevel1 {
 	@Override
 	protected void done() {
 
-		if ( !usingOwnVarLevel ) {// first
-			var2 = null;// FIXME: do I need this in every level?
-		}
+		// if ( !usingOwnVarLevel ) {// first
+		// var2 = null;// FIXME: do I need this in every level?
+		// }
 		super.done();// second
 	}
 	

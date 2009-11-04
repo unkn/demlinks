@@ -125,9 +125,9 @@ public class MainLevel3 extends MainLevel2 {
 	@Override
 	protected void done() {
 
-		if ( !usingOwnVarLevel ) {// first
-			var3 = null;
-		}
+		// if ( !usingOwnVarLevel ) {// first
+		// var3 = null;
+		// }
 		
 		super.done();// second
 	}

@@ -138,9 +138,9 @@ public class MainLevel1 extends MainLevel0 {
 	protected void done() {
 
 		System.out.println( this.getName() + " deiniting..." );
-		if ( !usingOwnVarLevel ) {
-			var1 = null;
-		}
+		// if ( !usingOwnVarLevel ) {
+		// var1 = null;
+		// }
 		super.done();
 	}
 }
