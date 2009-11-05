@@ -66,9 +66,11 @@ public abstract class StaticInstanceTracker {
 		while ( null != iter ) {
 			StaticInstanceTracker next = ALL_INSTANCES.getObjectAt(
 					Position.AFTER, iter );
-			
 			if ( this.getClass() == iter.getClass() ) {
 				iter.deInit();
+				// need to reparse list because maybe next item disappeared due
+				// to prev deInit() call
+				next = ALL_INSTANCES.getObjectAt( Position.FIRST );
 			}
 			
 			iter = next;
