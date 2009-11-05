@@ -357,6 +357,7 @@ public class LevelsTest {
 		ml3.init( mp );
 		assertTrue( vl3.isInited() );
 		assertTrue( ml3.junitGetVar() == vl3 );
+		ml3.showHome();
 		ml3.deInit();
 		assertTrue( vl3.isInited() );
 		vl3.deInit();

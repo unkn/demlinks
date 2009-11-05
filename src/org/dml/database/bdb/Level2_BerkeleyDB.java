@@ -27,12 +27,13 @@ package org.dml.database.bdb;
 
 import java.io.File;
 
-import org.dml.tools.MainLevel0;
 import org.dml.tools.RunTime;
 import org.dml.tools.StaticInstanceTrackerWithMethodParams;
 import org.javapart.logger.Log;
 import org.references.ListOfUniqueNonNullObjects;
 import org.references.Position;
+import org.references.method.MethodParams;
+import org.temporary.tests.PossibleParams;
 
 import com.sleepycat.bind.tuple.StringBinding;
 import com.sleepycat.je.Database;
@@ -52,7 +53,7 @@ import com.sleepycat.je.SequenceConfig;
  * 
  *
  */
-public class Level2_BerkeleyDB extends MainLevel0 {
+public class Level2_BerkeleyDB extends StaticInstanceTrackerWithMethodParams {
 	
 	private String												envHomeDir;
 	private final EnvironmentConfig								environmentConfig			= new EnvironmentConfig();
@@ -110,49 +111,59 @@ public class Level2_BerkeleyDB extends MainLevel0 {
 
 	}
 	
-	public void init( String envHomeDir1 ) throws DatabaseException {
-
-		this.init( envHomeDir1, false );
-	}
-	
-	
-
-	/**
-	 * call before all
-	 * 
-	 * @throws DatabaseException
-	 */
-	public final void init( String envHomeDir1,
-			boolean internalDestroyBeforeInit ) throws DatabaseException {
-
-		// maybe it would be needed to set the envhome dir
-		RunTime.assertNotNull( envHomeDir1 );
-		envHomeDir = envHomeDir1;
-		Log.entry( envHomeDir );
-		if ( internalDestroyBeforeInit ) {
-			this.internalWipeEnv();
-		}
-		// Environment init isn't needed, only deInit();
-		this.getEnvironment();// forces env open or create
-		// DBSequence init isn't needed, only deInit()
-		
-		// getDBMapJIDsToNodeIDs() is initing that when needed
-		
-		// db1=db1.init();
-		super.init();
-	}
-	
+	// public void init( String envHomeDir1 ) throws DatabaseException {
+	//
+	// this.init( envHomeDir1, false );
+	// }
+	//	
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.dml.tools.StaticInstanceTracker#start()
+	 * @see org.dml.tools.MainLevel0#init(org.references.method.MethodParams)
 	 */
 	@Override
-	protected void start() {
+	public void init( MethodParams<Object> params ) {
 
-		// TODO Auto-generated method stub
-		
+		super.init();
+		envHomeDir = params.getExString( PossibleParams.homeDir );
+		Log.entry( envHomeDir );
+		if ( (Boolean)params.getEx( PossibleParams.wipeDB ) ) {
+			this.internalWipeEnv();
+		}
+		try {
+			this.getEnvironment();
+		} catch ( DatabaseException e ) {
+			// TODO Auto-generated catch block
+			// FIXME: can't mod method signature
+			e.printStackTrace();
+		}// forces env open or create
 	}
+	
+	//	
+	// /**
+	// * call before all
+	// *
+	// * @throws DatabaseException
+	// */
+	// public final void init( String envHomeDir1,
+	// boolean internalDestroyBeforeInit ) throws DatabaseException {
+	//
+	// // maybe it would be needed to set the envhome dir
+	// RunTime.assertNotNull( envHomeDir1 );
+	// envHomeDir = envHomeDir1;
+	// Log.entry( envHomeDir );
+	// if ( internalDestroyBeforeInit ) {
+	// this.internalWipeEnv();
+	// }
+	// // Environment init isn't needed, only deInit();
+	// this.getEnvironment();// forces env open or create
+	// // DBSequence init isn't needed, only deInit()
+	//		
+	// // getDBMapJIDsToNodeIDs() is initing that when needed
+	//		
+	// // db1=db1.init();
+	// super.init();
+	// }
 	
 	/*
 	 * (non-Javadoc)
@@ -162,6 +173,7 @@ public class Level2_BerkeleyDB extends MainLevel0 {
 	@Override
 	protected void done() {
 
+		
 		if ( null != dbJID2NID ) {
 			dbJID2NID = dbJID2NID.deInit();
 		}
@@ -169,6 +181,7 @@ public class Level2_BerkeleyDB extends MainLevel0 {
 		this.silentCloseAllOpenDatabases();// second
 		this.closeDBEnvironment();
 		
+		// super.done();
 	}
 	
 	// =============================================
@@ -588,46 +601,10 @@ public class Level2_BerkeleyDB extends MainLevel0 {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.dml.tools.MainLevel0#checkVarLevelX(java.lang.Object)
+	 * @see org.dml.tools.StaticInstanceTracker#start()
 	 */
 	@Override
-	protected void checkVarLevelX( Object obj ) {
-
-		// TODO Auto-generated method stub
-		
-	}
-	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.dml.tools.MainLevel0#getVarLevelX()
-	 */
-	@Override
-	protected StaticInstanceTrackerWithMethodParams getVarLevelX() {
-
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.dml.tools.MainLevel0#newVarLevelX()
-	 */
-	@Override
-	protected Object newVarLevelX() {
-
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.dml.tools.MainLevel0#setVarLevelX(java.lang.Object)
-	 */
-	@Override
-	protected void setVarLevelX( Object toValue ) {
+	protected void start() {
 
 		// TODO Auto-generated method stub
 		

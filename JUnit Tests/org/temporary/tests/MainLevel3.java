@@ -69,7 +69,7 @@ public class MainLevel3 extends MainLevel2 {
 	@Override
 	public void init( MethodParams<Object> params ) {
 
-		super.init( this.internalInit( var3, params ) );
+		super.init( this.internalInit( params ) );
 		
 		// // should not modify contents of 'params';
 		// MethodParams<Object> referenceToParams = params;

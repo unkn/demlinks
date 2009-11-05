@@ -191,10 +191,11 @@ public abstract class MainLevel0 extends StaticInstanceTrackerWithMethodParams {
 	 *            that must be passed to a super.initMainLevel()
 	 * @return
 	 */
-	protected MethodParams<Object> internalInit( Object varAny,
-			MethodParams<Object> params ) {
+	protected MethodParams<Object> internalInit( MethodParams<Object> params ) {
 
-		// Object refToVarAny = varAny;// even if null
+		// this part will have to be called in each subclass once
+		// if it's just super()-ed it won't do because each private VarLevel in
+		// each class would have to be set to the last instance
 		MethodParams<Object> refToParams = params;
 		if ( null == refToParams ) {
 			// empty means use defaults
@@ -254,6 +255,7 @@ public abstract class MainLevel0 extends StaticInstanceTrackerWithMethodParams {
 	@Override
 	public void init( MethodParams<Object> params ) {
 
+		
 		RunTime.assertNotNull( params );
 		inited = true;// first
 		super.init();// second

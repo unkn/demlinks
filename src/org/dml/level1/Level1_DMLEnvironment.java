@@ -25,7 +25,6 @@ package org.dml.level1;
 
 
 
-import org.dml.level2.Level2_DMLStorageWrapper;
 import org.dml.tools.MainLevel0;
 import org.dml.tools.RunTime;
 import org.dml.tools.StaticInstanceTrackerWithMethodParams;
@@ -71,7 +70,7 @@ public class Level1_DMLEnvironment extends MainLevel0 {
 	@Override
 	protected void checkVarLevelX( Object obj ) {
 
-		if ( !( obj instanceof Level2_DMLStorageWrapper ) ) {
+		if ( !( obj instanceof Level1_DMLStorageWrapper ) ) {
 			// cannot be under Level1_DMLStorageWrapper, can be above tho
 			RunTime.badCall( "wrong type passed" );
 		}

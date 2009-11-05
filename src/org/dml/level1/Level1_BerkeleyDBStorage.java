@@ -27,6 +27,7 @@ package org.dml.level1;
 
 import org.dml.tools.MainLevel0;
 import org.dml.tools.StaticInstanceTrackerWithMethodParams;
+import org.references.method.MethodParams;
 
 
 
@@ -40,6 +41,18 @@ public class Level1_BerkeleyDBStorage extends MainLevel0 implements
 	public Level1_BerkeleyDBStorage() {
 
 		super();
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.dml.tools.MainLevel0#init(org.references.method.MethodParams)
+	 */
+	@Override
+	public void init( MethodParams<Object> params ) {
+
+		super.init( this.internalInit( var1, params ) );
+		
 	}
 	
 	/*

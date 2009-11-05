@@ -30,6 +30,8 @@ import static org.junit.Assert.assertTrue;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.references.method.MethodParams;
+import org.temporary.tests.PossibleParams;
 
 
 
@@ -72,5 +74,24 @@ public class Level1_DMLEnvironmentTest {
 		} finally {
 			dml1.deInit();
 		}
+	}
+	
+	@Test
+	public void testMultiInit() {
+
+		dml1.deInit();
+		dml1.init( null );
+		dml1.deInit();
+	}
+	
+	@Test
+	public void testGivenParam() {
+
+		dml1.deInit();
+		MethodParams<Object> params = new MethodParams<Object>();
+		Level1_BerkeleyDBStorage storL1 = new Level1_BerkeleyDBStorage();
+		storL1.init( null );
+		params.set( PossibleParams.varLevelAll, storL1 );
+		dml1.init( params );
 	}
 }
