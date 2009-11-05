@@ -37,9 +37,8 @@ import org.references.method.MethodParams;
  */
 public class MainLevel3 extends MainLevel2 {
 	
-	@VarLevel
-	protected VarLevel3	var3;	// FIXME: make private
-								
+	private VarLevel3	var3;
+	
 	public MainLevel3() {
 
 		super();

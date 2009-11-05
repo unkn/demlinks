@@ -46,24 +46,13 @@ import org.references.method.MethodParams;
 public class MainLevel1 extends MainLevel0 {
 	
 	
-	@VarLevel
-	protected VarLevel1	var1		= null;
-	@VarLevel
-	protected VarLevel1	temporary	= null;
+	private VarLevel1	var1	= null;
 	
 	
 
 	public MainLevel1() {
 
-		// FIXME: temporary
-		// var1 = new VarLevel1();
 		super();
-		this.test1();
-		System.out.println( "Fixed : " + this.getVarLevelX() + " / "
-				+ temporary );
-		if ( 1 == 1 ) {
-			throw new RuntimeException();
-		}
 	}
 	
 	

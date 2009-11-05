@@ -69,9 +69,9 @@ public abstract class MainLevel0 extends StaticInstanceTrackerWithMethodParams {
 	
 	protected static MethodParams<Object>	temporaryLevel1Params	= null;
 	
-	public void test1() {
+	private void test1() {
 
-		// FIXME temporary
+		// FIXME temporary, delete this
 		// System.out.println( this.getClass() );
 		Field[] fields = this.getClass().getDeclaredFields();
 		// System.out.println( fields.length );
