@@ -21,11 +21,10 @@
  */
 
 
-package org.dml.level2;
+package org.dml.level1;
 
 
 
-import org.dml.level1.NodeJID;
 import org.dml.storagewrapper.StorageException;
 import org.dml.tools.StaticInstanceTrackerWithMethodParamsInterface;
 

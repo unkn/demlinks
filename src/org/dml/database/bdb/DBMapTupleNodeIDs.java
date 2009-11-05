@@ -25,7 +25,7 @@ package org.dml.database.bdb;
 
 
 
-import org.dml.level2.NodeID;
+import org.dml.level1.NodeID;
 import org.dml.storagewrapper.StorageException;
 import org.dml.tools.RunTime;
 

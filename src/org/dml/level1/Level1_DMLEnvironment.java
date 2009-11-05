@@ -25,56 +25,138 @@ package org.dml.level1;
 
 
 
-import org.dml.tools.StaticInstanceTracker;
+import java.io.File;
+
+import org.dml.storagewrapper.StorageException;
+import org.dml.tools.Level0;
+import org.dml.tools.RunTime;
+import org.dml.tools.StaticInstanceTrackerWithMethodParams;
+import org.dml.tools.StaticInstanceTrackerWithMethodParamsInterface;
+import org.references.method.MethodParams;
+import org.temporary.tests.PossibleParams;
 
 
 
 /**
- * facade design pattern
  * 
+ *
  */
-public class Level1_DMLEnvironment extends StaticInstanceTracker {
+public class Level1_DMLEnvironment extends Level0 implements
+		Level1_DMLStorageWrapper,
+		StaticInstanceTrackerWithMethodParamsInterface {
 	
+	// this is the last level(subclass) of storage that is expected to be set,
+	// even if new() will be on a subclass closer to base
+	protected Level1_DMLStorageWrapper	storage					= null;
+	
+	private final static String			DEFAULT_BDB_ENV_PATH	= "."
+																		+ File.separator
+																		+ "bin"
+																		+ File.separator
+																		+ "mainEnv"
+																		+ File.separator;
 	
 	/**
-	 * construct, don't forget to call init(...)
+	 * construct, don't forget to call init(with param/s)
 	 */
 	public Level1_DMLEnvironment() {
 
 		super();
+		
+	}
+	
+	
+	@Override
+	protected MethodParams<Object> getDefaults() {
+
+		MethodParams<Object> def = super.getDefaults();
+		
+		def.set( PossibleParams.homeDir, DEFAULT_BDB_ENV_PATH );
+		def.set( PossibleParams.wipeDB, false );
+		return def;
+	}
+	
+	@Override
+	protected StaticInstanceTrackerWithMethodParams getVarLevelX() {
+
+		return (StaticInstanceTrackerWithMethodParams)storage;
+	}
+	
+	@Override
+	protected void newVarLevelX() {
+
+		storage = new Level1_DMLStorage_BerkeleyDB();
+	}
+	
+	@Override
+	protected void setVarLevelX( Object toValue ) {
+
+		storage = (Level1_DMLStorageWrapper)toValue;
+	}
+	
+	@Override
+	protected void checkVarLevelX( Object obj ) {
+
+		if ( !( obj instanceof Level1_DMLStorageWrapper ) ) {
+			// FIXME: is this working?
+			// cannot be under VarLevel1, can be above tho
+			RunTime.badCall( "wrong type passed" );
+		}
+	}
+	
+	
+
+	// ---------------------------------------------
+	/**
+	 * there's a one to one mapping between NodeID and NodeJID<br>
+	 * given the NodeID return its NodeJID<br>
+	 * NodeIDs are on some kind of Storage<br>
+	 * 
+	 * @param nodeID
+	 * @return NodeJID
+	 * @throws StorageException
+	 */
+	public NodeJID getNodeJID( NodeID nodeID ) throws StorageException {
+
+		RunTime.assertNotNull( nodeID );
+		return storage.getNodeJID( nodeID );
 	}
 	
 	/**
-	 * @param strID
+	 * eget=ensure get<br>
+	 * make a new one if it doesn't exist<br>
+	 * but if exists don't complain<br>
+	 * 
+	 * @param theJID
+	 *            this JID and this Node will be mapped 1 to 1
+	 * @return never null
+	 * @throws StorageException
+	 */
+	public NodeID ensureNodeID( NodeJID theJID ) throws StorageException {
+
+		RunTime.assertNotNull( theJID );
+		return storage.ensureNodeID( theJID );
+	}
+	
+	/**
+	 * @param identifiedByThisJID
 	 * @return
-	 * @see NodeJID#ensureJIDFor(String)
+	 * @throws StorageException
 	 */
-	public NodeJID ensureJIDFor( String strID ) {
+	public NodeID getNodeID( NodeJID identifiedByThisJID )
+			throws StorageException {
 
-		return NodeJID.ensureJIDFor( strID );
+		return storage.getNodeID( identifiedByThisJID );
 	}
 	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.dml.tools.StaticInstanceTracker#done()
+	/**
+	 * @param fromJID
+	 * @return
+	 * @throws StorageException
 	 */
-	@Override
-	protected void done() {
+	public NodeID createNodeID( NodeJID fromJID ) throws StorageException {
 
-		// TODO Auto-generated method stub
-		
+		return storage.createNodeID( fromJID );
 	}
 	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.dml.tools.StaticInstanceTracker#start()
-	 */
-	@Override
-	protected void start() {
-
-		// TODO Auto-generated method stub
-		
-	}
 }

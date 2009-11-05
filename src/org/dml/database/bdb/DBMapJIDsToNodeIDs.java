@@ -26,8 +26,8 @@ package org.dml.database.bdb;
 
 
 import org.dml.error.BugError;
+import org.dml.level1.NodeID;
 import org.dml.level1.NodeJID;
-import org.dml.level2.NodeID;
 import org.dml.tools.RunTime;
 import org.javapart.logger.Log;
 

@@ -81,6 +81,14 @@ public class NodeJIDTest {
 		// assertTrue( NodeJID.all_Level1_NodeJIDs.size() == 2 );
 		// assertTrue( a != NodeJID.getJIDFor( "A" ) );
 		// assertTrue( NodeJID.all_Level1_NodeJIDs.size() == 3 );
+		String test = "test";
+		NodeJID j1 = NodeJID.ensureJIDFor( test );
+		NodeJID.ensureJIDFor( "middle" );
+		NodeJID j2 = NodeJID.ensureJIDFor( test );
+		assertTrue( j1 == j2 );
+		System.out.println( "!" + j1.getAsString() + "!" + j2.getAsString()
+				+ "!" );
+		assertTrue( j1.equals( j2 ) );
 	}
 	
 	// @Test

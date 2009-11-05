@@ -26,9 +26,9 @@ package org.dml.level3;
 
 
 import org.dml.database.bdb.Level1_Storage_BerkeleyDB;
+import org.dml.level1.Level1_DMLStorage_BerkeleyDB;
+import org.dml.level1.NodeID;
 import org.dml.level1.NodeJID;
-import org.dml.level2.Level1_DMLStorage_BerkeleyDB;
-import org.dml.level2.NodeID;
 import org.dml.storagewrapper.StorageException;
 import org.dml.tools.RunTime;
 

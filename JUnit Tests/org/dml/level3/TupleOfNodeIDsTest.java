@@ -27,8 +27,8 @@ package org.dml.level3;
 
 import org.dml.JUnits.Consts;
 import org.dml.level1.Level1_DMLEnvironment;
+import org.dml.level1.NodeID;
 import org.dml.level1.NodeJID;
-import org.dml.level2.NodeID;
 import org.dml.storagewrapper.StorageException;
 import org.junit.After;
 import org.junit.Before;

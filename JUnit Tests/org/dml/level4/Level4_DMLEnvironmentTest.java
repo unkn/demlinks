@@ -31,8 +31,8 @@ import static org.junit.Assert.assertTrue;
 
 import org.dml.JUnits.Consts;
 import org.dml.level1.Level1_DMLEnvironment;
+import org.dml.level1.NodeID;
 import org.dml.level1.NodeJID;
-import org.dml.level2.NodeID;
 import org.dml.level4.Level4_DMLEnvironment;
 import org.junit.Test;
 

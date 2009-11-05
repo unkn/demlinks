@@ -27,9 +27,16 @@ package org.dml.level1;
 
 import static org.junit.Assert.assertTrue;
 
+import org.dml.JUnits.Consts;
+import org.dml.level1.Level1_DMLEnvironment;
+import org.dml.level1.NodeID;
+import org.dml.level1.NodeJID;
+import org.dml.storagewrapper.StorageException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.references.method.MethodParams;
+import org.temporary.tests.PossibleParams;
 
 
 
@@ -39,47 +46,58 @@ import org.junit.Test;
  */
 public class Level1_DMLEnvironmentTest {
 	
-	Level1_DMLEnvironment	dml1;
+	Level1_DMLEnvironment	dml2;
+	NodeID					a, b, c;
+	MethodParams<Object>	params;
 	
 	@Before
-	public void setUp() {
+	public void setUp() throws StorageException {
 
-		dml1 = new Level1_DMLEnvironment();
-		dml1.init();
-		NodeJID.junitClearAll();
+		params = new MethodParams<Object>();
+		params.init();
+		
+		dml2 = new Level1_DMLEnvironment();
+		params.set( PossibleParams.homeDir, Consts.BDB_ENV_PATH );
+		dml2.init( params );
+		
 	}
 	
 	@After
 	public void tearDown() {
 
-		dml1.deInitSilently();
-		dml1 = null;
+		dml2.deInitSilently();
+		dml2 = null;
+		params.deInit();
+		params = null;
 	}
 	
 	@Test
-	public void test1() {
+	public void test1() throws StorageException {
 
 		try {
-			String test = "test";
-			NodeJID j1 = dml1.ensureJIDFor( test );
-			NodeJID.ensureJIDFor( "middle" );
-			NodeJID j2 = dml1.ensureJIDFor( test );
-			assertTrue( j1 == j2 );
-			System.out.println( "!" + j1.getAsString() + "!" + j2.getAsString()
-					+ "!" );
-			assertTrue( j1.equals( j2 ) );
-			// throw new RuntimeException();
+			a = dml2.ensureNodeID( NodeJID.ensureJIDFor( "A" ) );
+			b = dml2.ensureNodeID( NodeJID.ensureJIDFor( "B" ) );
+			c = dml2.ensureNodeID( NodeJID.ensureJIDFor( "C" ) );
+			assertTrue( a != null );
+			assertTrue( a.equals( dml2.getNodeID( NodeJID.ensureJIDFor( "A" ) ) ) );
+			assertTrue( a != dml2.getNodeID( NodeJID.ensureJIDFor( "A" ) ) );
+			assertTrue( b.equals( dml2.getNodeID( NodeJID.ensureJIDFor( "B" ) ) ) );
+			assertTrue( c.equals( dml2.getNodeID( NodeJID.ensureJIDFor( "C" ) ) ) );
 		} finally {
-			dml1.deInit();
+			dml2.deInit();
 		}
 	}
 	
 	@Test
-	public void testMultiInit() {
+	public void testMultiInits() throws StorageException {
 
-		dml1.deInit();
-		dml1.init();
-		dml1.deInit();
+		try {
+			dml2.deInit();
+			dml2.init( params );
+			// dml2.deInit();
+			// dml2.init( Consts.DEFAULT_BDB_ENV_PATH );
+		} finally {
+			dml2.deInitAllLikeMe();
+		}
 	}
-	
 }
