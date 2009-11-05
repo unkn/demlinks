@@ -27,7 +27,6 @@ package org.dml.level1;
 
 import static org.junit.Assert.assertTrue;
 
-import org.dml.error.BadCallError;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -47,17 +46,13 @@ public class Level1_DMLEnvironmentTest {
 
 		dml1 = new Level1_DMLEnvironment();
 		dml1.init( null );
-		NodeJID.clearAllForJUnit();
+		NodeJID.junitClearAll();
 	}
 	
 	@After
 	public void tearDown() {
 
-		try {
-			dml1.deInit();
-		} catch ( BadCallError bce ) {
-			// ignore
-		}
+		dml1.deInitSilently();
 		dml1 = null;
 	}
 	
@@ -73,7 +68,7 @@ public class Level1_DMLEnvironmentTest {
 			System.out.println( "!" + j1.getAsString() + "!" + j2.getAsString()
 					+ "!" );
 			assertTrue( j1.equals( j2 ) );
-			
+			// throw new RuntimeException();
 		} finally {
 			dml1.deInit();
 		}

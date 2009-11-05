@@ -59,7 +59,7 @@ public class NodeJID extends Reference<String> {
 	// string representation of the ID
 	// private String stringID = null;
 	
-	protected static final void clearAllForJUnit() {
+	protected static final void junitClearAll() {
 
 		if ( null != all_Level1_NodeJIDs ) {
 			all_Level1_NodeJIDs.clear();

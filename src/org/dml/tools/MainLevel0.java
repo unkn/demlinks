@@ -50,6 +50,8 @@ import org.temporary.tests.VarLevel;
  * getVarLevelX, checkVarLevelX, newVarLevelX;
  * 5. always call super on setVarLevelX and always override it
  * 6. VarLevelX variable must extend StaticInstanceTrackerWithMethodParams
+ * 7. override getDefaults() and call its super first, and set your defaults
+ * that will be used when params are missing or null instead of them
  */
 public abstract class MainLevel0 extends StaticInstanceTrackerWithMethodParams {
 	
@@ -136,6 +138,7 @@ public abstract class MainLevel0 extends StaticInstanceTrackerWithMethodParams {
 	}
 	
 	/**
+	 * 1of5
 	 * must override this in each level AND call super at end or beginning<br>
 	 * <code>var1 = (VarLevel1)toValue;<br></code>
 	 * 
@@ -144,6 +147,7 @@ public abstract class MainLevel0 extends StaticInstanceTrackerWithMethodParams {
 	abstract protected void setVarLevelX( Object toValue );
 	
 	/**
+	 * 2of5
 	 * must override this in each Level w/o calling super, and use the right
 	 * type<br>
 	 * <code>
@@ -153,6 +157,7 @@ public abstract class MainLevel0 extends StaticInstanceTrackerWithMethodParams {
 	abstract protected Object newVarLevelX();
 	
 	/**
+	 * 3of5
 	 * must override in each level w/o calling super<br>
 	 * this method must make sure the obj is of VarLevelX type depending on the
 	 * current variable type used in the class<br>
@@ -169,6 +174,7 @@ public abstract class MainLevel0 extends StaticInstanceTrackerWithMethodParams {
 	abstract protected void checkVarLevelX( Object obj );
 	
 	/**
+	 * 4of5
 	 * must override this, and don't call super <br>
 	 * <code>return var1;<br></code>
 	 * 
@@ -239,8 +245,9 @@ public abstract class MainLevel0 extends StaticInstanceTrackerWithMethodParams {
 	/**
 	 * override this and call internalInit(...) then super with the returned
 	 * value<br>
-	 * ie. super.initMainLevel( this.internalInit( var1, params ) );<br>
-	 * super.init( this.internalInit( var1, params ) );
+	 * this method was previously named initMainLevel
+	 * ie.<br>
+	 * <code>super.init( this.internalInit( var1, params ) );</code>
 	 * 
 	 * @param params
 	 */
@@ -252,6 +259,13 @@ public abstract class MainLevel0 extends StaticInstanceTrackerWithMethodParams {
 		super.init();// second
 	}
 	
+	/**
+	 * 5of5
+	 * override this WITH calling its super first<br>
+	 * and set your own defaults
+	 * 
+	 * @return
+	 */
 	protected MethodParams<Object> getDefaults() {
 
 		if ( null == defaults ) {

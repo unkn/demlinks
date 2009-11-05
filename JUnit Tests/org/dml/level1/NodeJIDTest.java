@@ -46,7 +46,7 @@ public class NodeJIDTest {
 	public void init() throws StorageException {
 
 		// DMLEnvironment.init();
-		NodeJID.clearAllForJUnit();
+		NodeJID.junitClearAll();
 		assertTrue( NodeJID.all_Level1_NodeJIDs.size() == 0 );
 		a = NodeJID.ensureJIDFor( "A" );
 		b = NodeJID.ensureJIDFor( "B" );

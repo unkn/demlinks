@@ -73,8 +73,8 @@ public interface Level2_DMLStorageWrapper extends Level1_DMLStorageWrapper {
 	 */
 	public NodeID ensureNodeID( NodeJID theJID ) throws StorageException;
 	
-	
-	public void init( String envHomeDir, boolean internalDestroyBeforeInit )
-			throws StorageException;
+
+	// public void init( String envHomeDir, boolean internalDestroyBeforeInit )
+	// throws StorageException;
 	
 }

@@ -28,12 +28,13 @@ package org.dml.level2;
 import static org.junit.Assert.assertTrue;
 
 import org.dml.JUnits.Consts;
-import org.dml.error.BadCallError;
 import org.dml.level1.NodeJID;
 import org.dml.storagewrapper.StorageException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.references.method.MethodParams;
+import org.temporary.tests.PossibleParams;
 
 
 
@@ -45,24 +46,27 @@ public class Level2_DMLEnvironmentTest {
 	
 	Level2_DMLEnvironment	dml2;
 	NodeID					a, b, c;
+	MethodParams<Object>	params;
 	
 	@Before
 	public void setUp() throws StorageException {
 
+		params = new MethodParams<Object>();
+		params.init();
+		
 		dml2 = new Level2_DMLEnvironment();
-		dml2.init( Consts.BDB_ENV_PATH );
+		params.set( PossibleParams.homeDir, Consts.BDB_ENV_PATH );
+		dml2.init( params );
 		
 	}
 	
 	@After
 	public void tearDown() {
 
-		try {
-			dml2.deInit();
-		} catch ( BadCallError bce ) {
-			// ignore
-		}
+		dml2.deInitSilently();
 		dml2 = null;
+		params.deInit();
+		params = null;
 	}
 	
 	@Test
@@ -87,7 +91,7 @@ public class Level2_DMLEnvironmentTest {
 
 		try {
 			dml2.deInit();
-			dml2.init( Consts.BDB_ENV_PATH );
+			dml2.init( params );
 			// dml2.deInit();
 			// dml2.init( Consts.DEFAULT_BDB_ENV_PATH );
 		} finally {

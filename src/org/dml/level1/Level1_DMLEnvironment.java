@@ -40,10 +40,10 @@ import org.references.method.MethodParams;
 public class Level1_DMLEnvironment extends MainLevel0 {
 	
 	
-	private Level1_DMLStorageWrapper	Storage	= null;
+	private Level1_DMLStorageWrapper	storageL1	= null;
 	
 	/**
-	 * construct, don't forget to call init()
+	 * construct, don't forget to call init(...)
 	 */
 	public Level1_DMLEnvironment() {
 
@@ -60,7 +60,7 @@ public class Level1_DMLEnvironment extends MainLevel0 {
 	@Override
 	public void init( MethodParams<Object> params ) {
 
-		super.init( this.internalInit( Storage, params ) );
+		super.init( this.internalInit( storageL1, params ) );
 	}
 	
 	/*
@@ -85,7 +85,7 @@ public class Level1_DMLEnvironment extends MainLevel0 {
 	@Override
 	protected StaticInstanceTrackerWithMethodParams getVarLevelX() {
 
-		return (StaticInstanceTrackerWithMethodParams)Storage;
+		return (StaticInstanceTrackerWithMethodParams)storageL1;
 	}
 	
 	/*
@@ -96,8 +96,8 @@ public class Level1_DMLEnvironment extends MainLevel0 {
 	@Override
 	protected Object newVarLevelX() {
 
-		Storage = new Level1_BerkeleyDBStorage();
-		return Storage;
+		storageL1 = new Level1_BerkeleyDBStorage();
+		return storageL1;
 	}
 	
 	/*
@@ -108,6 +108,6 @@ public class Level1_DMLEnvironment extends MainLevel0 {
 	@Override
 	protected void setVarLevelX( Object toValue ) {
 
-		Storage = (Level1_DMLStorageWrapper)toValue;
+		storageL1 = (Level1_DMLStorageWrapper)toValue;
 	}
 }

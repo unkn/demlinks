@@ -30,6 +30,8 @@ import org.dml.level1.Level1_BerkeleyDBStorage;
 import org.dml.level1.NodeJID;
 import org.dml.storagewrapper.StorageException;
 import org.dml.tools.RunTime;
+import org.dml.tools.StaticInstanceTrackerWithMethodParams;
+import org.references.method.MethodParams;
 
 import com.sleepycat.je.DatabaseException;
 
@@ -42,9 +44,18 @@ import com.sleepycat.je.DatabaseException;
 public class Level2_BerkeleyDBStorage extends Level1_BerkeleyDBStorage
 		implements Level2_DMLStorageWrapper {
 	
-	private Level2_BerkeleyDB	bdb	= null;
-	private String				envHomeDir;
-	private boolean				internalDestroyBeforeInit;
+	private Level2_BerkeleyDB	bdbL2	= null;
+	
+	// private String envHomeDir;
+	// private boolean internalDestroyBeforeInit;
+	
+	/**
+	 * constructor, don't forget to call init(...)
+	 */
+	public Level2_BerkeleyDBStorage() {
+
+		super();
+	}
 	
 	@Override
 	public final NodeJID getNodeJID( NodeID identifiedByThisNodeID )
@@ -52,7 +63,7 @@ public class Level2_BerkeleyDBStorage extends Level1_BerkeleyDBStorage
 
 		RunTime.assertNotNull( identifiedByThisNodeID );
 		try {
-			return bdb.getDBMapJIDsToNodeIDs().getNodeJID(
+			return bdbL2.getDBMapJIDsToNodeIDs().getNodeJID(
 					identifiedByThisNodeID );
 		} catch ( DatabaseException ex ) {
 			throw new StorageException( ex );
@@ -65,7 +76,7 @@ public class Level2_BerkeleyDBStorage extends Level1_BerkeleyDBStorage
 
 		RunTime.assertNotNull( identifiedByThisJID );
 		try {
-			return bdb.getDBMapJIDsToNodeIDs().getNodeID( identifiedByThisJID );
+			return bdbL2.getDBMapJIDsToNodeIDs().getNodeID( identifiedByThisJID );
 		} catch ( DatabaseException dbe ) {
 			throw new StorageException( dbe );
 		}
@@ -76,7 +87,7 @@ public class Level2_BerkeleyDBStorage extends Level1_BerkeleyDBStorage
 
 		RunTime.assertNotNull( fromJID );
 		try {
-			return bdb.getDBMapJIDsToNodeIDs().createNodeID( fromJID );
+			return bdbL2.getDBMapJIDsToNodeIDs().createNodeID( fromJID );
 		} catch ( DatabaseException dbe ) {
 			throw new StorageException( dbe );
 		}
@@ -88,79 +99,135 @@ public class Level2_BerkeleyDBStorage extends Level1_BerkeleyDBStorage
 
 		RunTime.assertNotNull( theJID );
 		try {
-			return bdb.getDBMapJIDsToNodeIDs().ensureNodeID( theJID );
+			return bdbL2.getDBMapJIDsToNodeIDs().ensureNodeID( theJID );
 		} catch ( DatabaseException de ) {
 			throw new StorageException( de );
 		}
 	}
 	
-	/**
-	 * constructor, don't forget to call init(...)
-	 */
-	public Level2_BerkeleyDBStorage() {
-
-	}
 	
-	/**
-	 * @param envHomeDir1
-	 * @throws StorageException
-	 */
-	public void init( String envHomeDir1 ) throws StorageException {
-
-		this.init( envHomeDir1, false );
-	}
-	
-	/**
-	 * @param envHomeDir1
-	 * @param internalDestroyBeforeInit1
-	 * @throws StorageException
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.dml.tools.MainLevel0#init(org.references.method.MethodParams)
 	 */
 	@Override
-	public void init( String envHomeDir1, boolean internalDestroyBeforeInit1 )
-			throws StorageException {
+	public void init( MethodParams<Object> params ) {
 
-		RunTime.assertNotNull( envHomeDir1 );
-		envHomeDir = envHomeDir1;
-		internalDestroyBeforeInit = internalDestroyBeforeInit1;
-		super.init();
+		super.init( this.internalInit( bdbL2, params ) );
 	}
 	
-	/**
-	 * override this in subclasses without calling super<br>
-	 * this method is called by start() which in turn is called by init()
+	// /**
+	// * @param envHomeDir1
+	// * @throws StorageException
+	// */
+	// public void init( String envHomeDir1 ) throws StorageException {
+	//
+	// this.init( envHomeDir1, false );
+	// }
+	//	
+	// /**
+	// * @param envHomeDir1
+	// * @param internalDestroyBeforeInit1
+	// * @throws StorageException
+	// */
+	// @Override
+	// public void init( String envHomeDir1, boolean internalDestroyBeforeInit1
+	// )
+	// throws StorageException {
+	//
+	// RunTime.assertNotNull( envHomeDir1 );
+	// envHomeDir = envHomeDir1;
+	// internalDestroyBeforeInit = internalDestroyBeforeInit1;
+	// super.init();
+	// }
+	//	
+	// /**
+	// * override this in subclasses without calling super<br>
+	// * this method is called by start() which in turn is called by init()
+	// */
+	// @Override
+	// protected void storageInit() {
+	//
+	// if ( null == bdb ) {
+	// bdb = new Level2_BerkeleyDB();
+	// }
+	//		
+	// try {
+	// bdb.init( envHomeDir, internalDestroyBeforeInit );
+	// } catch ( DatabaseException de ) {
+	// throw new StorageException( de );
+	// }
+	// }
+	//	
+	// /**
+	// * override this in subclasses without calling super<br>
+	// * this method is called by done() which in turn is called by deInit()
+	// */
+	// @Override
+	// protected void storageDeInit() {
+	//
+	// bdb.deInit();
+	// }
+	//	
+	// /**
+	// * no throwing
+	// */
+	// @Override
+	// public final void done() {
+	//
+	//		
+	// super.done();
+	// }
+	//	
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.dml.level1.Level1_BerkeleyDBStorage#setVarLevelX(java.lang.Object)
 	 */
 	@Override
-	protected void storageInit() {
+	protected void setVarLevelX( Object toValue ) {
 
-		if ( null == bdb ) {
-			bdb = new Level2_BerkeleyDB();
+		bdbL2 = (Level2_BerkeleyDB)toValue;
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.dml.level1.Level1_BerkeleyDBStorage#getVarLevelX()
+	 */
+	@Override
+	protected StaticInstanceTrackerWithMethodParams getVarLevelX() {
+
+		return bdbL2;
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.dml.level1.Level1_BerkeleyDBStorage#newVarLevelX()
+	 */
+	@Override
+	protected Object newVarLevelX() {
+
+		bdbL2 = new Level2_BerkeleyDB();
+		return bdbL2;
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.dml.level1.Level1_BerkeleyDBStorage#checkVarLevelX(java.lang.Object)
+	 */
+	@Override
+	protected void checkVarLevelX( Object obj ) {
+
+		if ( !( obj instanceof Level2_BerkeleyDB ) ) {
+			// cannot be under VarLevel1, can be above tho
+			RunTime.badCall( "wrong type passed" );
 		}
-		
-		try {
-			bdb.init( envHomeDir, internalDestroyBeforeInit );
-		} catch ( DatabaseException de ) {
-			throw new StorageException( de );
-		}
 	}
-	
-	/**
-	 * override this in subclasses without calling super<br>
-	 * this method is called by done() which in turn is called by deInit()
-	 */
-	@Override
-	protected void storageDeInit() {
-
-		bdb.deInit();
-	}
-	
-	/**
-	 * no throwing
-	 */
-	@Override
-	public final void done() {
-
-		
-		super.done();
-	}
-	
 }// end of class

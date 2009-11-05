@@ -27,8 +27,9 @@ package org.dml.database.bdb;
 
 import java.io.File;
 
+import org.dml.tools.MainLevel0;
 import org.dml.tools.RunTime;
-import org.dml.tools.StaticInstanceTracker;
+import org.dml.tools.StaticInstanceTrackerWithMethodParams;
 import org.javapart.logger.Log;
 import org.references.ListOfUniqueNonNullObjects;
 import org.references.Position;
@@ -51,7 +52,7 @@ import com.sleepycat.je.SequenceConfig;
  * 
  *
  */
-public class Level2_BerkeleyDB extends StaticInstanceTracker {
+public class Level2_BerkeleyDB extends MainLevel0 {
 	
 	private String												envHomeDir;
 	private final EnvironmentConfig								environmentConfig			= new EnvironmentConfig();
@@ -582,6 +583,54 @@ public class Level2_BerkeleyDB extends StaticInstanceTracker {
 		}
 		
 		return null;
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.dml.tools.MainLevel0#checkVarLevelX(java.lang.Object)
+	 */
+	@Override
+	protected void checkVarLevelX( Object obj ) {
+
+		// TODO Auto-generated method stub
+		
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.dml.tools.MainLevel0#getVarLevelX()
+	 */
+	@Override
+	protected StaticInstanceTrackerWithMethodParams getVarLevelX() {
+
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.dml.tools.MainLevel0#newVarLevelX()
+	 */
+	@Override
+	protected Object newVarLevelX() {
+
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.dml.tools.MainLevel0#setVarLevelX(java.lang.Object)
+	 */
+	@Override
+	protected void setVarLevelX( Object toValue ) {
+
+		// TODO Auto-generated method stub
+		
 	}
 	
 

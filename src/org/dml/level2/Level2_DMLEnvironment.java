@@ -31,7 +31,9 @@ import org.dml.level1.Level1_DMLEnvironment;
 import org.dml.level1.NodeJID;
 import org.dml.storagewrapper.StorageException;
 import org.dml.tools.RunTime;
-import org.javapart.logger.Log;
+import org.dml.tools.StaticInstanceTrackerWithMethodParams;
+import org.references.method.MethodParams;
+import org.temporary.tests.PossibleParams;
 
 
 
@@ -42,12 +44,8 @@ import org.javapart.logger.Log;
 public class Level2_DMLEnvironment extends Level1_DMLEnvironment implements
 		Level2_DMLStorageWrapper {
 	
-	protected Level2_DMLStorageWrapper	Storage					= null;						// is
-																							// this
-																							// hiding
-																							// or
-																							// not?
-																							
+	private Level2_DMLStorageWrapper	storageL2				= null;
+	
 	private final static String			DEFAULT_BDB_ENV_PATH	= "."
 																		+ File.separator
 																		+ "bin"
@@ -55,96 +53,148 @@ public class Level2_DMLEnvironment extends Level1_DMLEnvironment implements
 																		+ "mainEnv"
 																		+ File.separator;
 	
-	private boolean						inited					= false;
-	
 	// temporary:
-	private String						envHomeDir				= null;
+	// private String envHomeDir = null;
 	
-	private boolean						wipeEnvFirst			= false;
+	// private boolean wipeEnvFirst = false;
 	
 	/**
 	 * construct, don't forget to call init(with param/s)
 	 */
 	public Level2_DMLEnvironment() {
 
+		super();
 	}
 	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * org.dml.level1.Level1_DMLEnvironment#init(org.references.method.MethodParams
+	 * )
+	 */
 	@Override
-	protected void start() {
+	public void init( MethodParams<Object> params ) {
 
-		// to prevent user from using just init(),
-		if ( !inited ) {// this means caller used init() w/o params
-			this.Level2_DMLinit( DEFAULT_BDB_ENV_PATH, false );
-			// RunTime.BadCallError( "must use the other init()s" );
+		super.init( this.internalInit( storageL2, params ) );
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.dml.level1.Level1_DMLEnvironment#getVarLevelX()
+	 */
+	@Override
+	protected StaticInstanceTrackerWithMethodParams getVarLevelX() {
+
+		return (StaticInstanceTrackerWithMethodParams)storageL2;
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.dml.tools.MainLevel0#getDefaults()
+	 */
+	@Override
+	protected MethodParams<Object> getDefaults() {
+
+		MethodParams<Object> def = super.getDefaults();
+		def.set( PossibleParams.homeDir, DEFAULT_BDB_ENV_PATH );
+		def.set( PossibleParams.wipeDB, false );
+		return def;
+	}
+	
+	// /**
+	// * @param envHomeDir1
+	// * @param wipeEnvFirst1
+	// * @throws StorageException
+	// */
+	// private void Level2_DMLinit( String envHomeDir1, boolean wipeEnvFirst1 )
+	// throws StorageException {
+	//
+	// RunTime.assertNotNull( envHomeDir1, wipeEnvFirst1 );
+	// envHomeDir = envHomeDir1;
+	// wipeEnvFirst = wipeEnvFirst1;
+	// inited = true;
+	// }
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.dml.level1.Level1_DMLEnvironment#newVarLevelX()
+	 */
+	@Override
+	protected Object newVarLevelX() {
+
+		storageL2 = new Level2_BerkeleyDBStorage();
+		return storageL2;
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.dml.level1.Level1_DMLEnvironment#setVarLevelX(java.lang.Object)
+	 */
+	@Override
+	protected void setVarLevelX( Object toValue ) {
+
+		storageL2 = (Level2_DMLStorageWrapper)toValue;
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.dml.level1.Level1_DMLEnvironment#checkVarLevelX(java.lang.Object)
+	 */
+	@Override
+	protected void checkVarLevelX( Object obj ) {
+
+		if ( !( obj instanceof Level2_DMLStorageWrapper ) ) {
+			// cannot be under VarLevel1, can be above tho
+			RunTime.badCall( "wrong type passed" );
 		}
-		super.start();
 	}
 	
-	@Override
-	protected void done() {
-
-		inited = false;
-		super.done();
-	}
+	// /**
+	// * @param envHomeDir1
+	// * @param wipeEnvFirst1
+	// * this should be false, unless inside a JUnit; will delete all
+	// * data
+	// * @throws StorageException
+	// */
+	// public void init( String envHomeDir1, boolean wipeEnvFirst1 )
+	// throws StorageException {
+	//
+	// this.Level2_DMLinit( envHomeDir1, wipeEnvFirst1 );
+	// super.init();// this will call start() from this class
+	// }
 	
-	/**
-	 * @param envHomeDir1
-	 * @param wipeEnvFirst1
-	 * @throws StorageException
-	 */
-	private void Level2_DMLinit( String envHomeDir1, boolean wipeEnvFirst1 )
-			throws StorageException {
-
-		RunTime.assertNotNull( envHomeDir1, wipeEnvFirst1 );
-		envHomeDir = envHomeDir1;
-		wipeEnvFirst = wipeEnvFirst1;
-		inited = true;
-	}
-	
-	
-	@Override
-	protected void storageInit() throws StorageException {
-
-		Log.entry();
-		if ( null == Storage ) {
-			Storage = new Level2_BerkeleyDBStorage();
-			
-		}
-		Storage.init( envHomeDir, wipeEnvFirst );
-		// won't call super, because we get rid of that level of storage since
-		// it's missing new features
-	}
-	
-	@Override
-	protected void storageDeInit() {
-
-		Log.entry();
-		Storage.deInit();
-	}
-	
-	/**
-	 * @param envHomeDir1
-	 * @param wipeEnvFirst1
-	 *            this should be false, unless inside a JUnit; will delete all
-	 *            data
-	 * @throws StorageException
-	 */
-	public void init( String envHomeDir1, boolean wipeEnvFirst1 )
-			throws StorageException {
-
-		this.Level2_DMLinit( envHomeDir1, wipeEnvFirst1 );
-		super.init();// this will call start() from this class
-	}
-	
-	/**
-	 * @param envHomeDir1
-	 * @throws StorageException
-	 */
-	public void init( String envHomeDir1 ) throws StorageException {
-
-		this.init( envHomeDir1, false );
-	}
-	
+	// /**
+	// * @param envHomeDir1
+	// * @throws StorageException
+	// */
+	// public void init( String envHomeDir1 ) throws StorageException {
+	//
+	// this.init( envHomeDir1, false );
+	// }
+	//	
 	// ---------------------------------------------
 	/**
 	 * there's a one to one mapping between NodeID and NodeJID<br>
@@ -158,7 +208,7 @@ public class Level2_DMLEnvironment extends Level1_DMLEnvironment implements
 	public NodeJID getNodeJID( NodeID nodeID ) throws StorageException {
 
 		RunTime.assertNotNull( nodeID );
-		return Storage.getNodeJID( nodeID );
+		return storageL2.getNodeJID( nodeID );
 	}
 	
 	/**
@@ -174,7 +224,7 @@ public class Level2_DMLEnvironment extends Level1_DMLEnvironment implements
 	public NodeID ensureNodeID( NodeJID theJID ) throws StorageException {
 
 		RunTime.assertNotNull( theJID );
-		return Storage.ensureNodeID( theJID );
+		return storageL2.ensureNodeID( theJID );
 	}
 	
 	/**
@@ -185,7 +235,7 @@ public class Level2_DMLEnvironment extends Level1_DMLEnvironment implements
 	public NodeID getNodeID( NodeJID identifiedByThisJID )
 			throws StorageException {
 
-		return Storage.getNodeID( identifiedByThisJID );
+		return storageL2.getNodeID( identifiedByThisJID );
 	}
 	
 	/**
@@ -195,7 +245,7 @@ public class Level2_DMLEnvironment extends Level1_DMLEnvironment implements
 	 */
 	public NodeID createNodeID( NodeJID fromJID ) throws StorageException {
 
-		return Storage.createNodeID( fromJID );
+		return storageL2.createNodeID( fromJID );
 	}
 	
 }

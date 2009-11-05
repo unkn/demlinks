@@ -25,6 +25,7 @@ package org.dml.level1;
 
 
 
+import org.dml.tools.MainLevel0;
 import org.dml.tools.StaticInstanceTrackerWithMethodParams;
 
 
@@ -33,50 +34,60 @@ import org.dml.tools.StaticInstanceTrackerWithMethodParams;
  * should throw only StorageException.<br>
  * this is done mostly for wrapping Exceptions under StorageException<br>
  */
-public class Level1_BerkeleyDBStorage extends
-		StaticInstanceTrackerWithMethodParams implements
+public class Level1_BerkeleyDBStorage extends MainLevel0 implements
 		Level1_DMLStorageWrapper {
 	
 	public Level1_BerkeleyDBStorage() {
 
-	}
-	
-	/**
-	 * override this in subclasses without calling super<br>
-	 * this method is called by done() which in turn is called by deInit()
-	 */
-	protected void storageDeInit() {
-
+		super();
 	}
 	
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.dml.tools.StaticInstanceTracker#done()
+	 * @see org.dml.tools.MainLevel0#checkVarLevelX(java.lang.Object)
 	 */
 	@Override
-	protected void done() {
+	protected void checkVarLevelX( Object obj ) {
 
-		this.storageDeInit();
-	}
-	
-	/**
-	 * override this in subclasses without calling super<br>
-	 * this method is called by start() which in turn is called by init()
-	 */
-	protected void storageInit() {
-
+		// TODO Auto-generated method stub
+		
 	}
 	
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.dml.tools.StaticInstanceTracker#start()
+	 * @see org.dml.tools.MainLevel0#getVarLevelX()
 	 */
 	@Override
-	protected void start() {
+	protected StaticInstanceTrackerWithMethodParams getVarLevelX() {
 
-		this.storageInit();
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.dml.tools.MainLevel0#newVarLevelX()
+	 */
+	@Override
+	protected Object newVarLevelX() {
+
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.dml.tools.MainLevel0#setVarLevelX(java.lang.Object)
+	 */
+	@Override
+	protected void setVarLevelX( Object toValue ) {
+
+		// TODO Auto-generated method stub
+		
 	}
 	
 
