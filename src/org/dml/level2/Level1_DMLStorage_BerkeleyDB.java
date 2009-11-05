@@ -21,16 +21,16 @@
  */
 
 
-package org.dml.level3;
+package org.dml.level2;
 
 
 
 import org.dml.database.bdb.Level1_Storage_BerkeleyDB;
 import org.dml.level1.NodeJID;
-import org.dml.level2.Level1_DMLStorage_BerkeleyDB;
-import org.dml.level2.NodeID;
 import org.dml.storagewrapper.StorageException;
+import org.dml.tools.Level0;
 import org.dml.tools.RunTime;
+import org.dml.tools.StaticInstanceTrackerWithMethodParams;
 
 import com.sleepycat.je.DatabaseException;
 
@@ -40,18 +40,56 @@ import com.sleepycat.je.DatabaseException;
  * should throw only StorageException.<br>
  * this is done mostly for wrapping Exceptions under StorageException<br>
  */
-public class Level3_BerkeleyDBStorage extends Level1_DMLStorage_BerkeleyDB implements
-		Level3_DMLStorageWrapper {
+public class Level1_DMLStorage_BerkeleyDB extends Level0 implements
+		Level1_DMLStorageWrapper {
 	
-	private Level1_Storage_BerkeleyDB	bdb	= null;
+	protected Level1_Storage_BerkeleyDB	bdbL1	= null;
 	
+	/**
+	 * constructor, don't forget to call init(...)
+	 */
+	public Level1_DMLStorage_BerkeleyDB() {
+
+		super();
+	}
+	
+	@Override
+	protected void setVarLevelX( Object toValue ) {
+
+		bdbL1 = (Level1_Storage_BerkeleyDB)toValue;
+	}
+	
+	@Override
+	protected StaticInstanceTrackerWithMethodParams getVarLevelX() {
+
+		return bdbL1;
+	}
+	
+	@Override
+	protected void newVarLevelX() {
+
+		bdbL1 = new Level1_Storage_BerkeleyDB();
+	}
+	
+	@Override
+	protected void checkVarLevelX( Object obj ) {
+
+		if ( !( obj instanceof Level1_Storage_BerkeleyDB ) ) {
+			// cannot be under VarLevel1, can be above tho
+			RunTime.badCall( "wrong type passed" );
+		}
+	}
+	
+	
+
+	// =============================================
 	@Override
 	public final NodeJID getNodeJID( NodeID identifiedByThisNodeID )
 			throws StorageException {
 
 		RunTime.assertNotNull( identifiedByThisNodeID );
 		try {
-			return bdb.getDBMapJIDsToNodeIDs().getNodeJID(
+			return bdbL1.getDBMapJIDsToNodeIDs().getNodeJID(
 					identifiedByThisNodeID );
 		} catch ( DatabaseException ex ) {
 			throw new StorageException( ex );
@@ -64,7 +102,7 @@ public class Level3_BerkeleyDBStorage extends Level1_DMLStorage_BerkeleyDB imple
 
 		RunTime.assertNotNull( identifiedByThisJID );
 		try {
-			return bdb.getDBMapJIDsToNodeIDs().getNodeID( identifiedByThisJID );
+			return bdbL1.getDBMapJIDsToNodeIDs().getNodeID( identifiedByThisJID );
 		} catch ( DatabaseException dbe ) {
 			throw new StorageException( dbe );
 		}
@@ -75,7 +113,7 @@ public class Level3_BerkeleyDBStorage extends Level1_DMLStorage_BerkeleyDB imple
 
 		RunTime.assertNotNull( fromJID );
 		try {
-			return bdb.getDBMapJIDsToNodeIDs().createNodeID( fromJID );
+			return bdbL1.getDBMapJIDsToNodeIDs().createNodeID( fromJID );
 		} catch ( DatabaseException dbe ) {
 			throw new StorageException( dbe );
 		}
@@ -87,77 +125,40 @@ public class Level3_BerkeleyDBStorage extends Level1_DMLStorage_BerkeleyDB imple
 
 		RunTime.assertNotNull( theJID );
 		try {
-			return bdb.getDBMapJIDsToNodeIDs().ensureNodeID( theJID );
+			return bdbL1.getDBMapJIDsToNodeIDs().ensureNodeID( theJID );
 		} catch ( DatabaseException de ) {
 			throw new StorageException( de );
 		}
 	}
 	
-	
-	/**
-	 * @param envHomeDir
-	 * @throws StorageException
-	 */
-	public Level3_BerkeleyDBStorage( String envHomeDir ) throws StorageException {
-
-		this( envHomeDir, false );
-	}
-	
-	/**
-	 * construct
-	 * 
-	 * @param envHomeDir
-	 * @throws StorageException
-	 */
-	public Level3_BerkeleyDBStorage( String envHomeDir,
-			boolean internalDestroyBeforeInit ) throws StorageException {
-
-		this.init( envHomeDir, internalDestroyBeforeInit );
-	}
-	
-	/**
-	 * @param envHomeDir
-	 * @param internalDestroyBeforeInit
-	 * @throws StorageException
-	 */
-	private void init( String envHomeDir, boolean internalDestroyBeforeInit )
-			throws StorageException {
-
-		RunTime.assertNotNull( envHomeDir );
-		try {
-			bdb = new Level1_Storage_BerkeleyDB( envHomeDir, internalDestroyBeforeInit );
-		} catch ( DatabaseException de ) {
-			throw new StorageException( de );
-		}
-	}
-	
-	
-
-	/**
-	 * no throwing
-	 */
-	@Override
-	public final void deInit() {
-
-		bdb.deInit();
-	}
 	
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.dml.storagewrapper.StorageWrapper#ensureGroup(org.dml.level2.NodeID,
-	 * org.dml.level2.NodeID)
+	 * @see org.dml.tools.StaticInstanceTracker#done()
 	 */
 	@Override
-	public boolean ensureGroup( NodeID first, NodeID second )
-			throws StorageException {
+	protected void done() {
 
-		RunTime.assertNotNull( first, second );
-		try {
-			return bdb.getDBMapTupleNodeIDs().ensureGroup( first, second );
-		} catch ( DatabaseException de ) {
-			throw new StorageException( de );
+		bdbL1.deInit();
+		bdbL1 = null;
+		
+	}
+	
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.dml.tools.StaticInstanceTracker#start()
+	 */
+	@Override
+	protected void start() {
+
+		if ( null == bdbL1 ) {
+			// called init() which is not supported
+			RunTime.badCall( "please don't use init() w/o params" );
 		}
 	}
+	
+
 }// end of class

@@ -50,14 +50,14 @@ public class OneToOneDBMap {
 	private DatabaseCapsule				forwardDB	= null;
 	private SecondaryDatabaseCapsule	backwardDB	= null;
 	protected String					dbName;
-	protected final Level2_BerkeleyDB	bdb;
+	protected final Level1_Storage_BerkeleyDB	bdb;
 	
 	/**
 	 * constructor
 	 * 
 	 * @param dbName1
 	 */
-	public OneToOneDBMap( Level2_BerkeleyDB bdb1, String dbName1 ) {
+	public OneToOneDBMap( Level1_Storage_BerkeleyDB bdb1, String dbName1 ) {
 
 		RunTime.assertNotNull( bdb1 );
 		RunTime.assertNotNull( dbName1 );
@@ -173,8 +173,8 @@ public class OneToOneDBMap {
 		// TODO FIXME key/data should be able to do any object
 		DatabaseEntry deKey = new DatabaseEntry();
 		DatabaseEntry deData = new DatabaseEntry();
-		Level2_BerkeleyDB.stringToEntry( key, deKey );
-		Level2_BerkeleyDB.stringToEntry( data, deData );
+		Level1_Storage_BerkeleyDB.stringToEntry( key, deKey );
+		Level1_Storage_BerkeleyDB.stringToEntry( data, deData );
 		OperationStatus ret = this.getForwardDB().putNoOverwrite( null, deKey,
 				deData );
 		return ret;
@@ -188,7 +188,7 @@ public class OneToOneDBMap {
 	public String getKey( String data ) throws DatabaseException {
 
 		DatabaseEntry deData = new DatabaseEntry();
-		Level2_BerkeleyDB.stringToEntry( data, deData );
+		Level1_Storage_BerkeleyDB.stringToEntry( data, deData );
 		DatabaseEntry deKey = new DatabaseEntry();
 		DatabaseEntry pKey = new DatabaseEntry();
 		// deData=new DatabaseEntry(data.getBytes(BerkeleyDB.ENCODING));
@@ -199,7 +199,7 @@ public class OneToOneDBMap {
 		}
 		RunTime.assertTrue( deData.equals( deKey ) );
 		
-		return Level2_BerkeleyDB.entryToString( pKey );
+		return Level1_Storage_BerkeleyDB.entryToString( pKey );
 	}
 	
 	/**
@@ -210,7 +210,7 @@ public class OneToOneDBMap {
 	public String getData( String key ) throws DatabaseException {
 
 		DatabaseEntry deKey = new DatabaseEntry();
-		Level2_BerkeleyDB.stringToEntry( key, deKey );
+		Level1_Storage_BerkeleyDB.stringToEntry( key, deKey );
 		DatabaseEntry deData = new DatabaseEntry();
 		OperationStatus ret;
 		ret = this.getForwardDB().get( null, deKey, deData, null );
@@ -218,7 +218,7 @@ public class OneToOneDBMap {
 			return null;
 		}
 		
-		return Level2_BerkeleyDB.entryToString( deData );
+		return Level1_Storage_BerkeleyDB.entryToString( deData );
 	}
 	
 

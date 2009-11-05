@@ -29,7 +29,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.dml.JUnits.Consts;
-import org.dml.database.bdb.Level2_BerkeleyDB;
+import org.dml.database.bdb.Level1_Storage_BerkeleyDB;
 import org.dml.database.bdb.OneToManyDBMap;
 import org.junit.After;
 import org.junit.Before;
@@ -51,12 +51,12 @@ public class OneToManyDBMapTest {
 	final String	_a	= "A" + new Object();
 	final String	_b	= "B" + new Object();
 	final String	_c	= "C" + new Object();
-	Level2_BerkeleyDB		bdb;
+	Level1_Storage_BerkeleyDB		bdb;
 	
 	@Before
 	public void setUp() throws DatabaseException {
 
-		bdb = new Level2_BerkeleyDB( Consts.BDB_ENV_PATH, true );
+		bdb = new Level1_Storage_BerkeleyDB( Consts.BDB_ENV_PATH, true );
 		o2m = new OneToManyDBMap( bdb, "one to many" );// + new Object() );
 	}
 	

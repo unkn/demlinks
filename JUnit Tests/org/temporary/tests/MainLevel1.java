@@ -68,6 +68,7 @@ public class MainLevel1 extends MainLevel0 {
 	protected void setVarLevelX( Object toValue ) {
 
 		var1 = (VarLevel1)toValue;
+		// FIXME: so it's working w/o super? heh
 	}
 	
 	@Override

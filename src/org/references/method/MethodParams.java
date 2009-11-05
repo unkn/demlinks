@@ -279,6 +279,9 @@ public class MethodParams<T> extends StaticInstanceTracker {// T= base class,
 	}
 	
 	/**
+	 * after calling this, you will need to use deInit() on the returned,
+	 * because the returned did an init()
+	 * 
 	 * @return
 	 */
 	public MethodParams<T> getClone() {

@@ -25,10 +25,7 @@ package org.dml.level1;
 
 
 
-import org.dml.tools.MainLevel0;
-import org.dml.tools.RunTime;
-import org.dml.tools.StaticInstanceTrackerWithMethodParams;
-import org.references.method.MethodParams;
+import org.dml.tools.StaticInstanceTracker;
 
 
 
@@ -36,10 +33,8 @@ import org.references.method.MethodParams;
  * facade design pattern
  * 
  */
-public class Level1_DMLEnvironment extends MainLevel0 {
+public class Level1_DMLEnvironment extends StaticInstanceTracker {
 	
-	
-	private Level1_DMLStorageWrapper	storageL1	= null;
 	
 	/**
 	 * construct, don't forget to call init(...)
@@ -49,64 +44,37 @@ public class Level1_DMLEnvironment extends MainLevel0 {
 		super();
 	}
 	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.dml.tools.StaticInstanceTrackerWithMethodParams#init(org.references
-	 * .method.MethodParams)
+	/**
+	 * @param strID
+	 * @return
+	 * @see NodeJID#ensureJIDFor(String)
 	 */
-	@Override
-	public void init( MethodParams<Object> params ) {
+	public NodeJID ensureJIDFor( String strID ) {
 
-		super.init( this.internalInit( storageL1, params ) );
+		return NodeJID.ensureJIDFor( strID );
 	}
 	
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.dml.tools.MainLevel0#checkVarLevelX(java.lang.Object)
+	 * @see org.dml.tools.StaticInstanceTracker#done()
 	 */
 	@Override
-	protected void checkVarLevelX( Object obj ) {
+	protected void done() {
 
-		if ( !( obj instanceof Level1_DMLStorageWrapper ) ) {
-			// cannot be under Level1_DMLStorageWrapper, can be above tho
-			RunTime.badCall( "wrong type passed" );
-		}
+		// TODO Auto-generated method stub
+		
 	}
 	
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.dml.tools.MainLevel0#getVarLevelX()
+	 * @see org.dml.tools.StaticInstanceTracker#start()
 	 */
 	@Override
-	protected StaticInstanceTrackerWithMethodParams getVarLevelX() {
+	protected void start() {
 
-		return (StaticInstanceTrackerWithMethodParams)storageL1;
-	}
-	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.dml.tools.MainLevel0#newVarLevelX()
-	 */
-	@Override
-	protected Object newVarLevelX() {
-
-		storageL1 = new Level1_BerkeleyDBStorage();
-		return storageL1;
-	}
-	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.dml.tools.MainLevel0#setVarLevelX(java.lang.Object)
-	 */
-	@Override
-	protected void setVarLevelX( Object toValue ) {
-
-		storageL1 = (Level1_DMLStorageWrapper)toValue;
+		// TODO Auto-generated method stub
+		
 	}
 }

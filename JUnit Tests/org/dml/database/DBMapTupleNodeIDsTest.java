@@ -30,7 +30,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import org.dml.JUnits.Consts;
-import org.dml.database.bdb.Level2_BerkeleyDB;
+import org.dml.database.bdb.Level1_Storage_BerkeleyDB;
 import org.dml.database.bdb.DBMapTupleNodeIDs;
 import org.dml.level1.Level1_DMLEnvironment;
 import org.dml.level1.NodeJID;
@@ -52,12 +52,12 @@ public class DBMapTupleNodeIDsTest {
 	
 	DBMapTupleNodeIDs	tdb;
 	Level1_DMLEnvironment		dmlEnv;
-	Level2_BerkeleyDB			bdb;
+	Level1_Storage_BerkeleyDB			bdb;
 	
 	@Before
 	public void setUp() throws DatabaseException {
 
-		bdb = new Level2_BerkeleyDB( Consts.BDB_ENV_PATH, true );
+		bdb = new Level1_Storage_BerkeleyDB( Consts.BDB_ENV_PATH, true );
 		tdb = new DBMapTupleNodeIDs( bdb, "tupleIDs" );
 		
 	}

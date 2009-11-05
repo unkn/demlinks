@@ -30,8 +30,6 @@ import static org.junit.Assert.assertTrue;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.references.method.MethodParams;
-import org.temporary.tests.PossibleParams;
 
 
 
@@ -47,7 +45,7 @@ public class Level1_DMLEnvironmentTest {
 	public void setUp() {
 
 		dml1 = new Level1_DMLEnvironment();
-		dml1.init( null );
+		dml1.init();
 		NodeJID.junitClearAll();
 	}
 	
@@ -63,9 +61,9 @@ public class Level1_DMLEnvironmentTest {
 
 		try {
 			String test = "test";
-			NodeJID j1 = NodeJID.ensureJIDFor( test );
+			NodeJID j1 = dml1.ensureJIDFor( test );
 			NodeJID.ensureJIDFor( "middle" );
-			NodeJID j2 = NodeJID.ensureJIDFor( test );
+			NodeJID j2 = dml1.ensureJIDFor( test );
 			assertTrue( j1 == j2 );
 			System.out.println( "!" + j1.getAsString() + "!" + j2.getAsString()
 					+ "!" );
@@ -80,18 +78,8 @@ public class Level1_DMLEnvironmentTest {
 	public void testMultiInit() {
 
 		dml1.deInit();
-		dml1.init( null );
+		dml1.init();
 		dml1.deInit();
 	}
 	
-	@Test
-	public void testGivenParam() {
-
-		dml1.deInit();
-		MethodParams<Object> params = new MethodParams<Object>();
-		Level1_BerkeleyDBStorage storL1 = new Level1_BerkeleyDBStorage();
-		storL1.init( null );
-		params.set( PossibleParams.varLevelAll, storL1 );
-		dml1.init( params );
-	}
 }

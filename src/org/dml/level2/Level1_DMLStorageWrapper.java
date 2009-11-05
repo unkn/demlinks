@@ -21,8 +21,12 @@
  */
 
 
-package org.dml.level1;
+package org.dml.level2;
 
+
+
+import org.dml.level1.NodeJID;
+import org.dml.storagewrapper.StorageException;
 import org.dml.tools.StaticInstanceTrackerWithMethodParamsInterface;
 
 
@@ -34,11 +38,44 @@ import org.dml.tools.StaticInstanceTrackerWithMethodParamsInterface;
 public interface Level1_DMLStorageWrapper extends
 		StaticInstanceTrackerWithMethodParamsInterface {
 	
-	public void init();
+	/**
+	 * returns the NodeJID associated with the given NodeID<br>
+	 * it's a 1 to 1 mapping<br>
+	 * 
+	 * @param identifiedByThisNodeID
+	 * @return NodeJID
+	 * @throws StorageException
+	 */
+	public NodeJID getNodeJID( NodeID identifiedByThisNodeID )
+			throws StorageException;
 	
 	/**
+	 * returns the NodeID associated with the given NodeJID<br>
+	 * it's a 1 to 1 mapping<br>
 	 * 
+	 * @param identifiedByThisJID
+	 * @return NodeID
+	 * @throws StorageException
 	 */
-	public void deInit();
+	public NodeID getNodeID( NodeJID identifiedByThisJID )
+			throws StorageException;
+	
+	/**
+	 * @param fromJID
+	 * @return
+	 * @throws StorageException
+	 */
+	public NodeID createNodeID( NodeJID fromJID ) throws StorageException;
+	
+	/**
+	 * @param theJID
+	 * @return
+	 * @throws StorageException
+	 */
+	public NodeID ensureNodeID( NodeJID theJID ) throws StorageException;
+	
+
+	// public void init( String envHomeDir, boolean internalDestroyBeforeInit )
+	// throws StorageException;
 	
 }

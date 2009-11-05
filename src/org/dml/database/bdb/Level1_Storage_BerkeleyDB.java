@@ -27,6 +27,7 @@ package org.dml.database.bdb;
 
 import java.io.File;
 
+import org.dml.storagewrapper.StorageException;
 import org.dml.tools.RunTime;
 import org.dml.tools.StaticInstanceTrackerWithMethodParams;
 import org.javapart.logger.Log;
@@ -53,7 +54,8 @@ import com.sleepycat.je.SequenceConfig;
  * 
  *
  */
-public class Level2_BerkeleyDB extends StaticInstanceTrackerWithMethodParams {
+public class Level1_Storage_BerkeleyDB extends
+		StaticInstanceTrackerWithMethodParams {
 	
 	private String												envHomeDir;
 	private final EnvironmentConfig								environmentConfig			= new EnvironmentConfig();
@@ -107,7 +109,7 @@ public class Level2_BerkeleyDB extends StaticInstanceTrackerWithMethodParams {
 	/**
 	 * constructor, don't forget to call init(..);
 	 */
-	public Level2_BerkeleyDB() {
+	public Level1_Storage_BerkeleyDB() {
 
 	}
 	
@@ -133,9 +135,9 @@ public class Level2_BerkeleyDB extends StaticInstanceTrackerWithMethodParams {
 		try {
 			this.getEnvironment();
 		} catch ( DatabaseException e ) {
-			// TODO Auto-generated catch block
 			// FIXME: can't mod method signature
 			e.printStackTrace();
+			throw new StorageException( e );
 		}// forces env open or create
 	}
 	
@@ -354,7 +356,7 @@ public class Level2_BerkeleyDB extends StaticInstanceTrackerWithMethodParams {
 		// if ( null == thisSeq ) {
 		// init once:
 		DatabaseEntry deKey = new DatabaseEntry();
-		Level2_BerkeleyDB.stringToEntry( thisSeqName, deKey );
+		Level1_Storage_BerkeleyDB.stringToEntry( thisSeqName, deKey );
 		Sequence seq = this.getSeqsDB().openSequence( null, deKey,
 				allSequencesConfig );
 		if ( allSequenceInstances.addFirstQ( seq ) ) {

@@ -61,7 +61,7 @@ public class DBSequence {
 	// non-static follows:
 	private Sequence				thisSeq				= null;
 	private String					thisSeqName			= null;
-	private final Level2_BerkeleyDB		bdb;
+	private final Level1_Storage_BerkeleyDB		bdb;
 	
 	
 	/**
@@ -70,7 +70,7 @@ public class DBSequence {
 	 * @param seqName
 	 * @throws DatabaseException
 	 */
-	public DBSequence( Level2_BerkeleyDB bdb1, String seqName ) {
+	public DBSequence( Level1_Storage_BerkeleyDB bdb1, String seqName ) {
 
 		RunTime.assertNotNull( bdb1 );
 		RunTime.assertNotNull( seqName );

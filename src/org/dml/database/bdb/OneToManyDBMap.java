@@ -53,14 +53,14 @@ public class OneToManyDBMap {
 	private DatabaseCapsule		forwardDB		= null;
 	private DatabaseCapsule		backwardDB		= null;
 	private final String		dbName;
-	protected final Level2_BerkeleyDB	bdb;
+	protected final Level1_Storage_BerkeleyDB	bdb;
 	
 	/**
 	 * constructor
 	 * 
 	 * @param dbName1
 	 */
-	public OneToManyDBMap( Level2_BerkeleyDB bdb1, String dbName1 ) {
+	public OneToManyDBMap( Level1_Storage_BerkeleyDB bdb1, String dbName1 ) {
 
 		RunTime.assertNotNull( bdb1 );
 		RunTime.assertNotNull( dbName1 );
@@ -154,8 +154,8 @@ public class OneToManyDBMap {
 		TransactionCapsule txc = TransactionCapsule.getNewTransaction( this.getBDB() );
 		DatabaseEntry key = new DatabaseEntry();
 		DatabaseEntry data = new DatabaseEntry();
-		Level2_BerkeleyDB.stringToEntry( first, key );
-		Level2_BerkeleyDB.stringToEntry( second, data );
+		Level1_Storage_BerkeleyDB.stringToEntry( first, key );
+		Level1_Storage_BerkeleyDB.stringToEntry( second, data );
 		OperationStatus ret1, ret2;
 		try {
 			ret1 = this.getForwardDB().getSearchBoth( txc.get(), key, data,
@@ -176,7 +176,7 @@ public class OneToManyDBMap {
 	/**
 	 * @return
 	 */
-	private Level2_BerkeleyDB getBDB() {
+	private Level1_Storage_BerkeleyDB getBDB() {
 
 		return bdb;
 	}
@@ -216,8 +216,8 @@ public class OneToManyDBMap {
 		TransactionCapsule txc = TransactionCapsule.getNewTransaction( this.getBDB() );
 		DatabaseEntry key = new DatabaseEntry();
 		DatabaseEntry data = new DatabaseEntry();
-		Level2_BerkeleyDB.stringToEntry( first, key );
-		Level2_BerkeleyDB.stringToEntry( second, data );
+		Level1_Storage_BerkeleyDB.stringToEntry( first, key );
+		Level1_Storage_BerkeleyDB.stringToEntry( second, data );
 		boolean commit = false;
 		OperationStatus ret1, ret2;
 		try {

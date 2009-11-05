@@ -26,7 +26,7 @@ package org.dml.database;
 
 
 import org.dml.JUnits.Consts;
-import org.dml.database.bdb.Level2_BerkeleyDB;
+import org.dml.database.bdb.Level1_Storage_BerkeleyDB;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -41,12 +41,12 @@ import com.sleepycat.je.DatabaseException;
  */
 public class DBTest {
 	
-	Level2_BerkeleyDB	bdb;
+	Level1_Storage_BerkeleyDB	bdb;
 	
 	@Before
 	public void setUp() throws DatabaseException {
 
-		bdb = new Level2_BerkeleyDB( Consts.BDB_ENV_PATH );
+		bdb = new Level1_Storage_BerkeleyDB( Consts.BDB_ENV_PATH );
 		
 	}
 	
