@@ -37,7 +37,8 @@ import org.references.method.MethodParams;
  */
 public class MainLevel2 extends MainLevel1 {
 	
-	private VarLevel2	var2;
+	@VarLevel
+	protected VarLevel2	var2;
 	
 	// true if we did new var2
 	// private final boolean defaultVar = false;

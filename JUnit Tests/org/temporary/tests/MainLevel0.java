@@ -25,6 +25,11 @@ package org.temporary.tests;
 
 
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+
 import org.dml.tools.RunTime;
 import org.dml.tools.StaticInstanceTracker;
 import org.dml.tools.StaticInstanceTrackerWithMethodParams;
@@ -47,7 +52,7 @@ import org.references.method.MethodParams;
  * 5. always call super on setVarLevelX and always override it
  * 6. VarLevelX variable must extend StaticInstanceTrackerWithMethodParams
  */
-public abstract class MainLevel0 extends StaticInstanceTracker {
+public abstract class MainLevel0 extends StaticInstanceTrackerWithMethodParams {
 	
 	// defaults are no params, or no params means use defaults
 	protected static MethodParams<Object>	emptyParamList			= null;
@@ -64,6 +69,53 @@ public abstract class MainLevel0 extends StaticInstanceTracker {
 	
 	protected static MethodParams<Object>	temporaryLevel1Params	= null;
 	
+	public void test1() {
+
+		// FIXME temporary
+		// System.out.println( this.getClass() );
+		Field[] fields = this.getClass().getDeclaredFields();
+		// System.out.println( fields.length );
+		int count = 0;
+		for ( Field field : fields ) {
+			Annotation[] allAnno = field.getAnnotations();
+			// System.out.println( allAnno.length );
+			for ( Annotation annotation : allAnno ) {
+				count++;
+				System.out.println( count );
+				if ( annotation instanceof VarLevel ) {
+					System.out.println( annotation + "+" + field.getName()
+							+ "+" + field.getType() );
+					try {
+						System.out.println( "Before: " + field.get( this ) );
+						Constructor<?> con = field.getType().getConstructor(
+								null );
+						field.set( this, con.newInstance( null ) );
+						System.out.println( "After : " + field.get( this ) );
+					} catch ( IllegalArgumentException e ) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch ( IllegalAccessException e ) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch ( SecurityException e ) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch ( NoSuchMethodException e ) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch ( InstantiationException e ) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch ( InvocationTargetException e ) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				
+			}
+			
+		}
+	}
 	
 	public MainLevel0() {
 
@@ -87,9 +139,9 @@ public abstract class MainLevel0 extends StaticInstanceTracker {
 	/**
 	 * must override this in each level AND call super at end or beginning<br>
 	 * 
-	 * @param obj
+	 * @param toValue
 	 */
-	abstract protected void setVarLevelX( Object obj );
+	abstract protected void setVarLevelX( Object toValue );
 	
 	/**
 	 * must override this in each Level w/o calling super, and use the right

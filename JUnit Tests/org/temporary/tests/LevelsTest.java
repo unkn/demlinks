@@ -53,9 +53,10 @@ public class LevelsTest {
 	@Before
 	public void setUp() {
 
+		
+		ml3 = new MainLevel3();
 		ml1 = new MainLevel1();
 		ml2 = new MainLevel2();
-		ml3 = new MainLevel3();
 	}
 	
 	@After

@@ -42,16 +42,28 @@ import org.references.method.MethodParams;
  * 4. can use supplied VarLevel, which must be inited/deInited by caller
  * 5. call to init() w/o params (not initMainLevel()) is prevented
  */
+
 public class MainLevel1 extends MainLevel0 {
 	
-	private VarLevel1	var1	= null;
+	
+	@VarLevel
+	protected VarLevel1	var1		= null;
+	@VarLevel
+	protected VarLevel1	temporary	= null;
 	
 	
 
 	public MainLevel1() {
 
+		// FIXME: temporary
+		// var1 = new VarLevel1();
 		super();
-		
+		this.test1();
+		System.out.println( "Fixed : " + this.getVarLevelX() + " / "
+				+ temporary );
+		if ( 1 == 1 ) {
+			throw new RuntimeException();
+		}
 	}
 	
 	
@@ -63,9 +75,9 @@ public class MainLevel1 extends MainLevel0 {
 	
 	
 	@Override
-	protected void setVarLevelX( Object obj ) {
+	protected void setVarLevelX( Object toValue ) {
 
-		var1 = (VarLevel1)obj;
+		var1 = (VarLevel1)toValue;
 	}
 	
 	@Override
@@ -125,7 +137,6 @@ public class MainLevel1 extends MainLevel0 {
 	 */
 	public VarLevel1 junitGetVar() {
 
-		// FIXME: should this be true?
 		RunTime.assertTrue( var1 == this.getVarLevelX() );
 		return (VarLevel1)this.getVarLevelX();
 	}
