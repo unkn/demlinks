@@ -46,7 +46,7 @@ import org.temporary.tests.PossibleParams;
  */
 public class Level1_DMLEnvironmentTest {
 	
-	Level1_DMLEnvironment	dml2;
+	Level1_DMLEnvironment	dml1;
 	NodeID					a, b, c;
 	MethodParams<Object>	params;
 	
@@ -56,17 +56,17 @@ public class Level1_DMLEnvironmentTest {
 		params = new MethodParams<Object>();
 		params.init();
 		
-		dml2 = new Level1_DMLEnvironment();
+		dml1 = new Level1_DMLEnvironment();
 		params.set( PossibleParams.homeDir, Consts.BDB_ENV_PATH );
-		dml2.init( params );
+		dml1.init( params );
 		
 	}
 	
 	@After
 	public void tearDown() {
 
-		dml2.deInitSilently();
-		dml2 = null;
+		dml1.deInitSilently();
+		dml1 = null;
 		params.deInit();
 		params = null;
 	}
@@ -75,16 +75,16 @@ public class Level1_DMLEnvironmentTest {
 	public void test1() throws StorageException {
 
 		try {
-			a = dml2.ensureNodeID( NodeJID.ensureJIDFor( "A" ) );
-			b = dml2.ensureNodeID( NodeJID.ensureJIDFor( "B" ) );
-			c = dml2.ensureNodeID( NodeJID.ensureJIDFor( "C" ) );
+			a = dml1.ensureNodeID( NodeJID.ensureJIDFor( "A" ) );
+			b = dml1.ensureNodeID( NodeJID.ensureJIDFor( "B" ) );
+			c = dml1.ensureNodeID( NodeJID.ensureJIDFor( "C" ) );
 			assertTrue( a != null );
-			assertTrue( a.equals( dml2.getNodeID( NodeJID.ensureJIDFor( "A" ) ) ) );
-			assertTrue( a != dml2.getNodeID( NodeJID.ensureJIDFor( "A" ) ) );
-			assertTrue( b.equals( dml2.getNodeID( NodeJID.ensureJIDFor( "B" ) ) ) );
-			assertTrue( c.equals( dml2.getNodeID( NodeJID.ensureJIDFor( "C" ) ) ) );
+			assertTrue( a.equals( dml1.getNodeID( NodeJID.ensureJIDFor( "A" ) ) ) );
+			assertTrue( a != dml1.getNodeID( NodeJID.ensureJIDFor( "A" ) ) );
+			assertTrue( b.equals( dml1.getNodeID( NodeJID.ensureJIDFor( "B" ) ) ) );
+			assertTrue( c.equals( dml1.getNodeID( NodeJID.ensureJIDFor( "C" ) ) ) );
 		} finally {
-			dml2.deInit();
+			dml1.deInit();
 		}
 	}
 	
@@ -92,12 +92,12 @@ public class Level1_DMLEnvironmentTest {
 	public void testMultiInits() throws StorageException {
 
 		try {
-			dml2.deInit();
-			dml2.init( params );
+			dml1.deInit();
+			dml1.init( params );
 			// dml2.deInit();
 			// dml2.init( Consts.DEFAULT_BDB_ENV_PATH );
 		} finally {
-			dml2.deInitAllLikeMe();
+			dml1.deInitAllLikeMe();
 		}
 	}
 }

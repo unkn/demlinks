@@ -26,6 +26,7 @@ package org.dml.level2;
 
 
 import org.dml.level1.Level1_DMLEnvironment;
+import org.dml.level1.LevelAll_DMLStorageWrapper;
 import org.dml.level1.NodeID;
 import org.dml.storagewrapper.StorageException;
 import org.dml.tools.RunTime;
@@ -38,6 +39,22 @@ import org.dml.tools.RunTime;
  */
 public class Level2_DMLEnvironment extends Level1_DMLEnvironment implements
 		Level2_DMLStorageWrapper {
+	
+	@Override
+	protected void checkVarLevelX( Object obj ) {
+
+		if ( !( obj instanceof Level2_DMLStorageWrapper ) ) {
+			// FIXME: is this working?
+			// cannot be under VarLevel1, can be above tho
+			RunTime.badCall( "wrong type passed" );
+		}
+	}
+	
+	@Override
+	protected void newVarLevelX() {
+
+		storage = (LevelAll_DMLStorageWrapper)new Level2_DMLStorage_BerkeleyDB();
+	}
 	
 	/*
 	 * (non-Javadoc)

@@ -99,12 +99,37 @@ public abstract class Level0 extends StaticInstanceTrackerWithMethodParams {
 	
 	abstract protected StaticInstanceTrackerWithMethodParams getVarLevelX();
 	
+	/**
+	 * 1of2
+	 * must override this in each Level w/o calling super, and use the right
+	 * type<br>
+	 * <code>
+	 * var1 = new VarLevel1();<br>
+		return var1;<br></code>
+	 */
 	abstract protected void newVarLevelX();
 	
+	/**
+	 * override only in base class
+	 * 
+	 * @param toValue
+	 */
 	abstract protected void setVarLevelX( Object toValue );
 	
 	/**
-	 * override this only in base class, ie. once
+	 * 2of2
+	 * override this in each subclass
+	 * 
+	 * * must override in each level w/o calling super<br>
+	 * this method must make sure the obj is of VarLevelX type depending on the
+	 * current variable type used in the class<br>
+	 * forgetting to override this may cause unexpected bugs but you can see it
+	 * when you get NullPointerException when calling a method only available in
+	 * a later level<br>
+	 * <code>if ( !( obj instanceof VarLevel1 ) ) {<br>
+			// cannot be under VarLevel1, can be above tho<br>
+			RunTime.badCall( "wrong type passed" );<br>
+		}<br></code>
 	 * 
 	 * @param obj
 	 */

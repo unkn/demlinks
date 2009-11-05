@@ -27,7 +27,6 @@ package org.dml.level1;
 
 import java.io.File;
 
-import org.dml.level2.Level2_DMLStorageWrapper;
 import org.dml.storagewrapper.StorageException;
 import org.dml.tools.Level0;
 import org.dml.tools.RunTime;
@@ -43,19 +42,19 @@ import org.temporary.tests.PossibleParams;
  *
  */
 public class Level1_DMLEnvironment extends Level0 implements
-		Level1_DMLStorageWrapper,
-		StaticInstanceTrackerWithMethodParamsInterface {
+		StaticInstanceTrackerWithMethodParamsInterface,
+		Level1_DMLStorageWrapper {
 	
 	// this is the last level(subclass) of storage that is expected to be set,
 	// even if new() will be on a subclass closer to base
-	protected Level2_DMLStorageWrapper	storage					= null;
+	protected LevelAll_DMLStorageWrapper	storage					= null;
 	
-	private final static String			DEFAULT_BDB_ENV_PATH	= "."
-																		+ File.separator
-																		+ "bin"
-																		+ File.separator
-																		+ "mainEnv"
-																		+ File.separator;
+	private final static String				DEFAULT_BDB_ENV_PATH	= "."
+																			+ File.separator
+																			+ "bin"
+																			+ File.separator
+																			+ "mainEnv"
+																			+ File.separator;
 	
 	/**
 	 * construct, don't forget to call init(with param/s)
@@ -86,13 +85,13 @@ public class Level1_DMLEnvironment extends Level0 implements
 	@Override
 	protected void newVarLevelX() {
 
-		storage = new Level1_DMLStorage_BerkeleyDB();
+		storage = (LevelAll_DMLStorageWrapper)new Level1_DMLStorage_BerkeleyDB();
 	}
 	
 	@Override
 	protected void setVarLevelX( Object toValue ) {
 
-		storage = (Level2_DMLStorageWrapper)toValue;
+		storage = (LevelAll_DMLStorageWrapper)toValue;
 	}
 	
 	@Override

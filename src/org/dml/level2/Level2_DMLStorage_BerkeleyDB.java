@@ -38,7 +38,7 @@ import com.sleepycat.je.DatabaseException;
  * should throw only StorageException.<br>
  * this is done mostly for wrapping Exceptions under StorageException<br>
  */
-public class Level2_BerkeleyDBStorage extends Level1_DMLStorage_BerkeleyDB
+public class Level2_DMLStorage_BerkeleyDB extends Level1_DMLStorage_BerkeleyDB
 		implements Level2_DMLStorageWrapper {
 	
 	/*
