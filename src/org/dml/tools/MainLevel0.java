@@ -21,7 +21,7 @@
  */
 
 
-package org.temporary.tests;
+package org.dml.tools;
 
 
 
@@ -30,11 +30,10 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 
-import org.dml.tools.RunTime;
-import org.dml.tools.StaticInstanceTracker;
-import org.dml.tools.StaticInstanceTrackerWithMethodParams;
 import org.references.Reference;
 import org.references.method.MethodParams;
+import org.temporary.tests.PossibleParams;
+import org.temporary.tests.VarLevel;
 
 
 
@@ -138,6 +137,7 @@ public abstract class MainLevel0 extends StaticInstanceTrackerWithMethodParams {
 	
 	/**
 	 * must override this in each level AND call super at end or beginning<br>
+	 * <code>var1 = (VarLevel1)toValue;<br></code>
 	 * 
 	 * @param toValue
 	 */
@@ -146,6 +146,9 @@ public abstract class MainLevel0 extends StaticInstanceTrackerWithMethodParams {
 	/**
 	 * must override this in each Level w/o calling super, and use the right
 	 * type<br>
+	 * <code>
+	 * var1 = new VarLevel1();<br>
+		return var1;<br></code>
 	 */
 	abstract protected Object newVarLevelX();
 	
@@ -155,14 +158,19 @@ public abstract class MainLevel0 extends StaticInstanceTrackerWithMethodParams {
 	 * current variable type used in the class<br>
 	 * forgetting to override this may cause unexpected bugs but you can see it
 	 * when you get NullPointerException when calling a method only available in
-	 * a later level
+	 * a later level<br>
+	 * <code>if ( !( obj instanceof VarLevel1 ) ) {<br>
+			// cannot be under VarLevel1, can be above tho<br>
+			RunTime.badCall( "wrong type passed" );<br>
+		}<br></code>
 	 * 
 	 * @param obj
 	 */
 	abstract protected void checkVarLevelX( Object obj );
 	
 	/**
-	 * must override this, and don't call super
+	 * must override this, and don't call super <br>
+	 * <code>return var1;<br></code>
 	 * 
 	 * @return
 	 */
@@ -231,15 +239,17 @@ public abstract class MainLevel0 extends StaticInstanceTrackerWithMethodParams {
 	/**
 	 * override this and call internalInit(...) then super with the returned
 	 * value<br>
-	 * ie. super.initMainLevel( this.internalInit( var1, params ) );
+	 * ie. super.initMainLevel( this.internalInit( var1, params ) );<br>
+	 * super.init( this.internalInit( var1, params ) );
 	 * 
 	 * @param params
 	 */
-	public void initMainLevel( MethodParams<Object> params ) {
+	@Override
+	public void init( MethodParams<Object> params ) {
 
 		RunTime.assertNotNull( params );
 		inited = true;// first
-		this.init();// second
+		super.init();// second
 	}
 	
 	protected MethodParams<Object> getDefaults() {

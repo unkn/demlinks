@@ -78,7 +78,7 @@ public class LevelsTest {
 		v1.init();
 		MethodParams<Object> params1 = new MethodParams<Object>();
 		params1.set( PossibleParams.varLevelAll, v1 );
-		ml1.initMainLevel( params1 );
+		ml1.init( params1 );
 		ml1.do1();
 		
 		MethodParams<Object> v2params = new MethodParams<Object>();
@@ -91,7 +91,7 @@ public class LevelsTest {
 		
 		boolean threw = false;
 		try {
-			ml2.initMainLevel( params2 );
+			ml2.init( params2 );
 		} catch ( BadCallError bce ) {
 			threw = true;
 		} finally {
@@ -99,13 +99,13 @@ public class LevelsTest {
 		}
 		
 		ml2.deInit();
-		ml2.initMainLevel( params2 );
+		ml2.init( params2 );
 		ml2.showHome();
 		
 		ml1.deInit();
 		try {
 			threw = false;
-			ml1.initMainLevel( params2 );
+			ml1.init( params2 );
 		} catch ( BadCallError bce ) {
 			threw = true;
 		} finally {
@@ -115,7 +115,7 @@ public class LevelsTest {
 		
 		try {
 			threw = false;
-			ml2.initMainLevel( params1 );
+			ml2.init( params1 );
 		} catch ( BadCallError bce ) {
 			threw = true;
 		} finally {
@@ -125,7 +125,7 @@ public class LevelsTest {
 		params1.set( PossibleParams.varLevelAll, "something" );
 		try {
 			threw = false;
-			ml2.initMainLevel( params1 );
+			ml2.init( params1 );
 		} catch ( BadCallError bce ) {
 			threw = true;
 		} finally {
@@ -135,7 +135,7 @@ public class LevelsTest {
 		params1.set( PossibleParams.varLevelAll, null );
 		try {
 			threw = false;
-			ml2.initMainLevel( params1 );
+			ml2.init( params1 );
 		} catch ( AssertionError ae ) {
 			threw = true;
 		} finally {
@@ -146,18 +146,18 @@ public class LevelsTest {
 		params2.set( PossibleParams.homeDir, "home3" );
 		params2.remove( PossibleParams.varLevelAll );
 		ml2.deInit();
-		ml2.initMainLevel( params2 );
+		ml2.init( params2 );
 		ml2.showHome();
 		
 		ml2.deInit();
-		ml2.initMainLevel( params2 );
+		ml2.init( params2 );
 		ml2.showHome();
 		ml2.do1();
 		
 		params2.set( PossibleParams.varLevelAll, null );
 		try {
 			threw = false;
-			ml1.initMainLevel( params2 );
+			ml1.init( params2 );
 		} catch ( AssertionError ae ) {
 			threw = true;
 		} finally {
@@ -174,7 +174,7 @@ public class LevelsTest {
 		params3.set( PossibleParams.varLevelAll, null );
 		try {
 			threw = false;
-			ml3.initMainLevel( params3 );
+			ml3.init( params3 );
 		} catch ( AssertionError ae ) {
 			threw = true;
 		} finally {
@@ -184,7 +184,7 @@ public class LevelsTest {
 		params3.set( PossibleParams.varLevelAll, v2 );
 		try {
 			threw = false;
-			ml3.initMainLevel( params3 );
+			ml3.init( params3 );
 		} catch ( BadCallError bce ) {
 			threw = true;
 		} finally {
@@ -194,7 +194,7 @@ public class LevelsTest {
 		params3.set( PossibleParams.varLevelAll, v1 );
 		try {
 			threw = false;
-			ml3.initMainLevel( params3 );
+			ml3.init( params3 );
 		} catch ( BadCallError bce ) {
 			threw = true;
 		} finally {
@@ -202,13 +202,13 @@ public class LevelsTest {
 		}
 		
 		params3.set( PossibleParams.varLevelAll, v3 );
-		ml3.initMainLevel( params3 );
+		ml3.init( params3 );
 		ml3.showHome();
 		
 		params3.remove( PossibleParams.varLevelAll );
 		params3.set( PossibleParams.homeDir, "L3nondefaultHomeDir" );
 		ml3.deInit();
-		ml3.initMainLevel( params3 );
+		ml3.init( params3 );
 		ml3.showHome();
 		ml3.do1();
 		ml3.deInit();
@@ -220,7 +220,7 @@ public class LevelsTest {
 		VarLevel3 old = null;
 		int count2 = 3;
 		while ( count2 > 0 ) {
-			ml3.initMainLevel( null );// using own VarLevel
+			ml3.init( null );// using own VarLevel
 			VarLevel3 vl3 = (VarLevel3)ml3.junitGetVar();
 			if ( null == old ) {
 				old = vl3;
@@ -250,7 +250,7 @@ public class LevelsTest {
 		
 		int count = 3;
 		while ( count > 0 ) {
-			ml3.initMainLevel( mlParams );
+			ml3.init( mlParams );
 			VarLevel3 newVL3 = (VarLevel3)ml3.junitGetVar();
 			assertNotNull( newVL3 );
 			assertTrue( newVL3.isInited() );
@@ -261,7 +261,7 @@ public class LevelsTest {
 			count--;
 		}
 		
-		ml3.initMainLevel( null );
+		ml3.init( null );
 		VarLevel3 own = (VarLevel3)ml3.junitGetVar();
 		assertNotNull( own );
 		assertTrue( own.isInited() );
@@ -277,13 +277,13 @@ public class LevelsTest {
 	public void test2() {
 
 		
-		ml2.initMainLevel( null );
+		ml2.init( null );
 		VarLevel1 v1 = ml2.junitGetVar();
 		assertNotNull( v1 );
 		ml2.deInit();
 		assertNull( ml3.junitGetVar() );
 		
-		ml2.initMainLevel( null );
+		ml2.init( null );
 		VarLevel1 v1_1 = ml2.junitGetVar();
 		ml2.deInit();
 		
@@ -299,11 +299,11 @@ public class LevelsTest {
 		// the parameters won't get modified
 		MethodParams<Object> mp = new MethodParams<Object>();
 		assertTrue( 0 == mp.size() );
-		ml2.initMainLevel( mp );
+		ml2.init( mp );
 		assertTrue( 0 == mp.size() );
-		ml1.initMainLevel( mp );
+		ml1.init( mp );
 		assertTrue( 0 == mp.size() );
-		ml3.initMainLevel( mp );
+		ml3.init( mp );
 		assertTrue( 0 == mp.size() );
 		
 		StaticInstanceTracker.deInitAllThatExtendMe();
@@ -313,7 +313,7 @@ public class LevelsTest {
 		vl3.init( v3params );
 		mp.set( PossibleParams.varLevelAll, vl3 );
 		assertTrue( 1 == mp.size() );
-		ml3.initMainLevel( mp );
+		ml3.init( mp );
 		assertTrue( 1 == mp.size() );
 		Reference<Object> ref = mp.get( PossibleParams.varLevelAll );
 		assertNotNull( ref );
@@ -333,12 +333,12 @@ public class LevelsTest {
 		}
 		
 		assertNull( ml3.junitGetVar() );
-		ml3.initMainLevel( mp );
+		ml3.init( mp );
 		assertTrue( ml3.junitGetVar() == vl3 );
 		ml3.deInit();
 		assertNull( ml3.junitGetVar() );
 		vl3.deInitSilently();
-		ml3.initMainLevel( null );
+		ml3.init( null );
 		assertTrue( ml3.junitGetVar() != vl3 );
 		assertNotNull( ml3.junitGetVar() );
 		ml3.showHome();
@@ -354,7 +354,7 @@ public class LevelsTest {
 		vl3.init( vl3mp );
 		mp.set( PossibleParams.varLevelAll, vl3 );
 		assertTrue( vl3.isInited() );
-		ml3.initMainLevel( mp );
+		ml3.init( mp );
 		assertTrue( vl3.isInited() );
 		assertTrue( ml3.junitGetVar() == vl3 );
 		ml3.deInit();
@@ -363,7 +363,7 @@ public class LevelsTest {
 		assertFalse( vl3.isInited() );
 		vl3 = null;
 		
-		ml3.initMainLevel( null );
+		ml3.init( null );
 		VarLevel3 intern = (VarLevel3)ml3.junitGetVar();
 		assertNotNull( intern );
 		assertTrue( intern.isInited() );

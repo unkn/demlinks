@@ -23,13 +23,16 @@
 
 package org.dml.level1;
 
+import org.dml.tools.StaticInstanceTrackerWithMethodParamsInterface;
+
 
 
 /**
  * 
  *
  */
-public interface Level1_DMLStorageWrapper {
+public interface Level1_DMLStorageWrapper extends
+		StaticInstanceTrackerWithMethodParamsInterface {
 	
 	public void init();
 	

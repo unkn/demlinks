@@ -25,7 +25,7 @@ package org.dml.level1;
 
 
 
-import org.dml.tools.StaticInstanceTracker;
+import org.dml.tools.StaticInstanceTrackerWithMethodParams;
 
 
 
@@ -33,7 +33,8 @@ import org.dml.tools.StaticInstanceTracker;
  * should throw only StorageException.<br>
  * this is done mostly for wrapping Exceptions under StorageException<br>
  */
-public class Level1_BerkeleyDBStorage extends StaticInstanceTracker implements
+public class Level1_BerkeleyDBStorage extends
+		StaticInstanceTrackerWithMethodParams implements
 		Level1_DMLStorageWrapper {
 	
 	public Level1_BerkeleyDBStorage() {

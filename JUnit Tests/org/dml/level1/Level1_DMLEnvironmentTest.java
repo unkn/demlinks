@@ -46,7 +46,7 @@ public class Level1_DMLEnvironmentTest {
 	public void setUp() {
 
 		dml1 = new Level1_DMLEnvironment();
-		dml1.init();
+		dml1.init( null );
 		NodeJID.clearAllForJUnit();
 	}
 	

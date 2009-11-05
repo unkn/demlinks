@@ -25,6 +25,7 @@ package org.temporary.tests;
 
 
 
+import org.dml.tools.MainLevel0;
 import org.dml.tools.RunTime;
 import org.dml.tools.StaticInstanceTrackerWithMethodParams;
 import org.references.method.MethodParams;
@@ -57,9 +58,9 @@ public class MainLevel1 extends MainLevel0 {
 	
 	
 	@Override
-	public void initMainLevel( MethodParams<Object> params ) {
+	public void init( MethodParams<Object> params ) {
 
-		super.initMainLevel( this.internalInit( var1, params ) );
+		super.init( this.internalInit( var1, params ) );
 	}
 	
 	

@@ -1,5 +1,5 @@
 /**
- * File creation: Nov 4, 2009 7:00:07 PM
+ * File creation: Nov 5, 2009 10:42:42 AM
  * 
  * Copyright (C) 2005-2009 AtKaaZ <atkaaz@users.sourceforge.net>
  * Copyright (C) 2005-2009 UnKn <unkn@users.sourceforge.net>
@@ -23,29 +23,14 @@
 
 package org.dml.tools;
 
-
-
 import org.references.method.MethodParams;
-
 
 
 /**
  * 
  *
  */
-public abstract class StaticInstanceTrackerWithMethodParams extends
-		StaticInstanceTracker implements
-		StaticInstanceTrackerWithMethodParamsInterface {
+public interface StaticInstanceTrackerWithMethodParamsInterface {
 	
-	/**
-	 * you should override this and also call super or at least super.init()
-	 * 
-	 * @param params
-	 */
-	public void init( MethodParams<Object> params ) {
-
-		// ignoring params at this level
-		super.init();
-	}
-	
+	public void init( MethodParams<Object> params );
 }

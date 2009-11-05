@@ -25,67 +25,89 @@ package org.dml.level1;
 
 
 
-import org.dml.tools.StaticInstanceTracker;
+import org.dml.level2.Level2_DMLStorageWrapper;
+import org.dml.tools.MainLevel0;
+import org.dml.tools.RunTime;
+import org.dml.tools.StaticInstanceTrackerWithMethodParams;
+import org.references.method.MethodParams;
 
 
 
 /**
- * facade dessign pattern
+ * facade design pattern
  * 
  */
-public class Level1_DMLEnvironment extends StaticInstanceTracker {
+public class Level1_DMLEnvironment extends MainLevel0 {
 	
 	
-	protected Level1_DMLStorageWrapper	Storage	= null;
+	private Level1_DMLStorageWrapper	Storage	= null;
 	
 	/**
 	 * construct, don't forget to call init()
 	 */
 	public Level1_DMLEnvironment() {
 
+		super();
 	}
 	
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.dml.tools.StaticInstanceTracker#done()
+	 * @see
+	 * org.dml.tools.StaticInstanceTrackerWithMethodParams#init(org.references
+	 * .method.MethodParams)
 	 */
 	@Override
-	protected void done() {
+	public void init( MethodParams<Object> params ) {
 
-		this.storageDeInit();
+		super.init( this.internalInit( Storage, params ) );
 	}
 	
-	/**
-	 * override this in subclasses without calling super<br>
-	 * this method is called by start() which in turn is called by init()
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.dml.tools.MainLevel0#checkVarLevelX(java.lang.Object)
 	 */
-	protected void storageInit() {
+	@Override
+	protected void checkVarLevelX( Object obj ) {
 
-		if ( null == Storage ) {
-			Storage = new Level1_BerkeleyDBStorage();
+		if ( !( obj instanceof Level2_DMLStorageWrapper ) ) {
+			// cannot be under Level1_DMLStorageWrapper, can be above tho
+			RunTime.badCall( "wrong type passed" );
 		}
-		Storage.init();
-	}
-	
-	/**
-	 * override this in subclasses without calling super<br>
-	 * this method is called by done() which in turn is called by deInit()
-	 */
-	protected void storageDeInit() {
-
-		Storage.deInit();
-		// Storage = null;
 	}
 	
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.dml.tools.StaticInstanceTracker#start()
+	 * @see org.dml.tools.MainLevel0#getVarLevelX()
 	 */
 	@Override
-	protected void start() {
+	protected StaticInstanceTrackerWithMethodParams getVarLevelX() {
 
-		this.storageInit();
+		return (StaticInstanceTrackerWithMethodParams)Storage;
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.dml.tools.MainLevel0#newVarLevelX()
+	 */
+	@Override
+	protected Object newVarLevelX() {
+
+		Storage = new Level1_BerkeleyDBStorage();
+		return Storage;
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.dml.tools.MainLevel0#setVarLevelX(java.lang.Object)
+	 */
+	@Override
+	protected void setVarLevelX( Object toValue ) {
+
+		Storage = (Level1_DMLStorageWrapper)toValue;
 	}
 }

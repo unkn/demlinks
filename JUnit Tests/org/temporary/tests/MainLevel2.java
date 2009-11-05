@@ -66,9 +66,9 @@ public class MainLevel2 extends MainLevel1 {
 	 * MethodParams)
 	 */
 	@Override
-	public void initMainLevel( MethodParams<Object> params ) {
+	public void init( MethodParams<Object> params ) {
 
-		super.initMainLevel( this.internalInit( var2, params ) );
+		super.init( this.internalInit( var2, params ) );
 		// MethodParams<Object> refToParams = params;
 		// if ( null == refToParams ) {
 		// // empty means use defaults
