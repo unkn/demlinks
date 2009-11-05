@@ -42,7 +42,8 @@ import com.sleepycat.je.DatabaseException;
 public class Level1_DMLStorage_BerkeleyDB extends Level0 implements
 		Level1_DMLStorageWrapper {
 	
-	protected Level1_Storage_BerkeleyDB	bdbL1	= null;
+	// this var type must be set to latest level
+	protected Level1_Storage_BerkeleyDB	bdb	= null;
 	
 	/**
 	 * constructor, don't forget to call init(...)
@@ -55,19 +56,19 @@ public class Level1_DMLStorage_BerkeleyDB extends Level0 implements
 	@Override
 	protected void setVarLevelX( Object toValue ) {
 
-		bdbL1 = (Level1_Storage_BerkeleyDB)toValue;
+		bdb = (Level1_Storage_BerkeleyDB)toValue;
 	}
 	
 	@Override
 	protected StaticInstanceTrackerWithMethodParams getVarLevelX() {
 
-		return bdbL1;
+		return bdb;
 	}
 	
 	@Override
 	protected void newVarLevelX() {
 
-		bdbL1 = new Level1_Storage_BerkeleyDB();
+		bdb = new Level1_Storage_BerkeleyDB();
 	}
 	
 	@Override
@@ -88,7 +89,7 @@ public class Level1_DMLStorage_BerkeleyDB extends Level0 implements
 
 		RunTime.assertNotNull( identifiedByThisNodeID );
 		try {
-			return bdbL1.getDBMapJIDsToNodeIDs().getNodeJID(
+			return bdb.getDBMapJIDsToNodeIDs().getNodeJID(
 					identifiedByThisNodeID );
 		} catch ( DatabaseException ex ) {
 			throw new StorageException( ex );
@@ -101,7 +102,7 @@ public class Level1_DMLStorage_BerkeleyDB extends Level0 implements
 
 		RunTime.assertNotNull( identifiedByThisJID );
 		try {
-			return bdbL1.getDBMapJIDsToNodeIDs().getNodeID( identifiedByThisJID );
+			return bdb.getDBMapJIDsToNodeIDs().getNodeID( identifiedByThisJID );
 		} catch ( DatabaseException dbe ) {
 			throw new StorageException( dbe );
 		}
@@ -112,7 +113,7 @@ public class Level1_DMLStorage_BerkeleyDB extends Level0 implements
 
 		RunTime.assertNotNull( fromJID );
 		try {
-			return bdbL1.getDBMapJIDsToNodeIDs().createNodeID( fromJID );
+			return bdb.getDBMapJIDsToNodeIDs().createNodeID( fromJID );
 		} catch ( DatabaseException dbe ) {
 			throw new StorageException( dbe );
 		}
@@ -124,7 +125,7 @@ public class Level1_DMLStorage_BerkeleyDB extends Level0 implements
 
 		RunTime.assertNotNull( theJID );
 		try {
-			return bdbL1.getDBMapJIDsToNodeIDs().ensureNodeID( theJID );
+			return bdb.getDBMapJIDsToNodeIDs().ensureNodeID( theJID );
 		} catch ( DatabaseException de ) {
 			throw new StorageException( de );
 		}
@@ -139,8 +140,8 @@ public class Level1_DMLStorage_BerkeleyDB extends Level0 implements
 	@Override
 	protected void done() {
 
-		bdbL1.deInit();
-		bdbL1 = null;
+		bdb.deInit();
+		bdb = null;
 		
 	}
 	
@@ -153,7 +154,7 @@ public class Level1_DMLStorage_BerkeleyDB extends Level0 implements
 	@Override
 	protected void start() {
 
-		if ( null == bdbL1 ) {
+		if ( null == bdb ) {
 			// called init() which is not supported
 			RunTime.badCall( "please don't use init() w/o params" );
 		}

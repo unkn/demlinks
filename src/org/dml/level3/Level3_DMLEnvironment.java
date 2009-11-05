@@ -1,5 +1,5 @@
 /**
- * File creation: Oct 19, 2009 11:39:43 PM
+ * File creation: Oct 19, 2009 11:38:38 PM
  * 
  * Copyright (C) 2005-2009 AtKaaZ <atkaaz@users.sourceforge.net>
  * Copyright (C) 2005-2009 UnKn <unkn@users.sourceforge.net>
@@ -25,8 +25,7 @@ package org.dml.level3;
 
 
 
-import org.dml.level1.Level1_DMLEnvironment;
-import org.dml.storagewrapper.StorageException;
+import org.dml.level2.Level2_DMLEnvironment;
 
 
 
@@ -34,10 +33,7 @@ import org.dml.storagewrapper.StorageException;
  * 
  *
  */
-public class Level3_DMLEnvironment extends Level1_DMLEnvironment {
+public class Level3_DMLEnvironment extends Level2_DMLEnvironment {
 	
-	protected Level3_DMLEnvironment() throws StorageException {
-
-		super( DEFAULT_BDB_ENVIRONMENT_HOMEDIR, false );
-	}
+	// TODO
 }

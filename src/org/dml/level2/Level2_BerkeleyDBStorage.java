@@ -1,5 +1,5 @@
 /**
- * File creation: Oct 19, 2009 11:38:38 PM
+ * File creation: Jun 17, 2009 6:54:03 PM
  * 
  * Copyright (C) 2005-2009 AtKaaZ <atkaaz@users.sourceforge.net>
  * Copyright (C) 2005-2009 UnKn <unkn@users.sourceforge.net>
@@ -21,28 +21,42 @@
  */
 
 
-package org.dml.level4;
+package org.dml.level2;
 
 
 
-import org.dml.level3.Level3_DMLEnvironment;
+import org.dml.level1.Level1_DMLStorage_BerkeleyDB;
+import org.dml.level1.NodeID;
 import org.dml.storagewrapper.StorageException;
+import org.dml.tools.RunTime;
+
+import com.sleepycat.je.DatabaseException;
 
 
 
 /**
- * 
- *
+ * should throw only StorageException.<br>
+ * this is done mostly for wrapping Exceptions under StorageException<br>
  */
-public class Level4_DMLEnvironment extends Level3_DMLEnvironment {
+public class Level2_BerkeleyDBStorage extends Level1_DMLStorage_BerkeleyDB
+		implements Level2_DMLStorageWrapper {
 	
-	/**
-	 * @throws StorageException
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.dml.storagewrapper.StorageWrapper#ensureGroup(org.dml.level2.NodeID,
+	 * org.dml.level2.NodeID)
 	 */
-	protected Level4_DMLEnvironment() throws StorageException {
+	@Override
+	public boolean ensureGroup( NodeID first, NodeID second )
+			throws StorageException {
 
-		super();
-		// TODO Auto-generated constructor stub
+		RunTime.assertNotNull( first, second );
+		try {
+			return bdb.getDBMapTupleNodeIDs().ensureGroup( first, second );
+		} catch ( DatabaseException de ) {
+			throw new StorageException( de );
+		}
 	}
-	
-}
+}// end of class

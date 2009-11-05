@@ -27,6 +27,7 @@ package org.dml.level1;
 
 import java.io.File;
 
+import org.dml.level2.Level2_DMLStorageWrapper;
 import org.dml.storagewrapper.StorageException;
 import org.dml.tools.Level0;
 import org.dml.tools.RunTime;
@@ -47,7 +48,7 @@ public class Level1_DMLEnvironment extends Level0 implements
 	
 	// this is the last level(subclass) of storage that is expected to be set,
 	// even if new() will be on a subclass closer to base
-	protected Level1_DMLStorageWrapper	storage					= null;
+	protected Level2_DMLStorageWrapper	storage					= null;
 	
 	private final static String			DEFAULT_BDB_ENV_PATH	= "."
 																		+ File.separator
@@ -91,7 +92,7 @@ public class Level1_DMLEnvironment extends Level0 implements
 	@Override
 	protected void setVarLevelX( Object toValue ) {
 
-		storage = (Level1_DMLStorageWrapper)toValue;
+		storage = (Level2_DMLStorageWrapper)toValue;
 	}
 	
 	@Override

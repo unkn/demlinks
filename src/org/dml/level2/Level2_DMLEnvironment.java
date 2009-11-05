@@ -1,5 +1,5 @@
 /**
- * File creation: May 31, 2009 10:45:44 AM
+ * File creation: Oct 19, 2009 11:39:43 PM
  * 
  * Copyright (C) 2005-2009 AtKaaZ <atkaaz@users.sourceforge.net>
  * Copyright (C) 2005-2009 UnKn <unkn@users.sourceforge.net>
@@ -21,18 +21,14 @@
  */
 
 
-package org.dml.level3;
+package org.dml.level2;
 
 
 
-import org.dml.JUnits.Consts;
 import org.dml.level1.Level1_DMLEnvironment;
 import org.dml.level1.NodeID;
-import org.dml.level1.NodeJID;
 import org.dml.storagewrapper.StorageException;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.dml.tools.RunTime;
 
 
 
@@ -40,32 +36,21 @@ import org.junit.Test;
  * 
  *
  */
-public class TupleOfNodeIDsTest {
+public class Level2_DMLEnvironment extends Level1_DMLEnvironment implements
+		Level2_DMLStorageWrapper {
 	
-	// TupleOfNodeIDs one, two, three;
-	NodeID			n1, n2, n3;
-	Level1_DMLEnvironment	dml;
-	
-	@Before
-	public void setUp() throws StorageException {
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.dml.level2.Level2_DMLStorageWrapper#ensureGroup(org.dml.level1.NodeID
+	 * , org.dml.level1.NodeID)
+	 */
+	@Override
+	public boolean ensureGroup( NodeID first, NodeID second )
+			throws StorageException {
 
-		dml = Level1_DMLEnvironment.getNew( Consts.BDB_ENV_PATH, true );
-	}
-	
-	@After
-	public void tearDown() {
-
-		dml.deInit();
-	}
-	
-	@Test
-	public void test1() throws StorageException {
-
-		n1 = dml.ensureNodeID( NodeJID.ensureJIDFor( "A" ) );
-		n2 = dml.ensureNodeID( NodeJID.ensureJIDFor( "B" ) );
-		// one = TupleOfNodeIDs.groupAsKeyValue( n1, n2 );
-		
-		System.out.println( n1 + "!" + n2 );
-		
+		RunTime.assertNotNull( first, second );
+		return storage.ensureGroup( first, second );
 	}
 }

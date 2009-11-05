@@ -29,7 +29,7 @@ import org.junit.runners.Suite;
 
 @RunWith( Suite.class )
 @Suite.SuiteClasses( value = {
-	TupleOfNodeIDsTest.class
+	Level3_DMLEnvironmentTest.class
 } )
 public class AllTestsL3 {
 }

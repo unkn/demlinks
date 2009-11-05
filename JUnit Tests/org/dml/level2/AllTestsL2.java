@@ -1,8 +1,5 @@
-/**
- * File creation: Oct 19, 2009 11:30:51 PM
- * 
- * Copyright (C) 2005-2009 AtKaaZ <atkaaz@users.sourceforge.net>
- * Copyright (C) 2005-2009 UnKn <unkn@users.sourceforge.net>
+/*
+ * Copyright (C) 2005-2008 AtKaaZ <atkaaz@users.sourceforge.net>
  * 
  * This file and its contents are part of DeMLinks.
  * 
@@ -21,17 +18,18 @@
  */
 
 
-package org.dml.level4;
+package org.dml.level2;
 
 
-/**
- * list of NodeIDs in which order matters and it's known<br>
- * should be able to hold any number of NodeIDs even if they repeat inside the
- * list<br>
- * the order of insertion is kept<br>
- * this will be a double linked list represented in DMLEnvironment<br>
- * this is level 4
- */
-public class ListID {
-	// TODO
+
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
+
+
+
+@RunWith( Suite.class )
+@Suite.SuiteClasses( value = {
+	TupleOfNodeIDsTest.class
+} )
+public class AllTestsL2 {
 }

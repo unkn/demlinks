@@ -21,11 +21,11 @@
  */
 
 
-package org.dml.level3;
+package org.dml.level2;
 
 
 
-import org.dml.level1.Level2_DMLStorageWrapper;
+import org.dml.level1.Level1_DMLStorageWrapper;
 import org.dml.level1.NodeID;
 import org.dml.storagewrapper.StorageException;
 
@@ -35,7 +35,7 @@ import org.dml.storagewrapper.StorageException;
  * 
  *
  */
-public interface Level3_DMLStorageWrapper extends Level2_DMLStorageWrapper {
+public interface Level2_DMLStorageWrapper extends Level1_DMLStorageWrapper {
 	
 	/**
 	 * @param first
