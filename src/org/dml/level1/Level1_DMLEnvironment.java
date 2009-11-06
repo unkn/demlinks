@@ -30,10 +30,10 @@ import java.io.File;
 import org.dml.storagewrapper.StorageException;
 import org.dml.tools.MainLevel0;
 import org.dml.tools.RunTime;
-import org.dml.tools.StaticInstanceTrackerWithMethodParams;
 import org.dml.tools.StaticInstanceTrackerWithMethodParamsInterface;
 import org.references.method.MethodParams;
 import org.temporary.tests.PossibleParams;
+import org.temporary.tests.VarLevel;
 
 
 
@@ -45,16 +45,15 @@ public class Level1_DMLEnvironment extends MainLevel0 implements
 		StaticInstanceTrackerWithMethodParamsInterface,
 		Level1_DMLStorageWrapper {
 	
-	// this is the last level(subclass) of storage that is expected to be set,
-	// even if new() will be on a subclass closer to base
-	private LevelAll_DMLStorageWrapper	storage					= null;
+	@VarLevel
+	private final LevelAll_DMLStorageWrapper	storage					= null;
 	
-	private final static String			DEFAULT_BDB_ENV_PATH	= "."
-																		+ File.separator
-																		+ "bin"
-																		+ File.separator
-																		+ "mainEnv"
-																		+ File.separator;
+	private final static String					DEFAULT_BDB_ENV_PATH	= "."
+																				+ File.separator
+																				+ "bin"
+																				+ File.separator
+																				+ "mainEnv"
+																				+ File.separator;
 	
 	/**
 	 * construct, don't forget to call init(with param/s)
@@ -76,36 +75,6 @@ public class Level1_DMLEnvironment extends MainLevel0 implements
 		return def;
 	}
 	
-	@Override
-	protected StaticInstanceTrackerWithMethodParams getVarLevelX() {
-
-		return (StaticInstanceTrackerWithMethodParams)storage;
-	}
-	
-	@Override
-	protected void newVarLevelX() {
-
-		storage = (LevelAll_DMLStorageWrapper)new Level1_DMLStorage_BerkeleyDB();
-	}
-	
-	@Override
-	protected void setAllVarLevelX( Object toValue ) {
-
-		storage = (LevelAll_DMLStorageWrapper)toValue;
-	}
-	
-	@Override
-	protected void checkVarLevelX( Object obj ) {
-
-		if ( !( obj instanceof Level1_DMLStorageWrapper ) ) {
-			// FIXME: is this working?
-			// cannot be under VarLevel1, can be above tho
-			RunTime.badCall( "wrong type passed" );
-		}
-	}
-	
-	
-
 	// ---------------------------------------------
 	/**
 	 * there's a one to one mapping between NodeID and NodeJID<br>

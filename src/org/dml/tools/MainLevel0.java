@@ -57,9 +57,6 @@ import org.temporary.tests.VarLevel;
  */
 public abstract class MainLevel0 extends StaticInstanceTrackerWithMethodParams {
 	
-	// defaults are no params, or no params means use defaults
-	private static MethodParams<Object>				emptyParamList			= null;
-	
 	// var to see if we used init() instead of initMainLevel(...); its only
 	// purpose is to prevent init() usage
 	private boolean									inited					= false;
@@ -70,29 +67,14 @@ public abstract class MainLevel0 extends StaticInstanceTrackerWithMethodParams {
 	
 	private static MethodParams<Object>				defaults				= null;
 	
-	private static MethodParams<Object>				temporaryLevel1Params	= null;
-	
 	private final ListOfUniqueNonNullObjects<Field>	listOfAnnotatedFields	= new ListOfUniqueNonNullObjects<Field>();
 	
+	// TODO: accept more than 1 variable per subclass, should be easy, maybe add
+	// param to annotation
 	
 	public MainLevel0() {
 
 		this.processAnnotatedFields();
-		// since this is static:
-		if ( null == emptyParamList ) {
-			emptyParamList = new MethodParams<Object>();
-			emptyParamList.init();
-			// FIXME: when is this deInited? should be when last instance is
-			// deInited, but can't compare class names, could be Level3 and
-			// Level2 classes, but we can't deInit on last Level3.deInit
-			// true that a deInit is not really needed, but as a concept...when?
-		}
-		
-		if ( null == temporaryLevel1Params ) {
-			temporaryLevel1Params = new MethodParams<Object>();
-			temporaryLevel1Params.init();
-			// FIXME: when's this deInited also?
-		}
 	}
 	
 	private void setAllVarLevelX( Object toValue ) {
@@ -148,19 +130,9 @@ public abstract class MainLevel0 extends StaticInstanceTrackerWithMethodParams {
 	}
 	
 	/**
-	 * 1of2
-	 * must override in each level w/o calling super<br>
-	 * this method must make sure the obj is of VarLevelX type depending on the
-	 * current variable type used in the class<br>
-	 * forgetting to override this may cause unexpected bugs but you can see it
-	 * when you get NullPointerException when calling a method only available in
-	 * a later level<br>
-	 * <code>if ( !( obj instanceof VarLevel1 ) ) {<br>
-			// cannot be under VarLevel1, can be above tho<br>
-			RunTime.badCall( "wrong type passed" );<br>
-		}<br></code>
-	 * 
 	 * @param obj
+	 *            to check if it's at least of the required level type, could be
+	 *            higher(subclassed) but not lower(superclass)
 	 */
 	private void checkVarLevelX( Object obj ) {
 
@@ -199,85 +171,46 @@ public abstract class MainLevel0 extends StaticInstanceTrackerWithMethodParams {
 	}
 	
 	/**
-	 * DO NOT override this, ever
-	 * 
-	 * @param varAny
-	 *            the VarLevel at this level
-	 * @param params
-	 *            that must be passed to a super.initMainLevel()
-	 * @return
-	 */
-	protected final MethodParams<Object> preInit( MethodParams<Object> params ) {
-
-		// this part will have to be called in each subclass once
-		// if it's just super()-ed it won't do because each private VarLevel in
-		// each class would have to be set to the last instance
-		MethodParams<Object> refToParams = params;
-		if ( null == refToParams ) {
-			// empty means use defaults
-			refToParams = emptyParamList;
-		}
-		RunTime.assertNotNull( refToParams );
-		
-		// optional param, but the top level will supply this if toplevel exists
-		// or the user will supply this if it is so desired but he will be
-		// responsible for it being inited/deinited
-		Reference<Object> ref = refToParams.get( PossibleParams.varLevelAll );
-		if ( null == ref ) {
-			// no VarLevelX given thus must use defaults for VarLevelX
-			// maybe use some defaults ie. homeDir value to default
-			if ( null == this.getVarLevelX() ) {
-				// setVarLevelX(
-				this.newVarLevelX();// );
-			}
-			usingOwnVarLevel = true;// 2
-			
-
-			// TODO avoid new-ing this every time; clone does the new
-			MethodParams<Object> moo = this.getDefaults().getClone();
-			// using defaults but overwriting them with params
-			moo.mergeWith( refToParams, true );
-			( this.getVarLevelX() ).init( moo );// 3
-			moo.deInit();
-			
-			// set this for Level1
-			synchronized ( temporaryLevel1Params ) {
-				temporaryLevel1Params.set( PossibleParams.varLevelAll,
-						this.getVarLevelX() );
-				RunTime.assertTrue( temporaryLevel1Params.size() == 1 );
-			}
-			refToParams = temporaryLevel1Params;
-		} else {
-			Object obj = ref.getObject();
-			RunTime.assertNotNull( obj );
-			this.checkVarLevelX( obj );
-			this.setAllVarLevelX( obj );
-		}
-		
-
-		return refToParams;
-	}
-	
-	/**
-	 * override this and call internalInit(...) then super with the returned
-	 * value<br>
-	 * this method was previously named initMainLevel
-	 * ie.<br>
-	 * <code>super.init( preInit( var1, params ) );</code>
+	 * override this and call super
 	 * 
 	 * @param params
+	 *            can accept a passed VarLevel or other params needed to init a
+	 *            new VarLevel; if null or empty then defaults are used
 	 */
 	@Override
 	public void init( MethodParams<Object> params ) {
 
-		
-		RunTime.assertNotNull( params );
-		inited = true;// first
-		super.init();// second
+		// allows null argument
+		MethodParams<Object> mixedParams = this.getDefaults().getClone();
+		try {
+			if ( null != params ) {
+				mixedParams.mergeWith( params, true );// prio on passed params
+			}
+			
+			Reference<Object> ref = mixedParams.get( PossibleParams.varLevelAll );
+			if ( null == ref ) {
+				// not specified own VarLevel by user, then we make one which we
+				// will deInit later
+				if ( null == this.getVarLevelX() ) {
+					this.newVarLevelX();// 1
+				}
+				usingOwnVarLevel = true;// 2
+				this.getVarLevelX().init( mixedParams );// 3
+			} else {
+				Object obj = ref.getObject();
+				RunTime.assertNotNull( obj );
+				this.checkVarLevelX( obj );
+				this.setAllVarLevelX( obj );
+				// it's already inited by caller (assumed) so we won't init it
+			}
+			inited = true;
+			super.init();
+		} finally {
+			mixedParams.deInit();
+		}
 	}
 	
 	/**
-	 * 5of5
 	 * override this WITH calling its super first<br>
 	 * and set your own defaults
 	 * 

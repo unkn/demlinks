@@ -58,7 +58,7 @@ public class MainLevel1 extends MainLevel0 {
 	@Override
 	public void init( MethodParams<Object> params ) {
 
-		super.init( this.preInit( params ) );
+		super.init( params );
 	}
 	
 	
