@@ -278,55 +278,70 @@ public abstract class MainLevel0 extends StaticInstanceTrackerWithMethodParams {
 	private void test1() {
 
 		// FIXME temporary, delete this
-		System.out.println( this.getClass() );
-		Field[] fields = this.getClass().getDeclaredFields();
-		// System.out.println( fields.length );
-		int count = 0;
-		for ( Field field : fields ) {
-			Annotation[] allAnno = field.getAnnotations();
-			// System.out.println( allAnno.length );
-			for ( Annotation annotation : allAnno ) {
-				count++;
-				System.out.println( count );
-				if ( annotation instanceof VarLevel ) {
-					boolean prev = field.isAccessible();
-					if ( !prev ) {
-						System.out.println( "!!!!!!!!!!!!!!!!!!!!!" );
-					}
-					field.setAccessible( true );
-					System.out.println( annotation + "+" + field.getName()
-							+ "+" + field.getType() );
-					try {
-						System.out.println( "Before: " + field.get( this ) );
-						// Constructor<?> con = field.getType().getConstructor(
-						// null );
-						// field.set( this, con.newInstance( null ) );
-						// System.out.println( "After : " + field.get( this ) );
-					} catch ( IllegalArgumentException e ) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch ( IllegalAccessException e ) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch ( SecurityException e ) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-						// } catch ( NoSuchMethodException e ) {
-						// // TODO Auto-generated catch block
-						// e.printStackTrace();
-						// } catch ( InstantiationException e ) {
-						// // TODO Auto-generated catch block
-						// e.printStackTrace();
-						// } catch ( InvocationTargetException e ) {
-						// // TODO Auto-generated catch block
-						// e.printStackTrace();
-					} finally {
-						field.setAccessible( prev );
-					}
-				}// if
+		System.out.println( this.getClass() + "+++++++"
+				+ this.getClass().getSuperclass() );
+		Class<?> currentClass = this.getClass();
+		while ( currentClass != MainLevel0.class ) {
+			System.out.println( currentClass.getSimpleName()
+					+ "..............." );
+			
+			// for ( Class<?> c : this.getClass().getSuperclass() ) {
+			// System.out.println( c.getSimpleName() + "---------" );
+			// }
+			
+			Field[] fields = currentClass.getDeclaredFields();
+			// System.out.println( fields.length );
+			int count = 0;
+			for ( Field field : fields ) {
+				Annotation[] allAnno = field.getAnnotations();
+				// System.out.println( allAnno.length );
+				for ( Annotation annotation : allAnno ) {
+					if ( annotation instanceof VarLevel ) {
+						count++;
+						System.out.println( count );
+						boolean prev = field.isAccessible();
+						if ( !prev ) {
+							System.out.println( "!!!!!!!!!!!!!!!!!!!!!" );
+						}
+						field.setAccessible( true );
+						System.out.println( annotation + "+" + field.getName()
+								+ "+" + field.getType() );
+						try {
+							System.out.println( "Before: " + field.get( this ) );
+							// Constructor<?> con =
+							// field.getType().getConstructor(
+							// null );
+							// field.set( this, con.newInstance( null ) );
+							// System.out.println( "After : " + field.get( this
+							// ) );
+						} catch ( IllegalArgumentException e ) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch ( IllegalAccessException e ) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch ( SecurityException e ) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+							// } catch ( NoSuchMethodException e ) {
+							// // TODO Auto-generated catch block
+							// e.printStackTrace();
+							// } catch ( InstantiationException e ) {
+							// // TODO Auto-generated catch block
+							// e.printStackTrace();
+							// } catch ( InvocationTargetException e ) {
+							// // TODO Auto-generated catch block
+							// e.printStackTrace();
+						} finally {
+							field.setAccessible( prev );
+						}
+					}// if
+					
+				}
 				
 			}
-			
+			// go to prev superclass
+			currentClass = currentClass.getSuperclass();
 		}
 	}
 }
