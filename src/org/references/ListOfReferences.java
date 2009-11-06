@@ -24,6 +24,7 @@ package org.references;
 
 import java.util.NoSuchElementException;
 
+import org.dml.error.BadCallError;
 import org.dml.tools.RunTime;
 
 
@@ -64,15 +65,15 @@ public class ListOfReferences<Obje> {
 	// a ListCursor
 	private int						modCount	= 0;
 	
-	// constructor
 	/**
-	 * 
+	 * constructor
 	 */
 	protected ListOfReferences() {
 
 		this.setListToEmpty();
 	}
 	
+	/** accessors */
 	private void setModified() {
 
 		this.modCount++;
@@ -84,14 +85,19 @@ public class ListOfReferences<Obje> {
 	}
 	
 	/**
-	 * 
+	 * @return the firstNodeRef
 	 */
-	private void setListToEmpty() {
+	protected ChainedReference<Obje> getFirstRef() {
 
-		this.cachedSize = 0;// increased on add, decreased on remove and related
-		this.setFirstRef( null );
-		this.lastRef = null;
-		this.setModified();
+		return this.firstRef;
+	}
+	
+	/**
+	 * @return the lastNodeRef
+	 */
+	protected ChainedReference<Obje> getLastRef() {
+
+		return lastRef;
 	}
 	
 	private void setFirstRef( ChainedReference<Obje> toValue ) {
@@ -99,12 +105,45 @@ public class ListOfReferences<Obje> {
 		this.firstRef = toValue;
 	}
 	
+	private void setLastRef( ChainedReference<Obje> toValue ) {
+
+		this.lastRef = toValue;
+	}
+	
+	
+	private void setSize( int size ) {
+
+		cachedSize = size;
+	}
+	
 	/**
-	 * @return
+	 * @return number of elements in list
 	 */
 	public int size() {
 
-		return this.cachedSize;
+		return cachedSize;
+	}
+	
+	private void incSize() {
+
+		this.setSize( this.size() + 1 );
+	}
+	
+	private void decSize() {
+
+		this.setSize( this.size() - 1 );
+	}
+	
+	// =================================
+	/**
+	 * 
+	 */
+	private void setListToEmpty() {
+
+		this.setSize( 0 );// increased on add, decreased on remove and related
+		this.setFirstRef( null );
+		this.setLastRef( null );
+		this.setModified();
 	}
 	
 	/**
@@ -113,7 +152,7 @@ public class ListOfReferences<Obje> {
 	public boolean isEmpty() {
 
 		return ( 0 == this.size() ) || ( this.getFirstRef() == null )
-				|| ( this.lastRef == null );
+				|| ( this.getLastRef() == null );
 	}
 	
 	/**
@@ -127,22 +166,24 @@ public class ListOfReferences<Obje> {
 		if ( this.containsRef( newLastRef ) ) {
 			return true;// already exists
 		}
+		
 		if ( !newLastRef.isAlone() ) {// this allows null objects
-			throw new AssertionError(
-					"the new Ref must be empty, because we fill next and prev." );
+			RunTime.bug( "the new Ref must be empty, because we fill next and prev." );
 		}
+		
 		this.setModified();
-		if ( this.lastRef == null ) {// list is initially empty
-			this.lastRef = newLastRef;
+		if ( this.getLastRef() == null ) {// list is initially empty
+			this.setLastRef( newLastRef );
 			this.setFirstRef( newLastRef );
-		} else {// list not empty
-			this.lastRef.setNext( newLastRef );
-			newLastRef.setPrev( this.lastRef );
-			this.lastRef = newLastRef;
+		} else {// list was not empty
+			this.getLastRef().setNext( newLastRef );
+			newLastRef.setPrev( this.getLastRef() );
+			this.setLastRef( newLastRef );
 		}
-		this.cachedSize++;
+		this.incSize();
 		this.setModified();// again
-		return false;
+		
+		return false;// didn't already exist, but it does now
 	}
 	
 	/**
@@ -165,15 +206,16 @@ public class ListOfReferences<Obje> {
 		}
 		this.setModified();
 		if ( this.getFirstRef() == null ) {// list is initially empty
-			this.lastRef = newFirstRef;
+			this.setLastRef( newFirstRef );
 			this.setFirstRef( newFirstRef );
 		} else {// list not empty
 			this.getFirstRef().setPrev( newFirstRef );
 			newFirstRef.setNext( this.getFirstRef() );
 			this.setFirstRef( newFirstRef );
 		}
-		this.cachedSize++;
+		this.incSize();
 		this.setModified();// again
+		
 		return false;
 	}
 	
@@ -186,20 +228,24 @@ public class ListOfReferences<Obje> {
 	 * @return true if already existed in list and wasn't moved as specified by
 	 *         call<br>
 	 *         false if all went ok
+	 * @throws NoSuchElementException
+	 *             if posRef not found
 	 */
-	public boolean insertObjAt( ChainedReference<Obje> newRef, Position pos,
+	public boolean insertRefAt( ChainedReference<Obje> newRef, Position pos,
 			ChainedReference<Obje> posRef ) {
 
 		if ( !this.containsRef( posRef ) ) {// this first for buggy calls
 			throw new NoSuchElementException();
 		}
+		
 		if ( this.containsRef( newRef ) ) {
 			return true;// already exists
 		}
+		
 		if ( !newRef.isAlone() ) {// this allows null objects
-			throw new AssertionError(
-					"the new Ref must be empty, because we fill next and prev." );
+			RunTime.bug( "the new Ref must be empty, because we fill next and prev." );
 		}
+		
 		switch ( pos ) {
 		case BEFORE:// insert newRef BEFORE posRef:
 			// beforePosRef <-> posRef <->
@@ -229,7 +275,7 @@ public class ListOfReferences<Obje> {
 			newRef.setNext( afterPosRef );// 2) newRef -> afterPosRef
 			if ( afterPosRef == null ) {
 				// posRef is last
-				this.lastRef = newRef;
+				this.setLastRef( newRef );
 			} else {
 				// posRef isn't last
 				afterPosRef.setPrev( newRef );// 3) newRef <- afterPosRef
@@ -237,28 +283,14 @@ public class ListOfReferences<Obje> {
 			posRef.setNext( newRef );// 4) posRef -> newRef
 			break;
 		default:
-			throw new AssertionError( "undefined location here." );
+			RunTime.bug( "undefined location here." );
 		}
-		this.cachedSize++;
+		this.incSize();
 		this.setModified();// again
+		
 		return false;
 	}
 	
-	/**
-	 * @return the firstNodeRef
-	 */
-	protected ChainedReference<Obje> getFirstRef() {
-
-		return this.firstRef;
-	}
-	
-	/**
-	 * @return the lastNodeRef
-	 */
-	protected ChainedReference<Obje> getLastRef() {
-
-		return this.lastRef;
-	}
 	
 	/**
 	 * @param killRef
@@ -271,41 +303,42 @@ public class ListOfReferences<Obje> {
 			return false;
 		}
 		this.setModified();
-		ChainedReference<Obje> prev = killRef.getPrev();// beware if you remove
-		// this
-		// local var
-		ChainedReference<Obje> next = killRef.getNext();
-		if ( prev != null ) {
-			prev.setNext( next );
+		ChainedReference<Obje> cachedPrev = killRef.getPrev();// beware if you
+		// remove this local var
+		ChainedReference<Obje> cachedNext = killRef.getNext();
+		if ( cachedPrev != null ) {
+			cachedPrev.setNext( cachedNext );
 			// killRef.setPrev(null);//beware
 		} else {
+			// killRef is first already
 			if ( this.getFirstRef() == killRef ) {
-				this.setFirstRef( next );// can be null
+				this.setFirstRef( cachedNext );// can be null
 			} else {
-				throw new AssertionError( "compromised integrity of list" );
+				RunTime.bug( "compromised integrity of list" );
 			}
 		}
-		if ( next != null ) {
-			next.setPrev( prev );// beware
+		if ( cachedNext != null ) {
+			cachedNext.setPrev( cachedPrev );// beware
 			// killRef.setNext(null);
 		} else {
-			if ( this.lastRef == killRef ) {
-				this.lastRef = prev;// can be null
+			// killRef is last already
+			if ( this.getLastRef() == killRef ) {
+				this.setLastRef( cachedPrev );// can be null
 			} else {
-				throw new AssertionError( "compromised integrity of list (2)" );
+				RunTime.bug( "compromised integrity of list (2)" );
 			}
 		}
-		// killRef.setObject(null);
 		killRef.destroy();
-		this.cachedSize--;
+		this.decSize();
 		this.setModified();
+		
 		return true;
 	}
 	
 	/**
 	 * @param whichRef
 	 * @return true if the reference already exists; doesn't matter to what
-	 *         object it points to; identity check only
+	 *         object it points to; identity check only ie. ==
 	 */
 	public boolean containsRef( ChainedReference<Obje> whichRef ) {
 
@@ -342,7 +375,7 @@ public class ListOfReferences<Obje> {
 	
 	/**
 	 * @param location
-	 *            FIRST/LAST allowed; but BEFORE/AFTER are supposed to be used
+	 *            BEFORE/AFTER are supposed to be used; others aren't allowed
 	 * @param locationRef
 	 *            the reference that location is referring to
 	 * @return the ref or null
@@ -352,24 +385,41 @@ public class ListOfReferences<Obje> {
 			ChainedReference<Obje> locationRef ) {
 
 		RunTime.assertNotNull( location, locationRef );
-		if ( !this.containsRef( locationRef ) ) {// this will unfortunately
-			// parse the list until it
-			// finds it
-			return null;
+		if ( this.containsRef( locationRef ) ) {
+			switch ( location ) {
+			case BEFORE:
+				return locationRef.getPrev();
+			case AFTER:
+				return locationRef.getNext();
+			default:
+				RunTime.bug( "undefined location within this context" );
+			}
 		}
-		// locationRef cannot be null past this point, no checks follow
-		switch ( location ) {
-		case BEFORE:
-			return locationRef.getPrev();
-		case AFTER:
-			return locationRef.getNext();
-		case FIRST:
-		case LAST:
-			return this.getRefAt( location );
-		default:
-			throw new AssertionError( "undefined location within this context" );
-		}
+		return null;
 	}
-	// parser can be done using parser=getFirstRef() and
-	// parser=getNodeRefAt(Position.AFTER, parser)
+	
+	/**
+	 * @param index
+	 *            0 based index
+	 * @return null or the ref at position 'index'
+	 * @exception BadCallError
+	 *                if index out of bounds
+	 */
+	public ChainedReference<Obje> getRefAtIndex( int index ) {
+
+		if ( ( index < 0 ) || ( index >= this.size() ) ) {
+			throw new BadCallError( "out of bounds" );
+		}
+		
+		ChainedReference<Obje> parser = this.getFirstRef();
+		int pos = 0;
+		while ( null != parser ) {
+			if ( index == pos ) {
+				break;
+			}
+			parser = parser.getNext();
+			pos++;
+		}
+		return parser;
+	}
 }

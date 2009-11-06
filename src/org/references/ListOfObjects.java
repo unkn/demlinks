@@ -24,7 +24,6 @@ package org.references;
 
 import java.util.NoSuchElementException;
 
-import org.dml.error.BadCallError;
 import org.dml.tools.RunTime;
 
 
@@ -68,10 +67,12 @@ public class ListOfObjects<E> extends ListOfReferences<E> {
 	}
 	
 	/**
-	 * creates a new NodeRef to be added to this list, but it's not added via
+	 * creates a new Ref to be added to this list, but it's not added to list
+	 * via
 	 * this method
 	 * 
 	 * @param obj
+	 *            that will be encapsulated into the ref
 	 * @return new reference to <tt>obj</tt>
 	 */
 	public ChainedReference<E> newRef( E obj ) {
@@ -82,46 +83,22 @@ public class ListOfObjects<E> extends ListOfReferences<E> {
 	}
 	
 	/**
-	 * doesn't compare by content<br>
-	 * compares by reference ie. ==
+	 * objects are not compared by content<br>
+	 * compares by reference ie. ==<br>
 	 * 
-	 * @param obj
+	 * @param containingThisObject
 	 *            could be null apparently
 	 * @return null or the reference containing the obj
 	 */
-	public ChainedReference<E> getRef( E obj ) {
+	public ChainedReference<E> getRef( E containingThisObject ) {
 
-		ChainedReference<E> parser = this.getFirstRef();
+		ChainedReference<E> parser = this.getFirstRef();// can be null if empty
+		// list
 		while ( null != parser ) {
-			if ( parser.getObject() == obj ) {
+			if ( parser.getObject() == containingThisObject ) {
 				break;
 			}
 			parser = parser.getNext();
-		}
-		return parser;
-	}
-	
-	/**
-	 * @param index
-	 *            0 based index
-	 * @return null or the ref at position 'index'
-	 * @exception BadCallError
-	 *                if index out of bounds
-	 */
-	public ChainedReference<E> getRefAtIndex( int index ) {
-
-		if ( ( index < 0 ) || ( index >= this.size() ) ) {
-			throw new BadCallError( "out of bounds" );
-		}
-		
-		ChainedReference<E> parser = this.getFirstRef();
-		int pos = 0;
-		while ( null != parser ) {
-			if ( index == pos ) {
-				break;
-			}
-			parser = parser.getNext();
-			pos++;
 		}
 		return parser;
 	}
@@ -173,14 +150,14 @@ public class ListOfObjects<E> extends ListOfReferences<E> {
 		ChainedReference<E> refPos = this.getRef( objPos );
 		if ( null == refPos ) {
 			// couldn't find objPos
-			throw new BadCallError( "position object not found" );
+			RunTime.badCall( "position object not found" );
 		}
 		// ie. what's the ref that's BEFORE(pos) ref1(refPos) ?
 		ChainedReference<E> ref = this.getRefAt( pos, refPos );
 		if ( null == ref ) {
 			throw new NoSuchElementException();
 		}
-		return ref.getObject();
+		return ref.getObject();// can be null
 	}
 	
 	/**
@@ -191,7 +168,9 @@ public class ListOfObjects<E> extends ListOfReferences<E> {
 	public ChainedReference<E> addLast( E obj ) {
 
 		ChainedReference<E> nr = this.newRef( obj );
-		this.addLastRef( nr );
+		if ( this.addLastRef( nr ) ) {
+			RunTime.bug( "must not compare by contents" );
+		}
 		return nr;
 	}
 	
@@ -223,20 +202,24 @@ public class ListOfObjects<E> extends ListOfReferences<E> {
 		case LAST:
 			return this.addLast( obj );
 		default:
-			throw new AssertionError( "undefined location here." );
+			RunTime.bug( "undefined location here." );
 		}
+		return null;// unreachable but eclipse complains
 	}
 	
 	/**
 	 * @param newObj
 	 * @param pos
 	 * @param posObj
-	 * @return false
+	 * @return false if it didn't exist; true if it didn't and it wasn't moved
 	 * @throws NoSuchElementException
 	 *             if posObj doesn't exist
 	 */
 	public boolean insert( E newObj, Position pos, E posObj ) {
 
+		// FIXME: the first object that == posObj will be found, although the
+		// list supports duplicates thus posObj can be found multiple times, so
+		// which one does the user want?
 		RunTime.assertNotNull( pos );
 		ChainedReference<E> posRef = this.getRef( posObj );
 		if ( null == posRef ) {
@@ -244,8 +227,7 @@ public class ListOfObjects<E> extends ListOfReferences<E> {
 			throw new NoSuchElementException();
 		}
 		ChainedReference<E> newRef = this.newRef( newObj );
-		this.insertObjAt( newRef, pos, posRef );
-		return false;
+		return this.insertRefAt( newRef, pos, posRef );
 	}
 	
 	/**

@@ -60,7 +60,7 @@ public class ListOfUniqueNonNullObjects<E> extends ListOfObjects<E> {
 	// return null;
 	// }
 	/**
-	 * not by content comparison
+	 * not by content comparison ie. not .equals() instead it's "=="
 	 * 
 	 * @param obj
 	 * @return
@@ -95,7 +95,7 @@ public class ListOfUniqueNonNullObjects<E> extends ListOfObjects<E> {
 	@Override
 	public ChainedReference<E> newRef( E obj ) {
 
-		RunTime.assertNotNull( obj );
+		RunTime.assertNotNull( obj );// must not be null
 		return super.newRef( obj );
 	}
 	
@@ -125,6 +125,7 @@ public class ListOfUniqueNonNullObjects<E> extends ListOfObjects<E> {
 		} catch ( NoSuchElementException nsee ) {
 			return null;
 		}
+		RunTime.assertNotNull( obj );
 		return obj;
 	}
 	
@@ -143,6 +144,7 @@ public class ListOfUniqueNonNullObjects<E> extends ListOfObjects<E> {
 		} catch ( NoSuchElementException nsee ) {
 			return null;
 		}
+		RunTime.assertNotNull( obj );
 		return obj;
 	}
 	
@@ -163,6 +165,7 @@ public class ListOfUniqueNonNullObjects<E> extends ListOfObjects<E> {
 		} catch ( NoSuchElementException nsee ) {
 			return null;
 		}
+		RunTime.assertNotNull( obj );
 		return obj;
 	}
 	
@@ -217,8 +220,9 @@ public class ListOfUniqueNonNullObjects<E> extends ListOfObjects<E> {
 			// already exists, not added/moved
 			return true;
 		}
-		super.addFirst( obj );
-		return false;
+		RunTime.assertNotNull( super.addFirst( obj ) );
+		
+		return false;// didn't exist
 	}
 	
 	/**
@@ -236,8 +240,9 @@ public class ListOfUniqueNonNullObjects<E> extends ListOfObjects<E> {
 		case LAST:
 			return this.addLast( obj );
 		default:
-			throw new AssertionError( "undefined location here." );
+			RunTime.bug( "undefined location here." );
 		}
+		return null;// not reached
 	}
 	
 	/**

@@ -56,9 +56,9 @@ public class RefsListTest {
 	public void testInsert() {
 
 		assertFalse( refList.addFirstRef( ref1 ) );
-		assertFalse( refList.insertObjAt( ref2, Position.AFTER, ref1 ) );
+		assertFalse( refList.insertRefAt( ref2, Position.AFTER, ref1 ) );
 		ChainedReference<Object> ref3 = new ChainedReference<Object>();
-		assertFalse( refList.insertObjAt( ref3, Position.BEFORE, ref1 ) );
+		assertFalse( refList.insertRefAt( ref3, Position.BEFORE, ref1 ) );
 		assertTrue( refList.getFirstRef() == ref3 );
 		assertTrue( refList.getLastRef() == ref2 );
 		assertTrue( refList.getRefAt( Position.BEFORE, ref2 ) == ref1 );
@@ -69,7 +69,7 @@ public class RefsListTest {
 			// even though ref2 exists, while ref3 doesn't, the call is bugged
 			// so we alert:
 			// ref3 should exist
-			refList.insertObjAt( ref2, Position.BEFORE, ref3 );// 3rd
+			refList.insertRefAt( ref2, Position.BEFORE, ref3 );// 3rd
 			// param,
 			// not
 			// exists
