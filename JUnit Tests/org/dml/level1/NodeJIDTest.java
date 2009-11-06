@@ -71,8 +71,8 @@ public class NodeJIDTest {
 
 		String _a = "ABCDEDFASA".substring( 0, 1 );
 		assertTrue( "A" != _a );
-		assertTrue( "A".equals( _a ) );
-		assertTrue( a == NodeJID.ensureJIDFor( _a ) );
+		assertTrue( "A".equals( _a ) );// compare by contents yields true
+		assertTrue( a == NodeJID.ensureJIDFor( _a ) );// not re-added
 		assertTrue( NodeJID.all_Level1_NodeJIDs.size() == 3 );
 		// assertTrue( null != DMLEnvironment.AllWords );
 		// assertTrue( NodeJID.all_Level1_NodeJIDs.size() == 4 );

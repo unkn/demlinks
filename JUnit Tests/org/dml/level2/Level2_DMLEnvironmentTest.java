@@ -21,7 +21,7 @@
  */
 
 
-package org.dml.level3;
+package org.dml.level2;
 
 
 
@@ -30,11 +30,11 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import org.dml.JUnits.Consts;
-import org.dml.level1.Level1_DMLEnvironment;
 import org.dml.level1.NodeID;
 import org.dml.level1.NodeJID;
-import org.dml.level3.Level3_DMLEnvironment;
 import org.junit.Test;
+import org.references.method.MethodParams;
+import org.temporary.tests.PossibleParams;
 
 
 
@@ -42,17 +42,25 @@ import org.junit.Test;
  * 
  *
  */
-public class Level3_DMLEnvironmentTest {
+public class Level2_DMLEnvironmentTest {
 	
 	@Test
 	public void multiple() throws Exception {
 
-		Level3_DMLEnvironment d1 = Level3_DMLEnvironment.getNew(
-				Consts.BDB_ENV_PATH + "1&2", true );
-		Level3_DMLEnvironment d2 = Level3_DMLEnvironment.getNew(
-				Consts.BDB_ENV_PATH + "1&2", false );
-		Level3_DMLEnvironment d3 = Level3_DMLEnvironment.getNew(
-				Consts.BDB_ENV_PATH + "3", true );
+		MethodParams<Object> params = new MethodParams<Object>();
+		params.set( PossibleParams.wipeDB, true );
+		
+		Level2_DMLEnvironment d1 = new Level2_DMLEnvironment();
+		params.set( PossibleParams.homeDir, Consts.BDB_ENV_PATH + "1&2" );
+		d1.init( params );
+		
+		Level2_DMLEnvironment d2 = new Level2_DMLEnvironment();
+		d2.init( params );
+		
+		params.set( PossibleParams.homeDir, Consts.BDB_ENV_PATH + "3" );
+		Level2_DMLEnvironment d3 = new Level2_DMLEnvironment();
+		d3.init( params );
+		
 		try {
 			// if ( 1 == 1 ) {
 			// throw new Exception( "blah" );
@@ -63,12 +71,17 @@ public class Level3_DMLEnvironmentTest {
 			NodeJID j2 = NodeJID.ensureJIDFor( test2 );
 			NodeID n1 = d1.createNodeID( j1 );
 			NodeID n2 = d1.createNodeID( j2 );
-			assertTrue( n1.equalsContents( d1.getNodeID( j1 ) ) );
-			assertTrue( n2.equalsContents( d1.getNodeID( j2 ) ) );
-			assertTrue( n1.equalsContents( d2.getNodeID( j1 ) ) );// d2 is d1 inside BDB
+			assertTrue( n1.equals( d1.getNodeID( j1 ) ) );
+			// FIXME: maybe fix? getNodeID() does a new everytime
+			assertTrue( n1 != d1.getNodeID( j1 ) );
+			assertTrue( n2.equals( d1.getNodeID( j2 ) ) );
+			assertTrue( n2 != d1.getNodeID( j2 ) );
+			assertTrue( n1.equals( d2.getNodeID( j1 ) ) );// d2 is d1
+			// inside
+			// BDB
 			// because they're
 			// in same dir
-			assertTrue( n2.equalsContents( d2.getNodeID( j2 ) ) );
+			assertTrue( n2.equals( d2.getNodeID( j2 ) ) );
 			
 			NodeID n3 = d3.getNodeID( j1 );// d3 is in diff dir
 			assertNull( n3 );
@@ -83,7 +96,7 @@ public class Level3_DMLEnvironmentTest {
 		} finally {
 			d1.deInit();
 			// d2.deInit();
-			Level1_DMLEnvironment.deInitAllLikeMe();
+			d1.deInitAllLikeMe();
 		}
 	}
 }

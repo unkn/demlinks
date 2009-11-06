@@ -70,8 +70,9 @@ public class ObjRefsListTest {
 			iter = ol.getObjectAt( Position.AFTER, iter );
 		}
 		String ante = "ante";
-		String last = "last";
+		String last = "laste".substring( 0, 4 );
 		assertTrue( last.equals( ol.getObjectAt( Position.LAST ) ) );
+		assertFalse( last == ol.getObjectAt( Position.LAST ) );
 		assertTrue( ( ante + last ).equals( ante + last ) );
 	}
 }

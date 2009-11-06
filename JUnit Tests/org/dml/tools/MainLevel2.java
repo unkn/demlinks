@@ -1,5 +1,5 @@
 /**
- * File creation: Oct 19, 2009 11:39:43 PM
+ * File creation: Oct 23, 2009 8:43:20 AM
  * 
  * Copyright (C) 2005-2009 AtKaaZ <atkaaz@users.sourceforge.net>
  * Copyright (C) 2005-2009 UnKn <unkn@users.sourceforge.net>
@@ -21,15 +21,14 @@
  */
 
 
-package org.dml.level2;
+package org.dml.tools;
 
 
 
-import org.dml.level1.Level1_DMLEnvironment;
-import org.dml.level1.NodeID;
-import org.dml.storagewrapper.StorageException;
-import org.dml.tools.RunTime;
 import org.dml.tools.VarLevel;
+import org.references.method.MethodParams;
+import org.temporary.tests.PossibleParams;
+import org.temporary.tests.VarLevel2;
 
 
 
@@ -37,24 +36,38 @@ import org.dml.tools.VarLevel;
  * 
  *
  */
-public class Level2_DMLEnvironment extends Level1_DMLEnvironment implements
-		Level2_DMLStorageWrapper {
+public class MainLevel2 extends MainLevel1 {
 	
 	@VarLevel
-	private final Level2_DMLStorage_BerkeleyDB	storage	= null;
+	private VarLevel2	var2;
 	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.dml.level2.Level2_DMLStorageWrapper#ensureGroup(org.dml.level1.NodeID
-	 * , org.dml.level1.NodeID)
-	 */
-	@Override
-	public boolean ensureGroup( NodeID first, NodeID second )
-			throws StorageException {
+	// true if we did new var2
+	// private final boolean defaultVar = false;
+	
 
-		RunTime.assertNotNull( first, second );
-		return storage.ensureGroup( first, second );
+	public MainLevel2() {
+
+		super();
+		
 	}
+	
+	@Override
+	protected MethodParams<Object> getDefaults() {
+
+		MethodParams<Object> def = super.getDefaults();
+		def.set( PossibleParams.homeDir, "level2defaultHOME" );
+		
+		return def;
+	}
+	
+	
+	/**
+	 * 
+	 */
+	public void showHome() {
+
+		var2.showHome();
+		this.do1();
+	}
+	
 }

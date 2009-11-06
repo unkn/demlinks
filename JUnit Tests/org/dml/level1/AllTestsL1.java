@@ -29,7 +29,8 @@ import org.junit.runners.Suite;
 
 @RunWith( Suite.class )
 @Suite.SuiteClasses( value = {
-		NodeJIDTest.class, Level1_DMLEnvironmentTest.class
+		NodeJIDTest.class, Level1_DMLEnvironmentTest.class,
+		TupleOfNodeIDsTest.class
 } )
 public class AllTestsL1 {
 }

@@ -25,15 +25,10 @@ package org.dml.level1;
 
 
 
-import java.io.File;
-
 import org.dml.storagewrapper.StorageException;
 import org.dml.tools.MainLevel0;
 import org.dml.tools.RunTime;
-import org.dml.tools.StaticInstanceTrackerWithMethodParamsInterface;
-import org.references.method.MethodParams;
-import org.temporary.tests.PossibleParams;
-import org.temporary.tests.VarLevel;
+import org.dml.tools.VarLevel;
 
 
 
@@ -42,18 +37,11 @@ import org.temporary.tests.VarLevel;
  *
  */
 public class Level1_DMLEnvironment extends MainLevel0 implements
-		StaticInstanceTrackerWithMethodParamsInterface,
 		Level1_DMLStorageWrapper {
 	
 	@VarLevel
-	private final LevelAll_DMLStorageWrapper	storage					= null;
+	private final Level1_DMLStorage_BerkeleyDB	storage	= null;
 	
-	private final static String					DEFAULT_BDB_ENV_PATH	= "."
-																				+ File.separator
-																				+ "bin"
-																				+ File.separator
-																				+ "mainEnv"
-																				+ File.separator;
 	
 	/**
 	 * construct, don't forget to call init(with param/s)
@@ -62,17 +50,6 @@ public class Level1_DMLEnvironment extends MainLevel0 implements
 
 		super();
 		
-	}
-	
-	
-	@Override
-	protected MethodParams<Object> getDefaults() {
-
-		MethodParams<Object> def = super.getDefaults();
-		
-		def.set( PossibleParams.homeDir, DEFAULT_BDB_ENV_PATH );
-		def.set( PossibleParams.wipeDB, false );
-		return def;
 	}
 	
 	// ---------------------------------------------

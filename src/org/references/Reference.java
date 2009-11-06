@@ -58,14 +58,15 @@ public class Reference<T> implements Serializable {
 		return object;
 	}
 	
+	
 	@SuppressWarnings( "unchecked" )
-	// @Override
+	@Override
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
-	public boolean equalsByContent( Object obj1 ) {
+	public boolean equals( Object obj1 ) {
 
 		boolean ret = true;
 		if ( !super.equals( obj1 ) ) {

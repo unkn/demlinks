@@ -25,11 +25,15 @@ package org.dml.level1;
 
 
 
+import java.io.File;
+
 import org.dml.database.bdb.Level1_Storage_BerkeleyDB;
 import org.dml.storagewrapper.StorageException;
-import org.dml.tools.Level0;
+import org.dml.tools.MainLevel0;
 import org.dml.tools.RunTime;
-import org.dml.tools.StaticInstanceTrackerWithMethodParams;
+import org.dml.tools.VarLevel;
+import org.references.method.MethodParams;
+import org.temporary.tests.PossibleParams;
 
 import com.sleepycat.je.DatabaseException;
 
@@ -39,11 +43,19 @@ import com.sleepycat.je.DatabaseException;
  * should throw only StorageException.<br>
  * this is done mostly for wrapping Exceptions under StorageException<br>
  */
-public class Level1_DMLStorage_BerkeleyDB extends Level0 implements
+public class Level1_DMLStorage_BerkeleyDB extends MainLevel0 implements
 		Level1_DMLStorageWrapper {
 	
-	// this var type must be set to latest level
-	protected Level1_Storage_BerkeleyDB	bdb	= null;
+	@VarLevel
+	private Level1_Storage_BerkeleyDB	bdb						= null;
+	
+	private final static String			DEFAULT_BDB_ENV_PATH	= "."
+																		+ File.separator
+																		+ "bin"
+																		+ File.separator
+																		+ "mainEnv"
+																		+ File.separator;
+	
 	
 	/**
 	 * constructor, don't forget to call init(...)
@@ -54,34 +66,15 @@ public class Level1_DMLStorage_BerkeleyDB extends Level0 implements
 	}
 	
 	@Override
-	protected void setVarLevelX( Object toValue ) {
+	protected MethodParams<Object> getDefaults() {
 
-		bdb = (Level1_Storage_BerkeleyDB)toValue;
+		MethodParams<Object> def = super.getDefaults();
+		
+		def.set( PossibleParams.homeDir, DEFAULT_BDB_ENV_PATH );
+		def.set( PossibleParams.wipeDB, false );
+		return def;
 	}
 	
-	@Override
-	protected StaticInstanceTrackerWithMethodParams getVarLevelX() {
-
-		return bdb;
-	}
-	
-	@Override
-	protected void newVarLevelX() {
-
-		bdb = new Level1_Storage_BerkeleyDB();
-	}
-	
-	@Override
-	protected void checkVarLevelX( Object obj ) {
-
-		if ( !( obj instanceof Level1_Storage_BerkeleyDB ) ) {
-			// cannot be under VarLevel1, can be above tho
-			RunTime.badCall( "wrong type passed" );
-		}
-	}
-	
-	
-
 	// =============================================
 	@Override
 	public final NodeJID getNodeJID( NodeID identifiedByThisNodeID )

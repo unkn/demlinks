@@ -21,7 +21,7 @@
  */
 
 
-package org.temporary.tests;
+package org.dml.tools;
 
 
 
@@ -35,6 +35,11 @@ import java.lang.annotation.Target;
 /**
  * targets any fields, preferably private ones<br>
  * maximum just one field per subclass<br>
+ * 
+ * if you tag one field per subclass with this annotation, it means that field
+ * is considered that it will be a different type in each subclass following
+ * with the purpose of that field leveling up with the class, a level that's on
+ * top of previous level and using previous level
  */
 @Target( ElementType.FIELD )
 @Retention( RetentionPolicy.RUNTIME )

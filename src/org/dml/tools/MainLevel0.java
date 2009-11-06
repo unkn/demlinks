@@ -34,26 +34,24 @@ import org.references.Position;
 import org.references.Reference;
 import org.references.method.MethodParams;
 import org.temporary.tests.PossibleParams;
-import org.temporary.tests.VarLevel;
 
 
 
 /**
- * must not call super() on some methods because remember that the VarLevel is
- * Overridden on the next level<br>
  * 
- * 2. VarLevel field in each subclass(or level) must be declared private and all
- * *VarLevelX* methods must be overridden without calling their super, and they
- * will operate on this private field; with the exception of setVarLevelX which
- * must call super always<br>
- * 3. there is only one VarLevel instance no matter at which level we are, once
- * the class is instantiated
- * 4. as said in 2. you must override w/o calling super, the following methods:
- * getVarLevelX, checkVarLevelX, newVarLevelX;
- * 5. always call super on setVarLevelX and always override it
- * 6. VarLevelX variable must extend StaticInstanceTrackerWithMethodParams
- * 7. override getDefaults() and call its super first, and set your defaults
- * that will be used when params are missing or null instead of them
+ * this allows all subclasses to level up and use one field that will also
+ * level up
+ * 
+ * 1. VarLevel field in each subclass(or level) should be declared private and
+ * must extend StaticInstanceTrackerWithMethodParams and thus cannot be an
+ * interface type<br>
+ * ... there is only one VarLevel instance no matter at which level we are, once
+ * the class is instantiated, all private fields marked with VarLevel will point
+ * to the same instance which is of same type as the last subclass (which
+ * instantiated it)<br>
+ * 2. override getDefaults() and call its super first, and set your defaults
+ * that will be used when params are missing or null instead of them or params
+ * that are passed to the VarLevel init(..)
  */
 public abstract class MainLevel0 extends StaticInstanceTrackerWithMethodParams {
 	
@@ -175,7 +173,8 @@ public abstract class MainLevel0 extends StaticInstanceTrackerWithMethodParams {
 	 * 
 	 * @param params
 	 *            can accept a passed VarLevel or other params needed to init a
-	 *            new VarLevel; if null or empty then defaults are used
+	 *            new VarLevel; if null or empty then defaults are used; params
+	 *            are passed down to the VarLevel
 	 */
 	@Override
 	public void init( MethodParams<Object> params ) {

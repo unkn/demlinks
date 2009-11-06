@@ -22,10 +22,6 @@ package org.references;
 
 
 
-import org.dml.tools.RunTime;
-
-
-
 public class ChainedReference<Obj> extends Reference<Obj> {
 	
 	/**
@@ -43,37 +39,36 @@ public class ChainedReference<Obj> extends Reference<Obj> {
 		this.initAsDead();
 	}
 	
-	/**
-	 * this is a kind of cloning...
-	 * 
-	 * @param cloneThis
-	 */
-	public ChainedReference( ChainedReference<Obj> cloneThis ) {
-
-		this.initAsDead();
-		RunTime.assertNotNull( cloneThis );
-		this.setPrev( cloneThis.getPrev() );
-		this.setNext( cloneThis.getNext() );
-		this.setObject( cloneThis.getObject() );
-	}
+	// /**
+	// * this is a kind of cloning...
+	// *
+	// * @param cloneThis
+	// */
+	// public ChainedReference( ChainedReference<Obj> cloneThis ) {
+	//
+	// this.initAsDead();
+	// RunTime.assertNotNull( cloneThis );
+	// this.setPrev( cloneThis.getPrev() );
+	// this.setNext( cloneThis.getNext() );
+	// this.setObject( cloneThis.getObject() );
+	// RunTime.assertTrue( this != cloneThis );// by ref
+	// RunTime.assertTrue( this.equals( cloneThis ) );// by contents
+	// }
 	
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
+	@SuppressWarnings( "unchecked" )
 	@Override
-	public boolean equals( Object obj ) {
+	public boolean equals( Object compareObj ) {
 
-		return super.equals( obj );
-	}
-	
-	public boolean equalsContents( ChainedReference<Obj> compareObj ) {
-
-		if ( ( super.equals( compareObj ) )
-				|| ( ( this.getPrev() == compareObj.getPrev() )
-						&& ( this.getNext() == compareObj.getNext() ) && ( this.getObject() == compareObj.getObject() ) ) ) {
-			return true;
+		if ( super.equals( compareObj ) ) {
+			if ( ( this.getPrev() == ( (ChainedReference<Obj>)compareObj ).getPrev() )
+					&& ( this.getNext() == ( (ChainedReference<Obj>)compareObj ).getNext() ) ) {
+				return true;
+			}
 		}
 		return false;
 		// I thought compareObj.prev is private, and yet I'm still able to
@@ -106,7 +101,8 @@ public class ChainedReference<Obj> extends Reference<Obj> {
 	}
 	
 	/**
-	 * signal that the reference has been removed/destroyed from the list
+	 * signal that the reference has been removed/destroyed from the list<br>
+	 * when calling this, make sure no other references point to it
 	 */
 	public void destroy() {
 

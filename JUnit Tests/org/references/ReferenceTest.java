@@ -89,7 +89,7 @@ public class ReferenceTest {
 		randomFile.delete();
 		assertNotNull( ess2 );
 		assertTrue( str.equals( ess2.getObject() ) );
-		assertTrue( ess.equalsByContent( ess2 ) );
+		assertTrue( ess.equals( ess2 ) );
 		assertTrue( ess.hashCode() == ess2.hashCode() );
 	}
 	
@@ -99,7 +99,7 @@ public class ReferenceTest {
 		Reference<String> one, two;
 		one = new Reference<String>();
 		two = new Reference<String>();
-		assertTrue( one.equalsByContent( two ) );
+		assertTrue( one.equals( two ) );
 		assertTrue( one.getObject() == two.getObject() );
 		assertNull( one.getObject() );
 		
@@ -118,7 +118,7 @@ public class ReferenceTest {
 		
 		two.setObject( str );
 		assertTrue( one.hashCode() == two.hashCode() );
-		assertTrue( one.equalsByContent( two ) );
+		assertTrue( one.equals( two ) );
 		assertFalse( one == two );
 		two.setObject( null );
 		assertNull( two.getObject() );
@@ -133,7 +133,7 @@ public class ReferenceTest {
 		two.setObject( str3 );
 		assertTrue( two.getObject() == str3 );
 		assertTrue( one != two );
-		assertTrue( one.equalsByContent( two ) );
+		assertTrue( one.equals( two ) );
 		assertTrue( one.hashCode() == two.hashCode() );
 		
 		// this tests the list
@@ -145,9 +145,9 @@ public class ReferenceTest {
 		list.addLast( two );
 		assertTrue( list.containsObject( two ) );
 		
-		assertTrue( one != two );
-		assertTrue( one.equalsByContent( two ) );// same content
-		assertFalse( one.equals( two ) );// different references
+		assertFalse( one == two );// different references
+		assertTrue( one.equals( two ) );// same content
+		
 		assertTrue( list.size() == 2 );
 	}
 }

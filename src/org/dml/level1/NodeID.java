@@ -89,16 +89,22 @@ public class NodeID {
 		return this.getClass().getSimpleName() + ":" + this.getAsString();
 	}
 	
-	/*
-	 * (non-Javadoc)
+	/**
+	 * compares by content if refs are different
 	 * 
-	 * @see java.lang.Object#equals(java.lang.Object)
+	 * @param nid
+	 * @return
 	 */
-	public boolean equals( NodeID nid ) {
+	@Override
+	public boolean equals( Object nid ) {
 
 		RunTime.assertNotNull( nid );
+		if ( ( !this.getClass().isAssignableFrom( nid.getClass() ) )
+				|| ( this.getClass() != nid.getClass() ) ) {
+			RunTime.bug( "you passed a different type parameter; must be a bug somewhere" );
+		}
 		if ( ( super.equals( nid ) )
-				|| ( this.getAsString().equals( nid.getAsString() ) ) ) {
+				|| ( this.getAsString().equals( ( (NodeID)nid ).getAsString() ) ) ) {
 			return true;
 		}
 		return false;

@@ -1,5 +1,5 @@
 /**
- * File creation: Nov 5, 2009 10:04:11 PM
+ * File creation: Oct 26, 2009 10:04:39 AM
  * 
  * Copyright (C) 2005-2009 AtKaaZ <atkaaz@users.sourceforge.net>
  * Copyright (C) 2005-2009 UnKn <unkn@users.sourceforge.net>
@@ -21,18 +21,45 @@
  */
 
 
-package org.dml.level1;
+package org.dml.tools;
 
 
 
-import org.dml.level2.Level2_DMLStorageWrapper;
+import org.dml.tools.VarLevel;
+import org.references.method.MethodParams;
+import org.temporary.tests.PossibleParams;
+import org.temporary.tests.VarLevel3;
 
 
 
 /**
  * 
- *this must be updated to the last level interface
+ *
  */
-public interface LevelAll_DMLStorageWrapper extends Level2_DMLStorageWrapper {
+public class MainLevel3 extends MainLevel2 {
+	
+	@VarLevel
+	private VarLevel3	var3;
+	
+	public MainLevel3() {
+
+		super();
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.temporary.tests.MainLevel2#getDefaults()
+	 */
+	@Override
+	protected MethodParams<Object> getDefaults() {
+
+		MethodParams<Object> ret = super.getDefaults();
+		
+		// the following will overwrite prev param set in Level2
+		ret.set( PossibleParams.homeDir, "level3HOMEDir" );
+		
+		return ret;
+	}
 	
 }

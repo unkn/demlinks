@@ -21,7 +21,7 @@
  */
 
 
-package org.dml.level2;
+package org.dml.level1;
 
 
 
@@ -51,9 +51,12 @@ public class TupleOfNodeIDsTest {
 	@Before
 	public void setUp() throws StorageException {
 
-		MethodParams<Object> params=new MethodParams<Object>();
-		params.set( PossibleParams.homeDir, Consts.BDB_ENV_PATH )
-		dml = Level1_DMLEnvironment.getNew( , true );
+		MethodParams<Object> params = new MethodParams<Object>();
+		params.set( PossibleParams.homeDir, Consts.BDB_ENV_PATH );
+		params.set( PossibleParams.wipeDB, true );
+		// dml = Level1_DMLEnvironment.getNew( , true );
+		dml = new Level1_DMLEnvironment();
+		dml.init( params );
 	}
 	
 	@After

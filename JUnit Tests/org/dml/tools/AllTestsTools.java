@@ -29,7 +29,8 @@ import org.junit.runners.Suite;
 
 @RunWith( Suite.class )
 @Suite.SuiteClasses( value = {
-	StaticInstanceTrackerTest.class,
+		StaticInstanceTrackerTest.class, LevelsTest.class,
+		OneToOneMapTest.class
 } )
 public class AllTestsTools {
 }

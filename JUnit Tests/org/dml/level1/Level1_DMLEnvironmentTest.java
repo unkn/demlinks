@@ -25,12 +25,11 @@ package org.dml.level1;
 
 
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.dml.JUnits.Consts;
-import org.dml.level1.Level1_DMLEnvironment;
-import org.dml.level1.NodeID;
-import org.dml.level1.NodeJID;
+import org.dml.error.BugError;
 import org.dml.storagewrapper.StorageException;
 import org.junit.After;
 import org.junit.Before;
@@ -83,6 +82,17 @@ public class Level1_DMLEnvironmentTest {
 			assertTrue( a != dml1.getNodeID( NodeJID.ensureJIDFor( "A" ) ) );
 			assertTrue( b.equals( dml1.getNodeID( NodeJID.ensureJIDFor( "B" ) ) ) );
 			assertTrue( c.equals( dml1.getNodeID( NodeJID.ensureJIDFor( "C" ) ) ) );
+			Object t = dml1.getNodeID( NodeJID.ensureJIDFor( "A" ) );
+			assertTrue( a.equals( t ) );
+			Object t2 = new Object();
+			boolean threw = false;
+			try {
+				assertFalse( a.equals( t2 ) );
+			} catch ( BugError be ) {
+				threw = true;
+			} finally {
+				assertTrue( threw );
+			}
 		} finally {
 			dml1.deInit();
 		}

@@ -42,4 +42,9 @@ public class SuperBase {
 		var = "Base";
 		this.show();
 	}
+	
+	public void test1() {
+
+		System.out.println( "test1" );
+	}
 }

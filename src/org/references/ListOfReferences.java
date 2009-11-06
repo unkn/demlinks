@@ -89,9 +89,14 @@ public class ListOfReferences<Obje> {
 	private void setListToEmpty() {
 
 		this.cachedSize = 0;// increased on add, decreased on remove and related
-		this.firstRef = null;
+		this.setFirstRef( null );
 		this.lastRef = null;
 		this.setModified();
+	}
+	
+	private void setFirstRef( ChainedReference<Obje> toValue ) {
+
+		this.firstRef = toValue;
 	}
 	
 	/**
@@ -107,7 +112,7 @@ public class ListOfReferences<Obje> {
 	 */
 	public boolean isEmpty() {
 
-		return ( 0 == this.size() ) || ( this.firstRef == null )
+		return ( 0 == this.size() ) || ( this.getFirstRef() == null )
 				|| ( this.lastRef == null );
 	}
 	
@@ -128,7 +133,8 @@ public class ListOfReferences<Obje> {
 		}
 		this.setModified();
 		if ( this.lastRef == null ) {// list is initially empty
-			this.lastRef = this.firstRef = newLastRef;
+			this.lastRef = newLastRef;
+			this.setFirstRef( newLastRef );
 		} else {// list not empty
 			this.lastRef.setNext( newLastRef );
 			newLastRef.setPrev( this.lastRef );
@@ -150,17 +156,21 @@ public class ListOfReferences<Obje> {
 		if ( this.containsRef( newFirstRef ) ) {
 			return true;// already exists
 		}
-		if ( !newFirstRef.isAlone() ) {// this allows null objects
-			throw new AssertionError(
-					"the new Ref must be empty, because we fill next and prev." );
+		
+
+		if ( !newFirstRef.isAlone() ) {
+			// this allows null objects(ie. getObject());
+			// because of using isAlone instead of isDead
+			RunTime.bug( "the new Ref must be empty, because we fill next and prev." );
 		}
 		this.setModified();
-		if ( this.firstRef == null ) {// list is initially empty
-			this.firstRef = this.lastRef = newFirstRef;
+		if ( this.getFirstRef() == null ) {// list is initially empty
+			this.lastRef = newFirstRef;
+			this.setFirstRef( newFirstRef );
 		} else {// list not empty
-			this.firstRef.setPrev( newFirstRef );
-			newFirstRef.setNext( this.firstRef );
-			this.firstRef = newFirstRef;
+			this.getFirstRef().setPrev( newFirstRef );
+			newFirstRef.setNext( this.getFirstRef() );
+			this.setFirstRef( newFirstRef );
 		}
 		this.cachedSize++;
 		this.setModified();// again
@@ -204,7 +214,7 @@ public class ListOfReferences<Obje> {
 				beforePosRef.setNext( newRef );// 3) beforePosRef <-> newRef ->
 				// posRef, beforePosRef<- posRef
 			} else {// is first so also set firstRef
-				this.firstRef = newRef; // a new first in list
+				this.setFirstRef( newRef ); // a new first in list
 				// if posRef was last, then it remains last, but if it was first
 				// newRef is first now
 			}
@@ -269,8 +279,8 @@ public class ListOfReferences<Obje> {
 			prev.setNext( next );
 			// killRef.setPrev(null);//beware
 		} else {
-			if ( this.firstRef == killRef ) {
-				this.firstRef = next;// can be null
+			if ( this.getFirstRef() == killRef ) {
+				this.setFirstRef( next );// can be null
 			} else {
 				throw new AssertionError( "compromised integrity of list" );
 			}
@@ -302,7 +312,9 @@ public class ListOfReferences<Obje> {
 		RunTime.assertNotNull( whichRef );
 		ChainedReference<Obje> parser = this.getFirstRef();
 		while ( null != parser ) {
-			if ( whichRef.equals( parser ) ) {
+			// compare by reference not contents, two diff refs can have same
+			// contents but they are diff refs, so don't use .equals()
+			if ( whichRef == parser ) {
 				return true;
 			}
 			parser = parser.getNext();

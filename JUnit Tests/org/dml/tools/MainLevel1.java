@@ -21,12 +21,13 @@
  */
 
 
-package org.temporary.tests;
+package org.dml.tools;
 
 
 
 import org.dml.tools.MainLevel0;
-import org.references.method.MethodParams;
+import org.dml.tools.VarLevel;
+import org.temporary.tests.VarLevel1;
 
 
 
@@ -55,14 +56,6 @@ public class MainLevel1 extends MainLevel0 {
 	}
 	
 	
-	@Override
-	public void init( MethodParams<Object> params ) {
-
-		super.init( params );
-	}
-	
-	
-
 	public void do1() {
 
 		var1.sayHello();

@@ -82,16 +82,18 @@ public class ListOfObjects<E> extends ListOfReferences<E> {
 	}
 	
 	/**
-	 * doesn't compare by content
+	 * doesn't compare by content<br>
+	 * compares by reference ie. ==
 	 * 
 	 * @param obj
+	 *            could be null apparently
 	 * @return null or the reference containing the obj
 	 */
 	public ChainedReference<E> getRef( E obj ) {
 
 		ChainedReference<E> parser = this.getFirstRef();
 		while ( null != parser ) {
-			if ( obj.equals( parser.getObject() ) ) {
+			if ( parser.getObject() == obj ) {
 				break;
 			}
 			parser = parser.getNext();

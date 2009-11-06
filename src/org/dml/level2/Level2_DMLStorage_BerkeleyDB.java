@@ -25,10 +25,12 @@ package org.dml.level2;
 
 
 
+import org.dml.database.bdb.Level1_Storage_BerkeleyDB;
 import org.dml.level1.Level1_DMLStorage_BerkeleyDB;
 import org.dml.level1.NodeID;
 import org.dml.storagewrapper.StorageException;
 import org.dml.tools.RunTime;
+import org.dml.tools.VarLevel;
 
 import com.sleepycat.je.DatabaseException;
 
@@ -41,13 +43,9 @@ import com.sleepycat.je.DatabaseException;
 public class Level2_DMLStorage_BerkeleyDB extends Level1_DMLStorage_BerkeleyDB
 		implements Level2_DMLStorageWrapper {
 	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.dml.storagewrapper.StorageWrapper#ensureGroup(org.dml.level2.NodeID,
-	 * org.dml.level2.NodeID)
-	 */
+	@VarLevel
+	private final Level1_Storage_BerkeleyDB	bdb	= null;
+	
 	@Override
 	public boolean ensureGroup( NodeID first, NodeID second )
 			throws StorageException {

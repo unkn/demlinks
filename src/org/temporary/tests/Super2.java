@@ -34,6 +34,8 @@ public class Super2 extends SuperBase {
 
 		Super2 s = new Super2();
 		s.init();
+		s.test1();
+		s.testPrev();
 	}
 	
 	/*
@@ -48,4 +50,16 @@ public class Super2 extends SuperBase {
 		this.show();
 		super.init();
 	}
+	
+	@Override
+	public void test1() {
+
+		System.out.println( "test2" );
+	}
+	
+	public void testPrev() {
+
+		super.test1();
+	}
+	
 }
