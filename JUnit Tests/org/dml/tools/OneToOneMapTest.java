@@ -26,6 +26,7 @@ package org.dml.tools;
 
 
 import org.junit.Test;
+import org.references.Reference;
 
 
 
@@ -35,16 +36,16 @@ import org.junit.Test;
  */
 public class OneToOneMapTest {
 	
-	OneToOneMap<String, Encapsulated<String>>	map;
+	OneToOneMap<String, Reference<String>>	map;
 	
 	@Test
 	public void test1() {
 
-		map = new OneToOneMap<String, Encapsulated<String>>();
+		map = new OneToOneMap<String, Reference<String>>();
 		
 		String str = "one";
-		Encapsulated<String> estr = new Encapsulated<String>();
-		estr.encapsulateThis( str );
+		Reference<String> estr = new Reference<String>();
+		estr.setObject( str );
 		
 		map.setFirst( str );
 		map.setSecond( estr );

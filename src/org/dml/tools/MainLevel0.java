@@ -68,7 +68,8 @@ public abstract class MainLevel0 extends StaticInstanceTrackerWithMethodParams {
 	private final ListOfUniqueNonNullObjects<Field>	listOfAnnotatedFields	= new ListOfUniqueNonNullObjects<Field>();
 	
 	// TODO: accept more than 1 variable per subclass, should be easy, maybe add
-	// param to annotation
+	// a param to annotation indicating fields that pertain to same group (one
+	// group per subclass)
 	
 	public MainLevel0() {
 

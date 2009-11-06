@@ -33,7 +33,9 @@ public class LateStaticBindings {
 	
 	public static void main( String[] args ) {
 
+		@SuppressWarnings( "unused" )
 		A a = new A();
+		@SuppressWarnings( "unused" )
 		B b = new B();
 		A.test();
 	}

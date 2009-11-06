@@ -28,6 +28,8 @@ package org.temporary.bdb;
 import org.dml.JUnits.Consts;
 import org.dml.database.bdb.Level1_Storage_BerkeleyDB;
 import org.dml.level1.NodeJID;
+import org.references.method.MethodParams;
+import org.temporary.tests.PossibleParams;
 
 import com.sleepycat.je.DatabaseException;
 
@@ -41,12 +43,21 @@ public class BDBTest {
 	
 	public static void main( String[] args ) throws DatabaseException {
 
-		Level1_Storage_BerkeleyDB b = new Level1_Storage_BerkeleyDB( Consts.BDB_ENV_PATH, true );
+		MethodParams<Object> params = new MethodParams<Object>();
+		params.init();
+		params.set( PossibleParams.homeDir, Consts.BDB_ENV_PATH );
+		params.set( PossibleParams.wipeDB, true );
+		Level1_Storage_BerkeleyDB b = new Level1_Storage_BerkeleyDB();
+		b.init( params );
+		params.deInit();
+		params = null;
+		
 		try {
 			b.getDBMapJIDsToNodeIDs().createNodeID(
 					NodeJID.ensureJIDFor( "duh" ) );
 		} finally {
 			b.deInit();
+			
 		}
 		System.out.println( "end." );
 	}
