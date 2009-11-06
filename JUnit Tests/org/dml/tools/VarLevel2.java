@@ -1,5 +1,5 @@
 /**
- * File creation: Oct 23, 2009 8:42:08 AM
+ * File creation: Oct 23, 2009 8:43:36 AM
  * 
  * Copyright (C) 2005-2009 AtKaaZ <atkaaz@users.sourceforge.net>
  * Copyright (C) 2005-2009 UnKn <unkn@users.sourceforge.net>
@@ -21,12 +21,13 @@
  */
 
 
-package org.temporary.tests;
+package org.dml.tools;
 
 
 
-import org.dml.tools.StaticInstanceTrackerWithMethodParams;
+import org.dml.tools.RunTime;
 import org.references.method.MethodParams;
+import org.temporary.tests.PossibleParams;
 
 
 
@@ -34,54 +35,59 @@ import org.references.method.MethodParams;
  * 
  *
  */
-public class VarLevel1 extends StaticInstanceTrackerWithMethodParams implements
-		VarLevel1Interface {
+public class VarLevel2 extends VarLevel1 implements VarLevel2Interface {
 	
+	String			homeDir;
+	private boolean	inited	= false;
 	
-	public String getName() {
+	// public void init( String homeDir1 ) {
+	//
+	// homeDir = homeDir1;
+	// inited = true;
+	// super.init();
+	// }
+	
+	@Override
+	protected void start() {
 
-		return this.getClass().getSimpleName();
+		if ( !inited ) {
+			RunTime.badCall( "please don't use init() w/o params" );
+		}
+		super.start();
 	}
 	
-	public void sayHello() {
+	public void showHome() {
 
-		System.out.println( this.getName() + " says Hello." );
+		RunTime.assertTrue( inited );
+		System.out.println( this.getName() + "'s home is: " + homeDir );
 	}
 	
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.dml.tools.StaticInstanceTracker#done()
+	 * @see org.temporary.tests.VarLevel1#done()
 	 */
 	@Override
 	protected void done() {
 
-		System.out.println( this.getName() + " DeInited." );
-		
+		inited = false;
+		super.done();
 	}
 	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.dml.tools.StaticInstanceTracker#start()
-	 */
-	@Override
-	protected void start() {
+	public boolean isInited() {
 
-		System.out.println( this.getName() + " inited." );
-		
+		return inited;
 	}
 	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @seeorg.temporary.tests.VarLevel1Interface#init(org.references.method.
-	 * MethodParams)
+	/**
+	 * @param params
 	 */
 	@Override
 	public void init( MethodParams<Object> params ) {
 
-		// ignoring at this level
-		super.init();
+		RunTime.assertNotNull( params );
+		homeDir = params.getExString( PossibleParams.homeDir );
+		inited = true;
+		super.init( params );
 	}
 }

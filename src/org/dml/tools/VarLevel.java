@@ -39,7 +39,9 @@ import java.lang.annotation.Target;
  * if you tag one field per subclass with this annotation, it means that field
  * is considered that it will be a different type in each subclass following
  * with the purpose of that field leveling up with the class, a level that's on
- * top of previous level and using previous level
+ * top of previous level and using previous level<br>
+ * 
+ * this field, set it to null on declaration
  */
 @Target( ElementType.FIELD )
 @Retention( RetentionPolicy.RUNTIME )

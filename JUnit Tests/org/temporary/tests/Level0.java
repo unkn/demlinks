@@ -32,7 +32,6 @@ import java.lang.reflect.InvocationTargetException;
 
 import org.dml.tools.RunTime;
 import org.dml.tools.StaticInstanceTrackerWithMethodParams;
-import org.dml.tools.StaticInstanceTrackerWithMethodParamsInterface;
 import org.dml.tools.VarLevel;
 import org.references.Reference;
 import org.references.method.MethodParams;
@@ -43,6 +42,7 @@ import org.references.method.MethodParams;
  * 
  *
  */
+@Deprecated
 public abstract class Level0 extends StaticInstanceTrackerWithMethodParams {
 	
 	private static MethodParams<Object>	defaults			= null;
@@ -55,6 +55,7 @@ public abstract class Level0 extends StaticInstanceTrackerWithMethodParams {
 	// purpose is to prevent init() usage
 	private boolean						inited				= false;
 	
+	@SuppressWarnings( "unused" )
 	private void test1() {
 
 		// FIXME temporary, delete this

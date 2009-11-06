@@ -52,6 +52,8 @@ import org.temporary.tests.PossibleParams;
  * 2. override getDefaults() and call its super first, and set your defaults
  * that will be used when params are missing or null instead of them or params
  * that are passed to the VarLevel init(..)
+ * 3. the VarLevel and the MainLevel1 class have to extend
+ * StaticInstanceTrackerWithMethodParams
  */
 public abstract class MainLevel0 extends StaticInstanceTrackerWithMethodParams {
 	
@@ -90,7 +92,9 @@ public abstract class MainLevel0 extends StaticInstanceTrackerWithMethodParams {
 			} catch ( IllegalArgumentException e ) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-				RunTime.bug();
+				RunTime.bug( "this usually happens when the VarLevel in each subclass are of class types that are not subclasses of previous VarLevel's type" );
+				// for example: class A has Z var; and class B extends A has X
+				// var and X doesn't extend Z, that is bad it should extend Z
 			} catch ( IllegalAccessException e ) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

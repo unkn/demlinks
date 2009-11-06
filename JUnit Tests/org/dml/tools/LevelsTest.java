@@ -38,9 +38,6 @@ import org.junit.Test;
 import org.references.Reference;
 import org.references.method.MethodParams;
 import org.temporary.tests.PossibleParams;
-import org.temporary.tests.VarLevel1;
-import org.temporary.tests.VarLevel2;
-import org.temporary.tests.VarLevel3;
 
 
 

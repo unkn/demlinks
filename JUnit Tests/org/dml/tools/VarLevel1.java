@@ -1,5 +1,5 @@
 /**
- * File creation: Oct 23, 2009 8:43:36 AM
+ * File creation: Oct 23, 2009 8:42:08 AM
  * 
  * Copyright (C) 2005-2009 AtKaaZ <atkaaz@users.sourceforge.net>
  * Copyright (C) 2005-2009 UnKn <unkn@users.sourceforge.net>
@@ -21,11 +21,11 @@
  */
 
 
-package org.temporary.tests;
+package org.dml.tools;
 
 
 
-import org.dml.tools.RunTime;
+import org.dml.tools.StaticInstanceTrackerWithMethodParams;
 import org.references.method.MethodParams;
 
 
@@ -34,59 +34,54 @@ import org.references.method.MethodParams;
  * 
  *
  */
-public class VarLevel2 extends VarLevel1 implements VarLevel2Interface {
+public class VarLevel1 extends StaticInstanceTrackerWithMethodParams implements
+		VarLevel1Interface {
 	
-	String			homeDir;
-	private boolean	inited	= false;
 	
-	// public void init( String homeDir1 ) {
-	//
-	// homeDir = homeDir1;
-	// inited = true;
-	// super.init();
-	// }
-	
-	@Override
-	protected void start() {
+	public String getName() {
 
-		if ( !inited ) {
-			RunTime.badCall( "please don't use init() w/o params" );
-		}
-		super.start();
+		return this.getClass().getSimpleName();
 	}
 	
-	public void showHome() {
+	public void sayHello() {
 
-		RunTime.assertTrue( inited );
-		System.out.println( this.getName() + "'s home is: " + homeDir );
+		System.out.println( this.getName() + " says Hello." );
 	}
 	
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.temporary.tests.VarLevel1#done()
+	 * @see org.dml.tools.StaticInstanceTracker#done()
 	 */
 	@Override
 	protected void done() {
 
-		inited = false;
-		super.done();
+		System.out.println( this.getName() + " DeInited." );
+		
 	}
 	
-	public boolean isInited() {
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.dml.tools.StaticInstanceTracker#start()
+	 */
+	@Override
+	protected void start() {
 
-		return inited;
+		System.out.println( this.getName() + " inited." );
+		
 	}
 	
-	/**
-	 * @param params
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @seeorg.temporary.tests.VarLevel1Interface#init(org.references.method.
+	 * MethodParams)
 	 */
 	@Override
 	public void init( MethodParams<Object> params ) {
 
-		RunTime.assertNotNull( params );
-		homeDir = params.getExString( PossibleParams.homeDir );
-		inited = true;
-		super.init( params );
+		// ignoring at this level
+		super.init();
 	}
 }

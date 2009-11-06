@@ -1,5 +1,5 @@
 /**
- * File creation: Oct 23, 2009 8:45:52 AM
+ * File creation: Oct 26, 2009 10:06:55 AM
  * 
  * Copyright (C) 2005-2009 AtKaaZ <atkaaz@users.sourceforge.net>
  * Copyright (C) 2005-2009 UnKn <unkn@users.sourceforge.net>
@@ -21,27 +21,13 @@
  */
 
 
-package org.temporary.tests;
-
-
-
-
+package org.dml.tools;
 
 
 /**
  * 
  *
  */
-public interface VarLevel1Interface {
+public class VarLevel3 extends VarLevel2 {
 	
-	// public void init( MethodParams<Object> params );
-	
-	public void init();
-	
-	/**
-	 * 
-	 */
-	public void deInit();
-	
-	public void sayHello();
 }

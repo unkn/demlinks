@@ -25,7 +25,7 @@ package org.dml.level2;
 
 
 
-import org.dml.database.bdb.Level1_Storage_BerkeleyDB;
+import org.dml.database.bdb.Level2_Storage_BerkeleyDB;
 import org.dml.level1.Level1_DMLStorage_BerkeleyDB;
 import org.dml.level1.NodeID;
 import org.dml.storagewrapper.StorageException;
@@ -44,7 +44,7 @@ public class Level2_DMLStorage_BerkeleyDB extends Level1_DMLStorage_BerkeleyDB
 		implements Level2_DMLStorageWrapper {
 	
 	@VarLevel
-	private final Level1_Storage_BerkeleyDB	bdb	= null;
+	private final Level2_Storage_BerkeleyDB	bdb	= null;
 	
 	@Override
 	public boolean ensureGroup( NodeID first, NodeID second )
