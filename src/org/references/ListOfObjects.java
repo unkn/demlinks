@@ -137,30 +137,6 @@ public class ListOfObjects<E> extends ListOfReferences<E> {
 	}
 	
 	/**
-	 * @param pos
-	 *            BEFORE/AFTER...of...
-	 * @param objPos
-	 *            ...which object
-	 * @return the object(which can be null)
-	 * @throws NoSuchElementException
-	 */
-	public E getObjectAt( Position pos, E objPos ) {
-
-		RunTime.assertNotNull( pos );
-		ChainedReference<E> refPos = this.getRef( objPos );
-		if ( null == refPos ) {
-			// couldn't find objPos
-			RunTime.badCall( "position object not found" );
-		}
-		// ie. what's the ref that's BEFORE(pos) ref1(refPos) ?
-		ChainedReference<E> ref = this.getRefAt( pos, refPos );
-		if ( null == ref ) {
-			throw new NoSuchElementException();
-		}
-		return ref.getObject();// can be null
-	}
-	
-	/**
 	 * @param obj
 	 *            can be null and can exist already(a new dup would be added)
 	 * @return ChainedReference
@@ -205,29 +181,6 @@ public class ListOfObjects<E> extends ListOfReferences<E> {
 			RunTime.bug( "undefined location here." );
 		}
 		return null;// unreachable but eclipse complains
-	}
-	
-	/**
-	 * @param newObj
-	 * @param pos
-	 * @param posObj
-	 * @return false if it didn't exist; true if it didn't and it wasn't moved
-	 * @throws NoSuchElementException
-	 *             if posObj doesn't exist
-	 */
-	public boolean insert( E newObj, Position pos, E posObj ) {
-
-		// FIXME: the first object that == posObj will be found, although the
-		// list supports duplicates thus posObj can be found multiple times, so
-		// which one does the user want?
-		RunTime.assertNotNull( pos );
-		ChainedReference<E> posRef = this.getRef( posObj );
-		if ( null == posRef ) {
-			// posObj non existent? stop some bugs by throwing exception
-			throw new NoSuchElementException();
-		}
-		ChainedReference<E> newRef = this.newRef( newObj );
-		return this.insertRefAt( newRef, pos, posRef );
 	}
 	
 	/**

@@ -155,18 +155,24 @@ public class ListOfUniqueNonNullObjects<E> extends ListOfObjects<E> {
 	 *            ...which object
 	 * @return null or the object
 	 */
-	@Override
 	public E getObjectAt( Position pos, E objPos ) {
 
 		RunTime.assertNotNull( pos, objPos );
-		E obj = null;
-		try {
-			obj = super.getObjectAt( pos, objPos );
-		} catch ( NoSuchElementException nsee ) {
-			return null;
+		E ret = null;
+		ChainedReference<E> refPos = this.getRef( objPos );
+		if ( null == refPos ) {
+			// couldn't find objPos
+			RunTime.badCall( "position object not found" );
 		}
-		RunTime.assertNotNull( obj );
-		return obj;
+		// ie. what's the ref that's BEFORE(pos) ref1(refPos) ?
+		ChainedReference<E> ref = this.getRefAt( pos, refPos );
+		if ( null == ref ) {
+			ret = null;// not found
+		} else {
+			ret = ref.getObject();
+			RunTime.assertNotNull( ret );
+		}
+		return ret;
 	}
 	
 	/**
@@ -252,7 +258,6 @@ public class ListOfUniqueNonNullObjects<E> extends ListOfObjects<E> {
 	 * @return true if newObj already exists, and nothing is done with it<br>
 	 *         false is all went according to call
 	 */
-	@Override
 	public boolean insert( E newObj, Position pos, E posObj ) {
 
 		RunTime.assertNotNull( newObj, pos, posObj );
@@ -261,7 +266,14 @@ public class ListOfUniqueNonNullObjects<E> extends ListOfObjects<E> {
 			// already exists, not added/moved
 			return true;
 		}
-		return super.insert( newObj, pos, posObj );
+		
+		ChainedReference<E> posRef = this.getRef( posObj );
+		if ( null == posRef ) {
+			// posObj non existent? stop some bugs by throwing exception
+			throw new NoSuchElementException();
+		}
+		newRef = this.newRef( newObj );
+		return this.insertRefAt( newRef, pos, posRef );
 	}
 	
 	/**
