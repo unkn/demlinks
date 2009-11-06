@@ -46,7 +46,7 @@ import org.references.method.MethodParams;
 
 public class MainLevel1 extends MainLevel0 {
 	
-	
+	@VarLevel
 	private VarLevel1	var1	= null;
 	
 	
@@ -69,6 +69,7 @@ public class MainLevel1 extends MainLevel0 {
 
 		var1 = (VarLevel1)toValue;
 		// FIXME: so it's working w/o super? heh
+		super.setVarLevelX( toValue );
 	}
 	
 	@Override

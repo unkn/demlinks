@@ -37,6 +37,7 @@ import org.references.method.MethodParams;
  */
 public class MainLevel3 extends MainLevel2 {
 	
+	@VarLevel
 	private VarLevel3	var3;
 	
 	public MainLevel3() {
