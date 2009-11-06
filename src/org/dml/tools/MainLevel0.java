@@ -28,6 +28,8 @@ package org.dml.tools;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 
+import org.references.ListOfUniqueNonNullObjects;
+import org.references.Position;
 import org.references.Reference;
 import org.references.method.MethodParams;
 import org.temporary.tests.PossibleParams;
@@ -55,22 +57,23 @@ import org.temporary.tests.VarLevel;
 public abstract class MainLevel0 extends StaticInstanceTrackerWithMethodParams {
 	
 	// defaults are no params, or no params means use defaults
-	private static MethodParams<Object>	emptyParamList			= null;
+	private static MethodParams<Object>				emptyParamList			= null;
 	
 	// var to see if we used init() instead of initMainLevel(...); its only
 	// purpose is to prevent init() usage
-	private boolean						inited					= false;
+	private boolean									inited					= false;
 	
 	// true if we inited a default 'var' so we know to deInit it
 	// we won't deInit passed 'var' param
-	private boolean						usingOwnVarLevel		= false;
+	private boolean									usingOwnVarLevel		= false;
 	
-	private static MethodParams<Object>	defaults				= null;
+	private static MethodParams<Object>				defaults				= null;
 	
-	private static MethodParams<Object>	temporaryLevel1Params	= null;
+	private static MethodParams<Object>				temporaryLevel1Params	= null;
+	
+	private final ListOfUniqueNonNullObjects<Field>	listOfAnnotatedFields	= new ListOfUniqueNonNullObjects<Field>();
 	
 	
-
 	public MainLevel0() {
 
 		// since this is static:
@@ -170,7 +173,8 @@ public abstract class MainLevel0 extends StaticInstanceTrackerWithMethodParams {
 			// no VarLevelX given thus must use defaults for VarLevelX
 			// maybe use some defaults ie. homeDir value to default
 			if ( null == this.getVarLevelX() ) {
-				this.newVarLevelX();
+				// setVarLevelX(
+				this.newVarLevelX();// );
 			}
 			usingOwnVarLevel = true;// 2
 			
@@ -277,71 +281,61 @@ public abstract class MainLevel0 extends StaticInstanceTrackerWithMethodParams {
 	
 	private void test1() {
 
-		// FIXME temporary, delete this
-		System.out.println( this.getClass() + "+++++++"
-				+ this.getClass().getSuperclass() );
 		Class<?> currentClass = this.getClass();
 		while ( currentClass != MainLevel0.class ) {
-			System.out.println( currentClass.getSimpleName()
-					+ "..............." );
-			
-			// for ( Class<?> c : this.getClass().getSuperclass() ) {
-			// System.out.println( c.getSimpleName() + "---------" );
-			// }
-			
 			Field[] fields = currentClass.getDeclaredFields();
-			// System.out.println( fields.length );
+			
+			// how many fields are VarLevel annotated per class
 			int count = 0;
+			
 			for ( Field field : fields ) {
 				Annotation[] allAnno = field.getAnnotations();
-				// System.out.println( allAnno.length );
 				for ( Annotation annotation : allAnno ) {
 					if ( annotation instanceof VarLevel ) {
 						count++;
-						System.out.println( count );
 						boolean prev = field.isAccessible();
-						if ( !prev ) {
-							System.out.println( "!!!!!!!!!!!!!!!!!!!!!" );
-						}
-						field.setAccessible( true );
-						System.out.println( annotation + "+" + field.getName()
-								+ "+" + field.getType() );
 						try {
-							System.out.println( "Before: " + field.get( this ) );
-							// Constructor<?> con =
-							// field.getType().getConstructor(
-							// null );
-							// field.set( this, con.newInstance( null ) );
-							// System.out.println( "After : " + field.get( this
-							// ) );
-						} catch ( IllegalArgumentException e ) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						} catch ( IllegalAccessException e ) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						} catch ( SecurityException e ) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-							// } catch ( NoSuchMethodException e ) {
-							// // TODO Auto-generated catch block
-							// e.printStackTrace();
-							// } catch ( InstantiationException e ) {
-							// // TODO Auto-generated catch block
-							// e.printStackTrace();
-							// } catch ( InvocationTargetException e ) {
-							// // TODO Auto-generated catch block
-							// e.printStackTrace();
+							field.setAccessible( true );
+							listOfAnnotatedFields.addFirst( field );
 						} finally {
 							field.setAccessible( prev );
-						}
+						}// try
 					}// if
-					
-				}
-				
+				}// for
+			}// for
+			
+			if ( 1 != count ) {
+				// FIXME: 1. maybe this is not desired: one field per subclass a
+				// must?
+				// FIXME: 2. maybe we have multiple fields per class... then
+				// what?
+				RunTime.bug( "you have to annotate at least 1 field in each subclass" );
 			}
-			// go to prev superclass
+			RunTime.assertTrue( 1 == count );
+			
+			// go to prev superclass ie. go next
 			currentClass = currentClass.getSuperclass();
+		}
+		
+		Field iter = listOfAnnotatedFields.getObjectAt( Position.FIRST );
+		while ( null != iter ) {
+			boolean prevState = iter.isAccessible();
+			try {
+				iter.setAccessible( true );
+				System.out.println( iter.getName() + " / " + iter.getType()
+						+ " / " + iter.get( this ) );
+			} catch ( IllegalArgumentException e ) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch ( IllegalAccessException e ) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} finally {
+				iter.setAccessible( prevState );
+			}
+			
+			// next
+			iter = listOfAnnotatedFields.getObjectAt( Position.AFTER, iter );
 		}
 	}
 }

@@ -37,7 +37,7 @@ import org.javapart.logger.Log;
  */
 public class RunTime {
 	
-	public static void Bug() {
+	public static void bug() {
 
 		bug( "Bug detected." );
 	}
