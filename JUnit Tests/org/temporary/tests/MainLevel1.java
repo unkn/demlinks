@@ -60,7 +60,7 @@ public class MainLevel1 extends MainLevel0 {
 	@Override
 	public void init( MethodParams<Object> params ) {
 
-		super.init( this.internalInit( params ) );
+		super.init( this.preInit( params ) );
 	}
 	
 	
@@ -72,10 +72,9 @@ public class MainLevel1 extends MainLevel0 {
 	}
 	
 	@Override
-	protected Object newVarLevelX() {
+	protected void newVarLevelX() {
 
 		var1 = new VarLevel1();
-		return var1;
 	}
 	
 	@Override

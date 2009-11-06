@@ -68,7 +68,7 @@ public class MainLevel2 extends MainLevel1 {
 	@Override
 	public void init( MethodParams<Object> params ) {
 
-		super.init( this.internalInit( params ) );
+		super.init( this.preInit( params ) );
 		// MethodParams<Object> refToParams = params;
 		// if ( null == refToParams ) {
 		// // empty means use defaults
@@ -149,10 +149,9 @@ public class MainLevel2 extends MainLevel1 {
 	 * @see org.temporary.tests.MainLevel1#newVarLevelX()
 	 */
 	@Override
-	protected Object newVarLevelX() {
+	protected void newVarLevelX() {
 
 		var2 = new VarLevel2();
-		return var2;
 	}
 	
 	/*

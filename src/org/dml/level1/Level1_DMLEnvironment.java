@@ -28,7 +28,7 @@ package org.dml.level1;
 import java.io.File;
 
 import org.dml.storagewrapper.StorageException;
-import org.dml.tools.Level0;
+import org.dml.tools.MainLevel0;
 import org.dml.tools.RunTime;
 import org.dml.tools.StaticInstanceTrackerWithMethodParams;
 import org.dml.tools.StaticInstanceTrackerWithMethodParamsInterface;
@@ -41,20 +41,20 @@ import org.temporary.tests.PossibleParams;
  * 
  *
  */
-public class Level1_DMLEnvironment extends Level0 implements
+public class Level1_DMLEnvironment extends MainLevel0 implements
 		StaticInstanceTrackerWithMethodParamsInterface,
 		Level1_DMLStorageWrapper {
 	
 	// this is the last level(subclass) of storage that is expected to be set,
 	// even if new() will be on a subclass closer to base
-	protected LevelAll_DMLStorageWrapper	storage					= null;
+	private LevelAll_DMLStorageWrapper	storage					= null;
 	
-	private final static String				DEFAULT_BDB_ENV_PATH	= "."
-																			+ File.separator
-																			+ "bin"
-																			+ File.separator
-																			+ "mainEnv"
-																			+ File.separator;
+	private final static String			DEFAULT_BDB_ENV_PATH	= "."
+																		+ File.separator
+																		+ "bin"
+																		+ File.separator
+																		+ "mainEnv"
+																		+ File.separator;
 	
 	/**
 	 * construct, don't forget to call init(with param/s)

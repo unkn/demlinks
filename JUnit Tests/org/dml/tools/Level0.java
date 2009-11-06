@@ -25,9 +25,15 @@ package org.dml.tools;
 
 
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+
 import org.references.Reference;
 import org.references.method.MethodParams;
 import org.temporary.tests.PossibleParams;
+import org.temporary.tests.VarLevel;
 
 
 
@@ -47,6 +53,53 @@ public abstract class Level0 extends StaticInstanceTrackerWithMethodParams {
 	// purpose is to prevent init() usage
 	private boolean						inited				= false;
 	
+	private void test1() {
+
+		// FIXME temporary, delete this
+		// System.out.println( this.getClass() );
+		Field[] fields = this.getClass().getDeclaredFields();
+		// System.out.println( fields.length );
+		int count = 0;
+		for ( Field field : fields ) {
+			Annotation[] allAnno = field.getAnnotations();
+			// System.out.println( allAnno.length );
+			for ( Annotation annotation : allAnno ) {
+				count++;
+				System.out.println( count );
+				if ( annotation instanceof VarLevel ) {
+					System.out.println( annotation + "+" + field.getName()
+							+ "+" + field.getType() );
+					try {
+						System.out.println( "Before: " + field.get( this ) );
+						Constructor<?> con = field.getType().getConstructor(
+								null );
+						field.set( this, con.newInstance( null ) );
+						System.out.println( "After : " + field.get( this ) );
+					} catch ( IllegalArgumentException e ) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch ( IllegalAccessException e ) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch ( SecurityException e ) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch ( NoSuchMethodException e ) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch ( InstantiationException e ) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch ( InvocationTargetException e ) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				
+			}
+			
+		}
+	}
 	
 	/**
 	 * uses: PossibleParams.varLevelAll
@@ -70,8 +123,9 @@ public abstract class Level0 extends StaticInstanceTrackerWithMethodParams {
 					this.newVarLevelX();
 					// storageL1 = new Level2_BerkeleyDBStorage();
 				}
-				this.getVarLevelX().init( mixedParams );
 				usingOwnVarLevel = true;
+				this.getVarLevelX().init( mixedParams );
+				
 			} else {
 				Object obj = ref.getObject();
 				RunTime.assertNotNull( obj );

@@ -25,15 +25,9 @@ package org.dml.tools;
 
 
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-
 import org.references.Reference;
 import org.references.method.MethodParams;
 import org.temporary.tests.PossibleParams;
-import org.temporary.tests.VarLevel;
 
 
 
@@ -43,7 +37,8 @@ import org.temporary.tests.VarLevel;
  * 
  * 2. VarLevel field in each subclass(or level) must be declared private and all
  * *VarLevelX* methods must be overridden without calling their super, and they
- * will operate on this private field.<br>
+ * will operate on this private field; with the exception of setVarLevelX which
+ * must call super always<br>
  * 3. there is only one VarLevel instance no matter at which level we are, once
  * the class is instantiated
  * 4. as said in 2. you must override w/o calling super, the following methods:
@@ -56,68 +51,22 @@ import org.temporary.tests.VarLevel;
 public abstract class MainLevel0 extends StaticInstanceTrackerWithMethodParams {
 	
 	// defaults are no params, or no params means use defaults
-	protected static MethodParams<Object>	emptyParamList			= null;
+	private static MethodParams<Object>	emptyParamList			= null;
 	
 	// var to see if we used init() instead of initMainLevel(...); its only
 	// purpose is to prevent init() usage
-	private boolean							inited					= false;
+	private boolean						inited					= false;
 	
 	// true if we inited a default 'var' so we know to deInit it
 	// we won't deInit passed 'var' param
-	protected boolean						usingOwnVarLevel		= false;
+	private boolean						usingOwnVarLevel		= false;
 	
-	private static MethodParams<Object>		defaults				= null;
+	private static MethodParams<Object>	defaults				= null;
 	
-	protected static MethodParams<Object>	temporaryLevel1Params	= null;
+	private static MethodParams<Object>	temporaryLevel1Params	= null;
 	
-	private void test1() {
+	
 
-		// FIXME temporary, delete this
-		// System.out.println( this.getClass() );
-		Field[] fields = this.getClass().getDeclaredFields();
-		// System.out.println( fields.length );
-		int count = 0;
-		for ( Field field : fields ) {
-			Annotation[] allAnno = field.getAnnotations();
-			// System.out.println( allAnno.length );
-			for ( Annotation annotation : allAnno ) {
-				count++;
-				System.out.println( count );
-				if ( annotation instanceof VarLevel ) {
-					System.out.println( annotation + "+" + field.getName()
-							+ "+" + field.getType() );
-					try {
-						System.out.println( "Before: " + field.get( this ) );
-						Constructor<?> con = field.getType().getConstructor(
-								null );
-						field.set( this, con.newInstance( null ) );
-						System.out.println( "After : " + field.get( this ) );
-					} catch ( IllegalArgumentException e ) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch ( IllegalAccessException e ) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch ( SecurityException e ) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch ( NoSuchMethodException e ) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch ( InstantiationException e ) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch ( InvocationTargetException e ) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
-				
-			}
-			
-		}
-	}
-	
 	public MainLevel0() {
 
 		// since this is static:
@@ -138,23 +87,26 @@ public abstract class MainLevel0 extends StaticInstanceTrackerWithMethodParams {
 	}
 	
 	/**
-	 * 1of5
+	 * 1of5 call SUPER
 	 * must override this in each level AND call super at end or beginning<br>
-	 * <code>var1 = (VarLevel1)toValue;<br></code>
+	 * <code>var1 = (VarLevel1)toValue;<br></code> it's important that these be
+	 * chained by SUPER so that each field on each subclass is set to the new
+	 * instance (which is only one)<br>
 	 * 
 	 * @param toValue
 	 */
 	abstract protected void setVarLevelX( Object toValue );
 	
+	
+
 	/**
 	 * 2of5
 	 * must override this in each Level w/o calling super, and use the right
 	 * type<br>
 	 * <code>
-	 * var1 = new VarLevel1();<br>
-		return var1;<br></code>
+	 * var1 = new VarLevel1();<br></code>
 	 */
-	abstract protected Object newVarLevelX();
+	abstract protected void newVarLevelX();
 	
 	/**
 	 * 3of5
@@ -191,7 +143,7 @@ public abstract class MainLevel0 extends StaticInstanceTrackerWithMethodParams {
 	 *            that must be passed to a super.initMainLevel()
 	 * @return
 	 */
-	protected MethodParams<Object> internalInit( MethodParams<Object> params ) {
+	protected final MethodParams<Object> preInit( MethodParams<Object> params ) {
 
 		// this part will have to be called in each subclass once
 		// if it's just super()-ed it won't do because each private VarLevel in
@@ -211,9 +163,7 @@ public abstract class MainLevel0 extends StaticInstanceTrackerWithMethodParams {
 			// no VarLevelX given thus must use defaults for VarLevelX
 			// maybe use some defaults ie. homeDir value to default
 			if ( null == this.getVarLevelX() ) {
-				// refToVarAny =
 				this.newVarLevelX();
-				// varAny = new VarLevel2();// 1
 			}
 			usingOwnVarLevel = true;// 2
 			
@@ -229,13 +179,13 @@ public abstract class MainLevel0 extends StaticInstanceTrackerWithMethodParams {
 			synchronized ( temporaryLevel1Params ) {
 				temporaryLevel1Params.set( PossibleParams.varLevelAll,
 						this.getVarLevelX() );
+				RunTime.assertTrue( temporaryLevel1Params.size() == 1 );
 			}
 			refToParams = temporaryLevel1Params;
 		} else {
 			Object obj = ref.getObject();
 			RunTime.assertNotNull( obj );
 			this.checkVarLevelX( obj );
-			// varAny = obj;
 			this.setVarLevelX( obj );
 		}
 		
@@ -248,7 +198,7 @@ public abstract class MainLevel0 extends StaticInstanceTrackerWithMethodParams {
 	 * value<br>
 	 * this method was previously named initMainLevel
 	 * ie.<br>
-	 * <code>super.init( this.internalInit( var1, params ) );</code>
+	 * <code>super.init( preInit( var1, params ) );</code>
 	 * 
 	 * @param params
 	 */
@@ -272,7 +222,7 @@ public abstract class MainLevel0 extends StaticInstanceTrackerWithMethodParams {
 
 		if ( null == defaults ) {
 			defaults = new MethodParams<Object>();
-			defaults.init();
+			defaults.init();// FIXME: when's this deInit-ed?
 		}
 		
 		return defaults;
@@ -293,7 +243,7 @@ public abstract class MainLevel0 extends StaticInstanceTrackerWithMethodParams {
 			if ( usingOwnVarLevel ) {
 				// we inited it, then we deinit it
 				usingOwnVarLevel = false;// 1 //this did the trick
-				( (StaticInstanceTracker)this.getVarLevelX() ).deInit();// 2
+				( this.getVarLevelX() ).deInit();// 2
 				// not setting it to null, since we might use it on the next
 				// call
 			} else {
