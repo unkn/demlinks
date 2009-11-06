@@ -25,8 +25,6 @@ package org.temporary.tests;
 
 
 
-import org.dml.tools.RunTime;
-import org.dml.tools.StaticInstanceTrackerWithMethodParams;
 import org.references.method.MethodParams;
 
 
@@ -119,52 +117,4 @@ public class MainLevel3 extends MainLevel2 {
 		// super.initMainLevel( referenceToParams );
 	}
 	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.temporary.tests.MainLevel2#checkVarLevelX(java.lang.Object)
-	 */
-	@Override
-	protected void checkVarLevelX( Object obj ) {
-
-		
-		if ( !( obj instanceof VarLevel3 ) ) {
-			// cannot be under VarLevel3, can be above tho
-			RunTime.badCall( "wrong type passed" );
-		}
-	}
-	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.temporary.tests.MainLevel2#newVarLevelX()
-	 */
-	@Override
-	protected void newVarLevelX() {
-
-		var3 = new VarLevel3();
-	}
-	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.temporary.tests.MainLevel2#setVarLevelX(java.lang.Object)
-	 */
-	@Override
-	protected void setAllVarLevelX( Object obj ) {
-
-		var3 = (VarLevel3)obj;
-		super.setAllVarLevelX( obj );
-	}
-	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.temporary.tests.MainLevel2#getVarLevelX()
-	 */
-	@Override
-	protected StaticInstanceTrackerWithMethodParams getVarLevelX() {
-
-		return var3;
-	}
 }

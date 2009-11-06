@@ -77,7 +77,7 @@ public abstract class MainLevel0 extends StaticInstanceTrackerWithMethodParams {
 	
 	public MainLevel0() {
 
-		this.test1();
+		this.processAnnotatedFields();
 		// since this is static:
 		if ( null == emptyParamList ) {
 			emptyParamList = new MethodParams<Object>();
@@ -95,15 +95,6 @@ public abstract class MainLevel0 extends StaticInstanceTrackerWithMethodParams {
 		}
 	}
 	
-	/**
-	 * 1of5 call SUPER
-	 * must override this in each level AND call super at end or beginning<br>
-	 * <code>var1 = (VarLevel1)toValue;<br></code> it's important that these be
-	 * chained by SUPER so that each field on each subclass is set to the new
-	 * instance (which is only one)<br>
-	 * 
-	 * @param toValue
-	 */
 	private void setAllVarLevelX( Object toValue ) {
 
 		Field iter = listOfAnnotatedFields.getObjectAt( Position.FIRST );
@@ -134,13 +125,6 @@ public abstract class MainLevel0 extends StaticInstanceTrackerWithMethodParams {
 	
 	
 
-	/**
-	 * 2of5
-	 * must override this in each Level w/o calling super, and use the right
-	 * type<br>
-	 * <code>
-	 * var1 = new VarLevel1();<br></code>
-	 */
 	private void newVarLevelX() {
 
 		Field lastField = this.getFieldInLastSubClassWhichIs_This();
@@ -164,7 +148,7 @@ public abstract class MainLevel0 extends StaticInstanceTrackerWithMethodParams {
 	}
 	
 	/**
-	 * 3of5
+	 * 1of2
 	 * must override in each level w/o calling super<br>
 	 * this method must make sure the obj is of VarLevelX type depending on the
 	 * current variable type used in the class<br>
@@ -178,16 +162,41 @@ public abstract class MainLevel0 extends StaticInstanceTrackerWithMethodParams {
 	 * 
 	 * @param obj
 	 */
-	abstract protected void checkVarLevelX( Object obj );
+	private void checkVarLevelX( Object obj ) {
+
+		RunTime.assertNotNull( obj );
+		Field lastField = this.getFieldInLastSubClassWhichIs_This();
+		if ( !lastField.getType().isAssignableFrom( obj.getClass() ) ) {
+			// !true if lastField's class is a superclass(ie. base class) of the
+			// obj's class, or the same class; OR obj is a subclass or same
+			// class of the lastField's class
+			RunTime.badCall( "wrong type passed, must be a subclass of "
+					+ lastField.getType().getSimpleName() );
+		}
+	}
 	
-	/**
-	 * 4of5
-	 * must override this, and don't call super <br>
-	 * <code>return var1;<br></code>
-	 * 
-	 * @return
-	 */
-	abstract protected StaticInstanceTrackerWithMethodParams getVarLevelX();
+	private StaticInstanceTrackerWithMethodParams getVarLevelX() {
+
+		Field lastField = this.getFieldInLastSubClassWhichIs_This();
+		StaticInstanceTrackerWithMethodParams ret = null;
+		boolean prevState = lastField.isAccessible();
+		try {
+			lastField.setAccessible( true );
+			ret = (StaticInstanceTrackerWithMethodParams)lastField.get( this );
+		} catch ( IllegalArgumentException e ) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			RunTime.bug();
+		} catch ( IllegalAccessException e ) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			RunTime.bug();
+		} finally {
+			lastField.setAccessible( prevState );
+		}
+		return ret;
+		
+	}
 	
 	/**
 	 * DO NOT override this, ever
@@ -324,7 +333,10 @@ public abstract class MainLevel0 extends StaticInstanceTrackerWithMethodParams {
 	}
 	
 	
-	private void test1() {
+	/**
+	 * fields from subclasses
+	 */
+	private void processAnnotatedFields() {
 
 		Class<?> currentClass = this.getClass();
 		while ( currentClass != MainLevel0.class ) {
@@ -380,7 +392,7 @@ public abstract class MainLevel0 extends StaticInstanceTrackerWithMethodParams {
 				// must?
 				// FIXME: 2. maybe we have multiple fields per class... then
 				// what?
-				RunTime.bug( "you have to annotate at least 1 field in each subclass" );
+				RunTime.bug( "you have to annotate just 1 field in each subclass, not more, not less" );
 			}
 			RunTime.assertTrue( 1 == count );
 			

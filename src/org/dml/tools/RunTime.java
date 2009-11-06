@@ -54,7 +54,9 @@ public class RunTime {
 	
 	public static void badCall( String msg ) {
 
-		throw new BadCallError( "BADCALL: " + msg );
+		String msg2 = "BADCALL: " + msg;
+		Log.thro( msg2 );// FIXME: add a minus level param to show caller's pos
+		throw new BadCallError( msg2 );
 	}
 	
 	public static void thro( Exception ex ) throws Exception {

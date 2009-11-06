@@ -33,8 +33,8 @@ import java.lang.annotation.Target;
 
 
 /**
- * targets only accessible fields ie. protected/public not private!
- * 
+ * targets any fields, preferably private ones<br>
+ * maximum just one field per subclass<br>
  */
 @Target( ElementType.FIELD )
 @Retention( RetentionPolicy.RUNTIME )

@@ -26,8 +26,6 @@ package org.temporary.tests;
 
 
 import org.dml.tools.MainLevel0;
-import org.dml.tools.RunTime;
-import org.dml.tools.StaticInstanceTrackerWithMethodParams;
 import org.references.method.MethodParams;
 
 
@@ -47,7 +45,7 @@ import org.references.method.MethodParams;
 public class MainLevel1 extends MainLevel0 {
 	
 	@VarLevel
-	private VarLevel1	var1	= null;
+	private final VarLevel1	var1	= null;
 	
 	
 
@@ -64,40 +62,7 @@ public class MainLevel1 extends MainLevel0 {
 	}
 	
 	
-	@Override
-	protected void setAllVarLevelX( Object toValue ) {
 
-		var1 = (VarLevel1)toValue;
-		// FIXME: so it's working w/o super? heh
-		super.setAllVarLevelX( toValue );
-	}
-	
-	@Override
-	protected void newVarLevelX() {
-
-		var1 = new VarLevel1();
-	}
-	
-	@Override
-	protected void checkVarLevelX( Object obj ) {
-
-		if ( !( obj instanceof VarLevel1 ) ) {
-			// cannot be under VarLevel1, can be above tho
-			RunTime.badCall( "wrong type passed" );
-		}
-	}
-	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.temporary.tests.MainLevel0#getVarLevelX()
-	 */
-	@Override
-	protected StaticInstanceTrackerWithMethodParams getVarLevelX() {
-
-		return var1;
-	}
-	
 	public void do1() {
 
 		var1.sayHello();
@@ -128,8 +93,7 @@ public class MainLevel1 extends MainLevel0 {
 	 */
 	public VarLevel1 junitGetVar() {
 
-		RunTime.assertTrue( var1 == this.getVarLevelX() );
-		return (VarLevel1)this.getVarLevelX();
+		return var1;
 	}
 	
 	/*
