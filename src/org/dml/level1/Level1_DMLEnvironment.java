@@ -89,7 +89,7 @@ public class Level1_DMLEnvironment extends MainLevel0 implements
 	}
 	
 	@Override
-	protected void setVarLevelX( Object toValue ) {
+	protected void setAllVarLevelX( Object toValue ) {
 
 		storage = (LevelAll_DMLStorageWrapper)toValue;
 	}

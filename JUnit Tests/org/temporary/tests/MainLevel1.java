@@ -65,11 +65,11 @@ public class MainLevel1 extends MainLevel0 {
 	
 	
 	@Override
-	protected void setVarLevelX( Object toValue ) {
+	protected void setAllVarLevelX( Object toValue ) {
 
 		var1 = (VarLevel1)toValue;
 		// FIXME: so it's working w/o super? heh
-		super.setVarLevelX( toValue );
+		super.setAllVarLevelX( toValue );
 	}
 	
 	@Override

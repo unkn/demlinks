@@ -161,10 +161,10 @@ public class MainLevel2 extends MainLevel1 {
 	 * @see org.temporary.tests.MainLevel1#setVarLevelX(java.lang.Object)
 	 */
 	@Override
-	protected void setVarLevelX( Object obj ) {
+	protected void setAllVarLevelX( Object obj ) {
 
 		var2 = (VarLevel2)obj;
-		super.setVarLevelX( obj );
+		super.setAllVarLevelX( obj );
 	}
 	
 	/*

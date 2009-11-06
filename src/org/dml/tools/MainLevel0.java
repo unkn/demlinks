@@ -26,6 +26,7 @@ package org.dml.tools;
 
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 
 import org.references.ListOfUniqueNonNullObjects;
@@ -76,6 +77,7 @@ public abstract class MainLevel0 extends StaticInstanceTrackerWithMethodParams {
 	
 	public MainLevel0() {
 
+		this.test1();
 		// since this is static:
 		if ( null == emptyParamList ) {
 			emptyParamList = new MethodParams<Object>();
@@ -102,9 +104,32 @@ public abstract class MainLevel0 extends StaticInstanceTrackerWithMethodParams {
 	 * 
 	 * @param toValue
 	 */
-	protected void setVarLevelX( Object toValue ) {
+	private void setAllVarLevelX( Object toValue ) {
 
-		this.test1();
+		Field iter = listOfAnnotatedFields.getObjectAt( Position.FIRST );
+		while ( null != iter ) {
+			boolean prevState = iter.isAccessible();
+			try {
+				iter.setAccessible( true );
+				// System.out.println( iter.getName() + " / " + iter.getType()
+				// + " / " + iter.get( this ) );
+				iter.set( this, toValue );
+				RunTime.assertTrue( iter.get( this ) == toValue );
+			} catch ( IllegalArgumentException e ) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				RunTime.bug();
+			} catch ( IllegalAccessException e ) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				RunTime.bug();
+			} finally {
+				iter.setAccessible( prevState );
+			}
+			
+			// next
+			iter = listOfAnnotatedFields.getObjectAt( Position.AFTER, iter );
+		}
 	}
 	
 	
@@ -116,7 +141,27 @@ public abstract class MainLevel0 extends StaticInstanceTrackerWithMethodParams {
 	 * <code>
 	 * var1 = new VarLevel1();<br></code>
 	 */
-	abstract protected void newVarLevelX();
+	private void newVarLevelX() {
+
+		Field lastField = this.getFieldInLastSubClassWhichIs_This();
+		Constructor<?> con;
+		try {
+			con = lastField.getType().getConstructor( (Class<?>[])null );
+			this.setAllVarLevelX( con.newInstance( (Object[])null ) );
+		} catch ( Exception e ) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			RunTime.bug();
+		}
+		
+	}
+	
+	private Field getFieldInLastSubClassWhichIs_This() {
+
+		Field ret = listOfAnnotatedFields.getObjectAt( Position.LAST );
+		RunTime.assertTrue( null != ret );
+		return ret;
+	}
 	
 	/**
 	 * 3of5
@@ -197,7 +242,7 @@ public abstract class MainLevel0 extends StaticInstanceTrackerWithMethodParams {
 			Object obj = ref.getObject();
 			RunTime.assertNotNull( obj );
 			this.checkVarLevelX( obj );
-			this.setVarLevelX( obj );
+			this.setAllVarLevelX( obj );
 		}
 		
 
@@ -258,7 +303,7 @@ public abstract class MainLevel0 extends StaticInstanceTrackerWithMethodParams {
 				// not setting it to null, since we might use it on the next
 				// call
 			} else {
-				this.setVarLevelX( null );
+				this.setAllVarLevelX( null );
 			}
 		}
 	}
@@ -293,10 +338,36 @@ public abstract class MainLevel0 extends StaticInstanceTrackerWithMethodParams {
 				for ( Annotation annotation : allAnno ) {
 					if ( annotation instanceof VarLevel ) {
 						count++;
+						
 						boolean prev = field.isAccessible();
 						try {
 							field.setAccessible( true );
+							// System.out.println( field.get( this )
+							// + " / "
+							// + field.getType()
+							// + " / "
+							// +
+							// StaticInstanceTrackerWithMethodParams.class.isInstance(
+							// field.get( this ) )
+							// + field.getType().isAssignableFrom(
+							// StaticInstanceTrackerWithMethodParams.class )
+							// + " / "
+							// +
+							// StaticInstanceTrackerWithMethodParams.class.isAssignableFrom(
+							// field.getType() ) );
+							// if ( !( field.get( this ) instanceof
+							// StaticInstanceTrackerWithMethodParams ) ) {
+							if ( !StaticInstanceTrackerWithMethodParams.class.isAssignableFrom( field.getType() ) ) {
+								RunTime.bug( "wrong field type, must be a subclass of "
+										+ StaticInstanceTrackerWithMethodParams.class.getSimpleName() );
+							}
+							// make sure this class' field is last!
+							// by using LIFO
 							listOfAnnotatedFields.addFirst( field );
+						} catch ( IllegalArgumentException e ) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+							RunTime.bug();
 						} finally {
 							field.setAccessible( prev );
 						}// try
@@ -317,25 +388,6 @@ public abstract class MainLevel0 extends StaticInstanceTrackerWithMethodParams {
 			currentClass = currentClass.getSuperclass();
 		}
 		
-		Field iter = listOfAnnotatedFields.getObjectAt( Position.FIRST );
-		while ( null != iter ) {
-			boolean prevState = iter.isAccessible();
-			try {
-				iter.setAccessible( true );
-				System.out.println( iter.getName() + " / " + iter.getType()
-						+ " / " + iter.get( this ) );
-			} catch ( IllegalArgumentException e ) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch ( IllegalAccessException e ) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} finally {
-				iter.setAccessible( prevState );
-			}
-			
-			// next
-			iter = listOfAnnotatedFields.getObjectAt( Position.AFTER, iter );
-		}
+
 	}
 }

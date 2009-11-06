@@ -38,14 +38,11 @@ public abstract class StaticInstanceTrackerWithMethodParams extends
 		StaticInstanceTrackerWithMethodParamsInterface {
 	
 	/**
-	 * you should override this and also call super or at least super.init()
+	 * you should override this and call super.init()
 	 * 
 	 * @param params
 	 */
-	public void init( MethodParams<Object> params ) {
-
-		// ignoring params at this level
-		super.init();
-	}
+	abstract public void init( MethodParams<Object> params );
 	
+
 }
