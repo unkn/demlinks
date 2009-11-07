@@ -26,7 +26,7 @@ package org.temporary.bdb;
 
 
 import org.dml.JUnits.Consts;
-import org.dml.database.bdb.Level1_Storage_BerkeleyDB;
+import org.dml.database.bdb.level1.Level1_Storage_BerkeleyDB;
 import org.dml.level1.NodeJID;
 import org.references.method.MethodParams;
 import org.temporary.tests.PossibleParams;

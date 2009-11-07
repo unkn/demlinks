@@ -21,7 +21,7 @@
  */
 
 
-package org.dml.database.bdb;
+package org.dml.database.bdb.level1;
 
 
 
@@ -106,7 +106,7 @@ public class DBSequence {
 	 */
 	public DBSequence done() {
 
-		thisSeq = bdb.silentCloseAnySeq( thisSeq, thisSeqName );
+		thisSeq = bdb.closeAnySeq_silent( thisSeq, thisSeqName );
 		return null;
 	}
 }

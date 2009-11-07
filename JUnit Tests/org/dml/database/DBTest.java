@@ -26,7 +26,7 @@ package org.dml.database;
 
 
 import org.dml.JUnits.Consts;
-import org.dml.database.bdb.Level1_Storage_BerkeleyDB;
+import org.dml.database.bdb.level1.Level1_Storage_BerkeleyDB;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

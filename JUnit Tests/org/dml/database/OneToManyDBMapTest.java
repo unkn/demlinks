@@ -29,8 +29,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.dml.JUnits.Consts;
-import org.dml.database.bdb.Level1_Storage_BerkeleyDB;
-import org.dml.database.bdb.OneToManyDBMap;
+import org.dml.database.bdb.level1.Level1_Storage_BerkeleyDB;
+import org.dml.database.bdb.level2.OneToManyDBMap;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -69,7 +69,7 @@ public class OneToManyDBMapTest {
 	
 	/**
 	 * Test method for
-	 * {@link org.dml.database.bdb.OneToManyDBMap#ensureGroup(java.lang.String, java.lang.String)}
+	 * {@link org.dml.database.bdb.level2.OneToManyDBMap#ensureGroup(java.lang.String, java.lang.String)}
 	 * .
 	 * 
 	 * @throws DatabaseException

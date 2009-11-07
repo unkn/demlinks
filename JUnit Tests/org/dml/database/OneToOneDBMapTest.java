@@ -30,8 +30,8 @@ import static org.junit.Assert.assertTrue;
 import java.io.UnsupportedEncodingException;
 
 import org.dml.JUnits.Consts;
-import org.dml.database.bdb.Level1_Storage_BerkeleyDB;
-import org.dml.database.bdb.OneToOneDBMap;
+import org.dml.database.bdb.level1.Level1_Storage_BerkeleyDB;
+import org.dml.database.bdb.level1.OneToOneDBMap;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

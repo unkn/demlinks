@@ -21,10 +21,11 @@
  */
 
 
-package org.dml.database.bdb;
+package org.dml.database.bdb.level2;
 
 
 
+import org.dml.database.bdb.level1.Level1_Storage_BerkeleyDB;
 import org.dml.level1.NodeID;
 import org.dml.storagewrapper.StorageException;
 import org.dml.tools.RunTime;
@@ -114,7 +115,7 @@ public class DBMapTupleNodeIDs extends OneToManyDBMap {
 	private void throwIfNotExist( NodeID nid ) throws DatabaseException {
 
 		RunTime.assertNotNull( nid );
-		if ( null == bdb.getDBMapJIDsToNodeIDs().getNodeJID( nid ) ) {
+		if ( null == this.getBDBL1().getDBMapJIDsToNodeIDs().getNodeJID( nid ) ) {
 			RunTime.bug( "NodeID doesn't exist, and it's assumed it should" );
 		}
 	}

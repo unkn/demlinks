@@ -21,10 +21,11 @@
  */
 
 
-package org.dml.database.bdb;
+package org.dml.database.bdb.level1;
 
 
 
+import org.dml.database.bdb.level2.OneToOneDBConfig;
 import org.dml.tools.RunTime;
 import org.javapart.logger.Log;
 

@@ -21,7 +21,7 @@
  */
 
 
-package org.dml.database.bdb;
+package org.dml.database.bdb.level1;
 
 
 
@@ -61,8 +61,8 @@ public class Level1_Storage_BerkeleyDB extends
 	private final EnvironmentConfig								environmentConfig			= new EnvironmentConfig();
 	private Environment											env							= null;
 	private DBMapJIDsToNodeIDs									dbJID2NID					= null;
-	private DBMapTupleNodeIDs									dbTupleNIDs					= null;
 	
+
 	// a database where all sequences will be stored:(only 1 db per bdb env)
 	private Database											seqDb						= null;
 	private final static String									seqDb_NAME					= "db5_AllSequences";
@@ -73,7 +73,7 @@ public class Level1_Storage_BerkeleyDB extends
 	private final ListOfUniqueNonNullObjects<Sequence>			allSequenceInstances		= new ListOfUniqueNonNullObjects<Sequence>();
 	private final ListOfUniqueNonNullObjects<Database>			allOpenPrimaryDatabases		= new ListOfUniqueNonNullObjects<Database>();
 	private final ListOfUniqueNonNullObjects<SecondaryDatabase>	allOpenSecondaryDatabases	= new ListOfUniqueNonNullObjects<SecondaryDatabase>();
-	private final static String									dbTupleNIDs_NAME			= "tuple(NodeID<->NodeID)";
+	
 	private static final String									dbJID2NID_NAME				= "map(JID<->NodeID)";
 	private final static String									UNINITIALIZED_STRING		= "uninitializedString";
 	
@@ -93,31 +93,28 @@ public class Level1_Storage_BerkeleyDB extends
 		return dbJID2NID;
 	}
 	
-	/**
-	 * @return
-	 */
-	public DBMapTupleNodeIDs getDBMapTupleNodeIDs() {
+	
 
-		if ( null == dbTupleNIDs ) {
-			dbTupleNIDs = new DBMapTupleNodeIDs( this, dbTupleNIDs_NAME );
-			RunTime.assertNotNull( dbTupleNIDs );
-		}
-		return dbTupleNIDs;
-	}
-	
-	
 	/**
 	 * constructor, don't forget to call init(..);
 	 */
 	public Level1_Storage_BerkeleyDB() {
 
+		super();
 	}
 	
-	// public void init( String envHomeDir1 ) throws DatabaseException {
-	//
-	// this.init( envHomeDir1, false );
-	// }
-	//	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.dml.tools.StaticInstanceTracker#start()
+	 */
+	@Override
+	protected void start() {
+
+		// TODO Auto-generated method stub
+		
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -179,9 +176,9 @@ public class Level1_Storage_BerkeleyDB extends
 		if ( null != dbJID2NID ) {
 			dbJID2NID = dbJID2NID.deInit();
 		}
-		this.deInitSeqSystem();// first
-		this.silentCloseAllOpenDatabases();// second
-		this.closeDBEnvironment();
+		this.deInitSeqSystem_silent();// first
+		this.closeAllOpenDatabases_silent();// second
+		this.closeDBEnvironment();// last
 		
 		// super.done();
 	}
@@ -372,7 +369,7 @@ public class Level1_Storage_BerkeleyDB extends
 	/**
 	 * @return null
 	 */
-	public Sequence silentCloseAnySeq( Sequence thisSeq, String thisSeqName ) {
+	public Sequence closeAnySeq_silent( Sequence thisSeq, String thisSeqName ) {
 
 		Log.entry( "attempting to close sequence: " + thisSeqName );
 		// System.err.println( allSequenceInstances.size() );
@@ -399,7 +396,7 @@ public class Level1_Storage_BerkeleyDB extends
 	/**
 	 * 
 	 */
-	private final void silentCloseAllSequences() {
+	private final void closeAllSequences_silent() {
 
 		Log.entry();
 		Sequence iter;
@@ -410,7 +407,7 @@ public class Level1_Storage_BerkeleyDB extends
 			// there won't be any calls to DBSequence.done() before
 			// closeEnvironment() finishes anyway; same goes for DatabaseCapsule
 			// and SecondaryDatabaseCapsule
-			this.silentCloseAnySeq( iter, "autoclosing..." );// we don't know
+			this.closeAnySeq_silent( iter, "autoclosing..." );// we don't know
 			// the name here
 			if ( allSequenceInstances.removeObject( iter ) ) {
 				RunTime.bug( "should've already been removed by above statement" );
@@ -425,22 +422,20 @@ public class Level1_Storage_BerkeleyDB extends
 	/**
 	 * closing all sequences first, then the BerkeleyDB holding them
 	 */
-	private void silentCloseAllSequencesAndTheirDB() {
+	private void closeAllSequencesAndTheirDB_silent() {
 
 		Log.entry();
 		if ( !allSequenceInstances.isEmpty() ) {
-			this.silentCloseAllSequences();
+			this.closeAllSequences_silent();
 		}
 		
 		if ( !allSequenceInstances.isEmpty() ) {
-			// BUG, avoiding throw because it's silent
-			Log.bug( "should be empty now" );
+			// BUG, avoiding throw because it's silent; nevermind that
+			RunTime.bug( "should be empty now" );
 		}
 		
 		if ( null != seqDb ) {
-			seqDb = this.silentClosePriDB( seqDb );// , seqDb_NAME );
-			// } else {
-			// Log.warn( "close() called on a not yet inited/open database" );
+			seqDb = this.closePriDB_silent( seqDb );
 		}
 	}
 	
@@ -448,17 +443,17 @@ public class Level1_Storage_BerkeleyDB extends
 	 * safely closes all active sequences and the database holding them<br>
 	 * for the current environment only
 	 */
-	public final void deInitSeqSystem() {
+	public final void deInitSeqSystem_silent() {
 
 		Log.entry();
-		this.silentCloseAllSequencesAndTheirDB();
+		this.closeAllSequencesAndTheirDB_silent();
 		
 	}
 	
 	/**
 	 * closing secondary then primary databases
 	 */
-	private void silentCloseAllOpenDatabases() {
+	private void closeAllOpenDatabases_silent() {
 
 		Log.entry();
 		// close secondaries first!
@@ -474,7 +469,7 @@ public class Level1_Storage_BerkeleyDB extends
 		// closing primaries:
 		Database iter = allOpenPrimaryDatabases.getObjectAt( Position.FIRST );
 		while ( null != iter ) {
-			this.silentClosePriDB( iter );
+			this.closePriDB_silent( iter );
 			if ( allOpenPrimaryDatabases.removeObject( iter ) ) {
 				RunTime.bug( "should've already been removed by above cmd" );
 			}
@@ -574,7 +569,7 @@ public class Level1_Storage_BerkeleyDB extends
 	 * @param db
 	 *            just for information
 	 */
-	public final Database silentClosePriDB( Database db ) {
+	public final Database closePriDB_silent( Database db ) {
 
 		Log.entry();
 		if ( null != db ) {
@@ -598,18 +593,6 @@ public class Level1_Storage_BerkeleyDB extends
 		}
 		
 		return null;
-	}
-	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.dml.tools.StaticInstanceTracker#start()
-	 */
-	@Override
-	protected void start() {
-
-		// TODO Auto-generated method stub
-		
 	}
 	
 

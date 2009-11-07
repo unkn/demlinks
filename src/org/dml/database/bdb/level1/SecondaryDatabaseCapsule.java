@@ -21,7 +21,7 @@
  */
 
 
-package org.dml.database.bdb;
+package org.dml.database.bdb.level1;
 
 
 
@@ -29,64 +29,64 @@ import org.dml.tools.RunTime;
 import org.javapart.logger.Log;
 
 import com.sleepycat.je.Database;
-import com.sleepycat.je.DatabaseConfig;
 import com.sleepycat.je.DatabaseException;
+import com.sleepycat.je.SecondaryConfig;
+import com.sleepycat.je.SecondaryDatabase;
 
 
 
 /**
- * encapsulates the DatabaseConfig and the Database objects into one<br>
+ * encapsulates the SecondaryConfig and the SecondaryDatabase objects into one<br>
  * also makes sure the database isn't open unless it's needed<br>
  * once opened it stays open until silentClose() is called<br>
  */
-public class DatabaseCapsule {
+public class SecondaryDatabaseCapsule {
 	
-	private String				dbName;
-	private Database			db		= null;
-	private DatabaseConfig		dbConf	= null;
-	private final Level1_Storage_BerkeleyDB	bdb;
+	private final String			secDbName;
+	private SecondaryDatabase		secDb	= null;
+	private final SecondaryConfig	secDbConf;
+	private final Database			primaryDb;
+	private final Level1_Storage_BerkeleyDB		bdb;
 	
 	/**
 	 * @param string
 	 */
-	public DatabaseCapsule( Level1_Storage_BerkeleyDB bdb1, String dbName1,
-			DatabaseConfig dbConf1 ) {
+	public SecondaryDatabaseCapsule( Level1_Storage_BerkeleyDB bdb1, String dbName,
+			SecondaryConfig secConf,
+			@SuppressWarnings( "hiding" ) Database primaryDb ) {
 
 		RunTime.assertNotNull( bdb1 );
-		RunTime.assertNotNull( dbName1 );
-		RunTime.assertFalse( dbName1.isEmpty() );
+		RunTime.assertNotNull( dbName );
+		RunTime.assertFalse( dbName.isEmpty() );
 		
 		bdb = bdb1;
-		dbName = dbName1;
-		dbConf = dbConf1;// can be null
+		secDbName = dbName;
+		this.primaryDb = primaryDb;
+		secDbConf = secConf;// can be null if defaults are to be used
 	}
+	
 	
 	/**
 	 * @return
 	 * @throws DatabaseException
 	 */
-	public Database getDB() throws DatabaseException {
+	public SecondaryDatabase getSecDB() throws DatabaseException {
 
-		if ( null == db ) {
+		if ( null == secDb ) {
 			// first time init:
-			db = bdb.openAnyDatabase( dbName, dbConf );
-			RunTime.assertNotNull( db );
+			secDb = bdb.openAnySecDatabase( secDbName, primaryDb, secDbConf );
+			RunTime.assertNotNull( secDb );
+			// Runtime.getRuntime().addShutdownHook(null); bad idea:
+			// concurrently called
 		}
-		return db;
+		return secDb;
 	}
 	
 	@Override
 	protected void finalize() throws Throwable {
 
-		Log.entry( "in finalize() for dbName:" + dbName );
-		if ( null != db ) {
-			Log.thro( "the DB object was lost but the DB wasn't closed!" );
-		}
+		Log.entry( "in finalize() for secDbName:" + secDbName );
 		this.silentClose();
-		db = null;
-		dbConf = null;
-		dbName = null;
-		
 		super.finalize();
 	}
 	
@@ -96,7 +96,7 @@ public class DatabaseCapsule {
 	public void silentClose() {
 
 		Log.entry();
-		db = bdb.silentClosePriDB( db );// , dbName );
+		secDb = bdb.silentCloseAnySecDB( secDb );
 	}
 	
 }

@@ -27,7 +27,7 @@ package org.dml.level1;
 
 import java.io.File;
 
-import org.dml.database.bdb.Level1_Storage_BerkeleyDB;
+import org.dml.database.bdb.level1.Level1_Storage_BerkeleyDB;
 import org.dml.storagewrapper.StorageException;
 import org.dml.tools.MainLevel0;
 import org.dml.tools.RunTime;

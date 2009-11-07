@@ -21,10 +21,13 @@
  */
 
 
-package org.dml.database.bdb;
+package org.dml.database.bdb.level2;
 
 
 
+import org.dml.database.bdb.level1.DatabaseCapsule;
+import org.dml.database.bdb.level1.Level1_Storage_BerkeleyDB;
+import org.dml.database.bdb.level1.OneToManyDBConfig;
 import org.dml.error.BugError;
 import org.dml.tools.RunTime;
 import org.javapart.logger.Log;
@@ -49,23 +52,29 @@ import com.sleepycat.je.OperationStatus;
  */
 public class OneToManyDBMap {
 	
-	private static final String	backwardSuffix	= "_backward";
-	private DatabaseCapsule		forwardDB		= null;
-	private DatabaseCapsule		backwardDB		= null;
-	private final String		dbName;
-	protected final Level1_Storage_BerkeleyDB	bdb;
+	private static final String				backwardSuffix	= "_backward";
+	private DatabaseCapsule					forwardDB		= null;
+	private DatabaseCapsule					backwardDB		= null;
+	private final String					dbName;
+	private final Level1_Storage_BerkeleyDB	bdbL1;
 	
 	/**
 	 * constructor
 	 * 
+	 * @param bdb1
 	 * @param dbName1
 	 */
 	public OneToManyDBMap( Level1_Storage_BerkeleyDB bdb1, String dbName1 ) {
 
 		RunTime.assertNotNull( bdb1 );
 		RunTime.assertNotNull( dbName1 );
-		bdb = bdb1;
+		bdbL1 = bdb1;
 		dbName = dbName1;
+	}
+	
+	protected Level1_Storage_BerkeleyDB getBDBL1() {
+
+		return bdbL1;
 	}
 	
 	/**
@@ -83,7 +92,7 @@ public class OneToManyDBMap {
 	private Database getForwardDB() throws DatabaseException {
 
 		if ( null == forwardDB ) {
-			forwardDB = new DatabaseCapsule( bdb, dbName,
+			forwardDB = new DatabaseCapsule( this.getBDBL1(), dbName,
 					new OneToManyDBConfig() );
 			RunTime.assertNotNull( forwardDB );
 		}
@@ -97,8 +106,8 @@ public class OneToManyDBMap {
 	private Database getBackwardDB() throws DatabaseException {
 
 		if ( null == backwardDB ) {
-			backwardDB = new DatabaseCapsule( bdb, dbName + backwardSuffix,
-					new OneToManyDBConfig() );
+			backwardDB = new DatabaseCapsule( this.getBDBL1(), dbName
+					+ backwardSuffix, new OneToManyDBConfig() );
 			RunTime.assertNotNull( backwardDB );
 		}
 		return backwardDB.getDB();
@@ -149,9 +158,9 @@ public class OneToManyDBMap {
 	private boolean internal_isGroup( String first, String second )
 			throws DatabaseException {
 
-		// FIXME: maybe a transaction here is unnecessary, however we don't want
+		// TODO: maybe a transaction here is unnecessary, however we don't want
 		// another transaction (supposedly) to interlace between the two gets
-		TransactionCapsule txc = TransactionCapsule.getNewTransaction( this.getBDB() );
+		TransactionCapsule txc = TransactionCapsule.getNewTransaction( this.getBDBL1() );
 		DatabaseEntry key = new DatabaseEntry();
 		DatabaseEntry data = new DatabaseEntry();
 		Level1_Storage_BerkeleyDB.stringToEntry( first, key );
@@ -167,18 +176,10 @@ public class OneToManyDBMap {
 				RunTime.bug( "one exists, the other doesn't; but should either both exist, or both not exist" );
 			}
 		} finally {
-			txc.commit();
+			txc.commit();// or abort
 		}
 		
 		return ( OperationStatus.SUCCESS == ret1 );
-	}
-	
-	/**
-	 * @return
-	 */
-	private Level1_Storage_BerkeleyDB getBDB() {
-
-		return bdb;
 	}
 	
 	/**
@@ -213,7 +214,7 @@ public class OneToManyDBMap {
 			throws DatabaseException {
 
 		RunTime.assertNotNull( first, second );
-		TransactionCapsule txc = TransactionCapsule.getNewTransaction( this.getBDB() );
+		TransactionCapsule txc = TransactionCapsule.getNewTransaction( this.getBDBL1() );
 		DatabaseEntry key = new DatabaseEntry();
 		DatabaseEntry data = new DatabaseEntry();
 		Level1_Storage_BerkeleyDB.stringToEntry( first, key );

@@ -31,9 +31,10 @@ public class Log {
 	static final int					fileAndLineWidth						= 30;
 	
 	private final static LogFlags		CurrentLogFlags[]						= {
-			LogFlags.Entry, // LogFlags.Mid,
-			LogFlags.Warn, LogFlags.Result, LogFlags.Special, LogFlags.Thro,
-			LogFlags.Exit, LogFlags.Bug
+			// LogFlags.Entry, // LogFlags.Mid,
+			LogFlags.Bug, LogFlags.Warn, LogFlags.Result, LogFlags.Special,
+			LogFlags.Thro,
+																				// LogFlags.Exit,
 																				};
 	
 	// if no elements, then all methods are shown

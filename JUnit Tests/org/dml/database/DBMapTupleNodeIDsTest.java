@@ -30,8 +30,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import org.dml.JUnits.Consts;
-import org.dml.database.bdb.Level1_Storage_BerkeleyDB;
-import org.dml.database.bdb.DBMapTupleNodeIDs;
+import org.dml.database.bdb.level1.Level1_Storage_BerkeleyDB;
+import org.dml.database.bdb.level2.DBMapTupleNodeIDs;
 import org.dml.level1.Level1_DMLEnvironment;
 import org.dml.level1.NodeID;
 import org.dml.level1.NodeJID;
