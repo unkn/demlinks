@@ -24,6 +24,11 @@
 package org.dml.tools;
 
 
+
+import org.references.method.MethodParams;
+
+
+
 /**
  * 
  *
@@ -36,7 +41,7 @@ public class ProperSubClassingOfSIT extends StaticInstanceTracker {
 	}
 	
 	@Override
-	public void start() {
+	public void start( MethodParams<Object> params ) {
 
 		System.err.println( this.getClass().getCanonicalName()
 				+ " is initializing." );

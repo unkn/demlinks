@@ -28,6 +28,7 @@ package org.dml.tools;
 import org.javapart.logger.Log;
 import org.references.ListOfUniqueNonNullObjects;
 import org.references.Position;
+import org.references.method.MethodParams;
 
 
 
@@ -50,10 +51,102 @@ public abstract class StaticInstanceTracker {
 	private final static ListOfUniqueNonNullObjects<StaticInstanceTracker>	ALL_INSTANCES	= new ListOfUniqueNonNullObjects<StaticInstanceTracker>();
 	private boolean															inited			= false;
 	private boolean															deInited		= true;
+	private MethodParams<Object>											formerParams	= null;
 	
+	/**
+	 * constructor
+	 */
 	public StaticInstanceTracker() {
 
 	}
+	
+	
+
+	/**
+	 * implement this start(), but use init() instead
+	 */
+	protected abstract void start( MethodParams<Object> params );
+	
+	/**
+	 * the params will be cloned (or copied) to be used by reInit()
+	 * 
+	 * @param params
+	 *            null or the params
+	 */
+	public final void init( MethodParams<Object> params ) {
+
+		if ( inited || !deInited ) {
+			RunTime.badCall( "already inited, you must deInit() before calling init(...) again" );
+		}
+		addNewInstance( this );
+		inited = true;
+		deInited = false;
+		
+		if ( params != formerParams ) {
+			// NOT called by reInit()
+			if ( null != formerParams ) {
+				// was used before, we discard the one before
+				formerParams.deInit();
+				formerParams = null;
+			}
+			
+			if ( null != params ) {// we get a copy of passed params
+				// this does init(null) inside
+				formerParams = params.getClone();
+			} // else is null
+		} // else called by reInit() we don't mod them
+		this.start( formerParams );
+	}
+	
+	/**
+	 * this will call deInit() and then init(params) where params are the last
+	 * used params which were saved/cloned internally
+	 */
+	public final void reInit() {
+
+		this.deInit();
+		this.init( formerParams );
+	}
+	
+	/**
+	 * implement this done(), but use deInit() instead
+	 */
+	protected abstract void done();
+	
+	/**
+	 * do not use <code>this</code> again after calling this method
+	 * 
+	 * @return
+	 */
+	public final void deInit() {
+
+		if ( !inited ) {
+			RunTime.badCall( this.toString() + " was not already init()-ed" );
+		}
+		if ( deInited ) {
+			
+			RunTime.badCall( this + " was already deInit()-ed!" );
+		}
+		
+		this.deInitSilently();
+	}
+	
+	/**
+	 * this will not except if already deInit()-ed
+	 * 
+	 * @see #deInit()
+	 */
+	public final void deInitSilently() {
+
+		if ( ( inited ) && ( !deInited ) ) {
+			deInited = true;
+			inited = false;
+			removeOldInstance( this );
+			this.done();
+			// formerParams are not managed here, only on init() ie. discarded
+		}
+	}
+	
 	
 	/**
 	 * LIFO manner deinit, only for the same class type<br>
@@ -97,60 +190,6 @@ public abstract class StaticInstanceTracker {
 		RunTime.assertTrue( ALL_INSTANCES.isEmpty() );
 	}
 	
-	
-	/**
-	 * implement this start(), but use init() instead
-	 */
-	protected abstract void start();
-	
-	/**
-	 * implement this done(), but use deInit() instead
-	 */
-	protected abstract void done();
-	
-	/**
-	 * do not use <code>this</code> again after calling this method
-	 * 
-	 * @return
-	 */
-	public final void deInit() {
-
-		if ( !inited ) {
-			RunTime.badCall( this.toString() + " was not already init()-ed" );
-		}
-		if ( deInited ) {
-			
-			RunTime.badCall( this + " was already deInit()-ed!" );
-		}
-		
-		this.deInitSilently();
-	}
-	
-	/**
-	 * this will not except if already deInit()-ed
-	 * 
-	 * @see #deInit()
-	 */
-	public final void deInitSilently() {
-
-		if ( ( inited ) && ( !deInited ) ) {
-			deInited = true;
-			inited = false;
-			removeOldInstance( this );
-			this.done();
-		}
-	}
-	
-	public final void init() {
-
-		if ( inited || !deInited ) {
-			RunTime.badCall( "already inited" );
-		}
-		addNewInstance( this );
-		inited = true;
-		deInited = false;
-		this.start();
-	}
 	
 	private final static void addNewInstance( StaticInstanceTracker instance ) {
 

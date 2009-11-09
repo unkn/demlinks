@@ -25,6 +25,11 @@ package org.dml.tools;
 
 
 
+import org.references.method.MethodParams;
+import org.temporary.tests.PossibleParams;
+
+
+
 /**
  * 
  *
@@ -38,18 +43,21 @@ public class Testy extends StaticInstanceTracker {
 		System.out.println( this.getName() + " shows home=" + home );
 	}
 	
-	public boolean init( String home1 ) {
+	public String getHome() {
 
-		home = home1;
-		// if something throws before below init() ...
-		this.init();
-		return true;
+		return home;
 	}
 	
 	public static Testy getNew() {
 
 		Testy t = new Testy();
-		t.init( "one/" + new Object() );
+		
+		MethodParams<Object> params = new MethodParams<Object>();
+		params.init( null );
+		params.set( PossibleParams.homeDir, "one/" + new Object() );
+		t.init( params );
+		params.deInit();
+		
 		return t;
 	}
 	
@@ -62,6 +70,7 @@ public class Testy extends StaticInstanceTracker {
 	protected void done() {
 
 		System.out.println( this.getName() + " is done." );
+		home = null;
 	}
 	
 	/**
@@ -75,13 +84,21 @@ public class Testy extends StaticInstanceTracker {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.dml.tools.StaticInstanceTracker#start()
+	 * @see
+	 * 
+	 * 
+	 * 
+	 * 
+	 * org.dml.tools.StaticInstanceTracker#start(org.references.method.MethodParams
+	 * )
 	 */
 	@Override
-	protected void start() {
+	protected void start( MethodParams<Object> params ) {
 
 		System.out.println( this.getName() + " start()" );
-		
+		RunTime.assertNotNull( params );
+		RunTime.assertTrue( params.size() > 0 );
+		home = params.getExString( PossibleParams.homeDir );
 	}
 	
 }

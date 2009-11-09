@@ -25,6 +25,8 @@ package org.dml.tools;
 
 
 
+import org.references.method.MethodParams;
+import org.temporary.tests.PossibleParams;
 
 
 
@@ -37,7 +39,13 @@ public class Testy2 extends Testy {
 	public static Testy2 getNew() {
 
 		Testy2 t2 = new Testy2();
-		t2.init( "two" + new Object() );
+		
+		MethodParams<Object> params = new MethodParams<Object>();
+		params.init( null );
+		params.set( PossibleParams.homeDir, "two" + new Object() );
+		t2.init( params );
+		params.deInit();
+		
 		return t2;
 		
 	}

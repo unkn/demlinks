@@ -160,7 +160,9 @@ public class MethodParams<T> extends StaticInstanceTracker {// T= base class,
 		
 		ChainedReference<T> cref = this.internalGet( paramName );
 		if ( null == cref ) {
+			int bug = listOfParams.size();// FIXME: remove
 			cref = listOfParams.addFirst( value );
+			RunTime.assertTrue( listOfParams.size() > bug );
 			paramName.add( cref );
 			redundantListOfNames.addFirst( paramName );
 			// FIXME: transaction needed
@@ -293,7 +295,7 @@ public class MethodParams<T> extends StaticInstanceTracker {// T= base class,
 	public MethodParams<T> getClone() {
 
 		MethodParams<T> clone = new MethodParams<T>();
-		clone.init();
+		clone.init( null );// must be null or recursion
 		// we parse all ref to values, which are in 'this' and add each to the
 		// cloned
 		ChainedReference<T> ref = this.internalGetFirst();
@@ -304,6 +306,9 @@ public class MethodParams<T> extends StaticInstanceTracker {// T= base class,
 			// fetch next ref to value
 			ref = this.internalGetNextOf( ref );
 		}
+		
+		RunTime.assertTrue( clone.size() == this.size() );
+		RunTime.assertTrue( clone.redundantListOfNames.size() == this.redundantListOfNames.size() );
 		
 		return clone;
 	}
@@ -326,11 +331,26 @@ public class MethodParams<T> extends StaticInstanceTracker {// T= base class,
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.dml.tools.StaticInstanceTracker#start()
+	 * @see
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * org.dml.tools.StaticInstanceTracker#start(org.references.method.MethodParams
+	 * )
 	 */
 	@Override
-	protected void start() {
+	protected void start( MethodParams<Object> params ) {
 
+		// params should be null, passed via init(...)
+		RunTime.assertTrue( null == params );
+		
+		// assumed it's empty on start, or else bugged
 		RunTime.assertTrue( this.size() == 0 );
 		RunTime.assertTrue( redundantListOfNames.size() == 0 );
 	}

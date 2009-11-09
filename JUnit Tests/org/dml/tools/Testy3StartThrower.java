@@ -25,6 +25,11 @@ package org.dml.tools;
 
 
 
+import org.references.method.MethodParams;
+import org.temporary.tests.PossibleParams;
+
+
+
 /**
  * 
  *
@@ -34,13 +39,18 @@ public class Testy3StartThrower extends Testy {
 	public static Testy3StartThrower getNew() {
 
 		Testy3StartThrower t2 = new Testy3StartThrower();
-		t2.init( "two" + new Object() );
+		
+		MethodParams<Object> params = new MethodParams<Object>();
+		params.init( null );
+		params.set( PossibleParams.homeDir, "two" + new Object() );
+		t2.init( params );
+		params.deInit();
 		return t2;
 		
 	}
 	
 	@Override
-	public void start() {
+	protected void start( org.references.method.MethodParams<Object> params ) {
 
 		RunTime.thro( new RuntimeException( "start" ) );
 	}

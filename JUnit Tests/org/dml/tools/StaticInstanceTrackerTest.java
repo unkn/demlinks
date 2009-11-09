@@ -32,6 +32,8 @@ import org.dml.error.BadCallError;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.references.method.MethodParams;
+import org.temporary.tests.PossibleParams;
 
 
 
@@ -44,6 +46,7 @@ public class StaticInstanceTrackerTest {
 	Testy					t, tt;
 	Testy2					t2, tt2;
 	ProperSubClassingOfSIT	psc;
+	MethodParams<Object>	params	= null;
 	
 	@Before
 	public void setUp() {
@@ -53,6 +56,10 @@ public class StaticInstanceTrackerTest {
 		t2 = Testy2.getNew();
 		tt = Testy.getNew();
 		tt2 = new Testy2();
+		
+		params = new MethodParams<Object>();
+		params.init( null );
+		
 	}
 	
 	@After
@@ -61,27 +68,45 @@ public class StaticInstanceTrackerTest {
 		// t.deInit();
 		// t2.deInit();
 		StaticInstanceTracker.deInitAllThatExtendMe();
-		
+		params.deInitSilently();
 	}
 	
 	@Test
 	public void test1() throws Exception {
 
 		try {
-			t.init( "1/2" );
+			assertTrue( params.size() == 0 );
+			params.set( PossibleParams.homeDir, "1/2" );
+			assertTrue( params.size() == 1 );
+			
+			t.init( params );
 			t.show();
 			t.deInit();
-			t.init( "2/2" );
+			
+			params.reInit();// this will empty params
+			assertTrue( params.size() == 0 );
+			
+			params.set( PossibleParams.homeDir, "2/2" );
+			assertTrue( params.size() == 1 );
+			
+			t.init( params );
 			t.show();
 			t.deInit();
+			
+			assertTrue( params.size() == 1 );
+			params.reInit();
+			assertTrue( params.size() == 0 );
 			
 			tt.show();
 			t2.show();
 			
-			tt2.init( "3+ 1/2" );
+			params.set( PossibleParams.homeDir, "3+ 1/2" );
+			tt2.init( params );
 			tt2.show();
 			tt2.deInit();
-			tt2.init( "3+ 2/2" );
+			
+			params.set( PossibleParams.homeDir, "3+ 2/2" );
+			tt2.init( params );
 			tt2.show();
 			tt2.deInit();
 			// throw new Exception();
@@ -94,15 +119,18 @@ public class StaticInstanceTrackerTest {
 	@Test
 	public void test2() {
 
+		params.set( PossibleParams.homeDir, "something" );
+		assertTrue( params.size() == 1 );
 		boolean errored = false;
 		try {
-			t.init();
-			t.init();
+			t.init( params );
+			t.init( params );
 		} catch ( BadCallError bce ) {
 			errored = true;
 		} finally {
 			assertTrue( errored );
 		}
+		assertTrue( params.size() == 1 );
 		
 		errored = false;
 		try {
@@ -113,6 +141,7 @@ public class StaticInstanceTrackerTest {
 		} finally {
 			assertTrue( errored );
 		}
+		assertTrue( params.size() == 1 );
 		
 		errored = false;
 		try {
@@ -123,14 +152,31 @@ public class StaticInstanceTrackerTest {
 		} finally {
 			assertTrue( errored );
 		}
+		
+		assertTrue( params.size() == 1 );
+		System.out.println( params.getExString( PossibleParams.homeDir ) );
+		t.init( params );
+		// params.deInit();
+		errored = false;
+		try {
+			t.reInit();
+			t.reInit();
+			t.reInit();
+			t.reInit();
+		} catch ( BadCallError bce ) {
+			errored = true;
+		} finally {
+			assertFalse( errored );
+		}
 	}
 	
 	@Test
 	public void testDeInitAllExtenders() {
 
 		System.out.println( "===============" );
-		t.init();
-		tt2.init();
+		params.set( PossibleParams.homeDir, "nothing" );
+		t.init( params );
+		tt2.init( params );
 	}
 	
 	@Test
@@ -147,9 +193,11 @@ public class StaticInstanceTrackerTest {
 		}
 		
 		excepted = false;
+		params.set( PossibleParams.homeDir, "some" );
+		t2.init( params );
+		t2.deInit();
 		try {
-			t2.init();
-			t2.deInit();
+			
 			t2.deInitSilently();
 		} catch ( BadCallError bce ) {
 			excepted = true;
@@ -164,8 +212,9 @@ public class StaticInstanceTrackerTest {
 
 		psc = new ProperSubClassingOfSIT();
 		
+		// params.set( PossibleParams.homeDir, "homePSC" );
 		try {
-			psc.init();
+			psc.init( null );
 			psc.exec();
 		} finally {
 			boolean rted = false;
@@ -195,7 +244,7 @@ public class StaticInstanceTrackerTest {
 		Testy3StartThrower t3 = new Testy3StartThrower();
 		boolean threw = false;
 		try {
-			t3.init();
+			t3.init( null );
 		} catch ( RuntimeException rte ) {
 			threw = true;
 		} finally {
@@ -203,4 +252,29 @@ public class StaticInstanceTrackerTest {
 			t3.deInit();
 		}
 	}
+	
+	@Test
+	public void testParams() {
+
+		String home = "home";
+		params.set( PossibleParams.homeDir, home );
+		t.init( params );
+		params.deInit();
+		assertTrue( params.size() == 0 );
+		assertTrue( t.getHome() == home );
+		t.reInit();
+		t.show();
+		assertTrue( t.getHome() == home );
+		t.deInit();
+		String home2 = "home2";
+		params.set( PossibleParams.homeDir, home2 );
+		t.init( params );
+		assertTrue( t.getHome() == home2 );
+		assertTrue( home != home2 );
+		t.reInit();
+		assertTrue( t.getHome() == home2 );
+		t.deInit();
+		assertTrue( t.getHome() == null );
+	}
+	
 }
