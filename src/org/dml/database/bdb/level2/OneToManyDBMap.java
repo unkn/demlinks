@@ -31,6 +31,8 @@ import org.dml.database.bdb.level1.OneToManyDBConfig;
 import org.dml.error.BugError;
 import org.dml.tools.RunTime;
 import org.javapart.logger.Log;
+import org.references.method.MethodParams;
+import org.temporary.tests.PossibleParams;
 
 import com.sleepycat.je.Database;
 import com.sleepycat.je.DatabaseEntry;
@@ -106,9 +108,15 @@ public class OneToManyDBMap {
 	private Database getBackwardDB() throws DatabaseException {
 
 		if ( null == backwardDB ) {
-			backwardDB = new DatabaseCapsule( this.getBDBL1(), dbName
-					+ backwardSuffix, new OneToManyDBConfig() );
-			RunTime.assertNotNull( backwardDB );
+			MethodParams<Object> params = new MethodParams<Object>();
+			backwardDB = new DatabaseCapsule();
+			params.init();
+			params.set( PossibleParams.level1_BDBStorage, this.getBDBL1() );
+			params.set( PossibleParams.dbName, dbName + backwardSuffix );
+			params.set( PossibleParams.dbConfig, new OneToManyDBConfig() );
+			backwardDB.init( params );
+			params.deInit();
+			// RunTime.assertNotNull( backwardDB );
 		}
 		return backwardDB.getDB();
 	}

@@ -74,6 +74,9 @@ public class Level1_Storage_BerkeleyDB extends
 	private final ListOfUniqueNonNullObjects<Database>			allOpenPrimaryDatabases		= new ListOfUniqueNonNullObjects<Database>();
 	private final ListOfUniqueNonNullObjects<SecondaryDatabase>	allOpenSecondaryDatabases	= new ListOfUniqueNonNullObjects<SecondaryDatabase>();
 	
+	// to prevent calling init() w/o params
+	private boolean												inited						= false;
+	
 	private static final String									dbJID2NID_NAME				= "map(JID<->NodeID)";
 	private final static String									UNINITIALIZED_STRING		= "uninitializedString";
 	
@@ -111,8 +114,10 @@ public class Level1_Storage_BerkeleyDB extends
 	@Override
 	protected void start() {
 
-		// TODO Auto-generated method stub
-		
+		if ( !inited ) {
+			RunTime.bug( "call init(...) with params instead" );
+		}
+		// super.start();
 	}
 	
 	/*
@@ -123,6 +128,7 @@ public class Level1_Storage_BerkeleyDB extends
 	@Override
 	public void init( MethodParams<Object> params ) {
 
+		inited = true;
 		super.init();
 		envHomeDir = params.getExString( PossibleParams.homeDir );
 		Log.entry( envHomeDir );
@@ -136,33 +142,8 @@ public class Level1_Storage_BerkeleyDB extends
 			e.printStackTrace();
 			throw new StorageException( e );
 		}// forces env open or create
+		
 	}
-	
-	//	
-	// /**
-	// * call before all
-	// *
-	// * @throws DatabaseException
-	// */
-	// public final void init( String envHomeDir1,
-	// boolean internalDestroyBeforeInit ) throws DatabaseException {
-	//
-	// // maybe it would be needed to set the envhome dir
-	// RunTime.assertNotNull( envHomeDir1 );
-	// envHomeDir = envHomeDir1;
-	// Log.entry( envHomeDir );
-	// if ( internalDestroyBeforeInit ) {
-	// this.internalWipeEnv();
-	// }
-	// // Environment init isn't needed, only deInit();
-	// this.getEnvironment();// forces env open or create
-	// // DBSequence init isn't needed, only deInit()
-	//		
-	// // getDBMapJIDsToNodeIDs() is initing that when needed
-	//		
-	// // db1=db1.init();
-	// super.init();
-	// }
 	
 	/*
 	 * (non-Javadoc)
@@ -172,7 +153,7 @@ public class Level1_Storage_BerkeleyDB extends
 	@Override
 	protected void done() {
 
-		
+		inited = false;
 		if ( null != dbJID2NID ) {
 			dbJID2NID = dbJID2NID.deInit();
 		}
@@ -463,17 +444,18 @@ public class Level1_Storage_BerkeleyDB extends
 			if ( allOpenSecondaryDatabases.removeObject( iterSec ) ) {
 				RunTime.bug( "should've already been removed by above cmd" );
 			}
-			iterSec = allOpenSecondaryDatabases.getObjectAt( Position.FIRST );
+			// iterSec = allOpenSecondaryDatabases.getObjectAt( Position.FIRST
+			// );
 		}
 		
 		// closing primaries:
-		Database iter = allOpenPrimaryDatabases.getObjectAt( Position.FIRST );
-		while ( null != iter ) {
+		Database iter;
+		while ( null != ( iter = allOpenPrimaryDatabases.getObjectAt( Position.FIRST ) ) ) {
 			this.closePriDB_silent( iter );
 			if ( allOpenPrimaryDatabases.removeObject( iter ) ) {
 				RunTime.bug( "should've already been removed by above cmd" );
 			}
-			iter = allOpenPrimaryDatabases.getObjectAt( Position.FIRST );
+			// iter = allOpenPrimaryDatabases.getObjectAt( Position.FIRST );
 		}
 	}
 	

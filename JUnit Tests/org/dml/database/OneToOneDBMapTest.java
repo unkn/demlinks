@@ -35,6 +35,8 @@ import org.dml.database.bdb.level1.OneToOneDBMap;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.references.method.MethodParams;
+import org.temporary.tests.PossibleParams;
 
 import com.sleepycat.je.DatabaseException;
 
@@ -46,15 +48,22 @@ import com.sleepycat.je.DatabaseException;
  */
 public class OneToOneDBMapTest {
 	
-	OneToOneDBMap	x;
-	final String	_a	= "AAAAAAAAAAAAAAAAAAA";
-	final String	_b	= "BBBBBBBBBBBBBBBBBBBBBBBBB";
-	Level1_Storage_BerkeleyDB		bdb;
+	OneToOneDBMap				x;
+	final String				_a	= "AAAAAAAAAAAAAAAAAAA";
+	final String				_b	= "BBBBBBBBBBBBBBBBBBBBBBBBB";
+	Level1_Storage_BerkeleyDB	bdb;
 	
 	@Before
 	public void setUp() throws DatabaseException {
 
-		bdb = new Level1_Storage_BerkeleyDB( Consts.BDB_ENV_PATH, true );
+		MethodParams<Object> params = new MethodParams<Object>();
+		params.init();
+		params.set( PossibleParams.homeDir, Consts.BDB_ENV_PATH );
+		params.set( PossibleParams.wipeDB, true );
+		bdb = new Level1_Storage_BerkeleyDB();
+		bdb.init( params );
+		params.deInit();
+		// bdb = new Level1_Storage_BerkeleyDB( Consts.BDB_ENV_PATH, true );
 		x = new OneToOneDBMap( bdb, "someMap" );
 	}
 	

@@ -47,10 +47,10 @@ import com.sleepycat.je.SecondaryDatabase;
  */
 public class OneToOneDBMap {
 	
-	private static final String			secPrefix	= "secondary";
-	private DatabaseCapsule				forwardDB	= null;
-	private SecondaryDatabaseCapsule	backwardDB	= null;
-	protected String					dbName;
+	private static final String					secPrefix	= "secondary";
+	private DatabaseCapsule						forwardDB	= null;
+	private SecondaryDatabaseCapsule			backwardDB	= null;
+	protected String							dbName;
 	protected final Level1_Storage_BerkeleyDB	bdb;
 	
 	/**
@@ -112,22 +112,6 @@ public class OneToOneDBMap {
 		return backwardDB.getSecDB();
 	}
 	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#finalize()
-	 */
-	@Override
-	protected void finalize() throws Throwable {
-
-		Log.exit( "in finalize() for OneToOneDBMap: " + dbName );
-		this.silentClose();
-		backwardDB = null;
-		forwardDB = null;
-		dbName = null;
-		
-		super.finalize();
-	}
 	
 	/**
 	 * @return null

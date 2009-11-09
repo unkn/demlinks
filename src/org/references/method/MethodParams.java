@@ -88,7 +88,8 @@ public class MethodParams<T> extends StaticInstanceTracker {// T= base class,
 	}
 	
 	/**
-	 * this method will search for paramName and return it's value Object<br>
+	 * this method will search for paramName and return a reference to it's
+	 * value Object<br>
 	 * 
 	 * @param paramName
 	 * @return null if not found; use .getObject() to get the value
@@ -113,6 +114,11 @@ public class MethodParams<T> extends StaticInstanceTracker {// T= base class,
 		return listOfParams.getRefAt( Position.AFTER, afterThis );
 	}
 	
+	/**
+	 * @param paramName
+	 * @return reference; null if not found, or the ref pointing to the value,
+	 *         the value can be null tho
+	 */
 	private ChainedReference<T> internalGet( ParamName<T> paramName ) {
 
 		RunTime.assertNotNull( paramName );

@@ -26,7 +26,11 @@ package org.dml.database.bdb.level1;
 
 
 import org.dml.tools.RunTime;
+import org.dml.tools.StaticInstanceTrackerWithMethodParams;
 import org.javapart.logger.Log;
+import org.references.Reference;
+import org.references.method.MethodParams;
+import org.temporary.tests.PossibleParams;
 
 import com.sleepycat.je.Database;
 import com.sleepycat.je.DatabaseConfig;
@@ -39,26 +43,67 @@ import com.sleepycat.je.DatabaseException;
  * also makes sure the database isn't open unless it's needed<br>
  * once opened it stays open until silentClose() is called<br>
  */
-public class DatabaseCapsule {
+public class DatabaseCapsule extends StaticInstanceTrackerWithMethodParams {
 	
-	private final String					dbName;
-	private Database						db		= null;
-	private DatabaseConfig					dbConf	= null;
-	private final Level1_Storage_BerkeleyDB	bdb;
+	private String						dbName;
+	private Database					db		= null;
+	private DatabaseConfig				dbConf	= null;
+	private Level1_Storage_BerkeleyDB	bdbL1;
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.dml.tools.StaticInstanceTracker#done()
+	 */
+	@Override
+	protected void done() {
+
+		// TODO Auto-generated method stub
+		
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.dml.tools.StaticInstanceTracker#start()
+	 */
+	@Override
+	protected void start() {
+
+		// TODO Auto-generated method stub
+		
+	}
 	
 	/**
 	 * @param string
 	 */
-	public DatabaseCapsule( Level1_Storage_BerkeleyDB bdb1, String dbName1,
-			DatabaseConfig dbConf1 ) {
+	public DatabaseCapsule() {
 
-		RunTime.assertNotNull( bdb1 );
-		RunTime.assertNotNull( dbName1 );
-		RunTime.assertFalse( dbName1.isEmpty() );
+		super();
+	}
+	
+	/**
+	 * @param params
+	 */
+	@Override
+	public void init( MethodParams<Object> params ) {
+
+		// compulsory
+		bdbL1 = (Level1_Storage_BerkeleyDB)params.getEx( PossibleParams.level1_BDBStorage );
+		RunTime.assertNotNull( bdbL1 );
 		
-		bdb = bdb1;
-		dbName = dbName1;
-		dbConf = dbConf1;// can be null
+		// compulsory
+		dbName = params.getExString( PossibleParams.dbName );
+		RunTime.assertNotNull( dbName );
+		RunTime.assertFalse( dbName.isEmpty() );
+		
+		// dbConf is optional / can be null
+		Reference<Object> ref = params.get( PossibleParams.dbConfig );
+		if ( null != ref ) {
+			dbConf = (DatabaseConfig)ref.getObject();
+		} else {
+			dbConf = null;// use BDB defaults
+		}
 	}
 	
 	/**
@@ -69,7 +114,7 @@ public class DatabaseCapsule {
 
 		if ( null == db ) {
 			// first time init:
-			db = bdb.openAnyDatabase( dbName, dbConf );
+			db = bdbL1.openAnyDatabase( dbName, dbConf );
 			RunTime.assertNotNull( db );
 		}
 		return db;
@@ -82,8 +127,9 @@ public class DatabaseCapsule {
 
 		Log.entry();
 		if ( null != db ) {
-			db = bdb.closePriDB_silent( db );
+			db = bdbL1.closePriDB_silent( db );
 		}
 	}
 	
+
 }

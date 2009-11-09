@@ -43,9 +43,16 @@ public class PossibleParams {
 	// these lists can hold objects but the objects that they will hold are the
 	// references from similar typed list, not the instances that these refs
 	// point at
-	public static final ParamName<Object>	varLevelAll	= new ParamName<Object>();
-	public static final ParamName<Object>	homeDir		= new ParamName<Object>();
+	public static final ParamName<Object>	varLevelAll			= new ParamName<Object>();
+	public static final ParamName<Object>	homeDir				= new ParamName<Object>();
 	
 	// true if a call to BDB init should empty the database(s) before init
-	public static final ParamName<Object>	wipeDB		= new ParamName<Object>();
+	public static final ParamName<Object>	wipeDB				= new ParamName<Object>();
+	
+
+	// DatabaseCapsule:
+	public static final ParamName<Object>	level1_BDBStorage	= new ParamName<Object>();
+	public static final ParamName<Object>	dbName				= new ParamName<Object>();
+	public static final ParamName<Object>	dbConfig			= new ParamName<Object>();
+	
 }

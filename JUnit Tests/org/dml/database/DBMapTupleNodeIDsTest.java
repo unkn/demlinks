@@ -39,6 +39,8 @@ import org.dml.storagewrapper.StorageException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.references.method.MethodParams;
+import org.temporary.tests.PossibleParams;
 
 import com.sleepycat.je.DatabaseException;
 
@@ -50,14 +52,20 @@ import com.sleepycat.je.DatabaseException;
  */
 public class DBMapTupleNodeIDsTest {
 	
-	DBMapTupleNodeIDs	tdb;
+	DBMapTupleNodeIDs			tdb;
 	Level1_DMLEnvironment		dmlEnv;
-	Level1_Storage_BerkeleyDB			bdb;
+	Level1_Storage_BerkeleyDB	bdb;
 	
 	@Before
 	public void setUp() throws DatabaseException {
 
-		bdb = new Level1_Storage_BerkeleyDB( Consts.BDB_ENV_PATH, true );
+		MethodParams<Object> params = new MethodParams<Object>();
+		params.init();
+		params.set( PossibleParams.homeDir, Consts.BDB_ENV_PATH );
+		params.set( PossibleParams.wipeDB, true );
+		bdb = new Level1_Storage_BerkeleyDB();
+		bdb.init( params );
+		params.deInit();
 		tdb = new DBMapTupleNodeIDs( bdb, "tupleIDs" );
 		
 	}
@@ -68,6 +76,7 @@ public class DBMapTupleNodeIDsTest {
 		// tdb.silentClose();
 		tdb = null;
 		bdb.deInit();
+		bdb = null;
 	}
 	
 	@Test
