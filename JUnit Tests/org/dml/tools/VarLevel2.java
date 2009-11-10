@@ -70,7 +70,8 @@ public class VarLevel2 extends VarLevel1 implements VarLevel2Interface {
 	protected void start( MethodParams<Object> params ) {
 
 		RunTime.assertNotNull( params );
-		homeDir = params.getExString( PossibleParams.homeDir );
 		super.start( params );
+		homeDir = params.getExString( PossibleParams.homeDir );
+		
 	}
 }

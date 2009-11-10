@@ -198,9 +198,10 @@ public abstract class StaticInstanceTracker {
 
 		Log.entry();
 		StaticInstanceTracker iter;
-		while ( null != ( iter = ALL_INSTANCES.getObjectAt( Position.FIRST ) ) ) {
-			System.out.println( iter.getClass().getSimpleName() + " / " + iter
-					+ "!!!!!!" + ALL_INSTANCES.size() );
+		while ( null != ( iter = ALL_INSTANCES.getObjectAt( Position.LAST ) ) ) {
+			// System.out.println( iter.getClass().getSimpleName() + " / " +
+			// iter
+			// + "!!!!!!" + ALL_INSTANCES.size() );
 			iter.deInit();
 		}
 		RunTime.assertTrue( ALL_INSTANCES.isEmpty() );

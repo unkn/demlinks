@@ -57,9 +57,6 @@ import org.temporary.tests.PossibleParams;
  */
 public abstract class MainLevel0 extends StaticInstanceTracker {
 	
-	// var to see if we used init() instead of initMainLevel(...); its only
-	// purpose is to prevent init() usage
-	private boolean									inited					= false;
 	
 	// true if we inited a default 'var' so we know to deInit it
 	// we won't deInit passed 'var' param
@@ -85,9 +82,9 @@ public abstract class MainLevel0 extends StaticInstanceTracker {
 			boolean prevState = iter.isAccessible();
 			try {
 				iter.setAccessible( true );
+				iter.set( this, toValue );
 				// System.out.println( iter.getName() + " / " + iter.getType()
 				// + " / " + iter.get( this ) );
-				iter.set( this, toValue );
 				RunTime.assertTrue( iter.get( this ) == toValue );
 			} catch ( IllegalArgumentException e ) {
 				// TODO Auto-generated catch block
@@ -208,7 +205,6 @@ public abstract class MainLevel0 extends StaticInstanceTracker {
 				this.setAllVarLevelX( obj );
 				// it's already inited by caller (assumed) so we won't init it
 			}
-			inited = true;
 			// super.start( null );
 		} finally {
 			mixedParams.deInit();
@@ -239,7 +235,6 @@ public abstract class MainLevel0 extends StaticInstanceTracker {
 	@Override
 	protected void done() {
 
-		inited = false;// first
 		
 		if ( null != this.getVarLevelX() ) {
 			// could be not yet inited due to throws in initMainLevel()

@@ -59,21 +59,6 @@ public class VarLevel1 extends StaticInstanceTracker implements
 		
 	}
 	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.dml.tools.StaticInstanceTracker#start()
-	 */
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * 
-	 * 
-	 * 
-	 * org.dml.tools.StaticInstanceTracker#start(org.references.method.MethodParams
-	 * )
-	 */
 	@Override
 	protected void start( MethodParams<Object> params ) {
 

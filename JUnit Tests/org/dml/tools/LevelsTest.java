@@ -304,7 +304,9 @@ public class LevelsTest {
 		ml3.init( mp );
 		assertTrue( 0 == mp.size() );
 		
-		StaticInstanceTracker.deInitAllThatExtendMe();
+
+
+		ml3.deInit();
 		VarLevel3 vl3 = new VarLevel3();
 		MethodParams<Object> v3params = new MethodParams<Object>();
 		v3params.init( null );
@@ -313,6 +315,7 @@ public class LevelsTest {
 		v3params.deInit();
 		mp.set( PossibleParams.varLevelAll, vl3 );
 		assertTrue( 1 == mp.size() );
+		
 		ml3.init( mp );
 		assertTrue( 1 == mp.size() );
 		Reference<Object> ref = mp.get( PossibleParams.varLevelAll );
@@ -325,13 +328,13 @@ public class LevelsTest {
 		boolean ex = false;
 		try {
 			ml3.init( null );
-		} catch ( BadCallError bce ) {
+		} catch ( Error err ) {
 			ex = true;
 		}
-		assertTrue( ex );
+		assertFalse( ex );
 		ml3.deInit();
 		
-		assertNull( ml3.junitGetVar() );
+		assertNotNull( ml3.junitGetVar() );
 		ml3.init( mp );
 		assertTrue( ml3.junitGetVar() == vl3 );
 		ml3.deInit();
