@@ -25,8 +25,7 @@ package org.dml.tools;
 
 
 
-import org.dml.tools.MainLevel0;
-import org.dml.tools.VarLevel;
+import org.references.method.MethodParams;
 
 
 
@@ -74,10 +73,10 @@ public class MainLevel1 extends MainLevel0 {
 	 * @see org.temporary.tests.MainLevel0#start()
 	 */
 	@Override
-	protected void start() {
+	protected void start( MethodParams<Object> params ) {
 
 		System.out.println( this.getName() + " Initing..." );
-		super.start();
+		super.start( params );
 	}
 	
 	/**

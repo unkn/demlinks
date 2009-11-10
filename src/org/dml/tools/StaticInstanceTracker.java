@@ -50,9 +50,29 @@ public abstract class StaticInstanceTracker {
 	// LIFO list tracking all instances of ALL subclasses
 	private final static ListOfUniqueNonNullObjects<StaticInstanceTracker>	ALL_INSTANCES	= new ListOfUniqueNonNullObjects<StaticInstanceTracker>();
 	private boolean															inited			= false;
-	private boolean															deInited		= true;
 	private MethodParams<Object>											formerParams	= null;
 	
+	/**
+	 * @param inited1
+	 *            the inited to set
+	 */
+	private final void setInited( boolean inited1 ) {
+
+		inited = inited1;
+	}
+	
+	
+
+	/**
+	 * @return the inited
+	 */
+	public final boolean isInited() {
+
+		return inited;
+	}
+	
+	
+
 	/**
 	 * constructor
 	 */
@@ -75,12 +95,11 @@ public abstract class StaticInstanceTracker {
 	 */
 	public final void init( MethodParams<Object> params ) {
 
-		if ( inited || !deInited ) {
+		if ( this.isInited() ) {
 			RunTime.badCall( "already inited, you must deInit() before calling init(...) again" );
 		}
 		addNewInstance( this );
-		inited = true;
-		deInited = false;
+		this.setInited( true );
 		
 		if ( params != formerParams ) {
 			// NOT called by reInit()
@@ -120,12 +139,8 @@ public abstract class StaticInstanceTracker {
 	 */
 	public final void deInit() {
 
-		if ( !inited ) {
+		if ( !this.isInited() ) {
 			RunTime.badCall( this.toString() + " was not already init()-ed" );
-		}
-		if ( deInited ) {
-			
-			RunTime.badCall( this + " was already deInit()-ed!" );
 		}
 		
 		this.deInitSilently();
@@ -138,9 +153,8 @@ public abstract class StaticInstanceTracker {
 	 */
 	public final void deInitSilently() {
 
-		if ( ( inited ) && ( !deInited ) ) {
-			deInited = true;
-			inited = false;
+		if ( this.isInited() ) {
+			this.setInited( false );
 			removeOldInstance( this );
 			this.done();
 			// formerParams are not managed here, only on init() ie. discarded
@@ -185,6 +199,8 @@ public abstract class StaticInstanceTracker {
 		Log.entry();
 		StaticInstanceTracker iter;
 		while ( null != ( iter = ALL_INSTANCES.getObjectAt( Position.FIRST ) ) ) {
+			System.out.println( iter.getClass().getSimpleName() + " / " + iter
+					+ "!!!!!!" + ALL_INSTANCES.size() );
 			iter.deInit();
 		}
 		RunTime.assertTrue( ALL_INSTANCES.isEmpty() );

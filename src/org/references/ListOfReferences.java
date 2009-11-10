@@ -422,4 +422,22 @@ public class ListOfReferences<Obje> {
 		}
 		return parser;
 	}
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+
+		String ret = "";// this.getClass().getSimpleName();
+		ChainedReference<Obje> iter = this.getFirstRef();
+		while ( null != iter ) {
+			ret += iter.toString() + ", ";
+			// get next
+			iter = this.getRefAt( Position.AFTER, iter );
+		}
+		return ret + ".";
+	}
 }

@@ -105,4 +105,19 @@ public class Reference<T> implements Serializable {
 			return super.hashCode();
 		}
 	}
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+
+		if ( null != this.getObject() ) {
+			return this.getObject().toString();
+		} else {
+			return "null";
+		}
+	}
 }

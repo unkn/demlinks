@@ -224,7 +224,7 @@ public abstract class BaseFixedLogicrateGame extends AbstractGame {
 	}
 	
 	/**
-	 * Get the exception handler if one hs been set.
+	 * Get the exception handler if one has been set.
 	 * 
 	 * @return the exception handler, or {@code null} if not set.
 	 */

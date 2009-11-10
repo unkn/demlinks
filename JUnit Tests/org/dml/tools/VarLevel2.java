@@ -25,7 +25,6 @@ package org.dml.tools;
 
 
 
-import org.dml.tools.RunTime;
 import org.references.method.MethodParams;
 import org.temporary.tests.PossibleParams;
 
@@ -37,8 +36,7 @@ import org.temporary.tests.PossibleParams;
  */
 public class VarLevel2 extends VarLevel1 implements VarLevel2Interface {
 	
-	String			homeDir;
-	private boolean	inited	= false;
+	String	homeDir;
 	
 	// public void init( String homeDir1 ) {
 	//
@@ -47,18 +45,9 @@ public class VarLevel2 extends VarLevel1 implements VarLevel2Interface {
 	// super.init();
 	// }
 	
-	@Override
-	protected void start() {
-
-		if ( !inited ) {
-			RunTime.badCall( "please don't use init() w/o params" );
-		}
-		super.start();
-	}
-	
 	public void showHome() {
 
-		RunTime.assertTrue( inited );
+		RunTime.assertTrue( this.isInited() );
 		System.out.println( this.getName() + "'s home is: " + homeDir );
 	}
 	
@@ -70,24 +59,18 @@ public class VarLevel2 extends VarLevel1 implements VarLevel2Interface {
 	@Override
 	protected void done() {
 
-		inited = false;
 		super.done();
 	}
 	
-	public boolean isInited() {
-
-		return inited;
-	}
 	
 	/**
 	 * @param params
 	 */
 	@Override
-	public void init( MethodParams<Object> params ) {
+	protected void start( MethodParams<Object> params ) {
 
 		RunTime.assertNotNull( params );
 		homeDir = params.getExString( PossibleParams.homeDir );
-		inited = true;
-		super.init( params );
+		super.start( params );
 	}
 }

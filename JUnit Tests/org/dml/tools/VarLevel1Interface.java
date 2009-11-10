@@ -25,18 +25,11 @@ package org.dml.tools;
 
 
 
-
-
-
 /**
  * 
  *
  */
 public interface VarLevel1Interface {
-	
-	// public void init( MethodParams<Object> params );
-	
-	public void init();
 	
 	/**
 	 * 

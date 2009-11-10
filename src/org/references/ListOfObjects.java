@@ -75,7 +75,7 @@ public class ListOfObjects<E> extends ListOfReferences<E> {
 	 *            that will be encapsulated into the ref
 	 * @return new reference to <tt>obj</tt>
 	 */
-	public ChainedReference<E> newRef( E obj ) {
+	protected ChainedReference<E> newRef( E obj ) {
 
 		ChainedReference<E> n = new ChainedReference<E>();
 		n.setObject( obj );// is no longer null
@@ -197,4 +197,6 @@ public class ListOfObjects<E> extends ListOfReferences<E> {
 	}
 	
 	// TODO add replace methods
+	
+
 }

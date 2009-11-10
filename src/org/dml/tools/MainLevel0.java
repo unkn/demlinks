@@ -43,7 +43,7 @@ import org.temporary.tests.PossibleParams;
  * level up
  * 
  * 1. VarLevel field in each subclass(or level) should be declared private and
- * must extend StaticInstanceTrackerWithMethodParams and thus cannot be an
+ * must extend StaticInstanceTracker and thus cannot be an
  * interface type<br>
  * ... there is only one VarLevel instance no matter at which level we are, once
  * the class is instantiated, all private fields marked with VarLevel will point
@@ -53,9 +53,9 @@ import org.temporary.tests.PossibleParams;
  * that will be used when params are missing or null instead of them or params
  * that are passed to the VarLevel init(..)
  * 3. the VarLevel and the MainLevel1 class have to extend
- * StaticInstanceTrackerWithMethodParams
+ * StaticInstanceTracker
  */
-public abstract class MainLevel0 extends StaticInstanceTrackerWithMethodParams {
+public abstract class MainLevel0 extends StaticInstanceTracker {
 	
 	// var to see if we used init() instead of initMainLevel(...); its only
 	// purpose is to prevent init() usage
@@ -150,14 +150,14 @@ public abstract class MainLevel0 extends StaticInstanceTrackerWithMethodParams {
 		}
 	}
 	
-	private StaticInstanceTrackerWithMethodParams getVarLevelX() {
+	private StaticInstanceTracker getVarLevelX() {
 
 		Field lastField = this.getFieldInLastSubClassWhichIs_This();
-		StaticInstanceTrackerWithMethodParams ret = null;
+		StaticInstanceTracker ret = null;
 		boolean prevState = lastField.isAccessible();
 		try {
 			lastField.setAccessible( true );
-			ret = (StaticInstanceTrackerWithMethodParams)lastField.get( this );
+			ret = (StaticInstanceTracker)lastField.get( this );
 		} catch ( IllegalArgumentException e ) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -182,7 +182,7 @@ public abstract class MainLevel0 extends StaticInstanceTrackerWithMethodParams {
 	 *            are passed down to the VarLevel
 	 */
 	@Override
-	public void init( MethodParams<Object> params ) {
+	protected void start( MethodParams<Object> params ) {
 
 		// allows null argument
 		MethodParams<Object> mixedParams = this.getDefaults().getClone();
@@ -191,6 +191,7 @@ public abstract class MainLevel0 extends StaticInstanceTrackerWithMethodParams {
 				mixedParams.mergeWith( params, true );// prio on passed params
 			}
 			
+			// FIXME: maybe using same param here is bad idea
 			Reference<Object> ref = mixedParams.get( PossibleParams.varLevelAll );
 			if ( null == ref ) {
 				// not specified own VarLevel by user, then we make one which we
@@ -208,7 +209,7 @@ public abstract class MainLevel0 extends StaticInstanceTrackerWithMethodParams {
 				// it's already inited by caller (assumed) so we won't init it
 			}
 			inited = true;
-			super.init();
+			// super.start( null );
 		} finally {
 			mixedParams.deInit();
 		}
@@ -224,7 +225,7 @@ public abstract class MainLevel0 extends StaticInstanceTrackerWithMethodParams {
 
 		if ( null == defaults ) {
 			defaults = new MethodParams<Object>();
-			defaults.init();// FIXME: when's this deInit-ed?
+			defaults.init( null );// FIXME: when's this deInit-ed?
 		}
 		
 		return defaults;
@@ -253,22 +254,6 @@ public abstract class MainLevel0 extends StaticInstanceTrackerWithMethodParams {
 			}
 		}
 	}
-	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.dml.tools.StaticInstanceTracker#start()
-	 */
-	@Override
-	protected void start() {
-
-		if ( !inited ) {
-			// called init() which is not supported
-			RunTime.badCall( "please don't use init() w/o params" );
-			// this.initMainLevel( null );this won't work, init() recursion
-		}
-	}
-	
 	
 	/**
 	 * fields from subclasses
@@ -306,9 +291,9 @@ public abstract class MainLevel0 extends StaticInstanceTrackerWithMethodParams {
 							// field.getType() ) );
 							// if ( !( field.get( this ) instanceof
 							// StaticInstanceTrackerWithMethodParams ) ) {
-							if ( !StaticInstanceTrackerWithMethodParams.class.isAssignableFrom( field.getType() ) ) {
+							if ( !StaticInstanceTracker.class.isAssignableFrom( field.getType() ) ) {
 								RunTime.bug( "wrong field type, must be a subclass of "
-										+ StaticInstanceTrackerWithMethodParams.class.getSimpleName() );
+										+ StaticInstanceTracker.class.getSimpleName() );
 							}
 							// make sure this class' field is last!
 							// by using LIFO

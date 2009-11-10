@@ -22,8 +22,6 @@ package org.references;
 
 
 
-import java.util.NoSuchElementException;
-
 import org.dml.tools.RunTime;
 
 
@@ -37,154 +35,24 @@ import org.dml.tools.RunTime;
  * if a is already in list, b can't be added (it already exists as a)<br>
  * for that to work, you need to override .equals() or else it defaults to ==
  */
-public class ListOfUniqueNonNullObjects<E> extends ListOfObjects<E> {
+public class ListOfUniqueNonNullObjects<E> extends ListOfNonNullObjects<E> {
 	
 	public ListOfUniqueNonNullObjects() {
 
 		super();
 	}
 	
-	// /** unused, yet
-	// * @param position only FIRST/LAST
-	// * @return the object that was removed, or null is none was
-	// */
-	// public E removeObject(Position position) {
-	// Debug.nullException(position);
-	// Reference<E> nr = getNodeRefAt(position);
-	// if (null != nr) {
-	// E nod = nr.getObject();
-	// if (removeRef(nr)) {
-	// return nod;
-	// }
-	// }
-	// return null;
-	// }
-	/**
-	 * not by content comparison ie. not .equals() instead it's "=="
-	 * 
-	 * @param obj
-	 * @return
-	 */
-	@Override
-	public boolean containsObject( E obj ) {
-
-		RunTime.assertNotNull( obj );
-		return super.containsObject( obj );
-	}
 	
-	/**
-	 * @param obj
-	 * @param index
-	 *            0 based index
-	 * @return true if obj is at index
-	 */
-	@Override
-	public boolean containsObjectAtPos( E obj, int index ) {
 
-		RunTime.assertNotNull( obj );
-		return super.containsObjectAtPos( obj, index );
-	}
-	
-	/**
-	 * creates a new NodeRef to be added to this list, but it's not added via
-	 * this method
-	 * 
-	 * @param obj
-	 * @return new reference to <tt>obj</tt>
-	 */
-	@Override
-	public ChainedReference<E> newRef( E obj ) {
-
-		RunTime.assertNotNull( obj );// must not be null
-		return super.newRef( obj );
-	}
-	
-	/**
-	 * @param obj
-	 * @return null or the reference containing the obj
-	 */
-	@Override
-	public ChainedReference<E> getRef( E obj ) {
-
-		RunTime.assertNotNull( obj );
-		return super.getRef( obj );
-	}
-	
-	/**
-	 * @param pos
-	 *            only FIRST/LAST
-	 * @return null or the object at specified position
-	 */
-	@Override
-	public E getObjectAt( Position pos ) {
-
-		RunTime.assertNotNull( pos );
-		E obj = null;
-		try {
-			obj = super.getObjectAt( pos );
-		} catch ( NoSuchElementException nsee ) {
-			return null;
-		}
-		RunTime.assertNotNull( obj );
-		return obj;
-	}
-	
-	/**
-	 * @param index
-	 *            0 based index
-	 * @return null(aka not found) or the object at index
-	 */
-	@Override
-	public E getObjectAt( int index ) {
-
-		RunTime.assertNotNull( index );
-		E obj = null;
-		try {
-			obj = super.getObjectAt( index );
-		} catch ( NoSuchElementException nsee ) {
-			return null;
-		}
-		RunTime.assertNotNull( obj );
-		return obj;
-	}
-	
-	/**
-	 * @param pos
-	 *            BEFORE/AFTER...of...
-	 * @param objPos
-	 *            ...which object
-	 * @return null or the object
-	 */
-	public E getObjectAt( Position pos, E objPos ) {
-
-		RunTime.assertNotNull( pos, objPos );
-		E ret = null;
-		ChainedReference<E> refPos = this.getRef( objPos );
-		if ( null == refPos ) {
-			// couldn't find objPos
-			RunTime.badCall( "position object not found" );
-		}
-		// ie. what's the ref that's BEFORE(pos) ref1(refPos) ?
-		ChainedReference<E> ref = this.getRefAt( pos, refPos );
-		if ( null == ref ) {
-			ret = null;// not found
-		} else {
-			ret = ref.getObject();
-			RunTime.assertNotNull( ret );
-		}
-		return ret;
-	}
-	
 	/**
 	 * @param obj
 	 *            that doesn't already exist; not null
-	 * @return true if object already existed and wasn't re-added or moved to
-	 *         end
+	 * @return the ref
 	 */
 	@Override
 	public ChainedReference<E> addLast( E obj ) {
 
-		RunTime.assertNotNull( obj );
+		RunTime.assertNotNull( obj );// redundant
 		ChainedReference<E> ref = this.getRef( obj );
 		if ( null != ref ) {
 			// already exists, not added/moved
@@ -202,7 +70,7 @@ public class ListOfUniqueNonNullObjects<E> extends ListOfObjects<E> {
 	@Override
 	public ChainedReference<E> addFirst( E obj ) {
 
-		RunTime.assertNotNull( obj );
+		RunTime.assertNotNull( obj );// redundant
 		
 		ChainedReference<E> ref = this.getRef( obj );
 		if ( null != ref ) {
@@ -214,6 +82,7 @@ public class ListOfUniqueNonNullObjects<E> extends ListOfObjects<E> {
 	
 	/**
 	 * @param obj
+	 *            not null, not already existing;
 	 * @return true if existed and nothing was changed; false if it didn't
 	 *         exist, but it does now
 	 */
@@ -232,32 +101,13 @@ public class ListOfUniqueNonNullObjects<E> extends ListOfObjects<E> {
 	}
 	
 	/**
-	 * @param node
-	 * @param location
-	 * @return ref to the object that existed, or was just added
-	 */
-	@Override
-	public ChainedReference<E> insert( E obj, Position position ) {
-
-		RunTime.assertNotNull( obj, position );
-		switch ( position ) {
-		case FIRST:
-			return this.addFirst( obj );
-		case LAST:
-			return this.addLast( obj );
-		default:
-			RunTime.bug( "undefined location here." );
-		}
-		return null;// not reached
-	}
-	
-	/**
 	 * @param newObj
 	 * @param pos
 	 * @param posObj
 	 * @return true if newObj already exists, and nothing is done with it<br>
 	 *         false is all went according to call
 	 */
+	@Override
 	public boolean insert( E newObj, Position pos, E posObj ) {
 
 		RunTime.assertNotNull( newObj, pos, posObj );
@@ -267,25 +117,9 @@ public class ListOfUniqueNonNullObjects<E> extends ListOfObjects<E> {
 			return true;
 		}
 		
-		ChainedReference<E> posRef = this.getRef( posObj );
-		if ( null == posRef ) {
-			// posObj non existent? stop some bugs by throwing exception
-			throw new NoSuchElementException();
-		}
-		newRef = this.newRef( newObj );
-		return this.insertRefAt( newRef, pos, posRef );
+		return super.insert( newObj, pos, posObj );// false
 	}
 	
-	/**
-	 * @param obj
-	 * @return true if existed; either way after call it's removed
-	 */
-	@Override
-	public boolean removeObject( E obj ) {
 
-		RunTime.assertNotNull( obj );
-		return super.removeObject( obj );
-	}
-	
 	// TODO add replace methods
 }

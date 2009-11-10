@@ -25,7 +25,6 @@ package org.dml.tools;
 
 
 
-import org.dml.tools.StaticInstanceTrackerWithMethodParams;
 import org.references.method.MethodParams;
 
 
@@ -34,7 +33,7 @@ import org.references.method.MethodParams;
  * 
  *
  */
-public class VarLevel1 extends StaticInstanceTrackerWithMethodParams implements
+public class VarLevel1 extends StaticInstanceTracker implements
 		VarLevel1Interface {
 	
 	
@@ -65,23 +64,20 @@ public class VarLevel1 extends StaticInstanceTrackerWithMethodParams implements
 	 * 
 	 * @see org.dml.tools.StaticInstanceTracker#start()
 	 */
-	@Override
-	protected void start() {
-
-		System.out.println( this.getName() + " inited." );
-		
-	}
-	
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @seeorg.temporary.tests.VarLevel1Interface#init(org.references.method.
-	 * MethodParams)
+	 * @see
+	 * 
+	 * 
+	 * 
+	 * org.dml.tools.StaticInstanceTracker#start(org.references.method.MethodParams
+	 * )
 	 */
 	@Override
-	public void init( MethodParams<Object> params ) {
+	protected void start( MethodParams<Object> params ) {
 
-		// ignoring at this level
-		super.init();
+		System.out.println( this.getName() + " inited." );
 	}
+	
 }

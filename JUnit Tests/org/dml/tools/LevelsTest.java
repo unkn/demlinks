@@ -31,7 +31,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import org.dml.error.BadCallError;
-import org.dml.tools.StaticInstanceTracker;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -76,7 +75,7 @@ public class LevelsTest {
 		
 
 		VarLevel1 v1 = new VarLevel1();
-		v1.init();
+		v1.init( null );
 		MethodParams<Object> params1 = new MethodParams<Object>();
 		params1.set( PossibleParams.varLevelAll, v1 );
 		ml1.init( params1 );
@@ -95,9 +94,8 @@ public class LevelsTest {
 			ml2.init( params2 );
 		} catch ( BadCallError bce ) {
 			threw = true;
-		} finally {
-			assertFalse( threw );
 		}
+		assertFalse( threw );
 		
 		ml2.deInit();
 		ml2.init( params2 );
@@ -109,9 +107,8 @@ public class LevelsTest {
 			ml1.init( params2 );
 		} catch ( BadCallError bce ) {
 			threw = true;
-		} finally {
-			assertFalse( threw );
 		}
+		assertFalse( threw );
 		ml1.do1();// level2
 		
 		try {
@@ -119,9 +116,8 @@ public class LevelsTest {
 			ml2.init( params1 );
 		} catch ( BadCallError bce ) {
 			threw = true;
-		} finally {
-			assertTrue( threw );
 		}
+		assertTrue( threw );
 		
 		params1.set( PossibleParams.varLevelAll, "something" );
 		try {
@@ -129,9 +125,9 @@ public class LevelsTest {
 			ml2.init( params1 );
 		} catch ( BadCallError bce ) {
 			threw = true;
-		} finally {
-			assertTrue( threw );
 		}
+		assertTrue( threw );
+		ml2.deInit();
 		
 		params1.set( PossibleParams.varLevelAll, null );
 		try {
@@ -139,10 +135,11 @@ public class LevelsTest {
 			ml2.init( params1 );
 		} catch ( AssertionError ae ) {
 			threw = true;
-		} finally {
-			assertTrue( threw );
 		}
+		assertTrue( threw );
+		ml2.deInit();
 		
+		ml2.init( params2 );
 		ml2.showHome();
 		params2.set( PossibleParams.homeDir, "home3" );
 		params2.remove( PossibleParams.varLevelAll );
@@ -155,15 +152,16 @@ public class LevelsTest {
 		ml2.showHome();
 		ml2.do1();
 		
+
+		ml1.deInit();
 		params2.set( PossibleParams.varLevelAll, null );
 		try {
 			threw = false;
 			ml1.init( params2 );
 		} catch ( AssertionError ae ) {
 			threw = true;
-		} finally {
-			assertTrue( threw );
 		}
+		assertTrue( threw );
 		
 		// Level 3:
 		MethodParams<Object> v3params = new MethodParams<Object>();
@@ -178,9 +176,8 @@ public class LevelsTest {
 			ml3.init( params3 );
 		} catch ( AssertionError ae ) {
 			threw = true;
-		} finally {
-			assertTrue( threw );
 		}
+		assertTrue( threw );
 		
 		params3.set( PossibleParams.varLevelAll, v2 );
 		try {
@@ -188,9 +185,8 @@ public class LevelsTest {
 			ml3.init( params3 );
 		} catch ( BadCallError bce ) {
 			threw = true;
-		} finally {
-			assertTrue( threw );
 		}
+		assertTrue( threw );
 		
 		params3.set( PossibleParams.varLevelAll, v1 );
 		try {
@@ -198,9 +194,9 @@ public class LevelsTest {
 			ml3.init( params3 );
 		} catch ( BadCallError bce ) {
 			threw = true;
-		} finally {
-			assertTrue( threw );
 		}
+		assertTrue( threw );
+		ml3.deInit();
 		
 		params3.set( PossibleParams.varLevelAll, v3 );
 		ml3.init( params3 );
@@ -299,6 +295,7 @@ public class LevelsTest {
 
 		// the parameters won't get modified
 		MethodParams<Object> mp = new MethodParams<Object>();
+		mp.init( null );
 		assertTrue( 0 == mp.size() );
 		ml2.init( mp );
 		assertTrue( 0 == mp.size() );
@@ -310,8 +307,10 @@ public class LevelsTest {
 		StaticInstanceTracker.deInitAllThatExtendMe();
 		VarLevel3 vl3 = new VarLevel3();
 		MethodParams<Object> v3params = new MethodParams<Object>();
+		v3params.init( null );
 		v3params.set( PossibleParams.homeDir, "homeDir3" );
 		vl3.init( v3params );
+		v3params.deInit();
 		mp.set( PossibleParams.varLevelAll, vl3 );
 		assertTrue( 1 == mp.size() );
 		ml3.init( mp );
@@ -325,13 +324,12 @@ public class LevelsTest {
 		
 		boolean ex = false;
 		try {
-			ml3.init();
+			ml3.init( null );
 		} catch ( BadCallError bce ) {
 			ex = true;
-		} finally {
-			assertTrue( ex );
-			ml3.deInit();
 		}
+		assertTrue( ex );
+		ml3.deInit();
 		
 		assertNull( ml3.junitGetVar() );
 		ml3.init( mp );
@@ -343,19 +341,25 @@ public class LevelsTest {
 		assertTrue( ml3.junitGetVar() != vl3 );
 		assertNotNull( ml3.junitGetVar() );
 		ml3.showHome();
+		
+		mp.deInit();
 	}
 	
 	@Test
 	public void test4() {
 
 		MethodParams<Object> mp = new MethodParams<Object>();
+		mp.init( null );
 		VarLevel3 vl3 = new VarLevel3();
 		MethodParams<Object> vl3mp = new MethodParams<Object>();
+		vl3mp.init( null );
 		vl3mp.set( PossibleParams.homeDir, "homeDir3" );
 		vl3.init( vl3mp );
+		vl3mp.deInit();
 		mp.set( PossibleParams.varLevelAll, vl3 );
 		assertTrue( vl3.isInited() );
 		ml3.init( mp );
+		mp.deInit();
 		assertTrue( vl3.isInited() );
 		assertTrue( ml3.junitGetVar() == vl3 );
 		ml3.showHome();

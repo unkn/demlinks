@@ -335,12 +335,6 @@ public class MethodParams<T> extends StaticInstanceTracker {// T= base class,
 	 * 
 	 * 
 	 * 
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
 	 * org.dml.tools.StaticInstanceTracker#start(org.references.method.MethodParams
 	 * )
 	 */
@@ -353,5 +347,16 @@ public class MethodParams<T> extends StaticInstanceTracker {// T= base class,
 		// assumed it's empty on start, or else bugged
 		RunTime.assertTrue( this.size() == 0 );
 		RunTime.assertTrue( redundantListOfNames.size() == 0 );
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+
+		return listOfParams.toString();
 	}
 }
