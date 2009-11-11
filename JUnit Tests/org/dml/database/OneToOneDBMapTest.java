@@ -57,7 +57,7 @@ public class OneToOneDBMapTest {
 	public void setUp() throws DatabaseException {
 
 		MethodParams<Object> params = new MethodParams<Object>();
-		params.init();
+		params.init( null );
 		params.set( PossibleParams.homeDir, Consts.BDB_ENV_PATH );
 		params.set( PossibleParams.wipeDB, true );
 		bdb = new Level1_Storage_BerkeleyDB();

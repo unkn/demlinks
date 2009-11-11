@@ -47,14 +47,14 @@ public class Level1_DMLStorage_BerkeleyDB extends MainLevel0 implements
 		Level1_DMLStorageWrapper {
 	
 	@VarLevel
-	private Level1_Storage_BerkeleyDB	bdb						= null;
+	private final Level1_Storage_BerkeleyDB	bdb						= null;
 	
-	private final static String			DEFAULT_BDB_ENV_PATH	= "."
-																		+ File.separator
-																		+ "bin"
-																		+ File.separator
-																		+ "mainEnv"
-																		+ File.separator;
+	private final static String				DEFAULT_BDB_ENV_PATH	= "."
+																			+ File.separator
+																			+ "bin"
+																			+ File.separator
+																			+ "mainEnv"
+																			+ File.separator;
 	
 	
 	/**
@@ -74,6 +74,7 @@ public class Level1_DMLStorage_BerkeleyDB extends MainLevel0 implements
 		def.set( PossibleParams.wipeDB, false );
 		return def;
 	}
+	
 	
 	// =============================================
 	@Override
@@ -121,35 +122,6 @@ public class Level1_DMLStorage_BerkeleyDB extends MainLevel0 implements
 			return bdb.getDBMapJIDsToNodeIDs().ensureNodeID( theJID );
 		} catch ( DatabaseException de ) {
 			throw new StorageException( de );
-		}
-	}
-	
-	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.dml.tools.StaticInstanceTracker#done()
-	 */
-	@Override
-	protected void done() {
-
-		bdb.deInit();
-		bdb = null;
-		
-	}
-	
-	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.dml.tools.StaticInstanceTracker#start()
-	 */
-	@Override
-	protected void start() {
-
-		if ( null == bdb ) {
-			// called init() which is not supported
-			RunTime.badCall( "please don't use init() w/o params" );
 		}
 	}
 	

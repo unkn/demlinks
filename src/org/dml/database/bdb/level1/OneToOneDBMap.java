@@ -28,6 +28,8 @@ package org.dml.database.bdb.level1;
 import org.dml.database.bdb.level2.OneToOneDBConfig;
 import org.dml.tools.RunTime;
 import org.javapart.logger.Log;
+import org.references.method.MethodParams;
+import org.temporary.tests.PossibleParams;
 
 import com.sleepycat.je.Database;
 import com.sleepycat.je.DatabaseEntry;
@@ -74,8 +76,16 @@ public class OneToOneDBMap {
 	 */
 	private void internal_initBoth() throws DatabaseException {
 
-		forwardDB = new DatabaseCapsule( bdb, dbName, new OneToOneDBConfig() );
+		forwardDB = new DatabaseCapsule();
+		MethodParams<Object> params = new MethodParams<Object>();
+		params.init( null );
+		params.set( PossibleParams.level1_BDBStorage, bdb );
+		params.set( PossibleParams.dbName, dbName );
+		params.set( PossibleParams.dbConfig, new OneToOneDBConfig() );
+		forwardDB.init( params );
+		params.deInit();
 		
+
 		backwardDB = new SecondaryDatabaseCapsule( bdb, secPrefix + dbName,
 				new OneToOneSecondaryDBConfig(), forwardDB.getDB() );
 		

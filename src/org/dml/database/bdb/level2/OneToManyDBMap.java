@@ -94,8 +94,16 @@ public class OneToManyDBMap {
 	private Database getForwardDB() throws DatabaseException {
 
 		if ( null == forwardDB ) {
-			forwardDB = new DatabaseCapsule( this.getBDBL1(), dbName,
-					new OneToManyDBConfig() );
+			
+			forwardDB = new DatabaseCapsule();
+			MethodParams<Object> params = new MethodParams<Object>();
+			params.init( null );
+			params.set( PossibleParams.level1_BDBStorage, this.getBDBL1() );
+			params.set( PossibleParams.dbName, dbName );
+			params.set( PossibleParams.dbConfig, new OneToManyDBConfig() );
+			forwardDB.init( params );
+			params.deInit();
+			
 			RunTime.assertNotNull( forwardDB );
 		}
 		return forwardDB.getDB();
@@ -110,7 +118,7 @@ public class OneToManyDBMap {
 		if ( null == backwardDB ) {
 			MethodParams<Object> params = new MethodParams<Object>();
 			backwardDB = new DatabaseCapsule();
-			params.init();
+			params.init( null );
 			params.set( PossibleParams.level1_BDBStorage, this.getBDBL1() );
 			params.set( PossibleParams.dbName, dbName + backwardSuffix );
 			params.set( PossibleParams.dbConfig, new OneToManyDBConfig() );

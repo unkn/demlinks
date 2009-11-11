@@ -26,7 +26,7 @@ package org.dml.database.bdb.level1;
 
 
 import org.dml.tools.RunTime;
-import org.dml.tools.StaticInstanceTrackerWithMethodParams;
+import org.dml.tools.StaticInstanceTracker;
 import org.javapart.logger.Log;
 import org.references.Reference;
 import org.references.method.MethodParams;
@@ -43,7 +43,7 @@ import com.sleepycat.je.DatabaseException;
  * also makes sure the database isn't open unless it's needed<br>
  * once opened it stays open until silentClose() is called<br>
  */
-public class DatabaseCapsule extends StaticInstanceTrackerWithMethodParams {
+public class DatabaseCapsule extends StaticInstanceTracker {
 	
 	private String						dbName;
 	private Database					db		= null;
@@ -58,20 +58,7 @@ public class DatabaseCapsule extends StaticInstanceTrackerWithMethodParams {
 	@Override
 	protected void done() {
 
-		// TODO Auto-generated method stub
-		
-	}
-	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.dml.tools.StaticInstanceTracker#start()
-	 */
-	@Override
-	protected void start() {
-
-		// TODO Auto-generated method stub
-		
+		this.silentClose();
 	}
 	
 	/**
@@ -86,7 +73,7 @@ public class DatabaseCapsule extends StaticInstanceTrackerWithMethodParams {
 	 * @param params
 	 */
 	@Override
-	public void init( MethodParams<Object> params ) {
+	protected void start( MethodParams<Object> params ) {
 
 		// compulsory
 		bdbL1 = (Level1_Storage_BerkeleyDB)params.getEx( PossibleParams.level1_BDBStorage );

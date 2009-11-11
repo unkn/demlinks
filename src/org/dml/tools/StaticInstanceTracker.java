@@ -193,6 +193,10 @@ public abstract class StaticInstanceTracker {
 	 * already deInited since they're not in the list anymore<br>
 	 * this will deinit all instances that were ever inited, no matter how
 	 * different they are; different name classes included<br>
+	 * *Be careful using this in other places than before quitting the program,
+	 * because ie. if u have an instance that inits another instance and the
+	 * latter gets deInit-ed first then the former when deInit-ing will fail
+	 * with 'not already inited' when it tries to deInit what it inited<br>
 	 */
 	public static final void deInitAllThatExtendMe() {
 

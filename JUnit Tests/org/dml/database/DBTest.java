@@ -30,6 +30,8 @@ import org.dml.database.bdb.level1.Level1_Storage_BerkeleyDB;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.references.method.MethodParams;
+import org.temporary.tests.PossibleParams;
 
 import com.sleepycat.je.DatabaseException;
 
@@ -46,7 +48,13 @@ public class DBTest {
 	@Before
 	public void setUp() throws DatabaseException {
 
-		bdb = new Level1_Storage_BerkeleyDB( Consts.BDB_ENV_PATH );
+		bdb = new Level1_Storage_BerkeleyDB();
+		MethodParams<Object> params = new MethodParams<Object>();
+		params.init( null );
+		params.set( PossibleParams.homeDir, Consts.BDB_ENV_PATH );
+		params.set( PossibleParams.wipeDB, false );
+		bdb.init( params );
+		params.deInit();
 		
 	}
 	

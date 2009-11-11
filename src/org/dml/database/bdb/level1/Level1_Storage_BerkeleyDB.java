@@ -29,7 +29,7 @@ import java.io.File;
 
 import org.dml.storagewrapper.StorageException;
 import org.dml.tools.RunTime;
-import org.dml.tools.StaticInstanceTrackerWithMethodParams;
+import org.dml.tools.StaticInstanceTracker;
 import org.javapart.logger.Log;
 import org.references.ListOfUniqueNonNullObjects;
 import org.references.Position;
@@ -54,8 +54,7 @@ import com.sleepycat.je.SequenceConfig;
  * 
  *
  */
-public class Level1_Storage_BerkeleyDB extends
-		StaticInstanceTrackerWithMethodParams {
+public class Level1_Storage_BerkeleyDB extends StaticInstanceTracker {
 	
 	private String												envHomeDir;
 	private final EnvironmentConfig								environmentConfig			= new EnvironmentConfig();
@@ -73,9 +72,6 @@ public class Level1_Storage_BerkeleyDB extends
 	private final ListOfUniqueNonNullObjects<Sequence>			allSequenceInstances		= new ListOfUniqueNonNullObjects<Sequence>();
 	private final ListOfUniqueNonNullObjects<Database>			allOpenPrimaryDatabases		= new ListOfUniqueNonNullObjects<Database>();
 	private final ListOfUniqueNonNullObjects<SecondaryDatabase>	allOpenSecondaryDatabases	= new ListOfUniqueNonNullObjects<SecondaryDatabase>();
-	
-	// to prevent calling init() w/o params
-	private boolean												inited						= false;
 	
 	private static final String									dbJID2NID_NAME				= "map(JID<->NodeID)";
 	private final static String									UNINITIALIZED_STRING		= "uninitializedString";
@@ -106,30 +102,10 @@ public class Level1_Storage_BerkeleyDB extends
 		super();
 	}
 	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.dml.tools.StaticInstanceTracker#start()
-	 */
 	@Override
-	protected void start() {
+	protected void start( MethodParams<Object> params ) {
 
-		if ( !inited ) {
-			RunTime.bug( "call init(...) with params instead" );
-		}
-		// super.start();
-	}
-	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.dml.tools.MainLevel0#init(org.references.method.MethodParams)
-	 */
-	@Override
-	public void init( MethodParams<Object> params ) {
-
-		inited = true;
-		super.init();
+		// super.start(params);
 		envHomeDir = params.getExString( PossibleParams.homeDir );
 		Log.entry( envHomeDir );
 		if ( (Boolean)params.getEx( PossibleParams.wipeDB ) ) {
@@ -153,7 +129,6 @@ public class Level1_Storage_BerkeleyDB extends
 	@Override
 	protected void done() {
 
-		inited = false;
 		if ( null != dbJID2NID ) {
 			dbJID2NID = dbJID2NID.deInit();
 		}

@@ -27,7 +27,6 @@ package org.dml.database.bdb.level2;
 
 import org.dml.database.bdb.level1.Level1_Storage_BerkeleyDB;
 import org.dml.tools.RunTime;
-import org.references.method.MethodParams;
 
 
 
@@ -40,12 +39,6 @@ public class Level2_Storage_BerkeleyDB extends Level1_Storage_BerkeleyDB {
 	private DBMapTupleNodeIDs	dbTupleNIDs			= null;
 	private final static String	dbTupleNIDs_NAME	= "tuple(NodeID<->NodeID)";
 	
-	
-	@Override
-	public void init( MethodParams<Object> params ) {
-
-		super.init( params );
-	}
 	
 	/**
 	 * @return

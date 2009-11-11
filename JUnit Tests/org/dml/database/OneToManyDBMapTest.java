@@ -34,6 +34,8 @@ import org.dml.database.bdb.level2.OneToManyDBMap;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.references.method.MethodParams;
+import org.temporary.tests.PossibleParams;
 
 import com.sleepycat.je.DatabaseException;
 
@@ -45,19 +47,27 @@ import com.sleepycat.je.DatabaseException;
  */
 public class OneToManyDBMapTest {
 	
-	OneToManyDBMap	o2m;
+	OneToManyDBMap				o2m;
 	// the following two should be random unique names not already in the dbase
 	// or else the tests may fail
-	final String	_a	= "A" + new Object();
-	final String	_b	= "B" + new Object();
-	final String	_c	= "C" + new Object();
-	Level1_Storage_BerkeleyDB		bdb;
+	final String				_a	= "A" + new Object();
+	final String				_b	= "B" + new Object();
+	final String				_c	= "C" + new Object();
+	Level1_Storage_BerkeleyDB	bdb;
 	
 	@Before
 	public void setUp() throws DatabaseException {
 
-		bdb = new Level1_Storage_BerkeleyDB( Consts.BDB_ENV_PATH, true );
+		bdb = new Level1_Storage_BerkeleyDB();
+		MethodParams<Object> params = new MethodParams<Object>();
+		params.init( null );
+		params.set( PossibleParams.homeDir, Consts.BDB_ENV_PATH );
+		params.set( PossibleParams.wipeDB, true );
+		bdb.init( params );
+		params.deInit();
+		
 		o2m = new OneToManyDBMap( bdb, "one to many" );// + new Object() );
+		
 	}
 	
 	@After
@@ -108,8 +118,30 @@ public class OneToManyDBMapTest {
 		
 		assertTrue( o2m.ensureGroup( _c, _b ) );
 		
-		// assertFalse( o2m.ensureGroup( "", "" ) );
-		// assertTrue( o2m.ensureGroup( "", "" ) );
+
 	}
 	
+	@Test
+	public void testSame() throws DatabaseException {
+
+		assertFalse( o2m.ensureGroup( _a, _a ) );
+		assertTrue( o2m.ensureGroup( _a, _a ) );
+		assertTrue( o2m.isGroup( _a, _a ) );
+	}
+	
+	@Test
+	public void testEmpty() throws DatabaseException {
+
+		assertFalse( o2m.ensureGroup( "", "" ) );
+		assertTrue( o2m.ensureGroup( "", "" ) );
+		assertTrue( o2m.isGroup( "", "" ) );
+	}
+	
+	@Test
+	public void testAll() throws DatabaseException {
+
+		this.testEnsureGroup();
+		this.testSame();
+		this.testEmpty();
+	}
 }
