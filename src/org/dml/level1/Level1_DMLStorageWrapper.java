@@ -40,7 +40,7 @@ public interface Level1_DMLStorageWrapper {
 	 * it's a 1 to 1 mapping<br>
 	 * 
 	 * @param identifiedByThisNodeID
-	 * @return NodeJID
+	 * @return NodeJID or null if not found
 	 * @throws StorageException
 	 */
 	public NodeJID getNodeJID( NodeID identifiedByThisNodeID )
@@ -51,7 +51,7 @@ public interface Level1_DMLStorageWrapper {
 	 * it's a 1 to 1 mapping<br>
 	 * 
 	 * @param identifiedByThisJID
-	 * @return NodeID
+	 * @return NodeID or null if not found;
 	 * @throws StorageException
 	 */
 	public NodeID getNodeID( NodeJID identifiedByThisJID )
@@ -59,14 +59,16 @@ public interface Level1_DMLStorageWrapper {
 	
 	/**
 	 * @param fromJID
-	 * @return
+	 *            must not be already associated with a NodeID (1to1 max) or
+	 *            else throws
+	 * @return the created NodeID or throws bug if fromJID already had a NodeID
 	 * @throws StorageException
 	 */
 	public NodeID createNodeID( NodeJID fromJID ) throws StorageException;
 	
 	/**
 	 * @param theJID
-	 * @return
+	 * @return the new or existing NodeID
 	 * @throws StorageException
 	 */
 	public NodeID ensureNodeID( NodeJID theJID ) throws StorageException;

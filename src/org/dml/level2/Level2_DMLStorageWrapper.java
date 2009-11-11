@@ -46,4 +46,6 @@ public interface Level2_DMLStorageWrapper extends Level1_DMLStorageWrapper {
 	public boolean ensureGroup( NodeID first, NodeID second )
 			throws StorageException;
 	
+	
+	public boolean isGroup( NodeID first, NodeID second );
 }

@@ -88,15 +88,25 @@ public class Level2_DMLEnvironmentTest {
 			n3 = d3.getNodeID( j2 );
 			assertNull( n3 );
 			System.out.println( d3.getNodeJID( n1 ) );
+			assertFalse( d1.isGroup( n1, n2 ) );
+			assertFalse( d1.isGroup( n1, n1 ) );
 			assertFalse( d1.ensureGroup( n1, n2 ) );
 			assertFalse( d1.ensureGroup( n1, n1 ) );
 			assertTrue( d1.ensureGroup( n1, n2 ) );
 			assertTrue( d1.ensureGroup( n1, n1 ) );
+			assertTrue( d1.isGroup( n1, n2 ) );
+			assertTrue( d1.isGroup( n1, n1 ) );
 			
 		} finally {
 			d1.deInit();
 			// d2.deInit();
+			assertFalse( d1.isInited() );
+			assertTrue( d2.isInited() );
+			assertTrue( d3.isInited() );
 			d1.deInitAllLikeMe();
+			assertFalse( d1.isInited() );
+			assertFalse( d2.isInited() );
+			assertFalse( d3.isInited() );
 		}
 	}
 }

@@ -57,4 +57,18 @@ public class Level2_DMLEnvironment extends Level1_DMLEnvironment implements
 		RunTime.assertNotNull( first, second );
 		return storage.ensureGroup( first, second );
 	}
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.dml.level2.Level2_DMLStorageWrapper#isGroup(org.dml.level1.NodeID,
+	 * org.dml.level1.NodeID)
+	 */
+	@Override
+	public boolean isGroup( NodeID first, NodeID second ) {
+
+		RunTime.assertNotNull( first, second );
+		return storage.isGroup( first, second );
+	}
 }

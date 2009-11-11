@@ -86,7 +86,6 @@ public class Level1_DMLEnvironment extends MainLevel0 implements
 	
 	/**
 	 * @param identifiedByThisJID
-	 * @return
 	 * @throws StorageException
 	 */
 	public NodeID getNodeID( NodeJID identifiedByThisJID )

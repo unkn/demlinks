@@ -57,4 +57,22 @@ public class Level2_DMLStorage_BerkeleyDB extends Level1_DMLStorage_BerkeleyDB
 			throw new StorageException( de );
 		}
 	}
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.dml.level2.Level2_DMLStorageWrapper#isGroup(org.dml.level1.NodeID,
+	 * org.dml.level1.NodeID)
+	 */
+	@Override
+	public boolean isGroup( NodeID first, NodeID second ) {
+
+		RunTime.assertNotNull( first, second );
+		try {
+			return bdb.getDBMapTupleNodeIDs().isGroup( first, second );
+		} catch ( DatabaseException de ) {
+			throw new StorageException( de );
+		}
+	}
 }// end of class

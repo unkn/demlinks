@@ -124,7 +124,7 @@ public class DBMapJIDsToNodeIDs extends OneToOneDBMap {
 
 		if ( null != this.internal_getNodeIDFromJID( fromJID ) ) {
 			// already exists
-			RunTime.bug( "bad programming" );// throws
+			RunTime.bug( "bad programming, the JID is already associated with one NodeID !" );// throws
 		}
 		// doesn't exist, make it:
 		return this.internal_makeNewNodeID( fromJID );
