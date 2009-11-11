@@ -33,7 +33,7 @@ import org.references.ListOfUniqueNonNullObjects;
 import org.references.Position;
 import org.references.Reference;
 import org.references.method.MethodParams;
-import org.temporary.tests.PossibleParams;
+import org.references.method.PossibleParams;
 
 
 

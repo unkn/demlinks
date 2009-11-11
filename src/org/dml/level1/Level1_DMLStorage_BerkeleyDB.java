@@ -33,7 +33,7 @@ import org.dml.tools.MainLevel0;
 import org.dml.tools.RunTime;
 import org.dml.tools.VarLevel;
 import org.references.method.MethodParams;
-import org.temporary.tests.PossibleParams;
+import org.references.method.PossibleParams;
 
 import com.sleepycat.je.DatabaseException;
 

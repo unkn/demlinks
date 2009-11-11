@@ -36,7 +36,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.references.Reference;
 import org.references.method.MethodParams;
-import org.temporary.tests.PossibleParams;
+import org.references.method.PossibleParams;
 
 
 

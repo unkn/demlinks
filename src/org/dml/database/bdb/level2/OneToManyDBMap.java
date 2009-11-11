@@ -32,7 +32,7 @@ import org.dml.error.BugError;
 import org.dml.tools.RunTime;
 import org.javapart.logger.Log;
 import org.references.method.MethodParams;
-import org.temporary.tests.PossibleParams;
+import org.references.method.PossibleParams;
 
 import com.sleepycat.je.Database;
 import com.sleepycat.je.DatabaseEntry;
@@ -100,7 +100,7 @@ public class OneToManyDBMap {
 			params.init( null );
 			params.set( PossibleParams.level1_BDBStorage, this.getBDBL1() );
 			params.set( PossibleParams.dbName, dbName );
-			params.set( PossibleParams.dbConfig, new OneToManyDBConfig() );
+			params.set( PossibleParams.priDbConfig, new OneToManyDBConfig() );
 			forwardDB.init( params );
 			params.deInit();
 			
@@ -121,7 +121,7 @@ public class OneToManyDBMap {
 			params.init( null );
 			params.set( PossibleParams.level1_BDBStorage, this.getBDBL1() );
 			params.set( PossibleParams.dbName, dbName + backwardSuffix );
-			params.set( PossibleParams.dbConfig, new OneToManyDBConfig() );
+			params.set( PossibleParams.priDbConfig, new OneToManyDBConfig() );
 			backwardDB.init( params );
 			params.deInit();
 			// RunTime.assertNotNull( backwardDB );

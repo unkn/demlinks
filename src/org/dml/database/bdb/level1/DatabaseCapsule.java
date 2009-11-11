@@ -30,7 +30,7 @@ import org.dml.tools.StaticInstanceTracker;
 import org.javapart.logger.Log;
 import org.references.Reference;
 import org.references.method.MethodParams;
-import org.temporary.tests.PossibleParams;
+import org.references.method.PossibleParams;
 
 import com.sleepycat.je.Database;
 import com.sleepycat.je.DatabaseConfig;
@@ -85,7 +85,7 @@ public class DatabaseCapsule extends StaticInstanceTracker {
 		RunTime.assertFalse( dbName.isEmpty() );
 		
 		// dbConf is optional / can be null
-		Reference<Object> ref = params.get( PossibleParams.dbConfig );
+		Reference<Object> ref = params.get( PossibleParams.priDbConfig );
 		if ( null != ref ) {
 			dbConf = (DatabaseConfig)ref.getObject();
 		} else {

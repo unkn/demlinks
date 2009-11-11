@@ -34,7 +34,7 @@ import org.javapart.logger.Log;
 import org.references.ListOfUniqueNonNullObjects;
 import org.references.Position;
 import org.references.method.MethodParams;
-import org.temporary.tests.PossibleParams;
+import org.references.method.PossibleParams;
 
 import com.sleepycat.bind.tuple.StringBinding;
 import com.sleepycat.je.Database;

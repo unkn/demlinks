@@ -34,7 +34,7 @@ import org.dml.level1.NodeID;
 import org.dml.level1.NodeJID;
 import org.junit.Test;
 import org.references.method.MethodParams;
-import org.temporary.tests.PossibleParams;
+import org.references.method.PossibleParams;
 
 
 

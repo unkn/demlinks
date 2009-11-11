@@ -29,7 +29,7 @@ import org.dml.database.bdb.level2.OneToOneDBConfig;
 import org.dml.tools.RunTime;
 import org.javapart.logger.Log;
 import org.references.method.MethodParams;
-import org.temporary.tests.PossibleParams;
+import org.references.method.PossibleParams;
 
 import com.sleepycat.je.Database;
 import com.sleepycat.je.DatabaseEntry;
@@ -81,14 +81,18 @@ public class OneToOneDBMap {
 		params.init( null );
 		params.set( PossibleParams.level1_BDBStorage, bdb );
 		params.set( PossibleParams.dbName, dbName );
-		params.set( PossibleParams.dbConfig, new OneToOneDBConfig() );
+		params.set( PossibleParams.priDbConfig, new OneToOneDBConfig() );
 		forwardDB.init( params );
-		params.deInit();
 		
 
-		backwardDB = new SecondaryDatabaseCapsule( bdb, secPrefix + dbName,
-				new OneToOneSecondaryDBConfig(), forwardDB.getDB() );
-		
+
+		backwardDB = new SecondaryDatabaseCapsule();
+		params.set( PossibleParams.dbName, secPrefix + dbName );
+		params.set( PossibleParams.secDbConfig, new OneToOneSecondaryDBConfig() );
+		params.set( PossibleParams.priDb, forwardDB.getDB() );
+		params.remove( PossibleParams.priDbConfig );// not needed
+		backwardDB.init( params );
+		params.deInit();
 		// must make sure second BerkeleyDB is also open!! because all inserts
 		// are done
 		// via first BerkeleyDB

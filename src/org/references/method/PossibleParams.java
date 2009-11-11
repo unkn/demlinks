@@ -21,11 +21,10 @@
  */
 
 
-package org.temporary.tests;
+package org.references.method;
 
 
 
-import org.references.method.ParamName;
 
 
 
@@ -53,6 +52,8 @@ public class PossibleParams {
 	// DatabaseCapsule:
 	public static final ParamName<Object>	level1_BDBStorage	= new ParamName<Object>();
 	public static final ParamName<Object>	dbName				= new ParamName<Object>();
-	public static final ParamName<Object>	dbConfig			= new ParamName<Object>();
+	public static final ParamName<Object>	priDbConfig			= new ParamName<Object>();
+	public static final ParamName<Object>	secDbConfig			= new ParamName<Object>();
+	public static final ParamName<Object>	priDb				= new ParamName<Object>();
 	
 }
