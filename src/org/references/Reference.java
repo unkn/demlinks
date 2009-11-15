@@ -25,7 +25,6 @@ package org.references;
 
 
 
-import java.io.Serializable;
 
 
 
@@ -33,13 +32,9 @@ import java.io.Serializable;
  * 
  *
  */
-public class Reference<T> implements Serializable {
+public class Reference<T> {
 	
-	/**
-	 * 
-	 */
-	private static final long	serialVersionUID	= 4067289925841216474L;
-	private T					object				= null;
+	private T	object	= null;
 	
 	public Reference() {
 

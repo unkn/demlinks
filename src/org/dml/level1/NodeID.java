@@ -42,6 +42,14 @@ import org.dml.tools.RunTime;
  */
 public class NodeID {
 	
+	/**
+	 * The <code>Class</code> instance representing the primitive type
+	 * <code>float</code>.
+	 * 
+	 * @since JDK1.1
+	 */
+	// public static final Class<Float> TYPE =
+	// Class.getPrimitiveClass("NodeID");
 	
 	private final long	itself;
 	
@@ -69,14 +77,15 @@ public class NodeID {
 		// itself = Long.valueOf( iD );
 	}
 	
-	/**
-	 * @return the string representation of this NodeID, usually long to string
-	 *         transformation
-	 */
-	public String getAsString() {
-
-		return String.valueOf( itself );
-	}
+	// /**
+	// * @return the string representation of this NodeID, usually long to
+	// string
+	// * transformation
+	// */
+	// public String getAsString() {
+	//
+	// return String.valueOf( itself );
+	// }
 	
 	/*
 	 * (non-Javadoc)
@@ -86,7 +95,7 @@ public class NodeID {
 	@Override
 	public String toString() {
 
-		return this.getClass().getSimpleName() + ":" + this.getAsString();
+		return this.getClass().getSimpleName() + ":" + String.valueOf( itself );
 	}
 	
 	/**
@@ -103,8 +112,9 @@ public class NodeID {
 				|| ( this.getClass() != nid.getClass() ) ) {
 			RunTime.bug( "you passed a different type parameter; must be a bug somewhere" );
 		}
-		if ( ( super.equals( nid ) )
-				|| ( this.getAsString().equals( ( (NodeID)nid ).getAsString() ) ) ) {
+		if ( ( super.equals( nid ) ) || // ( this.getAsString().equals( (
+				// (NodeID)nid ).getAsString() ) ) ) {
+				( ( (NodeID)nid ).itself == itself ) ) {
 			return true;
 		}
 		return false;

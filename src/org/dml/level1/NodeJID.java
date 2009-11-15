@@ -48,10 +48,6 @@ import org.references.Reference;
  */
 public class NodeJID extends Reference<String> {
 	
-	/**
-	 * 
-	 */
-	private static final long						serialVersionUID	= 7988354223875468191L;
 	// this will keep track of all NodeJIDs of all environments
 	// there's no point of having same JID twice for diff environments
 	protected static final HashMap<String, NodeJID>	all_Level1_NodeJIDs	= new HashMap<String, NodeJID>();
@@ -108,18 +104,18 @@ public class NodeJID extends Reference<String> {
 	@Override
 	public String toString() {
 
-		return this.getClass().getSimpleName() + ":" + this.getAsString();
+		return this.getClass().getSimpleName() + ":" + this.getObject();
 	}
 	
-	/**
-	 * @return
-	 */
-	public String getAsString() {
-
-		String temp = this.getObject();
-		RunTime.assertNotNull( temp );// safety check?
-		return temp;
-	}
+	// /**
+	// * @return
+	// */
+	// public String getAsString() {
+	//
+	// String temp = this.getObject();
+	// RunTime.assertNotNull( temp );// safety check?
+	// return temp;
+	// }
 	
 
 	// /**

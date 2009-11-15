@@ -161,7 +161,7 @@ public class DBMapJIDsToNodeIDs extends OneToOneDBMap {
 			throws DatabaseException {
 
 		RunTime.assertNotNull( thisJID, withThisNID );
-		return this.link( thisJID.getAsString(), withThisNID.getAsString() );
+		return this.link( thisJID.getAsString(), withThisNID );
 	}
 	
 	/**
@@ -192,7 +192,7 @@ public class DBMapJIDsToNodeIDs extends OneToOneDBMap {
 			throws DatabaseException {
 
 		RunTime.assertNotNull( fromJID );
-		String nidAsStr = this.getData( fromJID.getAsString() );
+		String nidAsStr = this.getData( fromJID );
 		if ( null == nidAsStr ) {
 			return null;
 		}
@@ -213,7 +213,7 @@ public class DBMapJIDsToNodeIDs extends OneToOneDBMap {
 	public NodeJID getNodeJID( NodeID fromNodeID ) throws DatabaseException {
 
 		RunTime.assertNotNull( fromNodeID );
-		String jidAsStr = this.getKey( fromNodeID.getAsString() );
+		String jidAsStr = this.getKey( fromNodeID );
 		if ( null == jidAsStr ) {
 			return null;
 		}

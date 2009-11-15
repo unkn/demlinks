@@ -1,5 +1,5 @@
 /**
- * File creation: Oct 24, 2009 1:59:22 PM
+ * File creation: Nov 15, 2009 3:51:10 PM
  * 
  * Copyright (C) 2005-2009 AtKaaZ <atkaaz@users.sourceforge.net>
  * Copyright (C) 2005-2009 UnKn <unkn@users.sourceforge.net>
@@ -21,12 +21,13 @@
  */
 
 
-package org.dml.tools;
+package org.dml.level1;
 
 
 
-import org.junit.Test;
-import org.references.Reference;
+import com.sleepycat.bind.tuple.TupleBinding;
+import com.sleepycat.bind.tuple.TupleInput;
+import com.sleepycat.bind.tuple.TupleOutput;
 
 
 
@@ -34,24 +35,34 @@ import org.references.Reference;
  * 
  *
  */
-public class OneToOneMapTest {
+public class NodeIDBinding extends TupleBinding<NodeID> {
 	
-	OneToOneMap<String, Reference<String>>	map;
-	
-	@Test
-	public void test1() {
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sleepycat.bind.tuple.TupleBinding#entryToObject(com.sleepycat.bind
+	 * .tuple.TupleInput)
+	 */
+	@Override
+	public NodeID entryToObject( TupleInput input ) {
 
-		map = new OneToOneMap<String, Reference<String>>();
-		
-		String str = "one";
-		Reference<String> estr = new Reference<String>();
-		estr.setObject( str );
-		
-		// map.setFirst( str );
-		// map.setSecond( estr );
-		// map.setBoth( str, estr );
-		// map.getFirst();
-		// map.getSecond();
-		// map.getBoth();
+		// TODO Auto-generated method stub
+		return null;
 	}
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.sleepycat.bind.tuple.TupleBinding#objectToEntry(java.lang.Object,
+	 * com.sleepycat.bind.tuple.TupleOutput)
+	 */
+	@Override
+	public void objectToEntry( NodeID object, TupleOutput output ) {
+
+		// TODO Auto-generated method stub
+		
+	}
+	
 }

@@ -31,6 +31,7 @@ import org.javapart.logger.Log;
 import org.references.method.MethodParams;
 import org.references.method.PossibleParams;
 
+import com.sleepycat.bind.EntryBinding;
 import com.sleepycat.je.Database;
 import com.sleepycat.je.DatabaseEntry;
 import com.sleepycat.je.DatabaseException;
@@ -47,7 +48,7 @@ import com.sleepycat.je.SecondaryDatabase;
  * key->data and data->key
  * key and data are both Strings
  */
-public class OneToOneDBMap {
+public class OneToOneDBMap<keyClass, dataClass> {
 	
 	private static final String					secPrefix	= "secondary";
 	private DatabaseCapsule						forwardDB	= null;
@@ -130,7 +131,7 @@ public class OneToOneDBMap {
 	/**
 	 * @return null
 	 */
-	public OneToOneDBMap silentClose() {
+	public OneToOneDBMap<keyClass, dataClass> silentClose() {
 
 		Log.entry( "closing OneToOneDBMap: " + dbName );
 		boolean one = false;
@@ -162,18 +163,25 @@ public class OneToOneDBMap {
 	}
 	
 	/**
-	 * @param string
-	 * @param string2
+	 * @param key
+	 * @param data
+	 * @return
 	 * @throws DatabaseException
 	 */
-	public OperationStatus link( String key, String data )
+	@SuppressWarnings( "unchecked" )
+	public OperationStatus link( keyClass key, dataClass data )
 			throws DatabaseException {
 
-		// TODO FIXME key/data should be able to do any object
+		RunTime.assertNotNull( key, data );
+		// key can be a descendant of keyClass, thus getClass() is a good idea,
+		// yes?
+		EntryBinding keyBinding = AllTupleBindings.getBinding( key.getClass() );
+		EntryBinding dataBinding = AllTupleBindings.getBinding( data.getClass() );
+		
 		DatabaseEntry deKey = new DatabaseEntry();
+		keyBinding.objectToEntry( key, deKey );
 		DatabaseEntry deData = new DatabaseEntry();
-		Level1_Storage_BerkeleyDB.stringToEntry( key, deKey );
-		Level1_Storage_BerkeleyDB.stringToEntry( data, deData );
+		dataBinding.objectToEntry( data, deData );
 		OperationStatus ret = this.getForwardDB().putNoOverwrite( null, deKey,
 				deData );
 		return ret;
@@ -184,10 +192,14 @@ public class OneToOneDBMap {
 	 * @return null if not found
 	 * @throws DatabaseException
 	 */
-	public String getKey( String data ) throws DatabaseException {
+	@SuppressWarnings( "unchecked" )
+	public keyClass getKey( dataClass data ) throws DatabaseException {
 
+		RunTime.assertNotNull( data );
+		EntryBinding dataBinding = AllTupleBindings.getBinding( data.getClass() );
 		DatabaseEntry deData = new DatabaseEntry();
-		Level1_Storage_BerkeleyDB.stringToEntry( data, deData );
+		dataBinding.objectToEntry( data, deData );
+		
 		DatabaseEntry deKey = new DatabaseEntry();
 		DatabaseEntry pKey = new DatabaseEntry();
 		// deData=new DatabaseEntry(data.getBytes(BerkeleyDB.ENCODING));
@@ -206,10 +218,17 @@ public class OneToOneDBMap {
 	 * @return null if not found
 	 * @throws DatabaseException
 	 */
-	public String getData( String key ) throws DatabaseException {
+	@SuppressWarnings( "unchecked" )
+	public dataClass getData( keyClass key ) throws DatabaseException {
 
+		RunTime.assertNotNull( key );
+		EntryBinding keyBinding = AllTupleBindings.getBinding( key.getClass() );
 		DatabaseEntry deKey = new DatabaseEntry();
-		Level1_Storage_BerkeleyDB.stringToEntry( key, deKey );
+		keyBinding.objectToEntry( key, deKey );
+		// Level1_Storage_BerkeleyDB.stringToEntry( key, deKey );
+		
+
+		// FIXME maybe not new every time here ie. make private field
 		DatabaseEntry deData = new DatabaseEntry();
 		OperationStatus ret;
 		ret = this.getForwardDB().get( null, deKey, deData, null );
