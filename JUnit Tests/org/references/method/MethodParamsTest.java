@@ -43,7 +43,7 @@ import org.references.Reference;
 public class MethodParamsTest {
 	
 	MethodParams<Object>	mp1, mp2, mp3;
-	ParamName<String>		paramString1;
+	ParamName<Object>		paramString1;
 	ParamName<Object>		paramNull2, paramInteger3, paramBoolean4;
 	ParamName<Object>		compulsoryParam1	= new ParamName<Object>();
 	ParamName<Object>		compulsoryParam2	= new ParamName<Object>();
@@ -76,7 +76,7 @@ public class MethodParamsTest {
 	@Before
 	public void setUp() {
 
-		paramString1 = new ParamName<String>();
+		paramString1 = new ParamName<Object>();
 		paramNull2 = new ParamName<Object>();
 		paramInteger3 = new ParamName<Object>();
 		paramBoolean4 = new ParamName<Object>();

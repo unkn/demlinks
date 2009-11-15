@@ -53,6 +53,7 @@ public class AllTupleBindings {
 		addNonPrimitive( NodeJID.class, new NodeJIDBinding() );
 	}
 	
+	// parametric method
 	private static <T> void addNonPrimitive( Class<T> cls,
 			TupleBinding<T> binding ) {
 

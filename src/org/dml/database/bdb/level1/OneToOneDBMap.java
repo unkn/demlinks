@@ -50,6 +50,8 @@ import com.sleepycat.je.SecondaryDatabase;
  */
 public class OneToOneDBMap<keyClass, dataClass> {
 	
+	private final keyClass						dummyKey	= keyClass.newInstance();
+	private final dataClass						dummyData;
 	private static final String					secPrefix	= "secondary";
 	private DatabaseCapsule						forwardDB	= null;
 	private SecondaryDatabaseCapsule			backwardDB	= null;
