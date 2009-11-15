@@ -50,8 +50,6 @@ import com.sleepycat.je.SecondaryDatabase;
  */
 public class OneToOneDBMap<KeyType, DataType> {
 	
-	// private static final keyClass2=null;
-	// private final dataClass dummyData;
 	private final Class<KeyType>				keyClass;
 	private final Class<DataType>				dataClass;
 	

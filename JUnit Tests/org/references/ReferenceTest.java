@@ -26,16 +26,8 @@ package org.references;
 
 
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 
 import org.junit.Test;
 
@@ -66,32 +58,32 @@ public class ReferenceTest {
 
 	}
 	
-	@SuppressWarnings( "unchecked" )
-	@Test
-	public void testStream() throws IOException, ClassNotFoundException {
-
-		ess = new Reference<String>();
-		ess.setObject( str );
-		assertTrue( str == ess.getObject() );
-		
-		File randomFile = File.createTempFile( "JUnit", "test", new File( "."
-				+ File.separator ) );
-		FileOutputStream fos = new FileOutputStream( randomFile );
-		ObjectOutputStream out = new ObjectOutputStream( fos );
-		out.writeObject( ess );
-		out.close();
-		
-		FileInputStream fis = new FileInputStream( randomFile );
-		ObjectInputStream in = new ObjectInputStream( fis );
-		ess2 = null;
-		ess2 = (Reference<String>)in.readObject();
-		in.close();
-		randomFile.delete();
-		assertNotNull( ess2 );
-		assertTrue( str.equals( ess2.getObject() ) );
-		assertTrue( ess.equals( ess2 ) );
-		assertTrue( ess.hashCode() == ess2.hashCode() );
-	}
+	// @SuppressWarnings( "unchecked" )
+	// @Test
+	// public void testStream() throws IOException, ClassNotFoundException {
+	//
+	// ess = new Reference<String>();
+	// ess.setObject( str );
+	// assertTrue( str == ess.getObject() );
+	//		
+	// File randomFile = File.createTempFile( "JUnit", "test", new File( "."
+	// + File.separator ) );
+	// FileOutputStream fos = new FileOutputStream( randomFile );
+	// ObjectOutputStream out = new ObjectOutputStream( fos );
+	// out.writeObject( ess );
+	// out.close();
+	//		
+	// FileInputStream fis = new FileInputStream( randomFile );
+	// ObjectInputStream in = new ObjectInputStream( fis );
+	// ess2 = null;
+	// ess2 = (Reference<String>)in.readObject();
+	// in.close();
+	// randomFile.delete();
+	// assertNotNull( ess2 );
+	// assertTrue( str.equals( ess2.getObject() ) );
+	// assertTrue( ess.equals( ess2 ) );
+	// assertTrue( ess.hashCode() == ess2.hashCode() );
+	// }
 	
 	@Test
 	public void testEmpty() {

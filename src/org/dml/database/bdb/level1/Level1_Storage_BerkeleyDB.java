@@ -186,27 +186,28 @@ public class Level1_Storage_BerkeleyDB extends StaticInstanceTracker {
 	}
 	
 	
-	/**
-	 * @param input
-	 * @param output
-	 */
-	public final static void stringToEntry( String input, DatabaseEntry output ) {
+	// /**
+	// * @param input
+	// * @param output
+	// */
+	// public final static void stringToEntry( String input, DatabaseEntry
+	// output ) {
+	//
+	// RunTime.assertNotNull( input, output );
+	// StringBinding.stringToEntry( input, output );
+	// }
+	//	
+	// /**
+	// * @param input
+	// * @return
+	// */
+	// public final static String entryToString( DatabaseEntry input ) {
+	//
+	// RunTime.assertNotNull( input );
+	// return StringBinding.entryToString( input );
+	// }
+	
 
-		RunTime.assertNotNull( input, output );
-		StringBinding.stringToEntry( input, output );
-	}
-	
-	/**
-	 * @param input
-	 * @return
-	 */
-	public final static String entryToString( DatabaseEntry input ) {
-
-		RunTime.assertNotNull( input );
-		return StringBinding.entryToString( input );
-	}
-	
-	
 
 	/**
 	 * @throws DatabaseException
@@ -305,10 +306,12 @@ public class Level1_Storage_BerkeleyDB extends StaticInstanceTracker {
 	public Sequence getNewSequence( String thisSeqName,
 			SequenceConfig allSequencesConfig ) throws DatabaseException {
 
-		// if ( null == thisSeq ) {
+		RunTime.assertNotNull( thisSeqName, allSequencesConfig );
+		// allSequencesConfig can be null though, to use BDB defaults
+		
 		// init once:
 		DatabaseEntry deKey = new DatabaseEntry();
-		Level1_Storage_BerkeleyDB.stringToEntry( thisSeqName, deKey );
+		StringBinding.stringToEntry( thisSeqName, deKey );
 		Sequence seq = this.getSeqsDB().openSequence( null, deKey,
 				allSequencesConfig );
 		if ( allSequenceInstances.addFirstQ( seq ) ) {
@@ -316,9 +319,6 @@ public class Level1_Storage_BerkeleyDB extends StaticInstanceTracker {
 		}
 		RunTime.assertNotNull( seq );
 		return seq;
-		// RunTime.assertNotNull( thisSeq );
-		// }
-		// return thisSeq;
 	}
 	
 	/**

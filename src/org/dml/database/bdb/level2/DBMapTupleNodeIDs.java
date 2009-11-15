@@ -48,7 +48,7 @@ import com.sleepycat.je.DatabaseException;
  * sorted but should not be counted on). The only thing you'd need to know here
  * is whether the tuple exists or not.<br>
  */
-public class DBMapTupleNodeIDs extends OneToManyDBMap {
+public class DBMapTupleNodeIDs extends OneToManyDBMap<NodeID, NodeID> {
 	
 	/**
 	 * constructor
@@ -61,7 +61,7 @@ public class DBMapTupleNodeIDs extends OneToManyDBMap {
 	 */
 	public DBMapTupleNodeIDs( Level1_Storage_BerkeleyDB bdb1, String dbName1 ) {
 
-		super( bdb1, dbName1 );
+		super( bdb1, dbName1, NodeID.class, NodeID.class );
 	}
 	
 	/**
@@ -73,6 +73,7 @@ public class DBMapTupleNodeIDs extends OneToManyDBMap {
 	 * @return true if existed already; false if it didn't exist before call
 	 * @throws DatabaseException
 	 */
+	@Override
 	public boolean ensureVector( NodeID initialNode, NodeID terminalNode )
 			throws DatabaseException {
 
@@ -83,10 +84,7 @@ public class DBMapTupleNodeIDs extends OneToManyDBMap {
 		this.throwIfNotExist( initialNode );
 		this.throwIfNotExist( terminalNode );
 		
-		// TODO make base method to have the ability to any store Serialized
-		// object in this case a NodeID object
-		return this.ensureVector( initialNode.getAsString(),
-				terminalNode.getAsString() );
+		return super.ensureVector( initialNode, terminalNode );
 	}
 	
 	/**
@@ -99,6 +97,7 @@ public class DBMapTupleNodeIDs extends OneToManyDBMap {
 	 * @throws StorageException
 	 * @throws DatabaseException
 	 */
+	@Override
 	public boolean isVector( NodeID initialNode, NodeID terminalNode )
 			throws DatabaseException {
 
@@ -107,8 +106,12 @@ public class DBMapTupleNodeIDs extends OneToManyDBMap {
 		this.throwIfNotExist( initialNode );
 		this.throwIfNotExist( terminalNode );
 		
-		return this.isVector( initialNode.getAsString(),
-				terminalNode.getAsString() );
+		// if ( ( !this.existsNodeID( initialNode ) )
+		// || ( !this.existsNodeID( terminalNode ) ) ) {
+		// return false;
+		// }
+		
+		return super.isVector( initialNode, terminalNode );
 	}
 	
 	/**
@@ -119,8 +122,14 @@ public class DBMapTupleNodeIDs extends OneToManyDBMap {
 	private void throwIfNotExist( NodeID nid ) throws DatabaseException {
 
 		RunTime.assertNotNull( nid );
-		if ( null == this.getBDBL1().getDBMapJIDsToNodeIDs().getNodeJID( nid ) ) {
+		if ( !this.existsNodeID( nid ) ) {
 			RunTime.bug( "NodeID doesn't exist, and it's assumed it should" );
 		}
+	}
+	
+	private boolean existsNodeID( NodeID whichNodeID ) throws DatabaseException {
+
+		return ( null != this.getBDBL1().getDBMapJIDsToNodeIDs().getNodeJID(
+				whichNodeID ) );
 	}
 }

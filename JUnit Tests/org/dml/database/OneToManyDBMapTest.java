@@ -47,13 +47,13 @@ import com.sleepycat.je.DatabaseException;
  */
 public class OneToManyDBMapTest {
 	
-	OneToManyDBMap				o2m;
+	OneToManyDBMap<String, String>	o2m;
 	// the following two should be random unique names not already in the dbase
 	// or else the tests may fail
-	final String				_a	= "A" + new Object();
-	final String				_b	= "B" + new Object();
-	final String				_c	= "C" + new Object();
-	Level1_Storage_BerkeleyDB	bdb;
+	final String					_a	= "A" + new Object();
+	final String					_b	= "B" + new Object();
+	final String					_c	= "C" + new Object();
+	Level1_Storage_BerkeleyDB		bdb;
 	
 	@Before
 	public void setUp() throws DatabaseException {
@@ -66,7 +66,8 @@ public class OneToManyDBMapTest {
 		bdb.init( params );
 		params.deInit();
 		
-		o2m = new OneToManyDBMap( bdb, "one to many" );// + new Object() );
+		o2m = new OneToManyDBMap<String, String>( bdb, "one to many",
+				String.class, String.class );// + new Object() );
 		
 	}
 	

@@ -82,18 +82,27 @@ public class DBMapTupleNodeIDsTest {
 	@Test
 	public void test1() throws DatabaseException, StorageException {
 
-		NodeID _a = bdb.getDBMapJIDsToNodeIDs().ensureNodeID(
-				NodeJID.ensureJIDFor( "A" ) );
+		String strA = "A";
+		NodeJID jidA = NodeJID.ensureJIDFor( strA );
+		NodeID _a = bdb.getDBMapJIDsToNodeIDs().ensureNodeID( jidA );
 		NodeID _b = bdb.getDBMapJIDsToNodeIDs().ensureNodeID(
 				NodeJID.ensureJIDFor( "B" ) );
 		assertNotNull( _a );
 		assertNotNull( _b );
+		
+		assertTrue( jidA.equals( bdb.getDBMapJIDsToNodeIDs().getNodeJID( _a ) ) );
+		assertTrue( bdb.getDBMapJIDsToNodeIDs().getNodeJID( _a ) == jidA );
+		
 		org.junit.Assert.assertFalse( tdb.isVector( _a, _b ) );
 		org.junit.Assert.assertFalse( tdb.ensureVector( _a, _b ) );
 		
 		assertTrue( tdb.isVector( _a, _b ) );
 		assertTrue( tdb.ensureVector( _a, _b ) );
-		assertFalse( tdb.ensureVector( "D", "E" ) );
+		NodeID _d = bdb.getDBMapJIDsToNodeIDs().ensureNodeID(
+				NodeJID.ensureJIDFor( "D" ) );
+		NodeID _e = bdb.getDBMapJIDsToNodeIDs().ensureNodeID(
+				NodeJID.ensureJIDFor( "E" ) );
+		assertFalse( tdb.ensureVector( _d, _e ) );
 		NodeID _c = bdb.getDBMapJIDsToNodeIDs().ensureNodeID(
 				NodeJID.ensureJIDFor( "C" ) );
 		assertFalse( tdb.ensureVector( _a, _c ) );
