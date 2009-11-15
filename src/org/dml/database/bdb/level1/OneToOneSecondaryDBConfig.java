@@ -70,7 +70,7 @@ public class OneToOneSecondaryDBConfig extends SecondaryConfig {
 				result.setData( data.getData() );
 				result.setSize( data.getSize() );
 				// System.out.println( key + "!" + data + "!" + result );
-				
+				RunTime.assertTrue( result.equals( data ) );
 				return true;
 			}
 		};
