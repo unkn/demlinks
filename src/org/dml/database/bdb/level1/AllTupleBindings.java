@@ -28,6 +28,8 @@ package org.dml.database.bdb.level1;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.dml.database.JUnit_Base1;
+import org.dml.database.JUnit_Base1Binding;
 import org.dml.level1.NodeID;
 import org.dml.level1.NodeIDBinding;
 import org.dml.level1.NodeJID;
@@ -51,6 +53,7 @@ public class AllTupleBindings {
 		// dbase
 		addNonPrimitive( NodeID.class, new NodeIDBinding() );
 		addNonPrimitive( NodeJID.class, new NodeJIDBinding() );
+		addNonPrimitive( JUnit_Base1.class, new JUnit_Base1Binding() );
 	}
 	
 	// parametric method

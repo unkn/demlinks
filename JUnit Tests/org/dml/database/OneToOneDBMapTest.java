@@ -48,10 +48,10 @@ import com.sleepycat.je.DatabaseException;
  */
 public class OneToOneDBMapTest {
 	
-	OneToOneDBMap				x;
-	final String				_a	= "AAAAAAAAAAAAAAAAAAA";
-	final String				_b	= "BBBBBBBBBBBBBBBBBBBBBBBBB";
-	Level1_Storage_BerkeleyDB	bdb;
+	OneToOneDBMap<String, String>	x;
+	final String					_a	= "AAAAAAAAAAAAAAAAAAA";
+	final String					_b	= "BBBBBBBBBBBBBBBBBBBBBBBBB";
+	Level1_Storage_BerkeleyDB		bdb;
 	
 	@Before
 	public void setUp() throws DatabaseException {
@@ -64,7 +64,8 @@ public class OneToOneDBMapTest {
 		bdb.init( params );
 		params.deInit();
 		// bdb = new Level1_Storage_BerkeleyDB( Consts.BDB_ENV_PATH, true );
-		x = new OneToOneDBMap( bdb, "someMap" );
+		x = new OneToOneDBMap<String, String>( bdb, "someMap", String.class,
+				String.class );
 	}
 	
 	@After
@@ -88,5 +89,15 @@ public class OneToOneDBMapTest {
 		assertTrue( _a != x.getKey( _b ) );
 		assertTrue( _b != x.getData( _a ) );
 		assertTrue( _b.equals( x.getData( x.getKey( _b ) ) ) );
+		
+	}
+	
+	@Test
+	public void extendedTest() throws DatabaseException {
+
+		OneToOneDBMap<String, JUnit_Base1> map = new OneToOneDBMap<String, JUnit_Base1>(
+				bdb, "extendsMap", String.class, JUnit_Base1.class );
+		JUnit_Ex2 e = new JUnit_Ex2();
+		map.getKey( e );
 	}
 }

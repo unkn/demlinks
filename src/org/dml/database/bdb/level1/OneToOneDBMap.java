@@ -48,10 +48,13 @@ import com.sleepycat.je.SecondaryDatabase;
  * key->data and data->key
  * key and data are both Strings
  */
-public class OneToOneDBMap<keyClass, dataClass> {
+public class OneToOneDBMap<KeyType, DataType> {
 	
-	private final keyClass						dummyKey	= keyClass.newInstance();
-	private final dataClass						dummyData;
+	// private static final keyClass2=null;
+	// private final dataClass dummyData;
+	private final Class<KeyType>				keyClass;
+	private final Class<DataType>				dataClass;
+	
 	private static final String					secPrefix	= "secondary";
 	private DatabaseCapsule						forwardDB	= null;
 	private SecondaryDatabaseCapsule			backwardDB	= null;
@@ -63,12 +66,15 @@ public class OneToOneDBMap<keyClass, dataClass> {
 	 * 
 	 * @param dbName1
 	 */
-	public OneToOneDBMap( Level1_Storage_BerkeleyDB bdb1, String dbName1 ) {
+	public OneToOneDBMap( Level1_Storage_BerkeleyDB bdb1, String dbName1,
+			Class<KeyType> keyClass1, Class<DataType> dataClass1 ) {
 
 		RunTime.assertNotNull( bdb1 );
 		RunTime.assertNotNull( dbName1 );
 		bdb = bdb1;
 		dbName = dbName1;
+		keyClass = keyClass1;
+		dataClass = dataClass1;
 	}
 	
 	/**
@@ -133,7 +139,7 @@ public class OneToOneDBMap<keyClass, dataClass> {
 	/**
 	 * @return null
 	 */
-	public OneToOneDBMap<keyClass, dataClass> silentClose() {
+	public OneToOneDBMap<KeyType, DataType> silentClose() {
 
 		Log.entry( "closing OneToOneDBMap: " + dbName );
 		boolean one = false;
@@ -171,7 +177,7 @@ public class OneToOneDBMap<keyClass, dataClass> {
 	 * @throws DatabaseException
 	 */
 	@SuppressWarnings( "unchecked" )
-	public OperationStatus link( keyClass key, dataClass data )
+	public OperationStatus link( KeyType key, DataType data )
 			throws DatabaseException {
 
 		RunTime.assertNotNull( key, data );
@@ -195,10 +201,11 @@ public class OneToOneDBMap<keyClass, dataClass> {
 	 * @throws DatabaseException
 	 */
 	@SuppressWarnings( "unchecked" )
-	public keyClass getKey( dataClass data ) throws DatabaseException {
+	public KeyType getKey( DataType data ) throws DatabaseException {
 
 		RunTime.assertNotNull( data );
-		EntryBinding dataBinding = AllTupleBindings.getBinding( data.getClass() );
+		EntryBinding dataBinding = AllTupleBindings.getBinding( dataClass );// data.getClass()
+																			// );
 		DatabaseEntry deData = new DatabaseEntry();
 		dataBinding.objectToEntry( data, deData );
 		
@@ -212,7 +219,11 @@ public class OneToOneDBMap<keyClass, dataClass> {
 		}
 		RunTime.assertTrue( deData.equals( deKey ) );
 		
-		return Level1_Storage_BerkeleyDB.entryToString( pKey );
+		EntryBinding keyBinding = AllTupleBindings.getBinding( keyClass );
+		KeyType key = (KeyType)keyBinding.entryToObject( pKey );
+		// should not be null here
+		RunTime.assertNotNull( key );
+		return key;// Level1_Storage_BerkeleyDB.entryToString( pKey );
 	}
 	
 	/**
@@ -221,7 +232,7 @@ public class OneToOneDBMap<keyClass, dataClass> {
 	 * @throws DatabaseException
 	 */
 	@SuppressWarnings( "unchecked" )
-	public dataClass getData( keyClass key ) throws DatabaseException {
+	public DataType getData( KeyType key ) throws DatabaseException {
 
 		RunTime.assertNotNull( key );
 		EntryBinding keyBinding = AllTupleBindings.getBinding( key.getClass() );
@@ -237,9 +248,9 @@ public class OneToOneDBMap<keyClass, dataClass> {
 		if ( OperationStatus.SUCCESS != ret ) {
 			return null;
 		}
-		dataClass data;
-		EntryBinding dataBinding = AllTupleBindings.getBinding();
-		data = (dataClass)dataBinding.entryToObject( deData );
+		
+		EntryBinding dataBinding = AllTupleBindings.getBinding( dataClass );
+		DataType data = (DataType)dataBinding.entryToObject( deData );
 		// should not be null here
 		RunTime.assertNotNull( data );
 		return data;// Level1_Storage_BerkeleyDB.entryToString( deData );
