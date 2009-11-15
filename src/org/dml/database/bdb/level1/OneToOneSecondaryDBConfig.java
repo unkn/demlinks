@@ -63,13 +63,14 @@ public class OneToOneSecondaryDBConfig extends SecondaryConfig {
 					DatabaseEntry key, DatabaseEntry data, DatabaseEntry result )
 					throws DatabaseException {
 
-				// key->data is JID->NodeID;
-				// result is the secondary key aka primary key in secondary
-				// dbase which is NodeID
+				// if this differs, then we need perhaps to set it to result
+				// also
+				RunTime.assertTrue( data.getOffset() == 0 );
 				
-				// result = new DatabaseEntry( data.getData() );
 				result.setData( data.getData() );
+				result.setSize( data.getSize() );
 				// System.out.println( key + "!" + data + "!" + result );
+				
 				return true;
 			}
 		};
