@@ -206,7 +206,8 @@ public class OneToOneDBMap<KeyType, DataType> {
 	private void checkKey( KeyType key ) {
 
 		RunTime.assertNotNull( key );
-		// shouldn't allow subclass of keyClass!! or else havoc
+		// shouldn't allow subclass of keyClass!! or else havoc, well data loss
+		// since TupleBinding treats it as Base class
 		// 1of3
 		if ( key.getClass() != keyClass ) {
 			RunTime.badCall( "shouldn't allow subclass of keyClass!! or else havoc" );

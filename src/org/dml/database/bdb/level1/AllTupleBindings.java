@@ -60,7 +60,10 @@ public class AllTupleBindings {
 	private static <T> void addNonPrimitive( Class<T> cls,
 			TupleBinding<T> binding ) {
 
+		int formerSize = nonPrimitives.size();
 		nonPrimitives.put( cls, binding );
+		// making sure nothing is overwritten
+		RunTime.assertTrue( nonPrimitives.size() == formerSize + 1 );
 	}
 	
 	@SuppressWarnings( "unchecked" )
