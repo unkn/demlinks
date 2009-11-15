@@ -66,9 +66,10 @@ public class NodeIDBinding extends TupleBinding<NodeID> {
 	@Override
 	public void objectToEntry( NodeID object, TupleOutput output ) {
 
-		NodeID my = object;
-		long myLong = my.internalGetForBinding();
+		RunTime.assertNotNull( object, output );
+		long myLong = object.internalGetForBinding();
 		RunTime.assertNotNull( myLong );
+		System.out.println( object );
 		// it will never be null before writing it to dbase, else bug somewhere
 		output.writeLong( myLong );
 	}

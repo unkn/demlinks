@@ -26,6 +26,7 @@ package org.dml.level2;
 
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -71,8 +72,12 @@ public class Level2_DMLEnvironmentTest {
 			NodeJID j2 = NodeJID.ensureJIDFor( test2 );
 			NodeID n1 = d1.createNodeID( j1 );
 			NodeID n2 = d1.createNodeID( j2 );
+			assertNotNull( n1 );
+			assertNotNull( d1.getNodeJID( n1 ) );
+			assertTrue( d1.getNodeJID( n1 ).equals( j1 ) );
+			assertTrue( d1.getNodeJID( n1 ) == j1 );
 			assertTrue( n1.equals( d1.getNodeID( j1 ) ) );
-			// FIXME: maybe fix? getNodeID() does a new everytime
+			// FIXME: maybe fix? getNodeID() does a new every time
 			assertTrue( n1 != d1.getNodeID( j1 ) );
 			assertTrue( n2.equals( d1.getNodeID( j2 ) ) );
 			assertTrue( n2 != d1.getNodeID( j2 ) );
@@ -87,6 +92,7 @@ public class Level2_DMLEnvironmentTest {
 			assertNull( n3 );
 			n3 = d3.getNodeID( j2 );
 			assertNull( n3 );
+			System.out.println( d1.getNodeJID( n1 ) );
 			System.out.println( d3.getNodeJID( n1 ) );
 			assertFalse( d1.isVector( n1, n2 ) );
 			assertFalse( d1.isVector( n1, n1 ) );

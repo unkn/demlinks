@@ -49,12 +49,13 @@ public class NodeJIDBinding extends TupleBinding<NodeJID> {
 	@Override
 	public NodeJID entryToObject( TupleInput input ) {
 
+		RunTime.assertNotNull( input );
 		// Data must be read in the same order that it was
 		// originally written.
 		String strJID = input.readString();
 		RunTime.assertNotNull( strJID );
 		NodeJID myJID = NodeJID.ensureJIDFor( strJID );// new NodeJID( strJID );
-		
+		RunTime.assertNotNull( myJID );
 		return myJID;
 	}
 	
@@ -68,9 +69,12 @@ public class NodeJIDBinding extends TupleBinding<NodeJID> {
 	@Override
 	public void objectToEntry( NodeJID object, TupleOutput output ) {
 
-		NodeJID myJID = object;
-		String strJID = myJID.getObject();
+		RunTime.assertNotNull( object, output );
+		String strJID = object.getObject();
 		RunTime.assertNotNull( strJID );
+		strJID = new String( strJID );// FIXME: no new
+		RunTime.assertNotNull( strJID );
+		System.out.println( object );
 		// it will never be null before writing it to dbase, else bug somewhere
 		output.writeString( strJID );
 	}

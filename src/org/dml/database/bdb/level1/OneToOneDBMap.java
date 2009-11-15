@@ -53,6 +53,9 @@ public class OneToOneDBMap<KeyType, DataType> {
 	private final Class<KeyType>				keyClass;
 	private final Class<DataType>				dataClass;
 	
+	private final EntryBinding<KeyType>			keyBinding;
+	private final EntryBinding<DataType>		dataBinding;
+	
 	private static final String					secPrefix	= "secondary";
 	private DatabaseCapsule						forwardDB	= null;
 	private SecondaryDatabaseCapsule			backwardDB	= null;
@@ -73,6 +76,8 @@ public class OneToOneDBMap<KeyType, DataType> {
 		dbName = dbName1;
 		keyClass = keyClass1;
 		dataClass = dataClass1;
+		keyBinding = AllTupleBindings.getBinding( keyClass );
+		dataBinding = AllTupleBindings.getBinding( dataClass );
 	}
 	
 	/**
@@ -174,17 +179,11 @@ public class OneToOneDBMap<KeyType, DataType> {
 	 * @return
 	 * @throws DatabaseException
 	 */
-	@SuppressWarnings( "unchecked" )
 	public OperationStatus link( KeyType key, DataType data )
 			throws DatabaseException {
 
 		this.checkKey( key );
 		this.checkData( data );
-		
-		// key can be a descendant of keyClass, thus getClass() is a good idea,
-		// yes?
-		EntryBinding keyBinding = AllTupleBindings.getBinding( key.getClass() );
-		EntryBinding dataBinding = AllTupleBindings.getBinding( data.getClass() );
 		
 		DatabaseEntry deKey = new DatabaseEntry();
 		keyBinding.objectToEntry( key, deKey );
@@ -219,13 +218,11 @@ public class OneToOneDBMap<KeyType, DataType> {
 	 * @return null if not found
 	 * @throws DatabaseException
 	 */
-	@SuppressWarnings( "unchecked" )
 	public KeyType getKey( DataType data ) throws DatabaseException {
 
 		this.checkData( data );
 		
 		// 2of3
-		EntryBinding dataBinding = AllTupleBindings.getBinding( data.getClass() );
 		DatabaseEntry deData = new DatabaseEntry();
 		dataBinding.objectToEntry( data, deData );
 		
@@ -240,10 +237,10 @@ public class OneToOneDBMap<KeyType, DataType> {
 		RunTime.assertTrue( deData.equals( deKey ) );
 		
 		// 3of3
-		EntryBinding keyBinding = AllTupleBindings.getBinding( keyClass );
-		KeyType key = (KeyType)keyBinding.entryToObject( pKey );
+		KeyType key = keyBinding.entryToObject( pKey );
 		// should not be null here
 		RunTime.assertNotNull( key );
+		this.checkKey( key );
 		return key;// Level1_Storage_BerkeleyDB.entryToString( pKey );
 	}
 	
@@ -252,19 +249,16 @@ public class OneToOneDBMap<KeyType, DataType> {
 	 * @return null if not found
 	 * @throws DatabaseException
 	 */
-	@SuppressWarnings( "unchecked" )
 	public DataType getData( KeyType key ) throws DatabaseException {
 
 		this.checkKey( key );
 		
 		// 2of3
-		EntryBinding keyBinding = AllTupleBindings.getBinding( key.getClass() );
 		DatabaseEntry deKey = new DatabaseEntry();
 		keyBinding.objectToEntry( key, deKey );
 		// Level1_Storage_BerkeleyDB.stringToEntry( key, deKey );
 		
 
-		// FIXME maybe not new every time here ie. make synchro private field ?
 		DatabaseEntry deData = new DatabaseEntry();
 		OperationStatus ret;
 		ret = this.getForwardDB().get( null, deKey, deData, null );
@@ -273,10 +267,10 @@ public class OneToOneDBMap<KeyType, DataType> {
 		}
 		
 		// 3of3
-		EntryBinding dataBinding = AllTupleBindings.getBinding( dataClass );
-		DataType data = (DataType)dataBinding.entryToObject( deData );
+		DataType data = dataBinding.entryToObject( deData );
 		// should not be null here
 		RunTime.assertNotNull( data );
+		this.checkData( data );
 		return data;// Level1_Storage_BerkeleyDB.entryToString( deData );
 	}
 	

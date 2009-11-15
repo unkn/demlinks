@@ -106,11 +106,6 @@ public class DBMapTupleNodeIDs extends OneToManyDBMap<NodeID, NodeID> {
 		this.throwIfNotExist( initialNode );
 		this.throwIfNotExist( terminalNode );
 		
-		// if ( ( !this.existsNodeID( initialNode ) )
-		// || ( !this.existsNodeID( terminalNode ) ) ) {
-		// return false;
-		// }
-		
 		return super.isVector( initialNode, terminalNode );
 	}
 	
@@ -123,7 +118,7 @@ public class DBMapTupleNodeIDs extends OneToManyDBMap<NodeID, NodeID> {
 
 		RunTime.assertNotNull( nid );
 		if ( !this.existsNodeID( nid ) ) {
-			RunTime.bug( "NodeID doesn't exist, and it's assumed it should" );
+			RunTime.bug( "NodeID doesn't exist, and it SHOULD exist! it's NODE ID not JID" );
 		}
 	}
 	

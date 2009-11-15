@@ -207,11 +207,6 @@ public class DBMapJIDsToNodeIDs extends OneToOneDBMap<NodeJID, NodeID> {
 	 * @return null if not found
 	 * @throws DatabaseException
 	 */
-	/**
-	 * @param nodeID
-	 * @return null if not found
-	 * @throws DatabaseException
-	 */
 	public NodeJID getNodeJID( NodeID fromNodeID ) throws DatabaseException {
 
 		RunTime.assertNotNull( fromNodeID );
