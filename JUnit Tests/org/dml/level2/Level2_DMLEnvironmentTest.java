@@ -69,7 +69,12 @@ public class Level2_DMLEnvironmentTest {
 			String test1 = "test1";
 			String test2 = "test2";
 			NodeJID j1 = NodeJID.ensureJIDFor( test1 );
+			assertTrue( test1 == j1.getObject() );
 			NodeJID j2 = NodeJID.ensureJIDFor( test2 );
+			assertTrue( j2.getObject() == test2 );
+			assertTrue( test1 != test2 );
+			assertTrue( j1 != j2 );
+			assertFalse( j1.equals( j2 ) );
 			NodeID n1 = d1.createNodeID( j1 );
 			NodeID n2 = d1.createNodeID( j2 );
 			assertNotNull( n1 );
