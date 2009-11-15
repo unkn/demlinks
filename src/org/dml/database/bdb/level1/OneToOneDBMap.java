@@ -203,9 +203,10 @@ public class OneToOneDBMap<KeyType, DataType> {
 	@SuppressWarnings( "unchecked" )
 	public KeyType getKey( DataType data ) throws DatabaseException {
 
+		// data can be a subclass of DataType though
+		
 		RunTime.assertNotNull( data );
-		EntryBinding dataBinding = AllTupleBindings.getBinding( dataClass );// data.getClass()
-																			// );
+		EntryBinding dataBinding = AllTupleBindings.getBinding( data.getClass() );
 		DatabaseEntry deData = new DatabaseEntry();
 		dataBinding.objectToEntry( data, deData );
 		

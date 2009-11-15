@@ -32,6 +32,7 @@ import java.io.UnsupportedEncodingException;
 import org.dml.JUnits.Consts;
 import org.dml.database.bdb.level1.Level1_Storage_BerkeleyDB;
 import org.dml.database.bdb.level1.OneToOneDBMap;
+import org.dml.error.BugError;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -95,9 +96,26 @@ public class OneToOneDBMapTest {
 	@Test
 	public void extendedTest() throws DatabaseException {
 
-		OneToOneDBMap<String, JUnit_Base1> map = new OneToOneDBMap<String, JUnit_Base1>(
-				bdb, "extendsMap", String.class, JUnit_Base1.class );
+		// this makes sure those 2 methods are protected to having a parameter
+		// that extends the given base class, as the extended class needs to
+		// have a new TupleBinding class defined for it, or so
+		OneToOneDBMap<JUnit_Base1, JUnit_Base1> map = new OneToOneDBMap<JUnit_Base1, JUnit_Base1>(
+				bdb, "extendsMap", JUnit_Base1.class, JUnit_Base1.class );
 		JUnit_Ex2 e = new JUnit_Ex2();
-		map.getKey( e );
+		boolean threw = false;
+		try {
+			map.getKey( e );
+		} catch ( BugError be ) {
+			threw = true;
+		}
+		assertTrue( threw );
+		
+		threw = false;
+		try {
+			map.getData( e );
+		} catch ( BugError be ) {
+			threw = true;
+		}
+		assertTrue( threw );
 	}
 }
