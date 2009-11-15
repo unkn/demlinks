@@ -37,7 +37,7 @@ import com.sleepycat.bind.tuple.TupleOutput;
  * 
  *
  */
-public class NodeJIDBinding extends TupleBinding<NodeJID> {
+public class NodeJavaIDBinding extends TupleBinding<NodeJavaID> {
 	
 	/*
 	 * (non-Javadoc)
@@ -47,16 +47,16 @@ public class NodeJIDBinding extends TupleBinding<NodeJID> {
 	 * .tuple.TupleInput)
 	 */
 	@Override
-	public NodeJID entryToObject( TupleInput input ) {
+	public NodeJavaID entryToObject( TupleInput input ) {
 
 		RunTime.assertNotNull( input );
 		// Data must be read in the same order that it was
 		// originally written.
-		String strJID = input.readString();
-		RunTime.assertNotNull( strJID );
-		NodeJID myJID = NodeJID.ensureJIDFor( strJID );// new NodeJID( strJID );
-		RunTime.assertNotNull( myJID );
-		return myJID;
+		String strJavaID = input.readString();
+		RunTime.assertNotNull( strJavaID );
+		NodeJavaID myJavaID = NodeJavaID.ensureJavaIDFor( strJavaID );
+		RunTime.assertNotNull( myJavaID );
+		return myJavaID;
 	}
 	
 	/*
@@ -67,16 +67,16 @@ public class NodeJIDBinding extends TupleBinding<NodeJID> {
 	 * com.sleepycat.bind.tuple.TupleOutput)
 	 */
 	@Override
-	public void objectToEntry( NodeJID object, TupleOutput output ) {
+	public void objectToEntry( NodeJavaID object, TupleOutput output ) {
 
 		RunTime.assertNotNull( object, output );
-		String strJID = object.getObject();
-		RunTime.assertNotNull( strJID );
-		strJID = new String( strJID );// FIXME: no new
-		RunTime.assertNotNull( strJID );
+		String strJavaID = object.getObject();
+		RunTime.assertNotNull( strJavaID );
+		strJavaID = new String( strJavaID );// FIXME: no new
+		RunTime.assertNotNull( strJavaID );
 		System.out.println( object );
 		// it will never be null before writing it to dbase, else bug somewhere
-		output.writeString( strJID );
+		output.writeString( strJavaID );
 	}
 	
 }

@@ -31,12 +31,12 @@ import org.references.Reference;
 
 
 /**
- * Node Java-Identifier a.k.a. NodeJID = node name on the java level which is
+ * Node Java-Identifier a.k.a. NodeJavaID = node name on the java level which is
  * basically
  * a string<br>
- * this is how we identify Nodes at the java level, using NodeJIDs<br>
+ * this is how we identify Nodes at the java level, using NodeJavaIDs<br>
  * 
- * - you're supposed to always use NodeJIDs while in java, to access Nodes<br>
+ * - you're supposed to always use NodeJavaIDs while in java, to access Nodes<br>
  * 
  * - it's probably a bad idea to cache ie. NodeIDs because while cached, it may<br>
  * be
@@ -44,43 +44,43 @@ import org.references.Reference;
  * program/thread(assuming concurrency will ever be allowed),
  * although this might be challenging to implement (or limiting).<br>
  * 
- * - NodeJIDs(Level1) != NodeIDs(Level2)
+ * - NodeJavaIDs(Level1) != NodeIDs(Level2)
  */
-public class NodeJID extends Reference<String> {
+public class NodeJavaID extends Reference<String> {
 	
-	// this will keep track of all NodeJIDs of all environments
-	// there's no point of having same JID twice for diff environments
-	protected static final HashMap<String, NodeJID>	all_Level1_NodeJIDs	= new HashMap<String, NodeJID>();
+	// this will keep track of all NodeJavaIDs of all environments
+	// there's no point of having same JavaID twice for diff environments
+	protected static final HashMap<String, NodeJavaID>	all_Level1_NodeJavaIDs	= new HashMap<String, NodeJavaID>();
 	
 	// string representation of the ID
 	// private String stringID = null;
 	
 	protected static final void junitClearAll() {
 
-		if ( null != all_Level1_NodeJIDs ) {
-			all_Level1_NodeJIDs.clear();
+		if ( null != all_Level1_NodeJavaIDs ) {
+			all_Level1_NodeJavaIDs.clear();
 		}
-		// all_Level1_NodeJIDs = new HashMap<String, NodeJID>();
+		// all_Level1_NodeJavaIDs = new HashMap<String, NodeJavaID>();
 	}
 	
 	/**
-	 * get the JID for this string<br>
+	 * get the JavaID for this string<br>
 	 * make a new one if it doesn't exist<br>
-	 * one to one mapping between the string and the JID
+	 * one to one mapping between the string and the JavaID
 	 * 
 	 * @param strID
 	 *            a normal string that's supposed to be used as an ID
-	 * @return JID (java ID) - the encapsulated string strID<br>
+	 * @return JavaID (java ID) - the encapsulated string strID<br>
 	 *         should never return null
 	 */
-	public static NodeJID ensureJIDFor( String strID ) {
+	public static NodeJavaID ensureJavaIDFor( String strID ) {
 
 		RunTime.assertNotNull( strID );
-		NodeJID curr = all_Level1_NodeJIDs.get( strID );
+		NodeJavaID curr = all_Level1_NodeJavaIDs.get( strID );
 		if ( null == curr ) {
 			// create new
-			curr = new NodeJID( strID );
-			if ( all_Level1_NodeJIDs.put( strID, curr ) != null ) {
+			curr = new NodeJavaID( strID );
+			if ( all_Level1_NodeJavaIDs.put( strID, curr ) != null ) {
 				RunTime.bug( "a value already existed?!! wicked! it means that the above .get() is bugged?!" );
 			}
 		}
@@ -93,7 +93,7 @@ public class NodeJID extends Reference<String> {
 	 * 
 	 * @param strID
 	 */
-	private NodeJID( String strID ) {
+	private NodeJavaID( String strID ) {
 
 		RunTime.assertNotNull( strID );
 		
@@ -107,29 +107,4 @@ public class NodeJID extends Reference<String> {
 		return this.getClass().getSimpleName() + ":" + this.getObject();
 	}
 	
-	// /**
-	// * @return
-	// */
-	// public String getAsString() {
-	//
-	// String temp = this.getObject();
-	// RunTime.assertNotNull( temp );// safety check?
-	// return temp;
-	// }
-	
-
-	// /**
-	// * (non-Javadoc)
-	// *
-	// * @see java.lang.Object#equals(java.lang.Object)
-	// */
-	// public boolean equals( NodeJID jid ) {
-	//
-	// RunTime.assertNotNull( jid );
-	// if ( ( super.equals( jid ) )
-	// || ( this.getAsString() ).equals( jid.getAsString() ) ) {
-	// return true;
-	// }
-	// return false;
-	// }
 }

@@ -28,7 +28,7 @@ package org.dml.level1;
 import org.dml.JUnits.Consts;
 import org.dml.level1.Level1_DMLEnvironment;
 import org.dml.level1.NodeID;
-import org.dml.level1.NodeJID;
+import org.dml.level1.NodeJavaID;
 import org.dml.storagewrapper.StorageException;
 import org.junit.After;
 import org.junit.Before;
@@ -68,8 +68,8 @@ public class TupleOfNodeIDsTest {
 	@Test
 	public void test1() throws StorageException {
 
-		n1 = dml.ensureNodeID( NodeJID.ensureJIDFor( "A" ) );
-		n2 = dml.ensureNodeID( NodeJID.ensureJIDFor( "B" ) );
+		n1 = dml.ensureNodeID( NodeJavaID.ensureJavaIDFor( "A" ) );
+		n2 = dml.ensureNodeID( NodeJavaID.ensureJavaIDFor( "B" ) );
 		// one = TupleOfNodeIDs.groupAsKeyValue( n1, n2 );
 		
 		System.out.println( n1 + "!" + n2 );

@@ -32,7 +32,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.dml.JUnits.Consts;
 import org.dml.level1.NodeID;
-import org.dml.level1.NodeJID;
+import org.dml.level1.NodeJavaID;
 import org.junit.Test;
 import org.references.method.MethodParams;
 import org.references.method.PossibleParams;
@@ -68,9 +68,9 @@ public class Level2_DMLEnvironmentTest {
 			// }
 			String test1 = "test1";
 			String test2 = "test2";
-			NodeJID j1 = NodeJID.ensureJIDFor( test1 );
+			NodeJavaID j1 = NodeJavaID.ensureJavaIDFor( test1 );
 			assertTrue( test1 == j1.getObject() );
-			NodeJID j2 = NodeJID.ensureJIDFor( test2 );
+			NodeJavaID j2 = NodeJavaID.ensureJavaIDFor( test2 );
 			assertTrue( j2.getObject() == test2 );
 			assertTrue( test1 != test2 );
 			assertTrue( j1 != j2 );
@@ -78,9 +78,9 @@ public class Level2_DMLEnvironmentTest {
 			NodeID n1 = d1.createNodeID( j1 );
 			NodeID n2 = d1.createNodeID( j2 );
 			assertNotNull( n1 );
-			assertNotNull( d1.getNodeJID( n1 ) );
-			assertTrue( d1.getNodeJID( n1 ).equals( j1 ) );
-			assertTrue( d1.getNodeJID( n1 ) == j1 );
+			assertNotNull( d1.getNodeJavaID( n1 ) );
+			assertTrue( d1.getNodeJavaID( n1 ).equals( j1 ) );
+			assertTrue( d1.getNodeJavaID( n1 ) == j1 );
 			assertTrue( n1.equals( d1.getNodeID( j1 ) ) );
 			// FIXME: maybe fix? getNodeID() does a new every time
 			assertTrue( n1 != d1.getNodeID( j1 ) );
@@ -97,8 +97,8 @@ public class Level2_DMLEnvironmentTest {
 			assertNull( n3 );
 			n3 = d3.getNodeID( j2 );
 			assertNull( n3 );
-			System.out.println( d1.getNodeJID( n1 ) );
-			System.out.println( d3.getNodeJID( n1 ) );
+			System.out.println( d1.getNodeJavaID( n1 ) );
+			System.out.println( d3.getNodeJavaID( n1 ) );
 			assertFalse( d1.isVector( n1, n2 ) );
 			assertFalse( d1.isVector( n1, n1 ) );
 			assertFalse( d1.ensureVector( n1, n2 ) );

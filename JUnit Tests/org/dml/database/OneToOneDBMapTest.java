@@ -83,7 +83,7 @@ public class OneToOneDBMapTest {
 			UnsupportedEncodingException {
 
 		
-		System.out.println( x.link( _a, _b ) );
+		System.out.println( x.makeVector( _a, _b ) );
 		assertTrue( x.getKey( _b ).equals( _a ) );
 		assertTrue( x.getData( _a ).equals( _b ) );
 		// different objects, same content
@@ -165,7 +165,7 @@ public class OneToOneDBMapTest {
 		}
 		assertTrue( threw );
 		
-		map.link( key1, data );// shouldn't throw!
+		map.makeVector( key1, data );// shouldn't throw!
 		
 		key1 = new JUnit_Ex2();
 		threw = false;
@@ -178,7 +178,7 @@ public class OneToOneDBMapTest {
 		
 		threw = false;
 		try {
-			map.link( key1, data );
+			map.makeVector( key1, data );
 		} catch ( BadCallError bce ) {
 			threw = true;
 		}
@@ -187,7 +187,7 @@ public class OneToOneDBMapTest {
 
 		threw = false;
 		try {
-			map.link( key2, data );
+			map.makeVector( key2, data );
 		} catch ( BadCallError bce ) {
 			threw = true;
 		}

@@ -67,18 +67,18 @@ public class Level1_DMLEnvironment extends MainLevel0 implements
 	
 	// ---------------------------------------------
 	/**
-	 * there's a one to one mapping between NodeID and NodeJID<br>
-	 * given the NodeID return its NodeJID<br>
+	 * there's a one to one mapping between NodeID and NodeJavaID<br>
+	 * given the NodeID return its NodeJavaID<br>
 	 * NodeIDs are on some kind of Storage<br>
 	 * 
 	 * @param nodeID
-	 * @return NodeJID
+	 * @return NodeJavaID
 	 * @throws StorageException
 	 */
-	public NodeJID getNodeJID( NodeID nodeID ) throws StorageException {
+	public NodeJavaID getNodeJavaID( NodeID nodeID ) throws StorageException {
 
 		RunTime.assertNotNull( nodeID );
-		return storage.getNodeJID( nodeID );
+		return storage.getNodeJavaID( nodeID );
 	}
 	
 	/**
@@ -86,35 +86,35 @@ public class Level1_DMLEnvironment extends MainLevel0 implements
 	 * make a new one if it doesn't exist<br>
 	 * but if exists don't complain<br>
 	 * 
-	 * @param theJID
-	 *            this JID and this Node will be mapped 1 to 1
+	 * @param theJavaID
+	 *            this JavaID and this Node will be mapped 1 to 1
 	 * @return never null
 	 * @throws StorageException
 	 */
-	public NodeID ensureNodeID( NodeJID theJID ) throws StorageException {
+	public NodeID ensureNodeID( NodeJavaID theJavaID ) throws StorageException {
 
-		RunTime.assertNotNull( theJID );
-		return storage.ensureNodeID( theJID );
+		RunTime.assertNotNull( theJavaID );
+		return storage.ensureNodeID( theJavaID );
 	}
 	
 	/**
-	 * @param identifiedByThisJID
+	 * @param identifiedByThisJavaID
 	 * @throws StorageException
 	 */
-	public NodeID getNodeID( NodeJID identifiedByThisJID )
+	public NodeID getNodeID( NodeJavaID identifiedByThisJavaID )
 			throws StorageException {
 
-		return storage.getNodeID( identifiedByThisJID );
+		return storage.getNodeID( identifiedByThisJavaID );
 	}
 	
 	/**
-	 * @param fromJID
+	 * @param fromJavaID
 	 * @return
 	 * @throws StorageException
 	 */
-	public NodeID createNodeID( NodeJID fromJID ) throws StorageException {
+	public NodeID createNodeID( NodeJavaID fromJavaID ) throws StorageException {
 
-		return storage.createNodeID( fromJID );
+		return storage.createNodeID( fromJavaID );
 	}
 	
 }

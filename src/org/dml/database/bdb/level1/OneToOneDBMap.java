@@ -179,7 +179,7 @@ public class OneToOneDBMap<KeyType, DataType> {
 	 * @return
 	 * @throws DatabaseException
 	 */
-	public OperationStatus link( KeyType key, DataType data )
+	public OperationStatus makeVector( KeyType key, DataType data )
 			throws DatabaseException {
 
 		this.checkKey( key );

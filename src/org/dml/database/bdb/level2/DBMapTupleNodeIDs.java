@@ -56,8 +56,8 @@ public class DBMapTupleNodeIDs extends OneToManyDBMap<NodeID, NodeID> {
 	 * @param dbName1
 	 *            the name of the database that will hold the tuples
 	 * @param db
-	 *            the database holding the JIDs to NodeIDs 1to1 mappings,
-	 *            that's currently BerkeleyDB.getDBMapJIDsToNodeIDs()
+	 *            the database holding the JavaIDs to NodeIDs 1to1 mappings,
+	 *            that's currently BerkeleyDB.getDBMapJavaIDsToNodeIDs()
 	 */
 	public DBMapTupleNodeIDs( Level1_Storage_BerkeleyDB bdb1, String dbName1 ) {
 
@@ -66,7 +66,7 @@ public class DBMapTupleNodeIDs extends OneToManyDBMap<NodeID, NodeID> {
 	
 	/**
 	 * obviously first and second must already exist as NodeIDs associated with
-	 * JIDs<br>
+	 * JavaIDs<br>
 	 * 
 	 * @param initialNode
 	 * @param terminalNode
@@ -80,7 +80,7 @@ public class DBMapTupleNodeIDs extends OneToManyDBMap<NodeID, NodeID> {
 		RunTime.assertNotNull( initialNode, terminalNode );
 		
 		// checking that both NodeIDs exist already which means there are two
-		// JIDs associated with them
+		// JavaIDs associated with them
 		this.throwIfNotExist( initialNode );
 		this.throwIfNotExist( terminalNode );
 		
@@ -89,7 +89,7 @@ public class DBMapTupleNodeIDs extends OneToManyDBMap<NodeID, NodeID> {
 	
 	/**
 	 * obviously first and second must already exist as NodeIDs associated with
-	 * JIDs<br>
+	 * JavaIDs<br>
 	 * 
 	 * @param initialNode
 	 * @param terminalNode
@@ -118,13 +118,13 @@ public class DBMapTupleNodeIDs extends OneToManyDBMap<NodeID, NodeID> {
 
 		RunTime.assertNotNull( nid );
 		if ( !this.existsNodeID( nid ) ) {
-			RunTime.bug( "NodeID doesn't exist, and it SHOULD exist! it's NODE ID not JID" );
+			RunTime.bug( "NodeID doesn't exist, and it SHOULD exist! it's NODE ID not JavaID" );
 		}
 	}
 	
 	private boolean existsNodeID( NodeID whichNodeID ) throws DatabaseException {
 
-		return ( null != this.getBDBL1().getDBMapJIDsToNodeIDs().getNodeJID(
+		return ( null != this.getBDBL1().getDBMap_JavaIDs_To_NodeIDs().getNodeJavaID(
 				whichNodeID ) );
 	}
 }

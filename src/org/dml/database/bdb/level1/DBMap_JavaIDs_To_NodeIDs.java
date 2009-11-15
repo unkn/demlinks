@@ -27,7 +27,7 @@ package org.dml.database.bdb.level1;
 
 import org.dml.error.BugError;
 import org.dml.level1.NodeID;
-import org.dml.level1.NodeJID;
+import org.dml.level1.NodeJavaID;
 import org.dml.tools.RunTime;
 import org.javapart.logger.Log;
 
@@ -38,10 +38,10 @@ import com.sleepycat.je.OperationStatus;
 
 /**
  *this adds a Sequence for NodeID generation (ie. get a new unique NodeID)<br>
- *and the methods that use NodeID and NodeJID objects<br>
- *lookup by either NodeJID or NodeID<br>
+ *and the methods that use NodeID and NodeJavaID objects<br>
+ *lookup by either NodeJavaID or NodeID<br>
  */
-public class DBMapJIDsToNodeIDs extends OneToOneDBMap<NodeJID, NodeID> {
+public class DBMap_JavaIDs_To_NodeIDs extends OneToOneDBMap<NodeJavaID, NodeID> {
 	
 	private DBSequence			seq			= null;
 	private String				seq_KEYNAME	= null;
@@ -51,10 +51,10 @@ public class DBMapJIDsToNodeIDs extends OneToOneDBMap<NodeJID, NodeID> {
 	 * @param dbName1
 	 * @throws DatabaseException
 	 */
-	public DBMapJIDsToNodeIDs( Level1_Storage_BerkeleyDB bdb1, String dbName1 )
-			throws DatabaseException {
+	public DBMap_JavaIDs_To_NodeIDs( Level1_Storage_BerkeleyDB bdb1,
+			String dbName1 ) throws DatabaseException {
 
-		super( bdb1, dbName1, NodeJID.class, NodeID.class );
+		super( bdb1, dbName1, NodeJavaID.class, NodeID.class );
 		seq_KEYNAME = dbName1;
 	}
 	
@@ -73,7 +73,7 @@ public class DBMapJIDsToNodeIDs extends OneToOneDBMap<NodeJID, NodeID> {
 	}
 	
 	@Override
-	public OneToOneDBMap<NodeJID, NodeID> silentClose() {
+	public OneToOneDBMap<NodeJavaID, NodeID> silentClose() {
 
 		Log.entry( "closing " + this.getClass().getSimpleName()
 				+ " with name: " + dbName );
@@ -88,112 +88,102 @@ public class DBMapJIDsToNodeIDs extends OneToOneDBMap<NodeJID, NodeID> {
 	}
 	
 	/**
-	 * @return a NodeID that doesn't exist yet (and never will, even if
+	 * @return a long that doesn't exist yet (and never will, even if
 	 *         exceptions occur)
 	 * @throws DatabaseException
 	 */
-	private long getUniqueNodeID() throws DatabaseException {
+	private long getUniqueLong() throws DatabaseException {
 
 		return this.getDBSeq().getSequence().get( null, SEQ_DELTA );
 	}
 	
 	/**
 	 * the NodeID must already exist else null is returned<br>
-	 * this doesn't create a new NodeID for the supplied JID<br>
-	 * remember there's a one to one mapping between a JID and a NodeID
+	 * this doesn't create a new NodeID for the supplied JavaID<br>
+	 * remember there's a one to one mapping between a JavaID and a NodeID
 	 * 
-	 * @param theJID
+	 * @param fromJavaID
 	 * @return null if not found;
 	 * @throws DatabaseException
 	 */
-	public NodeID getNodeID( NodeJID fromJID ) throws DatabaseException {
+	public NodeID getNodeID( NodeJavaID fromJavaID ) throws DatabaseException {
 
-		RunTime.assertNotNull( fromJID );
-		return this.internal_getNodeIDFromJID( fromJID );
+		RunTime.assertNotNull( fromJavaID );
+		return this.internal_getNodeIDFromJavaID( fromJavaID );
 	}
 	
 	
 
 	/**
-	 * @param fromJID
+	 * @param fromJavaID
 	 * @return
 	 * @throws DatabaseException
 	 * @throws BugError
 	 */
-	public NodeID createNodeID( NodeJID fromJID ) throws DatabaseException {
+	public NodeID createNodeID( NodeJavaID fromJavaID )
+			throws DatabaseException {
 
-		if ( null != this.internal_getNodeIDFromJID( fromJID ) ) {
+		if ( null != this.internal_getNodeIDFromJavaID( fromJavaID ) ) {
 			// already exists
-			RunTime.bug( "bad programming, the JID is already associated with one NodeID !" );// throws
+			RunTime.bug( "bad programming, the JavaID is already associated with one NodeID !" );// throws
 		}
 		// doesn't exist, make it:
-		return this.internal_makeNewNodeID( fromJID );
+		return this.internal_makeNewNodeID( fromJavaID );
 	}
 	
 	/**
-	 * the fromJID must not already be mapped to another NodeID before calling
+	 * the fromJavaID must not already be mapped to another NodeID before
+	 * calling
 	 * this method!
 	 * 
-	 * @param fromJID
-	 * @return the new NodeID mapped to fromJID<br>
+	 * @param fromJavaID
+	 * @return the new NodeID mapped to fromJavaID<br>
 	 *         never null
 	 * @throws DatabaseException
 	 */
-	private final NodeID internal_makeNewNodeID( NodeJID fromJID )
+	private final NodeID internal_makeNewNodeID( NodeJavaID fromJavaID )
 			throws DatabaseException {
 
-		RunTime.assertNotNull( fromJID );
-		NodeID nid = new NodeID( this.getUniqueNodeID() );
-		if ( OperationStatus.SUCCESS != this.internal_Link( fromJID, nid ) ) {
-			RunTime.bug( "should've succeeded, maybe JID already existed?" );
+		RunTime.assertNotNull( fromJavaID );
+		NodeID nid = new NodeID( this.getUniqueLong() );
+		if ( OperationStatus.SUCCESS != this.makeVector( fromJavaID, nid ) ) {
+			RunTime.bug( "should've succeeded, maybe JavaID already existed?" );
 		}
 		RunTime.assertNotNull( nid );
 		return nid;
 	}
 	
 	/**
-	 * @param thisJID
-	 * @param withThisNID
+	 * get or create and get, a NodeID from the given JavaID
+	 * 
+	 * @param fromJavaID
 	 * @return
 	 * @throws DatabaseException
 	 */
-	private OperationStatus internal_Link( NodeJID thisJID, NodeID withThisNID )
+	public NodeID ensureNodeID( NodeJavaID fromJavaID )
 			throws DatabaseException {
 
-		RunTime.assertNotNull( thisJID, withThisNID );
-		return this.link( thisJID, withThisNID );
-	}
-	
-	/**
-	 * get or create and get, a NodeID from the given JID
-	 * 
-	 * @param fromJID
-	 * @return
-	 * @throws DatabaseException
-	 */
-	public NodeID ensureNodeID( NodeJID fromJID ) throws DatabaseException {
-
-		NodeID nid = this.internal_getNodeIDFromJID( fromJID );
+		NodeID nid = this.internal_getNodeIDFromJavaID( fromJavaID );
 		if ( null == nid ) {
-			// no NodeID for JID yet, make new one
-			nid = this.internal_makeNewNodeID( fromJID );
+			// no NodeID for JavaID yet, make new one
+			nid = this.internal_makeNewNodeID( fromJavaID );
 		}
 		RunTime.assertNotNull( nid );// this is stupid
 		return nid;
 	}
 	
 	/**
-	 * @param fromJID
-	 *            the JID identifying the returned NodeID
+	 * @param fromJavaID
+	 *            the JavaID identifying the returned NodeID
 	 * @return null if not found; or the NodeID as NodeID object if found
 	 * @throws DatabaseException
 	 */
-	private NodeID internal_getNodeIDFromJID( NodeJID fromJID )
+	private NodeID internal_getNodeIDFromJavaID( NodeJavaID fromJavaID )
 			throws DatabaseException {
 
-		RunTime.assertNotNull( fromJID );
+		RunTime.assertNotNull( fromJavaID );
 		// String nidAsStr =
-		NodeID nid = this.getData( fromJID );
+		NodeID nid = this.getData( fromJavaID );
 		// if ( null == nidAsStr ) {
 		// return null;
 		// }
@@ -207,10 +197,11 @@ public class DBMapJIDsToNodeIDs extends OneToOneDBMap<NodeJID, NodeID> {
 	 * @return null if not found
 	 * @throws DatabaseException
 	 */
-	public NodeJID getNodeJID( NodeID fromNodeID ) throws DatabaseException {
+	public NodeJavaID getNodeJavaID( NodeID fromNodeID )
+			throws DatabaseException {
 
 		RunTime.assertNotNull( fromNodeID );
-		NodeJID jid = this.getKey( fromNodeID );
+		NodeJavaID jid = this.getKey( fromNodeID );
 		// RunTime.assertNotNull( jid );
 		return jid;
 	}
@@ -218,7 +209,7 @@ public class DBMapJIDsToNodeIDs extends OneToOneDBMap<NodeJID, NodeID> {
 	/**
 	 * @return null
 	 */
-	public DBMapJIDsToNodeIDs deInit() {
+	public DBMap_JavaIDs_To_NodeIDs deInit() {
 
 		this.silentClose();
 		return null;

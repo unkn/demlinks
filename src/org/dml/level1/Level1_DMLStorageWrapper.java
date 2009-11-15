@@ -36,42 +36,42 @@ import org.dml.storagewrapper.StorageException;
 public interface Level1_DMLStorageWrapper {
 	
 	/**
-	 * returns the NodeJID associated with the given NodeID<br>
+	 * returns the NodeJavaID associated with the given NodeID<br>
 	 * it's a 1 to 1 mapping<br>
 	 * 
 	 * @param identifiedByThisNodeID
-	 * @return NodeJID or null if not found
+	 * @return NodeJavaID or null if not found
 	 * @throws StorageException
 	 */
-	public NodeJID getNodeJID( NodeID identifiedByThisNodeID )
+	public NodeJavaID getNodeJavaID( NodeID identifiedByThisNodeID )
 			throws StorageException;
 	
 	/**
-	 * returns the NodeID associated with the given NodeJID<br>
+	 * returns the NodeID associated with the given NodeJavaID<br>
 	 * it's a 1 to 1 mapping<br>
 	 * 
-	 * @param identifiedByThisJID
+	 * @param identifiedByThisJavaID
 	 * @return NodeID or null if not found;
 	 * @throws StorageException
 	 */
-	public NodeID getNodeID( NodeJID identifiedByThisJID )
+	public NodeID getNodeID( NodeJavaID identifiedByThisJavaID )
 			throws StorageException;
 	
 	/**
-	 * @param fromJID
+	 * @param fromJavaID
 	 *            must not be already associated with a NodeID (1to1 max) or
 	 *            else throws
 	 * @return the created NodeID or throws bug if fromJID already had a NodeID
 	 * @throws StorageException
 	 */
-	public NodeID createNodeID( NodeJID fromJID ) throws StorageException;
+	public NodeID createNodeID( NodeJavaID fromJavaID ) throws StorageException;
 	
 	/**
-	 * @param theJID
+	 * @param theJavaID
 	 * @return the new or existing NodeID
 	 * @throws StorageException
 	 */
-	public NodeID ensureNodeID( NodeJID theJID ) throws StorageException;
+	public NodeID ensureNodeID( NodeJavaID theJavaID ) throws StorageException;
 	
 
 }

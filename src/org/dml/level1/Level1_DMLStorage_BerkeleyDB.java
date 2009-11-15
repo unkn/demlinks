@@ -89,12 +89,12 @@ public class Level1_DMLStorage_BerkeleyDB extends MainLevel0 implements
 	
 	// =============================================
 	@Override
-	public final NodeJID getNodeJID( NodeID identifiedByThisNodeID )
+	public final NodeJavaID getNodeJavaID( NodeID identifiedByThisNodeID )
 			throws StorageException {
 
 		RunTime.assertNotNull( identifiedByThisNodeID );
 		try {
-			return bdb.getDBMapJIDsToNodeIDs().getNodeJID(
+			return bdb.getDBMap_JavaIDs_To_NodeIDs().getNodeJavaID(
 					identifiedByThisNodeID );
 		} catch ( DatabaseException ex ) {
 			throw new StorageException( ex );
@@ -102,23 +102,23 @@ public class Level1_DMLStorage_BerkeleyDB extends MainLevel0 implements
 	}
 	
 	@Override
-	public final NodeID getNodeID( NodeJID identifiedByThisJID )
+	public final NodeID getNodeID( NodeJavaID identifiedByThisJavaID )
 			throws StorageException {
 
-		RunTime.assertNotNull( identifiedByThisJID );
+		RunTime.assertNotNull( identifiedByThisJavaID );
 		try {
-			return bdb.getDBMapJIDsToNodeIDs().getNodeID( identifiedByThisJID );
+			return bdb.getDBMap_JavaIDs_To_NodeIDs().getNodeID( identifiedByThisJavaID );
 		} catch ( DatabaseException dbe ) {
 			throw new StorageException( dbe );
 		}
 	}
 	
 	@Override
-	public final NodeID createNodeID( NodeJID fromJID ) throws StorageException {
+	public final NodeID createNodeID( NodeJavaID fromJavaID ) throws StorageException {
 
-		RunTime.assertNotNull( fromJID );
+		RunTime.assertNotNull( fromJavaID );
 		try {
-			return bdb.getDBMapJIDsToNodeIDs().createNodeID( fromJID );
+			return bdb.getDBMap_JavaIDs_To_NodeIDs().createNodeID( fromJavaID );
 		} catch ( DatabaseException dbe ) {
 			throw new StorageException( dbe );
 		}
@@ -126,11 +126,11 @@ public class Level1_DMLStorage_BerkeleyDB extends MainLevel0 implements
 	
 	
 	@Override
-	public final NodeID ensureNodeID( NodeJID theJID ) throws StorageException {
+	public final NodeID ensureNodeID( NodeJavaID theJavaID ) throws StorageException {
 
-		RunTime.assertNotNull( theJID );
+		RunTime.assertNotNull( theJavaID );
 		try {
-			return bdb.getDBMapJIDsToNodeIDs().ensureNodeID( theJID );
+			return bdb.getDBMap_JavaIDs_To_NodeIDs().ensureNodeID( theJavaID );
 		} catch ( DatabaseException de ) {
 			throw new StorageException( de );
 		}

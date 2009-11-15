@@ -34,7 +34,7 @@ import org.dml.database.bdb.level1.Level1_Storage_BerkeleyDB;
 import org.dml.database.bdb.level2.DBMapTupleNodeIDs;
 import org.dml.level1.Level1_DMLEnvironment;
 import org.dml.level1.NodeID;
-import org.dml.level1.NodeJID;
+import org.dml.level1.NodeJavaID;
 import org.dml.storagewrapper.StorageException;
 import org.junit.After;
 import org.junit.Before;
@@ -83,28 +83,28 @@ public class DBMapTupleNodeIDsTest {
 	public void test1() throws DatabaseException, StorageException {
 
 		String strA = "A";
-		NodeJID jidA = NodeJID.ensureJIDFor( strA );
-		NodeID _a = bdb.getDBMapJIDsToNodeIDs().ensureNodeID( jidA );
-		NodeID _b = bdb.getDBMapJIDsToNodeIDs().ensureNodeID(
-				NodeJID.ensureJIDFor( "B" ) );
+		NodeJavaID jidA = NodeJavaID.ensureJavaIDFor( strA );
+		NodeID _a = bdb.getDBMap_JavaIDs_To_NodeIDs().ensureNodeID( jidA );
+		NodeID _b = bdb.getDBMap_JavaIDs_To_NodeIDs().ensureNodeID(
+				NodeJavaID.ensureJavaIDFor( "B" ) );
 		assertNotNull( _a );
 		assertNotNull( _b );
 		
-		assertTrue( jidA.equals( bdb.getDBMapJIDsToNodeIDs().getNodeJID( _a ) ) );
-		assertTrue( bdb.getDBMapJIDsToNodeIDs().getNodeJID( _a ) == jidA );
+		assertTrue( jidA.equals( bdb.getDBMap_JavaIDs_To_NodeIDs().getNodeJavaID( _a ) ) );
+		assertTrue( bdb.getDBMap_JavaIDs_To_NodeIDs().getNodeJavaID( _a ) == jidA );
 		
 		org.junit.Assert.assertFalse( tdb.isVector( _a, _b ) );
 		org.junit.Assert.assertFalse( tdb.ensureVector( _a, _b ) );
 		
 		assertTrue( tdb.isVector( _a, _b ) );
 		assertTrue( tdb.ensureVector( _a, _b ) );
-		NodeID _d = bdb.getDBMapJIDsToNodeIDs().ensureNodeID(
-				NodeJID.ensureJIDFor( "D" ) );
-		NodeID _e = bdb.getDBMapJIDsToNodeIDs().ensureNodeID(
-				NodeJID.ensureJIDFor( "E" ) );
+		NodeID _d = bdb.getDBMap_JavaIDs_To_NodeIDs().ensureNodeID(
+				NodeJavaID.ensureJavaIDFor( "D" ) );
+		NodeID _e = bdb.getDBMap_JavaIDs_To_NodeIDs().ensureNodeID(
+				NodeJavaID.ensureJavaIDFor( "E" ) );
 		assertFalse( tdb.ensureVector( _d, _e ) );
-		NodeID _c = bdb.getDBMapJIDsToNodeIDs().ensureNodeID(
-				NodeJID.ensureJIDFor( "C" ) );
+		NodeID _c = bdb.getDBMap_JavaIDs_To_NodeIDs().ensureNodeID(
+				NodeJavaID.ensureJavaIDFor( "C" ) );
 		assertFalse( tdb.ensureVector( _a, _c ) );
 		assertTrue( tdb.isVector( _a, _c ) );
 		assertFalse( tdb.ensureVector( _c, _a ) );

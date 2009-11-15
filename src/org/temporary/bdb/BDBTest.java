@@ -27,7 +27,7 @@ package org.temporary.bdb;
 
 import org.dml.JUnits.Consts;
 import org.dml.database.bdb.level1.Level1_Storage_BerkeleyDB;
-import org.dml.level1.NodeJID;
+import org.dml.level1.NodeJavaID;
 import org.references.method.MethodParams;
 import org.references.method.PossibleParams;
 
@@ -53,8 +53,8 @@ public class BDBTest {
 		params = null;
 		
 		try {
-			b.getDBMapJIDsToNodeIDs().createNodeID(
-					NodeJID.ensureJIDFor( "duh" ) );
+			b.getDBMap_JavaIDs_To_NodeIDs().createNodeID(
+					NodeJavaID.ensureJavaIDFor( "duh" ) );
 		} finally {
 			b.deInit();
 			

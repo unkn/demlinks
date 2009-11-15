@@ -59,7 +59,7 @@ public class Level1_Storage_BerkeleyDB extends StaticInstanceTracker {
 	private String												envHomeDir;
 	private final EnvironmentConfig								environmentConfig			= new EnvironmentConfig();
 	private Environment											env							= null;
-	private DBMapJIDsToNodeIDs									dbJID2NID					= null;
+	private DBMap_JavaIDs_To_NodeIDs							db_JavaID_To_NodeID			= null;
 	
 
 	// a database where all sequences will be stored:(only 1 db per bdb env)
@@ -73,23 +73,25 @@ public class Level1_Storage_BerkeleyDB extends StaticInstanceTracker {
 	private final ListOfUniqueNonNullObjects<Database>			allOpenPrimaryDatabases		= new ListOfUniqueNonNullObjects<Database>();
 	private final ListOfUniqueNonNullObjects<SecondaryDatabase>	allOpenSecondaryDatabases	= new ListOfUniqueNonNullObjects<SecondaryDatabase>();
 	
-	private static final String									dbJID2NID_NAME				= "map(JID<->NodeID)";
+	private static final String									dbNAME_JavaID_To_NodeID		= "map(JavaID<->NodeID)";
 	private final static String									UNINITIALIZED_STRING		= "uninitializedString";
 	
 	/**
 	 * singleton
 	 * 
-	 * @return the database handling the one to one mapping between JIDs and
+	 * @return the database handling the one to one mapping between JavaIDs and
 	 *         NodeIDs
 	 * @throws DatabaseException
 	 */
-	public DBMapJIDsToNodeIDs getDBMapJIDsToNodeIDs() throws DatabaseException {
+	public DBMap_JavaIDs_To_NodeIDs getDBMap_JavaIDs_To_NodeIDs()
+			throws DatabaseException {
 
-		if ( null == dbJID2NID ) {
-			dbJID2NID = new DBMapJIDsToNodeIDs( this, dbJID2NID_NAME );
-			RunTime.assertNotNull( dbJID2NID );
+		if ( null == db_JavaID_To_NodeID ) {
+			db_JavaID_To_NodeID = new DBMap_JavaIDs_To_NodeIDs( this,
+					dbNAME_JavaID_To_NodeID );
+			RunTime.assertNotNull( db_JavaID_To_NodeID );
 		}
-		return dbJID2NID;
+		return db_JavaID_To_NodeID;
 	}
 	
 	
@@ -128,8 +130,8 @@ public class Level1_Storage_BerkeleyDB extends StaticInstanceTracker {
 	@Override
 	protected void done() {
 
-		if ( null != dbJID2NID ) {
-			dbJID2NID = dbJID2NID.deInit();
+		if ( null != db_JavaID_To_NodeID ) {
+			db_JavaID_To_NodeID = db_JavaID_To_NodeID.deInit();
 		}
 		this.deInitSeqSystem_silent();// first
 		this.closeAllOpenDatabases_silent();// second

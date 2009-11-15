@@ -32,8 +32,8 @@ import org.dml.database.JUnit_Base1;
 import org.dml.database.JUnit_Base1Binding;
 import org.dml.level1.NodeID;
 import org.dml.level1.NodeIDBinding;
-import org.dml.level1.NodeJID;
-import org.dml.level1.NodeJIDBinding;
+import org.dml.level1.NodeJavaID;
+import org.dml.level1.NodeJavaIDBinding;
 import org.dml.tools.RunTime;
 
 import com.sleepycat.bind.tuple.TupleBinding;
@@ -52,7 +52,7 @@ public class AllTupleBindings {
 		// add to this list any objects that you expect to store into a BDB
 		// dbase
 		addNonPrimitive( NodeID.class, new NodeIDBinding() );
-		addNonPrimitive( NodeJID.class, new NodeJIDBinding() );
+		addNonPrimitive( NodeJavaID.class, new NodeJavaIDBinding() );
 		addNonPrimitive( JUnit_Base1.class, new JUnit_Base1Binding() );
 	}
 	

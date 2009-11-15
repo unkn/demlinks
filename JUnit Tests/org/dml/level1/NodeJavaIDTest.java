@@ -38,19 +38,19 @@ import org.junit.Test;
  * 
  *
  */
-public class NodeJIDTest {
+public class NodeJavaIDTest {
 	
-	NodeJID	a, b, c;
+	NodeJavaID	a, b, c;
 	
 	@Before
 	public void init() throws StorageException {
 
 		// DMLEnvironment.init();
-		NodeJID.junitClearAll();
-		assertTrue( NodeJID.all_Level1_NodeJIDs.size() == 0 );
-		a = NodeJID.ensureJIDFor( "A" );
-		b = NodeJID.ensureJIDFor( "B" );
-		c = NodeJID.ensureJIDFor( "C" );
+		NodeJavaID.junitClearAll();
+		assertTrue( NodeJavaID.all_Level1_NodeJavaIDs.size() == 0 );
+		a = NodeJavaID.ensureJavaIDFor( "A" );
+		b = NodeJavaID.ensureJavaIDFor( "B" );
+		c = NodeJavaID.ensureJavaIDFor( "C" );
 	}
 	
 	@After
@@ -62,8 +62,8 @@ public class NodeJIDTest {
 	@Test
 	public void listOfAllTest() {
 
-		assertTrue( NodeJID.all_Level1_NodeJIDs.size() == 3 );
-		System.out.println( NodeJID.all_Level1_NodeJIDs );
+		assertTrue( NodeJavaID.all_Level1_NodeJavaIDs.size() == 3 );
+		System.out.println( NodeJavaID.all_Level1_NodeJavaIDs );
 	}
 	
 	@Test
@@ -72,19 +72,19 @@ public class NodeJIDTest {
 		String _a = "ABCDEDFASA".substring( 0, 1 );
 		assertTrue( "A" != _a );
 		assertTrue( "A".equals( _a ) );// compare by contents yields true
-		assertTrue( a == NodeJID.ensureJIDFor( _a ) );// not re-added
-		assertTrue( NodeJID.all_Level1_NodeJIDs.size() == 3 );
+		assertTrue( a == NodeJavaID.ensureJavaIDFor( _a ) );// not re-added
+		assertTrue( NodeJavaID.all_Level1_NodeJavaIDs.size() == 3 );
 		// assertTrue( null != DMLEnvironment.AllWords );
 		// assertTrue( NodeJID.all_Level1_NodeJIDs.size() == 4 );
-		System.out.println( NodeJID.all_Level1_NodeJIDs );
+		System.out.println( NodeJavaID.all_Level1_NodeJavaIDs );
 		// NodeJID.forgetJIDFor( "A" );
 		// assertTrue( NodeJID.all_Level1_NodeJIDs.size() == 2 );
 		// assertTrue( a != NodeJID.getJIDFor( "A" ) );
 		// assertTrue( NodeJID.all_Level1_NodeJIDs.size() == 3 );
 		String test = "test";
-		NodeJID j1 = NodeJID.ensureJIDFor( test );
-		NodeJID.ensureJIDFor( "middle" );
-		NodeJID j2 = NodeJID.ensureJIDFor( test );
+		NodeJavaID j1 = NodeJavaID.ensureJavaIDFor( test );
+		NodeJavaID.ensureJavaIDFor( "middle" );
+		NodeJavaID j2 = NodeJavaID.ensureJavaIDFor( test );
 		assertTrue( j1 == j2 );
 		System.out.println( "!" + j1.toString() + "!" + j2.toString() + "!" );
 		assertTrue( j1.equals( j2 ) );
@@ -111,7 +111,7 @@ public class NodeJIDTest {
 
 		boolean aeGot = false;
 		try {
-			NodeJID.ensureJIDFor( null );
+			NodeJavaID.ensureJavaIDFor( null );
 		} catch ( AssertionError ae ) {
 			aeGot = true;
 		}
