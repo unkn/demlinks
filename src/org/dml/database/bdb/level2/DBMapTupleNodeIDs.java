@@ -83,7 +83,10 @@ public class DBMapTupleNodeIDs extends OneToManyDBMap {
 		this.throwIfNotExist( initialNode );
 		this.throwIfNotExist( terminalNode );
 		
-		return this.ensureVector( initialNode.getAsString(), terminalNode.getAsString() );
+		// TODO make base method to have the ability to any store Serialized
+		// object in this case a NodeID object
+		return this.ensureVector( initialNode.getAsString(),
+				terminalNode.getAsString() );
 	}
 	
 	/**
@@ -104,7 +107,8 @@ public class DBMapTupleNodeIDs extends OneToManyDBMap {
 		this.throwIfNotExist( initialNode );
 		this.throwIfNotExist( terminalNode );
 		
-		return this.isVector( initialNode.getAsString(), terminalNode.getAsString() );
+		return this.isVector( initialNode.getAsString(),
+				terminalNode.getAsString() );
 	}
 	
 	/**
