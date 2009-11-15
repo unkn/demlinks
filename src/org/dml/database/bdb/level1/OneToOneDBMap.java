@@ -228,15 +228,19 @@ public class OneToOneDBMap<keyClass, dataClass> {
 		// Level1_Storage_BerkeleyDB.stringToEntry( key, deKey );
 		
 
-		// FIXME maybe not new every time here ie. make private field
+		// FIXME maybe not new every time here ie. make synchro private field
 		DatabaseEntry deData = new DatabaseEntry();
 		OperationStatus ret;
 		ret = this.getForwardDB().get( null, deKey, deData, null );
 		if ( OperationStatus.SUCCESS != ret ) {
 			return null;
 		}
-		
-		return Level1_Storage_BerkeleyDB.entryToString( deData );
+		dataClass data;
+		EntryBinding dataBinding = AllTupleBindings.getBinding();
+		data = (dataClass)dataBinding.entryToObject( deData );
+		// should not be null here
+		RunTime.assertNotNull( data );
+		return data;// Level1_Storage_BerkeleyDB.entryToString( deData );
 	}
 	
 

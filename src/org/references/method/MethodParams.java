@@ -47,10 +47,10 @@ import org.references.Reference;
  * 
  * same ParamName cannot have two objects in the same MethodParams list<br>
  */
-public class MethodParams<T> extends StaticInstanceTracker {// T= base class,
-
-	// usually just
-	// Object
+public class MethodParams<T> extends StaticInstanceTracker {
+	
+	// T= base class, usually just Object
+	// TODO make this allow any subclass of T
 	
 	// a list of instances ie. String, Integer, or even null(s) which can repeat
 	// ie. A==B
@@ -94,7 +94,7 @@ public class MethodParams<T> extends StaticInstanceTracker {// T= base class,
 	 * @param paramName
 	 * @return null if not found; use .getObject() to get the value
 	 */
-	public Reference<T> get( ParamName<T> paramName ) {
+	public Reference<T> get( ParamName<? extends T> paramName ) {
 
 		// what this does is get the list paramName and intersect it with
 		// the MethodParams list and should find 0 or 1 elements in common, if
@@ -119,7 +119,7 @@ public class MethodParams<T> extends StaticInstanceTracker {// T= base class,
 	 * @return reference; null if not found, or the ref pointing to the value,
 	 *         the value can be null tho
 	 */
-	private ChainedReference<T> internalGet( ParamName<T> paramName ) {
+	private ChainedReference<T> internalGet( ParamName<? extends T> paramName ) {
 
 		RunTime.assertNotNull( paramName );
 		
@@ -127,7 +127,7 @@ public class MethodParams<T> extends StaticInstanceTracker {// T= base class,
 		ChainedReference<T> found = null;
 		// parse listOfParams and check each element(the reference of each)
 		// against ParamName list
-		ChainedReference<T> citer = this.internalGetFirst();
+		ChainedReference<? extends T> citer = this.internalGetFirst();
 		// listOfParams.getRefAt(
 		// Position.FIRST );
 		while ( null != citer ) {
@@ -154,7 +154,7 @@ public class MethodParams<T> extends StaticInstanceTracker {// T= base class,
 	 *            can be null or an object that was already used as a parameter
 	 *            one or more times
 	 */
-	public void set( ParamName<T> paramName, T value ) {
+	public void set( ParamName<? extends T> paramName, T value ) {
 
 		RunTime.assertNotNull( paramName );
 		
@@ -332,6 +332,13 @@ public class MethodParams<T> extends StaticInstanceTracker {// T= base class,
 	 * (non-Javadoc)
 	 * 
 	 * @see
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
 	 * 
 	 * 
 	 * 
