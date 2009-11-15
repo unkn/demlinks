@@ -32,7 +32,7 @@ import java.io.UnsupportedEncodingException;
 import org.dml.JUnits.Consts;
 import org.dml.database.bdb.level1.Level1_Storage_BerkeleyDB;
 import org.dml.database.bdb.level1.OneToOneDBMap;
-import org.dml.error.BugError;
+import org.dml.error.BadCallError;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -105,7 +105,7 @@ public class OneToOneDBMapTest {
 		boolean threw = false;
 		try {
 			map.getKey( e );
-		} catch ( BugError be ) {
+		} catch ( BadCallError bce ) {
 			threw = true;
 		}
 		assertTrue( threw );
@@ -113,9 +113,85 @@ public class OneToOneDBMapTest {
 		threw = false;
 		try {
 			map.getData( e );
-		} catch ( BugError be ) {
+		} catch ( BadCallError bce ) {
 			threw = true;
 		}
 		assertTrue( threw );
+	}
+	
+	@Test
+	public void integrityTest() throws DatabaseException {
+
+		OneToOneDBMap<JUnit_Base1, String> map = new OneToOneDBMap<JUnit_Base1, String>(
+				bdb, "irrelevant", JUnit_Base1.class, String.class );
+		JUnit_Base1 key1 = null;
+		JUnit_Ex2 key2 = null;
+		String data = null;
+		boolean threw = false;
+		try {
+			map.getData( key1 );
+		} catch ( AssertionError ae ) {
+			threw = true;
+		}
+		assertTrue( threw );
+		
+		threw = false;
+		try {
+			map.getData( key2 );
+		} catch ( AssertionError ae ) {
+			threw = true;
+		}
+		assertTrue( threw );
+		
+		threw = false;
+		try {
+			map.getKey( data );
+		} catch ( AssertionError ae ) {
+			threw = true;
+		}
+		assertTrue( threw );
+		
+		data = "some";
+		key1 = new JUnit_Base1();
+		map.getData( key1 );// shouldn't throw!
+		
+		key2 = new JUnit_Ex2();
+		
+		threw = false;
+		try {
+			map.getData( key2 );
+		} catch ( BadCallError bce ) {
+			threw = true;
+		}
+		assertTrue( threw );
+		
+		map.link( key1, data );// shouldn't throw!
+		
+		key1 = new JUnit_Ex2();
+		threw = false;
+		try {
+			map.getData( key1 );
+		} catch ( BadCallError bce ) {
+			threw = true;
+		}
+		assertTrue( threw );
+		
+		threw = false;
+		try {
+			map.link( key1, data );
+		} catch ( BadCallError bce ) {
+			threw = true;
+		}
+		assertTrue( threw );
+		
+
+		threw = false;
+		try {
+			map.link( key2, data );
+		} catch ( BadCallError bce ) {
+			threw = true;
+		}
+		assertTrue( threw );
+		
 	}
 }

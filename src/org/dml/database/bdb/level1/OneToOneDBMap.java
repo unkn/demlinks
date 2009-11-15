@@ -180,7 +180,9 @@ public class OneToOneDBMap<KeyType, DataType> {
 	public OperationStatus link( KeyType key, DataType data )
 			throws DatabaseException {
 
-		RunTime.assertNotNull( key, data );
+		this.checkKey( key );
+		this.checkData( data );
+		
 		// key can be a descendant of keyClass, thus getClass() is a good idea,
 		// yes?
 		EntryBinding keyBinding = AllTupleBindings.getBinding( key.getClass() );
@@ -195,6 +197,25 @@ public class OneToOneDBMap<KeyType, DataType> {
 		return ret;
 	}
 	
+	private void checkData( DataType data ) {
+
+		RunTime.assertNotNull( data );
+		// 1of3
+		if ( data.getClass() != dataClass ) {
+			RunTime.badCall( "shouldn't allow subclass of dataClass!! or else havoc" );
+		}
+	}
+	
+	private void checkKey( KeyType key ) {
+
+		RunTime.assertNotNull( key );
+		// shouldn't allow subclass of keyClass!! or else havoc
+		// 1of3
+		if ( key.getClass() != keyClass ) {
+			RunTime.badCall( "shouldn't allow subclass of keyClass!! or else havoc" );
+		}
+	}
+	
 	/**
 	 * @param data
 	 * @return null if not found
@@ -203,9 +224,9 @@ public class OneToOneDBMap<KeyType, DataType> {
 	@SuppressWarnings( "unchecked" )
 	public KeyType getKey( DataType data ) throws DatabaseException {
 
-		// data can be a subclass of DataType though
+		this.checkData( data );
 		
-		RunTime.assertNotNull( data );
+		// 2of3
 		EntryBinding dataBinding = AllTupleBindings.getBinding( data.getClass() );
 		DatabaseEntry deData = new DatabaseEntry();
 		dataBinding.objectToEntry( data, deData );
@@ -220,6 +241,7 @@ public class OneToOneDBMap<KeyType, DataType> {
 		}
 		RunTime.assertTrue( deData.equals( deKey ) );
 		
+		// 3of3
 		EntryBinding keyBinding = AllTupleBindings.getBinding( keyClass );
 		KeyType key = (KeyType)keyBinding.entryToObject( pKey );
 		// should not be null here
@@ -235,7 +257,9 @@ public class OneToOneDBMap<KeyType, DataType> {
 	@SuppressWarnings( "unchecked" )
 	public DataType getData( KeyType key ) throws DatabaseException {
 
-		RunTime.assertNotNull( key );
+		this.checkKey( key );
+		
+		// 2of3
 		EntryBinding keyBinding = AllTupleBindings.getBinding( key.getClass() );
 		DatabaseEntry deKey = new DatabaseEntry();
 		keyBinding.objectToEntry( key, deKey );
@@ -250,6 +274,7 @@ public class OneToOneDBMap<KeyType, DataType> {
 			return null;
 		}
 		
+		// 3of3
 		EntryBinding dataBinding = AllTupleBindings.getBinding( dataClass );
 		DataType data = (DataType)dataBinding.entryToObject( deData );
 		// should not be null here
