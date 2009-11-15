@@ -198,7 +198,7 @@ public class DBMapJIDsToNodeIDs extends OneToOneDBMap<NodeJID, NodeID> {
 		// return null;
 		// }
 		// NodeID nid = new NodeID( nidAsStr );
-		RunTime.assertNotNull( nid );
+		// RunTime.assertNotNull( nid );
 		return nid;
 	}
 	
@@ -216,7 +216,7 @@ public class DBMapJIDsToNodeIDs extends OneToOneDBMap<NodeJID, NodeID> {
 
 		RunTime.assertNotNull( fromNodeID );
 		NodeJID jid = this.getKey( fromNodeID );
-		RunTime.assertNotNull( jid );
+		// RunTime.assertNotNull( jid );
 		return jid;
 	}
 	
