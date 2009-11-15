@@ -31,6 +31,7 @@ import org.dml.level1.NodeID;
 import org.dml.storagewrapper.StorageException;
 import org.dml.tools.RunTime;
 import org.dml.tools.VarLevel;
+import org.references.method.MethodParams;
 
 import com.sleepycat.je.DatabaseException;
 
@@ -46,13 +47,27 @@ public class Level2_DMLStorage_BerkeleyDB extends Level1_DMLStorage_BerkeleyDB
 	@VarLevel
 	private final Level2_Storage_BerkeleyDB	bdb	= null;
 	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.dml.level1.Level1_DMLStorage_BerkeleyDB#start(org.references.method
+	 * .MethodParams)
+	 */
 	@Override
-	public boolean ensureGroup( NodeID first, NodeID second )
+	protected void start( MethodParams<Object> params ) {
+
+		// this method is not needed, but it's here for clarity
+		super.start( params );
+	}
+	
+	@Override
+	public boolean ensureVector( NodeID initialNode, NodeID terminalNode )
 			throws StorageException {
 
-		RunTime.assertNotNull( first, second );
+		RunTime.assertNotNull( initialNode, terminalNode );
 		try {
-			return bdb.getDBMapTupleNodeIDs().ensureGroup( first, second );
+			return bdb.getDBMapTupleNodeIDs().ensureVector( initialNode, terminalNode );
 		} catch ( DatabaseException de ) {
 			throw new StorageException( de );
 		}
@@ -66,11 +81,11 @@ public class Level2_DMLStorage_BerkeleyDB extends Level1_DMLStorage_BerkeleyDB
 	 * org.dml.level1.NodeID)
 	 */
 	@Override
-	public boolean isGroup( NodeID first, NodeID second ) {
+	public boolean isVector( NodeID initialNode, NodeID terminalNode ) {
 
-		RunTime.assertNotNull( first, second );
+		RunTime.assertNotNull( initialNode, terminalNode );
 		try {
-			return bdb.getDBMapTupleNodeIDs().isGroup( first, second );
+			return bdb.getDBMapTupleNodeIDs().isVector( initialNode, terminalNode );
 		} catch ( DatabaseException de ) {
 			throw new StorageException( de );
 		}

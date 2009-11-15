@@ -79,7 +79,7 @@ public class OneToManyDBMapTest {
 	
 	/**
 	 * Test method for
-	 * {@link org.dml.database.bdb.level2.OneToManyDBMap#ensureGroup(java.lang.String, java.lang.String)}
+	 * {@link org.dml.database.bdb.level2.OneToManyDBMap#ensureVector(java.lang.String, java.lang.String)}
 	 * .
 	 * 
 	 * @throws DatabaseException
@@ -92,31 +92,31 @@ public class OneToManyDBMapTest {
 		System.out.println( _c );
 		System.out.println( o2m.getName() );
 		
-		assertFalse( o2m.isGroup( _a, _b ) );
-		assertFalse( o2m.ensureGroup( _a, _b ) );
-		assertTrue( o2m.isGroup( _a, _b ) );
+		assertFalse( o2m.isVector( _a, _b ) );
+		assertFalse( o2m.ensureVector( _a, _b ) );
+		assertTrue( o2m.isVector( _a, _b ) );
 		
-		assertTrue( o2m.ensureGroup( _a, _b ) );
-		
-
-		assertFalse( o2m.isGroup( _b, _a ) );
-		assertFalse( o2m.ensureGroup( _b, _a ) );
-		assertTrue( o2m.isGroup( _b, _a ) );
-		
-		assertTrue( o2m.ensureGroup( _b, _a ) );
+		assertTrue( o2m.ensureVector( _a, _b ) );
 		
 
-		assertFalse( o2m.isGroup( _a, _c ) );
-		assertFalse( o2m.ensureGroup( _a, _c ) );
-		assertTrue( o2m.isGroup( _a, _c ) );
+		assertFalse( o2m.isVector( _b, _a ) );
+		assertFalse( o2m.ensureVector( _b, _a ) );
+		assertTrue( o2m.isVector( _b, _a ) );
 		
-		assertTrue( o2m.ensureGroup( _a, _c ) );
+		assertTrue( o2m.ensureVector( _b, _a ) );
 		
-		assertFalse( o2m.isGroup( _c, _b ) );
-		assertFalse( o2m.ensureGroup( _c, _b ) );
-		assertTrue( o2m.isGroup( _c, _b ) );
+
+		assertFalse( o2m.isVector( _a, _c ) );
+		assertFalse( o2m.ensureVector( _a, _c ) );
+		assertTrue( o2m.isVector( _a, _c ) );
 		
-		assertTrue( o2m.ensureGroup( _c, _b ) );
+		assertTrue( o2m.ensureVector( _a, _c ) );
+		
+		assertFalse( o2m.isVector( _c, _b ) );
+		assertFalse( o2m.ensureVector( _c, _b ) );
+		assertTrue( o2m.isVector( _c, _b ) );
+		
+		assertTrue( o2m.ensureVector( _c, _b ) );
 		
 
 	}
@@ -124,17 +124,17 @@ public class OneToManyDBMapTest {
 	@Test
 	public void testSame() throws DatabaseException {
 
-		assertFalse( o2m.ensureGroup( _a, _a ) );
-		assertTrue( o2m.ensureGroup( _a, _a ) );
-		assertTrue( o2m.isGroup( _a, _a ) );
+		assertFalse( o2m.ensureVector( _a, _a ) );
+		assertTrue( o2m.ensureVector( _a, _a ) );
+		assertTrue( o2m.isVector( _a, _a ) );
 	}
 	
 	@Test
 	public void testEmpty() throws DatabaseException {
 
-		assertFalse( o2m.ensureGroup( "", "" ) );
-		assertTrue( o2m.ensureGroup( "", "" ) );
-		assertTrue( o2m.isGroup( "", "" ) );
+		assertFalse( o2m.ensureVector( "", "" ) );
+		assertTrue( o2m.ensureVector( "", "" ) );
+		assertTrue( o2m.isVector( "", "" ) );
 	}
 	
 	@Test

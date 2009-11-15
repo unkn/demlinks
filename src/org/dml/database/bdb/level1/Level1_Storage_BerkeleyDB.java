@@ -118,7 +118,7 @@ public class Level1_Storage_BerkeleyDB extends StaticInstanceTracker {
 			e.printStackTrace();
 			throw new StorageException( e );
 		}// forces env open or create
-		
+		throw new StorageException( null );
 	}
 	
 	/*

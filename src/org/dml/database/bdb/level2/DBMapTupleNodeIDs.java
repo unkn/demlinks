@@ -68,43 +68,43 @@ public class DBMapTupleNodeIDs extends OneToManyDBMap {
 	 * obviously first and second must already exist as NodeIDs associated with
 	 * JIDs<br>
 	 * 
-	 * @param first
-	 * @param second
+	 * @param initialNode
+	 * @param terminalNode
 	 * @return true if existed already; false if it didn't exist before call
 	 * @throws DatabaseException
 	 */
-	public boolean ensureGroup( NodeID first, NodeID second )
+	public boolean ensureVector( NodeID initialNode, NodeID terminalNode )
 			throws DatabaseException {
 
-		RunTime.assertNotNull( first, second );
+		RunTime.assertNotNull( initialNode, terminalNode );
 		
 		// checking that both NodeIDs exist already which means there are two
 		// JIDs associated with them
-		this.throwIfNotExist( first );
-		this.throwIfNotExist( second );
+		this.throwIfNotExist( initialNode );
+		this.throwIfNotExist( terminalNode );
 		
-		return this.ensureGroup( first.getAsString(), second.getAsString() );
+		return this.ensureVector( initialNode.getAsString(), terminalNode.getAsString() );
 	}
 	
 	/**
 	 * obviously first and second must already exist as NodeIDs associated with
 	 * JIDs<br>
 	 * 
-	 * @param first
-	 * @param second
+	 * @param initialNode
+	 * @param terminalNode
 	 * @return
 	 * @throws StorageException
 	 * @throws DatabaseException
 	 */
-	public boolean isGroup( NodeID first, NodeID second )
+	public boolean isVector( NodeID initialNode, NodeID terminalNode )
 			throws DatabaseException {
 
-		RunTime.assertNotNull( first, second );
+		RunTime.assertNotNull( initialNode, terminalNode );
 		
-		this.throwIfNotExist( first );
-		this.throwIfNotExist( second );
+		this.throwIfNotExist( initialNode );
+		this.throwIfNotExist( terminalNode );
 		
-		return this.isGroup( first.getAsString(), second.getAsString() );
+		return this.isVector( initialNode.getAsString(), terminalNode.getAsString() );
 	}
 	
 	/**

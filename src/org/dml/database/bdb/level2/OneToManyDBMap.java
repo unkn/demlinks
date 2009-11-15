@@ -153,25 +153,25 @@ public class OneToManyDBMap {
 	 * notice that isGroup(first,second) is different than isGroup(second,first)<br>
 	 * they are two different groups (order matters)
 	 * 
-	 * @param first
-	 * @param second
+	 * @param initialNode
+	 * @param terminalNode
 	 * @return
 	 * @throws DatabaseException
 	 */
-	public boolean isGroup( String first, String second )
+	public boolean isVector( String initialNode, String terminalNode )
 			throws DatabaseException {
 
-		RunTime.assertNotNull( first, second );
-		return this.internal_isGroup( first, second );
+		RunTime.assertNotNull( initialNode, terminalNode );
+		return this.internal_isVector( initialNode, terminalNode );
 	}
 	
 	/**
-	 * @param first
-	 * @param second
+	 * @param initialNode
+	 * @param terminalNode
 	 * @return
 	 * @throws DatabaseException
 	 */
-	private boolean internal_isGroup( String first, String second )
+	private boolean internal_isVector( String initialNode, String terminalNode )
 			throws DatabaseException {
 
 		// TODO: maybe a transaction here is unnecessary, however we don't want
@@ -179,8 +179,8 @@ public class OneToManyDBMap {
 		TransactionCapsule txc = TransactionCapsule.getNewTransaction( this.getBDBL1() );
 		DatabaseEntry key = new DatabaseEntry();
 		DatabaseEntry data = new DatabaseEntry();
-		Level1_Storage_BerkeleyDB.stringToEntry( first, key );
-		Level1_Storage_BerkeleyDB.stringToEntry( second, data );
+		Level1_Storage_BerkeleyDB.stringToEntry( initialNode, key );
+		Level1_Storage_BerkeleyDB.stringToEntry( terminalNode, data );
 		OperationStatus ret1, ret2;
 		try {
 			ret1 = this.getForwardDB().getSearchBoth( txc.get(), key, data,
@@ -203,38 +203,38 @@ public class OneToManyDBMap {
 	 * notice that order matters, thus (second, first) is another grouping<br>
 	 * this is like a new that doesn't throw if the group already exists<br>
 	 * 
-	 * @param first
-	 * @param second
+	 * @param initialNode
+	 * @param terminalNode
 	 * @return true if existed already; false if it didn't exist before call
 	 * @throws DatabaseException
 	 */
-	public boolean ensureGroup( String first, String second )
+	public boolean ensureVector( String initialNode, String terminalNode )
 			throws DatabaseException {
 
-		RunTime.assertNotNull( first, second );
+		RunTime.assertNotNull( initialNode, terminalNode );
 		boolean ret;
-		ret = ( OperationStatus.KEYEXIST == this.internal_group( first, second ) );
+		ret = ( OperationStatus.KEYEXIST == this.internal_vector( initialNode, terminalNode ) );
 		return ret;
 	}
 	
 	/**
-	 * @param first
-	 * @param second
+	 * @param initialNode
+	 * @param terminalNode
 	 * @return OperationStatus.SUCCESS or KEYEXIST
 	 * @throws DatabaseException
 	 * @throws BugError
 	 *             if inconsistency detected (ie. one link exists the other
 	 *             doesn't)
 	 */
-	private OperationStatus internal_group( String first, String second )
+	private OperationStatus internal_vector( String initialNode, String terminalNode )
 			throws DatabaseException {
 
-		RunTime.assertNotNull( first, second );
+		RunTime.assertNotNull( initialNode, terminalNode );
 		TransactionCapsule txc = TransactionCapsule.getNewTransaction( this.getBDBL1() );
 		DatabaseEntry key = new DatabaseEntry();
 		DatabaseEntry data = new DatabaseEntry();
-		Level1_Storage_BerkeleyDB.stringToEntry( first, key );
-		Level1_Storage_BerkeleyDB.stringToEntry( second, data );
+		Level1_Storage_BerkeleyDB.stringToEntry( initialNode, key );
+		Level1_Storage_BerkeleyDB.stringToEntry( terminalNode, data );
 		boolean commit = false;
 		OperationStatus ret1, ret2;
 		try {

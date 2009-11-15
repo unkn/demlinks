@@ -88,19 +88,19 @@ public class DBMapTupleNodeIDsTest {
 				NodeJID.ensureJIDFor( "B" ) );
 		assertNotNull( _a );
 		assertNotNull( _b );
-		org.junit.Assert.assertFalse( tdb.isGroup( _a, _b ) );
-		org.junit.Assert.assertFalse( tdb.ensureGroup( _a, _b ) );
+		org.junit.Assert.assertFalse( tdb.isVector( _a, _b ) );
+		org.junit.Assert.assertFalse( tdb.ensureVector( _a, _b ) );
 		
-		assertTrue( tdb.isGroup( _a, _b ) );
-		assertTrue( tdb.ensureGroup( _a, _b ) );
-		assertFalse( tdb.ensureGroup( "D", "E" ) );
+		assertTrue( tdb.isVector( _a, _b ) );
+		assertTrue( tdb.ensureVector( _a, _b ) );
+		assertFalse( tdb.ensureVector( "D", "E" ) );
 		NodeID _c = bdb.getDBMapJIDsToNodeIDs().ensureNodeID(
 				NodeJID.ensureJIDFor( "C" ) );
-		assertFalse( tdb.ensureGroup( _a, _c ) );
-		assertTrue( tdb.isGroup( _a, _c ) );
-		assertFalse( tdb.ensureGroup( _c, _a ) );
-		assertFalse( tdb.ensureGroup( _c, _b ) );
-		assertTrue( tdb.isGroup( _c, _a ) );
-		assertTrue( tdb.isGroup( _c, _b ) );
+		assertFalse( tdb.ensureVector( _a, _c ) );
+		assertTrue( tdb.isVector( _a, _c ) );
+		assertFalse( tdb.ensureVector( _c, _a ) );
+		assertFalse( tdb.ensureVector( _c, _b ) );
+		assertTrue( tdb.isVector( _c, _a ) );
+		assertTrue( tdb.isVector( _c, _b ) );
 	}
 }

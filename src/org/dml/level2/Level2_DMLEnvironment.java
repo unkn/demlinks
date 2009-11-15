@@ -30,6 +30,7 @@ import org.dml.level1.NodeID;
 import org.dml.storagewrapper.StorageException;
 import org.dml.tools.RunTime;
 import org.dml.tools.VarLevel;
+import org.references.method.MethodParams;
 
 
 
@@ -47,15 +48,29 @@ public class Level2_DMLEnvironment extends Level1_DMLEnvironment implements
 	 * (non-Javadoc)
 	 * 
 	 * @see
+	 * org.dml.level1.Level1_DMLEnvironment#start(org.references.method.MethodParams
+	 * )
+	 */
+	@Override
+	protected void start( MethodParams<Object> params ) {
+
+		// this method is not needed, but it's here for clarity
+		super.start( params );
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
 	 * org.dml.level2.Level2_DMLStorageWrapper#ensureGroup(org.dml.level1.NodeID
 	 * , org.dml.level1.NodeID)
 	 */
 	@Override
-	public boolean ensureGroup( NodeID first, NodeID second )
+	public boolean ensureVector( NodeID first, NodeID second )
 			throws StorageException {
 
 		RunTime.assertNotNull( first, second );
-		return storage.ensureGroup( first, second );
+		return storage.ensureVector( first, second );
 	}
 	
 	/*
@@ -66,9 +81,9 @@ public class Level2_DMLEnvironment extends Level1_DMLEnvironment implements
 	 * org.dml.level1.NodeID)
 	 */
 	@Override
-	public boolean isGroup( NodeID first, NodeID second ) {
+	public boolean isVector( NodeID first, NodeID second ) {
 
 		RunTime.assertNotNull( first, second );
-		return storage.isGroup( first, second );
+		return storage.isVector( first, second );
 	}
 }

@@ -56,6 +56,17 @@ public class Level1_DMLStorage_BerkeleyDB extends MainLevel0 implements
 																			+ "mainEnv"
 																			+ File.separator;
 	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.dml.tools.MainLevel0#start(org.references.method.MethodParams)
+	 */
+	@Override
+	protected void start( MethodParams<Object> params ) {
+
+		// this method is not needed, but it's here for clarity
+		super.start( params );
+	}
 	
 	/**
 	 * constructor, don't forget to call init(...)
