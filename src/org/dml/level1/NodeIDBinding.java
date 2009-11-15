@@ -25,6 +25,8 @@ package org.dml.level1;
 
 
 
+import org.dml.tools.RunTime;
+
 import com.sleepycat.bind.tuple.TupleBinding;
 import com.sleepycat.bind.tuple.TupleInput;
 import com.sleepycat.bind.tuple.TupleOutput;
@@ -47,8 +49,11 @@ public class NodeIDBinding extends TupleBinding<NodeID> {
 	@Override
 	public NodeID entryToObject( TupleInput input ) {
 
-		// TODO Auto-generated method stub
-		return null;
+		long l = input.readLong();
+		RunTime.assertNotNull( l );
+		NodeID nid = new NodeID( l );
+		RunTime.assertTrue( nid.internalGetForBinding() == l );
+		return nid;
 	}
 	
 	/*
@@ -61,8 +66,11 @@ public class NodeIDBinding extends TupleBinding<NodeID> {
 	@Override
 	public void objectToEntry( NodeID object, TupleOutput output ) {
 
-		// TODO Auto-generated method stub
-		
+		NodeID my = object;
+		long myLong = my.internalGetForBinding();
+		RunTime.assertNotNull( myLong );
+		// it will never be null before writing it to dbase, else bug somewhere
+		output.writeLong( myLong );
 	}
 	
 }

@@ -266,7 +266,7 @@ public class OneToOneDBMap<KeyType, DataType> {
 		// Level1_Storage_BerkeleyDB.stringToEntry( key, deKey );
 		
 
-		// FIXME maybe not new every time here ie. make synchro private field
+		// FIXME maybe not new every time here ie. make synchro private field ?
 		DatabaseEntry deData = new DatabaseEntry();
 		OperationStatus ret;
 		ret = this.getForwardDB().get( null, deKey, deData, null );

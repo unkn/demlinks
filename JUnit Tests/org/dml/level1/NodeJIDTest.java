@@ -86,8 +86,7 @@ public class NodeJIDTest {
 		NodeJID.ensureJIDFor( "middle" );
 		NodeJID j2 = NodeJID.ensureJIDFor( test );
 		assertTrue( j1 == j2 );
-		System.out.println( "!" + j1.getAsString() + "!" + j2.getAsString()
-				+ "!" );
+		System.out.println( "!" + j1.toString() + "!" + j2.toString() + "!" );
 		assertTrue( j1.equals( j2 ) );
 	}
 	

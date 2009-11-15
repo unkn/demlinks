@@ -41,7 +41,7 @@ import com.sleepycat.je.OperationStatus;
  *and the methods that use NodeID and NodeJID objects<br>
  *lookup by either NodeJID or NodeID<br>
  */
-public class DBMapJIDsToNodeIDs extends OneToOneDBMap {
+public class DBMapJIDsToNodeIDs extends OneToOneDBMap<NodeJID, NodeID> {
 	
 	private DBSequence			seq			= null;
 	private String				seq_KEYNAME	= null;
@@ -54,7 +54,7 @@ public class DBMapJIDsToNodeIDs extends OneToOneDBMap {
 	public DBMapJIDsToNodeIDs( Level1_Storage_BerkeleyDB bdb1, String dbName1 )
 			throws DatabaseException {
 
-		super( bdb1, dbName1 );
+		super( bdb1, dbName1, NodeJID.class, NodeID.class );
 		seq_KEYNAME = dbName1;
 	}
 	
@@ -73,7 +73,7 @@ public class DBMapJIDsToNodeIDs extends OneToOneDBMap {
 	}
 	
 	@Override
-	public OneToOneDBMap silentClose() {
+	public OneToOneDBMap<NodeJID, NodeID> silentClose() {
 
 		Log.entry( "closing " + this.getClass().getSimpleName()
 				+ " with name: " + dbName );
@@ -161,7 +161,7 @@ public class DBMapJIDsToNodeIDs extends OneToOneDBMap {
 			throws DatabaseException {
 
 		RunTime.assertNotNull( thisJID, withThisNID );
-		return this.link( thisJID.getAsString(), withThisNID );
+		return this.link( thisJID, withThisNID );
 	}
 	
 	/**
@@ -192,11 +192,13 @@ public class DBMapJIDsToNodeIDs extends OneToOneDBMap {
 			throws DatabaseException {
 
 		RunTime.assertNotNull( fromJID );
-		String nidAsStr = this.getData( fromJID );
-		if ( null == nidAsStr ) {
-			return null;
-		}
-		NodeID nid = new NodeID( nidAsStr );
+		// String nidAsStr =
+		NodeID nid = this.getData( fromJID );
+		// if ( null == nidAsStr ) {
+		// return null;
+		// }
+		// NodeID nid = new NodeID( nidAsStr );
+		RunTime.assertNotNull( nid );
 		return nid;
 	}
 	
@@ -213,11 +215,7 @@ public class DBMapJIDsToNodeIDs extends OneToOneDBMap {
 	public NodeJID getNodeJID( NodeID fromNodeID ) throws DatabaseException {
 
 		RunTime.assertNotNull( fromNodeID );
-		String jidAsStr = this.getKey( fromNodeID );
-		if ( null == jidAsStr ) {
-			return null;
-		}
-		NodeJID jid = NodeJID.ensureJIDFor( jidAsStr );
+		NodeJID jid = this.getKey( fromNodeID );
 		RunTime.assertNotNull( jid );
 		return jid;
 	}

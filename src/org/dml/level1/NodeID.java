@@ -63,19 +63,19 @@ public class NodeID {
 		itself = iD;
 	}
 	
-	/**
-	 * constructor, call only internally (maybe also within the package)<br>
-	 * must be a long inside that string
-	 * 
-	 * @param iD
-	 *            a long expressed as a string
-	 * @throws NumberFormatException
-	 */
-	public NodeID( String iD ) {
-
-		itself = Long.parseLong( iD );
-		// itself = Long.valueOf( iD );
-	}
+	// /**
+	// * constructor, call only internally (maybe also within the package)<br>
+	// * must be a long inside that string
+	// *
+	// * @param iD
+	// * a long expressed as a string
+	// * @throws NumberFormatException
+	// */
+	// public NodeID( String iD ) {
+	//
+	// itself = Long.parseLong( iD );
+	// // itself = Long.valueOf( iD );
+	// }
 	
 	// /**
 	// * @return the string representation of this NodeID, usually long to
@@ -118,5 +118,13 @@ public class NodeID {
 			return true;
 		}
 		return false;
+	}
+	
+	/**
+	 * @return
+	 */
+	public long internalGetForBinding() {
+
+		return itself;
 	}
 }
