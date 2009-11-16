@@ -30,7 +30,7 @@ import org.junit.runners.Suite;
 @RunWith( Suite.class )
 @Suite.SuiteClasses( value = {
 		NodeJavaIDTest.class, Level1_DMLEnvironmentTest.class,
-		TupleOfNodeIDsTest.class
+		NodeIDsTest.class
 } )
 public class AllTestsL1 {
 }

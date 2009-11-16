@@ -38,6 +38,7 @@ import org.references.method.PossibleParams;
 
 
 /**
+ * NOTE: some comments might be old, from a previous version of this class
  * 
  * this allows all subclasses to level up and use one field that will also
  * level up
@@ -172,6 +173,7 @@ public abstract class MainLevel0 extends StaticInstanceTracker {
 	
 	/**
 	 * override this and call super
+	 * this method is called by init
 	 * 
 	 * @param params
 	 *            can accept a passed VarLevel or other params needed to init a

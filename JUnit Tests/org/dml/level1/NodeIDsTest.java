@@ -26,9 +26,6 @@ package org.dml.level1;
 
 
 import org.dml.JUnits.Consts;
-import org.dml.level1.Level1_DMLEnvironment;
-import org.dml.level1.NodeID;
-import org.dml.level1.NodeJavaID;
 import org.dml.storagewrapper.StorageException;
 import org.junit.After;
 import org.junit.Before;
@@ -42,9 +39,8 @@ import org.references.method.PossibleParams;
  * 
  *
  */
-public class TupleOfNodeIDsTest {
+public class NodeIDsTest {
 	
-	// TupleOfNodeIDs one, two, three;
 	NodeID					n1, n2, n3;
 	Level1_DMLEnvironment	dml;
 	
@@ -54,7 +50,6 @@ public class TupleOfNodeIDsTest {
 		MethodParams<Object> params = new MethodParams<Object>();
 		params.set( PossibleParams.homeDir, Consts.BDB_ENV_PATH );
 		params.set( PossibleParams.wipeDB, true );
-		// dml = Level1_DMLEnvironment.getNew( , true );
 		dml = new Level1_DMLEnvironment();
 		dml.init( params );
 	}
@@ -70,7 +65,6 @@ public class TupleOfNodeIDsTest {
 
 		n1 = dml.ensureNodeID( NodeJavaID.ensureJavaIDFor( "A" ) );
 		n2 = dml.ensureNodeID( NodeJavaID.ensureJavaIDFor( "B" ) );
-		// one = TupleOfNodeIDs.groupAsKeyValue( n1, n2 );
 		
 		System.out.println( n1 + "!" + n2 );
 		

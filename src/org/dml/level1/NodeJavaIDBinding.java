@@ -72,9 +72,7 @@ public class NodeJavaIDBinding extends TupleBinding<NodeJavaID> {
 		RunTime.assertNotNull( object, output );
 		String strJavaID = object.getObject();
 		RunTime.assertNotNull( strJavaID );
-		strJavaID = new String( strJavaID );// FIXME: no new
-		RunTime.assertNotNull( strJavaID );
-		System.out.println( object );
+		// System.out.println( object );
 		// it will never be null before writing it to dbase, else bug somewhere
 		output.writeString( strJavaID );
 	}
