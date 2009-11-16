@@ -71,14 +71,14 @@ public class Level1_DMLEnvironment extends MainLevel0 implements
 	 * given the NodeID return its NodeJavaID<br>
 	 * NodeIDs are on some kind of Storage<br>
 	 * 
-	 * @param nodeID
+	 * @param symbol
 	 * @return NodeJavaID
 	 * @throws StorageException
 	 */
-	public NodeJavaID getNodeJavaID( NodeID nodeID ) throws StorageException {
+	public NodeJavaID getNodeJavaID( Symbol symbol ) throws StorageException {
 
-		RunTime.assertNotNull( nodeID );
-		return storage.getNodeJavaID( nodeID );
+		RunTime.assertNotNull( symbol );
+		return storage.getNodeJavaID( symbol );
 	}
 	
 	/**
@@ -91,20 +91,20 @@ public class Level1_DMLEnvironment extends MainLevel0 implements
 	 * @return never null
 	 * @throws StorageException
 	 */
-	public NodeID ensureNodeID( NodeJavaID theJavaID ) throws StorageException {
+	public Symbol ensureSymbol( NodeJavaID theJavaID ) throws StorageException {
 
 		RunTime.assertNotNull( theJavaID );
-		return storage.ensureNodeID( theJavaID );
+		return storage.ensureSymbol( theJavaID );
 	}
 	
 	/**
 	 * @param identifiedByThisJavaID
 	 * @throws StorageException
 	 */
-	public NodeID getNodeID( NodeJavaID identifiedByThisJavaID )
+	public Symbol getSymbol( NodeJavaID identifiedByThisJavaID )
 			throws StorageException {
 
-		return storage.getNodeID( identifiedByThisJavaID );
+		return storage.getSymbol( identifiedByThisJavaID );
 	}
 	
 	/**
@@ -112,9 +112,9 @@ public class Level1_DMLEnvironment extends MainLevel0 implements
 	 * @return
 	 * @throws StorageException
 	 */
-	public NodeID createNodeID( NodeJavaID fromJavaID ) throws StorageException {
+	public Symbol createSymbol( NodeJavaID fromJavaID ) throws StorageException {
 
-		return storage.createNodeID( fromJavaID );
+		return storage.createSymbol( fromJavaID );
 	}
 	
 }

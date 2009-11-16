@@ -26,7 +26,7 @@ package org.dml.database.bdb.level2;
 
 
 import org.dml.database.bdb.level1.Level1_Storage_BerkeleyDB;
-import org.dml.level1.NodeID;
+import org.dml.level1.Symbol;
 import org.dml.storagewrapper.StorageException;
 import org.dml.tools.RunTime;
 
@@ -48,7 +48,7 @@ import com.sleepycat.je.DatabaseException;
  * sorted but should not be counted on). The only thing you'd need to know here
  * is whether the tuple exists or not.<br>
  */
-public class DBMapTupleNodeIDs extends OneToManyDBMap<NodeID, NodeID> {
+public class DBMapTupleNodeIDs extends OneToManyDBMap<Symbol, Symbol> {
 	
 	/**
 	 * constructor
@@ -61,7 +61,7 @@ public class DBMapTupleNodeIDs extends OneToManyDBMap<NodeID, NodeID> {
 	 */
 	public DBMapTupleNodeIDs( Level1_Storage_BerkeleyDB bdb1, String dbName1 ) {
 
-		super( bdb1, dbName1, NodeID.class, NodeID.class );
+		super( bdb1, dbName1, Symbol.class, Symbol.class );
 	}
 	
 	/**
@@ -74,7 +74,7 @@ public class DBMapTupleNodeIDs extends OneToManyDBMap<NodeID, NodeID> {
 	 * @throws DatabaseException
 	 */
 	@Override
-	public boolean ensureVector( NodeID initialNode, NodeID terminalNode )
+	public boolean ensureVector( Symbol initialNode, Symbol terminalNode )
 			throws DatabaseException {
 
 		RunTime.assertNotNull( initialNode, terminalNode );
@@ -98,7 +98,7 @@ public class DBMapTupleNodeIDs extends OneToManyDBMap<NodeID, NodeID> {
 	 * @throws DatabaseException
 	 */
 	@Override
-	public boolean isVector( NodeID initialNode, NodeID terminalNode )
+	public boolean isVector( Symbol initialNode, Symbol terminalNode )
 			throws DatabaseException {
 
 		RunTime.assertNotNull( initialNode, terminalNode );
@@ -114,17 +114,17 @@ public class DBMapTupleNodeIDs extends OneToManyDBMap<NodeID, NodeID> {
 	 * @throws StorageException
 	 * @throws DatabaseException
 	 */
-	private void throwIfNotExist( NodeID nid ) throws DatabaseException {
+	private void throwIfNotExist( Symbol nid ) throws DatabaseException {
 
 		RunTime.assertNotNull( nid );
-		if ( !this.existsNodeID( nid ) ) {
+		if ( !this.existsSymbol( nid ) ) {
 			RunTime.bug( "NodeID doesn't exist, and it SHOULD exist! it's NODE ID not JavaID" );
 		}
 	}
 	
-	private boolean existsNodeID( NodeID whichNodeID ) throws DatabaseException {
+	private boolean existsSymbol( Symbol whichSymbol ) throws DatabaseException {
 
 		return ( null != this.getBDBL1().getDBMap_JavaIDs_To_NodeIDs().getNodeJavaID(
-				whichNodeID ) );
+				whichSymbol ) );
 	}
 }

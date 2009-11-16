@@ -26,7 +26,7 @@ package org.dml.database.bdb.level1;
 
 
 import org.dml.error.BugError;
-import org.dml.level1.NodeID;
+import org.dml.level1.Symbol;
 import org.dml.level1.NodeJavaID;
 import org.dml.tools.RunTime;
 import org.javapart.logger.Log;
@@ -41,7 +41,7 @@ import com.sleepycat.je.OperationStatus;
  *and the methods that use NodeID and NodeJavaID objects<br>
  *lookup by either NodeJavaID or NodeID<br>
  */
-public class DBMap_JavaIDs_To_NodeIDs extends OneToOneDBMap<NodeJavaID, NodeID> {
+public class DBMap_JavaIDs_To_NodeIDs extends OneToOneDBMap<NodeJavaID, Symbol> {
 	
 	private DBSequence			seq			= null;
 	private String				seq_KEYNAME	= null;
@@ -54,7 +54,7 @@ public class DBMap_JavaIDs_To_NodeIDs extends OneToOneDBMap<NodeJavaID, NodeID> 
 	public DBMap_JavaIDs_To_NodeIDs( Level1_Storage_BerkeleyDB bdb1,
 			String dbName1 ) throws DatabaseException {
 
-		super( bdb1, dbName1, NodeJavaID.class, NodeID.class );
+		super( bdb1, dbName1, NodeJavaID.class, Symbol.class );
 		seq_KEYNAME = dbName1;
 	}
 	
@@ -73,7 +73,7 @@ public class DBMap_JavaIDs_To_NodeIDs extends OneToOneDBMap<NodeJavaID, NodeID> 
 	}
 	
 	@Override
-	public OneToOneDBMap<NodeJavaID, NodeID> silentClose() {
+	public OneToOneDBMap<NodeJavaID, Symbol> silentClose() {
 
 		Log.entry( "closing " + this.getClass().getSimpleName()
 				+ " with name: " + dbName );
@@ -106,10 +106,10 @@ public class DBMap_JavaIDs_To_NodeIDs extends OneToOneDBMap<NodeJavaID, NodeID> 
 	 * @return null if not found;
 	 * @throws DatabaseException
 	 */
-	public NodeID getNodeID( NodeJavaID fromJavaID ) throws DatabaseException {
+	public Symbol getSymbol( NodeJavaID fromJavaID ) throws DatabaseException {
 
 		RunTime.assertNotNull( fromJavaID );
-		return this.internal_getNodeIDFromJavaID( fromJavaID );
+		return this.internal_getSymbolFromJavaID( fromJavaID );
 	}
 	
 	
@@ -120,15 +120,15 @@ public class DBMap_JavaIDs_To_NodeIDs extends OneToOneDBMap<NodeJavaID, NodeID> 
 	 * @throws DatabaseException
 	 * @throws BugError
 	 */
-	public NodeID createNodeID( NodeJavaID fromJavaID )
+	public Symbol createSymbol( NodeJavaID fromJavaID )
 			throws DatabaseException {
 
-		if ( null != this.internal_getNodeIDFromJavaID( fromJavaID ) ) {
+		if ( null != this.internal_getSymbolFromJavaID( fromJavaID ) ) {
 			// already exists
 			RunTime.bug( "bad programming, the JavaID is already associated with one NodeID !" );// throws
 		}
 		// doesn't exist, make it:
-		return this.internal_makeNewNodeID( fromJavaID );
+		return this.internal_makeNewSymbol( fromJavaID );
 	}
 	
 	/**
@@ -141,11 +141,11 @@ public class DBMap_JavaIDs_To_NodeIDs extends OneToOneDBMap<NodeJavaID, NodeID> 
 	 *         never null
 	 * @throws DatabaseException
 	 */
-	private final NodeID internal_makeNewNodeID( NodeJavaID fromJavaID )
+	private final Symbol internal_makeNewSymbol( NodeJavaID fromJavaID )
 			throws DatabaseException {
 
 		RunTime.assertNotNull( fromJavaID );
-		NodeID nid = new NodeID( this.getUniqueLong() );
+		Symbol nid = new Symbol( this.getUniqueLong() );
 		if ( OperationStatus.SUCCESS != this.makeVector( fromJavaID, nid ) ) {
 			RunTime.bug( "should've succeeded, maybe JavaID already existed?" );
 		}
@@ -160,13 +160,13 @@ public class DBMap_JavaIDs_To_NodeIDs extends OneToOneDBMap<NodeJavaID, NodeID> 
 	 * @return
 	 * @throws DatabaseException
 	 */
-	public NodeID ensureNodeID( NodeJavaID fromJavaID )
+	public Symbol ensureSymbol( NodeJavaID fromJavaID )
 			throws DatabaseException {
 
-		NodeID nid = this.internal_getNodeIDFromJavaID( fromJavaID );
+		Symbol nid = this.internal_getSymbolFromJavaID( fromJavaID );
 		if ( null == nid ) {
 			// no NodeID for JavaID yet, make new one
-			nid = this.internal_makeNewNodeID( fromJavaID );
+			nid = this.internal_makeNewSymbol( fromJavaID );
 		}
 		RunTime.assertNotNull( nid );// this is stupid
 		return nid;
@@ -178,12 +178,12 @@ public class DBMap_JavaIDs_To_NodeIDs extends OneToOneDBMap<NodeJavaID, NodeID> 
 	 * @return null if not found; or the NodeID as NodeID object if found
 	 * @throws DatabaseException
 	 */
-	private NodeID internal_getNodeIDFromJavaID( NodeJavaID fromJavaID )
+	private Symbol internal_getSymbolFromJavaID( NodeJavaID fromJavaID )
 			throws DatabaseException {
 
 		RunTime.assertNotNull( fromJavaID );
 		// String nidAsStr =
-		NodeID nid = this.getData( fromJavaID );
+		Symbol nid = this.getData( fromJavaID );
 		// if ( null == nidAsStr ) {
 		// return null;
 		// }
@@ -193,15 +193,15 @@ public class DBMap_JavaIDs_To_NodeIDs extends OneToOneDBMap<NodeJavaID, NodeID> 
 	}
 	
 	/**
-	 * @param fromNodeID
+	 * @param fromSymbol
 	 * @return null if not found
 	 * @throws DatabaseException
 	 */
-	public NodeJavaID getNodeJavaID( NodeID fromNodeID )
+	public NodeJavaID getNodeJavaID( Symbol fromSymbol )
 			throws DatabaseException {
 
-		RunTime.assertNotNull( fromNodeID );
-		NodeJavaID jid = this.getKey( fromNodeID );
+		RunTime.assertNotNull( fromSymbol );
+		NodeJavaID jid = this.getKey( fromSymbol );
 		// RunTime.assertNotNull( jid );
 		return jid;
 	}

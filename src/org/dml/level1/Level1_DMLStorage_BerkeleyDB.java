@@ -89,36 +89,36 @@ public class Level1_DMLStorage_BerkeleyDB extends MainLevel0 implements
 	
 	// =============================================
 	@Override
-	public final NodeJavaID getNodeJavaID( NodeID identifiedByThisNodeID )
+	public final NodeJavaID getNodeJavaID( Symbol identifiedByThisSymbol )
 			throws StorageException {
 
-		RunTime.assertNotNull( identifiedByThisNodeID );
+		RunTime.assertNotNull( identifiedByThisSymbol );
 		try {
 			return bdb.getDBMap_JavaIDs_To_NodeIDs().getNodeJavaID(
-					identifiedByThisNodeID );
+					identifiedByThisSymbol );
 		} catch ( DatabaseException ex ) {
 			throw new StorageException( ex );
 		}
 	}
 	
 	@Override
-	public final NodeID getNodeID( NodeJavaID identifiedByThisJavaID )
+	public final Symbol getSymbol( NodeJavaID identifiedByThisJavaID )
 			throws StorageException {
 
 		RunTime.assertNotNull( identifiedByThisJavaID );
 		try {
-			return bdb.getDBMap_JavaIDs_To_NodeIDs().getNodeID( identifiedByThisJavaID );
+			return bdb.getDBMap_JavaIDs_To_NodeIDs().getSymbol( identifiedByThisJavaID );
 		} catch ( DatabaseException dbe ) {
 			throw new StorageException( dbe );
 		}
 	}
 	
 	@Override
-	public final NodeID createNodeID( NodeJavaID fromJavaID ) throws StorageException {
+	public final Symbol createSymbol( NodeJavaID fromJavaID ) throws StorageException {
 
 		RunTime.assertNotNull( fromJavaID );
 		try {
-			return bdb.getDBMap_JavaIDs_To_NodeIDs().createNodeID( fromJavaID );
+			return bdb.getDBMap_JavaIDs_To_NodeIDs().createSymbol( fromJavaID );
 		} catch ( DatabaseException dbe ) {
 			throw new StorageException( dbe );
 		}
@@ -126,11 +126,11 @@ public class Level1_DMLStorage_BerkeleyDB extends MainLevel0 implements
 	
 	
 	@Override
-	public final NodeID ensureNodeID( NodeJavaID theJavaID ) throws StorageException {
+	public final Symbol ensureSymbol( NodeJavaID theJavaID ) throws StorageException {
 
 		RunTime.assertNotNull( theJavaID );
 		try {
-			return bdb.getDBMap_JavaIDs_To_NodeIDs().ensureNodeID( theJavaID );
+			return bdb.getDBMap_JavaIDs_To_NodeIDs().ensureSymbol( theJavaID );
 		} catch ( DatabaseException de ) {
 			throw new StorageException( de );
 		}

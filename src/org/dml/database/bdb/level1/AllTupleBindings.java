@@ -30,8 +30,8 @@ import java.util.Map;
 
 import org.dml.database.JUnit_Base1;
 import org.dml.database.JUnit_Base1Binding;
-import org.dml.level1.NodeID;
-import org.dml.level1.NodeIDBinding;
+import org.dml.level1.Symbol;
+import org.dml.level1.SymbolBinding;
 import org.dml.level1.NodeJavaID;
 import org.dml.level1.NodeJavaIDBinding;
 import org.dml.tools.RunTime;
@@ -51,7 +51,7 @@ public class AllTupleBindings {
 	static {
 		// add to this list any objects that you expect to store into a BDB
 		// dbase
-		addNonPrimitive( NodeID.class, new NodeIDBinding() );
+		addNonPrimitive( Symbol.class, new SymbolBinding() );
 		addNonPrimitive( NodeJavaID.class, new NodeJavaIDBinding() );
 		addNonPrimitive( JUnit_Base1.class, new JUnit_Base1Binding() );
 	}

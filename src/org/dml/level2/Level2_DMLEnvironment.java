@@ -26,7 +26,7 @@ package org.dml.level2;
 
 
 import org.dml.level1.Level1_DMLEnvironment;
-import org.dml.level1.NodeID;
+import org.dml.level1.Symbol;
 import org.dml.storagewrapper.StorageException;
 import org.dml.tools.RunTime;
 import org.dml.tools.VarLevel;
@@ -66,7 +66,7 @@ public class Level2_DMLEnvironment extends Level1_DMLEnvironment implements
 	 * , org.dml.level1.NodeID)
 	 */
 	@Override
-	public boolean ensureVector( NodeID first, NodeID second )
+	public boolean ensureVector( Symbol first, Symbol second )
 			throws StorageException {
 
 		RunTime.assertNotNull( first, second );
@@ -81,7 +81,7 @@ public class Level2_DMLEnvironment extends Level1_DMLEnvironment implements
 	 * org.dml.level1.NodeID)
 	 */
 	@Override
-	public boolean isVector( NodeID first, NodeID second ) {
+	public boolean isVector( Symbol first, Symbol second ) {
 
 		RunTime.assertNotNull( first, second );
 		return storage.isVector( first, second );

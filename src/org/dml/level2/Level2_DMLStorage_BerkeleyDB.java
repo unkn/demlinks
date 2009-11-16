@@ -27,7 +27,7 @@ package org.dml.level2;
 
 import org.dml.database.bdb.level2.Level2_Storage_BerkeleyDB;
 import org.dml.level1.Level1_DMLStorage_BerkeleyDB;
-import org.dml.level1.NodeID;
+import org.dml.level1.Symbol;
 import org.dml.storagewrapper.StorageException;
 import org.dml.tools.RunTime;
 import org.dml.tools.VarLevel;
@@ -62,7 +62,7 @@ public class Level2_DMLStorage_BerkeleyDB extends Level1_DMLStorage_BerkeleyDB
 	}
 	
 	@Override
-	public boolean ensureVector( NodeID initialNode, NodeID terminalNode )
+	public boolean ensureVector( Symbol initialNode, Symbol terminalNode )
 			throws StorageException {
 
 		RunTime.assertNotNull( initialNode, terminalNode );
@@ -81,7 +81,7 @@ public class Level2_DMLStorage_BerkeleyDB extends Level1_DMLStorage_BerkeleyDB
 	 * org.dml.level1.NodeID)
 	 */
 	@Override
-	public boolean isVector( NodeID initialNode, NodeID terminalNode ) {
+	public boolean isVector( Symbol initialNode, Symbol terminalNode ) {
 
 		RunTime.assertNotNull( initialNode, terminalNode );
 		try {

@@ -26,7 +26,7 @@ package org.dml.level2;
 
 
 import org.dml.level1.Level1_DMLStorageWrapper;
-import org.dml.level1.NodeID;
+import org.dml.level1.Symbol;
 import org.dml.storagewrapper.StorageException;
 
 
@@ -43,9 +43,9 @@ public interface Level2_DMLStorageWrapper extends Level1_DMLStorageWrapper {
 	 * @return
 	 * @throws StorageException
 	 */
-	public boolean ensureVector( NodeID first, NodeID second )
+	public boolean ensureVector( Symbol first, Symbol second )
 			throws StorageException;
 	
 	
-	public boolean isVector( NodeID first, NodeID second );
+	public boolean isVector( Symbol first, Symbol second );
 }

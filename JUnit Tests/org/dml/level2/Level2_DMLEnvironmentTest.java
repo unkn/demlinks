@@ -31,7 +31,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import org.dml.JUnits.Consts;
-import org.dml.level1.NodeID;
+import org.dml.level1.Symbol;
 import org.dml.level1.NodeJavaID;
 import org.junit.Test;
 import org.references.method.MethodParams;
@@ -76,27 +76,27 @@ public class Level2_DMLEnvironmentTest {
 			assertTrue( test1 != test2 );
 			assertTrue( j1 != j2 );
 			assertFalse( j1.equals( j2 ) );
-			NodeID n1 = d1.createNodeID( j1 );
-			NodeID n2 = d1.createNodeID( j2 );
+			Symbol n1 = d1.createSymbol( j1 );
+			Symbol n2 = d1.createSymbol( j2 );
 			assertNotNull( n1 );
 			assertNotNull( d1.getNodeJavaID( n1 ) );
 			assertTrue( d1.getNodeJavaID( n1 ).equals( j1 ) );
 			assertTrue( d1.getNodeJavaID( n1 ) == j1 );
-			assertTrue( n1.equals( d1.getNodeID( j1 ) ) );
+			assertTrue( n1.equals( d1.getSymbol( j1 ) ) );
 			// FIXME: maybe fix? getNodeID() does a new every time
-			assertTrue( n1 != d1.getNodeID( j1 ) );
-			assertTrue( n2.equals( d1.getNodeID( j2 ) ) );
-			assertTrue( n2 != d1.getNodeID( j2 ) );
-			assertTrue( n1.equals( d2.getNodeID( j1 ) ) );// d2 is d1
+			assertTrue( n1 != d1.getSymbol( j1 ) );
+			assertTrue( n2.equals( d1.getSymbol( j2 ) ) );
+			assertTrue( n2 != d1.getSymbol( j2 ) );
+			assertTrue( n1.equals( d2.getSymbol( j1 ) ) );// d2 is d1
 			// inside
 			// BDB
 			// because they're
 			// in same dir
-			assertTrue( n2.equals( d2.getNodeID( j2 ) ) );
+			assertTrue( n2.equals( d2.getSymbol( j2 ) ) );
 			
-			NodeID n3 = d3.getNodeID( j1 );// d3 is in diff dir
+			Symbol n3 = d3.getSymbol( j1 );// d3 is in diff dir
 			assertNull( n3 );
-			n3 = d3.getNodeID( j2 );
+			n3 = d3.getSymbol( j2 );
 			assertNull( n3 );
 			System.out.println( d1.getNodeJavaID( n1 ) );
 			System.out.println( d3.getNodeJavaID( n1 ) );

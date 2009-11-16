@@ -40,7 +40,7 @@ import org.dml.tools.RunTime;
  * in Storage, a Sequence is used to generate a new NodeID that won't equate
  * with any other already existent<br>
  */
-public class NodeID {
+public class Symbol {
 	
 	/**
 	 * The <code>Class</code> instance representing the primitive type
@@ -58,7 +58,7 @@ public class NodeID {
 	 * 
 	 * @param iD
 	 */
-	public NodeID( long iD ) {
+	public Symbol( long iD ) {
 
 		itself = iD;
 	}
@@ -114,7 +114,7 @@ public class NodeID {
 		}
 		if ( ( super.equals( nid ) ) || // ( this.getAsString().equals( (
 				// (NodeID)nid ).getAsString() ) ) ) {
-				( ( (NodeID)nid ).itself == itself ) ) {
+				( ( (Symbol)nid ).itself == itself ) ) {
 			return true;
 		}
 		return false;

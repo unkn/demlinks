@@ -37,7 +37,7 @@ import com.sleepycat.bind.tuple.TupleOutput;
  * 
  *
  */
-public class NodeIDBinding extends TupleBinding<NodeID> {
+public class SymbolBinding extends TupleBinding<Symbol> {
 	
 	/*
 	 * (non-Javadoc)
@@ -47,11 +47,11 @@ public class NodeIDBinding extends TupleBinding<NodeID> {
 	 * .tuple.TupleInput)
 	 */
 	@Override
-	public NodeID entryToObject( TupleInput input ) {
+	public Symbol entryToObject( TupleInput input ) {
 
 		long l = input.readLong();
 		RunTime.assertNotNull( l );
-		NodeID nid = new NodeID( l );
+		Symbol nid = new Symbol( l );
 		RunTime.assertTrue( nid.internalGetForBinding() == l );
 		return nid;
 	}
@@ -64,7 +64,7 @@ public class NodeIDBinding extends TupleBinding<NodeID> {
 	 * com.sleepycat.bind.tuple.TupleOutput)
 	 */
 	@Override
-	public void objectToEntry( NodeID object, TupleOutput output ) {
+	public void objectToEntry( Symbol object, TupleOutput output ) {
 
 		RunTime.assertNotNull( object, output );
 		long myLong = object.internalGetForBinding();

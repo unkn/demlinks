@@ -41,7 +41,7 @@ import org.references.method.PossibleParams;
  */
 public class NodeIDsTest {
 	
-	NodeID					n1, n2, n3;
+	Symbol					n1, n2, n3;
 	Level1_DMLEnvironment	dml;
 	
 	@Before
@@ -64,8 +64,8 @@ public class NodeIDsTest {
 	@Test
 	public void test1() throws StorageException {
 
-		n1 = dml.ensureNodeID( NodeJavaID.ensureJavaIDFor( "A" ) );
-		n2 = dml.ensureNodeID( NodeJavaID.ensureJavaIDFor( "B" ) );
+		n1 = dml.ensureSymbol( NodeJavaID.ensureJavaIDFor( "A" ) );
+		n2 = dml.ensureSymbol( NodeJavaID.ensureJavaIDFor( "B" ) );
 		
 		System.out.println( n1 + "!" + n2 );
 		
