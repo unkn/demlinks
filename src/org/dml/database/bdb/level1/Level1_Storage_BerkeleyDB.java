@@ -112,6 +112,7 @@ public class Level1_Storage_BerkeleyDB extends StaticInstanceTracker {
 		envHomeDir = params.getExString( PossibleParams.homeDir );
 		Log.entry( envHomeDir );
 		if ( (Boolean)params.getEx( PossibleParams.jUnit_wipeDB ) ) {
+			Log.special( "destroying previous environment, before we beging..." );
 			this.internalWipeEnv();
 		}
 		try {
@@ -137,6 +138,7 @@ public class Level1_Storage_BerkeleyDB extends StaticInstanceTracker {
 		this.deInitSeqSystem_silent();// first
 		this.closeAllOpenDatabases_silent();// second
 		this.closeDBEnvironment();// last
+		
 		Reference<Object> killWhenDoneRef = params.get( PossibleParams.jUnit_wipeDBWhenDone );
 		if ( null != killWhenDoneRef ) {
 			if ( (Boolean)killWhenDoneRef.getObject() ) {
