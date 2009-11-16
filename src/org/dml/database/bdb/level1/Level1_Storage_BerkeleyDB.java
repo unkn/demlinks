@@ -33,6 +33,7 @@ import org.dml.tools.StaticInstanceTracker;
 import org.javapart.logger.Log;
 import org.references.ListOfUniqueNonNullObjects;
 import org.references.Position;
+import org.references.Reference;
 import org.references.method.MethodParams;
 import org.references.method.PossibleParams;
 
@@ -110,7 +111,7 @@ public class Level1_Storage_BerkeleyDB extends StaticInstanceTracker {
 		// super.start(params);
 		envHomeDir = params.getExString( PossibleParams.homeDir );
 		Log.entry( envHomeDir );
-		if ( (Boolean)params.getEx( PossibleParams.wipeDB ) ) {
+		if ( (Boolean)params.getEx( PossibleParams.jUnit_wipeDB ) ) {
 			this.internalWipeEnv();
 		}
 		try {
@@ -128,7 +129,7 @@ public class Level1_Storage_BerkeleyDB extends StaticInstanceTracker {
 	 * @see org.dml.tools.StaticInstanceTracker#done()
 	 */
 	@Override
-	protected void done() {
+	protected void done( MethodParams<Object> params ) {
 
 		if ( null != db_JavaID_To_NodeID ) {
 			db_JavaID_To_NodeID = db_JavaID_To_NodeID.deInit();
@@ -136,6 +137,13 @@ public class Level1_Storage_BerkeleyDB extends StaticInstanceTracker {
 		this.deInitSeqSystem_silent();// first
 		this.closeAllOpenDatabases_silent();// second
 		this.closeDBEnvironment();// last
+		Reference<Object> killWhenDoneRef = params.get( PossibleParams.jUnit_wipeDBWhenDone );
+		if ( null != killWhenDoneRef ) {
+			if ( (Boolean)killWhenDoneRef.getObject() ) {
+				Log.special( "destroying environment, we're done..." );
+				this.internalWipeEnv();
+			}
+		}
 		
 		// super.done();
 	}

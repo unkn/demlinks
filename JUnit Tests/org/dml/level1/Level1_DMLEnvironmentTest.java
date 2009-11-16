@@ -57,6 +57,7 @@ public class Level1_DMLEnvironmentTest {
 		
 		dml1 = new Level1_DMLEnvironment();
 		params.set( PossibleParams.homeDir, Consts.BDB_ENV_PATH );
+		params.set( PossibleParams.jUnit_wipeDBWhenDone, true );
 		dml1.init( params );
 		
 	}

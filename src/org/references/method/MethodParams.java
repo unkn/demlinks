@@ -320,7 +320,7 @@ public class MethodParams<T> extends StaticInstanceTracker {
 	 * @see org.dml.tools.StaticInstanceTracker#done()
 	 */
 	@Override
-	protected void done() {
+	protected void done( MethodParams<Object> params ) {
 
 		this.clear();
 		RunTime.assertTrue( this.size() == 0 );
@@ -332,6 +332,7 @@ public class MethodParams<T> extends StaticInstanceTracker {
 	 * (non-Javadoc)
 	 * 
 	 * @see
+	 * 
 	 * 
 	 * 
 	 * 

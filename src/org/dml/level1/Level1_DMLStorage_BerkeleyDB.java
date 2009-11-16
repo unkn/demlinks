@@ -82,7 +82,7 @@ public class Level1_DMLStorage_BerkeleyDB extends MainLevel0 implements
 		MethodParams<Object> def = super.getDefaults();
 		
 		def.set( PossibleParams.homeDir, DEFAULT_BDB_ENV_PATH );
-		def.set( PossibleParams.wipeDB, false );
+		def.set( PossibleParams.jUnit_wipeDB, false );
 		return def;
 	}
 	

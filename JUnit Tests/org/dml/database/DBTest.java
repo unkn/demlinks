@@ -52,7 +52,8 @@ public class DBTest {
 		MethodParams<Object> params = new MethodParams<Object>();
 		params.init( null );
 		params.set( PossibleParams.homeDir, Consts.BDB_ENV_PATH );
-		params.set( PossibleParams.wipeDB, false );
+		params.set( PossibleParams.jUnit_wipeDB, false );
+		params.set( PossibleParams.jUnit_wipeDBWhenDone, true );
 		bdb.init( params );
 		params.deInit();
 		

@@ -49,7 +49,8 @@ public class Level2_DMLEnvironmentTest {
 	public void multiple() throws Exception {
 
 		MethodParams<Object> params = new MethodParams<Object>();
-		params.set( PossibleParams.wipeDB, true );
+		params.set( PossibleParams.jUnit_wipeDB, true );
+		params.set( PossibleParams.jUnit_wipeDBWhenDone, true );
 		
 		Level2_DMLEnvironment d1 = new Level2_DMLEnvironment();
 		params.set( PossibleParams.homeDir, Consts.BDB_ENV_PATH + "1&2" );

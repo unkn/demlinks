@@ -27,6 +27,7 @@ package org.dml.database.bdb.level2;
 
 import org.dml.database.bdb.level1.Level1_Storage_BerkeleyDB;
 import org.dml.tools.RunTime;
+import org.references.method.MethodParams;
 
 
 
@@ -58,11 +59,11 @@ public class Level2_Storage_BerkeleyDB extends Level1_Storage_BerkeleyDB {
 	 * @see org.dml.database.bdb.level1.Level1_Storage_BerkeleyDB#done()
 	 */
 	@Override
-	protected void done() {
+	protected void done( MethodParams<Object> params ) {
 
 		if ( null != dbTupleNIDs ) {
 			dbTupleNIDs = (DBMapTupleNodeIDs)dbTupleNIDs.silentClose();
 		}
-		super.done();
+		super.done( params );
 	}
 }// class

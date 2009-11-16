@@ -47,7 +47,8 @@ public class BDBTest {
 		MethodParams<Object> params = new MethodParams<Object>();
 		params.init( null );
 		params.set( PossibleParams.homeDir, Consts.BDB_ENV_PATH );
-		params.set( PossibleParams.wipeDB, true );
+		params.set( PossibleParams.jUnit_wipeDB, true );
+		params.set( PossibleParams.jUnit_wipeDBWhenDone, true );
 		Level1_Storage_BerkeleyDB b = new Level1_Storage_BerkeleyDB();
 		b.init( params );
 		params.deInit();

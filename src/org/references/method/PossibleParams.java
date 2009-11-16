@@ -25,9 +25,6 @@ package org.references.method;
 
 
 
-
-
-
 /**
  * 
  *this will have fields that are lists of objects that are references to real
@@ -46,9 +43,9 @@ public class PossibleParams {
 	public static final ParamName<Object>	homeDir				= new ParamName<Object>();
 	
 	// true if a call to BDB init should empty the database(s) before init
-	public static final ParamName<Object>	wipeDB				= new ParamName<Object>();
+	public static final ParamName<Object>	jUnit_wipeDB				= new ParamName<Object>();
+	public static final ParamName<Object>	jUnit_wipeDBWhenDone		= new ParamName<Object>();
 	
-
 	// DatabaseCapsule:
 	public static final ParamName<Object>	level1_BDBStorage	= new ParamName<Object>();
 	public static final ParamName<Object>	dbName				= new ParamName<Object>();

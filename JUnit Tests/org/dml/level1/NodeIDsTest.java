@@ -49,7 +49,8 @@ public class NodeIDsTest {
 
 		MethodParams<Object> params = new MethodParams<Object>();
 		params.set( PossibleParams.homeDir, Consts.BDB_ENV_PATH );
-		params.set( PossibleParams.wipeDB, true );
+		params.set( PossibleParams.jUnit_wipeDB, true );
+		params.set( PossibleParams.jUnit_wipeDBWhenDone, true );
 		dml = new Level1_DMLEnvironment();
 		dml.init( params );
 	}

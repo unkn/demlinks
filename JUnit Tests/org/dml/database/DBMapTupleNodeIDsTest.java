@@ -62,7 +62,8 @@ public class DBMapTupleNodeIDsTest {
 		MethodParams<Object> params = new MethodParams<Object>();
 		params.init( null );
 		params.set( PossibleParams.homeDir, Consts.BDB_ENV_PATH );
-		params.set( PossibleParams.wipeDB, true );
+		params.set( PossibleParams.jUnit_wipeDB, true );
+		params.set( PossibleParams.jUnit_wipeDBWhenDone, true );
 		bdb = new Level1_Storage_BerkeleyDB();
 		bdb.init( params );
 		params.deInit();
@@ -90,7 +91,8 @@ public class DBMapTupleNodeIDsTest {
 		assertNotNull( _a );
 		assertNotNull( _b );
 		
-		assertTrue( jidA.equals( bdb.getDBMap_JavaIDs_To_NodeIDs().getNodeJavaID( _a ) ) );
+		assertTrue( jidA.equals( bdb.getDBMap_JavaIDs_To_NodeIDs().getNodeJavaID(
+				_a ) ) );
 		assertTrue( bdb.getDBMap_JavaIDs_To_NodeIDs().getNodeJavaID( _a ) == jidA );
 		
 		org.junit.Assert.assertFalse( tdb.isVector( _a, _b ) );

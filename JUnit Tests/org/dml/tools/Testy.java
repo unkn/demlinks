@@ -67,7 +67,7 @@ public class Testy extends StaticInstanceTracker {
 	 * @see org.dml.tools.StaticInstanceTracker#done()
 	 */
 	@Override
-	protected void done() {
+	protected void done( MethodParams<Object> params ) {
 
 		System.out.println( this.getName() + " is done." );
 		home = null;
@@ -85,6 +85,7 @@ public class Testy extends StaticInstanceTracker {
 	 * (non-Javadoc)
 	 * 
 	 * @see
+	 * 
 	 * 
 	 * 
 	 * 

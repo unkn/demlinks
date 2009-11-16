@@ -57,9 +57,9 @@ public class VarLevel2 extends VarLevel1 implements VarLevel2Interface {
 	 * @see org.temporary.tests.VarLevel1#done()
 	 */
 	@Override
-	protected void done() {
+	protected void done( MethodParams<Object> params ) {
 
-		super.done();
+		super.done( params );
 	}
 	
 	

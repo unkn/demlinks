@@ -53,7 +53,7 @@ public class ProperSubClassingOfSIT extends StaticInstanceTracker {
 	 * @see org.dml.tools.StaticInstanceTracker#done()
 	 */
 	@Override
-	protected void done() {
+	protected void done( MethodParams<Object> params ) {
 
 		System.err.println( this.getClass().getCanonicalName()
 				+ " is preparing to finish....step 1/2" );

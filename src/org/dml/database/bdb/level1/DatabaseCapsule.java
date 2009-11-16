@@ -56,7 +56,7 @@ public class DatabaseCapsule extends StaticInstanceTracker {
 	 * @see org.dml.tools.StaticInstanceTracker#done()
 	 */
 	@Override
-	protected void done() {
+	protected void done( MethodParams<Object> params ) {
 
 		this.silentClose();
 	}

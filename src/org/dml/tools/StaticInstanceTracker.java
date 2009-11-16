@@ -128,9 +128,15 @@ public abstract class StaticInstanceTracker {
 	}
 	
 	/**
-	 * implement this done(), but use deInit() instead
+	 * implement this done(), but use deInit() instead<br>
+	 * the parameters that were passed to init(params) will be passed to this
+	 * done(...) and yes they were saved(or cloned)<br>
+	 * deInit() is passing them to done() not you<br>
+	 * but this means you can access them in your own done(..) implementation<br>
+	 * try to not modify the contents of params... since they will be used on
+	 * reInit() or well maybe it won't matter anymore<br>
 	 */
-	protected abstract void done();
+	protected abstract void done( MethodParams<Object> params );
 	
 	/**
 	 * do not use <code>this</code> again after calling this method
@@ -156,7 +162,7 @@ public abstract class StaticInstanceTracker {
 		if ( this.isInited() ) {
 			this.setInited( false );
 			removeOldInstance( this );
-			this.done();
+			this.done( formerParams );
 			// formerParams are not managed here, only on init() ie. discarded
 		}
 	}

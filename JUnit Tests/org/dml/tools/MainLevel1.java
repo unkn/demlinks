@@ -93,9 +93,9 @@ public class MainLevel1 extends MainLevel0 {
 	 * @see org.temporary.tests.MainLevel0#done()
 	 */
 	@Override
-	protected void done() {
+	protected void done( MethodParams<Object> params ) {
 
 		System.out.println( this.getName() + " deiniting..." );
-		super.done();
+		super.done( params );
 	}
 }
