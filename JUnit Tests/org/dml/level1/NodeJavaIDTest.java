@@ -40,17 +40,17 @@ import org.junit.Test;
  */
 public class NodeJavaIDTest {
 	
-	NodeJavaID	a, b, c;
+	SymbolJavaID	a, b, c;
 	
 	@Before
 	public void init() throws StorageException {
 
 		// DMLEnvironment.init();
-		NodeJavaID.junitClearAll();
-		assertTrue( NodeJavaID.all_Level1_NodeJavaIDs.size() == 0 );
-		a = NodeJavaID.ensureJavaIDFor( "A" );
-		b = NodeJavaID.ensureJavaIDFor( "B" );
-		c = NodeJavaID.ensureJavaIDFor( "C" );
+		SymbolJavaID.junitClearAll();
+		assertTrue( SymbolJavaID.all_Level1_SymbolJavaIDs.size() == 0 );
+		a = SymbolJavaID.ensureJavaIDFor( "A" );
+		b = SymbolJavaID.ensureJavaIDFor( "B" );
+		c = SymbolJavaID.ensureJavaIDFor( "C" );
 	}
 	
 	@After
@@ -62,8 +62,8 @@ public class NodeJavaIDTest {
 	@Test
 	public void listOfAllTest() {
 
-		assertTrue( NodeJavaID.all_Level1_NodeJavaIDs.size() == 3 );
-		System.out.println( NodeJavaID.all_Level1_NodeJavaIDs );
+		assertTrue( SymbolJavaID.all_Level1_SymbolJavaIDs.size() == 3 );
+		System.out.println( SymbolJavaID.all_Level1_SymbolJavaIDs );
 	}
 	
 	@Test
@@ -72,19 +72,19 @@ public class NodeJavaIDTest {
 		String _a = "ABCDEDFASA".substring( 0, 1 );
 		assertTrue( "A" != _a );
 		assertTrue( "A".equals( _a ) );// compare by contents yields true
-		assertTrue( a == NodeJavaID.ensureJavaIDFor( _a ) );// not re-added
-		assertTrue( NodeJavaID.all_Level1_NodeJavaIDs.size() == 3 );
+		assertTrue( a == SymbolJavaID.ensureJavaIDFor( _a ) );// not re-added
+		assertTrue( SymbolJavaID.all_Level1_SymbolJavaIDs.size() == 3 );
 		// assertTrue( null != DMLEnvironment.AllWords );
 		// assertTrue( NodeJID.all_Level1_NodeJIDs.size() == 4 );
-		System.out.println( NodeJavaID.all_Level1_NodeJavaIDs );
+		System.out.println( SymbolJavaID.all_Level1_SymbolJavaIDs );
 		// NodeJID.forgetJIDFor( "A" );
 		// assertTrue( NodeJID.all_Level1_NodeJIDs.size() == 2 );
 		// assertTrue( a != NodeJID.getJIDFor( "A" ) );
 		// assertTrue( NodeJID.all_Level1_NodeJIDs.size() == 3 );
 		String test = "test";
-		NodeJavaID j1 = NodeJavaID.ensureJavaIDFor( test );
-		NodeJavaID.ensureJavaIDFor( "middle" );
-		NodeJavaID j2 = NodeJavaID.ensureJavaIDFor( test );
+		SymbolJavaID j1 = SymbolJavaID.ensureJavaIDFor( test );
+		SymbolJavaID.ensureJavaIDFor( "middle" );
+		SymbolJavaID j2 = SymbolJavaID.ensureJavaIDFor( test );
 		assertTrue( j1 == j2 );
 		System.out.println( "!" + j1.toString() + "!" + j2.toString() + "!" );
 		assertTrue( j1.equals( j2 ) );
@@ -111,7 +111,7 @@ public class NodeJavaIDTest {
 
 		boolean aeGot = false;
 		try {
-			NodeJavaID.ensureJavaIDFor( null );
+			SymbolJavaID.ensureJavaIDFor( null );
 		} catch ( AssertionError ae ) {
 			aeGot = true;
 		}

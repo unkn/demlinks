@@ -75,15 +75,15 @@ public class Level1_DMLEnvironmentTest {
 	public void test1() throws StorageException {
 
 		try {
-			a = dml1.ensureSymbol( NodeJavaID.ensureJavaIDFor( "A" ) );
-			b = dml1.ensureSymbol( NodeJavaID.ensureJavaIDFor( "B" ) );
-			c = dml1.ensureSymbol( NodeJavaID.ensureJavaIDFor( "C" ) );
+			a = dml1.ensureSymbol( SymbolJavaID.ensureJavaIDFor( "A" ) );
+			b = dml1.ensureSymbol( SymbolJavaID.ensureJavaIDFor( "B" ) );
+			c = dml1.ensureSymbol( SymbolJavaID.ensureJavaIDFor( "C" ) );
 			assertTrue( a != null );
-			assertTrue( a.equals( dml1.getSymbol( NodeJavaID.ensureJavaIDFor( "A" ) ) ) );
-			assertTrue( a != dml1.getSymbol( NodeJavaID.ensureJavaIDFor( "A" ) ) );
-			assertTrue( b.equals( dml1.getSymbol( NodeJavaID.ensureJavaIDFor( "B" ) ) ) );
-			assertTrue( c.equals( dml1.getSymbol( NodeJavaID.ensureJavaIDFor( "C" ) ) ) );
-			Object t = dml1.getSymbol( NodeJavaID.ensureJavaIDFor( "A" ) );
+			assertTrue( a.equals( dml1.getSymbol( SymbolJavaID.ensureJavaIDFor( "A" ) ) ) );
+			assertTrue( a != dml1.getSymbol( SymbolJavaID.ensureJavaIDFor( "A" ) ) );
+			assertTrue( b.equals( dml1.getSymbol( SymbolJavaID.ensureJavaIDFor( "B" ) ) ) );
+			assertTrue( c.equals( dml1.getSymbol( SymbolJavaID.ensureJavaIDFor( "C" ) ) ) );
+			Object t = dml1.getSymbol( SymbolJavaID.ensureJavaIDFor( "A" ) );
 			assertTrue( a.equals( t ) );
 			Object t2 = new Object();
 			boolean threw = false;

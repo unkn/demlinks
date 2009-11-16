@@ -34,7 +34,7 @@ import org.dml.database.bdb.level1.Level1_Storage_BerkeleyDB;
 import org.dml.database.bdb.level2.DBMapTupleNodeIDs;
 import org.dml.level1.Level1_DMLEnvironment;
 import org.dml.level1.Symbol;
-import org.dml.level1.NodeJavaID;
+import org.dml.level1.SymbolJavaID;
 import org.dml.storagewrapper.StorageException;
 import org.junit.After;
 import org.junit.Before;
@@ -84,16 +84,16 @@ public class DBMapTupleNodeIDsTest {
 	public void test1() throws DatabaseException, StorageException {
 
 		String strA = "A";
-		NodeJavaID jidA = NodeJavaID.ensureJavaIDFor( strA );
+		SymbolJavaID jidA = SymbolJavaID.ensureJavaIDFor( strA );
 		Symbol _a = bdb.getDBMap_JavaIDs_To_NodeIDs().ensureSymbol( jidA );
 		Symbol _b = bdb.getDBMap_JavaIDs_To_NodeIDs().ensureSymbol(
-				NodeJavaID.ensureJavaIDFor( "B" ) );
+				SymbolJavaID.ensureJavaIDFor( "B" ) );
 		assertNotNull( _a );
 		assertNotNull( _b );
 		
-		assertTrue( jidA.equals( bdb.getDBMap_JavaIDs_To_NodeIDs().getNodeJavaID(
+		assertTrue( jidA.equals( bdb.getDBMap_JavaIDs_To_NodeIDs().getSymbolJavaID(
 				_a ) ) );
-		assertTrue( bdb.getDBMap_JavaIDs_To_NodeIDs().getNodeJavaID( _a ) == jidA );
+		assertTrue( bdb.getDBMap_JavaIDs_To_NodeIDs().getSymbolJavaID( _a ) == jidA );
 		
 		org.junit.Assert.assertFalse( tdb.isVector( _a, _b ) );
 		org.junit.Assert.assertFalse( tdb.ensureVector( _a, _b ) );
@@ -101,12 +101,12 @@ public class DBMapTupleNodeIDsTest {
 		assertTrue( tdb.isVector( _a, _b ) );
 		assertTrue( tdb.ensureVector( _a, _b ) );
 		Symbol _d = bdb.getDBMap_JavaIDs_To_NodeIDs().ensureSymbol(
-				NodeJavaID.ensureJavaIDFor( "D" ) );
+				SymbolJavaID.ensureJavaIDFor( "D" ) );
 		Symbol _e = bdb.getDBMap_JavaIDs_To_NodeIDs().ensureSymbol(
-				NodeJavaID.ensureJavaIDFor( "E" ) );
+				SymbolJavaID.ensureJavaIDFor( "E" ) );
 		assertFalse( tdb.ensureVector( _d, _e ) );
 		Symbol _c = bdb.getDBMap_JavaIDs_To_NodeIDs().ensureSymbol(
-				NodeJavaID.ensureJavaIDFor( "C" ) );
+				SymbolJavaID.ensureJavaIDFor( "C" ) );
 		assertFalse( tdb.ensureVector( _a, _c ) );
 		assertTrue( tdb.isVector( _a, _c ) );
 		assertFalse( tdb.ensureVector( _c, _a ) );

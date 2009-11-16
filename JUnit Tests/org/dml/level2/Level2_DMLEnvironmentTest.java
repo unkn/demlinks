@@ -32,7 +32,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.dml.JUnits.Consts;
 import org.dml.level1.Symbol;
-import org.dml.level1.NodeJavaID;
+import org.dml.level1.SymbolJavaID;
 import org.junit.Test;
 import org.references.method.MethodParams;
 import org.references.method.PossibleParams;
@@ -69,9 +69,9 @@ public class Level2_DMLEnvironmentTest {
 			// }
 			String test1 = "test1";
 			String test2 = "test2";
-			NodeJavaID j1 = NodeJavaID.ensureJavaIDFor( test1 );
+			SymbolJavaID j1 = SymbolJavaID.ensureJavaIDFor( test1 );
 			assertTrue( test1 == j1.getObject() );
-			NodeJavaID j2 = NodeJavaID.ensureJavaIDFor( test2 );
+			SymbolJavaID j2 = SymbolJavaID.ensureJavaIDFor( test2 );
 			assertTrue( j2.getObject() == test2 );
 			assertTrue( test1 != test2 );
 			assertTrue( j1 != j2 );
@@ -79,9 +79,9 @@ public class Level2_DMLEnvironmentTest {
 			Symbol n1 = d1.createSymbol( j1 );
 			Symbol n2 = d1.createSymbol( j2 );
 			assertNotNull( n1 );
-			assertNotNull( d1.getNodeJavaID( n1 ) );
-			assertTrue( d1.getNodeJavaID( n1 ).equals( j1 ) );
-			assertTrue( d1.getNodeJavaID( n1 ) == j1 );
+			assertNotNull( d1.getSymbolJavaID( n1 ) );
+			assertTrue( d1.getSymbolJavaID( n1 ).equals( j1 ) );
+			assertTrue( d1.getSymbolJavaID( n1 ) == j1 );
 			assertTrue( n1.equals( d1.getSymbol( j1 ) ) );
 			// FIXME: maybe fix? getNodeID() does a new every time
 			assertTrue( n1 != d1.getSymbol( j1 ) );
@@ -98,8 +98,8 @@ public class Level2_DMLEnvironmentTest {
 			assertNull( n3 );
 			n3 = d3.getSymbol( j2 );
 			assertNull( n3 );
-			System.out.println( d1.getNodeJavaID( n1 ) );
-			System.out.println( d3.getNodeJavaID( n1 ) );
+			System.out.println( d1.getSymbolJavaID( n1 ) );
+			System.out.println( d3.getSymbolJavaID( n1 ) );
 			assertFalse( d1.isVector( n1, n2 ) );
 			assertFalse( d1.isVector( n1, n1 ) );
 			assertFalse( d1.ensureVector( n1, n2 ) );

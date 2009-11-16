@@ -43,7 +43,7 @@ public interface Level1_DMLStorageWrapper {
 	 * @return NodeJavaID or null if not found
 	 * @throws StorageException
 	 */
-	public NodeJavaID getNodeJavaID( Symbol identifiedByThisSymbol )
+	public SymbolJavaID getSymbolJavaID( Symbol identifiedByThisSymbol )
 			throws StorageException;
 	
 	/**
@@ -54,7 +54,7 @@ public interface Level1_DMLStorageWrapper {
 	 * @return NodeID or null if not found;
 	 * @throws StorageException
 	 */
-	public Symbol getSymbol( NodeJavaID identifiedByThisJavaID )
+	public Symbol getSymbol( SymbolJavaID identifiedByThisJavaID )
 			throws StorageException;
 	
 	/**
@@ -64,14 +64,14 @@ public interface Level1_DMLStorageWrapper {
 	 * @return the created NodeID or throws bug if fromJID already had a NodeID
 	 * @throws StorageException
 	 */
-	public Symbol createSymbol( NodeJavaID fromJavaID ) throws StorageException;
+	public Symbol createSymbol( SymbolJavaID fromJavaID ) throws StorageException;
 	
 	/**
 	 * @param theJavaID
 	 * @return the new or existing NodeID
 	 * @throws StorageException
 	 */
-	public Symbol ensureSymbol( NodeJavaID theJavaID ) throws StorageException;
+	public Symbol ensureSymbol( SymbolJavaID theJavaID ) throws StorageException;
 	
 
 }

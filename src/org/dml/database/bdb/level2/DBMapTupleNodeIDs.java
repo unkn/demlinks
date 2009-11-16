@@ -124,7 +124,7 @@ public class DBMapTupleNodeIDs extends OneToManyDBMap<Symbol, Symbol> {
 	
 	private boolean existsSymbol( Symbol whichSymbol ) throws DatabaseException {
 
-		return ( null != this.getBDBL1().getDBMap_JavaIDs_To_NodeIDs().getNodeJavaID(
+		return ( null != this.getBDBL1().getDBMap_JavaIDs_To_NodeIDs().getSymbolJavaID(
 				whichSymbol ) );
 	}
 }

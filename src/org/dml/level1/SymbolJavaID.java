@@ -46,19 +46,19 @@ import org.references.Reference;
  * 
  * - NodeJavaIDs(Level1) != NodeIDs(Level2)
  */
-public class NodeJavaID extends Reference<String> {
+public class SymbolJavaID extends Reference<String> {
 	
 	// this will keep track of all NodeJavaIDs of all environments
 	// there's no point of having same JavaID twice for diff environments
-	protected static final HashMap<String, NodeJavaID>	all_Level1_NodeJavaIDs	= new HashMap<String, NodeJavaID>();
+	protected static final HashMap<String, SymbolJavaID>	all_Level1_SymbolJavaIDs	= new HashMap<String, SymbolJavaID>();
 	
 	// string representation of the ID
 	// private String stringID = null;
 	
 	protected static final void junitClearAll() {
 
-		if ( null != all_Level1_NodeJavaIDs ) {
-			all_Level1_NodeJavaIDs.clear();
+		if ( null != all_Level1_SymbolJavaIDs ) {
+			all_Level1_SymbolJavaIDs.clear();
 		}
 		// all_Level1_NodeJavaIDs = new HashMap<String, NodeJavaID>();
 	}
@@ -73,14 +73,14 @@ public class NodeJavaID extends Reference<String> {
 	 * @return JavaID (java ID) - the encapsulated string strID<br>
 	 *         should never return null
 	 */
-	public static NodeJavaID ensureJavaIDFor( String strID ) {
+	public static SymbolJavaID ensureJavaIDFor( String strID ) {
 
 		RunTime.assertNotNull( strID );
-		NodeJavaID curr = all_Level1_NodeJavaIDs.get( strID );
+		SymbolJavaID curr = all_Level1_SymbolJavaIDs.get( strID );
 		if ( null == curr ) {
 			// create new
-			curr = new NodeJavaID( strID );
-			if ( all_Level1_NodeJavaIDs.put( strID, curr ) != null ) {
+			curr = new SymbolJavaID( strID );
+			if ( all_Level1_SymbolJavaIDs.put( strID, curr ) != null ) {
 				RunTime.bug( "a value already existed?!! wicked! it means that the above .get() is bugged?!" );
 			}
 		}
@@ -93,7 +93,7 @@ public class NodeJavaID extends Reference<String> {
 	 * 
 	 * @param strID
 	 */
-	private NodeJavaID( String strID ) {
+	private SymbolJavaID( String strID ) {
 
 		RunTime.assertNotNull( strID );
 		

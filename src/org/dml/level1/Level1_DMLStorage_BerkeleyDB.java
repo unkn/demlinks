@@ -89,12 +89,12 @@ public class Level1_DMLStorage_BerkeleyDB extends MainLevel0 implements
 	
 	// =============================================
 	@Override
-	public final NodeJavaID getNodeJavaID( Symbol identifiedByThisSymbol )
+	public final SymbolJavaID getSymbolJavaID( Symbol identifiedByThisSymbol )
 			throws StorageException {
 
 		RunTime.assertNotNull( identifiedByThisSymbol );
 		try {
-			return bdb.getDBMap_JavaIDs_To_NodeIDs().getNodeJavaID(
+			return bdb.getDBMap_JavaIDs_To_NodeIDs().getSymbolJavaID(
 					identifiedByThisSymbol );
 		} catch ( DatabaseException ex ) {
 			throw new StorageException( ex );
@@ -102,7 +102,7 @@ public class Level1_DMLStorage_BerkeleyDB extends MainLevel0 implements
 	}
 	
 	@Override
-	public final Symbol getSymbol( NodeJavaID identifiedByThisJavaID )
+	public final Symbol getSymbol( SymbolJavaID identifiedByThisJavaID )
 			throws StorageException {
 
 		RunTime.assertNotNull( identifiedByThisJavaID );
@@ -114,7 +114,7 @@ public class Level1_DMLStorage_BerkeleyDB extends MainLevel0 implements
 	}
 	
 	@Override
-	public final Symbol createSymbol( NodeJavaID fromJavaID ) throws StorageException {
+	public final Symbol createSymbol( SymbolJavaID fromJavaID ) throws StorageException {
 
 		RunTime.assertNotNull( fromJavaID );
 		try {
@@ -126,7 +126,7 @@ public class Level1_DMLStorage_BerkeleyDB extends MainLevel0 implements
 	
 	
 	@Override
-	public final Symbol ensureSymbol( NodeJavaID theJavaID ) throws StorageException {
+	public final Symbol ensureSymbol( SymbolJavaID theJavaID ) throws StorageException {
 
 		RunTime.assertNotNull( theJavaID );
 		try {

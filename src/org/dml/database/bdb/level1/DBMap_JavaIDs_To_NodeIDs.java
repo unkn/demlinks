@@ -27,7 +27,7 @@ package org.dml.database.bdb.level1;
 
 import org.dml.error.BugError;
 import org.dml.level1.Symbol;
-import org.dml.level1.NodeJavaID;
+import org.dml.level1.SymbolJavaID;
 import org.dml.tools.RunTime;
 import org.javapart.logger.Log;
 
@@ -41,7 +41,7 @@ import com.sleepycat.je.OperationStatus;
  *and the methods that use NodeID and NodeJavaID objects<br>
  *lookup by either NodeJavaID or NodeID<br>
  */
-public class DBMap_JavaIDs_To_NodeIDs extends OneToOneDBMap<NodeJavaID, Symbol> {
+public class DBMap_JavaIDs_To_NodeIDs extends OneToOneDBMap<SymbolJavaID, Symbol> {
 	
 	private DBSequence			seq			= null;
 	private String				seq_KEYNAME	= null;
@@ -54,7 +54,7 @@ public class DBMap_JavaIDs_To_NodeIDs extends OneToOneDBMap<NodeJavaID, Symbol> 
 	public DBMap_JavaIDs_To_NodeIDs( Level1_Storage_BerkeleyDB bdb1,
 			String dbName1 ) throws DatabaseException {
 
-		super( bdb1, dbName1, NodeJavaID.class, Symbol.class );
+		super( bdb1, dbName1, SymbolJavaID.class, Symbol.class );
 		seq_KEYNAME = dbName1;
 	}
 	
@@ -73,7 +73,7 @@ public class DBMap_JavaIDs_To_NodeIDs extends OneToOneDBMap<NodeJavaID, Symbol> 
 	}
 	
 	@Override
-	public OneToOneDBMap<NodeJavaID, Symbol> silentClose() {
+	public OneToOneDBMap<SymbolJavaID, Symbol> silentClose() {
 
 		Log.entry( "closing " + this.getClass().getSimpleName()
 				+ " with name: " + dbName );
@@ -106,7 +106,7 @@ public class DBMap_JavaIDs_To_NodeIDs extends OneToOneDBMap<NodeJavaID, Symbol> 
 	 * @return null if not found;
 	 * @throws DatabaseException
 	 */
-	public Symbol getSymbol( NodeJavaID fromJavaID ) throws DatabaseException {
+	public Symbol getSymbol( SymbolJavaID fromJavaID ) throws DatabaseException {
 
 		RunTime.assertNotNull( fromJavaID );
 		return this.internal_getSymbolFromJavaID( fromJavaID );
@@ -120,7 +120,7 @@ public class DBMap_JavaIDs_To_NodeIDs extends OneToOneDBMap<NodeJavaID, Symbol> 
 	 * @throws DatabaseException
 	 * @throws BugError
 	 */
-	public Symbol createSymbol( NodeJavaID fromJavaID )
+	public Symbol createSymbol( SymbolJavaID fromJavaID )
 			throws DatabaseException {
 
 		if ( null != this.internal_getSymbolFromJavaID( fromJavaID ) ) {
@@ -141,7 +141,7 @@ public class DBMap_JavaIDs_To_NodeIDs extends OneToOneDBMap<NodeJavaID, Symbol> 
 	 *         never null
 	 * @throws DatabaseException
 	 */
-	private final Symbol internal_makeNewSymbol( NodeJavaID fromJavaID )
+	private final Symbol internal_makeNewSymbol( SymbolJavaID fromJavaID )
 			throws DatabaseException {
 
 		RunTime.assertNotNull( fromJavaID );
@@ -160,7 +160,7 @@ public class DBMap_JavaIDs_To_NodeIDs extends OneToOneDBMap<NodeJavaID, Symbol> 
 	 * @return
 	 * @throws DatabaseException
 	 */
-	public Symbol ensureSymbol( NodeJavaID fromJavaID )
+	public Symbol ensureSymbol( SymbolJavaID fromJavaID )
 			throws DatabaseException {
 
 		Symbol nid = this.internal_getSymbolFromJavaID( fromJavaID );
@@ -178,7 +178,7 @@ public class DBMap_JavaIDs_To_NodeIDs extends OneToOneDBMap<NodeJavaID, Symbol> 
 	 * @return null if not found; or the NodeID as NodeID object if found
 	 * @throws DatabaseException
 	 */
-	private Symbol internal_getSymbolFromJavaID( NodeJavaID fromJavaID )
+	private Symbol internal_getSymbolFromJavaID( SymbolJavaID fromJavaID )
 			throws DatabaseException {
 
 		RunTime.assertNotNull( fromJavaID );
@@ -197,11 +197,11 @@ public class DBMap_JavaIDs_To_NodeIDs extends OneToOneDBMap<NodeJavaID, Symbol> 
 	 * @return null if not found
 	 * @throws DatabaseException
 	 */
-	public NodeJavaID getNodeJavaID( Symbol fromSymbol )
+	public SymbolJavaID getSymbolJavaID( Symbol fromSymbol )
 			throws DatabaseException {
 
 		RunTime.assertNotNull( fromSymbol );
-		NodeJavaID jid = this.getKey( fromSymbol );
+		SymbolJavaID jid = this.getKey( fromSymbol );
 		// RunTime.assertNotNull( jid );
 		return jid;
 	}
