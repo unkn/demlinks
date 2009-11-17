@@ -25,6 +25,7 @@ package org.dml.database.bdb.level2;
 
 
 
+import org.dml.database.bdb.level1.AllTupleBindings;
 import org.dml.database.bdb.level1.Level1_Storage_BerkeleyDB;
 import org.dml.level1.Symbol;
 import org.dml.storagewrapper.StorageException;
@@ -61,7 +62,9 @@ public class DBMapTupleNodeIDs extends OneToManyDBMap<Symbol, Symbol> {
 	 */
 	public DBMapTupleNodeIDs( Level1_Storage_BerkeleyDB bdb1, String dbName1 ) {
 
-		super( bdb1, dbName1, Symbol.class, Symbol.class );
+		super( bdb1, dbName1, Symbol.class,
+				AllTupleBindings.getBinding( Symbol.class ), Symbol.class,
+				AllTupleBindings.getBinding( Symbol.class ) );
 	}
 	
 	/**

@@ -25,7 +25,6 @@ package org.dml.database.bdb.level2;
 
 
 
-import org.dml.database.bdb.level1.AllTupleBindings;
 import org.dml.database.bdb.level1.DatabaseCapsule;
 import org.dml.database.bdb.level1.Level1_Storage_BerkeleyDB;
 import org.dml.error.BugError;
@@ -75,7 +74,10 @@ public class OneToManyDBMap<InitialType, TerminalType> {
 	 * @param dbName1
 	 */
 	public OneToManyDBMap( Level1_Storage_BerkeleyDB bdb1, String dbName1,
-			Class<InitialType> initialClass1, Class<TerminalType> terminalClass1 ) {
+			Class<InitialType> initialClass1,
+			EntryBinding<InitialType> initialBinding1,
+			Class<TerminalType> terminalClass1,
+			EntryBinding<TerminalType> terminalBinding1 ) {
 
 		RunTime.assertNotNull( bdb1 );
 		RunTime.assertNotNull( dbName1 );
@@ -83,8 +85,10 @@ public class OneToManyDBMap<InitialType, TerminalType> {
 		dbName = dbName1;
 		initialClass = initialClass1;
 		terminalClass = terminalClass1;
-		initialBinding = AllTupleBindings.getBinding( initialClass );
-		terminalBinding = AllTupleBindings.getBinding( terminalClass );
+		initialBinding = initialBinding1;// AllTupleBindings.getBinding(
+											// initialClass );
+		terminalBinding = terminalBinding1;// AllTupleBindings.getBinding(
+											// terminalClass );
 	}
 	
 	protected Level1_Storage_BerkeleyDB getBDBL1() {

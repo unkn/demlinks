@@ -50,7 +50,7 @@ public class AllTupleBindings {
 	private static final Map<Class, TupleBinding>	nonPrimitives	= new HashMap<Class, TupleBinding>();
 	static {
 		// add to this list any objects that you expect to store into a BDB
-		// dbase
+		// dbase, allows overriding existing ones from TupleBinding
 		addNonPrimitive( Symbol.class, new SymbolBinding() );
 		addNonPrimitive( SymbolJavaID.class, new SymbolJavaIDBinding() );
 		addNonPrimitive( JUnit_Base1.class, new JUnit_Base1Binding() );
@@ -69,9 +69,9 @@ public class AllTupleBindings {
 	@SuppressWarnings( "unchecked" )
 	public static <T> TupleBinding<T> getBinding( Class<T> cls ) {
 
-		TupleBinding t = TupleBinding.getPrimitiveBinding( cls );
+		TupleBinding t = nonPrimitives.get( cls );// first
 		if ( null == t ) {
-			t = nonPrimitives.get( cls );
+			t = TupleBinding.getPrimitiveBinding( cls );// second
 			if ( null == t ) {
 				RunTime.bug( "TupleBinding not yet defined for class '"
 						+ cls.getSimpleName()
