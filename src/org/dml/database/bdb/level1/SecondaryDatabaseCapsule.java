@@ -115,14 +115,6 @@ public class SecondaryDatabaseCapsule extends StaticInstanceTracker {
 		return secDb;
 	}
 	
-	@Override
-	protected void finalize() throws Throwable {
-
-		Log.entry( "in finalize() for secDbName:" + secDbName );
-		this.silentClose();
-		super.finalize();
-	}
-	
 	/**
 	 * 
 	 */

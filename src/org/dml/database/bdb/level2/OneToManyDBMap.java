@@ -86,9 +86,9 @@ public class OneToManyDBMap<InitialType, TerminalType> {
 		initialClass = initialClass1;
 		terminalClass = terminalClass1;
 		initialBinding = initialBinding1;// AllTupleBindings.getBinding(
-											// initialClass );
+		// initialClass );
 		terminalBinding = terminalBinding1;// AllTupleBindings.getBinding(
-											// terminalClass );
+		// terminalClass );
 	}
 	
 	protected Level1_Storage_BerkeleyDB getBDBL1() {
@@ -290,5 +290,48 @@ public class OneToManyDBMap<InitialType, TerminalType> {
 			}
 		}
 		return ret1;
+	}
+	
+	/**
+	 * @param a
+	 * @return
+	 * @throws DatabaseException
+	 */
+	public VectorIterator<InitialType, TerminalType> getIterator_on_Terminals_of(
+			InitialType initialObject ) throws DatabaseException {
+
+		// DatabaseEntry keyEntry = new DatabaseEntry();
+		// initialBinding.objectToEntry( initialObject, keyEntry );
+		VectorIterator<InitialType, TerminalType> ret = new VectorIterator<InitialType, TerminalType>(
+				this.getBDBL1(), this.getForwardDB(), initialObject,
+				initialBinding, terminalBinding );
+		return ret;
+	}
+	
+	public VectorIterator<TerminalType, InitialType> getIterator_on_Initials_of(
+			TerminalType terminalObject ) throws DatabaseException {
+
+		VectorIterator<TerminalType, InitialType> ret = new VectorIterator<TerminalType, InitialType>(
+				this.getBDBL1(), this.getBackwardDB(), terminalObject,
+				terminalBinding, initialBinding );
+		return ret;
+	}
+	
+	public int countInitials( TerminalType ofTerminalObject )
+			throws DatabaseException {
+
+		VectorIterator<TerminalType, InitialType> vi = this.getIterator_on_Initials_of( ofTerminalObject );
+		int count = vi.count();
+		vi.close();
+		return count;
+	}
+	
+	public int countTerminals( InitialType ofInitialObject )
+			throws DatabaseException {
+
+		VectorIterator<InitialType, TerminalType> vi = this.getIterator_on_Terminals_of( ofInitialObject );
+		int count = vi.count();
+		vi.close();
+		return count;
 	}
 }

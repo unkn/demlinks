@@ -48,20 +48,21 @@ public class DBSequence {
 
 	// FIXME: SequenceConfig will be kept the same for all Sequence -s, for
 	// now;that is same settings not same variable
-	private final SequenceConfig	allSequencesConfig	= new MySequenceConfig();
+	private final SequenceConfig			allSequencesConfig	= new MySequenceConfig();
 	
 
 
-	private static final String		seqPrefix			= (char)0 + "_preseq_"
-																+ (char)0;
-	private static final String		seqSuffix			= (char)255
-																+ "_postseq_"
-																+ (char)255;
+	private static final String				seqPrefix			= (char)0
+																		+ "_preseq_"
+																		+ (char)0;
+	private static final String				seqSuffix			= (char)255
+																		+ "_postseq_"
+																		+ (char)255;
 	
 	// non-static follows:
-	private Sequence				thisSeq				= null;
-	private String					thisSeqName			= null;
-	private final Level1_Storage_BerkeleyDB		bdb;
+	private Sequence						thisSeq				= null;
+	private String							thisSeqName			= null;
+	private final Level1_Storage_BerkeleyDB	bdb;
 	
 	
 	/**
@@ -77,12 +78,6 @@ public class DBSequence {
 		RunTime.assertFalse( seqName.isEmpty() );
 		bdb = bdb1;
 		thisSeqName = seqPrefix + seqName + seqSuffix;
-	}
-	
-	@Override
-	protected void finalize() {
-
-		this.done();
 	}
 	
 	/**

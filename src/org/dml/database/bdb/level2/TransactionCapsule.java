@@ -26,6 +26,7 @@ package org.dml.database.bdb.level2;
 
 
 import org.dml.database.bdb.level1.Level1_Storage_BerkeleyDB;
+import org.dml.tools.RunTime;
 
 import com.sleepycat.je.DatabaseException;
 import com.sleepycat.je.Transaction;
@@ -50,8 +51,8 @@ public class TransactionCapsule {
 	 * @return never null
 	 * @throws DatabaseException
 	 */
-	public final static TransactionCapsule getNewTransaction( Level1_Storage_BerkeleyDB bdb )
-			throws DatabaseException {
+	public final static TransactionCapsule getNewTransaction(
+			Level1_Storage_BerkeleyDB bdb ) throws DatabaseException {
 
 		TransactionCapsule txn = new TransactionCapsule();
 		
@@ -63,7 +64,7 @@ public class TransactionCapsule {
 		txn.txConf.setSerializableIsolation( true );
 		txn.txConf.setSync( true );
 		txn.txConf.setWriteNoSync( false );
-		
+		RunTime.assertFalse( txn.txConf.getReadUncommitted() );
 		txn.tx = bdb.getEnvironment().beginTransaction( null, txn.txConf );
 		
 		return txn;

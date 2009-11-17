@@ -549,7 +549,7 @@ public class Level1_Storage_BerkeleyDB extends StaticInstanceTracker {
 				Log.mid( "closed BerkeleyDB with name: " + dbname );
 			} catch ( DatabaseException de ) {
 				Log.thro( "failed closing BerkeleyDB with specified name: '"
-						+ dbname );
+						+ dbname + "; reason: " + de.getLocalizedMessage() );
 				// ignore
 			} finally {
 				if ( !allOpenPrimaryDatabases.removeObject( db ) ) {

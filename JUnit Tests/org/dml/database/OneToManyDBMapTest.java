@@ -121,7 +121,7 @@ public class OneToManyDBMapTest {
 		
 		assertTrue( o2m.ensureVector( _c, _b ) );
 		
-
+o2m.get
 	}
 	
 	@Test
