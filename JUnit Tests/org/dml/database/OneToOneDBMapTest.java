@@ -33,6 +33,7 @@ import org.dml.JUnits.Consts;
 import org.dml.database.bdb.level1.Level1_Storage_BerkeleyDB;
 import org.dml.database.bdb.level1.OneToOneDBMap;
 import org.dml.error.BadCallError;
+import org.dml.error.BugError;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -91,7 +92,13 @@ public class OneToOneDBMapTest {
 		assertTrue( _a != x.getKey( _b ) );
 		assertTrue( _b != x.getData( _a ) );
 		assertTrue( _b.equals( x.getData( x.getKey( _b ) ) ) );
-		
+		boolean threw = false;
+		try {
+			x.makeVector( _a, _b );
+		} catch ( BugError be ) {
+			threw = true;
+		}
+		assertTrue( threw );
 	}
 	
 	@Test

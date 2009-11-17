@@ -190,6 +190,9 @@ public class OneToOneDBMap<KeyType, DataType> {
 		dataBinding.objectToEntry( data, deData );
 		OperationStatus ret = this.getForwardDB().putNoOverwrite( null, deKey,
 				deData );
+		if ( OperationStatus.KEYEXIST == ret ) {
+			RunTime.bug( "this is supposed to make a new unexisting key->data pair, apparently it failed!" );
+		}
 		return ret;
 	}
 	
@@ -206,7 +209,8 @@ public class OneToOneDBMap<KeyType, DataType> {
 
 		RunTime.assertNotNull( key );
 		// shouldn't allow subclass of keyClass!! or else havoc, well data loss
-		// since TupleBinding treats it as Base class
+		// since TupleBinding treats it as Base class, so assuming the subclass
+		// has new fields they won't be stored/retreived from DB
 		// 1of3
 		if ( key.getClass() != keyClass ) {
 			RunTime.badCall( "shouldn't allow subclass of keyClass!! or else havoc" );

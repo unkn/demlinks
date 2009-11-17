@@ -27,6 +27,7 @@ package org.dml.database;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import org.dml.JUnits.Consts;
@@ -39,6 +40,7 @@ import org.dml.storagewrapper.StorageException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.references.Position;
 import org.references.method.MethodParams;
 import org.references.method.PossibleParams;
 
@@ -88,8 +90,18 @@ public class DBMapTupleNodeIDsTest {
 		Symbol _a = bdb.getDBMap_JavaIDs_To_NodeIDs().ensureSymbol( jidA );
 		Symbol _b = bdb.getDBMap_JavaIDs_To_NodeIDs().ensureSymbol(
 				SymbolJavaID.ensureJavaIDFor( "B" ) );
+		Symbol _d = bdb.getDBMap_JavaIDs_To_NodeIDs().ensureSymbol(
+				SymbolJavaID.ensureJavaIDFor( "D" ) );
+		Symbol _e = bdb.getDBMap_JavaIDs_To_NodeIDs().ensureSymbol(
+				SymbolJavaID.ensureJavaIDFor( "E" ) );
+		Symbol _c = bdb.getDBMap_JavaIDs_To_NodeIDs().ensureSymbol(
+				SymbolJavaID.ensureJavaIDFor( "C" ) );
+		
 		assertNotNull( _a );
 		assertNotNull( _b );
+		assertNotNull( _d );
+		assertNotNull( _e );
+		assertNotNull( _c );
 		
 		assertTrue( jidA.equals( bdb.getDBMap_JavaIDs_To_NodeIDs().getSymbolJavaID(
 				_a ) ) );
@@ -100,18 +112,44 @@ public class DBMapTupleNodeIDsTest {
 		
 		assertTrue( tdb.isVector( _a, _b ) );
 		assertTrue( tdb.ensureVector( _a, _b ) );
-		Symbol _d = bdb.getDBMap_JavaIDs_To_NodeIDs().ensureSymbol(
-				SymbolJavaID.ensureJavaIDFor( "D" ) );
-		Symbol _e = bdb.getDBMap_JavaIDs_To_NodeIDs().ensureSymbol(
-				SymbolJavaID.ensureJavaIDFor( "E" ) );
+		
 		assertFalse( tdb.ensureVector( _d, _e ) );
-		Symbol _c = bdb.getDBMap_JavaIDs_To_NodeIDs().ensureSymbol(
-				SymbolJavaID.ensureJavaIDFor( "C" ) );
+		
 		assertFalse( tdb.ensureVector( _a, _c ) );
 		assertTrue( tdb.isVector( _a, _c ) );
+		
 		assertFalse( tdb.ensureVector( _c, _a ) );
 		assertFalse( tdb.ensureVector( _c, _b ) );
 		assertTrue( tdb.isVector( _c, _a ) );
 		assertTrue( tdb.isVector( _c, _b ) );
+		
+		VectorIterator iter = tdb.getTerminalIteratorFor( _a );
+		iter.goFirst();
+		assertTrue( _b.equals( iter.now() ) );
+		assertTrue( _b != iter );
+		
+		iter = tdb.getTerminal( _a, Position.AFTER, iter );
+		assertTrue( _c.equals( iter ) );
+		assertTrue( _c != iter );
+		
+		iter = tdb.getTerminal( _a, Position.AFTER, iter );
+		assertNull( iter );
+		
+		iter = tdb.getInitialIteratorFor( _b );
+		iter.goFirst();
+		assertTrue( _a.equals( iter.now() ) );
+		assertTrue( _a != iter );
+		
+		iter = tdb.getInitial( _b, Position.LAST );
+		assertTrue( _c.equals( iter ) );
+		assertTrue( _c != iter );
+		
+		assertNull( tdb.getInitial( _b, Position.AFTER, iter ) );
+		iter = tdb.getInitial( _b, Position.BEFORE, iter );
+		assertTrue( _a.equals( iter ) );
+		assertTrue( _a != iter );
+		
+		assertTrue( tdb.countInitial( _b ) == 2 );
+		assertTrue( tdb.countTerminal( _a ) == 2 );
 	}
 }

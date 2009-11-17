@@ -43,26 +43,30 @@ import com.sleepycat.je.OperationStatus;
 
 
 /**
- * -key and data are String
+ * initial=key
+ * terminal=data
+ * vector= (initial -> terminal)
  * - one key, multiple data (but different data, within this key ie. no two
  * datums are equal [within a key])
- * - and we want to be able to lookup by either key or data, or both
+ * - and we want to be able to lookup by either key or data, or both and we can
  * 
  * - stored as two primary databases (because the primary can't have dup data
  * while associated with secondary, although secondary can have dup data)
  * - and we can't store these as secondary because we can only delete from
  * secondaries
  */
-public class OneToManyDBMap<KeyType, DataType> {
+public class OneToManyDBMap<InitialType, TerminalType> {
 	
-	private final Class<KeyType>			keyClass;
-	private final Class<DataType>			dataClass;
+	private final Class<InitialType>			initialClass;
+	private final Class<TerminalType>			terminalClass;
+	private final EntryBinding<InitialType>		initialBinding;
+	private final EntryBinding<TerminalType>	terminalBinding;
 	
-	private static final String				backwardSuffix	= "_backward";
-	private DatabaseCapsule					forwardDB		= null;
-	private DatabaseCapsule					backwardDB		= null;
-	private final String					dbName;
-	private final Level1_Storage_BerkeleyDB	bdbL1;
+	private static final String					backwardSuffix	= "_backward";
+	private DatabaseCapsule						forwardDB		= null;
+	private DatabaseCapsule						backwardDB		= null;
+	private final String						dbName;
+	private final Level1_Storage_BerkeleyDB		bdbL1;
 	
 	/**
 	 * constructor
@@ -71,14 +75,16 @@ public class OneToManyDBMap<KeyType, DataType> {
 	 * @param dbName1
 	 */
 	public OneToManyDBMap( Level1_Storage_BerkeleyDB bdb1, String dbName1,
-			Class<KeyType> keyClass1, Class<DataType> dataClass1 ) {
+			Class<InitialType> initialClass1, Class<TerminalType> terminalClass1 ) {
 
 		RunTime.assertNotNull( bdb1 );
 		RunTime.assertNotNull( dbName1 );
 		bdbL1 = bdb1;
 		dbName = dbName1;
-		keyClass = keyClass1;
-		dataClass = dataClass1;
+		initialClass = initialClass1;
+		terminalClass = terminalClass1;
+		initialBinding = AllTupleBindings.getBinding( initialClass );
+		terminalBinding = AllTupleBindings.getBinding( terminalClass );
 	}
 	
 	protected Level1_Storage_BerkeleyDB getBDBL1() {
@@ -139,7 +145,7 @@ public class OneToManyDBMap<KeyType, DataType> {
 	/**
 	 * @return null
 	 */
-	public OneToManyDBMap<KeyType, DataType> silentClose() {
+	public OneToManyDBMap<InitialType, TerminalType> silentClose() {
 
 		Log.entry( "closing OneToManyDBMap: " + dbName );
 		
@@ -155,20 +161,20 @@ public class OneToManyDBMap<KeyType, DataType> {
 		return null;
 	}
 	
-	private void checkData( DataType data ) {
+	private void checkData( TerminalType data ) {
 
 		RunTime.assertNotNull( data );
 		// 1of3
-		if ( data.getClass() != dataClass ) {
+		if ( data.getClass() != terminalClass ) {
 			RunTime.badCall( "shouldn't allow subclass of dataClass!! or else havoc" );
 		}
 	}
 	
-	private void checkKey( KeyType key ) {
+	private void checkKey( InitialType key ) {
 
 		RunTime.assertNotNull( key );
 		// 1of3
-		if ( key.getClass() != keyClass ) {
+		if ( key.getClass() != initialClass ) {
 			RunTime.badCall( "shouldn't allow subclass of keyClass!! or else havoc" );
 		}
 	}
@@ -179,9 +185,8 @@ public class OneToManyDBMap<KeyType, DataType> {
 	 * @return
 	 * @throws DatabaseException
 	 */
-	@SuppressWarnings( "unchecked" )
-	public boolean isVector( KeyType initialObject, DataType terminalObject )
-			throws DatabaseException {
+	public boolean isVector( InitialType initialObject,
+			TerminalType terminalObject ) throws DatabaseException {
 
 		this.checkKey( initialObject );
 		this.checkData( terminalObject );
@@ -191,15 +196,11 @@ public class OneToManyDBMap<KeyType, DataType> {
 		TransactionCapsule txc = TransactionCapsule.getNewTransaction( this.getBDBL1() );
 		
 		DatabaseEntry keyEntry = new DatabaseEntry();
-		EntryBinding keyBinding = AllTupleBindings.getBinding( initialObject.getClass() );
-		keyBinding.objectToEntry( initialObject, keyEntry );
+		initialBinding.objectToEntry( initialObject, keyEntry );
 		
 		DatabaseEntry dataEntry = new DatabaseEntry();
-		EntryBinding dataBinding = AllTupleBindings.getBinding( terminalObject.getClass() );
-		dataBinding.objectToEntry( terminalObject, dataEntry );
+		terminalBinding.objectToEntry( terminalObject, dataEntry );
 		
-		// Level1_Storage_BerkeleyDB.stringToEntry( initialNode, key );
-		// Level1_Storage_BerkeleyDB.stringToEntry( terminalNode, data );
 		OperationStatus ret1, ret2;
 		try {
 			ret1 = this.getForwardDB().getSearchBoth( txc.get(), keyEntry,
@@ -227,12 +228,12 @@ public class OneToManyDBMap<KeyType, DataType> {
 	 * @return true if existed already; false if it didn't exist before call
 	 * @throws DatabaseException
 	 */
-	public boolean ensureVector( KeyType initialObject, DataType terminalObject )
-			throws DatabaseException {
+	public boolean ensureVector( InitialType initialObject,
+			TerminalType terminalObject ) throws DatabaseException {
 
 		RunTime.assertNotNull( initialObject, terminalObject );
 		boolean ret;
-		ret = ( OperationStatus.KEYEXIST == this.internal_vector(
+		ret = ( OperationStatus.KEYEXIST == this.internal_makeVector(
 				initialObject, terminalObject ) );
 		return ret;
 	}
@@ -246,24 +247,20 @@ public class OneToManyDBMap<KeyType, DataType> {
 	 *             if inconsistency detected (ie. one link exists the other
 	 *             doesn't)
 	 */
-	@SuppressWarnings( "unchecked" )
-	private OperationStatus internal_vector( KeyType initialObject,
-			DataType terminalObject ) throws DatabaseException {
+	private OperationStatus internal_makeVector( InitialType initialObject,
+			TerminalType terminalObject ) throws DatabaseException {
 
 		this.checkKey( initialObject );
 		this.checkData( terminalObject );
 		
 		TransactionCapsule txc = TransactionCapsule.getNewTransaction( this.getBDBL1() );
-		DatabaseEntry keyEntry = new DatabaseEntry();
 		
-		// Level1_Storage_BerkeleyDB.stringToEntry( initialNode, key );
-		// Level1_Storage_BerkeleyDB.stringToEntry( terminalNode, data );
-		EntryBinding keyBinding = AllTupleBindings.getBinding( initialObject.getClass() );
-		keyBinding.objectToEntry( initialObject, keyEntry );
+		DatabaseEntry keyEntry = new DatabaseEntry();
+		initialBinding.objectToEntry( initialObject, keyEntry );
 		
 		DatabaseEntry dataEntry = new DatabaseEntry();
-		EntryBinding dataBinding = AllTupleBindings.getBinding( terminalObject.getClass() );
-		dataBinding.objectToEntry( terminalObject, dataEntry );
+		terminalBinding.objectToEntry( terminalObject, dataEntry );
+		
 		boolean commit = false;
 		OperationStatus ret1, ret2;
 		try {
@@ -277,7 +274,7 @@ public class OneToManyDBMap<KeyType, DataType> {
 			} else {
 				if ( ( ( OperationStatus.KEYEXIST == ret1 ) && ( OperationStatus.KEYEXIST != ret2 ) )
 						|| ( ( OperationStatus.KEYEXIST != ret1 ) && ( OperationStatus.KEYEXIST == ret2 ) ) ) {
-					RunTime.bug( "one link exists and the other does not" );
+					RunTime.bug( "one link exists and the other does not; should either both exist or neither" );
 				}
 			}
 			

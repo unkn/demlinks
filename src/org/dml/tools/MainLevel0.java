@@ -311,9 +311,14 @@ public abstract class MainLevel0 extends StaticInstanceTracker {
 				// must?
 				// FIXME: 2. maybe we have multiple fields per class... then
 				// what?
-				RunTime.bug( "you have to annotate just 1 field in each subclass, not more, not less" );
+				
+				if ( currentClass != this.getClass() ) {
+					// 3. for now we allow last class to have no annotated
+					// fields
+					RunTime.bug( "you have to annotate just 1 field in each subclass, not more, not less" );
+				}
 			}
-			RunTime.assertTrue( 1 == count );
+			RunTime.assertTrue( 1 >= count );// 3 above
 			
 			// go to prev superclass ie. go next
 			currentClass = currentClass.getSuperclass();

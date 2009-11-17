@@ -24,6 +24,12 @@
 package org.dml.level3;
 
 
+
+import org.dml.level1.Symbol;
+import org.dml.tools.RunTime;
+
+
+
 /**
  * list of NodeIDs in which order matters and it's known<br>
  * should be able to hold any number of NodeIDs even if they repeat inside the
@@ -33,5 +39,26 @@ package org.dml.level3;
  * this is level 4
  */
 public class ListID {
-	// TODO
+	
+	Level3_DMLEnvironment	l3DMLEnvironment;
+	Symbol					name;
+	
+	public ListID( Level3_DMLEnvironment l3_DMLEnv, Symbol name1 ) {
+
+		RunTime.assertNotNull( l3_DMLEnv, name1 );
+		l3DMLEnvironment = l3_DMLEnv;
+		
+		name = name1;
+		// Symbol listSymbol = l3DMLEnvironment.getSymbol(
+		// Level3_DMLEnvironment.listSymbolJavaID );
+		l3DMLEnvironment.ensureVector( l3DMLEnvironment.allListsSymbol, name );
+	}
+	
+	
+	public boolean isValid() {
+
+		return l3DMLEnvironment.isVector( l3DMLEnvironment.allListsSymbol, name );
+	}
+	
+
 }

@@ -41,7 +41,8 @@ import com.sleepycat.je.OperationStatus;
  *and the methods that use NodeID and NodeJavaID objects<br>
  *lookup by either NodeJavaID or NodeID<br>
  */
-public class DBMap_JavaIDs_To_NodeIDs extends OneToOneDBMap<SymbolJavaID, Symbol> {
+public class DBMap_JavaIDs_To_NodeIDs extends
+		OneToOneDBMap<SymbolJavaID, Symbol> {
 	
 	private DBSequence			seq			= null;
 	private String				seq_KEYNAME	= null;
@@ -147,7 +148,7 @@ public class DBMap_JavaIDs_To_NodeIDs extends OneToOneDBMap<SymbolJavaID, Symbol
 		RunTime.assertNotNull( fromJavaID );
 		Symbol nid = new Symbol( this.getUniqueLong() );
 		if ( OperationStatus.SUCCESS != this.makeVector( fromJavaID, nid ) ) {
-			RunTime.bug( "should've succeeded, maybe JavaID already existed?" );
+			RunTime.bug( "should've succeeded, maybe fromJavaID already existed?" );
 		}
 		RunTime.assertNotNull( nid );
 		return nid;

@@ -1,5 +1,5 @@
 /**
- * File creation: Oct 19, 2009 11:38:38 PM
+ * File creation: Nov 16, 2009 11:54:21 PM
  * 
  * Copyright (C) 2005-2009 AtKaaZ <atkaaz@users.sourceforge.net>
  * Copyright (C) 2005-2009 UnKn <unkn@users.sourceforge.net>
@@ -25,40 +25,50 @@ package org.dml.level3;
 
 
 
+import static org.junit.Assert.assertTrue;
+
 import org.dml.level1.Symbol;
 import org.dml.level1.SymbolJavaID;
-import org.dml.level2.Level2_DMLEnvironment;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.references.method.MethodParams;
+import org.references.method.PossibleParams;
 
 
 
 /**
  * 
- * handling Lists
+ *
  */
-public class Level3_DMLEnvironment extends Level2_DMLEnvironment {
+public class Level3_DMLEnvironmentTest {
 	
-	private static final SymbolJavaID	listSymbolJavaID	= SymbolJavaID.ensureJavaIDFor( "AllLists" );
-	public Symbol						allListsSymbol		= null;
+	Level3_DMLEnvironment	l3;
 	
-	@Override
-	protected void start( MethodParams<Object> params ) {
+	@Before
+	public void setUp() {
 
-		super.start( params );
-		this.initGeneralSymbols();
+		MethodParams<Object> params = new MethodParams<Object>();
+		params.init( null );
+		params.set( PossibleParams.jUnit_wipeDB, true );
+		params.set( PossibleParams.jUnit_wipeDBWhenDone, true );
+		l3 = new Level3_DMLEnvironment();
+		l3.init( params );
+		params.deInit();
 	}
 	
-	/**
-	 * 
-	 */
-	private void initGeneralSymbols() {
+	@After
+	public void tearDown() {
 
-		allListsSymbol = this.createSymbol( listSymbolJavaID );
+		l3.deInitSilently();
 	}
 	
-	public ListID newList( Symbol listName ) {
+	@Test
+	public void test1() {
 
-		ListID list = new ListID( this, listName );
-		return list;
+		SymbolJavaID name = SymbolJavaID.ensureJavaIDFor( "boo" );
+		Symbol name2 = l3.createSymbol( name );
+		ListID list = l3.newList( name2 );
+		assertTrue( list.isValid() );
 	}
 }
