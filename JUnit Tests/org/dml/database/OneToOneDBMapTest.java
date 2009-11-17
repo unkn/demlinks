@@ -30,6 +30,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.UnsupportedEncodingException;
 
 import org.dml.JUnits.Consts;
+import org.dml.database.bdb.level1.AllTupleBindings;
 import org.dml.database.bdb.level1.Level1_Storage_BerkeleyDB;
 import org.dml.database.bdb.level1.OneToOneDBMap;
 import org.dml.error.BadCallError;
@@ -68,7 +69,8 @@ public class OneToOneDBMapTest {
 		params.deInit();
 		// bdb = new Level1_Storage_BerkeleyDB( Consts.BDB_ENV_PATH, true );
 		x = new OneToOneDBMap<String, String>( bdb, "someMap", String.class,
-				String.class );
+				AllTupleBindings.getBinding( String.class ), String.class,
+				AllTupleBindings.getBinding( String.class ) );
 	}
 	
 	@After
@@ -108,7 +110,10 @@ public class OneToOneDBMapTest {
 		// that extends the given base class, as the extended class needs to
 		// have a new TupleBinding class defined for it, or so
 		OneToOneDBMap<JUnit_Base1, JUnit_Base1> map = new OneToOneDBMap<JUnit_Base1, JUnit_Base1>(
-				bdb, "extendsMap", JUnit_Base1.class, JUnit_Base1.class );
+				bdb, "extendsMap", JUnit_Base1.class,
+				AllTupleBindings.getBinding( JUnit_Base1.class ),
+				JUnit_Base1.class,
+				AllTupleBindings.getBinding( JUnit_Base1.class ) );
 		JUnit_Ex2 e = new JUnit_Ex2();
 		boolean threw = false;
 		try {
@@ -131,7 +136,9 @@ public class OneToOneDBMapTest {
 	public void integrityTest() throws DatabaseException {
 
 		OneToOneDBMap<JUnit_Base1, String> map = new OneToOneDBMap<JUnit_Base1, String>(
-				bdb, "irrelevant", JUnit_Base1.class, String.class );
+				bdb, "irrelevant", JUnit_Base1.class,
+				AllTupleBindings.getBinding( JUnit_Base1.class ), String.class,
+				AllTupleBindings.getBinding( String.class ) );
 		JUnit_Base1 key1 = null;
 		JUnit_Ex2 key2 = null;
 		String data = null;

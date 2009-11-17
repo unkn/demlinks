@@ -55,7 +55,9 @@ public class DBMap_JavaIDs_To_NodeIDs extends
 	public DBMap_JavaIDs_To_NodeIDs( Level1_Storage_BerkeleyDB bdb1,
 			String dbName1 ) throws DatabaseException {
 
-		super( bdb1, dbName1, SymbolJavaID.class, Symbol.class );
+		super( bdb1, dbName1, SymbolJavaID.class,
+				AllTupleBindings.getBinding( SymbolJavaID.class ),
+				Symbol.class, AllTupleBindings.getBinding( Symbol.class ) );
 		seq_KEYNAME = dbName1;
 	}
 	

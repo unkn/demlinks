@@ -40,12 +40,15 @@ import com.sleepycat.je.SecondaryDatabase;
 
 
 /**
+ * vector means it has a sense,
+ * ie. key is first aka initial
+ * and data is second aka terminal
+ * 
  * It's like a TreeMap or HashMap?
  * key->data
  * lookup by either key or data
  * they're internally stored as primary and secondary databases:
  * key->data and data->key
- * key and data are both Strings
  */
 public class OneToOneDBMap<KeyType, DataType> {
 	
@@ -67,7 +70,8 @@ public class OneToOneDBMap<KeyType, DataType> {
 	 * @param dbName1
 	 */
 	public OneToOneDBMap( Level1_Storage_BerkeleyDB bdb1, String dbName1,
-			Class<KeyType> keyClass1, Class<DataType> dataClass1 ) {
+			Class<KeyType> keyClass1, EntryBinding<KeyType> keyBinding1,
+			Class<DataType> dataClass1, EntryBinding<DataType> dataBinding1 ) {
 
 		RunTime.assertNotNull( bdb1 );
 		RunTime.assertNotNull( dbName1 );
@@ -75,8 +79,8 @@ public class OneToOneDBMap<KeyType, DataType> {
 		dbName = dbName1;
 		keyClass = keyClass1;
 		dataClass = dataClass1;
-		keyBinding = AllTupleBindings.getBinding( keyClass );
-		dataBinding = AllTupleBindings.getBinding( dataClass );
+		keyBinding = keyBinding1;// AllTupleBindings.getBinding( keyClass );
+		dataBinding = dataBinding1;// AllTupleBindings.getBinding( dataClass );
 	}
 	
 	/**
@@ -189,7 +193,7 @@ public class OneToOneDBMap<KeyType, DataType> {
 		DatabaseEntry deData = new DatabaseEntry();
 		dataBinding.objectToEntry( data, deData );
 		OperationStatus ret = this.getForwardDB().putNoOverwrite( null, deKey,
-				deData );
+				deData );// this will auto put in secondary also
 		if ( OperationStatus.KEYEXIST == ret ) {
 			RunTime.bug( "this is supposed to make a new unexisting key->data pair, apparently it failed!" );
 		}
