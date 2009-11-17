@@ -26,7 +26,7 @@ package org.dml.level3;
 
 
 import org.dml.level1.Symbol;
-import org.dml.level1.SymbolJavaID;
+import org.dml.level1.JavaID;
 import org.dml.level2.Level2_DMLEnvironment;
 import org.references.method.MethodParams;
 
@@ -38,7 +38,7 @@ import org.references.method.MethodParams;
  */
 public class Level3_DMLEnvironment extends Level2_DMLEnvironment {
 	
-	private static final SymbolJavaID	listSymbolJavaID	= SymbolJavaID.ensureJavaIDFor( "AllLists" );
+	private static final JavaID	listJavaID	= JavaID.ensureJavaIDFor( "AllLists" );
 	public Symbol						allListsSymbol		= null;
 	
 	@Override
@@ -53,7 +53,7 @@ public class Level3_DMLEnvironment extends Level2_DMLEnvironment {
 	 */
 	private void initGeneralSymbols() {
 
-		allListsSymbol = this.createSymbol( listSymbolJavaID );
+		allListsSymbol = this.createSymbol( listJavaID );
 	}
 	
 	public ListID newList( Symbol listName ) {

@@ -60,7 +60,7 @@ public class Level1_Storage_BerkeleyDB extends StaticInstanceTracker {
 	private String												envHomeDir;
 	private final EnvironmentConfig								environmentConfig			= new EnvironmentConfig();
 	private Environment											env							= null;
-	private DBMap_JavaIDs_To_NodeIDs							db_JavaID_To_NodeID			= null;
+	private DBMap_JavaIDs_To_Symbols							db_JavaID_To_Symbol			= null;
 	
 
 	// a database where all sequences will be stored:(only 1 db per bdb env)
@@ -84,15 +84,15 @@ public class Level1_Storage_BerkeleyDB extends StaticInstanceTracker {
 	 *         NodeIDs
 	 * @throws DatabaseException
 	 */
-	public DBMap_JavaIDs_To_NodeIDs getDBMap_JavaIDs_To_NodeIDs()
+	public DBMap_JavaIDs_To_Symbols getDBMap_JavaIDs_To_Symbols()
 			throws DatabaseException {
 
-		if ( null == db_JavaID_To_NodeID ) {
-			db_JavaID_To_NodeID = new DBMap_JavaIDs_To_NodeIDs( this,
+		if ( null == db_JavaID_To_Symbol ) {
+			db_JavaID_To_Symbol = new DBMap_JavaIDs_To_Symbols( this,
 					dbNAME_JavaID_To_NodeID );
-			RunTime.assertNotNull( db_JavaID_To_NodeID );
+			RunTime.assertNotNull( db_JavaID_To_Symbol );
 		}
-		return db_JavaID_To_NodeID;
+		return db_JavaID_To_Symbol;
 	}
 	
 	
@@ -132,8 +132,8 @@ public class Level1_Storage_BerkeleyDB extends StaticInstanceTracker {
 	@Override
 	protected void done( MethodParams<Object> params ) {
 
-		if ( null != db_JavaID_To_NodeID ) {
-			db_JavaID_To_NodeID = db_JavaID_To_NodeID.deInit();
+		if ( null != db_JavaID_To_Symbol ) {
+			db_JavaID_To_Symbol = db_JavaID_To_Symbol.deInit();
 		}
 		this.deInitSeqSystem_silent();// first
 		this.closeAllOpenDatabases_silent();// second

@@ -28,7 +28,7 @@ package org.dml.level3;
 import static org.junit.Assert.assertTrue;
 
 import org.dml.level1.Symbol;
-import org.dml.level1.SymbolJavaID;
+import org.dml.level1.JavaID;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -66,7 +66,7 @@ public class Level3_DMLEnvironmentTest {
 	@Test
 	public void test1() {
 
-		SymbolJavaID name = SymbolJavaID.ensureJavaIDFor( "boo" );
+		JavaID name = JavaID.ensureJavaIDFor( "boo" );
 		Symbol name2 = l3.createSymbol( name );
 		ListID list = l3.newList( name2 );
 		assertTrue( list.isValid() );

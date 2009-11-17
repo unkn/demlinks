@@ -28,7 +28,7 @@ package org.temporary.bdb;
 import org.dml.JUnits.Consts;
 import org.dml.database.bdb.level1.Level1_Storage_BerkeleyDB;
 import org.dml.level1.Symbol;
-import org.dml.level1.SymbolJavaID;
+import org.dml.level1.JavaID;
 import org.references.method.MethodParams;
 import org.references.method.PossibleParams;
 
@@ -55,14 +55,14 @@ public class BDBTest {
 		params = null;
 		Symbol n1, n2, f1, f2;
 		try {
-			SymbolJavaID fromJavaID = SymbolJavaID.ensureJavaIDFor( "duh" );
-			n1 = b.getDBMap_JavaIDs_To_NodeIDs().createSymbol( fromJavaID );
-			n2 = b.getDBMap_JavaIDs_To_NodeIDs().getSymbol( fromJavaID );
-			SymbolJavaID jid2 = SymbolJavaID.ensureJavaIDFor( "duh2" );
-			f1 = b.getDBMap_JavaIDs_To_NodeIDs().createSymbol( jid2 );
-			f2 = b.getDBMap_JavaIDs_To_NodeIDs().getSymbol( jid2 );
+			JavaID fromJavaID = JavaID.ensureJavaIDFor( "duh" );
+			n1 = b.getDBMap_JavaIDs_To_Symbols().createSymbol( fromJavaID );
+			n2 = b.getDBMap_JavaIDs_To_Symbols().getSymbol( fromJavaID );
+			JavaID jid2 = JavaID.ensureJavaIDFor( "duh2" );
+			f1 = b.getDBMap_JavaIDs_To_Symbols().createSymbol( jid2 );
+			f2 = b.getDBMap_JavaIDs_To_Symbols().getSymbol( jid2 );
 			
-			System.out.println( b.getDBMap_JavaIDs_To_NodeIDs().getSymbolJavaID(
+			System.out.println( b.getDBMap_JavaIDs_To_Symbols().getJavaID(
 					f1 ) );
 		} finally {
 			b.deInit();

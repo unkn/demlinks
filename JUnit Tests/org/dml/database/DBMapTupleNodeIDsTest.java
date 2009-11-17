@@ -34,7 +34,7 @@ import org.dml.database.bdb.level1.Level1_Storage_BerkeleyDB;
 import org.dml.database.bdb.level2.DBMapTupleNodeIDs;
 import org.dml.level1.Level1_DMLEnvironment;
 import org.dml.level1.Symbol;
-import org.dml.level1.SymbolJavaID;
+import org.dml.level1.JavaID;
 import org.dml.storagewrapper.StorageException;
 import org.junit.After;
 import org.junit.Before;
@@ -84,16 +84,16 @@ public class DBMapTupleNodeIDsTest {
 	public void test1() throws DatabaseException, StorageException {
 
 		String strA = "A";
-		SymbolJavaID jidA = SymbolJavaID.ensureJavaIDFor( strA );
-		Symbol _a = bdb.getDBMap_JavaIDs_To_NodeIDs().ensureSymbol( jidA );
-		Symbol _b = bdb.getDBMap_JavaIDs_To_NodeIDs().ensureSymbol(
-				SymbolJavaID.ensureJavaIDFor( "B" ) );
-		Symbol _d = bdb.getDBMap_JavaIDs_To_NodeIDs().ensureSymbol(
-				SymbolJavaID.ensureJavaIDFor( "D" ) );
-		Symbol _e = bdb.getDBMap_JavaIDs_To_NodeIDs().ensureSymbol(
-				SymbolJavaID.ensureJavaIDFor( "E" ) );
-		Symbol _c = bdb.getDBMap_JavaIDs_To_NodeIDs().ensureSymbol(
-				SymbolJavaID.ensureJavaIDFor( "C" ) );
+		JavaID jidA = JavaID.ensureJavaIDFor( strA );
+		Symbol _a = bdb.getDBMap_JavaIDs_To_Symbols().ensureSymbol( jidA );
+		Symbol _b = bdb.getDBMap_JavaIDs_To_Symbols().ensureSymbol(
+				JavaID.ensureJavaIDFor( "B" ) );
+		Symbol _d = bdb.getDBMap_JavaIDs_To_Symbols().ensureSymbol(
+				JavaID.ensureJavaIDFor( "D" ) );
+		Symbol _e = bdb.getDBMap_JavaIDs_To_Symbols().ensureSymbol(
+				JavaID.ensureJavaIDFor( "E" ) );
+		Symbol _c = bdb.getDBMap_JavaIDs_To_Symbols().ensureSymbol(
+				JavaID.ensureJavaIDFor( "C" ) );
 		
 		assertNotNull( _a );
 		assertNotNull( _b );
@@ -101,9 +101,9 @@ public class DBMapTupleNodeIDsTest {
 		assertNotNull( _e );
 		assertNotNull( _c );
 		
-		assertTrue( jidA.equals( bdb.getDBMap_JavaIDs_To_NodeIDs().getSymbolJavaID(
+		assertTrue( jidA.equals( bdb.getDBMap_JavaIDs_To_Symbols().getJavaID(
 				_a ) ) );
-		assertTrue( bdb.getDBMap_JavaIDs_To_NodeIDs().getSymbolJavaID( _a ) == jidA );
+		assertTrue( bdb.getDBMap_JavaIDs_To_Symbols().getJavaID( _a ) == jidA );
 		
 		org.junit.Assert.assertFalse( tdb.isVector( _a, _b ) );
 		org.junit.Assert.assertFalse( tdb.ensureVector( _a, _b ) );

@@ -64,8 +64,8 @@ public class NodeIDsTest {
 	@Test
 	public void test1() throws StorageException {
 
-		n1 = dml.ensureSymbol( SymbolJavaID.ensureJavaIDFor( "A" ) );
-		n2 = dml.ensureSymbol( SymbolJavaID.ensureJavaIDFor( "B" ) );
+		n1 = dml.ensureSymbol( JavaID.ensureJavaIDFor( "A" ) );
+		n2 = dml.ensureSymbol( JavaID.ensureJavaIDFor( "B" ) );
 		
 		System.out.println( n1 + "!" + n2 );
 		

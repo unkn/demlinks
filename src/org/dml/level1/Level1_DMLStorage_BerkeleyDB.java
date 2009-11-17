@@ -89,12 +89,12 @@ public class Level1_DMLStorage_BerkeleyDB extends MainLevel0 implements
 	
 	// =============================================
 	@Override
-	public final SymbolJavaID getSymbolJavaID( Symbol identifiedByThisSymbol )
+	public final JavaID getJavaID( Symbol identifiedByThisSymbol )
 			throws StorageException {
 
 		RunTime.assertNotNull( identifiedByThisSymbol );
 		try {
-			return bdb.getDBMap_JavaIDs_To_NodeIDs().getSymbolJavaID(
+			return bdb.getDBMap_JavaIDs_To_Symbols().getJavaID(
 					identifiedByThisSymbol );
 		} catch ( DatabaseException ex ) {
 			throw new StorageException( ex );
@@ -102,23 +102,23 @@ public class Level1_DMLStorage_BerkeleyDB extends MainLevel0 implements
 	}
 	
 	@Override
-	public final Symbol getSymbol( SymbolJavaID identifiedByThisJavaID )
+	public final Symbol getSymbol( JavaID identifiedByThisJavaID )
 			throws StorageException {
 
 		RunTime.assertNotNull( identifiedByThisJavaID );
 		try {
-			return bdb.getDBMap_JavaIDs_To_NodeIDs().getSymbol( identifiedByThisJavaID );
+			return bdb.getDBMap_JavaIDs_To_Symbols().getSymbol( identifiedByThisJavaID );
 		} catch ( DatabaseException dbe ) {
 			throw new StorageException( dbe );
 		}
 	}
 	
 	@Override
-	public final Symbol createSymbol( SymbolJavaID fromJavaID ) throws StorageException {
+	public final Symbol createSymbol( JavaID fromJavaID ) throws StorageException {
 
 		RunTime.assertNotNull( fromJavaID );
 		try {
-			return bdb.getDBMap_JavaIDs_To_NodeIDs().createSymbol( fromJavaID );
+			return bdb.getDBMap_JavaIDs_To_Symbols().createSymbol( fromJavaID );
 		} catch ( DatabaseException dbe ) {
 			throw new StorageException( dbe );
 		}
@@ -126,11 +126,11 @@ public class Level1_DMLStorage_BerkeleyDB extends MainLevel0 implements
 	
 	
 	@Override
-	public final Symbol ensureSymbol( SymbolJavaID theJavaID ) throws StorageException {
+	public final Symbol ensureSymbol( JavaID theJavaID ) throws StorageException {
 
 		RunTime.assertNotNull( theJavaID );
 		try {
-			return bdb.getDBMap_JavaIDs_To_NodeIDs().ensureSymbol( theJavaID );
+			return bdb.getDBMap_JavaIDs_To_Symbols().ensureSymbol( theJavaID );
 		} catch ( DatabaseException de ) {
 			throw new StorageException( de );
 		}

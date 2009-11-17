@@ -75,11 +75,11 @@ public class Level1_DMLEnvironment extends MainLevel0 implements
 	 * @return NodeJavaID
 	 * @throws StorageException
 	 */
-	public SymbolJavaID getSymbolJavaID( Symbol symbol )
+	public JavaID getJavaID( Symbol symbol )
 			throws StorageException {
 
 		RunTime.assertNotNull( symbol );
-		return storage.getSymbolJavaID( symbol );
+		return storage.getJavaID( symbol );
 	}
 	
 	/**
@@ -92,7 +92,7 @@ public class Level1_DMLEnvironment extends MainLevel0 implements
 	 * @return never null
 	 * @throws StorageException
 	 */
-	public Symbol ensureSymbol( SymbolJavaID theJavaID )
+	public Symbol ensureSymbol( JavaID theJavaID )
 			throws StorageException {
 
 		RunTime.assertNotNull( theJavaID );
@@ -103,7 +103,7 @@ public class Level1_DMLEnvironment extends MainLevel0 implements
 	 * @param identifiedByThisJavaID
 	 * @throws StorageException
 	 */
-	public Symbol getSymbol( SymbolJavaID identifiedByThisJavaID )
+	public Symbol getSymbol( JavaID identifiedByThisJavaID )
 			throws StorageException {
 
 		return storage.getSymbol( identifiedByThisJavaID );
@@ -114,7 +114,7 @@ public class Level1_DMLEnvironment extends MainLevel0 implements
 	 * @return
 	 * @throws StorageException
 	 */
-	public Symbol createSymbol( SymbolJavaID fromJavaID )
+	public Symbol createSymbol( JavaID fromJavaID )
 			throws StorageException {
 
 		return storage.createSymbol( fromJavaID );

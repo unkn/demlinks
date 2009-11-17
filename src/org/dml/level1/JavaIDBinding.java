@@ -37,7 +37,7 @@ import com.sleepycat.bind.tuple.TupleOutput;
  * 
  *
  */
-public class SymbolJavaIDBinding extends TupleBinding<SymbolJavaID> {
+public class JavaIDBinding extends TupleBinding<JavaID> {
 	
 	/*
 	 * (non-Javadoc)
@@ -47,14 +47,14 @@ public class SymbolJavaIDBinding extends TupleBinding<SymbolJavaID> {
 	 * .tuple.TupleInput)
 	 */
 	@Override
-	public SymbolJavaID entryToObject( TupleInput input ) {
+	public JavaID entryToObject( TupleInput input ) {
 
 		RunTime.assertNotNull( input );
 		// Data must be read in the same order that it was
 		// originally written.
 		String strJavaID = input.readString();
 		RunTime.assertNotNull( strJavaID );
-		SymbolJavaID myJavaID = SymbolJavaID.ensureJavaIDFor( strJavaID );
+		JavaID myJavaID = JavaID.ensureJavaIDFor( strJavaID );
 		RunTime.assertNotNull( myJavaID );
 		return myJavaID;
 	}
@@ -67,7 +67,7 @@ public class SymbolJavaIDBinding extends TupleBinding<SymbolJavaID> {
 	 * com.sleepycat.bind.tuple.TupleOutput)
 	 */
 	@Override
-	public void objectToEntry( SymbolJavaID object, TupleOutput output ) {
+	public void objectToEntry( JavaID object, TupleOutput output ) {
 
 		RunTime.assertNotNull( object, output );
 		String strJavaID = object.getObject();
