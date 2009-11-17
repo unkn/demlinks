@@ -67,7 +67,7 @@ public class Level2_DMLStorage_BerkeleyDB extends Level1_DMLStorage_BerkeleyDB
 
 		RunTime.assertNotNull( initialNode, terminalNode );
 		try {
-			return bdb.getDBMapTupleNodeIDs().ensureVector( initialNode, terminalNode );
+			return bdb.getDBMapSymbolsTuple().ensureVector( initialNode, terminalNode );
 		} catch ( DatabaseException de ) {
 			throw new StorageException( de );
 		}
@@ -85,7 +85,7 @@ public class Level2_DMLStorage_BerkeleyDB extends Level1_DMLStorage_BerkeleyDB
 
 		RunTime.assertNotNull( initialNode, terminalNode );
 		try {
-			return bdb.getDBMapTupleNodeIDs().isVector( initialNode, terminalNode );
+			return bdb.getDBMapSymbolsTuple().isVector( initialNode, terminalNode );
 		} catch ( DatabaseException de ) {
 			throw new StorageException( de );
 		}

@@ -37,20 +37,20 @@ import org.references.method.MethodParams;
  */
 public class Level2_Storage_BerkeleyDB extends Level1_Storage_BerkeleyDB {
 	
-	private DBMapTupleNodeIDs	dbTupleNIDs			= null;
-	private final static String	dbTupleNIDs_NAME	= "tuple(NodeID<->NodeID)";
+	private DBMapSymbolsTuple	dbSymbolsTuple		= null;
+	private final static String	dbSymbolsTuple_NAME	= "tuple(Symbol<->Symbol)";
 	
 	
 	/**
 	 * @return
 	 */
-	public DBMapTupleNodeIDs getDBMapTupleNodeIDs() {
+	public DBMapSymbolsTuple getDBMapSymbolsTuple() {
 
-		if ( null == dbTupleNIDs ) {
-			dbTupleNIDs = new DBMapTupleNodeIDs( this, dbTupleNIDs_NAME );
-			RunTime.assertNotNull( dbTupleNIDs );
+		if ( null == dbSymbolsTuple ) {
+			dbSymbolsTuple = new DBMapSymbolsTuple( this, dbSymbolsTuple_NAME );
+			RunTime.assertNotNull( dbSymbolsTuple );
 		}
-		return dbTupleNIDs;
+		return dbSymbolsTuple;
 	}
 	
 	/*
@@ -61,8 +61,8 @@ public class Level2_Storage_BerkeleyDB extends Level1_Storage_BerkeleyDB {
 	@Override
 	protected void done( MethodParams<Object> params ) {
 
-		if ( null != dbTupleNIDs ) {
-			dbTupleNIDs = (DBMapTupleNodeIDs)dbTupleNIDs.silentClose();
+		if ( null != dbSymbolsTuple ) {
+			dbSymbolsTuple = (DBMapSymbolsTuple)dbSymbolsTuple.silentClose();
 		}
 		super.done( params );
 	}

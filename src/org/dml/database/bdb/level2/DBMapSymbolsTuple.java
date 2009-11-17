@@ -36,20 +36,23 @@ import com.sleepycat.je.DatabaseException;
 
 
 /**
- * - tuple of NodeIDs are two nodes in a group, clearly knowing which one is
- * first(ie. left one) and which is the second(aka last or right one)<br>
- * - any NodeID can be associated with any NodeID (even with itself)<br>
- * - a NodeID can be associated with more than one NodeID<br>
- * - the first NodeID is the one being associated with; the second NodeID<br>
+ * - tuple of Symbols are two symbol in a group, clearly knowing which one is
+ * first(ie. left one) and which is the second(aka last or right one) ie.
+ * vector(initial, terminal)<br>
+ * - any Symbol can be associated with any Symbol (even with itself)<br>
+ * - a Symbol can be associated with more than one Symbol<br>
+ * - the first Symbol is the one being associated with; the second Symbol<br>
+ * - the first is initial; the second is terminal; of a vector<br>
  * ie.<br>
- * A-D<br>
- * A-B<br>
- * A-C<br>
+ * A->D<br>
+ * A->B<br>
+ * A->C<br>
  * insertion order is irrelevant as there will be no order(well it's actually
- * sorted but should not be counted on). The only thing you'd need to know here
- * is whether the tuple exists or not.<br>
+ * sorted but should not be counted on, it's sorted by BDB internally for easy
+ * search/find). The only thing you'd need to know here
+ * is whether the tuple exists or not. And to parse all initial/terminal symbols<br>
  */
-public class DBMapTupleNodeIDs extends OneToManyDBMap<Symbol, Symbol> {
+public class DBMapSymbolsTuple extends OneToManyDBMap<Symbol, Symbol> {
 	
 	/**
 	 * constructor
@@ -60,7 +63,7 @@ public class DBMapTupleNodeIDs extends OneToManyDBMap<Symbol, Symbol> {
 	 *            the database holding the JavaIDs to NodeIDs 1to1 mappings,
 	 *            that's currently BerkeleyDB.getDBMapJavaIDsToNodeIDs()
 	 */
-	public DBMapTupleNodeIDs( Level1_Storage_BerkeleyDB bdb1, String dbName1 ) {
+	public DBMapSymbolsTuple( Level1_Storage_BerkeleyDB bdb1, String dbName1 ) {
 
 		super( bdb1, dbName1, Symbol.class,
 				AllTupleBindings.getBinding( Symbol.class ), Symbol.class,

@@ -31,7 +31,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.dml.JUnits.Consts;
 import org.dml.database.bdb.level1.Level1_Storage_BerkeleyDB;
-import org.dml.database.bdb.level2.DBMapTupleNodeIDs;
+import org.dml.database.bdb.level2.DBMapSymbolsTuple;
 import org.dml.level1.Level1_DMLEnvironment;
 import org.dml.level1.Symbol;
 import org.dml.level1.JavaID;
@@ -52,7 +52,7 @@ import com.sleepycat.je.DatabaseException;
  */
 public class DBMapTupleNodeIDsTest {
 	
-	DBMapTupleNodeIDs			tdb;
+	DBMapSymbolsTuple			tdb;
 	Level1_DMLEnvironment		dmlEnv;
 	Level1_Storage_BerkeleyDB	bdb;
 	
@@ -67,7 +67,7 @@ public class DBMapTupleNodeIDsTest {
 		bdb = new Level1_Storage_BerkeleyDB();
 		bdb.init( params );
 		params.deInit();
-		tdb = new DBMapTupleNodeIDs( bdb, "tupleIDs" );
+		tdb = new DBMapSymbolsTuple( bdb, "tupleIDs" );
 		
 	}
 	
