@@ -305,6 +305,7 @@ public class OneToManyDBMap<InitialType, TerminalType> {
 		VectorIterator<InitialType, TerminalType> ret = new VectorIterator<InitialType, TerminalType>(
 				this.getBDBL1(), this.getForwardDB(), initialObject,
 				initialBinding, terminalBinding );
+		ret.init( null );
 		return ret;
 	}
 	
@@ -314,6 +315,7 @@ public class OneToManyDBMap<InitialType, TerminalType> {
 		VectorIterator<TerminalType, InitialType> ret = new VectorIterator<TerminalType, InitialType>(
 				this.getBDBL1(), this.getBackwardDB(), terminalObject,
 				terminalBinding, initialBinding );
+		ret.init( null );
 		return ret;
 	}
 	
@@ -321,8 +323,12 @@ public class OneToManyDBMap<InitialType, TerminalType> {
 			throws DatabaseException {
 
 		VectorIterator<TerminalType, InitialType> vi = this.getIterator_on_Initials_of( ofTerminalObject );
-		int count = vi.count();
-		vi.close();
+		int count = -1;
+		try {
+			count = vi.count();
+		} finally {
+			vi.deInit();
+		}
 		return count;
 	}
 	
@@ -330,8 +336,12 @@ public class OneToManyDBMap<InitialType, TerminalType> {
 			throws DatabaseException {
 
 		VectorIterator<InitialType, TerminalType> vi = this.getIterator_on_Terminals_of( ofInitialObject );
-		int count = vi.count();
-		vi.close();
+		int count = -1;
+		try {
+			count = vi.count();
+		} finally {
+			vi.deInit();
+		}
 		return count;
 	}
 }

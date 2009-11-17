@@ -32,6 +32,7 @@ import org.dml.JUnits.Consts;
 import org.dml.database.bdb.level1.AllTupleBindings;
 import org.dml.database.bdb.level1.Level1_Storage_BerkeleyDB;
 import org.dml.database.bdb.level2.OneToManyDBMap;
+import org.dml.database.bdb.level2.VectorIterator;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -121,7 +122,29 @@ public class OneToManyDBMapTest {
 		
 		assertTrue( o2m.ensureVector( _c, _b ) );
 		
-o2m.get
+		VectorIterator<String, String> iter = o2m.getIterator_on_Initials_of( _c );
+		try {
+			do {
+				if ( null != iter ) {
+					System.out.println( iter.now() + " -> _c" );
+				}
+				iter.goNext();
+			} while ( null != iter.now() );
+		} finally {
+			iter.deInit();
+		}
+		
+		iter = o2m.getIterator_on_Terminals_of( _c );
+		try {
+			do {
+				if ( null != iter ) {
+					System.out.println( "_c -> " + iter.now() );
+				}
+				iter.goNext();
+			} while ( null != iter.now() );
+		} finally {
+			iter.deInit();
+		}
 	}
 	
 	@Test

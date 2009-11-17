@@ -145,7 +145,7 @@ public class DBMapTupleNodeIDsTest {
 			iter.goNext();
 			assertNull( iter.now() );
 		} finally {
-			iter.close();
+			iter.deInit();
 		}
 		
 
@@ -178,7 +178,7 @@ public class DBMapTupleNodeIDsTest {
 			assertTrue( _a.equals( iter.now() ) );
 			assertTrue( _a != iter.now() );
 		} finally {
-			iter.close();
+			iter.deInit();
 		}
 		
 		iter = tdb.getIterator_on_Initials_of( _b );
@@ -186,22 +186,22 @@ public class DBMapTupleNodeIDsTest {
 		try {
 			iter.goNext();// w/o goFirst
 		} catch ( DatabaseException de ) {
-			threw = true;
+			threw = true;// should not throw!
 		} finally {
-			iter.close();
+			iter.deInit();
 		}
-		assertTrue( threw );
+		assertFalse( threw );
 		
 		iter = tdb.getIterator_on_Initials_of( _b );
 		threw = false;
 		try {
 			iter.goPrev();// w/o goFirst
 		} catch ( DatabaseException de ) {
-			threw = true;
+			threw = true;// shouldn't throw though
 		} finally {
-			iter.close();
+			iter.deInit();
 		}
-		assertTrue( threw );
+		assertFalse( threw );
 		
 		assertTrue( tdb.countInitials( _b ) == 2 );
 		assertTrue( tdb.countTerminals( _a ) == 2 );

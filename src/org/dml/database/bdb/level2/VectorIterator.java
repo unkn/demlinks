@@ -26,7 +26,11 @@ package org.dml.database.bdb.level2;
 
 
 import org.dml.database.bdb.level1.Level1_Storage_BerkeleyDB;
+import org.dml.storagewrapper.StorageException;
 import org.dml.tools.RunTime;
+import org.dml.tools.StaticInstanceTracker;
+import org.javapart.logger.Log;
+import org.references.method.MethodParams;
 
 import com.sleepycat.bind.EntryBinding;
 import com.sleepycat.je.Cursor;
@@ -40,10 +44,16 @@ import com.sleepycat.je.OperationStatus;
 
 
 /**
- * parses data of a key->data primary dbase
- * 
+ * parses data of a key->data primary dbase<br>
+ * key=initial<br>
+ * data=terminal<br>
+ * we iterate only on terminals<br>
+ * the iteration order is not guaranteed, ie. the terminals are stored as in a
+ * Set, not as in an ordered list; however in practice they're sorted
+ * alphabetically so to speak, but shouldn't count on this!<br>
  */
-public class VectorIterator<InitialType, TerminalType> {
+public class VectorIterator<InitialType, TerminalType> extends
+		StaticInstanceTracker {
 	
 	private final Database						db;
 	private final InitialType					initialObject;					// key
@@ -83,19 +93,6 @@ public class VectorIterator<InitialType, TerminalType> {
 		}
 		RunTime.assertNotNull( cursor );
 		return cursor;
-	}
-	
-	public final void close() throws DatabaseException {
-
-		if ( null != cursor ) {
-			try {
-				cursor.close();
-			} catch ( DatabaseException e ) {
-				txn.abort();
-				throw e;
-			}
-			txn.commit();
-		}
 	}
 	
 	/**
@@ -151,9 +148,56 @@ public class VectorIterator<InitialType, TerminalType> {
 	 */
 	public int count() throws DatabaseException {
 
-		this.goFirst();// FIXME:
 		return this.getCursor().count();
 	}
 	
-	// goLast() is too hard to implement, due to BDB not giving support for it
+	@Override
+	protected void done( MethodParams<Object> params ) {
+
+		this.closeSilently();
+	}
+	
+	private final void close() throws DatabaseException {
+
+		if ( null != cursor ) {
+			try {
+				cursor.close();
+			} catch ( DatabaseException e ) {
+				txn = txn.abort();
+				throw e;
+			} finally {
+				cursor = null;
+			}
+			txn = txn.commit();
+		}
+	}
+	
+	/**
+	 * 
+	 */
+	private void closeSilently() {
+
+		try {
+			this.close();
+		} catch ( DatabaseException e ) {
+			Log.thro( e.getLocalizedMessage() );
+		}
+		
+	}
+	
+	@Override
+	protected void start( MethodParams<Object> params ) {
+
+		if ( null != params ) {
+			RunTime.badCall( "not accepting any parameters here" );
+		}
+		try {
+			this.goFirst();// init cursor
+		} catch ( DatabaseException de ) {
+			throw new StorageException( de );
+		}
+	}
+	
+	// goLast() is too expensive to implement, due to BDB not giving support for
+	// it
 }
