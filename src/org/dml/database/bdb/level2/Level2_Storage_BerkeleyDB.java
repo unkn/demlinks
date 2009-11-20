@@ -48,7 +48,7 @@ public class Level2_Storage_BerkeleyDB extends Level1_Storage_BerkeleyDB {
 
 		if ( null == dbSymbolsTuple ) {
 			dbSymbolsTuple = new DBMapSymbolsTuple( this, dbSymbolsTuple_NAME );
-			RunTime.assertNotNull( dbSymbolsTuple );
+			RunTime.assumedNotNull( dbSymbolsTuple );
 		}
 		return dbSymbolsTuple;
 	}

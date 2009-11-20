@@ -73,8 +73,8 @@ public class OneToOneDBMap<KeyType, DataType> {
 			Class<KeyType> keyClass1, EntryBinding<KeyType> keyBinding1,
 			Class<DataType> dataClass1, EntryBinding<DataType> dataBinding1 ) {
 
-		RunTime.assertNotNull( bdb1 );
-		RunTime.assertNotNull( dbName1 );
+		RunTime.assumedNotNull( bdb1 );
+		RunTime.assumedNotNull( dbName1 );
 		bdb = bdb1;
 		dbName = dbName1;
 		keyClass = keyClass1;
@@ -123,7 +123,7 @@ public class OneToOneDBMap<KeyType, DataType> {
 
 		if ( null == forwardDB ) {
 			this.internal_initBoth();
-			RunTime.assertNotNull( forwardDB );
+			RunTime.assumedNotNull( forwardDB );
 		}
 		return forwardDB.getDB();
 	}
@@ -136,7 +136,7 @@ public class OneToOneDBMap<KeyType, DataType> {
 
 		if ( null == backwardDB ) {
 			this.internal_initBoth();
-			RunTime.assertNotNull( backwardDB );
+			RunTime.assumedNotNull( backwardDB );
 		}
 		return backwardDB.getSecDB();
 	}
@@ -202,7 +202,7 @@ public class OneToOneDBMap<KeyType, DataType> {
 	
 	private void checkData( DataType data ) {
 
-		RunTime.assertNotNull( data );
+		RunTime.assumedNotNull( data );
 		// 1of3
 		if ( data.getClass() != dataClass ) {
 			RunTime.badCall( "shouldn't allow subclass of dataClass!! or else havoc" );
@@ -211,7 +211,7 @@ public class OneToOneDBMap<KeyType, DataType> {
 	
 	private void checkKey( KeyType key ) {
 
-		RunTime.assertNotNull( key );
+		RunTime.assumedNotNull( key );
 		// shouldn't allow subclass of keyClass!! or else havoc, well data loss
 		// since TupleBinding treats it as Base class, so assuming the subclass
 		// has new fields they won't be stored/retreived from DB
@@ -242,12 +242,12 @@ public class OneToOneDBMap<KeyType, DataType> {
 		if ( OperationStatus.SUCCESS != ret ) {
 			return null;
 		}
-		RunTime.assertTrue( deData.equals( deKey ) );
+		RunTime.assumedTrue( deData.equals( deKey ) );
 		
 		// 3of3
 		KeyType key = keyBinding.entryToObject( pKey );
 		// should not be null here
-		RunTime.assertNotNull( key );
+		RunTime.assumedNotNull( key );
 		this.checkKey( key );
 		return key;// Level1_Storage_BerkeleyDB.entryToString( pKey );
 	}
@@ -277,7 +277,7 @@ public class OneToOneDBMap<KeyType, DataType> {
 		// 3of3
 		DataType data = dataBinding.entryToObject( deData );
 		// should not be null here
-		RunTime.assertNotNull( data );
+		RunTime.assumedNotNull( data );
 		this.checkData( data );
 		return data;// Level1_Storage_BerkeleyDB.entryToString( deData );
 	}

@@ -39,7 +39,7 @@ public class LimitedObjectLister extends ObjectLister {
 	
 	public LimitedObjectLister( int maxSize1 ) {
 
-		RunTime.assertTrue( maxSize1 >= 1 );
+		RunTime.assumedTrue( maxSize1 >= 1 );
 		maxSize = maxSize1;
 	}
 	

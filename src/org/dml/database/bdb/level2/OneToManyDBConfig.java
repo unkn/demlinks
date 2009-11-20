@@ -46,6 +46,6 @@ public class OneToManyDBConfig extends DatabaseConfig {
 		this.setSortedDuplicates( true );// must be true
 		this.setTransactional( true );
 		
-		RunTime.assertTrue( this.getSortedDuplicates() == true );
+		RunTime.assumedTrue( this.getSortedDuplicates() == true );
 	}
 }

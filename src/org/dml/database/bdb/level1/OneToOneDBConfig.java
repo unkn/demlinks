@@ -46,6 +46,6 @@ public class OneToOneDBConfig extends DatabaseConfig {
 		this.setSortedDuplicates( false );// must be false
 		this.setTransactional( true );
 		
-		RunTime.assertTrue( this.getSortedDuplicates() == false );
+		RunTime.assumedTrue( this.getSortedDuplicates() == false );
 	}
 }

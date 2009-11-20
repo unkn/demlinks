@@ -162,7 +162,7 @@ public class ListOfReferences<Obje> {
 	 */
 	public boolean addLastRef( ChainedReference<Obje> newLastRef ) {
 
-		RunTime.assertNotNull( newLastRef );
+		RunTime.assumedNotNull( newLastRef );
 		if ( this.containsRef( newLastRef ) ) {
 			return true;// already exists
 		}
@@ -193,7 +193,7 @@ public class ListOfReferences<Obje> {
 	 */
 	public boolean addFirstRef( ChainedReference<Obje> newFirstRef ) {
 
-		RunTime.assertNotNull( newFirstRef );
+		RunTime.assumedNotNull( newFirstRef );
 		if ( this.containsRef( newFirstRef ) ) {
 			return true;// already exists
 		}
@@ -298,7 +298,7 @@ public class ListOfReferences<Obje> {
 	 */
 	public boolean removeRef( ChainedReference<Obje> killRef ) {
 
-		RunTime.assertNotNull( killRef );
+		RunTime.assumedNotNull( killRef );
 		if ( !this.containsRef( killRef ) ) {
 			return false;
 		}
@@ -342,7 +342,7 @@ public class ListOfReferences<Obje> {
 	 */
 	public boolean containsRef( ChainedReference<Obje> whichRef ) {
 
-		RunTime.assertNotNull( whichRef );
+		RunTime.assumedNotNull( whichRef );
 		ChainedReference<Obje> parser = this.getFirstRef();
 		while ( null != parser ) {
 			// compare by reference not contents, two diff refs can have same
@@ -384,7 +384,7 @@ public class ListOfReferences<Obje> {
 	public ChainedReference<Obje> getRefAt( Position location,
 			ChainedReference<Obje> locationRef ) {
 
-		RunTime.assertNotNull( location, locationRef );
+		RunTime.assumedNotNull( location, locationRef );
 		if ( this.containsRef( locationRef ) ) {
 			switch ( location ) {
 			case BEFORE:

@@ -50,9 +50,9 @@ public class SymbolBinding extends TupleBinding<Symbol> {
 	public Symbol entryToObject( TupleInput input ) {
 
 		long l = input.readLong();
-		RunTime.assertNotNull( l );
+		RunTime.assumedNotNull( l );
 		Symbol nid = new Symbol( l );
-		RunTime.assertTrue( nid.internalGetForBinding() == l );
+		RunTime.assumedTrue( nid.internalGetForBinding() == l );
 		return nid;
 	}
 	
@@ -66,9 +66,9 @@ public class SymbolBinding extends TupleBinding<Symbol> {
 	@Override
 	public void objectToEntry( Symbol object, TupleOutput output ) {
 
-		RunTime.assertNotNull( object, output );
+		RunTime.assumedNotNull( object, output );
 		long myLong = object.internalGetForBinding();
-		RunTime.assertNotNull( myLong );
+		RunTime.assumedNotNull( myLong );
 		// System.out.println( object );
 		// it will never be null before writing it to dbase, else bug somewhere
 		output.writeLong( myLong );

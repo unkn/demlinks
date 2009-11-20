@@ -70,7 +70,7 @@ public class DBMap_JavaIDs_To_Symbols extends
 		if ( null == seq ) {
 			// init once:
 			seq = new DBSequence( bdb, seq_KEYNAME );
-			RunTime.assertNotNull( seq );
+			RunTime.assumedNotNull( seq );
 		}
 		return seq;
 	}
@@ -111,7 +111,7 @@ public class DBMap_JavaIDs_To_Symbols extends
 	 */
 	public Symbol getSymbol( JavaID fromJavaID ) throws DatabaseException {
 
-		RunTime.assertNotNull( fromJavaID );
+		RunTime.assumedNotNull( fromJavaID );
 		return this.internal_getSymbolFromJavaID( fromJavaID );
 	}
 	
@@ -147,12 +147,12 @@ public class DBMap_JavaIDs_To_Symbols extends
 	private final Symbol internal_makeNewSymbol( JavaID fromJavaID )
 			throws DatabaseException {
 
-		RunTime.assertNotNull( fromJavaID );
+		RunTime.assumedNotNull( fromJavaID );
 		Symbol nid = new Symbol( this.getUniqueLong() );
 		if ( OperationStatus.SUCCESS != this.makeVector( fromJavaID, nid ) ) {
 			RunTime.bug( "should've succeeded, maybe fromJavaID already existed?" );
 		}
-		RunTime.assertNotNull( nid );
+		RunTime.assumedNotNull( nid );
 		return nid;
 	}
 	
@@ -171,7 +171,7 @@ public class DBMap_JavaIDs_To_Symbols extends
 			// no NodeID for JavaID yet, make new one
 			nid = this.internal_makeNewSymbol( fromJavaID );
 		}
-		RunTime.assertNotNull( nid );// this is stupid
+		RunTime.assumedNotNull( nid );// this is stupid
 		return nid;
 	}
 	
@@ -184,7 +184,7 @@ public class DBMap_JavaIDs_To_Symbols extends
 	private Symbol internal_getSymbolFromJavaID( JavaID fromJavaID )
 			throws DatabaseException {
 
-		RunTime.assertNotNull( fromJavaID );
+		RunTime.assumedNotNull( fromJavaID );
 		// String nidAsStr =
 		Symbol nid = this.getData( fromJavaID );
 		// if ( null == nidAsStr ) {
@@ -203,7 +203,7 @@ public class DBMap_JavaIDs_To_Symbols extends
 	public JavaID getJavaID( Symbol fromSymbol )
 			throws DatabaseException {
 
-		RunTime.assertNotNull( fromSymbol );
+		RunTime.assumedNotNull( fromSymbol );
 		JavaID jid = this.getKey( fromSymbol );
 		// RunTime.assertNotNull( jid );
 		return jid;

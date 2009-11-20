@@ -68,16 +68,16 @@ public class SecondaryDatabaseCapsule extends StaticInstanceTracker {
 
 		// compulsory
 		bdbL1 = (Level1_Storage_BerkeleyDB)params.getEx( PossibleParams.level1_BDBStorage );
-		RunTime.assertNotNull( bdbL1 );
+		RunTime.assumedNotNull( bdbL1 );
 		
 		// compulsory
 		secDbName = params.getExString( PossibleParams.dbName );
-		RunTime.assertNotNull( secDbName );
-		RunTime.assertFalse( secDbName.isEmpty() );
+		RunTime.assumedNotNull( secDbName );
+		RunTime.assumedFalse( secDbName.isEmpty() );
 		
 		// compulsory
 		primaryDb = (Database)params.getEx( PossibleParams.priDb );
-		RunTime.assertNotNull( primaryDb );
+		RunTime.assumedNotNull( primaryDb );
 		
 		// dbConf is optional / can be null
 		Reference<Object> ref = params.get( PossibleParams.secDbConfig );
@@ -108,7 +108,7 @@ public class SecondaryDatabaseCapsule extends StaticInstanceTracker {
 		if ( null == secDb ) {
 			// first time init:
 			secDb = bdbL1.openAnySecDatabase( secDbName, primaryDb, secDbConf );
-			RunTime.assertNotNull( secDb );
+			RunTime.assumedNotNull( secDb );
 			// Runtime.getRuntime().addShutdownHook(null); bad idea:
 			// concurrently called
 		}

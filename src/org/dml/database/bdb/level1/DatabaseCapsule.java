@@ -77,12 +77,12 @@ public class DatabaseCapsule extends StaticInstanceTracker {
 
 		// compulsory
 		bdbL1 = (Level1_Storage_BerkeleyDB)params.getEx( PossibleParams.level1_BDBStorage );
-		RunTime.assertNotNull( bdbL1 );
+		RunTime.assumedNotNull( bdbL1 );
 		
 		// compulsory
 		dbName = params.getExString( PossibleParams.dbName );
-		RunTime.assertNotNull( dbName );
-		RunTime.assertFalse( dbName.isEmpty() );
+		RunTime.assumedNotNull( dbName );
+		RunTime.assumedFalse( dbName.isEmpty() );
 		
 		// dbConf is optional / can be null
 		Reference<Object> ref = params.get( PossibleParams.priDbConfig );
@@ -102,7 +102,7 @@ public class DatabaseCapsule extends StaticInstanceTracker {
 		if ( null == db ) {
 			// first time init:
 			db = bdbL1.openAnyDatabase( dbName, dbConf );
-			RunTime.assertNotNull( db );
+			RunTime.assumedNotNull( db );
 		}
 		return db;
 	}

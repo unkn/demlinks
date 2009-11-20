@@ -83,7 +83,7 @@ public class DBMapSymbolsTuple extends OneToManyDBMap<Symbol, Symbol> {
 	public boolean ensureVector( Symbol initialNode, Symbol terminalNode )
 			throws DatabaseException {
 
-		RunTime.assertNotNull( initialNode, terminalNode );
+		RunTime.assumedNotNull( initialNode, terminalNode );
 		
 		// checking that both NodeIDs exist already which means there are two
 		// JavaIDs associated with them
@@ -107,7 +107,7 @@ public class DBMapSymbolsTuple extends OneToManyDBMap<Symbol, Symbol> {
 	public boolean isVector( Symbol initialNode, Symbol terminalNode )
 			throws DatabaseException {
 
-		RunTime.assertNotNull( initialNode, terminalNode );
+		RunTime.assumedNotNull( initialNode, terminalNode );
 		
 		this.throwIfNotExist( initialNode );
 		this.throwIfNotExist( terminalNode );
@@ -122,7 +122,7 @@ public class DBMapSymbolsTuple extends OneToManyDBMap<Symbol, Symbol> {
 	 */
 	private void throwIfNotExist( Symbol nid ) throws DatabaseException {
 
-		RunTime.assertNotNull( nid );
+		RunTime.assumedNotNull( nid );
 		if ( !this.existsSymbol( nid ) ) {
 			RunTime.bug( "NodeID doesn't exist, and it SHOULD exist! it's NODE ID not JavaID" );
 		}

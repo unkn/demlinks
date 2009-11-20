@@ -73,9 +73,9 @@ public class DBSequence {
 	 */
 	public DBSequence( Level1_Storage_BerkeleyDB bdb1, String seqName ) {
 
-		RunTime.assertNotNull( bdb1 );
-		RunTime.assertNotNull( seqName );
-		RunTime.assertFalse( seqName.isEmpty() );
+		RunTime.assumedNotNull( bdb1 );
+		RunTime.assumedNotNull( seqName );
+		RunTime.assumedFalse( seqName.isEmpty() );
 		bdb = bdb1;
 		thisSeqName = seqPrefix + seqName + seqSuffix;
 	}
@@ -88,7 +88,7 @@ public class DBSequence {
 
 		if ( null == thisSeq ) {
 			thisSeq = bdb.getNewSequence( thisSeqName, allSequencesConfig );
-			RunTime.assertNotNull( thisSeq );
+			RunTime.assumedNotNull( thisSeq );
 		}
 		return thisSeq;
 	}

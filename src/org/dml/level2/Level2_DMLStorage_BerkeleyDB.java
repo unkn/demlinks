@@ -65,7 +65,7 @@ public class Level2_DMLStorage_BerkeleyDB extends Level1_DMLStorage_BerkeleyDB
 	public boolean ensureVector( Symbol initialNode, Symbol terminalNode )
 			throws StorageException {
 
-		RunTime.assertNotNull( initialNode, terminalNode );
+		RunTime.assumedNotNull( initialNode, terminalNode );
 		try {
 			return bdb.getDBMapSymbolsTuple().ensureVector( initialNode, terminalNode );
 		} catch ( DatabaseException de ) {
@@ -83,7 +83,7 @@ public class Level2_DMLStorage_BerkeleyDB extends Level1_DMLStorage_BerkeleyDB
 	@Override
 	public boolean isVector( Symbol initialNode, Symbol terminalNode ) {
 
-		RunTime.assertNotNull( initialNode, terminalNode );
+		RunTime.assumedNotNull( initialNode, terminalNode );
 		try {
 			return bdb.getDBMapSymbolsTuple().isVector( initialNode, terminalNode );
 		} catch ( DatabaseException de ) {

@@ -97,8 +97,8 @@ public class Testy extends StaticInstanceTracker {
 	protected void start( MethodParams<Object> params ) {
 
 		System.out.println( this.getName() + " start()" );
-		RunTime.assertNotNull( params );
-		RunTime.assertTrue( params.size() > 0 );
+		RunTime.assumedNotNull( params );
+		RunTime.assumedTrue( params.size() > 0 );
 		home = params.getExString( PossibleParams.homeDir );
 	}
 	

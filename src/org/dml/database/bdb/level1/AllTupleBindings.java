@@ -63,7 +63,7 @@ public class AllTupleBindings {
 		int formerSize = nonPrimitives.size();
 		nonPrimitives.put( cls, binding );
 		// making sure nothing is overwritten
-		RunTime.assertTrue( nonPrimitives.size() == formerSize + 1 );
+		RunTime.assumedTrue( nonPrimitives.size() == formerSize + 1 );
 	}
 	
 	@SuppressWarnings( "unchecked" )

@@ -73,7 +73,7 @@ public class VectorIterator<InitialType, TerminalType> extends
 			EntryBinding<InitialType> initialBinding1,
 			EntryBinding<TerminalType> terminalBinding1 ) {
 
-		RunTime.assertNotNull( bdb_L1, whichPriDB, initialObject1,
+		RunTime.assumedNotNull( bdb_L1, whichPriDB, initialObject1,
 				initialBinding1, terminalBinding1 );
 		bdbL1 = bdb_L1;
 		db = whichPriDB;
@@ -91,7 +91,7 @@ public class VectorIterator<InitialType, TerminalType> extends
 			txn = TransactionCapsule.getNewTransaction( bdbL1 );
 			cursor = db.openCursor( txn.get(), CursorConfig.READ_COMMITTED );
 		}
-		RunTime.assertNotNull( cursor );
+		RunTime.assumedNotNull( cursor );
 		return cursor;
 	}
 	
@@ -103,7 +103,7 @@ public class VectorIterator<InitialType, TerminalType> extends
 	public void goFirst() throws DatabaseException {
 
 		deData.setSize( 0 );
-		RunTime.assertTrue( deData.getOffset() == 0 );
+		RunTime.assumedTrue( deData.getOffset() == 0 );
 		OperationStatus ret = this.getCursor().getSearchKey( deKey, deData,
 				LockMode.RMW );
 		if ( OperationStatus.SUCCESS == ret ) {
@@ -120,7 +120,7 @@ public class VectorIterator<InitialType, TerminalType> extends
 	
 	public void goNext() throws DatabaseException {
 
-		RunTime.assertTrue( deData.getOffset() == 0 );
+		RunTime.assumedTrue( deData.getOffset() == 0 );
 		OperationStatus ret = this.getCursor().getNextDup( deKey, deData,
 				LockMode.RMW );
 		if ( OperationStatus.SUCCESS == ret ) {
@@ -132,7 +132,7 @@ public class VectorIterator<InitialType, TerminalType> extends
 	
 	public void goPrev() throws DatabaseException {
 
-		RunTime.assertTrue( deData.getOffset() == 0 );
+		RunTime.assumedTrue( deData.getOffset() == 0 );
 		OperationStatus ret = this.getCursor().getPrevDup( deKey, deData,
 				LockMode.RMW );
 		if ( OperationStatus.SUCCESS == ret ) {

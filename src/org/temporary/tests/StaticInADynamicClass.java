@@ -42,7 +42,7 @@ public class StaticInADynamicClass {
 	
 	public StaticInADynamicClass( String what ) {
 
-		RunTime.assertNotNull( what );
+		RunTime.assumedNotNull( what );
 		current = what;
 		all.add( current );
 	}

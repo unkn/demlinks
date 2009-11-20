@@ -52,8 +52,8 @@ public class ParamName<T> {
 	 */
 	protected void add( Reference<T> refToValue ) {
 
-		RunTime.assertNotNull( refToValue );
-		RunTime.assertFalse( listOfValues.containsObject( refToValue ) );
+		RunTime.assumedNotNull( refToValue );
+		RunTime.assumedFalse( listOfValues.containsObject( refToValue ) );
 		listOfValues.addFirst( refToValue );
 	}
 	
@@ -63,7 +63,7 @@ public class ParamName<T> {
 	 */
 	protected boolean remove( Reference<T> refToValue ) {
 
-		RunTime.assertNotNull( refToValue );
+		RunTime.assumedNotNull( refToValue );
 		return listOfValues.removeObject( refToValue );
 	}
 	

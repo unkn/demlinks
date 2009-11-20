@@ -90,7 +90,7 @@ public class Level1_Storage_BerkeleyDB extends StaticInstanceTracker {
 		if ( null == db_JavaID_To_Symbol ) {
 			db_JavaID_To_Symbol = new DBMap_JavaIDs_To_Symbols( this,
 					dbNAME_JavaID_To_NodeID );
-			RunTime.assertNotNull( db_JavaID_To_Symbol );
+			RunTime.assumedNotNull( db_JavaID_To_Symbol );
 		}
 		return db_JavaID_To_Symbol;
 	}
@@ -191,7 +191,7 @@ public class Level1_Storage_BerkeleyDB extends StaticInstanceTracker {
 		if ( null == env ) {
 			// make new now:
 			this.firstTimeCreateEnvironment();
-			RunTime.assertNotNull( env );
+			RunTime.assumedNotNull( env );
 		}
 		
 		return env;
@@ -318,7 +318,7 @@ public class Level1_Storage_BerkeleyDB extends StaticInstanceTracker {
 	public Sequence getNewSequence( String thisSeqName,
 			SequenceConfig allSequencesConfig ) throws DatabaseException {
 
-		RunTime.assertNotNull( thisSeqName, allSequencesConfig );
+		RunTime.assumedNotNull( thisSeqName, allSequencesConfig );
 		// allSequencesConfig can be null though, to use BDB defaults
 		
 		// init once:
@@ -329,7 +329,7 @@ public class Level1_Storage_BerkeleyDB extends StaticInstanceTracker {
 		if ( allSequenceInstances.addFirstQ( seq ) ) {
 			RunTime.bug( "couldn't have already existed!" );
 		}
-		RunTime.assertNotNull( seq );
+		RunTime.assumedNotNull( seq );
 		return seq;
 	}
 	
@@ -382,7 +382,7 @@ public class Level1_Storage_BerkeleyDB extends StaticInstanceTracker {
 			// count++;
 		}
 		// System.out.println( count );
-		RunTime.assertTrue( allSequenceInstances.isEmpty() );
+		RunTime.assumedTrue( allSequenceInstances.isEmpty() );
 		Log.exit();
 	}
 	
@@ -455,7 +455,7 @@ public class Level1_Storage_BerkeleyDB extends StaticInstanceTracker {
 		if ( null == seqDb ) {
 			// init first time:
 			seqDb = this.openSeqDB();
-			RunTime.assertNotNull( seqDb );
+			RunTime.assumedNotNull( seqDb );
 		}
 		return seqDb;
 	}
@@ -470,8 +470,8 @@ public class Level1_Storage_BerkeleyDB extends StaticInstanceTracker {
 	 */
 	private final Database openSeqDB() throws DatabaseException {
 
-		RunTime.assertNotNull( seqDb_NAME );
-		RunTime.assertFalse( seqDb_NAME.isEmpty() );
+		RunTime.assumedNotNull( seqDb_NAME );
+		RunTime.assumedFalse( seqDb_NAME.isEmpty() );
 		
 		if ( null == seqDbConf ) {
 			// init once:

@@ -108,7 +108,7 @@ public class Symbol {
 	@Override
 	public boolean equals( Object nid ) {
 
-		RunTime.assertNotNull( nid );
+		RunTime.assumedNotNull( nid );
 		if ( ( !this.getClass().isAssignableFrom( nid.getClass() ) )
 				|| ( this.getClass() != nid.getClass() ) ) {
 			RunTime.bug( "you passed a different type parameter; must be a bug somewhere" );

@@ -214,7 +214,7 @@ public abstract class StaticInstanceTracker {
 			// + "!!!!!!" + ALL_INSTANCES.size() );
 			iter.deInit();
 		}
-		RunTime.assertTrue( ALL_INSTANCES.isEmpty() );
+		RunTime.assumedTrue( ALL_INSTANCES.isEmpty() );
 	}
 	
 	

@@ -112,7 +112,7 @@ public class ListOfObjects<E> extends ListOfReferences<E> {
 	 */
 	public E getObjectAt( Position pos ) {
 
-		RunTime.assertNotNull( pos );
+		RunTime.assumedNotNull( pos );
 		ChainedReference<E> ref = this.getRefAt( pos );
 		if ( null == ref ) {
 			throw new NoSuchElementException();
@@ -171,7 +171,7 @@ public class ListOfObjects<E> extends ListOfReferences<E> {
 	 */
 	public ChainedReference<E> insert( E obj, Position position ) {
 
-		RunTime.assertNotNull( obj, position );
+		RunTime.assumedNotNull( obj, position );
 		switch ( position ) {
 		case FIRST:
 			return this.addFirst( obj );

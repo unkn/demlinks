@@ -92,7 +92,7 @@ public class GenericLister<T> {
 	public int compareTo( GenericLister<T> toThis,
 			GenericListerComparator<T> usingComparator ) {
 
-		RunTime.assertNotNull( usingComparator );
+		RunTime.assumedNotNull( usingComparator );
 		return usingComparator.compareTwo( this, toThis );
 	}
 	

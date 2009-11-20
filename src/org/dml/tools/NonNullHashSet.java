@@ -34,14 +34,14 @@ public class NonNullHashSet<E> extends java.util.HashSet<E> {
 	@Override
 	public boolean add( E e ) {
 
-		RunTime.assertNotNull( e );
+		RunTime.assumedNotNull( e );
 		return super.add( e );
 	};
 	
 	@Override
 	public boolean remove( Object o ) {
 
-		RunTime.assertNotNull( o );
+		RunTime.assumedNotNull( o );
 		return super.remove( o );
 	};
 	

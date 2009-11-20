@@ -47,7 +47,7 @@ public class VarLevel2 extends VarLevel1 implements VarLevel2Interface {
 	
 	public void showHome() {
 
-		RunTime.assertTrue( this.isInited() );
+		RunTime.assumedTrue( this.isInited() );
 		System.out.println( this.getName() + "'s home is: " + homeDir );
 	}
 	
@@ -69,7 +69,7 @@ public class VarLevel2 extends VarLevel1 implements VarLevel2Interface {
 	@Override
 	protected void start( MethodParams<Object> params ) {
 
-		RunTime.assertNotNull( params );
+		RunTime.assumedNotNull( params );
 		super.start( params );
 		homeDir = params.getExString( PossibleParams.homeDir );
 		

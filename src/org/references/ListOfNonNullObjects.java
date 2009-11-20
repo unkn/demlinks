@@ -46,7 +46,7 @@ public class ListOfNonNullObjects<E> extends ListOfObjects<E> {
 	@Override
 	public boolean containsObject( E obj ) {
 
-		RunTime.assertNotNull( obj );
+		RunTime.assumedNotNull( obj );
 		return super.containsObject( obj );
 	}
 	
@@ -59,7 +59,7 @@ public class ListOfNonNullObjects<E> extends ListOfObjects<E> {
 	@Override
 	public boolean containsObjectAtPos( E obj, int index ) {
 
-		RunTime.assertNotNull( obj );
+		RunTime.assumedNotNull( obj );
 		return super.containsObjectAtPos( obj, index );
 	}
 	
@@ -73,7 +73,7 @@ public class ListOfNonNullObjects<E> extends ListOfObjects<E> {
 	@Override
 	protected ChainedReference<E> newRef( E obj ) {
 
-		RunTime.assertNotNull( obj );// must not be null
+		RunTime.assumedNotNull( obj );// must not be null
 		return super.newRef( obj );
 	}
 	
@@ -84,7 +84,7 @@ public class ListOfNonNullObjects<E> extends ListOfObjects<E> {
 	@Override
 	public ChainedReference<E> getRef( E obj ) {
 
-		RunTime.assertNotNull( obj );
+		RunTime.assumedNotNull( obj );
 		return super.getRef( obj );
 	}
 	
@@ -96,14 +96,14 @@ public class ListOfNonNullObjects<E> extends ListOfObjects<E> {
 	@Override
 	public E getObjectAt( Position pos ) {
 
-		RunTime.assertNotNull( pos );
+		RunTime.assumedNotNull( pos );
 		E obj = null;
 		try {
 			obj = super.getObjectAt( pos );
 		} catch ( NoSuchElementException nsee ) {
 			return null;
 		}
-		RunTime.assertNotNull( obj );
+		RunTime.assumedNotNull( obj );
 		return obj;
 	}
 	
@@ -115,14 +115,14 @@ public class ListOfNonNullObjects<E> extends ListOfObjects<E> {
 	@Override
 	public E getObjectAt( int index ) {
 
-		RunTime.assertNotNull( index );
+		RunTime.assumedNotNull( index );
 		E obj = null;
 		try {
 			obj = super.getObjectAt( index );
 		} catch ( NoSuchElementException nsee ) {
 			return null;
 		}
-		RunTime.assertNotNull( obj );
+		RunTime.assumedNotNull( obj );
 		return obj;
 	}
 	
@@ -136,7 +136,7 @@ public class ListOfNonNullObjects<E> extends ListOfObjects<E> {
 	 */
 	public E getObjectAt( Position pos, E objPos ) {
 
-		RunTime.assertNotNull( pos, objPos );
+		RunTime.assumedNotNull( pos, objPos );
 		E ret = null;
 		ChainedReference<E> refPos = this.getRef( objPos );
 		if ( null == refPos ) {
@@ -149,7 +149,7 @@ public class ListOfNonNullObjects<E> extends ListOfObjects<E> {
 			ret = null;// not found
 		} else {
 			ret = ref.getObject();
-			RunTime.assertNotNull( ret );
+			RunTime.assumedNotNull( ret );
 		}
 		return ret;
 	}
@@ -164,7 +164,7 @@ public class ListOfNonNullObjects<E> extends ListOfObjects<E> {
 	@Override
 	public ChainedReference<E> addLast( E obj ) {
 
-		RunTime.assertNotNull( obj );
+		RunTime.assumedNotNull( obj );
 		return super.addLast( obj );
 	}
 	
@@ -177,7 +177,7 @@ public class ListOfNonNullObjects<E> extends ListOfObjects<E> {
 	@Override
 	public ChainedReference<E> addFirst( E obj ) {
 
-		RunTime.assertNotNull( obj );
+		RunTime.assumedNotNull( obj );
 		return super.addFirst( obj );
 	}
 	
@@ -191,7 +191,7 @@ public class ListOfNonNullObjects<E> extends ListOfObjects<E> {
 	@Override
 	public ChainedReference<E> insert( E obj, Position position ) {
 
-		RunTime.assertNotNull( obj, position );
+		RunTime.assumedNotNull( obj, position );
 		switch ( position ) {
 		case FIRST:
 			return this.addFirst( obj );
@@ -212,7 +212,7 @@ public class ListOfNonNullObjects<E> extends ListOfObjects<E> {
 	 */
 	public boolean insert( E newObj, Position pos, E posObj ) {
 
-		RunTime.assertNotNull( newObj, pos, posObj );
+		RunTime.assumedNotNull( newObj, pos, posObj );
 		
 		ChainedReference<E> posRef = this.getRef( posObj );
 		if ( null == posRef ) {
@@ -221,7 +221,7 @@ public class ListOfNonNullObjects<E> extends ListOfObjects<E> {
 		}
 		ChainedReference<E> newRef = this.newRef( newObj );
 		boolean ret = this.insertRefAt( newRef, pos, posRef );
-		RunTime.assertFalse( ret );
+		RunTime.assumedFalse( ret );
 		return ret;
 	}
 	
@@ -232,7 +232,7 @@ public class ListOfNonNullObjects<E> extends ListOfObjects<E> {
 	@Override
 	public boolean removeObject( E obj ) {
 
-		RunTime.assertNotNull( obj );
+		RunTime.assumedNotNull( obj );
 		return super.removeObject( obj );
 	}
 }

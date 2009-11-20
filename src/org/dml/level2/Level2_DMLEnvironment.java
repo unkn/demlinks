@@ -70,7 +70,7 @@ public class Level2_DMLEnvironment extends Level1_DMLEnvironment implements
 	public boolean ensureVector( Symbol first, Symbol second )
 			throws StorageException {
 
-		RunTime.assertNotNull( first, second );
+		RunTime.assumedNotNull( first, second );
 		return storage.ensureVector( first, second );
 	}
 	
@@ -84,7 +84,7 @@ public class Level2_DMLEnvironment extends Level1_DMLEnvironment implements
 	@Override
 	public boolean isVector( Symbol first, Symbol second ) {
 
-		RunTime.assertNotNull( first, second );
+		RunTime.assumedNotNull( first, second );
 		return storage.isVector( first, second );
 	}
 }

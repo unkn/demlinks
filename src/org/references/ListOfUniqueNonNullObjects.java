@@ -52,7 +52,7 @@ public class ListOfUniqueNonNullObjects<E> extends ListOfNonNullObjects<E> {
 	@Override
 	public ChainedReference<E> addLast( E obj ) {
 
-		RunTime.assertNotNull( obj );// redundant
+		RunTime.assumedNotNull( obj );// redundant
 		ChainedReference<E> ref = this.getRef( obj );
 		if ( null != ref ) {
 			// already exists, not added/moved
@@ -70,7 +70,7 @@ public class ListOfUniqueNonNullObjects<E> extends ListOfNonNullObjects<E> {
 	@Override
 	public ChainedReference<E> addFirst( E obj ) {
 
-		RunTime.assertNotNull( obj );// redundant
+		RunTime.assumedNotNull( obj );// redundant
 		
 		ChainedReference<E> ref = this.getRef( obj );
 		if ( null != ref ) {
@@ -88,14 +88,14 @@ public class ListOfUniqueNonNullObjects<E> extends ListOfNonNullObjects<E> {
 	 */
 	public boolean addFirstQ( E obj ) {
 
-		RunTime.assertNotNull( obj );
+		RunTime.assumedNotNull( obj );
 		
 		ChainedReference<E> ref = this.getRef( obj );
 		if ( null != ref ) {
 			// already exists, not added/moved
 			return true;
 		}
-		RunTime.assertNotNull( super.addFirst( obj ) );
+		RunTime.assumedNotNull( super.addFirst( obj ) );
 		
 		return false;// didn't exist
 	}
@@ -110,7 +110,7 @@ public class ListOfUniqueNonNullObjects<E> extends ListOfNonNullObjects<E> {
 	@Override
 	public boolean insert( E newObj, Position pos, E posObj ) {
 
-		RunTime.assertNotNull( newObj, pos, posObj );
+		RunTime.assumedNotNull( newObj, pos, posObj );
 		ChainedReference<E> newRef = this.getRef( newObj );
 		if ( null != newRef ) {
 			// already exists, not added/moved

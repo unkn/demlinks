@@ -99,7 +99,7 @@ public class MethodParams<T> extends StaticInstanceTracker {
 		// what this does is get the list paramName and intersect it with
 		// the MethodParams list and should find 0 or 1 elements in common, if
 		// more than 1 then maybe throw BadCallError or Bug
-		RunTime.assertNotNull( paramName );
+		RunTime.assumedNotNull( paramName );
 		
 		return this.internalGet( paramName );
 	}
@@ -121,7 +121,7 @@ public class MethodParams<T> extends StaticInstanceTracker {
 	 */
 	private ChainedReference<T> internalGet( ParamName<T> paramName ) {
 
-		RunTime.assertNotNull( paramName );
+		RunTime.assumedNotNull( paramName );
 		
 		int foundCounter = 0;// should not exceed 1
 		ChainedReference<T> found = null;
@@ -144,7 +144,7 @@ public class MethodParams<T> extends StaticInstanceTracker {
 			citer = this.internalGetNextOf( citer );
 			// listOfParams.getRefAt( Position.AFTER, citer );
 		}
-		RunTime.assertTrue( foundCounter <= 1 );
+		RunTime.assumedTrue( foundCounter <= 1 );
 		return found;
 	}
 	
@@ -156,13 +156,13 @@ public class MethodParams<T> extends StaticInstanceTracker {
 	 */
 	public void set( ParamName<T> paramName, T value ) {
 
-		RunTime.assertNotNull( paramName );
+		RunTime.assumedNotNull( paramName );
 		
 		ChainedReference<T> cref = this.internalGet( paramName );
 		if ( null == cref ) {
 			int bug = listOfParams.size();// FIXME: remove
 			cref = listOfParams.addFirst( value );
-			RunTime.assertTrue( listOfParams.size() > bug );
+			RunTime.assumedTrue( listOfParams.size() > bug );
 			paramName.add( cref );
 			redundantListOfNames.addFirst( paramName );
 			// FIXME: transaction needed
@@ -180,7 +180,7 @@ public class MethodParams<T> extends StaticInstanceTracker {
 	 */
 	public String getExString( ParamName<T> paramName ) {
 
-		RunTime.assertNotNull( paramName );
+		RunTime.assumedNotNull( paramName );
 		return (String)this.getEx( paramName );
 	}
 	
@@ -192,14 +192,14 @@ public class MethodParams<T> extends StaticInstanceTracker {
 	 */
 	public boolean remove( ParamName<T> paramName ) {
 
-		RunTime.assertNotNull( paramName );
+		RunTime.assumedNotNull( paramName );
 		
 		ChainedReference<T> cref = this.internalGet( paramName );
 		if ( null == cref ) {
 			return false;// not found
 		} else {// already exists
 			boolean ret = listOfParams.removeRef( cref );
-			RunTime.assertTrue( ret );
+			RunTime.assumedTrue( ret );
 			paramName.remove( cref );
 			redundantListOfNames.removeObject( paramName );
 			// FIXME: transaction needed
@@ -223,7 +223,7 @@ public class MethodParams<T> extends StaticInstanceTracker {
 	 */
 	public void mergeWith( MethodParams<T> withThisNewOnes, boolean overwrite ) {
 
-		RunTime.assertNotNull( withThisNewOnes );
+		RunTime.assumedNotNull( withThisNewOnes );
 		
 		ParamName<T> iter = withThisNewOnes.getFirstParamName();
 		while ( null != iter ) {
@@ -244,8 +244,8 @@ public class MethodParams<T> extends StaticInstanceTracker {
 			this.remove( iter );
 			iter = next;
 		}
-		RunTime.assertTrue( this.size() == 0 );
-		RunTime.assertTrue( redundantListOfNames.size() == 0 );
+		RunTime.assumedTrue( this.size() == 0 );
+		RunTime.assumedTrue( redundantListOfNames.size() == 0 );
 		
 	}
 	
@@ -262,7 +262,7 @@ public class MethodParams<T> extends StaticInstanceTracker {
 	private ParamName<T> internalGetParamName(
 			ChainedReference<T> thatPointsToThisRef ) {
 
-		RunTime.assertNotNull( thatPointsToThisRef );
+		RunTime.assumedNotNull( thatPointsToThisRef );
 		
 		ParamName<T> ret = null;
 		// we need to find the paramname who's value this is
@@ -275,7 +275,7 @@ public class MethodParams<T> extends StaticInstanceTracker {
 				count++;
 				// two params cannot contain same ref, even thos
 				// ref.getObject() can be same; so we detect Bug here
-				RunTime.assertTrue( count <= 1 );
+				RunTime.assumedTrue( count <= 1 );
 				ret = namesIter;
 			}
 			
@@ -301,14 +301,14 @@ public class MethodParams<T> extends StaticInstanceTracker {
 		ChainedReference<T> ref = this.internalGetFirst();
 		while ( null != ref ) {
 			ParamName<T> pName = this.internalGetParamName( ref );
-			RunTime.assertNotNull( pName );
+			RunTime.assumedNotNull( pName );
 			clone.set( pName, ref.getObject() );
 			// fetch next ref to value
 			ref = this.internalGetNextOf( ref );
 		}
 		
-		RunTime.assertTrue( clone.size() == this.size() );
-		RunTime.assertTrue( clone.redundantListOfNames.size() == this.redundantListOfNames.size() );
+		RunTime.assumedTrue( clone.size() == this.size() );
+		RunTime.assumedTrue( clone.redundantListOfNames.size() == this.redundantListOfNames.size() );
 		
 		return clone;
 	}
@@ -323,8 +323,8 @@ public class MethodParams<T> extends StaticInstanceTracker {
 	protected void done( MethodParams<Object> params ) {
 
 		this.clear();
-		RunTime.assertTrue( this.size() == 0 );
-		RunTime.assertTrue( redundantListOfNames.size() == 0 );
+		RunTime.assumedTrue( this.size() == 0 );
+		RunTime.assumedTrue( redundantListOfNames.size() == 0 );
 	}
 	
 	
@@ -354,11 +354,11 @@ public class MethodParams<T> extends StaticInstanceTracker {
 	protected void start( MethodParams<Object> params ) {
 
 		// params should be null, passed via init(...)
-		RunTime.assertTrue( null == params );
+		RunTime.assumedTrue( null == params );
 		
 		// assumed it's empty on start, or else bugged
-		RunTime.assertTrue( this.size() == 0 );
-		RunTime.assertTrue( redundantListOfNames.size() == 0 );
+		RunTime.assumedTrue( this.size() == 0 );
+		RunTime.assumedTrue( redundantListOfNames.size() == 0 );
 	}
 	
 	/*

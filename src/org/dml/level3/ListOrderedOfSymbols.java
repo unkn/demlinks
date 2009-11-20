@@ -65,8 +65,8 @@ public class ListOrderedOfSymbols extends ListOrderedOfElementCapsules {
 		ElementCapsule ec = internal_encapsulateSymbol( whichSymbol );
 		
 		if ( this.isEmpty() ) {
-			RunTime.assertTrue( getFirstCapsule() == null );
-			RunTime.assertTrue( getLastCapsule() == null );
+			RunTime.assumedTrue( getFirstCapsule() == null );
+			RunTime.assumedTrue( getLastCapsule() == null );
 			// we don't have a last thus list is empty
 			// internal_setLast( ec ); is common below
 			internal_setFirst( ec );
@@ -75,7 +75,7 @@ public class ListOrderedOfSymbols extends ListOrderedOfElementCapsules {
 			// list has a last, so at least 1 element
 			ElementCapsule last = getLastCapsule();
 			last.setNextCapsule( ec );// auto set ec.prev=last;
-			RunTime.assertTrue( ec.getPrevCapsule() == last );
+			RunTime.assumedTrue( ec.getPrevCapsule() == last );
 		}
 		
 		internal_setLast( ec );

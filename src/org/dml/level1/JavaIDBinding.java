@@ -49,13 +49,13 @@ public class JavaIDBinding extends TupleBinding<JavaID> {
 	@Override
 	public JavaID entryToObject( TupleInput input ) {
 
-		RunTime.assertNotNull( input );
+		RunTime.assumedNotNull( input );
 		// Data must be read in the same order that it was
 		// originally written.
 		String strJavaID = input.readString();
-		RunTime.assertNotNull( strJavaID );
+		RunTime.assumedNotNull( strJavaID );
 		JavaID myJavaID = JavaID.ensureJavaIDFor( strJavaID );
-		RunTime.assertNotNull( myJavaID );
+		RunTime.assumedNotNull( myJavaID );
 		return myJavaID;
 	}
 	
@@ -69,9 +69,9 @@ public class JavaIDBinding extends TupleBinding<JavaID> {
 	@Override
 	public void objectToEntry( JavaID object, TupleOutput output ) {
 
-		RunTime.assertNotNull( object, output );
+		RunTime.assumedNotNull( object, output );
 		String strJavaID = object.getObject();
-		RunTime.assertNotNull( strJavaID );
+		RunTime.assumedNotNull( strJavaID );
 		// System.out.println( object );
 		// it will never be null before writing it to dbase, else bug somewhere
 		output.writeString( strJavaID );

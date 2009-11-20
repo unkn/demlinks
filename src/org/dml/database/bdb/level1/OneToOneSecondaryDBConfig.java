@@ -55,7 +55,7 @@ public class OneToOneSecondaryDBConfig extends SecondaryConfig {
 		this.setTemporary( false );
 		this.setTransactional( true );
 		
-		RunTime.assertTrue( this.getSortedDuplicates() == false );
+		RunTime.assumedTrue( this.getSortedDuplicates() == false );
 		SecondaryKeyCreator keyCreator = new SecondaryKeyCreator() {
 			
 			@Override
@@ -65,12 +65,12 @@ public class OneToOneSecondaryDBConfig extends SecondaryConfig {
 
 				// if this differs, then we need perhaps to set it to result
 				// also
-				RunTime.assertTrue( data.getOffset() == 0 );
+				RunTime.assumedTrue( data.getOffset() == 0 );
 				
 				result.setData( data.getData() );
 				result.setSize( data.getSize() );
 				// System.out.println( key + "!" + data + "!" + result );
-				RunTime.assertTrue( result.equals( data ) );
+				RunTime.assumedTrue( result.equals( data ) );
 				return true;
 			}
 		};

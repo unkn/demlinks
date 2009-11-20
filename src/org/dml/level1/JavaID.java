@@ -75,7 +75,7 @@ public class JavaID extends Reference<String> {
 	 */
 	public static JavaID ensureJavaIDFor( String strID ) {
 
-		RunTime.assertNotNull( strID );
+		RunTime.assumedNotNull( strID );
 		JavaID curr = all_Level1_JavaIDs.get( strID );
 		if ( null == curr ) {
 			// create new
@@ -95,7 +95,7 @@ public class JavaID extends Reference<String> {
 	 */
 	private JavaID( String strID ) {
 
-		RunTime.assertNotNull( strID );
+		RunTime.assumedNotNull( strID );
 		
 		this.setObject( strID );
 		

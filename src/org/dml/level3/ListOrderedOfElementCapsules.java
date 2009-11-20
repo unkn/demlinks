@@ -44,7 +44,7 @@ public class ListOrderedOfElementCapsules {
 	public ListOrderedOfElementCapsules( Level3_DMLEnvironment l3_DMLEnv,
 			Symbol name1 ) {
 
-		RunTime.assertNotNull( l3_DMLEnv, name1 );
+		RunTime.assumedNotNull( l3_DMLEnv, name1 );
 		envL3 = l3_DMLEnv;
 		
 		name = name1;
@@ -75,73 +75,15 @@ public class ListOrderedOfElementCapsules {
 		return this.internal_hasNameSetRight();
 	}
 	
-	public void addLast_ElementCapsule( ElementCapsule newLast ) {
-
-		this.add_ElementCapsule( Position.LAST, newLast );
-		// RunTime.assertNotNull( newLast );
-		// RunTime.assertTrue( newLast.isAlone() );// prev=next=null
-		//		
-		// boolean wasEmpty = this.emptyHandling( newLast );
-		// if ( !wasEmpty ) {
-		// // has a last
-		// ElementCapsule last = getLast_ElementCapsule();
-		// RunTime.assertNotNull( last );
-		// RunTime.assertTrue( null == last.getNextCapsule() );
-		// RunTime.assertTrue( newLast.isAlone() );// prev=next=null
-		// newLast.setPrevCapsule( last );
-		// last.setNextCapsule( newLast );
-		// internal_setLast( newLast );
-		// }
-	}
-	
-	/**
-	 * will add ONLY if list is empty<br>
-	 * 
-	 * @param candidate
-	 * @return true if list was empty and it was added; false if wasn't empty
-	 *         and wasn't added
-	 */
-	private boolean addIfListIsEmpty( ElementCapsule candidate ) {
-
-		RunTime.assertNotNull( candidate );
-		RunTime.assertTrue( candidate.isAlone() );// prev=next=null
-		if ( this.isEmpty() ) {
-			// no first/last
-			this.internal_registerNewFirstOrLast( Position.LAST, candidate );
-			this.internal_registerNewFirstOrLast( Position.FIRST, candidate );
-			return true;
-		}
-		return false;
-	}
-	
 	/**
 	 * @param last
 	 * @param candidate
 	 */
-	private void internal_registerNewFirstOrLast( Position last,
+	private void internal_dmlRegisterNewFirstOrLast( Position last,
 			ElementCapsule candidate ) {
 
 		// TODO Auto-generated method stub
 		
-	}
-	
-	public void addFirst_ElementCapsule( ElementCapsule newFirst ) {
-
-		this.add_ElementCapsule( Position.FIRST, newFirst );
-		// RunTime.assertNotNull( newFirst );
-		// RunTime.assertTrue( newFirst.isAlone() );// prev=next=null
-		//		
-		// boolean wasEmpty = this.emptyHandling( newFirst );
-		// if ( !wasEmpty ) {
-		// // has a last
-		// ElementCapsule first = getFirst_ElementCapsule();
-		// RunTime.assertNotNull( first );
-		// RunTime.assertTrue( null == first.getPrevCapsule() );
-		// RunTime.assertTrue( newFirst.isAlone() );// prev=next=null
-		// newFirst.setNextCapsule( first );
-		// first.setPrevCapsule( newFirst );
-		// internal_setFirst( newFirst );
-		// }
 	}
 	
 	public void add_ElementCapsule( Position pos, ElementCapsule theNew ) {
@@ -149,27 +91,32 @@ public class ListOrderedOfElementCapsules {
 		switch ( pos ) {
 		case FIRST:
 		case LAST:
-			RunTime.assertNotNull( theNew );
-			RunTime.assertTrue( theNew.isAlone() );// prev=next=null
+			RunTime.assumedNotNull( theNew );
+			RunTime.assumedTrue( theNew.isAlone() );// prev=next=null
 			
-			boolean wasEmpty = this.addIfListIsEmpty( theNew );
-			if ( !wasEmpty ) {
+			if ( this.isEmpty() ) {
+				// no first/last
+				this.internal_dmlRegisterNewFirstOrLast(
+						Position.opposite( pos ), theNew );
+			} else {// not empty list
 				// has a last
-				ElementCapsule theOld = get_ElementCapsule( pos );// first
-				RunTime.assertNotNull( theOld );// current first exists!
+				ElementCapsule theOld = this.get_ElementCapsule( pos );// first
+				RunTime.assumedNotNull( theOld );// current first exists!
 				
 				// first.prev is null
-				RunTime.assertTrue( null == theOld.getSideCapsule( Position.opposite( pos ) ) );
+				RunTime.assumedNull( theOld.getSideCapsule( pos ) );
 				
-				RunTime.assertTrue( theNew.isAlone() );// prev=next=null
+				// redundant check:
+				RunTime.assumedTrue( theNew.isAlone() );// prev=next=null
 				
 				// newfirst.next=oldfirst
 				theNew.setCapsule( Position.opposite( pos ), theOld );
 				// oldfirst.prev=newfirst
 				theOld.setCapsule( pos, theNew );
 				// setFirst=newfirst
-				this.internal_registerNewFirstOrLast( pos, theNew );
+				
 			}
+			this.internal_dmlRegisterNewFirstOrLast( pos, theNew );// common
 			break;
 		
 		default:
@@ -187,8 +134,18 @@ public class ListOrderedOfElementCapsules {
 	
 	public boolean isEmpty() {
 
-		RunTime.assertTrue( get_ElementCapsule( Position.FIRST ) == null );
-		RunTime.assertTrue( get_ElementCapsule( Position.LAST ) == null );
+		RunTime.assumedTrue( this.get_ElementCapsule( Position.FIRST ) == null );
+		RunTime.assumedTrue( this.get_ElementCapsule( Position.LAST ) == null );
 		return this.size() == 0;
+	}
+	
+	/**
+	 * @param first
+	 * @return
+	 */
+	private ElementCapsule get_ElementCapsule( Position pos ) {
+
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

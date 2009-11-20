@@ -64,7 +64,7 @@ public class TransactionCapsule {
 		txn.txConf.setSerializableIsolation( true );
 		txn.txConf.setSync( true );
 		txn.txConf.setWriteNoSync( false );
-		RunTime.assertFalse( txn.txConf.getReadUncommitted() );
+		RunTime.assumedFalse( txn.txConf.getReadUncommitted() );
 		txn.tx = bdb.getEnvironment().beginTransaction( null, txn.txConf );
 		
 		return txn;

@@ -86,7 +86,7 @@ public abstract class MainLevel0 extends StaticInstanceTracker {
 				iter.set( this, toValue );
 				// System.out.println( iter.getName() + " / " + iter.getType()
 				// + " / " + iter.get( this ) );
-				RunTime.assertTrue( iter.get( this ) == toValue );
+				RunTime.assumedTrue( iter.get( this ) == toValue );
 			} catch ( IllegalArgumentException e ) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -126,7 +126,7 @@ public abstract class MainLevel0 extends StaticInstanceTracker {
 	private Field getFieldInLastSubClassWhichIs_This() {
 
 		Field ret = listOfAnnotatedFields.getObjectAt( Position.LAST );
-		RunTime.assertTrue( null != ret );
+		RunTime.assumedTrue( null != ret );
 		return ret;
 	}
 	
@@ -137,7 +137,7 @@ public abstract class MainLevel0 extends StaticInstanceTracker {
 	 */
 	private void checkVarLevelX( Object obj ) {
 
-		RunTime.assertNotNull( obj );
+		RunTime.assumedNotNull( obj );
 		Field lastField = this.getFieldInLastSubClassWhichIs_This();
 		if ( !lastField.getType().isAssignableFrom( obj.getClass() ) ) {
 			// !true if lastField's class is a superclass(ie. base class) of the
@@ -202,7 +202,7 @@ public abstract class MainLevel0 extends StaticInstanceTracker {
 				this.getVarLevelX().init( mixedParams );// 3
 			} else {
 				Object obj = ref.getObject();
-				RunTime.assertNotNull( obj );
+				RunTime.assumedNotNull( obj );
 				this.checkVarLevelX( obj );
 				this.setAllVarLevelX( obj );
 				// it's already inited by caller (assumed) so we won't init it
@@ -318,7 +318,7 @@ public abstract class MainLevel0 extends StaticInstanceTracker {
 					RunTime.bug( "you have to annotate just 1 field in each subclass, not more, not less" );
 				}
 			}
-			RunTime.assertTrue( 1 >= count );// 3 above
+			RunTime.assumedTrue( 1 >= count );// 3 above
 			
 			// go to prev superclass ie. go next
 			currentClass = currentClass.getSuperclass();

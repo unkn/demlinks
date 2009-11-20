@@ -79,8 +79,8 @@ public class OneToManyDBMap<InitialType, TerminalType> {
 			Class<TerminalType> terminalClass1,
 			EntryBinding<TerminalType> terminalBinding1 ) {
 
-		RunTime.assertNotNull( bdb1 );
-		RunTime.assertNotNull( dbName1 );
+		RunTime.assumedNotNull( bdb1 );
+		RunTime.assumedNotNull( dbName1 );
 		bdbL1 = bdb1;
 		dbName = dbName1;
 		initialClass = initialClass1;
@@ -121,7 +121,7 @@ public class OneToManyDBMap<InitialType, TerminalType> {
 			forwardDB.init( params );
 			params.deInit();
 			
-			RunTime.assertNotNull( forwardDB );
+			RunTime.assumedNotNull( forwardDB );
 		}
 		return forwardDB.getDB();
 	}
@@ -167,7 +167,7 @@ public class OneToManyDBMap<InitialType, TerminalType> {
 	
 	private void checkData( TerminalType data ) {
 
-		RunTime.assertNotNull( data );
+		RunTime.assumedNotNull( data );
 		// 1of3
 		if ( data.getClass() != terminalClass ) {
 			RunTime.badCall( "shouldn't allow subclass of dataClass!! or else havoc" );
@@ -176,7 +176,7 @@ public class OneToManyDBMap<InitialType, TerminalType> {
 	
 	private void checkKey( InitialType key ) {
 
-		RunTime.assertNotNull( key );
+		RunTime.assumedNotNull( key );
 		// 1of3
 		if ( key.getClass() != initialClass ) {
 			RunTime.badCall( "shouldn't allow subclass of keyClass!! or else havoc" );
@@ -235,7 +235,7 @@ public class OneToManyDBMap<InitialType, TerminalType> {
 	public boolean ensureVector( InitialType initialObject,
 			TerminalType terminalObject ) throws DatabaseException {
 
-		RunTime.assertNotNull( initialObject, terminalObject );
+		RunTime.assumedNotNull( initialObject, terminalObject );
 		boolean ret;
 		ret = ( OperationStatus.KEYEXIST == this.internal_makeVector(
 				initialObject, terminalObject ) );

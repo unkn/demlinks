@@ -77,14 +77,14 @@ public class RunTime {
 	/**
 	 * @param b
 	 */
-	public static void assertTrue( boolean b ) {
+	public static void assumedTrue( boolean b ) {
 
 		if ( !b ) {
 			throw new AssertionError( "expected true condition was false!" );
 		}
 	}
 	
-	public static void assertNotNull( Object... obj ) {
+	public static void assumedNotNull( Object... obj ) {
 
 		for ( int i = 0; i < obj.length; i++ ) {
 			if ( null == obj[i] ) {
@@ -94,7 +94,17 @@ public class RunTime {
 		}
 	}
 	
-	public static void assertFalse( boolean b ) {
+	public static void assumedNull( Object... obj ) {
+
+		for ( int i = 0; i < obj.length; i++ ) {
+			if ( null != obj[i] ) {
+				throw new AssertionError( "expected null object[" + ( i + 1 )
+						+ "] was NOT null!" );
+			}
+		}
+	}
+	
+	public static void assumedFalse( boolean b ) {
 
 		if ( b ) {
 			throw new AssertionError( "expected false condition was true!" );
