@@ -20,6 +20,34 @@
 
 package org.references;
 
+
+
+import org.dml.tools.RunTime;
+
+
+
 public enum Position {
-	FIRST, LAST, BEFORE, AFTER
+	FIRST, LAST, BEFORE, AFTER;
+	
+	/**
+	 * @param pos
+	 * @return
+	 */
+	public static Position opposite( Position pos ) {
+
+		switch ( pos ) {
+		case FIRST:
+			return LAST;
+		case LAST:
+			return FIRST;
+		case BEFORE:
+			return AFTER;
+		case AFTER:
+			return BEFORE;
+			
+		default:
+			RunTime.bug( "shouldn't reach this" );
+		}
+		return null;// won't reach this
+	}
 }

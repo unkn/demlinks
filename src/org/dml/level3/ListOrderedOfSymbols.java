@@ -38,27 +38,50 @@ import org.dml.tools.RunTime;
  * this will be a double linked list represented in DMLEnvironment<br>
  * this is level 4
  */
-public class ListID {
+public class ListOrderedOfSymbols extends ListOrderedOfElementCapsules {
 	
-	Level3_DMLEnvironment	l3DMLEnvironment;
-	Symbol					name;
 	
-	public ListID( Level3_DMLEnvironment l3_DMLEnv, Symbol name1 ) {
+	public ListOrderedOfSymbols( Level3_DMLEnvironment l3_DMLEnv, Symbol name1 ) {
 
-		RunTime.assertNotNull( l3_DMLEnv, name1 );
-		l3DMLEnvironment = l3_DMLEnv;
+		super( l3_DMLEnv, name1 );
+	}
+	
+	@Override
+	protected void internal_setName() {
+
+		envL3.ensureVector( envL3.allListsSymbol, name );
+	}
+	
+	@Override
+	protected boolean internal_hasNameSetRight() {
+
+		return envL3.isVector( envL3.allListsSymbol, name );
+	}
+	
+	
+
+	synchronized public void addLast( Symbol whichSymbol ) {
+
+		ElementCapsule ec = internal_encapsulateSymbol( whichSymbol );
 		
-		name = name1;
-		// Symbol listSymbol = l3DMLEnvironment.getSymbol(
-		// Level3_DMLEnvironment.listSymbolJavaID );
-		l3DMLEnvironment.ensureVector( l3DMLEnvironment.allListsSymbol, name );
+		if ( this.isEmpty() ) {
+			RunTime.assertTrue( getFirstCapsule() == null );
+			RunTime.assertTrue( getLastCapsule() == null );
+			// we don't have a last thus list is empty
+			// internal_setLast( ec ); is common below
+			internal_setFirst( ec );
+			// now list has 1 element
+		} else {
+			// list has a last, so at least 1 element
+			ElementCapsule last = getLastCapsule();
+			last.setNextCapsule( ec );// auto set ec.prev=last;
+			RunTime.assertTrue( ec.getPrevCapsule() == last );
+		}
+		
+		internal_setLast( ec );
 	}
 	
-	
-	public boolean isValid() {
+	public void addFirst( Symbol whichSymbol ) {
 
-		return l3DMLEnvironment.isVector( l3DMLEnvironment.allListsSymbol, name );
 	}
-	
-
 }

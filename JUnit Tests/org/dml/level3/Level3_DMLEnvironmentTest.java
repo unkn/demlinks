@@ -68,7 +68,7 @@ public class Level3_DMLEnvironmentTest {
 
 		JavaID name = JavaID.ensureJavaIDFor( "boo" );
 		Symbol name2 = l3.createSymbol( name );
-		ListID list = l3.newList( name2 );
+		ListOrderedOfSymbols list = l3.newList( name2 );
 		assertTrue( list.isValid() );
 	}
 }
