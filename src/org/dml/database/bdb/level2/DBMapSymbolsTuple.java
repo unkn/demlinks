@@ -71,7 +71,8 @@ public class DBMapSymbolsTuple extends OneToManyDBMap<Symbol, Symbol> {
 	}
 	
 	/**
-	 * obviously first and second must already exist as NodeIDs associated with
+	 * obviously initial and terminal must already exist as Symbols associated
+	 * with
 	 * JavaIDs<br>
 	 * 
 	 * @param initialNode
@@ -134,5 +135,65 @@ public class DBMapSymbolsTuple extends OneToManyDBMap<Symbol, Symbol> {
 				whichSymbol ) );
 	}
 	
+	@Override
+	public BDBVectorIterator<Symbol, Symbol> getIterator_on_Initials_of(
+			Symbol terminalObject ) throws DatabaseException {
 
+		this.throwIfNotExist( terminalObject );
+		return super.getIterator_on_Initials_of( terminalObject );
+	}
+	
+	@Override
+	public BDBVectorIterator<Symbol, Symbol> getIterator_on_Terminals_of(
+			Symbol initialObject ) throws DatabaseException {
+
+		this.throwIfNotExist( initialObject );
+		return super.getIterator_on_Terminals_of( initialObject );
+	}
+	
+	@Override
+	public int countInitials( Symbol ofTerminalObject )
+			throws DatabaseException {
+
+		this.throwIfNotExist( ofTerminalObject );
+		return super.countInitials( ofTerminalObject );
+	}
+	
+	@Override
+	public int countTerminals( Symbol ofInitialObject )
+			throws DatabaseException {
+
+		this.throwIfNotExist( ofInitialObject );
+		return super.countTerminals( ofInitialObject );
+	}
+	
+	/**
+	 * @param initial1
+	 * @param initial2
+	 * @return
+	 * @throws DatabaseException
+	 */
+	@Override
+	public Symbol findCommonTerminalForInitials( Symbol initial1,
+			Symbol initial2 ) throws DatabaseException {
+
+		this.throwIfNotExist( initial1 );
+		this.throwIfNotExist( initial2 );
+		return super.findCommonTerminalForInitials( initial1, initial2 );
+	}
+	
+	/**
+	 * @param initial
+	 * @param terminal
+	 * @return true if existed
+	 * @throws DatabaseException
+	 */
+	@Override
+	public boolean removeVector( Symbol initial, Symbol terminal )
+			throws DatabaseException {
+
+		this.throwIfNotExist( initial );
+		this.throwIfNotExist( terminal );
+		return super.removeVector( initial, terminal );
+	}
 }

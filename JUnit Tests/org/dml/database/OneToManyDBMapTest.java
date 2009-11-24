@@ -32,7 +32,7 @@ import org.dml.JUnits.Consts;
 import org.dml.database.bdb.level1.AllTupleBindings;
 import org.dml.database.bdb.level1.Level1_Storage_BerkeleyDB;
 import org.dml.database.bdb.level2.OneToManyDBMap;
-import org.dml.database.bdb.level2.VectorIterator;
+import org.dml.database.bdb.level2.BDBVectorIterator;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -94,7 +94,7 @@ public class OneToManyDBMapTest {
 		System.out.println( _a );
 		System.out.println( _b );
 		System.out.println( _c );
-		System.out.println( o2m.getName() );
+		System.out.println( o2m.getDBName() );
 		
 		assertFalse( o2m.isVector( _a, _b ) );
 		assertFalse( o2m.ensureVector( _a, _b ) );
@@ -122,11 +122,13 @@ public class OneToManyDBMapTest {
 		
 		assertTrue( o2m.ensureVector( _c, _b ) );
 		
-		VectorIterator<String, String> iter = o2m.getIterator_on_Initials_of( _c );
+		BDBVectorIterator<String, String> iter = o2m.getIterator_on_Initials_of( _c );
 		try {
 			do {
 				if ( null != iter ) {
 					System.out.println( iter.now() + " -> _c" );
+					assertTrue( iter.now().equals( _a ) );
+					assertTrue( iter.now() != _a );
 				}
 				iter.goNext();
 			} while ( null != iter.now() );
@@ -139,6 +141,8 @@ public class OneToManyDBMapTest {
 			do {
 				if ( null != iter ) {
 					System.out.println( "_c -> " + iter.now() );
+					assertTrue( iter.now().equals( _b ) );
+					assertTrue( iter.now() != _b );
 				}
 				iter.goNext();
 			} while ( null != iter.now() );

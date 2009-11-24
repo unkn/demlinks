@@ -139,7 +139,6 @@ public abstract class StaticInstanceTracker {
 	protected abstract void done( MethodParams<Object> params );
 	
 	/**
-	 * do not use <code>this</code> again after calling this method
 	 * 
 	 * @return
 	 */

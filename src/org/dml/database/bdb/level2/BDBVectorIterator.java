@@ -52,7 +52,7 @@ import com.sleepycat.je.OperationStatus;
  * Set, not as in an ordered list; however in practice they're sorted
  * alphabetically so to speak, but shouldn't count on this!<br>
  */
-public class VectorIterator<InitialType, TerminalType> extends
+public class BDBVectorIterator<InitialType, TerminalType> extends
 		StaticInstanceTracker {
 	
 	private final Database						db;
@@ -68,7 +68,7 @@ public class VectorIterator<InitialType, TerminalType> extends
 	private DatabaseEntry						deKey					= null;
 	private DatabaseEntry						deData					= null;
 	
-	public VectorIterator( Level1_Storage_BerkeleyDB bdb_L1,
+	public BDBVectorIterator( Level1_Storage_BerkeleyDB bdb_L1,
 			Database whichPriDB, InitialType initialObject1,
 			EntryBinding<InitialType> initialBinding1,
 			EntryBinding<TerminalType> terminalBinding1 ) {
@@ -83,6 +83,8 @@ public class VectorIterator<InitialType, TerminalType> extends
 		deKey = new DatabaseEntry();
 		initialBinding.objectToEntry( initialObject, deKey );
 		deData = new DatabaseEntry();
+		// TODO add transaction parameter and if null then make own tx
+		// maybe this won't work as expected; think again
 	}
 	
 	private final Cursor getCursor() throws DatabaseException {
@@ -96,8 +98,6 @@ public class VectorIterator<InitialType, TerminalType> extends
 	}
 	
 	/**
-	 * you have to call this first, if you call goNext() you get exception
-	 * 
 	 * @throws DatabaseException
 	 */
 	public void goFirst() throws DatabaseException {
@@ -196,6 +196,17 @@ public class VectorIterator<InitialType, TerminalType> extends
 		} catch ( DatabaseException de ) {
 			throw new StorageException( de );
 		}
+	}
+	
+	/**
+	 * @throws DatabaseException
+	 * 
+	 */
+	public void delete() throws DatabaseException {
+
+		OperationStatus ret = this.getCursor().delete();
+		currentTerminalObject = null;
+		RunTime.assumedTrue( OperationStatus.SUCCESS == ret );
 	}
 	
 	// goLast() is too expensive to implement, due to BDB not giving support for

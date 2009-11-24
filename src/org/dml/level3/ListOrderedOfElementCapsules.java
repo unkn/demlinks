@@ -25,9 +25,13 @@ package org.dml.level3;
 
 
 
+import org.dml.database.bdb.level2.BDBVectorIterator;
 import org.dml.level1.Symbol;
+import org.dml.storagewrapper.StorageException;
 import org.dml.tools.RunTime;
 import org.references.Position;
+
+import com.sleepycat.je.DatabaseException;
 
 
 
@@ -79,24 +83,100 @@ public class ListOrderedOfElementCapsules {
 	 * @param last
 	 * @param candidate
 	 */
-	private void internal_dmlRegisterNewFirstOrLast( Position last,
+	private void internal_dmlRegisterNewHeadOrTail( Position pos,
 			ElementCapsule candidate ) {
 
-		// TODO Auto-generated method stub
+		RunTime.assumedNotNull( candidate, pos );
+		RunTime.assumedTrue( candidate.isValidCapsule() );
+		Symbol parent = null;
+		switch ( pos ) {
+		case FIRST:
+			parent = envL3.allHeads_Symbol;
+			break;
+		case LAST:
+			parent = envL3.allTails_Symbol;
+			break;
+		default:
+			RunTime.badCall( "bad position for this method" );
+			break;
+		}
+		ElementCapsule oldCandidate = this.get_ElementCapsule( pos );
+		// envL3.findCommonTerminalForInitials( parent,
+		// oldCandidate.getAsSymbol() );
+		if ( null != oldCandidate ) {
+			envL3.removeVector( parent, oldCandidate.getAsSymbol() );
+		}
+		// new one
+		envL3.ensureVector( parent, candidate.getAsSymbol() );
+	}
+	
+	public void add_ElementCapsule( ElementCapsule theNew, Position pos,
+			ElementCapsule posElement ) {
+
+		RunTime.assumedNotNull( theNew, pos, posElement );
+		RunTime.assumedTrue( posElement.isValidCapsule() );
+		RunTime.assumedTrue( theNew.isValidCapsule() );
+		RunTime.assumedTrue( theNew.isAlone() );
+		switch ( pos ) {
+		case BEFORE:
+		case AFTER:
+			// implies list has at least 1 element even if this is posElement
+			// 1. we must be sure posElement is already part of this list
+			RunTime.assumedTrue( this.hasElementCapsule( posElement ) );
+			// RunTime.assumedFalse( posElement.isAlone() ); could be alone
+			
+			// assuming pos is AFTER
+			// get oldnext
+			ElementCapsule oldOne = posElement.getSideCapsule( pos );
+			if ( null == oldOne ) {
+				// then posElement is last
+				RunTime.assumedTrue( this.get_ElementCapsule( pos ) == posElement );
+			} else {
+				// it's not the last
+				// oldnext.prev=theNew
+				oldOne.setCapsule( Position.opposite( pos ), theNew );
+			}
+			
+
+			// oldOne can be null here, from above, depending on case; and is ok
+			theNew.setCapsule( pos, oldOne );// new.next=oldnext
+			
+			posElement.setCapsule( pos, theNew );// next=theNew
+			
+			// new.prev=posElement
+			theNew.setCapsule( Position.opposite( pos ), posElement );
+			break;
+		default:
+			RunTime.badCall( "bad position for this method" );
+			break;
+		}
 		
 	}
 	
-	public void add_ElementCapsule( Position pos, ElementCapsule theNew ) {
+	/**
+	 * @param posElement
+	 * @return
+	 */
+	public boolean hasElementCapsule( ElementCapsule posElement ) {
+
+		// TODO Auto-generated method stub
+		return false;
+	}
+	
+	public void add_ElementCapsule( ElementCapsule theNew, Position pos ) {
 
 		switch ( pos ) {
 		case FIRST:
 		case LAST:
 			RunTime.assumedNotNull( theNew );
+			RunTime.assumedTrue( theNew.isValidCapsule() );
 			RunTime.assumedTrue( theNew.isAlone() );// prev=next=null
 			
+			// assuming pos is FIRST
 			if ( this.isEmpty() ) {
 				// no first/last
-				this.internal_dmlRegisterNewFirstOrLast(
+				// set as Tail
+				this.internal_dmlRegisterNewHeadOrTail(
 						Position.opposite( pos ), theNew );
 			} else {// not empty list
 				// has a last
@@ -116,7 +196,7 @@ public class ListOrderedOfElementCapsules {
 				// setFirst=newfirst
 				
 			}
-			this.internal_dmlRegisterNewFirstOrLast( pos, theNew );// common
+			this.internal_dmlRegisterNewHeadOrTail( pos, theNew );// common
 			break;
 		
 		default:
@@ -127,9 +207,16 @@ public class ListOrderedOfElementCapsules {
 	
 	public int size() {
 
-		return 0;
-		
-		// TODO
+		BDBVectorIterator<Symbol, Symbol> iter = envL3.getIterator_on_Terminals_of( name );
+		int ret;
+		try {
+			ret = iter.count();
+		} catch ( DatabaseException e ) {
+			throw new StorageException( e );
+		} finally {
+			iter.deInit();
+		}
+		return ret;
 	}
 	
 	public boolean isEmpty() {
@@ -140,12 +227,48 @@ public class ListOrderedOfElementCapsules {
 	}
 	
 	/**
-	 * @param first
+	 * @param pos
+	 *            FIRST or BEFORE / LAST or AFTER
 	 * @return
 	 */
-	private ElementCapsule get_ElementCapsule( Position pos ) {
+	public ElementCapsule get_ElementCapsule( Position pos ) {
 
-		// TODO Auto-generated method stub
-		return null;
+		RunTime.assumedNotNull( pos );
+		Symbol sym = null;
+		switch ( pos ) {
+		case FIRST:
+		case BEFORE:
+			sym = envL3.allHeads_Symbol;
+			break;
+		case LAST:
+		case AFTER:
+			sym = envL3.allTails_Symbol;
+			break;
+		default:
+			RunTime.badCall( "bad position for this method" );
+			break;// unreachable code
+		}
+		Symbol x = envL3.findCommonTerminalForInitials( sym, name );
+		if ( null != x ) {// found one
+			ElementCapsule ec = new ElementCapsule( envL3, x );
+			return ec;
+		}
+		return null;// found none
+	}
+	
+	public ElementCapsule get_ElementCapsule( Position pos, ElementCapsule posEC ) {
+
+		RunTime.assumedNotNull( pos, posEC );
+		switch ( pos ) {
+		case BEFORE:
+			break;
+		case AFTER:
+			break;
+		default:
+			RunTime.badCall( "bad position for this method" );
+			break;// unreachable code
+		}
+		// TODO
+		return null;// found none
 	}
 }

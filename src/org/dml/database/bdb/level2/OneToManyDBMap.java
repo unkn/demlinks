@@ -99,7 +99,7 @@ public class OneToManyDBMap<InitialType, TerminalType> {
 	/**
 	 * @return
 	 */
-	public String getName() {
+	public String getDBName() {
 
 		return dbName;
 	}
@@ -297,22 +297,22 @@ public class OneToManyDBMap<InitialType, TerminalType> {
 	 * @return
 	 * @throws DatabaseException
 	 */
-	public VectorIterator<InitialType, TerminalType> getIterator_on_Terminals_of(
+	public BDBVectorIterator<InitialType, TerminalType> getIterator_on_Terminals_of(
 			InitialType initialObject ) throws DatabaseException {
 
 		// DatabaseEntry keyEntry = new DatabaseEntry();
 		// initialBinding.objectToEntry( initialObject, keyEntry );
-		VectorIterator<InitialType, TerminalType> ret = new VectorIterator<InitialType, TerminalType>(
+		BDBVectorIterator<InitialType, TerminalType> ret = new BDBVectorIterator<InitialType, TerminalType>(
 				this.getBDBL1(), this.getForwardDB(), initialObject,
 				initialBinding, terminalBinding );
 		ret.init( null );
 		return ret;
 	}
 	
-	public VectorIterator<TerminalType, InitialType> getIterator_on_Initials_of(
+	public BDBVectorIterator<TerminalType, InitialType> getIterator_on_Initials_of(
 			TerminalType terminalObject ) throws DatabaseException {
 
-		VectorIterator<TerminalType, InitialType> ret = new VectorIterator<TerminalType, InitialType>(
+		BDBVectorIterator<TerminalType, InitialType> ret = new BDBVectorIterator<TerminalType, InitialType>(
 				this.getBDBL1(), this.getBackwardDB(), terminalObject,
 				terminalBinding, initialBinding );
 		ret.init( null );
@@ -322,7 +322,7 @@ public class OneToManyDBMap<InitialType, TerminalType> {
 	public int countInitials( TerminalType ofTerminalObject )
 			throws DatabaseException {
 
-		VectorIterator<TerminalType, InitialType> vi = this.getIterator_on_Initials_of( ofTerminalObject );
+		BDBVectorIterator<TerminalType, InitialType> vi = this.getIterator_on_Initials_of( ofTerminalObject );
 		int count = -1;
 		try {
 			count = vi.count();
@@ -335,7 +335,7 @@ public class OneToManyDBMap<InitialType, TerminalType> {
 	public int countTerminals( InitialType ofInitialObject )
 			throws DatabaseException {
 
-		VectorIterator<InitialType, TerminalType> vi = this.getIterator_on_Terminals_of( ofInitialObject );
+		BDBVectorIterator<InitialType, TerminalType> vi = this.getIterator_on_Terminals_of( ofInitialObject );
 		int count = -1;
 		try {
 			count = vi.count();
@@ -343,5 +343,75 @@ public class OneToManyDBMap<InitialType, TerminalType> {
 			vi.deInit();
 		}
 		return count;
+	}
+	
+	/**
+	 * @param initial1
+	 * @param initial2
+	 * @return
+	 */
+	public TerminalType findCommonTerminalForInitials( InitialType initial1,
+			InitialType initial2 ) throws DatabaseException {
+
+		this.checkKey( initial1 );
+		this.checkKey( initial2 );
+		// TODO
+		return null;
+	}
+	
+	/**
+	 * @param initial
+	 * @param terminal
+	 * @return true if existed
+	 * @throws DatabaseException
+	 */
+	public boolean removeVector( InitialType initialObject,
+			TerminalType terminalObject ) throws DatabaseException {
+
+		RunTime.assumedNotNull( initialObject, terminalObject );
+		
+		BDBVectorIterator<InitialType, TerminalType> iter = this.getIterator_on_Terminals_of( initialObject );
+		boolean found1 = false;
+		try {
+			iter.goFirst();
+			while ( null != iter.now() ) {
+				if ( iter.now().equals( terminalObject ) ) {
+					// found it
+					found1 = true;
+					break;
+				}
+				iter.goNext();
+			}
+			
+
+			if ( found1 ) {
+				BDBVectorIterator<TerminalType, InitialType> reverseIter = this.getIterator_on_Initials_of( terminalObject );
+				boolean found2 = false;
+				try {
+					reverseIter.goFirst();
+					while ( null != reverseIter.now() ) {
+						if ( reverseIter.now().equals( initialObject ) ) {
+							// found it
+							found2 = true;
+						}
+						reverseIter.goNext();
+					}
+					RunTime.assumedTrue( found2 );// must have!
+					// TODO encompass in a transaction
+					int size1 = iter.count();
+					int size2 = reverseIter.count();
+					iter.delete();
+					reverseIter.delete();
+					RunTime.assumedTrue( size1 - 1 == iter.count() );
+					RunTime.assumedTrue( size2 - 1 == reverseIter.count() );
+				} finally {
+					reverseIter.deInit();
+				}
+			}
+			
+		} finally {
+			iter.deInit();
+		}
+		return found1;
 	}
 }

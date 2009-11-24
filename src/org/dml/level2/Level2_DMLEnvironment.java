@@ -25,6 +25,7 @@ package org.dml.level2;
 
 
 
+import org.dml.database.bdb.level2.BDBVectorIterator;
 import org.dml.level1.Level1_DMLEnvironment;
 import org.dml.level1.Symbol;
 import org.dml.storagewrapper.StorageException;
@@ -48,6 +49,20 @@ public class Level2_DMLEnvironment extends Level1_DMLEnvironment implements
 	 * (non-Javadoc)
 	 * 
 	 * @see
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
 	 * 
 	 * org.dml.level1.Level1_DMLEnvironment#start(org.references.method.MethodParams
 	 * )
@@ -86,5 +101,65 @@ public class Level2_DMLEnvironment extends Level1_DMLEnvironment implements
 
 		RunTime.assumedNotNull( first, second );
 		return storage.isVector( first, second );
+	}
+	
+	@Override
+	public boolean removeVector( Symbol first, Symbol second ) {
+
+		RunTime.assumedNotNull( first, second );
+		return storage.removeVector( first, second );
+	}
+	
+	@Override
+	public BDBVectorIterator<Symbol, Symbol> getIterator_on_Initials_of(
+			Symbol terminalObject ) {
+
+		RunTime.assumedNotNull( terminalObject );
+		return storage.getIterator_on_Initials_of( terminalObject );
+	}
+	
+	@Override
+	public BDBVectorIterator<Symbol, Symbol> getIterator_on_Terminals_of(
+			Symbol initialObject ) {
+
+		RunTime.assumedNotNull( initialObject );
+		return storage.getIterator_on_Terminals_of( initialObject );
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.dml.level2.Level2_DMLStorageWrapper#countInitials(org.dml.level1.
+	 * Symbol)
+	 */
+	@Override
+	public int countInitials( Symbol ofTerminalObject ) {
+
+		RunTime.assumedNotNull( ofTerminalObject );
+		return storage.countInitials( ofTerminalObject );
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.dml.level2.Level2_DMLStorageWrapper#countTerminals(org.dml.level1
+	 * .Symbol)
+	 */
+	@Override
+	public int countTerminals( Symbol ofInitialObject ) {
+
+		RunTime.assumedNotNull( ofInitialObject );
+		return storage.countTerminals( ofInitialObject );
+	}
+	
+	/**
+	 */
+	public Symbol findCommonTerminalForInitials( Symbol initial1,
+			Symbol initial2 ) {
+
+		RunTime.assumedNotNull( initial1, initial2 );
+		return storage.findCommonTerminalForInitials( initial1, initial2 );
 	}
 }

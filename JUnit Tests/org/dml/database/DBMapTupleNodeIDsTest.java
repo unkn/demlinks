@@ -32,8 +32,8 @@ import static org.junit.Assert.assertTrue;
 
 import org.dml.JUnits.Consts;
 import org.dml.database.bdb.level1.Level1_Storage_BerkeleyDB;
+import org.dml.database.bdb.level2.BDBVectorIterator;
 import org.dml.database.bdb.level2.DBMapSymbolsTuple;
-import org.dml.database.bdb.level2.VectorIterator;
 import org.dml.level1.JavaID;
 import org.dml.level1.Level1_DMLEnvironment;
 import org.dml.level1.Symbol;
@@ -123,7 +123,7 @@ public class DBMapTupleNodeIDsTest {
 		assertTrue( tdb.isVector( _c, _a ) );
 		assertTrue( tdb.isVector( _c, _b ) );
 		
-		VectorIterator<Symbol, Symbol> iter = tdb.getIterator_on_Terminals_of( _a );
+		BDBVectorIterator<Symbol, Symbol> iter = tdb.getIterator_on_Terminals_of( _a );
 		try {
 			iter.goFirst();
 			do {
@@ -206,5 +206,12 @@ public class DBMapTupleNodeIDsTest {
 		assertTrue( tdb.countInitials( _b ) == 2 );
 		assertTrue( tdb.countTerminals( _a ) == 2 );
 		
+		assertTrue( tdb.removeVector( _a, _b ) );
+		assertTrue( tdb.countInitials( _b ) == 1 );
+		assertTrue( tdb.countTerminals( _a ) == 1 );
+		
+		assertFalse( tdb.removeVector( _a, _b ) );
+		assertTrue( tdb.countInitials( _b ) == 1 );
+		assertTrue( tdb.countTerminals( _a ) == 1 );
 	}
 }

@@ -25,6 +25,7 @@ package org.dml.level3;
 
 
 
+import org.dml.level1.Symbol;
 import org.dml.tools.RunTime;
 import org.references.Position;
 
@@ -35,6 +36,30 @@ import org.references.Position;
  *
  */
 public class ElementCapsule {
+	
+	Symbol					name;
+	Level3_DMLEnvironment	envL3;
+	
+	/**
+	 */
+	public ElementCapsule( Level3_DMLEnvironment env_L3, Symbol name1 ) {
+
+		RunTime.assumedNotNull( name1, env_L3 );
+		name = name1;
+		envL3 = env_L3;
+		RunTime.assumedTrue( this.isValidCapsule() );
+	}
+	
+	/**
+	 * @param name2
+	 * @return
+	 */
+	public boolean isValidCapsule() {
+
+		// TODO make sure it is an EC ie. AllECs->name
+		// it could not have either of Prev or Next
+		return false;
+	}
 	
 	/**
 	 * @return
@@ -88,6 +113,15 @@ public class ElementCapsule {
 		default:
 			RunTime.bug( "cannot reach this" );
 		}
+	}
+	
+	/**
+	 * @return
+	 */
+	public Symbol getAsSymbol() {
+
+		RunTime.assumedTrue( this.isValidCapsule() );
+		return name;
 	}
 	
 }

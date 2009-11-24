@@ -25,6 +25,7 @@ package org.dml.level2;
 
 
 
+import org.dml.database.bdb.level2.BDBVectorIterator;
 import org.dml.level1.Level1_DMLStorageWrapper;
 import org.dml.level1.Symbol;
 import org.dml.storagewrapper.StorageException;
@@ -48,4 +49,25 @@ public interface Level2_DMLStorageWrapper extends Level1_DMLStorageWrapper {
 	
 	
 	public boolean isVector( Symbol first, Symbol second );
+	
+	public BDBVectorIterator<Symbol, Symbol> getIterator_on_Initials_of(
+			Symbol terminalObject );
+	
+	public BDBVectorIterator<Symbol, Symbol> getIterator_on_Terminals_of(
+			Symbol initialObject );
+	
+	public int countInitials( Symbol ofTerminalObject );
+	
+	public int countTerminals( Symbol ofInitialObject );
+	
+	public Symbol findCommonTerminalForInitials( Symbol initial1,
+			Symbol initial2 );
+	
+	
+	/**
+	 * @param initial
+	 * @param terminal
+	 * @return true if existed
+	 */
+	boolean removeVector( Symbol initial, Symbol terminal );
 }

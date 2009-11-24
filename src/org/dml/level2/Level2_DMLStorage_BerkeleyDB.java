@@ -25,6 +25,7 @@ package org.dml.level2;
 
 
 
+import org.dml.database.bdb.level2.BDBVectorIterator;
 import org.dml.database.bdb.level2.Level2_Storage_BerkeleyDB;
 import org.dml.level1.Level1_DMLStorage_BerkeleyDB;
 import org.dml.level1.Symbol;
@@ -67,7 +68,8 @@ public class Level2_DMLStorage_BerkeleyDB extends Level1_DMLStorage_BerkeleyDB
 
 		RunTime.assumedNotNull( initialNode, terminalNode );
 		try {
-			return bdb.getDBMapSymbolsTuple().ensureVector( initialNode, terminalNode );
+			return bdb.getDBMapSymbolsTuple().ensureVector( initialNode,
+					terminalNode );
 		} catch ( DatabaseException de ) {
 			throw new StorageException( de );
 		}
@@ -85,7 +87,102 @@ public class Level2_DMLStorage_BerkeleyDB extends Level1_DMLStorage_BerkeleyDB
 
 		RunTime.assumedNotNull( initialNode, terminalNode );
 		try {
-			return bdb.getDBMapSymbolsTuple().isVector( initialNode, terminalNode );
+			return bdb.getDBMapSymbolsTuple().isVector( initialNode,
+					terminalNode );
+		} catch ( DatabaseException de ) {
+			throw new StorageException( de );
+		}
+	}
+	
+	@Override
+	public BDBVectorIterator<Symbol, Symbol> getIterator_on_Initials_of(
+			Symbol terminalObject ) {
+
+		RunTime.assumedNotNull( terminalObject );
+		try {
+			return bdb.getDBMapSymbolsTuple().getIterator_on_Initials_of(
+					terminalObject );
+		} catch ( DatabaseException de ) {
+			throw new StorageException( de );
+		}
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.dml.level2.Level2_DMLStorageWrapper#getIterator_on_Terminals_of(org
+	 * .dml.level1.Symbol)
+	 */
+	@Override
+	public BDBVectorIterator<Symbol, Symbol> getIterator_on_Terminals_of(
+			Symbol initialObject ) {
+
+		RunTime.assumedNotNull( initialObject );
+		try {
+			return bdb.getDBMapSymbolsTuple().getIterator_on_Terminals_of(
+					initialObject );
+		} catch ( DatabaseException de ) {
+			throw new StorageException( de );
+		}
+	}
+	
+	@Override
+	public int countInitials( Symbol ofTerminalObject ) {
+
+		RunTime.assumedNotNull( ofTerminalObject );
+		try {
+			return bdb.getDBMapSymbolsTuple().countInitials( ofTerminalObject );
+		} catch ( DatabaseException de ) {
+			throw new StorageException( de );
+		}
+	}
+	
+	@Override
+	public int countTerminals( Symbol ofInitialObject ) {
+
+		RunTime.assumedNotNull( ofInitialObject );
+		try {
+			return bdb.getDBMapSymbolsTuple().countTerminals( ofInitialObject );
+		} catch ( DatabaseException de ) {
+			throw new StorageException( de );
+		}
+	}
+	
+	/**
+	 * @param initial1
+	 * @param initial2
+	 * @return
+	 */
+	@Override
+	public Symbol findCommonTerminalForInitials( Symbol initial1,
+			Symbol initial2 ) {
+
+		RunTime.assumedNotNull( initial1, initial2 );
+		try {
+			return bdb.getDBMapSymbolsTuple().findCommonTerminalForInitials(
+					initial1, initial2 );
+		} catch ( DatabaseException de ) {
+			throw new StorageException( de );
+		}
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * 
+	 * 
+	 * 
+	 * org.dml.level2.Level2_DMLStorageWrapper#removeVector(org.dml.level1.Symbol
+	 * , org.dml.level1.Symbol)
+	 */
+	@Override
+	public boolean removeVector( Symbol initial, Symbol terminal ) {
+
+		RunTime.assumedNotNull( initial, terminal );
+		try {
+			return bdb.getDBMapSymbolsTuple().removeVector( initial, terminal );
 		} catch ( DatabaseException de ) {
 			throw new StorageException( de );
 		}
