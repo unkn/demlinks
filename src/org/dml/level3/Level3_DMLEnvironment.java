@@ -46,6 +46,8 @@ public class Level3_DMLEnvironment extends Level2_DMLEnvironment {
 	public Symbol				allHeads_Symbol						= null;
 	private static final JavaID	allTails_JavaID						= JavaID.ensureJavaIDFor( "allTAILs" );
 	public Symbol				allTails_Symbol						= null;
+	private static final JavaID	allElementCapsules_JavaID			= JavaID.ensureJavaIDFor( "allElementCapsules" );
+	public Symbol				allElementCapsules_Symbol			= null;
 	
 	@Override
 	protected void start( MethodParams<Object> params ) {
@@ -65,6 +67,7 @@ public class Level3_DMLEnvironment extends Level2_DMLEnvironment {
 		listOrderedOfElementCapsules_Symbol = this.ensureSymbol( listOrderedOfElementCapsules_JavaID );
 		allHeads_Symbol = this.ensureSymbol( allHeads_JavaID );
 		allTails_Symbol = this.ensureSymbol( allTails_JavaID );
+		allElementCapsules_Symbol = this.ensureSymbol( allElementCapsules_JavaID );
 	}
 	
 	public ListOrderedOfSymbols newList( Symbol listName ) {

@@ -25,10 +25,8 @@ package org.dml.level3;
 
 
 
-import static org.junit.Assert.assertTrue;
-
-import org.dml.level1.Symbol;
 import org.dml.level1.JavaID;
+import org.dml.level1.Symbol;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -69,6 +67,6 @@ public class Level3_DMLEnvironmentTest {
 		JavaID name = JavaID.ensureJavaIDFor( "boo" );
 		Symbol name2 = l3.createSymbol( name );
 		ListOrderedOfSymbols list = l3.newList( name2 );
-		assertTrue( list.isValid() );
+		list.assumedValid();
 	}
 }

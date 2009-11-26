@@ -167,16 +167,6 @@ public class Level2_DMLStorage_BerkeleyDB extends Level1_DMLStorage_BerkeleyDB
 		}
 	}
 	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * 
-	 * 
-	 * 
-	 * org.dml.level2.Level2_DMLStorageWrapper#removeVector(org.dml.level1.Symbol
-	 * , org.dml.level1.Symbol)
-	 */
 	@Override
 	public boolean removeVector( Symbol initial, Symbol terminal ) {
 

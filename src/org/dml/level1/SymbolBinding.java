@@ -51,8 +51,8 @@ public class SymbolBinding extends TupleBinding<Symbol> {
 
 		long l = input.readLong();
 		RunTime.assumedNotNull( l );
-		Symbol nid = new Symbol( l );
-		RunTime.assumedTrue( nid.internalGetForBinding() == l );
+		Symbol nid = Symbol.internalNewSymbolRepresentationFor( l );
+		RunTime.assumedTrue( nid.internalGetForBDBBinding() == l );
 		return nid;
 	}
 	
@@ -67,7 +67,7 @@ public class SymbolBinding extends TupleBinding<Symbol> {
 	public void objectToEntry( Symbol object, TupleOutput output ) {
 
 		RunTime.assumedNotNull( object, output );
-		long myLong = object.internalGetForBinding();
+		long myLong = object.internalGetForBDBBinding();
 		RunTime.assumedNotNull( myLong );
 		// System.out.println( object );
 		// it will never be null before writing it to dbase, else bug somewhere

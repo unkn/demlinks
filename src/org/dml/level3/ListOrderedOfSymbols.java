@@ -26,7 +26,7 @@ package org.dml.level3;
 
 
 import org.dml.level1.Symbol;
-import org.dml.tools.RunTime;
+import org.references.Position;
 
 
 
@@ -63,22 +63,7 @@ public class ListOrderedOfSymbols extends ListOrderedOfElementCapsules {
 	synchronized public void addLast( Symbol whichSymbol ) {
 
 		ElementCapsule ec = internal_encapsulateSymbol( whichSymbol );
-		
-		if ( this.isEmpty() ) {
-			RunTime.assumedTrue( getFirstCapsule() == null );
-			RunTime.assumedTrue( getLastCapsule() == null );
-			// we don't have a last thus list is empty
-			// internal_setLast( ec ); is common below
-			internal_setFirst( ec );
-			// now list has 1 element
-		} else {
-			// list has a last, so at least 1 element
-			ElementCapsule last = getLastCapsule();
-			last.setNextCapsule( ec );// auto set ec.prev=last;
-			RunTime.assumedTrue( ec.getPrevCapsule() == last );
-		}
-		
-		internal_setLast( ec );
+		this.add_ElementCapsule( ec, Position.LAST );
 	}
 	
 	public void addFirst( Symbol whichSymbol ) {

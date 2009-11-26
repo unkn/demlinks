@@ -45,28 +45,6 @@ public class Level2_DMLEnvironment extends Level1_DMLEnvironment implements
 	@VarLevel
 	private final Level2_DMLStorage_BerkeleyDB	storage	= null;
 	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
-	 * org.dml.level1.Level1_DMLEnvironment#start(org.references.method.MethodParams
-	 * )
-	 */
 	@Override
 	protected void start( MethodParams<Object> params ) {
 

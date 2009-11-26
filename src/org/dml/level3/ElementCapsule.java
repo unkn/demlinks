@@ -41,24 +41,31 @@ public class ElementCapsule {
 	Level3_DMLEnvironment	envL3;
 	
 	/**
+	 * @param env_L3
+	 * @param nameOfEC
+	 *            is an ElementCapsule already
 	 */
-	public ElementCapsule( Level3_DMLEnvironment env_L3, Symbol name1 ) {
+	public ElementCapsule( Level3_DMLEnvironment env_L3, Symbol nameOfEC ) {
 
-		RunTime.assumedNotNull( name1, env_L3 );
-		name = name1;
+		RunTime.assumedNotNull( nameOfEC, env_L3 );
+		RunTime.assumedTrue( env_L3.isInited() );
+		name = nameOfEC;
 		envL3 = env_L3;
-		RunTime.assumedTrue( this.isValidCapsule() );
+		this.assumedIsValidCapsule();
 	}
 	
 	/**
 	 * @param name2
 	 * @return
 	 */
-	public boolean isValidCapsule() {
+	public void assumedIsValidCapsule() {
 
-		// TODO make sure it is an EC ie. AllECs->name
-		// it could not have either of Prev or Next
-		return false;
+		// make sure it is an EC ie. AllECs->name
+		// it could not have either Prev or Next though
+		RunTime.assumedTrue( envL3.isVector( envL3.allElementCapsules_Symbol,
+				name ) );
+		int size = envL3.countTerminals( name );
+		RunTime.assumedTrue( ( size <= 3 ) && ( size >= 0 ) );
 	}
 	
 	/**
@@ -66,8 +73,8 @@ public class ElementCapsule {
 	 */
 	public boolean isAlone() {
 
-		boolean ret1 = ( getPrevCapsule() == null );
-		boolean ret2 = ( getNextCapsule() == null );
+		boolean ret1 = ( this.getSideCapsule( Position.FIRST ) == null );
+		boolean ret2 = ( this.getSideCapsule( Position.LAST ) == null );
 		if ( ret1 != ret2 ) {
 			RunTime.bug( "they should be same value" );
 		}
@@ -120,7 +127,7 @@ public class ElementCapsule {
 	 */
 	public Symbol getAsSymbol() {
 
-		RunTime.assumedTrue( this.isValidCapsule() );
+		this.assumedIsValidCapsule();
 		return name;
 	}
 	

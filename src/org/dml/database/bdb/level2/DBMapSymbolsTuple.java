@@ -51,6 +51,8 @@ import com.sleepycat.je.DatabaseException;
  * sorted but should not be counted on, it's sorted by BDB internally for easy
  * search/find). The only thing you'd need to know here
  * is whether the tuple exists or not. And to parse all initial/terminal symbols<br>
+ * 
+ * FIXME: erm... Symbols here don't need to have a JavaID associated with them<br>
  */
 public class DBMapSymbolsTuple extends OneToManyDBMap<Symbol, Symbol> {
 	
@@ -86,7 +88,7 @@ public class DBMapSymbolsTuple extends OneToManyDBMap<Symbol, Symbol> {
 
 		RunTime.assumedNotNull( initialNode, terminalNode );
 		
-		// checking that both NodeIDs exist already which means there are two
+		// checking that both Symbols exist already which means there are two
 		// JavaIDs associated with them
 		this.throwIfNotExist( initialNode );
 		this.throwIfNotExist( terminalNode );
@@ -131,6 +133,8 @@ public class DBMapSymbolsTuple extends OneToManyDBMap<Symbol, Symbol> {
 	
 	private boolean existsSymbol( Symbol whichSymbol ) throws DatabaseException {
 
+		// basically you're asking if the Symbol has a JavaID associated with
+		// it, but it doesn't need to have one to exist FIXME
 		return ( null != this.getBDBL1().getDBMap_JavaIDs_To_Symbols().getJavaID(
 				whichSymbol ) );
 	}

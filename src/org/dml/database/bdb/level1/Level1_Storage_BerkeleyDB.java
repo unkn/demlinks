@@ -112,7 +112,7 @@ public class Level1_Storage_BerkeleyDB extends StaticInstanceTracker {
 		envHomeDir = params.getExString( PossibleParams.homeDir );
 		Log.entry( envHomeDir );
 		if ( (Boolean)params.getEx( PossibleParams.jUnit_wipeDB ) ) {
-			Log.special( "destroying previous environment, before we beging..." );
+			Log.special( "destroying previous environment, before we begin..." );
 			this.internalWipeEnv();
 		}
 		try {

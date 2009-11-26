@@ -26,8 +26,8 @@ package org.dml.database.bdb.level1;
 
 
 import org.dml.error.BugError;
-import org.dml.level1.Symbol;
 import org.dml.level1.JavaID;
+import org.dml.level1.Symbol;
 import org.dml.tools.RunTime;
 import org.javapart.logger.Log;
 
@@ -41,13 +41,14 @@ import com.sleepycat.je.OperationStatus;
  *and the methods that use NodeID and NodeJavaID objects<br>
  *lookup by either NodeJavaID or NodeID<br>
  */
-public class DBMap_JavaIDs_To_Symbols extends
-		OneToOneDBMap<JavaID, Symbol> {
+public class DBMap_JavaIDs_To_Symbols extends OneToOneDBMap<JavaID, Symbol> {
 	
 	private DBSequence			seq			= null;
 	private String				seq_KEYNAME	= null;
-	private final static int	SEQ_DELTA	= 1;
 	
+	// increment-by value, when fetching new unique Symbols
+	private final static int	SEQ_DELTA	= 1;	// > 0
+													
 	/**
 	 * @param dbName1
 	 * @throws DatabaseException
@@ -56,8 +57,8 @@ public class DBMap_JavaIDs_To_Symbols extends
 			String dbName1 ) throws DatabaseException {
 
 		super( bdb1, dbName1, JavaID.class,
-				AllTupleBindings.getBinding( JavaID.class ),
-				Symbol.class, AllTupleBindings.getBinding( Symbol.class ) );
+				AllTupleBindings.getBinding( JavaID.class ), Symbol.class,
+				AllTupleBindings.getBinding( Symbol.class ) );
 		seq_KEYNAME = dbName1;
 	}
 	
@@ -101,9 +102,9 @@ public class DBMap_JavaIDs_To_Symbols extends
 	}
 	
 	/**
-	 * the NodeID must already exist else null is returned<br>
-	 * this doesn't create a new NodeID for the supplied JavaID<br>
-	 * remember there's a one to one mapping between a JavaID and a NodeID
+	 * the Symbol must already exist else null is returned<br>
+	 * this doesn't create a new Symbol for the supplied JavaID<br>
+	 * remember there's a one to one mapping between a JavaID and a Symbol
 	 * 
 	 * @param fromJavaID
 	 * @return null if not found;
@@ -123,8 +124,7 @@ public class DBMap_JavaIDs_To_Symbols extends
 	 * @throws DatabaseException
 	 * @throws BugError
 	 */
-	public Symbol createSymbol( JavaID fromJavaID )
-			throws DatabaseException {
+	public Symbol createSymbol( JavaID fromJavaID ) throws DatabaseException {
 
 		if ( null != this.internal_getSymbolFromJavaID( fromJavaID ) ) {
 			// already exists
@@ -148,10 +148,21 @@ public class DBMap_JavaIDs_To_Symbols extends
 			throws DatabaseException {
 
 		RunTime.assumedNotNull( fromJavaID );
-		Symbol nid = new Symbol( this.getUniqueLong() );
+		Symbol nid = this.internal_makeNewUniqueSymbol();
+		RunTime.assumedNotNull( nid );
 		if ( OperationStatus.SUCCESS != this.makeVector( fromJavaID, nid ) ) {
-			RunTime.bug( "should've succeeded, maybe fromJavaID already existed?" );
+			RunTime.bug( "should've succeeded, maybe fromJavaID already existed? in BDB I mean" );
 		}
+		return nid;
+	}
+	
+	private final Symbol internal_makeNewUniqueSymbol()
+			throws DatabaseException {
+
+		// this new Symbol is not saved anywhere in the database, but it's
+		// ensured that it will not be created again, so it's unique even if you
+		// don't save it in the database later
+		Symbol nid = Symbol.internalNewSymbolRepresentationFor( this.getUniqueLong() );
 		RunTime.assumedNotNull( nid );
 		return nid;
 	}
@@ -163,8 +174,7 @@ public class DBMap_JavaIDs_To_Symbols extends
 	 * @return
 	 * @throws DatabaseException
 	 */
-	public Symbol ensureSymbol( JavaID fromJavaID )
-			throws DatabaseException {
+	public Symbol ensureSymbol( JavaID fromJavaID ) throws DatabaseException {
 
 		Symbol nid = this.internal_getSymbolFromJavaID( fromJavaID );
 		if ( null == nid ) {
@@ -200,8 +210,7 @@ public class DBMap_JavaIDs_To_Symbols extends
 	 * @return null if not found
 	 * @throws DatabaseException
 	 */
-	public JavaID getJavaID( Symbol fromSymbol )
-			throws DatabaseException {
+	public JavaID getJavaID( Symbol fromSymbol ) throws DatabaseException {
 
 		RunTime.assumedNotNull( fromSymbol );
 		JavaID jid = this.getKey( fromSymbol );

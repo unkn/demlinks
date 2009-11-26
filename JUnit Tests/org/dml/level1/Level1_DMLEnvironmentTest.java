@@ -94,6 +94,14 @@ public class Level1_DMLEnvironmentTest {
 			} finally {
 				assertTrue( threw );
 			}
+			
+
+			// same contents in java
+			long la = a.internalGetForBDBBinding();
+			Symbol anew = Symbol.internalNewSymbolRepresentationFor( la );
+			assertTrue( a != anew );
+			assertTrue( a.equals( anew ) );
+			assertTrue( dml1.getJavaID( anew ) == dml1.getJavaID( a ) );
 		} finally {
 			dml1.deInit();
 		}

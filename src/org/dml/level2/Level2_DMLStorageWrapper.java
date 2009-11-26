@@ -53,6 +53,10 @@ public interface Level2_DMLStorageWrapper extends Level1_DMLStorageWrapper {
 	public BDBVectorIterator<Symbol, Symbol> getIterator_on_Initials_of(
 			Symbol terminalObject );
 	
+	/**
+	 * @param initialObject
+	 * @return already inited iterator, use deInit() when done
+	 */
 	public BDBVectorIterator<Symbol, Symbol> getIterator_on_Terminals_of(
 			Symbol initialObject );
 	

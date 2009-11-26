@@ -35,72 +35,61 @@ import org.dml.tools.RunTime;
  * and it's one2one associated with a SymbolJavaID (which is basically a String
  * in
  * java)<br>
- * it's not really important what NodeID is, rather it's important this one2one
+ * it's not really important what Symbol is, rather it's important this one2one
  * association between the two<br>
  * 
  * in Storage, a Sequence is used to generate a new Symbol that won't equate
  * with any other already existent<br>
+ * 
+ * ----ignoring the above, I say:
+ * so this is a java representation of a symbol that's stored in a dbase, which
+ * means it is read-only , caching the symbol on the database side, so that it
+ * can be used or referenced on this side<br>
+ * Therefore when you want to create a symbol, it will be created for you on the
+ * database side, and then a Symbol here in java will be associated with that to
+ * represent it. You should not be able to create the symbol here first, then in
+ * dbase.<br>
  */
 public class Symbol {
 	
-	/**
-	 * The <code>Class</code> instance representing the primitive type
-	 * <code>float</code>.
-	 * 
-	 * @since JDK1.1
-	 */
-	// public static final Class<Float> TYPE =
-	// Class.getPrimitiveClass("NodeID");
-	
-	private final long	itself;
-	
+	private final long	selfInBDB;	// in BDB
+									
 	/**
 	 * constructor, call only internally
 	 * 
 	 * @param iD
 	 */
-	public Symbol( long iD ) {
+	private Symbol( long iD ) {
 
-		itself = iD;
-	}
-	
-	// /**
-	// * constructor, call only internally (maybe also within the package)<br>
-	// * must be a long inside that string
-	// *
-	// * @param iD
-	// * a long expressed as a string
-	// * @throws NumberFormatException
-	// */
-	// public NodeID( String iD ) {
-	//
-	// itself = Long.parseLong( iD );
-	// // itself = Long.valueOf( iD );
-	// }
-	
-	// /**
-	// * @return the string representation of this NodeID, usually long to
-	// string
-	// * transformation
-	// */
-	// public String getAsString() {
-	//
-	// return String.valueOf( itself );
-	// }
-	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString() {
-
-		return this.getClass().getSimpleName() + ":" + String.valueOf( itself );
+		selfInBDB = iD;
 	}
 	
 	/**
-	 * compares by content if refs are different
+	 * the only one calling this should be the BDB subsystem<br>
+	 * not the user<br>
+	 * with a few exceptions for JUnit tests<br>
+	 * 
+	 * @param BDBSymbol
+	 *            given by the BDB dbase knowing that it's unique
+	 * @return
+	 */
+	public static Symbol internalNewSymbolRepresentationFor( long BDBSymbol ) {
+
+		RunTime.assumedNotNull( BDBSymbol );
+		return new Symbol( BDBSymbol );
+	}
+	
+	
+	@Override
+	public String toString() {
+
+		return this.getClass().getSimpleName() + ":"
+				+ String.valueOf( selfInBDB );
+	}
+	
+	/**
+	 * compares by content if refs are different<br>
+	 * equals always compares by content
 	 * 
 	 * @param nid
 	 * @return
@@ -115,7 +104,7 @@ public class Symbol {
 		}
 		if ( ( super.equals( nid ) ) || // ( this.getAsString().equals( (
 				// (NodeID)nid ).getAsString() ) ) ) {
-				( ( (Symbol)nid ).itself == itself ) ) {
+				( ( (Symbol)nid ).selfInBDB == selfInBDB ) ) {
 			return true;
 		}
 		return false;
@@ -124,8 +113,8 @@ public class Symbol {
 	/**
 	 * @return
 	 */
-	public long internalGetForBinding() {
+	public long internalGetForBDBBinding() {
 
-		return itself;
+		return selfInBDB;
 	}
 }

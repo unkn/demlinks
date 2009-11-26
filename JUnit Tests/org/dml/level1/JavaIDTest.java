@@ -38,7 +38,7 @@ import org.junit.Test;
  * 
  *
  */
-public class NodeJavaIDTest {
+public class JavaIDTest {
 	
 	JavaID	a, b, c;
 	

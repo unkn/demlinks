@@ -25,13 +25,9 @@ package org.dml.level3;
 
 
 
-import org.dml.database.bdb.level2.BDBVectorIterator;
 import org.dml.level1.Symbol;
-import org.dml.storagewrapper.StorageException;
 import org.dml.tools.RunTime;
 import org.references.Position;
-
-import com.sleepycat.je.DatabaseException;
 
 
 
@@ -49,8 +45,8 @@ public class ListOrderedOfElementCapsules {
 			Symbol name1 ) {
 
 		RunTime.assumedNotNull( l3_DMLEnv, name1 );
+		RunTime.assumedTrue( l3_DMLEnv.isInited() );
 		envL3 = l3_DMLEnv;
-		
 		name = name1;
 		// Symbol listSymbol = l3DMLEnvironment.getSymbol(
 		// Level3_DMLEnvironment.listSymbolJavaID );
@@ -73,13 +69,27 @@ public class ListOrderedOfElementCapsules {
 		return envL3.isVector( envL3.listOrderedOfElementCapsules_Symbol, name );
 	}
 	
-	public boolean isValid() {
+	public void assumedValid() {
 
 		// TODO more to add here
-		return this.internal_hasNameSetRight();
+		RunTime.assumedTrue( this.internal_hasNameSetRight() );
+		ElementCapsule first = this.get_ElementCapsule( Position.FIRST );
+		ElementCapsule last = this.get_ElementCapsule( Position.LAST );
+		if ( null != first ) {
+			RunTime.assumedTrue( envL3.isVector( name, first.getAsSymbol() ) );
+			RunTime.assumedTrue( this.hasElementCapsule( first ) );
+			RunTime.assumedTrue( last != null );
+		}
+		if ( null != last ) {
+			RunTime.assumedTrue( envL3.isVector( name, last.getAsSymbol() ) );
+			RunTime.assumedTrue( this.hasElementCapsule( last ) );
+			RunTime.assumedTrue( first != null );
+		}
 	}
 	
 	/**
+	 * replaces old HEAD/TAIL with the new one
+	 * 
 	 * @param last
 	 * @param candidate
 	 */
@@ -87,7 +97,7 @@ public class ListOrderedOfElementCapsules {
 			ElementCapsule candidate ) {
 
 		RunTime.assumedNotNull( candidate, pos );
-		RunTime.assumedTrue( candidate.isValidCapsule() );
+		candidate.assumedIsValidCapsule();
 		Symbol parent = null;
 		switch ( pos ) {
 		case FIRST:
@@ -104,19 +114,27 @@ public class ListOrderedOfElementCapsules {
 		// envL3.findCommonTerminalForInitials( parent,
 		// oldCandidate.getAsSymbol() );
 		if ( null != oldCandidate ) {
-			envL3.removeVector( parent, oldCandidate.getAsSymbol() );
+			if ( !envL3.removeVector( parent, oldCandidate.getAsSymbol() ) ) {
+				RunTime.bug( "get_ElementCapsule(pos) must be bugged then" );
+			}
 		}
 		// new one
 		envL3.ensureVector( parent, candidate.getAsSymbol() );
 	}
 	
+	/**
+	 * @param theNew
+	 * @param pos
+	 * @param posElement
+	 */
 	public void add_ElementCapsule( ElementCapsule theNew, Position pos,
 			ElementCapsule posElement ) {
 
 		RunTime.assumedNotNull( theNew, pos, posElement );
-		RunTime.assumedTrue( posElement.isValidCapsule() );
-		RunTime.assumedTrue( theNew.isValidCapsule() );
+		posElement.assumedIsValidCapsule();
+		theNew.assumedIsValidCapsule();
 		RunTime.assumedTrue( theNew.isAlone() );
+		RunTime.assumedFalse( this.hasElementCapsule( theNew ) );
 		switch ( pos ) {
 		case BEFORE:
 		case AFTER:
@@ -125,7 +143,7 @@ public class ListOrderedOfElementCapsules {
 			RunTime.assumedTrue( this.hasElementCapsule( posElement ) );
 			// RunTime.assumedFalse( posElement.isAlone() ); could be alone
 			
-			// assuming pos is AFTER
+			// assuming pos is AFTER, for comments only
 			// get oldnext
 			ElementCapsule oldOne = posElement.getSideCapsule( pos );
 			if ( null == oldOne ) {
@@ -159,17 +177,23 @@ public class ListOrderedOfElementCapsules {
 	 */
 	public boolean hasElementCapsule( ElementCapsule posElement ) {
 
-		// TODO Auto-generated method stub
-		return false;
+		RunTime.assumedNotNull( posElement );
+		return envL3.isVector( name, posElement.getAsSymbol() );
 	}
 	
+	/**
+	 * @param theNew
+	 * @param pos
+	 *            FIRST or LAST only
+	 */
 	public void add_ElementCapsule( ElementCapsule theNew, Position pos ) {
 
 		switch ( pos ) {
 		case FIRST:
 		case LAST:
 			RunTime.assumedNotNull( theNew );
-			RunTime.assumedTrue( theNew.isValidCapsule() );
+			theNew.assumedIsValidCapsule();
+			RunTime.assumedFalse( this.hasElementCapsule( theNew ) );
 			RunTime.assumedTrue( theNew.isAlone() );// prev=next=null
 			
 			// assuming pos is FIRST
@@ -194,8 +218,12 @@ public class ListOrderedOfElementCapsules {
 				// oldfirst.prev=newfirst
 				theOld.setCapsule( pos, theNew );
 				// setFirst=newfirst
-				
+				theNew.assumedIsValidCapsule();
+				if ( !envL3.ensureVector( name, theNew.getAsSymbol() ) ) {
+					RunTime.bug( "the link shouldn't already exist" );
+				}
 			}
+			// new HEAD
 			this.internal_dmlRegisterNewHeadOrTail( pos, theNew );// common
 			break;
 		
@@ -207,16 +235,7 @@ public class ListOrderedOfElementCapsules {
 	
 	public int size() {
 
-		BDBVectorIterator<Symbol, Symbol> iter = envL3.getIterator_on_Terminals_of( name );
-		int ret;
-		try {
-			ret = iter.count();
-		} catch ( DatabaseException e ) {
-			throw new StorageException( e );
-		} finally {
-			iter.deInit();
-		}
-		return ret;
+		return envL3.countTerminals( name );
 	}
 	
 	public boolean isEmpty() {
@@ -250,6 +269,7 @@ public class ListOrderedOfElementCapsules {
 		}
 		Symbol x = envL3.findCommonTerminalForInitials( sym, name );
 		if ( null != x ) {// found one
+			// wrap it in ElementCapsule type
 			ElementCapsule ec = new ElementCapsule( envL3, x );
 			return ec;
 		}
@@ -261,14 +281,13 @@ public class ListOrderedOfElementCapsules {
 		RunTime.assumedNotNull( pos, posEC );
 		switch ( pos ) {
 		case BEFORE:
-			break;
 		case AFTER:
-			break;
+			RunTime.assumedTrue( this.hasElementCapsule( posEC ) );
+			return posEC.getSideCapsule( pos );
 		default:
 			RunTime.badCall( "bad position for this method" );
 			break;// unreachable code
 		}
-		// TODO
 		return null;// found none
 	}
 }

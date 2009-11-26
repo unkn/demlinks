@@ -39,7 +39,7 @@ import org.references.method.PossibleParams;
  * 
  *
  */
-public class NodeIDsTest {
+public class SymbolsTest {
 	
 	Symbol					n1, n2, n3;
 	Level1_DMLEnvironment	dml;
