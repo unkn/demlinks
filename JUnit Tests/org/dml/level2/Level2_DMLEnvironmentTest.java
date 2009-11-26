@@ -31,8 +31,8 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import org.dml.JUnits.Consts;
-import org.dml.level1.Symbol;
 import org.dml.level1.JavaID;
+import org.dml.level1.Symbol;
 import org.junit.Test;
 import org.references.method.MethodParams;
 import org.references.method.PossibleParams;
@@ -83,10 +83,10 @@ public class Level2_DMLEnvironmentTest {
 			assertTrue( d1.getJavaID( n1 ).equals( j1 ) );
 			assertTrue( d1.getJavaID( n1 ) == j1 );
 			assertTrue( n1.equals( d1.getSymbol( j1 ) ) );
-			// FIXME: maybe fix? getNodeID() does a new every time
-			assertTrue( n1 != d1.getSymbol( j1 ) );
+			
+			assertTrue( n1 == d1.getSymbol( j1 ) );// fixed
 			assertTrue( n2.equals( d1.getSymbol( j2 ) ) );
-			assertTrue( n2 != d1.getSymbol( j2 ) );
+			assertTrue( n2 == d1.getSymbol( j2 ) );// yes
 			assertTrue( n1.equals( d2.getSymbol( j1 ) ) );// d2 is d1
 			// inside
 			// BDB

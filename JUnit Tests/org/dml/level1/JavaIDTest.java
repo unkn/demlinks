@@ -47,7 +47,7 @@ public class JavaIDTest {
 
 		// DMLEnvironment.init();
 		JavaID.junitClearAll();
-		assertTrue( JavaID.all_Level1_JavaIDs.size() == 0 );
+		assertTrue( JavaID.all_JavaIDs.size() == 0 );
 		a = JavaID.ensureJavaIDFor( "A" );
 		b = JavaID.ensureJavaIDFor( "B" );
 		c = JavaID.ensureJavaIDFor( "C" );
@@ -62,8 +62,8 @@ public class JavaIDTest {
 	@Test
 	public void listOfAllTest() {
 
-		assertTrue( JavaID.all_Level1_JavaIDs.size() == 3 );
-		System.out.println( JavaID.all_Level1_JavaIDs );
+		assertTrue( JavaID.all_JavaIDs.size() == 3 );
+		System.out.println( JavaID.all_JavaIDs );
 	}
 	
 	@Test
@@ -73,10 +73,10 @@ public class JavaIDTest {
 		assertTrue( "A" != _a );
 		assertTrue( "A".equals( _a ) );// compare by contents yields true
 		assertTrue( a == JavaID.ensureJavaIDFor( _a ) );// not re-added
-		assertTrue( JavaID.all_Level1_JavaIDs.size() == 3 );
+		assertTrue( JavaID.all_JavaIDs.size() == 3 );
 		// assertTrue( null != DMLEnvironment.AllWords );
 		// assertTrue( NodeJID.all_Level1_NodeJIDs.size() == 4 );
-		System.out.println( JavaID.all_Level1_JavaIDs );
+		System.out.println( JavaID.all_JavaIDs );
 		// NodeJID.forgetJIDFor( "A" );
 		// assertTrue( NodeJID.all_Level1_NodeJIDs.size() == 2 );
 		// assertTrue( a != NodeJID.getJIDFor( "A" ) );

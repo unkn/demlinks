@@ -25,6 +25,8 @@ package org.dml.level1;
 
 
 
+import java.util.HashMap;
+
 import org.dml.tools.RunTime;
 
 
@@ -52,8 +54,13 @@ import org.dml.tools.RunTime;
  */
 public class Symbol {
 	
-	private final long	selfInBDB;	// in BDB
-									
+	// in BDB
+	private final long								selfInBDB;
+	
+	// this is used to prevent new-ing too many times if there's already a
+	// new-ed one from a previous call
+	protected static final HashMap<Long, Symbol>	all_Symbols	= new HashMap<Long, Symbol>();
+	
 	/**
 	 * constructor, call only internally
 	 * 
@@ -76,9 +83,24 @@ public class Symbol {
 	public static Symbol internalNewSymbolRepresentationFor( long BDBSymbol ) {
 
 		RunTime.assumedNotNull( BDBSymbol );
-		return new Symbol( BDBSymbol );
+		Symbol curr = all_Symbols.get( BDBSymbol );
+		if ( null == curr ) {
+			// create new
+			curr = new Symbol( BDBSymbol );
+			if ( all_Symbols.put( BDBSymbol, curr ) != null ) {
+				RunTime.bug( "a value already existed?!! wicked! it means that the above .get() is bugged?!" );
+			}
+		}
+		return curr;
 	}
 	
+	protected static final void junitClearAll() {
+
+		RunTime.assumedNotNull( all_Symbols );
+		if ( null != all_Symbols ) {
+			all_Symbols.clear();
+		}
+	}
 	
 	@Override
 	public String toString() {
@@ -88,26 +110,29 @@ public class Symbol {
 	}
 	
 	/**
-	 * compares by content if refs are different<br>
-	 * equals always compares by content
+	 * equals always compares by content BUT in this case it ONLY compares by
+	 * references, because Symbol instances are not supposed to have the same
+	 * contents, ever<br>
 	 * 
-	 * @param nid
+	 * @param sym
 	 * @return
 	 */
 	@Override
-	public boolean equals( Object nid ) {
+	public boolean equals( Object sym ) {
 
-		RunTime.assumedNotNull( nid );
-		if ( ( !this.getClass().isAssignableFrom( nid.getClass() ) )
-				|| ( this.getClass() != nid.getClass() ) ) {
+		RunTime.assumedNotNull( sym );
+		if ( ( !this.getClass().isAssignableFrom( sym.getClass() ) )
+				|| ( this.getClass() != sym.getClass() ) ) {
 			RunTime.bug( "you passed a different type parameter; must be a bug somewhere" );
 		}
-		if ( ( super.equals( nid ) ) || // ( this.getAsString().equals( (
-				// (NodeID)nid ).getAsString() ) ) ) {
-				( ( (Symbol)nid ).selfInBDB == selfInBDB ) ) {
-			return true;
-		}
-		return false;
+		// RunTime.assumedTrue( this == nid );
+		// if ( ( super.equals( nid ) ) || // ( this.getAsString().equals( (
+		// // (NodeID)nid ).getAsString() ) ) ) {
+		// ( ( (Symbol)nid ).selfInBDB == selfInBDB ) ) {
+		// return true;
+		// }
+		// return false;
+		return this == sym;
 	}
 	
 	/**

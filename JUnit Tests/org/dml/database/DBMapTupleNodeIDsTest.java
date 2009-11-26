@@ -136,11 +136,11 @@ public class DBMapTupleNodeIDsTest {
 			
 			iter.goFirst();
 			assertTrue( _b.equals( iter.now() ) );
-			assertTrue( _b != iter.now() );
+			assertTrue( _b == iter.now() );// ye as ref also!
 			
 			iter.goNext();
 			assertTrue( _c.equals( iter.now() ) );
-			assertTrue( _c != iter.now() );
+			assertTrue( _c == iter.now() );// ye as ref also
 			
 			iter.goNext();
 			assertNull( iter.now() );
@@ -166,17 +166,17 @@ public class DBMapTupleNodeIDsTest {
 			System.out.println( "//"
 					+ bdb.getDBMap_JavaIDs_To_Symbols().getJavaID( iter.now() ) );
 			assertTrue( _a.equals( iter.now() ) );
-			assertTrue( _a != iter.now() );
+			assertTrue( _a == iter.now() );// also as refs
 			
 			iter.goNext();
 			assertTrue( _c.equals( iter.now() ) );
-			assertTrue( _c != iter.now() );
+			assertTrue( _c == iter.now() );// ack
 			
 			iter.goNext();
 			assertNull( iter.now() );
 			iter.goPrev();
 			assertTrue( _a.equals( iter.now() ) );
-			assertTrue( _a != iter.now() );
+			assertTrue( _a == iter.now() );// indeed
 		} finally {
 			iter.deInit();
 		}

@@ -50,17 +50,19 @@ public class JavaID extends Reference<String> {
 	
 	// this will keep track of all NodeJavaIDs of all environments
 	// there's no point of having same JavaID twice for diff environments
-	protected static final HashMap<String, JavaID>	all_Level1_JavaIDs	= new HashMap<String, JavaID>();
+	protected static final HashMap<String, JavaID>	all_JavaIDs	= new HashMap<String, JavaID>();
+	
+	// protected because used in JUnit
 	
 	// string representation of the ID
 	// private String stringID = null;
 	
 	protected static final void junitClearAll() {
 
-		if ( null != all_Level1_JavaIDs ) {
-			all_Level1_JavaIDs.clear();
+		RunTime.assumedNotNull( all_JavaIDs );
+		if ( null != all_JavaIDs ) {
+			all_JavaIDs.clear();
 		}
-		// all_Level1_NodeJavaIDs = new HashMap<String, NodeJavaID>();
 	}
 	
 	/**
@@ -76,11 +78,11 @@ public class JavaID extends Reference<String> {
 	public static JavaID ensureJavaIDFor( String strID ) {
 
 		RunTime.assumedNotNull( strID );
-		JavaID curr = all_Level1_JavaIDs.get( strID );
+		JavaID curr = all_JavaIDs.get( strID );
 		if ( null == curr ) {
 			// create new
 			curr = new JavaID( strID );
-			if ( all_Level1_JavaIDs.put( strID, curr ) != null ) {
+			if ( all_JavaIDs.put( strID, curr ) != null ) {
 				RunTime.bug( "a value already existed?!! wicked! it means that the above .get() is bugged?!" );
 			}
 		}
@@ -107,4 +109,23 @@ public class JavaID extends Reference<String> {
 		return this.getClass().getSimpleName() + ":" + this.getObject();
 	}
 	
+	
+	/**
+	 * equals always compares by content BUT in this case it ONLY compares by
+	 * references, because JavaID instances are not supposed to have the same
+	 * contents, ever<br>
+	 * 
+	 * @param jid
+	 * @return
+	 */
+	@Override
+	public boolean equals( Object jid ) {
+
+		RunTime.assumedNotNull( jid );
+		if ( ( !this.getClass().isAssignableFrom( jid.getClass() ) )
+				|| ( this.getClass() != jid.getClass() ) ) {
+			RunTime.bug( "you passed a different type parameter; must be a bug somewhere" );
+		}
+		return this == jid;
+	}
 }

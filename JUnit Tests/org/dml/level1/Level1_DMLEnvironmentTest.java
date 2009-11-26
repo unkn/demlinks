@@ -80,7 +80,8 @@ public class Level1_DMLEnvironmentTest {
 			c = dml1.ensureSymbol( JavaID.ensureJavaIDFor( "C" ) );
 			assertTrue( a != null );
 			assertTrue( a.equals( dml1.getSymbol( JavaID.ensureJavaIDFor( "A" ) ) ) );
-			assertTrue( a != dml1.getSymbol( JavaID.ensureJavaIDFor( "A" ) ) );
+			// refs equals too
+			assertTrue( a == dml1.getSymbol( JavaID.ensureJavaIDFor( "A" ) ) );
 			assertTrue( b.equals( dml1.getSymbol( JavaID.ensureJavaIDFor( "B" ) ) ) );
 			assertTrue( c.equals( dml1.getSymbol( JavaID.ensureJavaIDFor( "C" ) ) ) );
 			Object t = dml1.getSymbol( JavaID.ensureJavaIDFor( "A" ) );
@@ -99,7 +100,7 @@ public class Level1_DMLEnvironmentTest {
 			// same contents in java
 			long la = a.internalGetForBDBBinding();
 			Symbol anew = Symbol.internalNewSymbolRepresentationFor( la );
-			assertTrue( a != anew );
+			assertTrue( a == anew );// indeed
 			assertTrue( a.equals( anew ) );
 			assertTrue( dml1.getJavaID( anew ) == dml1.getJavaID( a ) );
 		} finally {
