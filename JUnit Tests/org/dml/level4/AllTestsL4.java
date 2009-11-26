@@ -1,8 +1,5 @@
-/**
- * File creation: Oct 24, 2009 9:54:05 PM
- * 
- * Copyright (C) 2005-2009 AtKaaZ <atkaaz@users.sourceforge.net>
- * Copyright (C) 2005-2009 UnKn <unkn@users.sourceforge.net>
+/*
+ * Copyright (C) 2005-2008 AtKaaZ <atkaaz@users.sourceforge.net>
  * 
  * This file and its contents are part of DeMLinks.
  * 
@@ -21,40 +18,18 @@
  */
 
 
-package org.temporary.tests;
+package org.dml.level4;
 
 
 
-import org.dml.tools.RunTime;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
 
 
 
-/**
- * 
- *
- */
-public class LimitedObjectLister extends ObjectLister {
-	
-	private final int	maxSize;
-	
-	public LimitedObjectLister( int maxSize1 ) {
-
-		RunTime.assumedTrue( maxSize1 >= 1 );
-		maxSize = maxSize1;
-	}
-	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.temporary.tests.GenericLister#addFirst(java.lang.Object)
-	 */
-	@Override
-	public void checkInvariants() {
-
-		if ( list.size() >= maxSize ) {
-			RunTime.BadCallError();
-		}
-	}
-	
-
+@RunWith( Suite.class )
+@Suite.SuiteClasses( value = {
+	Level4_DMLEnvironmentTest.class,
+} )
+public class AllTestsL4 {
 }

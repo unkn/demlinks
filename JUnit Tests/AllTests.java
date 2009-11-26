@@ -20,7 +20,7 @@
 import org.dml.database.AllTestsDatabase;
 import org.dml.level1.AllTestsL1;
 import org.dml.level2.AllTestsL2;
-import org.dml.level3.AllTestsL3;
+import org.dml.level4.AllTestsL4;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.references.AllTestsReferences;
@@ -30,7 +30,7 @@ import org.references.method.AllTestsReferencesMethod;
 
 @RunWith( Suite.class )
 @Suite.SuiteClasses( value = {
-		AllTestsReferences.class, AllTestsDatabase.class, AllTestsL3.class,
+		AllTestsReferences.class, AllTestsDatabase.class, AllTestsL4.class,
 		AllTestsL1.class, AllTestsL2.class, AllTestsReferencesMethod.class
 } )
 public class AllTests {

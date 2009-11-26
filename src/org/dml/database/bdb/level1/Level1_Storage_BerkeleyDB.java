@@ -73,6 +73,7 @@ public class Level1_Storage_BerkeleyDB extends StaticInstanceTracker {
 	private final ListOfUniqueNonNullObjects<Sequence>			allSequenceInstances		= new ListOfUniqueNonNullObjects<Sequence>();
 	private final ListOfUniqueNonNullObjects<Database>			allOpenPrimaryDatabases		= new ListOfUniqueNonNullObjects<Database>();
 	private final ListOfUniqueNonNullObjects<SecondaryDatabase>	allOpenSecondaryDatabases	= new ListOfUniqueNonNullObjects<SecondaryDatabase>();
+	private UniqueSymbolsGenerator								symGen						= null;
 	
 	private static final String									dbNAME_JavaID_To_NodeID		= "map(JavaID<->NodeID)";
 	private final static String									UNINITIALIZED_STRING		= "uninitializedString";
@@ -122,6 +123,15 @@ public class Level1_Storage_BerkeleyDB extends StaticInstanceTracker {
 			e.printStackTrace();
 			throw new StorageException( e );
 		}// forces env open or create
+		
+		RunTime.assumedNull( symGen );
+		symGen = new UniqueSymbolsGenerator( this );// implied init
+	}
+	
+	public UniqueSymbolsGenerator getUniqueSymbolsGenerator() {
+
+		RunTime.assumedNotNull( symGen );
+		return symGen;
 	}
 	
 	/*
@@ -134,6 +144,9 @@ public class Level1_Storage_BerkeleyDB extends StaticInstanceTracker {
 
 		if ( null != db_JavaID_To_Symbol ) {
 			db_JavaID_To_Symbol = db_JavaID_To_Symbol.deInit();
+		}
+		if ( null != symGen ) {
+			symGen = symGen.deInit();
 		}
 		this.deInitSeqSystem_silent();// first
 		this.closeAllOpenDatabases_silent();// second

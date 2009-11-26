@@ -51,6 +51,9 @@ import org.dml.tools.RunTime;
  * database side, and then a Symbol here in java will be associated with that to
  * represent it. You should not be able to create the symbol here first, then in
  * dbase.<br>
+ * Thus, it is assumed that if the Symbol instance exists in java, then it also
+ * exists or will exist safely (ie. when ensureVector(*,*) is called) in BDB or
+ * storage<br>
  */
 public class Symbol {
 	

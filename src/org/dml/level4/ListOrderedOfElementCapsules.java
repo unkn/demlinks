@@ -21,7 +21,7 @@
  */
 
 
-package org.dml.level3;
+package org.dml.level4;
 
 
 
@@ -38,15 +38,15 @@ import org.references.Position;
  */
 public class ListOrderedOfElementCapsules {
 	
-	Level3_DMLEnvironment	envL3;
+	Level4_DMLEnvironment	env;
 	Symbol					name;
 	
-	public ListOrderedOfElementCapsules( Level3_DMLEnvironment l3_DMLEnv,
+	public ListOrderedOfElementCapsules( Level4_DMLEnvironment envDML,
 			Symbol name1 ) {
 
-		RunTime.assumedNotNull( l3_DMLEnv, name1 );
-		RunTime.assumedTrue( l3_DMLEnv.isInited() );
-		envL3 = l3_DMLEnv;
+		RunTime.assumedNotNull( envDML, name1 );
+		RunTime.assumedTrue( envDML.isInited() );
+		env = envDML;
 		name = name1;
 		// Symbol listSymbol = l3DMLEnvironment.getSymbol(
 		// Level3_DMLEnvironment.listSymbolJavaID );
@@ -58,7 +58,7 @@ public class ListOrderedOfElementCapsules {
 	 */
 	protected void internal_setName() {
 
-		envL3.ensureVector( envL3.listOrderedOfElementCapsules_Symbol, name );
+		env.ensureVector( env.listOrderedOfElementCapsules_Symbol, name );
 	}
 	
 	/**
@@ -66,7 +66,7 @@ public class ListOrderedOfElementCapsules {
 	 */
 	protected boolean internal_hasNameSetRight() {
 
-		return envL3.isVector( envL3.listOrderedOfElementCapsules_Symbol, name );
+		return env.isVector( env.listOrderedOfElementCapsules_Symbol, name );
 	}
 	
 	public void assumedValid() {
@@ -76,12 +76,12 @@ public class ListOrderedOfElementCapsules {
 		ElementCapsule first = this.get_ElementCapsule( Position.FIRST );
 		ElementCapsule last = this.get_ElementCapsule( Position.LAST );
 		if ( null != first ) {
-			RunTime.assumedTrue( envL3.isVector( name, first.getAsSymbol() ) );
+			RunTime.assumedTrue( env.isVector( name, first.getAsSymbol() ) );
 			RunTime.assumedTrue( this.hasElementCapsule( first ) );
 			RunTime.assumedTrue( last != null );
 		}
 		if ( null != last ) {
-			RunTime.assumedTrue( envL3.isVector( name, last.getAsSymbol() ) );
+			RunTime.assumedTrue( env.isVector( name, last.getAsSymbol() ) );
 			RunTime.assumedTrue( this.hasElementCapsule( last ) );
 			RunTime.assumedTrue( first != null );
 		}
@@ -101,10 +101,10 @@ public class ListOrderedOfElementCapsules {
 		Symbol parent = null;
 		switch ( pos ) {
 		case FIRST:
-			parent = envL3.allHeads_Symbol;
+			parent = env.allHeads_Symbol;
 			break;
 		case LAST:
-			parent = envL3.allTails_Symbol;
+			parent = env.allTails_Symbol;
 			break;
 		default:
 			RunTime.badCall( "bad position for this method" );
@@ -114,12 +114,12 @@ public class ListOrderedOfElementCapsules {
 		// envL3.findCommonTerminalForInitials( parent,
 		// oldCandidate.getAsSymbol() );
 		if ( null != oldCandidate ) {
-			if ( !envL3.removeVector( parent, oldCandidate.getAsSymbol() ) ) {
+			if ( !env.removeVector( parent, oldCandidate.getAsSymbol() ) ) {
 				RunTime.bug( "get_ElementCapsule(pos) must be bugged then" );
 			}
 		}
 		// new one
-		envL3.ensureVector( parent, candidate.getAsSymbol() );
+		env.ensureVector( parent, candidate.getAsSymbol() );
 	}
 	
 	/**
@@ -178,7 +178,7 @@ public class ListOrderedOfElementCapsules {
 	public boolean hasElementCapsule( ElementCapsule posElement ) {
 
 		RunTime.assumedNotNull( posElement );
-		return envL3.isVector( name, posElement.getAsSymbol() );
+		return env.isVector( name, posElement.getAsSymbol() );
 	}
 	
 	/**
@@ -219,7 +219,7 @@ public class ListOrderedOfElementCapsules {
 				theOld.setCapsule( pos, theNew );
 				// setFirst=newfirst
 				theNew.assumedIsValidCapsule();
-				if ( !envL3.ensureVector( name, theNew.getAsSymbol() ) ) {
+				if ( !env.ensureVector( name, theNew.getAsSymbol() ) ) {
 					RunTime.bug( "the link shouldn't already exist" );
 				}
 			}
@@ -235,7 +235,7 @@ public class ListOrderedOfElementCapsules {
 	
 	public int size() {
 
-		return envL3.countTerminals( name );
+		return env.countTerminals( name );
 	}
 	
 	public boolean isEmpty() {
@@ -257,20 +257,20 @@ public class ListOrderedOfElementCapsules {
 		switch ( pos ) {
 		case FIRST:
 		case BEFORE:
-			sym = envL3.allHeads_Symbol;
+			sym = env.allHeads_Symbol;
 			break;
 		case LAST:
 		case AFTER:
-			sym = envL3.allTails_Symbol;
+			sym = env.allTails_Symbol;
 			break;
 		default:
 			RunTime.badCall( "bad position for this method" );
 			break;// unreachable code
 		}
-		Symbol x = envL3.findCommonTerminalForInitials( sym, name );
+		Symbol x = env.findCommonTerminalForInitials( sym, name );
 		if ( null != x ) {// found one
 			// wrap it in ElementCapsule type
-			ElementCapsule ec = new ElementCapsule( envL3, x );
+			ElementCapsule ec = new ElementCapsule( env, x );
 			return ec;
 		}
 		return null;// found none

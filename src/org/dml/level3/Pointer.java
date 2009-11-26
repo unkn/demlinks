@@ -27,6 +27,7 @@ package org.dml.level3;
 
 import org.dml.database.bdb.level2.BDBVectorIterator;
 import org.dml.level1.Symbol;
+import org.dml.level2.Level2_DMLEnvironment;
 import org.dml.storagewrapper.StorageException;
 import org.dml.tools.RunTime;
 
@@ -39,15 +40,25 @@ import com.sleepycat.je.DatabaseException;
  */
 public class Pointer {
 	
-	Level3_DMLEnvironment	envL3;
+	Level2_DMLEnvironment	envL2;
 	Symbol					self;
+	boolean					allowNull	= true;
 	
-	public Pointer( Level3_DMLEnvironment l3DML, Symbol selfName ) {
+	public Pointer( Level2_DMLEnvironment l2DML, Symbol selfName ) {
 
-		RunTime.assumedNotNull( l3DML, selfName );
-		RunTime.assumedTrue( l3DML.isInited() );
-		envL3 = l3DML;
+		RunTime.assumedNotNull( l2DML, selfName );
+		RunTime.assumedTrue( l2DML.isInited() );
+		envL2 = l2DML;
 		self = selfName;
+	}
+	
+	public boolean setAllowNull( boolean newValue ) {
+
+		RunTime.assumedNotNull( newValue );
+		boolean old = allowNull;
+		allowNull = newValue;
+		this.assumedValid();
+		return old;
 	}
 	
 	/**
@@ -58,16 +69,22 @@ public class Pointer {
 	 */
 	public Symbol pointTo( Symbol toWhat ) {
 
-		RunTime.assumedNotNull( toWhat );
+		if ( !allowNull ) {
+			RunTime.assumedNotNull( toWhat );
+		}
 		this.assumedValid();
 		Symbol oldSym = this.getPointee();// null or it
-		if ( !toWhat.equals( oldSym ) ) {
+		if ( null != oldSym ) {
+			RunTime.assumedTrue( envL2.removeVector( self, oldSym ) );
+			RunTime.assumedFalse( envL2.isVector( self, oldSym ) );
+		}
+		
+		if ( null != toWhat ) {
 			// the new one is not the same as the old one
 			// a diff pointee then we set new pointer to it, after removing old
-			RunTime.assumedTrue( envL3.removeVector( self, oldSym ) );
-			RunTime.assumedFalse( envL3.ensureVector( self, toWhat ) );
+			RunTime.assumedFalse( envL2.ensureVector( self, toWhat ) );
+			RunTime.assumedTrue( envL2.isVector( self, toWhat ) );
 		}
-		RunTime.assumedTrue( envL3.isVector( self, toWhat ) );
 		this.assumedValid();
 		return oldSym;
 	}
@@ -75,8 +92,9 @@ public class Pointer {
 	
 	public Symbol getPointee() {
 
+		this.assumedValid();
 		Symbol ret = null;
-		BDBVectorIterator<Symbol, Symbol> iter = envL3.getIterator_on_Terminals_of( self );
+		BDBVectorIterator<Symbol, Symbol> iter = envL2.getIterator_on_Terminals_of( self );
 		try {
 			try {
 				if ( iter.count() > 0 ) {
@@ -98,10 +116,16 @@ public class Pointer {
 	 */
 	public void assumedValid() {
 
-		// has 0 or 1 terminals
-		int size = envL3.countTerminals( self );
-		RunTime.assumedTrue( size <= 1 );
-		RunTime.assumedTrue( size >= 0 );
+		
+		int size = envL2.countTerminals( self );
+		if ( !allowNull ) {
+			// must have 1 terminal
+			RunTime.assumedTrue( 1 == size );
+		} else {
+			// has 0 or 1 terminals
+			RunTime.assumedTrue( size <= 1 );
+			RunTime.assumedTrue( size >= 0 );
+		}
 		
 		// getPointee works
 		if ( 1 == size ) {

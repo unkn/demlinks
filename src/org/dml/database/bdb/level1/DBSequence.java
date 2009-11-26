@@ -46,8 +46,9 @@ public class DBSequence {
 	
 	
 
-	// FIXME: SequenceConfig will be kept the same for all Sequence -s, for
-	// now;that is same settings not same variable
+	// FIXME: maybe we dont' want to keep it same for all?
+	// SequenceConfig will be kept the same for all Sequence -s, for now;that is
+	// same settings not same variable
 	private final SequenceConfig			allSequencesConfig	= new MySequenceConfig();
 	
 
@@ -66,7 +67,7 @@ public class DBSequence {
 	
 	
 	/**
-	 * constructor, use BerkeleyDB.newDBSequence() instead
+	 * constructor
 	 * 
 	 * @param seqName
 	 * @throws DatabaseException

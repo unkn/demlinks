@@ -43,12 +43,7 @@ import com.sleepycat.je.OperationStatus;
  */
 public class DBMap_JavaIDs_To_Symbols extends OneToOneDBMap<JavaID, Symbol> {
 	
-	private DBSequence			seq			= null;
-	private String				seq_KEYNAME	= null;
 	
-	// increment-by value, when fetching new unique Symbols
-	private final static int	SEQ_DELTA	= 1;	// > 0
-													
 	/**
 	 * @param dbName1
 	 * @throws DatabaseException
@@ -59,21 +54,6 @@ public class DBMap_JavaIDs_To_Symbols extends OneToOneDBMap<JavaID, Symbol> {
 		super( bdb1, dbName1, JavaID.class,
 				AllTupleBindings.getBinding( JavaID.class ), Symbol.class,
 				AllTupleBindings.getBinding( Symbol.class ) );
-		seq_KEYNAME = dbName1;
-	}
-	
-	/**
-	 * @return
-	 * @throws DatabaseException
-	 */
-	private final DBSequence getDBSeq() throws DatabaseException {
-
-		if ( null == seq ) {
-			// init once:
-			seq = new DBSequence( bdb, seq_KEYNAME );
-			RunTime.assumedNotNull( seq );
-		}
-		return seq;
 	}
 	
 	@Override
@@ -82,23 +62,8 @@ public class DBMap_JavaIDs_To_Symbols extends OneToOneDBMap<JavaID, Symbol> {
 		Log.entry( "closing " + this.getClass().getSimpleName()
 				+ " with name: " + dbName );
 		
-		// close seq
-		if ( null != seq ) {
-			seq = seq.done();
-		}
-		
 		// close DBs
 		return super.silentClose();
-	}
-	
-	/**
-	 * @return a long that doesn't exist yet (and never will, even if
-	 *         exceptions occur)
-	 * @throws DatabaseException
-	 */
-	private long getUniqueLong() throws DatabaseException {
-
-		return this.getDBSeq().getSequence().get( null, SEQ_DELTA );
 	}
 	
 	/**
@@ -148,22 +113,11 @@ public class DBMap_JavaIDs_To_Symbols extends OneToOneDBMap<JavaID, Symbol> {
 			throws DatabaseException {
 
 		RunTime.assumedNotNull( fromJavaID );
-		Symbol nid = this.internal_makeNewUniqueSymbol();
+		Symbol nid = bdb.getUniqueSymbolsGenerator().getNewUniqueSymbol();
 		RunTime.assumedNotNull( nid );
 		if ( OperationStatus.SUCCESS != this.makeVector( fromJavaID, nid ) ) {
 			RunTime.bug( "should've succeeded, maybe fromJavaID already existed? in BDB I mean" );
 		}
-		return nid;
-	}
-	
-	private final Symbol internal_makeNewUniqueSymbol()
-			throws DatabaseException {
-
-		// this new Symbol is not saved anywhere in the database, but it's
-		// ensured that it will not be created again, so it's unique even if you
-		// don't save it in the database later
-		Symbol nid = Symbol.internalNewSymbolRepresentationFor( this.getUniqueLong() );
-		RunTime.assumedNotNull( nid );
 		return nid;
 	}
 	

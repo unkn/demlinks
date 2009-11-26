@@ -1,5 +1,5 @@
 /**
- * File creation: Oct 24, 2009 10:02:03 PM
+ * File creation: Nov 26, 2009 7:15:10 AM
  * 
  * Copyright (C) 2005-2009 AtKaaZ <atkaaz@users.sourceforge.net>
  * Copyright (C) 2005-2009 UnKn <unkn@users.sourceforge.net>
@@ -21,27 +21,18 @@
  */
 
 
-package org.temporary.tests;
+package org.dml.level3;
+
+
+
+import org.dml.level2.Level2_DMLStorageWrapper;
+
 
 
 /**
  * 
  *
  */
-public class OneToOneLink<First, Second> extends LimitedObjectLister {
+public interface Level3_DMLStorageWrapper extends Level2_DMLStorageWrapper {
 	
-	public OneToOneLink() {
-
-		super( 2 );
-	}
-	
-	public void setFirst( First o ) {
-
-		super.replaceFirst( o );
-	}
-	
-	public void setSecond( Second o ) {
-
-		super.replaceLast( o );
-	}
 }

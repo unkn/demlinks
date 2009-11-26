@@ -73,5 +73,5 @@ public interface Level1_DMLStorageWrapper {
 	 */
 	public Symbol ensureSymbol( JavaID theJavaID ) throws StorageException;
 	
-
+	public Symbol newUniqueSymbol() throws StorageException;
 }

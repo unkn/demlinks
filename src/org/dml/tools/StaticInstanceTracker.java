@@ -43,7 +43,6 @@ import org.references.method.MethodParams;
  * to shutdown the application
  * you can init() again but only if u previously used deInit()<br>
  * NEVER call init() inside a constructor<br>
- * FIXME: problem is that we need to pass params to init() but atm it's final
  */
 public abstract class StaticInstanceTracker {
 	

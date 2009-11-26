@@ -21,7 +21,7 @@
  */
 
 
-package org.dml.level3;
+package org.dml.level4;
 
 
 
@@ -41,21 +41,21 @@ import org.references.Position;
 public class ListOrderedOfSymbols extends ListOrderedOfElementCapsules {
 	
 	
-	public ListOrderedOfSymbols( Level3_DMLEnvironment l3_DMLEnv, Symbol name1 ) {
+	public ListOrderedOfSymbols( Level4_DMLEnvironment envDML, Symbol name1 ) {
 
-		super( l3_DMLEnv, name1 );
+		super( envDML, name1 );
 	}
 	
 	@Override
 	protected void internal_setName() {
 
-		envL3.ensureVector( envL3.allListsSymbol, name );
+		env.ensureVector( env.allListsSymbol, name );
 	}
 	
 	@Override
 	protected boolean internal_hasNameSetRight() {
 
-		return envL3.isVector( envL3.allListsSymbol, name );
+		return env.isVector( env.allListsSymbol, name );
 	}
 	
 	

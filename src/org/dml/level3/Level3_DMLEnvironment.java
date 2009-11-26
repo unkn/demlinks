@@ -1,5 +1,5 @@
 /**
- * File creation: Oct 19, 2009 11:38:38 PM
+ * File creation: Oct 19, 2009 11:39:43 PM
  * 
  * Copyright (C) 2005-2009 AtKaaZ <atkaaz@users.sourceforge.net>
  * Copyright (C) 2005-2009 UnKn <unkn@users.sourceforge.net>
@@ -25,55 +25,23 @@ package org.dml.level3;
 
 
 
-import org.dml.level1.JavaID;
-import org.dml.level1.Symbol;
 import org.dml.level2.Level2_DMLEnvironment;
 import org.references.method.MethodParams;
 
 
 
 /**
+ * handling pointer(s) (that is a vector with 0 or 1 terminals)
  * 
- * handling Lists
  */
-public class Level3_DMLEnvironment extends Level2_DMLEnvironment {
-	
-	private static final JavaID	listJavaID							= JavaID.ensureJavaIDFor( "AllLists" );
-	public Symbol				allListsSymbol						= null;
-	private static final JavaID	listOrderedOfElementCapsules_JavaID	= JavaID.ensureJavaIDFor( "ListOrderedOfElementCapsules" );
-	public Symbol				listOrderedOfElementCapsules_Symbol	= null;
-	private static final JavaID	allHeads_JavaID						= JavaID.ensureJavaIDFor( "allHEADs" );
-	public Symbol				allHeads_Symbol						= null;
-	private static final JavaID	allTails_JavaID						= JavaID.ensureJavaIDFor( "allTAILs" );
-	public Symbol				allTails_Symbol						= null;
-	private static final JavaID	allElementCapsules_JavaID			= JavaID.ensureJavaIDFor( "allElementCapsules" );
-	public Symbol				allElementCapsules_Symbol			= null;
+public class Level3_DMLEnvironment extends Level2_DMLEnvironment implements
+		Level3_DMLStorageWrapper {
 	
 	@Override
 	protected void start( MethodParams<Object> params ) {
 
+		// this method is not needed, but it's here for clarity
 		super.start( params );
-		this.initGeneralSymbols();
 	}
-	
-	/**
-	 * 
-	 */
-	private void initGeneralSymbols() {
-
-		// persistent across restarts, and whatever the Symbol is, it is
-		// identifiable by the same JavaID no matter what
-		allListsSymbol = this.ensureSymbol( listJavaID );
-		listOrderedOfElementCapsules_Symbol = this.ensureSymbol( listOrderedOfElementCapsules_JavaID );
-		allHeads_Symbol = this.ensureSymbol( allHeads_JavaID );
-		allTails_Symbol = this.ensureSymbol( allTails_JavaID );
-		allElementCapsules_Symbol = this.ensureSymbol( allElementCapsules_JavaID );
-	}
-	
-	public ListOrderedOfSymbols newList( Symbol listName ) {
-
-		ListOrderedOfSymbols list = new ListOrderedOfSymbols( this, listName );
-		return list;
-	}
-	
+	// TODO add methods to handle Pointer and DomainPointer
 }

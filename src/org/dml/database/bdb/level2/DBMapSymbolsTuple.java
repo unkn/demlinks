@@ -52,7 +52,7 @@ import com.sleepycat.je.DatabaseException;
  * search/find). The only thing you'd need to know here
  * is whether the tuple exists or not. And to parse all initial/terminal symbols<br>
  * 
- * FIXME: erm... Symbols here don't need to have a JavaID associated with them<br>
+ * fixed... Symbols here don't need to have a JavaID associated with them<br>
  */
 public class DBMapSymbolsTuple extends OneToManyDBMap<Symbol, Symbol> {
 	
@@ -88,11 +88,6 @@ public class DBMapSymbolsTuple extends OneToManyDBMap<Symbol, Symbol> {
 
 		RunTime.assumedNotNull( initialNode, terminalNode );
 		
-		// checking that both Symbols exist already which means there are two
-		// JavaIDs associated with them
-		this.throwIfNotExist( initialNode );
-		this.throwIfNotExist( terminalNode );
-		
 		return super.ensureVector( initialNode, terminalNode );
 	}
 	
@@ -112,38 +107,14 @@ public class DBMapSymbolsTuple extends OneToManyDBMap<Symbol, Symbol> {
 
 		RunTime.assumedNotNull( initialNode, terminalNode );
 		
-		this.throwIfNotExist( initialNode );
-		this.throwIfNotExist( terminalNode );
-		
 		return super.isVector( initialNode, terminalNode );
-	}
-	
-	/**
-	 * @param nid
-	 * @throws StorageException
-	 * @throws DatabaseException
-	 */
-	private void throwIfNotExist( Symbol nid ) throws DatabaseException {
-
-		RunTime.assumedNotNull( nid );
-		if ( !this.existsSymbol( nid ) ) {
-			RunTime.bug( "NodeID doesn't exist, and it SHOULD exist! it's NODE ID not JavaID" );
-		}
-	}
-	
-	private boolean existsSymbol( Symbol whichSymbol ) throws DatabaseException {
-
-		// basically you're asking if the Symbol has a JavaID associated with
-		// it, but it doesn't need to have one to exist FIXME
-		return ( null != this.getBDBL1().getDBMap_JavaIDs_To_Symbols().getJavaID(
-				whichSymbol ) );
 	}
 	
 	@Override
 	public BDBVectorIterator<Symbol, Symbol> getIterator_on_Initials_of(
 			Symbol terminalObject ) throws DatabaseException {
 
-		this.throwIfNotExist( terminalObject );
+		RunTime.assumedNotNull( terminalObject );
 		return super.getIterator_on_Initials_of( terminalObject );
 	}
 	
@@ -151,7 +122,7 @@ public class DBMapSymbolsTuple extends OneToManyDBMap<Symbol, Symbol> {
 	public BDBVectorIterator<Symbol, Symbol> getIterator_on_Terminals_of(
 			Symbol initialObject ) throws DatabaseException {
 
-		this.throwIfNotExist( initialObject );
+		RunTime.assumedNotNull( initialObject );
 		return super.getIterator_on_Terminals_of( initialObject );
 	}
 	
@@ -159,7 +130,7 @@ public class DBMapSymbolsTuple extends OneToManyDBMap<Symbol, Symbol> {
 	public int countInitials( Symbol ofTerminalObject )
 			throws DatabaseException {
 
-		this.throwIfNotExist( ofTerminalObject );
+		RunTime.assumedNotNull( ofTerminalObject );
 		return super.countInitials( ofTerminalObject );
 	}
 	
@@ -167,7 +138,7 @@ public class DBMapSymbolsTuple extends OneToManyDBMap<Symbol, Symbol> {
 	public int countTerminals( Symbol ofInitialObject )
 			throws DatabaseException {
 
-		this.throwIfNotExist( ofInitialObject );
+		RunTime.assumedNotNull( ofInitialObject );
 		return super.countTerminals( ofInitialObject );
 	}
 	
@@ -181,8 +152,7 @@ public class DBMapSymbolsTuple extends OneToManyDBMap<Symbol, Symbol> {
 	public Symbol findCommonTerminalForInitials( Symbol initial1,
 			Symbol initial2 ) throws DatabaseException {
 
-		this.throwIfNotExist( initial1 );
-		this.throwIfNotExist( initial2 );
+		RunTime.assumedNotNull( initial1, initial2 );
 		return super.findCommonTerminalForInitials( initial1, initial2 );
 	}
 	
@@ -196,8 +166,7 @@ public class DBMapSymbolsTuple extends OneToManyDBMap<Symbol, Symbol> {
 	public boolean removeVector( Symbol initial, Symbol terminal )
 			throws DatabaseException {
 
-		this.throwIfNotExist( initial );
-		this.throwIfNotExist( terminal );
+		RunTime.assumedNotNull( initial, terminal );
 		return super.removeVector( initial, terminal );
 	}
 }

@@ -21,7 +21,7 @@
  */
 
 
-package org.dml.level3;
+package org.dml.level4;
 
 
 
@@ -38,14 +38,14 @@ import org.references.Position;
 public class ElementCapsule {
 	
 	Symbol					name;
-	Level3_DMLEnvironment	envL3;
+	Level4_DMLEnvironment	envL3;
 	
 	/**
 	 * @param env_L3
 	 * @param nameOfEC
 	 *            is an ElementCapsule already
 	 */
-	public ElementCapsule( Level3_DMLEnvironment env_L3, Symbol nameOfEC ) {
+	public ElementCapsule( Level4_DMLEnvironment env_L3, Symbol nameOfEC ) {
 
 		RunTime.assumedNotNull( nameOfEC, env_L3 );
 		RunTime.assumedTrue( env_L3.isInited() );

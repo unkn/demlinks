@@ -68,8 +68,8 @@ public abstract class MainLevel0 extends StaticInstanceTracker {
 	private final ListOfUniqueNonNullObjects<Field>	listOfAnnotatedFields	= new ListOfUniqueNonNullObjects<Field>();
 	
 	// TODO: accept more than 1 variable per subclass, should be easy, maybe add
-	// a param to annotation indicating fields that pertain to same group (one
-	// group per subclass)
+	// a param to annotation indicating fields that pertain to same group (same
+	// group in each subclass equates with same VarLevel)
 	
 	public MainLevel0() {
 
@@ -306,19 +306,22 @@ public abstract class MainLevel0 extends StaticInstanceTracker {
 				}// for
 			}// for
 			
-			if ( 1 != count ) {
-				// FIXME: 1. maybe this is not desired: one field per subclass a
-				// must?
-				// FIXME: 2. maybe we have multiple fields per class... then
-				// what?
-				
-				if ( currentClass != this.getClass() ) {
-					// 3. for now we allow last class to have no annotated
-					// fields
-					RunTime.bug( "you have to annotate just 1 field in each subclass, not more, not less" );
-				}
-			}
-			RunTime.assumedTrue( 1 >= count );// 3 above
+			// if ( 1 != count ) {
+			// // fixed: 1. maybe this is not desired: one field per subclass a
+			// // must?
+			// // FIXME: 2. maybe we have multiple fields per class... then
+			// // what?
+			//				
+			// if ( currentClass != this.getClass() ) {
+			// // 3. for now we allow last class to have no annotated
+			// // fields
+			// RunTime.bug(
+			// "you have to annotate just 1 field in each subclass, not more, not less"
+			// );
+			// }
+			// }
+			// fixed: allowing 0 or 1 at most, VarLevel -s per subclass
+			RunTime.assumedTrue( count <= 1 );// 3 above
 			
 			// go to prev superclass ie. go next
 			currentClass = currentClass.getSuperclass();

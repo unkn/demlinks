@@ -21,13 +21,14 @@
  */
 
 
-package org.dml.level3;
+package org.dml.level4;
 
 
 
 import org.dml.level1.JavaID;
 import org.dml.level1.Symbol;
 import org.dml.level4.Level4_DMLEnvironment;
+import org.dml.level4.ListOrderedOfSymbols;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -40,7 +41,7 @@ import org.references.method.PossibleParams;
  * 
  *
  */
-public class Level3_DMLEnvironmentTest {
+public class Level4_DMLEnvironmentTest {
 	
 	Level4_DMLEnvironment	l3;
 	
@@ -67,6 +68,7 @@ public class Level3_DMLEnvironmentTest {
 
 		JavaID name = JavaID.ensureJavaIDFor( "boo" );
 		Symbol name2 = l3.createSymbol( name );
-		// TODO
+		ListOrderedOfSymbols list = l3.newList( name2 );
+		list.assumedValid();
 	}
 }

@@ -26,13 +26,14 @@ package org.dml.level3;
 
 
 import org.dml.level1.Symbol;
+import org.dml.level2.Level2_DMLEnvironment;
 import org.dml.tools.RunTime;
 
 
 
 /**
- * will allow pointing only to terminals of domain
- * 
+ * will allow pointing only to terminals of domain<br>
+ * basically this is a Vector with max. one terminal; can have 0 though
  */
 public class DomainPointer extends Pointer {
 	
@@ -40,30 +41,43 @@ public class DomainPointer extends Pointer {
 	Symbol	domain	= null;
 	
 	/**
-	 * @param l3dml
+	 * @param l2dml
 	 * @param selfName
 	 */
-	public DomainPointer( Level3_DMLEnvironment l3dml, Symbol selfName ) {
+	public DomainPointer( Level2_DMLEnvironment l2dml, Symbol selfName ) {
 
-		super( l3dml, selfName );
+		super( l2dml, selfName );
 	}
 	
 	/**
 	 * @param newDomain
+	 * @return the old Domain, if any, or null
 	 */
-	public void setDomain( Symbol newDomain ) {
+	public Symbol setDomain( Symbol newDomain ) {
 
 		RunTime.assumedNotNull( newDomain );
+		this.assumedValid();
 		RunTime.assumedFalse( self.equals( newDomain ) );
-		Symbol old = this.getDomain();
+		Symbol old = this.getDomain();// or null
 		Symbol pointee = this.getPointee();
 		if ( null != pointee ) {
-			if ( !envL3.isVector( newDomain, pointee ) ) {
-				RunTime.badCall( "the new domain is incompatible with the already existing pointee. Maybe remove the pointee before you set the domain." );
+			// well we already have a pointee, we need to make sure it's from
+			// the NEW domain
+			if ( !this.isValidDomainPointeeTuple( newDomain, pointee ) ) {
+				RunTime.badCall( "the new domain is incompatible with the already existing pointee. "
+						+ "Maybe remove the pointee before you set the domain." );
 			}
 		}
 		domain = newDomain;
 		this.assumedValid();
+		return old;
+	}
+	
+	public boolean isValidDomainPointeeTuple( Symbol domain1, Symbol pointee ) {
+
+		RunTime.assumedNotNull( domain1, pointee );
+		RunTime.assumedFalse( self.equals( domain1 ) );
+		return envL2.isVector( domain1, pointee );
 	}
 	
 	/*
@@ -78,7 +92,8 @@ public class DomainPointer extends Pointer {
 		RunTime.assumedFalse( self.equals( domain ) );
 		Symbol pointee = this.getPointee();
 		if ( null != pointee ) {
-			RunTime.assumedTrue( envL3.isVector( domain, pointee ) );
+			RunTime.assumedTrue( this.isValidDomainPointeeTuple( domain,
+					pointee ) );
 		}
 	}
 	
@@ -88,6 +103,22 @@ public class DomainPointer extends Pointer {
 	public Symbol getDomain() {
 
 		return domain;
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.dml.level3.Pointer#pointTo(org.dml.level1.Symbol)
+	 */
+	@Override
+	public Symbol pointTo( Symbol toWhat ) {
+
+		RunTime.assumedNotNull( toWhat );
+		this.assumedValid();
+		if ( !this.isValidDomainPointeeTuple( domain, toWhat ) ) {
+			RunTime.badCall( "new pointee not from domain, you insipid bugger! :D" );
+		}
+		return super.pointTo( toWhat );
 	}
 	
 }
