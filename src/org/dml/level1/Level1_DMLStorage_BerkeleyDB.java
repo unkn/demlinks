@@ -154,5 +154,63 @@ public class Level1_DMLStorage_BerkeleyDB extends MainLevel0 implements
 		}
 	}
 	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.dml.level1.Level1_DMLStorageWrapper#link(org.dml.level1.Symbol,
+	 * org.dml.level1.JavaID)
+	 */
+	@Override
+	public boolean ensureLink( Symbol symbol, JavaID javaID )
+			throws StorageException {
+
+		RunTime.assumedNotNull( symbol, javaID );
+		try {
+			JavaID oldJid = this.getJavaID( symbol );
+			Symbol oldSym = this.getSymbol( javaID );
+			// true if already associated
+			boolean link1 = ( null != oldJid );
+			boolean link2 = ( null != oldSym );
+			// both links are either both false or both true, never one true and
+			// one false
+			if ( link1 ^ link2 ) {// xor 0^0=0; 1^1=0; 0^1=1
+				// true means fail
+				RunTime.bug( "the above two calls failed. Both should be same." );
+			}
+			if ( link1 ) {
+				// a jid is already associated with the symbol
+				// is it javaID though? or a diff one
+				if ( oldJid != javaID ) {
+					// a diff one
+					RunTime.badCall( "another JavaID was already associated with the passed Symbol." );
+				} else {// else it's the same but already rightly associated
+					return true;
+				}
+			}// else doesn't already exist
+			
+			if ( bdb.getDBMap_JavaIDs_To_Symbols().link( javaID, symbol ) ) {
+				// existed already, impossible to reach this
+				RunTime.bug( "huge discrepancy between getJavaID, getSymbol and .link here" );
+			}
+			return false;
+		} catch ( DatabaseException de ) {
+			throw new StorageException( de );
+		}
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.dml.level1.Level1_DMLStorageWrapper#newLink(org.dml.level1.Symbol,
+	 * org.dml.level1.JavaID)
+	 */
+	@Override
+	public void newLink( Symbol symbol, JavaID javaID ) throws StorageException {
+
+		RunTime.assumedNotNull( symbol, javaID );
+		RunTime.assumedFalse( this.ensureLink( symbol, javaID ) );
+	}
+	
 
 }// end of class

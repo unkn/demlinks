@@ -25,6 +25,7 @@ package org.dml.database;
 
 
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.UnsupportedEncodingException;
@@ -34,7 +35,6 @@ import org.dml.database.bdb.level1.AllTupleBindings;
 import org.dml.database.bdb.level1.Level1_Storage_BerkeleyDB;
 import org.dml.database.bdb.level1.OneToOneDBMap;
 import org.dml.error.BadCallError;
-import org.dml.error.BugError;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -87,20 +87,14 @@ public class OneToOneDBMapTest {
 			UnsupportedEncodingException {
 
 		
-		System.out.println( x.makeVector( _a, _b ) );
+		assertFalse( x.link( _a, _b ) );
 		assertTrue( x.getKey( _b ).equals( _a ) );
 		assertTrue( x.getData( _a ).equals( _b ) );
 		// different objects, same content
 		assertTrue( _a != x.getKey( _b ) );
 		assertTrue( _b != x.getData( _a ) );
 		assertTrue( _b.equals( x.getData( x.getKey( _b ) ) ) );
-		boolean threw = false;
-		try {
-			x.makeVector( _a, _b );
-		} catch ( BugError be ) {
-			threw = true;
-		}
-		assertTrue( threw );
+		assertTrue( x.link( _a, _b ) );
 	}
 	
 	@Test
@@ -180,7 +174,7 @@ public class OneToOneDBMapTest {
 		}
 		assertTrue( threw );
 		
-		map.makeVector( key1, data );// shouldn't throw!
+		map.link( key1, data );// shouldn't throw!
 		
 		key1 = new JUnit_Ex2();
 		threw = false;
@@ -193,7 +187,7 @@ public class OneToOneDBMapTest {
 		
 		threw = false;
 		try {
-			map.makeVector( key1, data );
+			map.link( key1, data );
 		} catch ( BadCallError bce ) {
 			threw = true;
 		}
@@ -202,7 +196,7 @@ public class OneToOneDBMapTest {
 
 		threw = false;
 		try {
-			map.makeVector( key2, data );
+			map.link( key2, data );
 		} catch ( BadCallError bce ) {
 			threw = true;
 		}

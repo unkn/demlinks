@@ -9,3 +9,5 @@ Things that are depreciated or obsolete won't be here.
 	
 	 
 2. using DejaVu Sans Mono 14, in eclipse for editing (General->Appearance->Colors and Fonts)
+
+3. methods will usually return TRUE if already existed; false otherwise; but they will not fail, if they do they throw exception

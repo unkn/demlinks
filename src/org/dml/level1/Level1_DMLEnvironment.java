@@ -34,7 +34,7 @@ import org.references.method.MethodParams;
 
 
 /**
- * handling Symbols
+ * handling JavaIDs and Symbols
  * 
  */
 public class Level1_DMLEnvironment extends MainLevel0 implements
@@ -66,66 +66,49 @@ public class Level1_DMLEnvironment extends MainLevel0 implements
 	}
 	
 	// ---------------------------------------------
-	/**
-	 * there's a one to one mapping between NodeID and NodeJavaID<br>
-	 * given the NodeID return its NodeJavaID<br>
-	 * NodeIDs are on some kind of Storage<br>
-	 * 
-	 * @param symbol
-	 * @return NodeJavaID
-	 * @throws StorageException
-	 */
+	
+	@Override
 	public JavaID getJavaID( Symbol symbol ) throws StorageException {
 
 		RunTime.assumedNotNull( symbol );
 		return storage.getJavaID( symbol );
 	}
 	
-	/**
-	 * eget=ensure get<br>
-	 * make a new one if it doesn't exist<br>
-	 * but if exists don't complain<br>
-	 * 
-	 * @param theJavaID
-	 *            this JavaID and this Node will be mapped 1 to 1
-	 * @return never null
-	 * @throws StorageException
-	 */
+	@Override
 	public Symbol ensureSymbol( JavaID theJavaID ) throws StorageException {
 
 		RunTime.assumedNotNull( theJavaID );
 		return storage.ensureSymbol( theJavaID );
 	}
 	
-	/**
-	 * @param identifiedByThisJavaID
-	 * @throws StorageException
-	 */
+	@Override
 	public Symbol getSymbol( JavaID identifiedByThisJavaID )
 			throws StorageException {
 
 		return storage.getSymbol( identifiedByThisJavaID );
 	}
 	
-	/**
-	 * @param fromJavaID
-	 * @return
-	 * @throws StorageException
-	 */
+	@Override
 	public Symbol createSymbol( JavaID fromJavaID ) throws StorageException {
 
 		return storage.createSymbol( fromJavaID );
 	}
 	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.dml.level1.Level1_DMLStorageWrapper#newUniqueSymbol()
-	 */
 	@Override
 	public Symbol newUniqueSymbol() throws StorageException {
 
 		return storage.newUniqueSymbol();
 	}
 	
+	@Override
+	public void newLink( Symbol noID, JavaID jid ) {
+
+		storage.newLink( noID, jid );
+	}
+	
+	@Override
+	public boolean ensureLink( Symbol noID, JavaID jid ) {
+
+		return storage.ensureLink( noID, jid );
+	}
 }

@@ -40,16 +40,16 @@ import com.sleepycat.je.DatabaseException;
  */
 public class Pointer {
 	
-	Level2_DMLEnvironment	envL2;
-	Symbol					self;
-	boolean					allowNull	= true;
+	protected final Level2_DMLEnvironment	envL2;
+	protected final Symbol					self;
+	private boolean							allowNull	= true;
 	
-	public Pointer( Level2_DMLEnvironment l2DML, Symbol selfName ) {
+	public Pointer( Level2_DMLEnvironment l2DML, Symbol self1 ) {
 
-		RunTime.assumedNotNull( l2DML, selfName );
+		RunTime.assumedNotNull( l2DML, self1 );
 		RunTime.assumedTrue( l2DML.isInited() );
 		envL2 = l2DML;
-		self = selfName;
+		self = self1;
 	}
 	
 	public boolean setAllowNull( boolean newValue ) {
@@ -117,6 +117,7 @@ public class Pointer {
 	public void assumedValid() {
 
 		
+		RunTime.assumedNotNull( self );
 		int size = envL2.countTerminals( self );
 		if ( !allowNull ) {
 			// must have 1 terminal
@@ -133,5 +134,14 @@ public class Pointer {
 		} else { // is 0
 			RunTime.assumedNull( this.getPointee() );
 		}
+	}
+	
+	/**
+	 * @return
+	 */
+	public Symbol getAsSymbol() {
+
+		this.assumedValid();
+		return self;
 	}
 }

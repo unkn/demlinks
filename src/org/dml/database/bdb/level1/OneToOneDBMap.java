@@ -179,11 +179,10 @@ public class OneToOneDBMap<KeyType, DataType> {
 	/**
 	 * @param key
 	 * @param data
-	 * @return
+	 * @return true if already existed
 	 * @throws DatabaseException
 	 */
-	public OperationStatus makeVector( KeyType key, DataType data )
-			throws DatabaseException {
+	public boolean link( KeyType key, DataType data ) throws DatabaseException {
 
 		this.checkKey( key );
 		this.checkData( data );
@@ -194,10 +193,12 @@ public class OneToOneDBMap<KeyType, DataType> {
 		dataBinding.objectToEntry( data, deData );
 		OperationStatus ret = this.getForwardDB().putNoOverwrite( null, deKey,
 				deData );// this will auto put in secondary also
-		if ( OperationStatus.KEYEXIST == ret ) {
-			RunTime.bug( "this is supposed to make a new unexisting key->data pair, apparently it failed!" );
-		}
-		return ret;
+		// if ( OperationStatus.KEYEXIST == ret ) {
+		// RunTime.bug(
+		// "this is supposed to make a new unexisting key->data pair, apparently it failed!"
+		// );
+		// }
+		return OperationStatus.KEYEXIST == ret;
 	}
 	
 	private void checkData( DataType data ) {

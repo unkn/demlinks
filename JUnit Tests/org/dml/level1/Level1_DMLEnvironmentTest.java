@@ -26,6 +26,8 @@ package org.dml.level1;
 
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import org.dml.JUnits.Consts;
@@ -119,5 +121,19 @@ public class Level1_DMLEnvironmentTest {
 		} finally {
 			dml1.deInitAllLikeMe();
 		}
+	}
+	
+	@Test
+	public void testUniqueAndAssociation() {
+
+		Symbol noID = dml1.newUniqueSymbol();
+		assertNotNull( noID );
+		JavaID jid = JavaID.ensureJavaIDFor( "UniqueSymbol" );
+		assertNull( dml1.getJavaID( noID ) );
+		assertNull( dml1.getSymbol( jid ) );
+		dml1.newLink( noID, jid );// no throws
+		assertTrue( dml1.getJavaID( noID ) == jid );
+		assertTrue( dml1.getSymbol( jid ) == noID );
+		assertTrue( dml1.ensureLink( noID, jid ) );
 	}
 }

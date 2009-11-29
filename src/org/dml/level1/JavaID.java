@@ -44,7 +44,13 @@ import org.references.Reference;
  * program/thread(assuming concurrency will ever be allowed),
  * although this might be challenging to implement (or limiting).<br>
  * 
- * - NodeJavaIDs(Level1) != NodeIDs(Level2)
+ * - JavaIDs(Level1) != Symbols(Level2)
+ * 
+ * ---------- ignoring the above, I say:
+ * JavaID is a way of referring to the same Symbol across application restarts
+ * ie. using ensureSymbol(javaID) method found in the environment not here
+ * on first run, a symbol is associated with a javaID, and on any next starts
+ * the same symbol is retrieved when referring to that javaID
  */
 public class JavaID extends Reference<String> {
 	

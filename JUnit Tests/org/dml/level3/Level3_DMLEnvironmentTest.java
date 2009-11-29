@@ -63,10 +63,16 @@ public class Level3_DMLEnvironmentTest {
 	}
 	
 	@Test
-	public void test1() {
+	public void testPointer() {
 
-		JavaID name = JavaID.ensureJavaIDFor( "boo" );
+		JavaID name = JavaID.ensureJavaIDFor( "Ptr1" );
 		Symbol name2 = l3.createSymbol( name );
 		// TODO
+		
+		Pointer p1 = l3.ensurePointer( name2 );
+		// l3.associateJavaIDWithSymbol( name, p1.getAsSymbol() );
+		p1.assumedValid();
+		Pointer p2 = l3.getNewPointer();
+		Pointer p1_1 = l3.ensurePointer( name2 );
 	}
 }

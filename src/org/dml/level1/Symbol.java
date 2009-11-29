@@ -54,6 +54,9 @@ import org.dml.tools.RunTime;
  * Thus, it is assumed that if the Symbol instance exists in java, then it also
  * exists or will exist safely (ie. when ensureVector(*,*) is called) in BDB or
  * storage<br>
+ * 
+ * Using same Symbol representation in java, for any symbols in any dml
+ * environments. Ie. two dml environments use one Symbol here in java.
  */
 public class Symbol {
 	
@@ -64,6 +67,8 @@ public class Symbol {
 	// new-ed one from a previous call
 	protected static final HashMap<Long, Symbol>	all_Symbols	= new HashMap<Long, Symbol>();
 	
+	
+
 	/**
 	 * constructor, call only internally
 	 * 

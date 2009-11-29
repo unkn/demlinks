@@ -36,18 +36,18 @@ import org.dml.storagewrapper.StorageException;
 public interface Level1_DMLStorageWrapper {
 	
 	/**
-	 * returns the NodeJavaID associated with the given NodeID<br>
-	 * it's a 1 to 1 mapping<br>
+	 * there's a one to one mapping between Symbol and JavaID<br>
+	 * given the Symbol return its JavaID<br>
 	 * 
-	 * @param identifiedByThisSymbol
-	 * @return NodeJavaID or null if not found
+	 * @param symbol
+	 * @return JavaID or null if not found
 	 * @throws StorageException
 	 */
 	public JavaID getJavaID( Symbol identifiedByThisSymbol )
 			throws StorageException;
 	
 	/**
-	 * returns the NodeID associated with the given NodeJavaID<br>
+	 * returns the Symbol associated with the given JavaID<br>
 	 * it's a 1 to 1 mapping<br>
 	 * 
 	 * @param identifiedByThisJavaID
@@ -61,17 +61,41 @@ public interface Level1_DMLStorageWrapper {
 	 * @param fromJavaID
 	 *            must not be already associated with a NodeID (1to1 max) or
 	 *            else throws
-	 * @return the created NodeID or throws bug if fromJID already had a NodeID
+	 * @return the created Symbol or throws bug if fromJID already had a Symbol
 	 * @throws StorageException
 	 */
 	public Symbol createSymbol( JavaID fromJavaID ) throws StorageException;
 	
 	/**
+	 * eget=ensure get<br>
+	 * make a new one if it doesn't exist<br>
+	 * but if exists don't complain<br>
+	 * 
 	 * @param theJavaID
-	 * @return the new or existing NodeID
+	 *            this JavaID and this Node will be mapped 1 to 1
+	 * @return never null
 	 * @throws StorageException
 	 */
 	public Symbol ensureSymbol( JavaID theJavaID ) throws StorageException;
 	
+	/**
+	 * @return a new Symbol without an associated JavaID
+	 * @throws StorageException
+	 */
 	public Symbol newUniqueSymbol() throws StorageException;
+	
+	/**
+	 * @param symbol
+	 * @param javaID
+	 */
+	public void newLink( Symbol symbol, JavaID javaID ) throws StorageException;
+	
+	/**
+	 * @param symbol
+	 * @param javaID
+	 * @return true if existed; throws if link existed with different params
+	 *         (ie. symbol and another javaID, or javaID and another symbol)
+	 */
+	public boolean ensureLink( Symbol symbol, JavaID javaID )
+			throws StorageException;
 }

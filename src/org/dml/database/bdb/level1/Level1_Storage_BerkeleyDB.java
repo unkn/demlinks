@@ -82,7 +82,7 @@ public class Level1_Storage_BerkeleyDB extends StaticInstanceTracker {
 	 * singleton
 	 * 
 	 * @return the database handling the one to one mapping between JavaIDs and
-	 *         NodeIDs
+	 *         Symbols
 	 * @throws DatabaseException
 	 */
 	public DBMap_JavaIDs_To_Symbols getDBMap_JavaIDs_To_Symbols()
