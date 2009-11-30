@@ -416,6 +416,7 @@ public class OneToManyDBMap<InitialType, TerminalType> {
 		} finally {
 			iter.deInit();
 		}
+		RunTime.assumedFalse( this.isVector( initialObject, terminalObject ) );
 		return found1;
 	}
 }

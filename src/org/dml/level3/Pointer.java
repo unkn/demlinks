@@ -123,7 +123,12 @@ public class Pointer {
 	
 	public Symbol getPointee() {
 
-		// this.assumedValid();
+		this.assumedValid();
+		return this.internal_getPointee();
+	}
+	
+	private Symbol internal_getPointee() {
+
 		Symbol ret = null;
 		BDBVectorIterator<Symbol, Symbol> iter = envL2.getIterator_on_Terminals_of( self );
 		try {
@@ -161,9 +166,9 @@ public class Pointer {
 		
 		// getPointee works
 		if ( 1 == size ) {
-			RunTime.assumedNotNull( this.getPointee() );
+			RunTime.assumedNotNull( this.internal_getPointee() );
 		} else { // is 0
-			RunTime.assumedNull( this.getPointee() );
+			RunTime.assumedNull( this.internal_getPointee() );
 		}
 	}
 	

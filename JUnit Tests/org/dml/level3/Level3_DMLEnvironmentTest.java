@@ -92,8 +92,50 @@ public class Level3_DMLEnvironmentTest {
 		Pointer p3 = l3.getNewNonNullPointer( pointsTo );
 		// must already point to something, which it does
 		Pointer p3_3 = l3.getExistingPointer( p3.getAsSymbol(), false );
+		assertTrue( p3_3.getPointee() == pointsTo );
+		assertTrue( p3.getPointee() == pointsTo );
+		boolean threw = false;
+		try {
+			p3.pointTo( null );
+		} catch ( AssertionError ae ) {
+			threw = true;
+		}
+		assertTrue( threw );
 		
-		// similar to getNewNonNullPointer:
-		Pointer p4 = l3.getNewNonNullPointer( pointsTo );
+		// allow null
+		Pointer p4 = l3.getExistingPointer( p3.getAsSymbol(), true );
+		assertTrue( p4.getPointee() == pointsTo );
+		assertTrue( p4.pointTo( null ) == pointsTo );
+		threw = false;
+		try {
+			p3.assumedValid();
+		} catch ( AssertionError ae ) {
+			threw = true;
+		}
+		assertTrue( threw );
+		
+		threw = false;
+		try {
+			p3.getPointee();
+		} catch ( AssertionError ae ) {
+			threw = true;
+		}
+		assertTrue( threw );
+		
+		threw = false;
+		try {
+			p3.pointTo( pointsTo );
+		} catch ( AssertionError ae ) {
+			threw = true;
+		}
+		assertTrue( threw );
+		
+		threw = false;
+		try {
+			p3.getAsSymbol();
+		} catch ( AssertionError ae ) {
+			threw = true;
+		}
+		assertTrue( threw );
 	}
 }
