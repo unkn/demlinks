@@ -25,6 +25,7 @@ package org.dml.level4;
 
 
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import org.dml.level1.JavaID;
@@ -82,9 +83,11 @@ public class Level4_DMLEnvironmentTest {
 		eclist.assumedValid();
 		
 		Symbol ec1name = l4.newUniqueSymbol();
-		ElementCapsule ec1 = new ElementCapsule( l4, ec1name );
+		ElementCapsule ec1 = ElementCapsule.getElementCapsule( l4, ec1name );
 		eclist.add_ElementCapsule( ec1, Position.FIRST );
-		assertTrue( eclist.get_ElementCapsule( Position.LAST ) == ec1 );
+		ElementCapsule tmpLast = eclist.get_ElementCapsule( Position.LAST );
+		assertNotNull( tmpLast );
+		assertTrue( tmpLast == ec1 );
 		assertTrue( eclist.get_ElementCapsule( Position.FIRST ) == ec1 );
 	}
 }

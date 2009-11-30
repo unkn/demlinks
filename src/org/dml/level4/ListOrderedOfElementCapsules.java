@@ -272,7 +272,7 @@ public class ListOrderedOfElementCapsules {
 		Symbol x = env.findCommonTerminalForInitials( sym, name );
 		if ( null != x ) {// found one
 			// existing ElementCapsule, wrap it in ElementCapsule type
-			ElementCapsule ec = new ElementCapsule( env, x );
+			ElementCapsule ec = ElementCapsule.getElementCapsule( env, x );
 			return ec;
 		}
 		return null;// found none

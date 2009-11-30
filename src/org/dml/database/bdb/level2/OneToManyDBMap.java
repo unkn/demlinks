@@ -346,6 +346,8 @@ public class OneToManyDBMap<InitialType, TerminalType> {
 	}
 	
 	/**
+	 * must not be more than 1 found, else bug
+	 * 
 	 * @param initial1
 	 * @param initial2
 	 * @return
@@ -355,8 +357,49 @@ public class OneToManyDBMap<InitialType, TerminalType> {
 
 		this.checkKey( initial1 );
 		this.checkKey( initial2 );
-		// TODO make sure it's only 1 terminal found! else bug
-		return null;
+		TerminalType found = null;
+		BDBVectorIterator<InitialType, TerminalType> iter1 = this.getIterator_on_Terminals_of( initial1 );
+		BDBVectorIterator<InitialType, TerminalType> iterator = iter1;
+		InitialType comparator = initial1;
+		BDBVectorIterator<InitialType, TerminalType> iter2 = null;
+		try {
+			iter2 = this.getIterator_on_Terminals_of( initial2 );
+			try {
+				if ( iter1.count() > iter2.count() ) {
+					iterator = iter2;
+					comparator = initial2;
+				}
+			} finally {
+				// deInit the unused one
+				if ( iterator == iter2 ) {
+					iter1.deInit();
+				} else {
+					iter2.deInit();
+				}
+			}
+			
+			// parse iter1's elements and see if any is in iter2
+			
+			iterator.goFirst();
+			TerminalType now = iterator.now();
+			while ( null != now ) {
+				if ( this.isVector( comparator, now ) ) {
+					// found one
+					if ( null != found ) {
+						RunTime.bug( "supposed to be only one, but we found two" );
+					} else {
+						found = now;
+					}
+				}
+				iterator.goNext();
+				now = iterator.now();
+			}
+		} finally {
+			iterator.deInit();
+		}
+		RunTime.assumedFalse( iter1.isInited() );
+		RunTime.assumedFalse( iter2.isInited() );
+		return found;
 	}
 	
 	/**

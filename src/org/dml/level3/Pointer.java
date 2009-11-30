@@ -30,6 +30,7 @@ import org.dml.level1.Symbol;
 import org.dml.level2.Level2_DMLEnvironment;
 import org.dml.storagewrapper.StorageException;
 import org.dml.tools.RunTime;
+import org.dml.tools.TwoKeyHashMap;
 
 import com.sleepycat.je.DatabaseException;
 
@@ -40,9 +41,10 @@ import com.sleepycat.je.DatabaseException;
  */
 public class Pointer {
 	
-	protected final Level2_DMLEnvironment	envL2;
-	protected final Symbol					self;
-	private boolean							allowNull	= true;
+	private static final TwoKeyHashMap<Level2_DMLEnvironment, Symbol, Pointer>	allPointerInstances	= new TwoKeyHashMap<Level2_DMLEnvironment, Symbol, Pointer>();
+	protected final Level2_DMLEnvironment										envL2;
+	protected final Symbol														self;
+	private boolean																allowNull			= true;
 	
 	/**
 	 * constructor, not to be used by user
@@ -61,9 +63,11 @@ public class Pointer {
 	public static Pointer getNewNullPointer( Level2_DMLEnvironment l2DML ) {
 
 		RunTime.assumedNotNull( l2DML );
-		Pointer ret = new Pointer( l2DML, l2DML.newUniqueSymbol() );
+		Symbol name = l2DML.newUniqueSymbol();
+		Pointer ret = new Pointer( l2DML, name );
 		ret.setAllowNull( true );
 		ret.assumedValid();
+		RunTime.assumedFalse( allPointerInstances.ensure( l2DML, name, ret ) );
 		return ret;
 	}
 	
@@ -71,10 +75,12 @@ public class Pointer {
 			Symbol pointTo ) {
 
 		RunTime.assumedNotNull( l2DML, pointTo );
-		Pointer ret = new Pointer( l2DML, l2DML.newUniqueSymbol() );
+		Symbol name = l2DML.newUniqueSymbol();
+		Pointer ret = new Pointer( l2DML, name );
 		ret.pointTo( pointTo );
 		ret.setAllowNull( false );
 		ret.assumedValid();
+		RunTime.assumedFalse( allPointerInstances.ensure( l2DML, name, ret ) );
 		return ret;
 	}
 	
@@ -82,10 +88,16 @@ public class Pointer {
 			Symbol name, boolean allowNull ) {
 
 		RunTime.assumedNotNull( l2DML, name, allowNull );
+		Pointer existingOne = allPointerInstances.get( l2DML, name );
+		if ( null != existingOne ) {
+			return existingOne;
+		}
+		// else make it
 		Pointer ret = new Pointer( l2DML, name );
 		// if false, it must already point to something
 		ret.setAllowNull( allowNull );
 		ret.assumedValid();
+		RunTime.assumedFalse( allPointerInstances.ensure( l2DML, name, ret ) );
 		return ret;
 	}
 	

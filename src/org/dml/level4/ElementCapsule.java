@@ -29,6 +29,7 @@ import org.dml.level1.Symbol;
 import org.dml.level3.DomainPointer;
 import org.dml.level3.Pointer;
 import org.dml.tools.RunTime;
+import org.dml.tools.TwoKeyHashMap;
 import org.references.Position;
 
 
@@ -39,10 +40,45 @@ import org.references.Position;
  */
 public class ElementCapsule {
 	
-	private final Symbol				name;
-	private final Level4_DMLEnvironment	envL4;
-	private final DomainPointer			cachedPrev, cachedNext;
-	private final Pointer				element;
+	private static final TwoKeyHashMap<Level4_DMLEnvironment, Symbol, ElementCapsule>	allElementCapsuleInstances	= new TwoKeyHashMap<Level4_DMLEnvironment, Symbol, ElementCapsule>();
+	private final Symbol																name;
+	private final Level4_DMLEnvironment													envL4;
+	private final DomainPointer															cachedPrev,
+			cachedNext;
+	private final Pointer																element;
+	
+	private final static void registerInstance( Level4_DMLEnvironment env,
+			Symbol name, ElementCapsule newOne ) {
+
+		RunTime.assumedNotNull( env, name, newOne );
+		RunTime.assumedFalse( allElementCapsuleInstances.ensure( env, name,
+				newOne ) );
+	}
+	
+	private final static ElementCapsule getInstance( Level4_DMLEnvironment env,
+			Symbol name ) {
+
+		RunTime.assumedNotNull( env, name );
+		return allElementCapsuleInstances.get( env, name );
+	}
+	
+	/**
+	 * @param env
+	 * @param x
+	 * @return
+	 */
+	public static ElementCapsule getElementCapsule(
+			Level4_DMLEnvironment envL4, Symbol existingSymbol ) {
+
+		RunTime.assumedNotNull( envL4, existingSymbol );
+		ElementCapsule existingOne = getInstance( envL4, existingSymbol );
+		if ( null == existingOne ) {
+			existingOne = new ElementCapsule( envL4, existingSymbol );
+			registerInstance( envL4, existingSymbol, existingOne );
+		}
+		existingOne.assumedIsValidCapsule();
+		return existingOne;
+	}
 	
 	/**
 	 * @param env_L4
@@ -51,7 +87,7 @@ public class ElementCapsule {
 	 *            if already existing EC, it must have 3 children ref2prev,
 	 *            ref2next, and ref2element, they can be null though
 	 */
-	public ElementCapsule( Level4_DMLEnvironment env_L4, Symbol nameOfEC ) {
+	private ElementCapsule( Level4_DMLEnvironment env_L4, Symbol nameOfEC ) {
 
 		RunTime.assumedNotNull( nameOfEC, env_L4 );
 		RunTime.assumedTrue( env_L4.isInited() );
@@ -70,6 +106,15 @@ public class ElementCapsule {
 					element.getAsSymbol() ) );
 			RunTime.assumedFalse( envL4.ensureVector( name,
 					cachedNext.getAsSymbol() ) );
+			
+			RunTime.assumedFalse( envL4.ensureVector(
+					envL4.allPrevElementCapsules_Symbol,
+					cachedPrev.getAsSymbol() ) );
+			RunTime.assumedFalse( envL4.ensureVector(
+					envL4.allNextElementCapsules_Symbol,
+					cachedNext.getAsSymbol() ) );
+			RunTime.assumedFalse( envL4.ensureVector(
+					envL4.allElementsOfEC_Symbol, element.getAsSymbol() ) );
 		} else {
 			RunTime.assumedTrue( count == 3 );
 			Symbol ref2Prev = envL4.findCommonTerminalForInitials(
@@ -99,12 +144,29 @@ public class ElementCapsule {
 		// it could not have either Prev or Next though
 		RunTime.assumedTrue( envL4.isVector( envL4.allElementCapsules_Symbol,
 				name ) );
+		
 		int size = envL4.countTerminals( name );
-		RunTime.assumedTrue( ( size <= 3 ) && ( size >= 0 ) );
-		if ( size > 0 ) {
-			// TODO: must be only the pointer to element if size is 1
-			// else pointer to element must be present
-		}
+		RunTime.assumedTrue( 3 == size );
+		
+		Symbol ref2Prev = envL4.findCommonTerminalForInitials(
+				envL4.allPrevElementCapsules_Symbol, name );
+		RunTime.assumedNotNull( ref2Prev );
+		DomainPointer tmpPrev = envL4.getExistingDomainPointer( ref2Prev,
+				envL4.allElementCapsules_Symbol, true );
+		RunTime.assumedTrue( tmpPrev == cachedPrev );
+		
+		Symbol ref2Next = envL4.findCommonTerminalForInitials(
+				envL4.allNextElementCapsules_Symbol, name );
+		RunTime.assumedNotNull( ref2Next );
+		DomainPointer tmpNext = envL4.getExistingDomainPointer( ref2Next,
+				envL4.allElementCapsules_Symbol, true );
+		RunTime.assumedTrue( tmpNext == cachedNext );
+		
+		Symbol elem = envL4.findCommonTerminalForInitials(
+				envL4.allElementsOfEC_Symbol, name );
+		RunTime.assumedNotNull( elem );
+		Pointer tmpElement = envL4.getExistingPointer( elem, true );
+		RunTime.assumedTrue( tmpElement == element );
 	}
 	
 	/**

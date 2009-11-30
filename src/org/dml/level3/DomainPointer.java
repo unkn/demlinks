@@ -28,6 +28,7 @@ package org.dml.level3;
 import org.dml.level1.Symbol;
 import org.dml.level2.Level2_DMLEnvironment;
 import org.dml.tools.RunTime;
+import org.dml.tools.TwoKeyHashMap;
 
 
 
@@ -37,8 +38,9 @@ import org.dml.tools.RunTime;
  */
 public class DomainPointer extends Pointer {
 	
+	private static final TwoKeyHashMap<Level2_DMLEnvironment, Symbol, DomainPointer>	allDomainPointerInstances	= new TwoKeyHashMap<Level2_DMLEnvironment, Symbol, DomainPointer>();
 	// allowed to point only to terminals of domain
-	Symbol	domain	= null;
+	Symbol																				domain						= null;
 	
 	/**
 	 * @param l2dml
@@ -58,12 +60,30 @@ public class DomainPointer extends Pointer {
 			Level2_DMLEnvironment l2DML, Symbol domain2, Symbol pointTo ) {
 
 		RunTime.assumedNotNull( l2DML, domain2, pointTo );
-		DomainPointer ret = new DomainPointer( l2DML, l2DML.newUniqueSymbol() );
+		Symbol name = l2DML.newUniqueSymbol();
+		DomainPointer ret = new DomainPointer( l2DML, name );
 		ret.setDomain( domain2 );
 		ret.pointTo( pointTo );
 		ret.setAllowNull( false );
 		ret.assumedValid();
+		RunTime.assumedTrue( ret.getAsSymbol() == name );
+		registerDPInstance( l2DML, name, ret );
 		return ret;
+	}
+	
+	private final static void registerDPInstance( Level2_DMLEnvironment env,
+			Symbol name, DomainPointer newOne ) {
+
+		RunTime.assumedNotNull( env, name, newOne );
+		RunTime.assumedFalse( allDomainPointerInstances.ensure( env, name,
+				newOne ) );
+	}
+	
+	private final static DomainPointer getDPInstance(
+			Level2_DMLEnvironment env, Symbol name ) {
+
+		RunTime.assumedNotNull( env, name );
+		return allDomainPointerInstances.get( env, name );
 	}
 	
 	
@@ -71,10 +91,13 @@ public class DomainPointer extends Pointer {
 			Symbol domain2 ) {
 
 		RunTime.assumedNotNull( l2DML, domain2 );
-		DomainPointer ret = new DomainPointer( l2DML, l2DML.newUniqueSymbol() );
+		Symbol name = l2DML.newUniqueSymbol();
+		DomainPointer ret = new DomainPointer( l2DML, name );
 		ret.setDomain( domain2 );
 		ret.setAllowNull( true );
 		ret.assumedValid();
+		RunTime.assumedTrue( ret.getAsSymbol() == name );
+		registerDPInstance( l2DML, name, ret );
 		return ret;
 	}
 	
@@ -90,6 +113,10 @@ public class DomainPointer extends Pointer {
 			Symbol domain2, boolean allowNull ) {
 
 		RunTime.assumedNotNull( level2DMLEnvironment, self, domain2, allowNull );
+		DomainPointer existingOne = getDPInstance( level2DMLEnvironment, self );
+		if ( null != existingOne ) {
+			return existingOne;
+		}
 		DomainPointer ret = new DomainPointer( level2DMLEnvironment, self );
 		ret.setDomain( domain2 );
 		ret.setAllowNull( allowNull );
