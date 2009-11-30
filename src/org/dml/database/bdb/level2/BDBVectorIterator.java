@@ -107,9 +107,9 @@ public class BDBVectorIterator<InitialType, TerminalType> extends
 		OperationStatus ret = this.getCursor().getSearchKey( deKey, deData,
 				LockMode.RMW );
 		if ( OperationStatus.SUCCESS == ret ) {
-			currentTerminalObject = terminalBinding.entryToObject( deData );
+			this.setNow( terminalBinding.entryToObject( deData ) );
 		} else {
-			currentTerminalObject = null;
+			this.setNow( null );
 		}
 	}
 	
@@ -118,27 +118,40 @@ public class BDBVectorIterator<InitialType, TerminalType> extends
 		return currentTerminalObject;
 	}
 	
+	private void setNow( TerminalType newNow ) {
+
+		currentTerminalObject = newNow;// null allowed
+	}
+	
 	public void goNext() throws DatabaseException {
 
-		RunTime.assumedTrue( deData.getOffset() == 0 );
-		OperationStatus ret = this.getCursor().getNextDup( deKey, deData,
-				LockMode.RMW );
-		if ( OperationStatus.SUCCESS == ret ) {
-			currentTerminalObject = terminalBinding.entryToObject( deData );
+		if ( null != this.now() ) {
+			RunTime.assumedTrue( deData.getOffset() == 0 );
+			OperationStatus ret = this.getCursor().getNextDup( deKey, deData,
+					LockMode.RMW );
+			if ( OperationStatus.SUCCESS == ret ) {
+				this.setNow( terminalBinding.entryToObject( deData ) );
+			} else {
+				this.setNow( null );
+			}
 		} else {
-			currentTerminalObject = null;
+			RunTime.badCall( "called goNext() while now() was null" );
 		}
 	}
 	
 	public void goPrev() throws DatabaseException {
 
-		RunTime.assumedTrue( deData.getOffset() == 0 );
-		OperationStatus ret = this.getCursor().getPrevDup( deKey, deData,
-				LockMode.RMW );
-		if ( OperationStatus.SUCCESS == ret ) {
-			currentTerminalObject = terminalBinding.entryToObject( deData );
+		if ( null != this.now() ) {
+			RunTime.assumedTrue( deData.getOffset() == 0 );
+			OperationStatus ret = this.getCursor().getPrevDup( deKey, deData,
+					LockMode.RMW );
+			if ( OperationStatus.SUCCESS == ret ) {
+				this.setNow( terminalBinding.entryToObject( deData ) );
+			} else {
+				this.setNow( null );
+			}
 		} else {
-			currentTerminalObject = null;
+			RunTime.badCall( "called goPrev() while now() was null" );
 		}
 	}
 	
@@ -148,7 +161,17 @@ public class BDBVectorIterator<InitialType, TerminalType> extends
 	 */
 	public int count() throws DatabaseException {
 
-		return this.getCursor().count();
+		if ( this.now() == null ) {
+			this.goFirst();
+			if ( null == this.now() ) {
+				return 0;
+			}
+			int ret = this.getCursor().count();
+			this.setNow( null );
+			return ret;
+		} else {
+			return this.getCursor().count();
+		}
 	}
 	
 	@Override
@@ -193,6 +216,9 @@ public class BDBVectorIterator<InitialType, TerminalType> extends
 		}
 		try {
 			this.goFirst();// init cursor
+			// if ( this.now() == null ) {
+			// RunTime.bug( "cursor init failed" );
+			// }
 		} catch ( DatabaseException de ) {
 			throw new StorageException( de );
 		}
@@ -202,11 +228,15 @@ public class BDBVectorIterator<InitialType, TerminalType> extends
 	 * @throws DatabaseException
 	 * 
 	 */
-	public void delete() throws DatabaseException {
+	public boolean delete() throws DatabaseException {
 
+		if ( null == this.now() ) {
+			return false;
+		}
 		OperationStatus ret = this.getCursor().delete();
-		currentTerminalObject = null;
+		this.setNow( null );
 		RunTime.assumedTrue( OperationStatus.SUCCESS == ret );
+		return OperationStatus.SUCCESS == ret;
 	}
 	
 	// goLast() is too expensive to implement, due to BDB not giving support for

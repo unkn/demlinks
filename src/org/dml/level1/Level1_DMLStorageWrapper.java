@@ -85,12 +85,18 @@ public interface Level1_DMLStorageWrapper {
 	public Symbol newUniqueSymbol() throws StorageException;
 	
 	/**
+	 * between Symbol X and javaID Y can be only one link<br>
+	 * it is a one to one mapping between the two
+	 * 
 	 * @param symbol
 	 * @param javaID
 	 */
 	public void newLink( Symbol symbol, JavaID javaID ) throws StorageException;
 	
 	/**
+	 * between Symbol X and javaID Y can be only one link<br>
+	 * it is a one to one mapping between the two
+	 * 
 	 * @param symbol
 	 * @param javaID
 	 * @return true if existed; throws if link existed with different params

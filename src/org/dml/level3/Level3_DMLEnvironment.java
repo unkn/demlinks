@@ -25,7 +25,9 @@ package org.dml.level3;
 
 
 
+import org.dml.level1.Symbol;
 import org.dml.level2.Level2_DMLEnvironment;
+import org.dml.tools.RunTime;
 import org.references.method.MethodParams;
 
 
@@ -43,5 +45,30 @@ public class Level3_DMLEnvironment extends Level2_DMLEnvironment implements
 		// this method is not needed, but it's here for clarity
 		super.start( params );
 	}
-	// TODO add methods to handle Pointer and DomainPointer
+	
+	// TODO add methods to handle DomainPointer
+	
+	public Pointer getExistingPointer( Symbol name2, boolean allowNull ) {
+
+		RunTime.assumedNotNull( name2, allowNull );
+		return Pointer.getExistingPointer( this, name2, allowNull );
+	}
+	
+	/**
+	 * @return
+	 */
+	public Pointer getNewNonNullPointer( Symbol pointTo ) {
+
+		RunTime.assumedNotNull( pointTo );
+		return Pointer.getNewNonNullPointer( this, pointTo );
+	}
+	
+	/**
+	 * @return
+	 */
+	public Pointer getNewNullPointer() {
+
+		return Pointer.getNewNullPointer( this );
+	}
+	
 }

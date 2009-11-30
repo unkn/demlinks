@@ -393,15 +393,19 @@ public class OneToManyDBMap<InitialType, TerminalType> {
 						if ( reverseIter.now().equals( initialObject ) ) {
 							// found it
 							found2 = true;
+							break;
 						}
 						reverseIter.goNext();
 					}
 					RunTime.assumedTrue( found2 );// must have!
 					// TODO encompass in a transaction
+					RunTime.assumedNotNull( reverseIter.now() );
 					int size1 = iter.count();
 					int size2 = reverseIter.count();
-					iter.delete();
-					reverseIter.delete();
+					RunTime.assumedNotNull( reverseIter.now() );
+					RunTime.assumedTrue( iter.delete() );
+					RunTime.assumedNotNull( reverseIter.now() );
+					RunTime.assumedTrue( reverseIter.delete() );
 					RunTime.assumedTrue( size1 - 1 == iter.count() );
 					RunTime.assumedTrue( size2 - 1 == reverseIter.count() );
 				} finally {

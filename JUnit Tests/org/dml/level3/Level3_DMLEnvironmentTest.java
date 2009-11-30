@@ -25,9 +25,11 @@ package org.dml.level3;
 
 
 
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import org.dml.level1.JavaID;
 import org.dml.level1.Symbol;
-import org.dml.level4.Level4_DMLEnvironment;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -42,7 +44,7 @@ import org.references.method.PossibleParams;
  */
 public class Level3_DMLEnvironmentTest {
 	
-	Level4_DMLEnvironment	l3;
+	Level3_DMLEnvironment	l3;
 	
 	@Before
 	public void setUp() {
@@ -51,7 +53,7 @@ public class Level3_DMLEnvironmentTest {
 		params.init( null );
 		params.set( PossibleParams.jUnit_wipeDB, true );
 		params.set( PossibleParams.jUnit_wipeDBWhenDone, true );
-		l3 = new Level4_DMLEnvironment();
+		l3 = new Level3_DMLEnvironment();
 		l3.init( params );
 		params.deInit();
 	}
@@ -69,10 +71,29 @@ public class Level3_DMLEnvironmentTest {
 		Symbol name2 = l3.createSymbol( name );
 		// TODO
 		
-		Pointer p1 = l3.ensurePointer( name2 );
+		Pointer p1 = l3.getExistingPointer( name2, true );
 		// l3.associateJavaIDWithSymbol( name, p1.getAsSymbol() );
 		p1.assumedValid();
-		Pointer p2 = l3.getNewPointer();
-		Pointer p1_1 = l3.ensurePointer( name2 );
+		assertNull( p1.getPointee() );
+		
+		Pointer p2 = l3.getNewNullPointer();// allowed to point to nothing
+		assertNull( p2.getPointee() );
+		
+		// can point to nothing
+		Pointer p1_1 = l3.getExistingPointer( name2, true );
+		assertNull( p1_1.getPointee() );
+		Symbol uni1 = l3.newUniqueSymbol();
+		assertNull( p1.pointTo( uni1 ) );
+		assertTrue( p1_1.getPointee() == uni1 );
+		assertTrue( p1.getPointee() == uni1 );
+		assertTrue( p1_1.pointTo( null ) == uni1 );
+		
+		Symbol pointsTo = l3.newUniqueSymbol();
+		Pointer p3 = l3.getNewNonNullPointer( pointsTo );
+		// must already point to something, which it does
+		Pointer p3_3 = l3.getExistingPointer( p3.getAsSymbol(), false );
+		
+		// similar to getNewNonNullPointer:
+		Pointer p4 = l3.getNewNonNullPointer( pointsTo );
 	}
 }

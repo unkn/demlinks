@@ -44,12 +44,43 @@ public class Pointer {
 	protected final Symbol					self;
 	private boolean							allowNull	= true;
 	
-	public Pointer( Level2_DMLEnvironment l2DML, Symbol self1 ) {
+	private Pointer( Level2_DMLEnvironment l2DML, Symbol self1 ) {
 
 		RunTime.assumedNotNull( l2DML, self1 );
 		RunTime.assumedTrue( l2DML.isInited() );
 		envL2 = l2DML;
 		self = self1;
+	}
+	
+	public static Pointer getNewNullPointer( Level2_DMLEnvironment l2DML ) {
+
+		RunTime.assumedNotNull( l2DML );
+		Pointer ret = new Pointer( l2DML, l2DML.newUniqueSymbol() );
+		ret.setAllowNull( true );
+		ret.assumedValid();
+		return ret;
+	}
+	
+	public static Pointer getNewNonNullPointer( Level2_DMLEnvironment l2DML,
+			Symbol pointTo ) {
+
+		RunTime.assumedNotNull( l2DML, pointTo );
+		Pointer ret = new Pointer( l2DML, l2DML.newUniqueSymbol() );
+		ret.pointTo( pointTo );
+		ret.setAllowNull( false );
+		ret.assumedValid();
+		return ret;
+	}
+	
+	public static Pointer getExistingPointer( Level2_DMLEnvironment l2DML,
+			Symbol name, boolean allowNull ) {
+
+		RunTime.assumedNotNull( l2DML, name, allowNull );
+		Pointer ret = new Pointer( l2DML, name );
+		// if false, it must already point to something
+		ret.setAllowNull( allowNull );
+		ret.assumedValid();
+		return ret;
 	}
 	
 	public boolean setAllowNull( boolean newValue ) {
@@ -92,7 +123,7 @@ public class Pointer {
 	
 	public Symbol getPointee() {
 
-		this.assumedValid();
+		// this.assumedValid();
 		Symbol ret = null;
 		BDBVectorIterator<Symbol, Symbol> iter = envL2.getIterator_on_Terminals_of( self );
 		try {
@@ -116,7 +147,7 @@ public class Pointer {
 	 */
 	public void assumedValid() {
 
-		
+		// watch out for recursion
 		RunTime.assumedNotNull( self );
 		int size = envL2.countTerminals( self );
 		if ( !allowNull ) {
