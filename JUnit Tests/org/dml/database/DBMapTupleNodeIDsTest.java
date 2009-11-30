@@ -34,6 +34,7 @@ import org.dml.JUnits.Consts;
 import org.dml.database.bdb.level1.Level1_Storage_BerkeleyDB;
 import org.dml.database.bdb.level2.BDBVectorIterator;
 import org.dml.database.bdb.level2.DBMapSymbolsTuple;
+import org.dml.error.BadCallError;
 import org.dml.level1.JavaID;
 import org.dml.level1.Level1_DMLEnvironment;
 import org.dml.level1.Symbol;
@@ -174,6 +175,15 @@ public class DBMapTupleNodeIDsTest {
 			
 			iter.goNext();
 			assertNull( iter.now() );
+			boolean threw = false;
+			try {
+				iter.goPrev();
+			} catch ( BadCallError bce ) {
+				threw = true;
+			}
+			assertTrue( threw );
+			iter.goFirst();
+			iter.goNext();
 			iter.goPrev();
 			assertTrue( _a.equals( iter.now() ) );
 			assertTrue( _a == iter.now() );// indeed
