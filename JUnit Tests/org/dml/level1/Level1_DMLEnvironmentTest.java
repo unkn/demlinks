@@ -25,13 +25,11 @@ package org.dml.level1;
 
 
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import org.dml.JUnits.Consts;
-import org.dml.error.BugError;
 import org.dml.storagewrapper.StorageException;
 import org.junit.After;
 import org.junit.Before;
@@ -88,15 +86,15 @@ public class Level1_DMLEnvironmentTest {
 			assertTrue( c == dml1.getSymbol( JavaID.ensureJavaIDFor( "C" ) ) );
 			Object t = dml1.getSymbol( JavaID.ensureJavaIDFor( "A" ) );
 			assertTrue( a == t );
-			Object t2 = new Object();
-			boolean threw = false;
-			try {
-				assertFalse( a == t2 );
-			} catch ( BugError be ) {
-				threw = true;
-			} finally {
-				assertTrue( threw );
-			}
+			// Object t2 = new Object();
+			// boolean threw = false;
+			// try {
+			// assertFalse( a == t2 );
+			// } catch ( BugError be ) {
+			// threw = true;
+			// } finally {
+			// assertTrue( threw );
+			// }
 			
 
 			// same contents in java

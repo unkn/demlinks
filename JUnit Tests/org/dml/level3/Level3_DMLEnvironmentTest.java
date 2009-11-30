@@ -150,16 +150,16 @@ public class Level3_DMLEnvironmentTest {
 		assertFalse( l3.ensureVector( domain, pointTo ) );
 		DomainPointer dp1 = l3.getNewNonNullDomainPointer( domain, pointTo );
 		DomainPointer dp1_1 = l3.getExistingDomainPointer( dp1.getAsSymbol(),
-				domain );
+				domain, false );
 		assertTrue( dp1_1.getPointee() == pointTo );
 		assertTrue( dp1_1.getDomain() == domain );
 		assertTrue( dp1 != dp1_1 );
 		
 		DomainPointer dp2 = l3.getNewNullDomainPointer( domain );
 		DomainPointer dp2_2 = l3.getExistingDomainPointer( dp2.getAsSymbol(),
-				domain );
+				domain, true );
 		assertTrue( dp2.getDomain() == domain );
 		assertTrue( dp2_2.getDomain() == dp2.getDomain() );
-		
+		// TODO more tests
 	}
 }

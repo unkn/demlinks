@@ -155,7 +155,7 @@ public class Level1_Storage_BerkeleyDB extends StaticInstanceTracker {
 		Reference<Object> killWhenDoneRef = params.get( PossibleParams.jUnit_wipeDBWhenDone );
 		if ( null != killWhenDoneRef ) {
 			if ( (Boolean)killWhenDoneRef.getObject() ) {
-				Log.special( "destroying environment, we're done..." );
+				Log.special( "destroying environment from storage, we're probably inside JUnit..." );
 				this.internalWipeEnv();
 			}
 		}

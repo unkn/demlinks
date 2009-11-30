@@ -51,6 +51,7 @@ public class ListOrderedOfElementCapsules {
 		// Symbol listSymbol = l3DMLEnvironment.getSymbol(
 		// Level3_DMLEnvironment.listSymbolJavaID );
 		this.internal_setName();
+		this.assumedValid();
 	}
 	
 	/**
@@ -85,6 +86,7 @@ public class ListOrderedOfElementCapsules {
 			RunTime.assumedTrue( this.hasElementCapsule( last ) );
 			RunTime.assumedTrue( first != null );
 		}
+		// TODO maybe check that all terminals of 'name' are ECs
 	}
 	
 	/**
@@ -269,7 +271,7 @@ public class ListOrderedOfElementCapsules {
 		}
 		Symbol x = env.findCommonTerminalForInitials( sym, name );
 		if ( null != x ) {// found one
-			// wrap it in ElementCapsule type
+			// existing ElementCapsule, wrap it in ElementCapsule type
 			ElementCapsule ec = new ElementCapsule( env, x );
 			return ec;
 		}

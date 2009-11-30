@@ -87,11 +87,12 @@ public class DomainPointer extends Pointer {
 	 */
 	public static DomainPointer getExistingDomainPointer(
 			Level2_DMLEnvironment level2DMLEnvironment, Symbol self,
-			Symbol domain2 ) {
+			Symbol domain2, boolean allowNull ) {
 
-		RunTime.assumedNotNull( level2DMLEnvironment, self, domain2 );
+		RunTime.assumedNotNull( level2DMLEnvironment, self, domain2, allowNull );
 		DomainPointer ret = new DomainPointer( level2DMLEnvironment, self );
 		ret.setDomain( domain2 );
+		ret.setAllowNull( allowNull );
 		ret.assumedValid();
 		return ret;
 	}

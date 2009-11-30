@@ -25,13 +25,14 @@ package org.dml.level4;
 
 
 
+import static org.junit.Assert.assertTrue;
+
 import org.dml.level1.JavaID;
 import org.dml.level1.Symbol;
-import org.dml.level4.Level4_DMLEnvironment;
-import org.dml.level4.ListOrderedOfSymbols;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.references.Position;
 import org.references.method.MethodParams;
 import org.references.method.PossibleParams;
 
@@ -43,7 +44,7 @@ import org.references.method.PossibleParams;
  */
 public class Level4_DMLEnvironmentTest {
 	
-	Level4_DMLEnvironment	l3;
+	Level4_DMLEnvironment	l4;
 	
 	@Before
 	public void setUp() {
@@ -52,23 +53,38 @@ public class Level4_DMLEnvironmentTest {
 		params.init( null );
 		params.set( PossibleParams.jUnit_wipeDB, true );
 		params.set( PossibleParams.jUnit_wipeDBWhenDone, true );
-		l3 = new Level4_DMLEnvironment();
-		l3.init( params );
+		l4 = new Level4_DMLEnvironment();
+		l4.init( params );
 		params.deInit();
 	}
 	
 	@After
 	public void tearDown() {
 
-		l3.deInitSilently();
+		l4.deInitSilently();
 	}
 	
 	@Test
 	public void test1() {
 
 		JavaID name = JavaID.ensureJavaIDFor( "boo" );
-		Symbol name2 = l3.createSymbol( name );
-		ListOrderedOfSymbols list = l3.newList( name2 );
+		Symbol name2 = l4.createSymbol( name );
+		ListOrderedOfSymbols list = l4.newList( name2 );
 		list.assumedValid();
+	}
+	
+	@Test
+	public void test2() {
+
+		Symbol name = l4.newUniqueSymbol();
+		ListOrderedOfElementCapsules eclist = new ListOrderedOfElementCapsules(
+				l4, name );
+		eclist.assumedValid();
+		
+		Symbol ec1name = l4.newUniqueSymbol();
+		ElementCapsule ec1 = new ElementCapsule( l4, ec1name );
+		eclist.add_ElementCapsule( ec1, Position.FIRST );
+		assertTrue( eclist.get_ElementCapsule( Position.LAST ) == ec1 );
+		assertTrue( eclist.get_ElementCapsule( Position.FIRST ) == ec1 );
 	}
 }
