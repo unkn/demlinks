@@ -25,6 +25,7 @@ package org.dml.level3;
 
 
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -92,6 +93,7 @@ public class Level3_DMLEnvironmentTest {
 		Pointer p3 = l3.getNewNonNullPointer( pointsTo );
 		// must already point to something, which it does
 		Pointer p3_3 = l3.getExistingPointer( p3.getAsSymbol(), false );
+		assertTrue( p3 != p3_3 );
 		assertTrue( p3_3.getPointee() == pointsTo );
 		assertTrue( p3.getPointee() == pointsTo );
 		boolean threw = false;
@@ -104,6 +106,7 @@ public class Level3_DMLEnvironmentTest {
 		
 		// allow null
 		Pointer p4 = l3.getExistingPointer( p3.getAsSymbol(), true );
+		assertTrue( p4 != p3 );
 		assertTrue( p4.getPointee() == pointsTo );
 		assertTrue( p4.pointTo( null ) == pointsTo );
 		threw = false;
@@ -137,5 +140,26 @@ public class Level3_DMLEnvironmentTest {
 			threw = true;
 		}
 		assertTrue( threw );
+	}
+	
+	@Test
+	public void testDomainPointer() {
+
+		Symbol domain = l3.ensureSymbol( JavaID.ensureJavaIDFor( "domain" ) );
+		Symbol pointTo = l3.newUniqueSymbol();
+		assertFalse( l3.ensureVector( domain, pointTo ) );
+		DomainPointer dp1 = l3.getNewNonNullDomainPointer( domain, pointTo );
+		DomainPointer dp1_1 = l3.getExistingDomainPointer( dp1.getAsSymbol(),
+				domain );
+		assertTrue( dp1_1.getPointee() == pointTo );
+		assertTrue( dp1_1.getDomain() == domain );
+		assertTrue( dp1 != dp1_1 );
+		
+		DomainPointer dp2 = l3.getNewNullDomainPointer( domain );
+		DomainPointer dp2_2 = l3.getExistingDomainPointer( dp2.getAsSymbol(),
+				domain );
+		assertTrue( dp2.getDomain() == domain );
+		assertTrue( dp2_2.getDomain() == dp2.getDomain() );
+		
 	}
 }

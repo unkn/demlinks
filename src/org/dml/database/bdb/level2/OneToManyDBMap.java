@@ -355,7 +355,7 @@ public class OneToManyDBMap<InitialType, TerminalType> {
 
 		this.checkKey( initial1 );
 		this.checkKey( initial2 );
-		// TODO
+		// TODO make sure it's only 1 terminal found! else bug
 		return null;
 	}
 	
@@ -375,7 +375,7 @@ public class OneToManyDBMap<InitialType, TerminalType> {
 		try {
 			iter.goFirst();
 			while ( null != iter.now() ) {
-				if ( iter.now().equals( terminalObject ) ) {
+				if ( iter.now() == terminalObject ) {
 					// found it
 					found1 = true;
 					break;
@@ -390,7 +390,7 @@ public class OneToManyDBMap<InitialType, TerminalType> {
 				try {
 					reverseIter.goFirst();
 					while ( null != reverseIter.now() ) {
-						if ( reverseIter.now().equals( initialObject ) ) {
+						if ( reverseIter.now() == initialObject ) {
 							// found it
 							found2 = true;
 							break;

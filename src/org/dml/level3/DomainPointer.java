@@ -44,9 +44,56 @@ public class DomainPointer extends Pointer {
 	 * @param l2dml
 	 * @param selfName
 	 */
-	public DomainPointer( Level2_DMLEnvironment l2dml, Symbol selfName ) {
+	protected DomainPointer( Level2_DMLEnvironment l2dml, Symbol selfName ) {
 
 		super( l2dml, selfName );
+	}
+	
+	/**
+	 * @param domain2
+	 * @param pointTo
+	 * @return
+	 */
+	public static DomainPointer getNewNonNullPointer(
+			Level2_DMLEnvironment l2DML, Symbol domain2, Symbol pointTo ) {
+
+		RunTime.assumedNotNull( l2DML, domain2, pointTo );
+		DomainPointer ret = new DomainPointer( l2DML, l2DML.newUniqueSymbol() );
+		ret.setDomain( domain2 );
+		ret.pointTo( pointTo );
+		ret.setAllowNull( false );
+		ret.assumedValid();
+		return ret;
+	}
+	
+	
+	public static DomainPointer getNewNullPointer( Level2_DMLEnvironment l2DML,
+			Symbol domain2 ) {
+
+		RunTime.assumedNotNull( l2DML, domain2 );
+		DomainPointer ret = new DomainPointer( l2DML, l2DML.newUniqueSymbol() );
+		ret.setDomain( domain2 );
+		ret.setAllowNull( true );
+		ret.assumedValid();
+		return ret;
+	}
+	
+	
+	/**
+	 * @param level3DMLEnvironment
+	 * @param self
+	 * @param domain2
+	 * @return
+	 */
+	public static DomainPointer getExistingDomainPointer(
+			Level2_DMLEnvironment level2DMLEnvironment, Symbol self,
+			Symbol domain2 ) {
+
+		RunTime.assumedNotNull( level2DMLEnvironment, self, domain2 );
+		DomainPointer ret = new DomainPointer( level2DMLEnvironment, self );
+		ret.setDomain( domain2 );
+		ret.assumedValid();
+		return ret;
 	}
 	
 	/**
@@ -56,16 +103,19 @@ public class DomainPointer extends Pointer {
 	public Symbol setDomain( Symbol newDomain ) {
 
 		RunTime.assumedNotNull( newDomain );
-		this.assumedValid();
-		RunTime.assumedFalse( self.equals( newDomain ) );
+		RunTime.assumedFalse( self == newDomain );
 		Symbol old = this.getDomain();// or null
-		Symbol pointee = this.getPointee();
-		if ( null != pointee ) {
-			// well we already have a pointee, we need to make sure it's from
-			// the NEW domain
-			if ( !this.isValidDomainPointeeTuple( newDomain, pointee ) ) {
-				RunTime.badCall( "the new domain is incompatible with the already existing pointee. "
-						+ "Maybe remove the pointee before you set the domain." );
+		if ( null != old ) {
+			// first time set domain
+			Symbol pointee = this.getPointee();
+			if ( null != pointee ) {
+				// well we already have a pointee, we need to make sure it's
+				// from
+				// the NEW domain
+				if ( !this.isValidDomainPointeeTuple( newDomain, pointee ) ) {
+					RunTime.badCall( "the new domain is incompatible with the already existing pointee. "
+							+ "Maybe remove the pointee before you set the domain." );
+				}
 			}
 		}
 		domain = newDomain;
@@ -76,7 +126,7 @@ public class DomainPointer extends Pointer {
 	public boolean isValidDomainPointeeTuple( Symbol domain1, Symbol pointee ) {
 
 		RunTime.assumedNotNull( domain1, pointee );
-		RunTime.assumedFalse( self.equals( domain1 ) );
+		RunTime.assumedFalse( self == domain1 );
 		return envL2.isVector( domain1, pointee );
 	}
 	
@@ -89,8 +139,8 @@ public class DomainPointer extends Pointer {
 	public void assumedValid() {
 
 		super.assumedValid();
-		RunTime.assumedFalse( self.equals( domain ) );
-		Symbol pointee = this.getPointee();
+		RunTime.assumedFalse( self == domain );
+		Symbol pointee = this.internal_getPointee();
 		if ( null != pointee ) {
 			RunTime.assumedTrue( this.isValidDomainPointeeTuple( domain,
 					pointee ) );
@@ -121,4 +171,5 @@ public class DomainPointer extends Pointer {
 		return super.pointTo( toWhat );
 	}
 	
+
 }

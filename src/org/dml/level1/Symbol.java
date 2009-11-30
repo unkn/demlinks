@@ -125,22 +125,19 @@ public class Symbol {
 	 * @param sym
 	 * @return
 	 */
+	@Deprecated
 	@Override
 	public boolean equals( Object sym ) {
 
-		RunTime.assumedNotNull( sym );
-		if ( ( !this.getClass().isAssignableFrom( sym.getClass() ) )
-				|| ( this.getClass() != sym.getClass() ) ) {
-			RunTime.bug( "you passed a different type parameter; must be a bug somewhere" );
-		}
-		// RunTime.assumedTrue( this == nid );
-		// if ( ( super.equals( nid ) ) || // ( this.getAsString().equals( (
-		// // (NodeID)nid ).getAsString() ) ) ) {
-		// ( ( (Symbol)nid ).selfInBDB == selfInBDB ) ) {
-		// return true;
+		RunTime.badCall( "do not use .equals() you should only compare by reference == " );
+		return false;
+		// RunTime.assumedNotNull( sym );
+		// if ( ( !this.getClass().isAssignableFrom( sym.getClass() ) )
+		// || ( this.getClass() != sym.getClass() ) ) {
+		// RunTime.bug(
+		// "you passed a different type parameter; must be a bug somewhere" );
 		// }
-		// return false;
-		return this == sym;
+		// return this == sym;
 	}
 	
 	/**

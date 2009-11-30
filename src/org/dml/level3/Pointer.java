@@ -44,7 +44,13 @@ public class Pointer {
 	protected final Symbol					self;
 	private boolean							allowNull	= true;
 	
-	private Pointer( Level2_DMLEnvironment l2DML, Symbol self1 ) {
+	/**
+	 * constructor, not to be used by user
+	 * 
+	 * @param l2DML
+	 * @param self1
+	 */
+	protected Pointer( Level2_DMLEnvironment l2DML, Symbol self1 ) {
 
 		RunTime.assumedNotNull( l2DML, self1 );
 		RunTime.assumedTrue( l2DML.isInited() );
@@ -127,7 +133,7 @@ public class Pointer {
 		return this.internal_getPointee();
 	}
 	
-	private Symbol internal_getPointee() {
+	protected Symbol internal_getPointee() {
 
 		Symbol ret = null;
 		BDBVectorIterator<Symbol, Symbol> iter = envL2.getIterator_on_Terminals_of( self );

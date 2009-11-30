@@ -82,17 +82,17 @@ public class Level2_DMLEnvironmentTest {
 			assertNotNull( d1.getJavaID( n1 ) );
 			assertTrue( d1.getJavaID( n1 ).equals( j1 ) );
 			assertTrue( d1.getJavaID( n1 ) == j1 );
-			assertTrue( n1.equals( d1.getSymbol( j1 ) ) );
+			assertTrue( n1 == d1.getSymbol( j1 ) );
 			
 			assertTrue( n1 == d1.getSymbol( j1 ) );// fixed
-			assertTrue( n2.equals( d1.getSymbol( j2 ) ) );
+			assertTrue( n2 == d1.getSymbol( j2 ) );
 			assertTrue( n2 == d1.getSymbol( j2 ) );// yes
-			assertTrue( n1.equals( d2.getSymbol( j1 ) ) );// d2 is d1
+			assertTrue( n1 == d2.getSymbol( j1 ) );// d2 is d1
 			// inside
 			// BDB
 			// because they're
 			// in same dir
-			assertTrue( n2.equals( d2.getSymbol( j2 ) ) );
+			assertTrue( n2 == d2.getSymbol( j2 ) );
 			
 			Symbol n3 = d3.getSymbol( j1 );// d3 is in diff dir
 			assertNull( n3 );

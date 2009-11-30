@@ -71,4 +71,36 @@ public class Level3_DMLEnvironment extends Level2_DMLEnvironment implements
 		return Pointer.getNewNullPointer( this );
 	}
 	
+	/**
+	 * @param domain
+	 * @param pointTo
+	 * @return
+	 */
+	public DomainPointer getNewNonNullDomainPointer( Symbol domain,
+			Symbol pointTo ) {
+
+		RunTime.assumedNotNull( domain, pointTo );
+		return DomainPointer.getNewNonNullPointer( this, domain, pointTo );
+	}
+	
+	/**
+	 * @param domain
+	 * @return
+	 */
+	public DomainPointer getNewNullDomainPointer( Symbol domain ) {
+
+		RunTime.assumedNotNull( domain );
+		return DomainPointer.getNewNullPointer( this, domain );
+	}
+	
+	/**
+	 * @param asSymbol
+	 * @return
+	 */
+	public DomainPointer getExistingDomainPointer( Symbol self, Symbol domain ) {
+
+		RunTime.assumedNotNull( self, domain );
+		return DomainPointer.getExistingDomainPointer( this, self, domain );
+	}
+	
 }
