@@ -360,14 +360,14 @@ public class OneToManyDBMap<InitialType, TerminalType> {
 		TerminalType found = null;
 		BDBVectorIterator<InitialType, TerminalType> iter1 = this.getIterator_on_Terminals_of( initial1 );
 		BDBVectorIterator<InitialType, TerminalType> iterator = iter1;
-		InitialType comparator = initial1;
+		InitialType comparator = initial2;
 		BDBVectorIterator<InitialType, TerminalType> iter2 = null;
 		try {
 			iter2 = this.getIterator_on_Terminals_of( initial2 );
 			try {
 				if ( iter1.count() > iter2.count() ) {
 					iterator = iter2;
-					comparator = initial2;
+					comparator = initial1;
 				}
 			} finally {
 				// deInit the unused one

@@ -140,6 +140,7 @@ public class ElementCapsule {
 	 */
 	public void assumedIsValidCapsule() {
 
+		RunTime.assumedNotNull( name );
 		// make sure it is an EC ie. AllECs->name
 		// it could not have either Prev or Next though
 		RunTime.assumedTrue( envL4.isVector( envL4.allElementCapsules_Symbol,
@@ -243,6 +244,7 @@ public class ElementCapsule {
 	public Symbol getAsSymbol() {
 
 		this.assumedIsValidCapsule();
+		RunTime.assumedNotNull( name );
 		return name;
 	}
 	

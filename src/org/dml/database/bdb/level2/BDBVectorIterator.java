@@ -113,6 +113,19 @@ public class BDBVectorIterator<InitialType, TerminalType> extends
 		}
 	}
 	
+	public void goTo( TerminalType terminal ) throws DatabaseException {
+
+		terminalBinding.objectToEntry( terminal, deData );
+		RunTime.assumedTrue( deData.getOffset() == 0 );
+		OperationStatus ret = this.getCursor().getSearchBoth( deKey, deData,
+				LockMode.RMW );
+		if ( OperationStatus.SUCCESS == ret ) {
+			this.setNow( terminalBinding.entryToObject( deData ) );
+		} else {
+			this.setNow( null );
+		}
+	}
+	
 	public TerminalType now() {
 
 		return currentTerminalObject;

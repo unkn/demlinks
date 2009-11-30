@@ -221,12 +221,12 @@ public class ListOrderedOfElementCapsules {
 				theOld.setCapsule( pos, theNew );
 				// setFirst=newfirst
 				theNew.assumedIsValidCapsule();
-				if ( !env.ensureVector( name, theNew.getAsSymbol() ) ) {
-					RunTime.bug( "the link shouldn't already exist" );
-				}
 			}
 			// new HEAD
 			this.internal_dmlRegisterNewHeadOrTail( pos, theNew );// common
+			if ( env.ensureVector( name, theNew.getAsSymbol() ) ) {
+				RunTime.bug( "the link shouldn't already exist" );
+			}
 			break;
 		
 		default:
@@ -291,5 +291,12 @@ public class ListOrderedOfElementCapsules {
 			break;// unreachable code
 		}
 		return null;// found none
+	}
+	
+	public Symbol getAsSymbol() {
+
+		this.assumedValid();
+		RunTime.assumedNotNull( name );
+		return name;
 	}
 }

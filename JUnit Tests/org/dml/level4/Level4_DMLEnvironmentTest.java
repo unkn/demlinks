@@ -85,6 +85,8 @@ public class Level4_DMLEnvironmentTest {
 		Symbol ec1name = l4.newUniqueSymbol();
 		ElementCapsule ec1 = ElementCapsule.getElementCapsule( l4, ec1name );
 		eclist.add_ElementCapsule( ec1, Position.FIRST );
+		assertTrue( l4.isVector( l4.allHeads_Symbol, ec1.getAsSymbol() ) );
+		assertTrue( l4.isVector( eclist.getAsSymbol(), ec1.getAsSymbol() ) );
 		ElementCapsule tmpLast = eclist.get_ElementCapsule( Position.LAST );
 		assertNotNull( tmpLast );
 		assertTrue( tmpLast == ec1 );
