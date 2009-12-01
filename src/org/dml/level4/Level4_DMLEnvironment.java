@@ -57,9 +57,9 @@ public class Level4_DMLEnvironment extends Level3_DMLEnvironment {
 	public Symbol				allElementsOfEC_Symbol				= null;
 	
 	@Override
-	protected void start( MethodParams<Object> params ) {
+	public void init( MethodParams<Object> params ) {
 
-		super.start( params );
+		super.init( params );
 		this.initGeneralSymbols();
 	}
 	

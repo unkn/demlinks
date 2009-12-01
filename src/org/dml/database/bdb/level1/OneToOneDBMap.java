@@ -258,8 +258,9 @@ public class OneToOneDBMap<KeyType, DataType> extends StaticInstanceTracker {
 	}
 	
 	@Override
-	protected void done( MethodParams<Object> params ) {
+	public void deInit() {
 
+		super.deInit();
 		Log.entry( "deinit OneToOneDBMap: " + dbName );
 		boolean one = false;
 		boolean two = false;
@@ -286,8 +287,9 @@ public class OneToOneDBMap<KeyType, DataType> extends StaticInstanceTracker {
 	}
 	
 	@Override
-	protected void start( MethodParams<Object> params ) {
+	public void init( MethodParams<Object> params ) {
 
+		super.init( params );
 		RunTime.assumedNull( params );
 		
 	}

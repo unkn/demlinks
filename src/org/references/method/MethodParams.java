@@ -313,46 +313,20 @@ public class MethodParams<T> extends StaticInstanceTracker {
 		return clone;
 	}
 	
-	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.dml.tools.StaticInstanceTracker#done()
-	 */
 	@Override
-	protected void done( MethodParams<Object> params ) {
+	public void deInit() {
 
+		super.deInit();
 		this.clear();
 		RunTime.assumedTrue( this.size() == 0 );
 		RunTime.assumedTrue( redundantListOfNames.size() == 0 );
 	}
 	
 	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
-	 * org.dml.tools.StaticInstanceTracker#start(org.references.method.MethodParams
-	 * )
-	 */
 	@Override
-	protected void start( MethodParams<Object> params ) {
+	public void init( MethodParams<Object> params ) {
 
+		super.init( params );
 		// params should be null, passed via init(...)
 		RunTime.assumedTrue( null == params );
 		

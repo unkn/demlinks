@@ -455,9 +455,11 @@ public class OneToManyDBMap<InitialType, TerminalType> extends
 	}
 	
 	@Override
-	protected void done( MethodParams<Object> params ) {
+	public void deInit() {
 
+		super.deInit();
 		
+
 		Log.entry( "done OneToManyDBMap: " + dbName );
 		
 		boolean one = false;
@@ -479,8 +481,9 @@ public class OneToManyDBMap<InitialType, TerminalType> extends
 	}
 	
 	@Override
-	protected void start( MethodParams<Object> params ) {
+	public void init( MethodParams<Object> params ) {
 
+		super.init( params );
 		RunTime.assumedNull( params );
 		
 	}

@@ -64,8 +64,9 @@ public class SecondaryDatabaseCapsule extends StaticInstanceTracker {
 	 * @param params
 	 */
 	@Override
-	protected void start( MethodParams<Object> params ) {
+	public void init( MethodParams<Object> params ) {
 
+		super.init( params );
 		// compulsory
 		bdbL1 = (Level1_Storage_BerkeleyDB)params.getEx( PossibleParams.level1_BDBStorage );
 		RunTime.assumedNotNull( bdbL1 );
@@ -94,9 +95,13 @@ public class SecondaryDatabaseCapsule extends StaticInstanceTracker {
 	 * @see org.dml.tools.StaticInstanceTracker#done()
 	 */
 	@Override
-	protected void done( MethodParams<Object> params ) {
+	public void deInit() {
 
-		this.silentClose();
+		super.deInit();
+		Log.entry();
+		if ( null != secDb ) {
+			secDb = bdbL1.silentCloseAnySecDB( secDb );
+		}
 	}
 	
 	/**
@@ -115,15 +120,5 @@ public class SecondaryDatabaseCapsule extends StaticInstanceTracker {
 		return secDb;
 	}
 	
-	/**
-	 * 
-	 */
-	public void silentClose() {
 
-		Log.entry();
-		if ( null != secDb ) {
-			secDb = bdbL1.silentCloseAnySecDB( secDb );
-		}
-	}
-	
 }

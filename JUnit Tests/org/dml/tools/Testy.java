@@ -67,8 +67,10 @@ public class Testy extends StaticInstanceTracker {
 	 * @see org.dml.tools.StaticInstanceTracker#done()
 	 */
 	@Override
-	protected void done( MethodParams<Object> params ) {
+	public void deInit() {
 
+		super.deInit();
+		
 		System.out.println( this.getName() + " is done." );
 		home = null;
 	}
@@ -81,21 +83,10 @@ public class Testy extends StaticInstanceTracker {
 		return this.getClass().getName();
 	}
 	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
-	 * org.dml.tools.StaticInstanceTracker#start(org.references.method.MethodParams
-	 * )
-	 */
 	@Override
-	protected void start( MethodParams<Object> params ) {
+	public void init( MethodParams<Object> params ) {
 
+		super.init( params );
 		System.out.println( this.getName() + " start()" );
 		RunTime.assumedNotNull( params );
 		RunTime.assumedTrue( params.size() > 0 );

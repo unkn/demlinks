@@ -50,8 +50,9 @@ public class Testy3StartThrower extends Testy {
 	}
 	
 	@Override
-	protected void start( org.references.method.MethodParams<Object> params ) {
+	public void init( org.references.method.MethodParams<Object> params ) {
 
+		super.init( params );
 		RunTime.thro( new RuntimeException( "start" ) );
 	}
 	

@@ -28,7 +28,6 @@ package org.dml.level3;
 import org.dml.level1.Symbol;
 import org.dml.level2.Level2_DMLEnvironment;
 import org.dml.tools.RunTime;
-import org.references.method.MethodParams;
 
 
 
@@ -36,17 +35,7 @@ import org.references.method.MethodParams;
  * handling pointer(s) (that is a vector with 0 or 1 terminals)
  * 
  */
-public class Level3_DMLEnvironment extends Level2_DMLEnvironment implements
-		Level3_DMLStorageWrapper {
-	
-	@Override
-	protected void start( MethodParams<Object> params ) {
-
-		// this method is not needed, but it's here for clarity
-		super.start( params );
-	}
-	
-	// TODO add methods to handle DomainPointer
+public class Level3_DMLEnvironment extends Level2_DMLEnvironment {
 	
 	public Pointer getExistingPointer( Symbol name2, boolean allowNull ) {
 

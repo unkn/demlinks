@@ -27,7 +27,6 @@ package org.dml.database.bdb.level2;
 
 import org.dml.database.bdb.level1.Level1_Storage_BerkeleyDB;
 import org.dml.tools.RunTime;
-import org.references.method.MethodParams;
 
 
 
@@ -64,11 +63,12 @@ public class Level2_Storage_BerkeleyDB extends Level1_Storage_BerkeleyDB {
 	 * @see org.dml.database.bdb.level1.Level1_Storage_BerkeleyDB#done()
 	 */
 	@Override
-	protected void done( MethodParams<Object> params ) {
+	public void deInit() {
 
 		if ( null != dbSymbolsTuple ) {
 			dbSymbolsTuple.deInit();
 		}
-		super.done( params );
+		// the above must be deInit-ed first
+		super.deInit();// last
 	}
 }// class

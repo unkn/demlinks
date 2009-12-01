@@ -67,7 +67,8 @@ public class StaticInstanceTrackerTest {
 
 		// t.deInit();
 		// t2.deInit();
-		// FIXME: need callback; or just silentDeInits everywhere
+		// FIXME: need callback; or just silentDeInits everywhere; or something
+		// else
 		// StaticInstanceTracker.deInitAllThatExtendMe();
 		params.deInitSilently();
 	}
@@ -248,10 +249,9 @@ public class StaticInstanceTrackerTest {
 			t3.init( null );
 		} catch ( RuntimeException rte ) {
 			threw = true;
-		} finally {
-			assertTrue( threw );
-			t3.deInit();
 		}
+		assertTrue( threw );
+		t3.deInit();
 	}
 	
 	@Test

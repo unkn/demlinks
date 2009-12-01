@@ -29,7 +29,6 @@ import org.dml.storagewrapper.StorageException;
 import org.dml.tools.MainLevel0;
 import org.dml.tools.RunTime;
 import org.dml.tools.VarLevel;
-import org.references.method.MethodParams;
 
 
 
@@ -51,18 +50,6 @@ public class Level1_DMLEnvironment extends MainLevel0 implements
 
 		super();
 		
-	}
-	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.dml.tools.MainLevel0#start(org.references.method.MethodParams)
-	 */
-	@Override
-	protected void start( MethodParams<Object> params ) {
-
-		// this method is not needed, but it's here for clarity
-		super.start( params );
 	}
 	
 	// ---------------------------------------------

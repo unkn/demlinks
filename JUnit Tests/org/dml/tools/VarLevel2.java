@@ -57,9 +57,9 @@ public class VarLevel2 extends VarLevel1 implements VarLevel2Interface {
 	 * @see org.temporary.tests.VarLevel1#done()
 	 */
 	@Override
-	protected void done( MethodParams<Object> params ) {
+	public void deInit() {
 
-		super.done( params );
+		super.deInit();
 	}
 	
 	
@@ -67,10 +67,10 @@ public class VarLevel2 extends VarLevel1 implements VarLevel2Interface {
 	 * @param params
 	 */
 	@Override
-	protected void start( MethodParams<Object> params ) {
+	public void init( MethodParams<Object> params ) {
 
+		super.init( params );
 		RunTime.assumedNotNull( params );
-		super.start( params );
 		homeDir = params.getExString( PossibleParams.homeDir );
 		
 	}

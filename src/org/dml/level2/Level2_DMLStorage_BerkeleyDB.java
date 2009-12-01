@@ -32,7 +32,6 @@ import org.dml.level1.Symbol;
 import org.dml.storagewrapper.StorageException;
 import org.dml.tools.RunTime;
 import org.dml.tools.VarLevel;
-import org.references.method.MethodParams;
 
 import com.sleepycat.je.DatabaseException;
 
@@ -47,20 +46,6 @@ public class Level2_DMLStorage_BerkeleyDB extends Level1_DMLStorage_BerkeleyDB
 	
 	@VarLevel
 	private final Level2_Storage_BerkeleyDB	bdb	= null;
-	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.dml.level1.Level1_DMLStorage_BerkeleyDB#start(org.references.method
-	 * .MethodParams)
-	 */
-	@Override
-	protected void start( MethodParams<Object> params ) {
-
-		// this method is not needed, but it's here for clarity
-		super.start( params );
-	}
 	
 	@Override
 	public boolean ensureVector( Symbol initialNode, Symbol terminalNode )

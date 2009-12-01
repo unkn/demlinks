@@ -31,7 +31,6 @@ import org.dml.level1.Symbol;
 import org.dml.storagewrapper.StorageException;
 import org.dml.tools.RunTime;
 import org.dml.tools.VarLevel;
-import org.references.method.MethodParams;
 
 
 
@@ -45,20 +44,6 @@ public class Level2_DMLEnvironment extends Level1_DMLEnvironment implements
 	@VarLevel
 	private final Level2_DMLStorage_BerkeleyDB	storage	= null;
 	
-	@Override
-	protected void start( MethodParams<Object> params ) {
-
-		// this method is not needed, but it's here for clarity
-		super.start( params );
-	}
-	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.dml.level2.Level2_DMLStorageWrapper#ensureGroup(org.dml.level1.NodeID
-	 * , org.dml.level1.NodeID)
-	 */
 	@Override
 	public boolean ensureVector( Symbol first, Symbol second )
 			throws StorageException {

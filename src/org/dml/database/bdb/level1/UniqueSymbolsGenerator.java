@@ -95,8 +95,10 @@ public class UniqueSymbolsGenerator extends StaticInstanceTracker {
 	}
 	
 	@Override
-	protected void done( MethodParams<Object> params ) {
+	public void deInit() {
 
+		super.deInit();
+		
 		// close seq
 		if ( null != seq ) {
 			// seq = seq.done();
@@ -105,8 +107,9 @@ public class UniqueSymbolsGenerator extends StaticInstanceTracker {
 	}
 	
 	@Override
-	protected void start( MethodParams<Object> params ) {
+	public void init( MethodParams<Object> params ) {
 
+		super.init( params );
 		RunTime.assumedNull( params );
 	}
 }

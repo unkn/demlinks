@@ -34,15 +34,19 @@ import org.references.method.MethodParams;
 
 /**
  * 
- * 1. implement start() and done() but call init() and deInit() instead; because
- * init() calls start() inside it; same for deInit() calling done()<br>
- * 2. use constructor to create, and then call init() don't call init() from
- * within the constructor<br>
- * 3. sometime when done with it, you have to use deInit()<br>
- * 4. use deInitAll() in a finally block just in case some exception is going
- * to shutdown the application
+ * 1. implement init() and deInit() but remember to always call super of them
+ * first line, in both; if you decide to go wild and call it lastly make sure in
+ * both you do that<br>
+ * 2. use constructor to create, and then call init() <br>
+ * 3. NEVER call init() inside a constructor<br>
+ * 4. sometime when done with it, you have to use deInit()<br>
  * you can init() again but only if u previously used deInit()<br>
- * NEVER call init() inside a constructor<br>
+ * 5. you can use restart() which does deInit and init again with original
+ * params<br>
+ * 6. or use reInit() if you already used deInit(), and it will use the original
+ * params to init it again<br>
+ * DON'T forget to call super.init() and super.deInit() when you override, first
+ * line! it's made like this so F3 in eclipse would work well
  */
 public abstract class StaticInstanceTracker {
 	
@@ -60,8 +64,6 @@ public abstract class StaticInstanceTracker {
 		inited = inited1;
 	}
 	
-	
-
 	/**
 	 * @return the inited
 	 */
@@ -70,8 +72,6 @@ public abstract class StaticInstanceTracker {
 		return inited;
 	}
 	
-	
-
 	/**
 	 * constructor
 	 */
@@ -79,20 +79,19 @@ public abstract class StaticInstanceTracker {
 
 	}
 	
-	
-
 	/**
 	 * implement this start(), but use init() instead
 	 */
-	protected abstract void start( MethodParams<Object> params );
+	// protected abstract void start( MethodParams<Object> params );
 	
 	/**
-	 * the params will be cloned (or copied) to be used by reInit()
+	 * the params will be cloned (or copied) to be used by reInit()<br>
+	 * the norm is to call super.init(*) first, then do your code<br>
 	 * 
 	 * @param params
 	 *            null or the params
 	 */
-	public final void init( MethodParams<Object> params ) {
+	public void init( MethodParams<Object> params ) {
 
 		if ( this.isInited() ) {
 			RunTime.badCall( "already inited, you must deInit() before calling init(...) again" );
@@ -101,7 +100,7 @@ public abstract class StaticInstanceTracker {
 		this.setInited( true );
 		
 		if ( params != formerParams ) {
-			// NOT called by reInit()
+			// NOT called by reInit() or restart()
 			if ( null != formerParams ) {
 				// was used before, we discard the one before
 				formerParams.deInit();
@@ -113,7 +112,12 @@ public abstract class StaticInstanceTracker {
 				formerParams = params.getClone();
 			} // else is null
 		} // else called by reInit() we don't mod them
-		this.start( formerParams );
+		// this.start( formerParams );
+	}
+	
+	public MethodParams<Object> getInitParams() {
+
+		return formerParams;
 	}
 	
 	/**
@@ -147,13 +151,14 @@ public abstract class StaticInstanceTracker {
 	 * try to not modify the contents of params... since they will be used on
 	 * reInit() or well maybe it won't matter anymore<br>
 	 */
-	protected abstract void done( MethodParams<Object> params );
+	// protected abstract void done( MethodParams<Object> params );
 	
 	/**
+	 * call super.deInit() first, then do your code
 	 * 
 	 * @return
 	 */
-	public final void deInit() {
+	public void deInit() {
 
 		if ( !this.isInited() ) {
 			RunTime.badCall( this.toString() + " was not already init()-ed" );
@@ -172,7 +177,7 @@ public abstract class StaticInstanceTracker {
 		if ( this.isInited() ) {
 			this.setInited( false );
 			removeOldInstance( this );
-			this.done( formerParams );
+			// this.done( formerParams );
 			// formerParams are not managed here, only on init() ie. discarded
 		}
 	}
@@ -235,6 +240,7 @@ public abstract class StaticInstanceTracker {
 	
 	private final static void addNewInstance( StaticInstanceTracker instance ) {
 
+		RunTime.assumedNotNull( instance );
 		if ( ALL_INSTANCES.addFirstQ( instance ) ) {
 			RunTime.bug( "should not have existed" );
 		}
@@ -243,6 +249,7 @@ public abstract class StaticInstanceTracker {
 	private final static void removeOldInstance( StaticInstanceTracker instance ) {
 
 		Log.entry( instance.toString() );
+		RunTime.assumedNotNull( instance );
 		if ( !ALL_INSTANCES.removeObject( instance ) ) {
 			RunTime.bug( "should've existed" );
 		}

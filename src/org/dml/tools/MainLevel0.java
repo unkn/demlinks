@@ -73,6 +73,7 @@ public abstract class MainLevel0 extends StaticInstanceTracker {
 	
 	public MainLevel0() {
 
+		super();
 		this.processAnnotatedFields();
 	}
 	
@@ -172,8 +173,7 @@ public abstract class MainLevel0 extends StaticInstanceTracker {
 	}
 	
 	/**
-	 * override this and call super
-	 * this method is called by init
+	 * override this and call super first, then your code<br>
 	 * 
 	 * @param params
 	 *            can accept a passed VarLevel or other params needed to init a
@@ -181,8 +181,9 @@ public abstract class MainLevel0 extends StaticInstanceTracker {
 	 *            are passed down to the VarLevel
 	 */
 	@Override
-	protected void start( MethodParams<Object> params ) {
+	public void init( MethodParams<Object> params ) {
 
+		super.init( params );
 		// allows null argument
 		MethodParams<Object> mixedParams = this.getDefaults().getClone();
 		try {
@@ -235,9 +236,9 @@ public abstract class MainLevel0 extends StaticInstanceTracker {
 	 * @see org.dml.tools.StaticInstanceTracker#done()
 	 */
 	@Override
-	protected void done( MethodParams<Object> params ) {
+	public void deInit() {
 
-		
+		super.deInit();
 		if ( null != this.getVarLevelX() ) {
 			// could be not yet inited due to throws in initMainLevel()
 			if ( usingOwnVarLevel ) {

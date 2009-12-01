@@ -30,7 +30,6 @@ import org.dml.level1.JavaID;
 import org.dml.level1.Symbol;
 import org.dml.tools.RunTime;
 import org.javapart.logger.Log;
-import org.references.method.MethodParams;
 
 import com.sleepycat.je.DatabaseException;
 
@@ -64,11 +63,11 @@ public class DBMap_JavaIDs_To_Symbols extends OneToOneDBMap<JavaID, Symbol> {
 	 * MethodParams)
 	 */
 	@Override
-	protected void done( MethodParams<Object> params ) {
+	public void deInit() {
 
 		Log.entry( "deinit " + this.getClass().getSimpleName() + " with name: "
 				+ dbName );
-		super.done( params );
+		super.deInit();
 	}
 	
 	/**

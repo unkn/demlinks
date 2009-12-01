@@ -191,9 +191,16 @@ public class BDBVectorIterator<InitialType, TerminalType> extends
 	}
 	
 	@Override
-	protected void done( MethodParams<Object> params ) {
+	public void deInit() {
 
-		this.closeSilently();
+		super.deInit();
+		
+		try {
+			this.close();
+		} catch ( DatabaseException e ) {
+			Log.thro( e.getLocalizedMessage() );
+		}
+		
 	}
 	
 	private final void close() throws DatabaseException {
@@ -211,22 +218,10 @@ public class BDBVectorIterator<InitialType, TerminalType> extends
 		}
 	}
 	
-	/**
-	 * 
-	 */
-	private void closeSilently() {
-
-		try {
-			this.close();
-		} catch ( DatabaseException e ) {
-			Log.thro( e.getLocalizedMessage() );
-		}
-		
-	}
-	
 	@Override
-	protected void start( MethodParams<Object> params ) {
+	public void init( MethodParams<Object> params ) {
 
+		super.init( params );
 		if ( null != params ) {
 			RunTime.badCall( "not accepting any parameters here" );
 		}
