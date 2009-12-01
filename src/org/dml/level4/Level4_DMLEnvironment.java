@@ -28,6 +28,7 @@ package org.dml.level4;
 import org.dml.level1.JavaID;
 import org.dml.level1.Symbol;
 import org.dml.level3.Level3_DMLEnvironment;
+import org.dml.tools.RunTime;
 import org.references.method.MethodParams;
 
 
@@ -79,10 +80,13 @@ public class Level4_DMLEnvironment extends Level3_DMLEnvironment {
 		allElementsOfEC_Symbol = this.ensureSymbol( allElementsOfEC_JavaID );
 	}
 	
-	public ListOrderedOfSymbols getAsList( Symbol listName ) {
+	public ListOrderedOfSymbols getAsList( Symbol listName, boolean allowNull,
+			boolean allowDUPs ) {
 
+		RunTime.assumedNotNull( listName, allowNull, allowDUPs );
 		ListOrderedOfSymbols list = ListOrderedOfSymbols.getListOOSymbols(
-				this, listName );
+				this, listName, allowDUPs );
+		list.setAllowNull( allowNull );
 		return list;
 	}
 	

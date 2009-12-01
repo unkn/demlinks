@@ -130,7 +130,7 @@ public class ListOrderedOfElementCapsules {
 			do {
 				netSize++;
 				RunTime.assumedTrue( env.isVector( name, current.getAsSymbol() ) );
-				RunTime.assumedNotNull( current.getElement() );
+				// RunTime.assumedNotNull( current.getElement() );
 				current = this.get_ElementCapsule( Position.AFTER, current );
 			} while ( null != current );
 		} else {
@@ -208,7 +208,7 @@ public class ListOrderedOfElementCapsules {
 		posElement.assumedIsValidCapsule();
 		theNew.assumedIsValidCapsule();
 		RunTime.assumedTrue( theNew.isAlone() );
-		RunTime.assumedNotNull( theNew.getElement() );
+		// RunTime.assumedNotNull( theNew.getElement() );
 		RunTime.assumedFalse( this.hasElementCapsule( theNew ) );
 		this.assumedValid();
 		switch ( pos ) {
@@ -262,7 +262,7 @@ public class ListOrderedOfElementCapsules {
 
 		RunTime.assumedNotNull( posElement );
 		posElement.assumedIsValidCapsule();
-		RunTime.assumedNotNull( posElement.getElement() );
+		// RunTime.assumedNotNull( posElement.getElement() );
 		return env.isVector( name, posElement.getAsSymbol() );
 	}
 	
@@ -281,7 +281,7 @@ public class ListOrderedOfElementCapsules {
 			theNew.assumedIsValidCapsule();
 			RunTime.assumedFalse( this.hasElementCapsule( theNew ) );
 			RunTime.assumedTrue( theNew.isAlone() );// prev=next=null
-			RunTime.assumedNotNull( theNew.getElement() );
+			// RunTime.assumedNotNull( theNew.getElement() );
 			
 			// list points to all ECs it has
 			if ( env.ensureVector( name, theNew.getAsSymbol() ) ) {

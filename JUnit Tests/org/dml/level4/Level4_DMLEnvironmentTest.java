@@ -29,6 +29,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import org.dml.error.BadCallError;
 import org.dml.level1.JavaID;
 import org.dml.level1.Symbol;
 import org.junit.After;
@@ -72,7 +73,7 @@ public class Level4_DMLEnvironmentTest {
 		JavaID name = JavaID.ensureJavaIDFor( "booList" );
 		Symbol name2 = l4.createSymbol( name );
 		
-		ListOrderedOfSymbols list = l4.getAsList( name2 );
+		ListOrderedOfSymbols list = l4.getAsList( name2, false, false );
 		list.assumedValid();
 		
 		assertNull( list.get( Position.FIRST ) );
@@ -110,6 +111,14 @@ public class Level4_DMLEnvironmentTest {
 		assertTrue( list.getAsSymbol() == list.get( Position.BEFORE, e3 ) );
 		assertTrue( list.size() == 5 );
 		list.assumedValid();
+		
+		boolean threw = false;
+		try {
+			list.add( Position.FIRST, e4 );
+		} catch ( BadCallError bce ) {
+			threw = true;
+		}
+		assertTrue( threw );
 	}
 	
 	@Test

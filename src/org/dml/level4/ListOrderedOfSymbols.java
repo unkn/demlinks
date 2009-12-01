@@ -39,12 +39,20 @@ import org.references.Position;
  * the order of insertion is kept<br>
  * this will be a double linked list represented in DMLEnvironment<br>
  * this is level 4<br>
- * NULL elements are not allowed, DUPS are allowed<br>
- * //FIXME: maybe allow NULLs
+ * NULL elements are yes allowed use setAllowNull(bool),<br>
+ * DUPS are allowed also, settable(?) in constructor<br>
  */
 public class ListOrderedOfSymbols extends ListOrderedOfElementCapsules {
 	
 	private static final TwoKeyHashMap<Level4_DMLEnvironment, Symbol, ListOrderedOfSymbols>	allListOOSInstances	= new TwoKeyHashMap<Level4_DMLEnvironment, Symbol, ListOrderedOfSymbols>();
+	private boolean																			allowNull			= false;
+	private final boolean																	allowDUPs;
+	
+	public void setAllowNull( boolean allow ) {
+
+		RunTime.assumedNotNull( allow );
+		allowNull = allow;
+	}
 	
 	/**
 	 * don't use this constructor directly
@@ -52,9 +60,12 @@ public class ListOrderedOfSymbols extends ListOrderedOfElementCapsules {
 	 * @param envDML
 	 * @param name1
 	 */
-	private ListOrderedOfSymbols( Level4_DMLEnvironment envDML, Symbol name1 ) {
+	private ListOrderedOfSymbols( Level4_DMLEnvironment envDML, Symbol name1,
+			boolean allowDUPs1 ) {
 
 		super( envDML, name1 );
+		RunTime.assumedNotNull( allowDUPs1 );
+		allowDUPs = allowDUPs1;
 	}
 	
 	private final static void registerInstance( Level4_DMLEnvironment env,
@@ -79,12 +90,14 @@ public class ListOrderedOfSymbols extends ListOrderedOfElementCapsules {
 	 * @return
 	 */
 	public static ListOrderedOfSymbols getListOOSymbols(
-			Level4_DMLEnvironment envL4, Symbol existingSymbol ) {
+			Level4_DMLEnvironment envL4, Symbol existingSymbol,
+			boolean allowDUPs ) {
 
-		RunTime.assumedNotNull( envL4, existingSymbol );
+		RunTime.assumedNotNull( envL4, existingSymbol, allowDUPs );
 		ListOrderedOfSymbols existingOne = getInstance( envL4, existingSymbol );
 		if ( null == existingOne ) {
-			existingOne = new ListOrderedOfSymbols( envL4, existingSymbol );
+			existingOne = new ListOrderedOfSymbols( envL4, existingSymbol,
+					allowDUPs );
 			registerInstance( envL4, existingSymbol, existingOne );
 		}
 		existingOne.assumedValid();
@@ -107,13 +120,23 @@ public class ListOrderedOfSymbols extends ListOrderedOfElementCapsules {
 
 	synchronized public void add( Position where, Symbol whichSymbol ) {
 
-		RunTime.assumedNotNull( where, whichSymbol );
+		RunTime.assumedNotNull( where );
+		if ( !allowNull ) {
+			RunTime.assumedNotNull( whichSymbol );
+		}
 		switch ( where ) {
 		case FIRST:
 		case LAST:
 			break;
 		default:
 			RunTime.badCall( "unsupported position" );
+		}
+		if ( !allowDUPs ) {
+			// must not already exist
+			if ( this.hasSymbol( whichSymbol ) ) {
+				// exists already
+				RunTime.badCall( "you tried to add an already existing Symbol to the list, whilst the list didn't support DUPs" );
+			}
 		}
 		ElementCapsule ec = ElementCapsule.getElementCapsule( env,
 				env.newUniqueSymbol() );
@@ -122,12 +145,23 @@ public class ListOrderedOfSymbols extends ListOrderedOfElementCapsules {
 		this.assumedValid();
 	}
 	
-	// FIXME: add this in next subclass
-	@Deprecated
 	public void add( Symbol whichSymbol, Position pos, Symbol posSymbol ) {
 
-		RunTime.assumedNotNull( whichSymbol, pos, posSymbol );
+		RunTime.assumedNotNull( pos );
+		if ( !allowNull ) {
+			RunTime.assumedNotNull( whichSymbol, posSymbol );
+		}
+		
+		if ( !allowDUPs ) {
+			if ( this.hasSymbol( whichSymbol ) ) {
+				RunTime.badCall( "the Symbol already exists and the list doesn't do DUPs" );
+			}
+		}
 		ElementCapsule posEC = this.get_ElementCapsule( posSymbol );
+		if ( null == posEC ) {
+			RunTime.badCall( "cannot find your posSymbol" );
+		}
+		
 		ElementCapsule newEC = ElementCapsule.getElementCapsule( env,
 				env.newUniqueSymbol() );
 		RunTime.assumedNull( newEC.setElement( whichSymbol ) );
@@ -135,22 +169,48 @@ public class ListOrderedOfSymbols extends ListOrderedOfElementCapsules {
 		this.assumedValid();
 	}
 	
-	// FIXME: I dno yet
-	@Deprecated
-	/**
-	 * @param posSymbol
-	 * @return
-	 */
-	protected ElementCapsule get_ElementCapsule( Symbol posSymbol ) {
+	public boolean hasSymbol( Symbol whichSymbol ) {
 
-		RunTime.assumedNotNull( posSymbol );
+		if ( !allowNull ) {
+			RunTime.assumedNotNull( whichSymbol );
+		}
+		RunTime.assumedFalse( allowDUPs );
+		return ( null != this.get_ElementCapsule( whichSymbol ) );
+	}
+	
+	/**
+	 * parses entire list, one by one <br>
+	 * 
+	 * @param posSymbol
+	 * @return the already existing EC for the passed symbol; or null if not
+	 *         found in list
+	 */
+	private ElementCapsule get_ElementCapsule( Symbol posSymbol ) {
+
+		if ( !allowNull ) {
+			RunTime.assumedNotNull( posSymbol );
+		}
+		// this method is not to be used while DUPs are allowed, because it will
+		// only find first occurrence and this is not explicitly stated in
+		// calling it
+		RunTime.assumedFalse( allowDUPs );
+		
 		ElementCapsule iter = this.get_ElementCapsule( Position.FIRST );
+		ElementCapsule found = null;
 		while ( null != iter ) {
 			if ( iter.getElement() == posSymbol ) {
-				return iter;
+				if ( null != found ) {
+					// found it again? since this is a no DUPs list => bug
+					RunTime.bug( "a noDUPs list was detected to have dups" );
+					// but then again, if dups are allowed this method should
+					// not be called?
+				}
+				found = iter;
+				// doesn't break because we want to check consistency
 			}
+			iter = this.get_ElementCapsule( Position.AFTER, iter );
 		}
-		return null;
+		return found;
 	}
 	
 	synchronized public Symbol get( Position pos ) {
@@ -160,16 +220,45 @@ public class ListOrderedOfSymbols extends ListOrderedOfElementCapsules {
 		return ret;
 	}
 	
+	/**
+	 * usable only when noDUPs are allowed, else throws
+	 * 
+	 * @param pos
+	 * @param posSymbol
+	 * @return
+	 */
 	public Symbol get( Position pos, Symbol posSymbol ) {
 
-		RunTime.assumedNotNull( pos, posSymbol );
-		ElementCapsule posEC = this.getAsEC( posSymbol );
-		ElementCapsule foundEC = this.get_ElementCapsule( pos, posEC );
-		if ( null != foundEC ) {
-			return foundEC.getElement();
-		} else {
-			return null;
+		RunTime.assumedNotNull( pos );
+		switch ( pos ) {// redundant checks
+		case BEFORE:
+		case AFTER:
+			break;
+		default:
+			RunTime.badCall( "bad position" );
 		}
+		
+		if ( !allowNull ) {
+			RunTime.assumedNotNull( posSymbol );
+		}
+		
+		RunTime.assumedFalse( allowDUPs );// don't call it when DUPS allowed!
+		
+		// acquire posElementCapsule
+		ElementCapsule posEC = this.get_ElementCapsule( posSymbol );
+		if ( null == posEC ) {
+			RunTime.badCall( "cannot find the posSymbol" );
+		}
+		
+		ElementCapsule foundEC = this.get_ElementCapsule( pos, posEC );
+		Symbol fe = null;
+		if ( null != foundEC ) {
+			fe = foundEC.getElement();
+			if ( !allowNull ) {
+				RunTime.assumedNotNull( fe );// consistency check,redundant
+			}
+		}
+		return fe;// can be null;
 	}
 	
 	private Symbol internalGet( Position pos ) {
@@ -183,16 +272,12 @@ public class ListOrderedOfSymbols extends ListOrderedOfElementCapsules {
 			RunTime.badCall( "unsupported position" );
 		}
 		ElementCapsule ec = this.get_ElementCapsule( pos );
+		Symbol ret = null;
 		if ( null != ec ) {
-			return ec.getElement();
-		} else {
-			return null;
+			ret = ec.getElement();
+			RunTime.assumedNotNull( ret );
 		}
-	}
-	
-	private final ElementCapsule getAsEC( Symbol which ) {
-
-		return ElementCapsule.getElementCapsule( env, which );
+		return ret;
 	}
 	
 	@Override
@@ -203,5 +288,6 @@ public class ListOrderedOfSymbols extends ListOrderedOfElementCapsules {
 			RunTime.assumedNotNull( this.internalGet( Position.FIRST ) );
 			RunTime.assumedNotNull( this.internalGet( Position.LAST ) );
 		}
+		// TODO check allowDUPS and allowNull compliance
 	}
 }

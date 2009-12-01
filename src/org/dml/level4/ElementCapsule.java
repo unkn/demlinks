@@ -102,6 +102,7 @@ public class ElementCapsule {
 			cachedPrev = envL4.getNewNullDomainPointer( envL4.allElementCapsules_Symbol );
 			cachedNext = envL4.getNewNullDomainPointer( envL4.allElementCapsules_Symbol );
 			element = envL4.getNewNullPointer();
+			RunTime.assumedNull( element.getPointee() );
 			RunTime.assumedFalse( envL4.ensureVector( name,
 					cachedPrev.getAsSymbol() ) );
 			RunTime.assumedFalse( envL4.ensureVector( name,
@@ -258,9 +259,10 @@ public class ElementCapsule {
 	
 	public Symbol setElement( Symbol newElement ) {
 
-		RunTime.assumedNotNull( newElement, element );
+		// can be null param
+		RunTime.assumedNotNull( element );
 		Symbol old = this.getElement();
-		element.pointTo( newElement );
+		element.pointTo( newElement );// can be null
 		RunTime.assumedTrue( this.getElement() == newElement );
 		return old;// can be null
 	}
