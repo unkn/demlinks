@@ -51,6 +51,9 @@ import com.sleepycat.je.OperationStatus;
  * the iteration order is not guaranteed, ie. the terminals are stored as in a
  * Set, not as in an ordered list; however in practice they're sorted
  * alphabetically so to speak, but shouldn't count on this!<br>
+ * //FIXME: maybe make a way to not throw DatabaseException from here, because
+ * it's
+ * being used in environment
  */
 public class BDBVectorIterator<InitialType, TerminalType> extends
 		StaticInstanceTracker {

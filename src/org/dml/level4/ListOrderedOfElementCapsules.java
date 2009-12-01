@@ -120,10 +120,18 @@ public class ListOrderedOfElementCapsules {
 		RunTime.assumedTrue( this.internal_hasNameSetRight() );
 		ElementCapsule first = this.get_ElementCapsule( Position.FIRST );
 		ElementCapsule last = this.get_ElementCapsule( Position.LAST );
+		int netSize = 0;
 		if ( null != first ) {
 			RunTime.assumedTrue( env.isVector( name, first.getAsSymbol() ) );
 			RunTime.assumedTrue( this.hasElementCapsule( first ) );
 			RunTime.assumedTrue( last != null );
+			// parse all
+			ElementCapsule current = first;
+			do {
+				netSize++;
+				RunTime.assumedTrue( env.isVector( name, current.getAsSymbol() ) );
+				current = this.get_ElementCapsule( Position.AFTER, current );
+			} while ( null != current );
 		} else {
 			RunTime.assumedTrue( this.isEmpty() );
 		}
@@ -133,7 +141,23 @@ public class ListOrderedOfElementCapsules {
 			RunTime.assumedTrue( first != null );
 		}
 		
+		RunTime.assumedTrue( netSize == this.size() );
 		// TODO maybe check that all terminals of 'name' are ECs
+		// BDBVectorIterator<Symbol, Symbol> iter =
+		// env.getIterator_on_Terminals_of( name );
+		// try {
+		// iter.goFirst();
+		// while ( null != iter.now() ) {
+		// ElementCapsule ec=ElementCapsule.getElementCapsule( env, iter.now()
+		// );
+		//				
+		// iter.goNext();
+		// }
+		// } catch ( DatabaseException e ) {
+		// throw new StorageException( e );
+		// } finally {
+		// iter.deInit();
+		// }
 	}
 	
 	/**
@@ -245,6 +269,7 @@ public class ListOrderedOfElementCapsules {
 	 */
 	public void add_ElementCapsule( Position pos, ElementCapsule theNew ) {
 
+		this.assumedValid();
 		switch ( pos ) {
 		case FIRST:
 		case LAST:
@@ -253,15 +278,15 @@ public class ListOrderedOfElementCapsules {
 			RunTime.assumedFalse( this.hasElementCapsule( theNew ) );
 			RunTime.assumedTrue( theNew.isAlone() );// prev=next=null
 			
+			// list points to all ECs it has
+			if ( env.ensureVector( name, theNew.getAsSymbol() ) ) {
+				RunTime.bug( "the link shouldn't already exist" );
+			}
 			// assuming pos is FIRST
-			if ( this.isEmpty() ) {
-				// no first/last
-				// set as Tail
-				this.internal_dmlRegisterNewHeadOrTail(
-						Position.opposite( pos ), theNew );
-			} else {// not empty list
-				// has a last
-				ElementCapsule theOld = this.get_ElementCapsule( pos );// first
+			// has a last
+			ElementCapsule theOld = this.get_ElementCapsule( pos );// first
+			if ( null != theOld ) {
+				// has at least 1 element in list
 				RunTime.assumedNotNull( theOld );// current first exists!
 				
 				// first.prev is null
@@ -277,19 +302,21 @@ public class ListOrderedOfElementCapsules {
 				theOld.setCapsule( Position.getAsNear( pos ), theNew );
 				// setFirst=newfirst
 				theNew.assumedIsValidCapsule();
+			} else {
+				// no first then no last
+				// set as Tail aka last
+				this.internal_dmlRegisterNewHeadOrTail(
+						Position.opposite( pos ), theNew );
 			}
-			// new HEAD
+			// new HEAD, set as first
 			this.internal_dmlRegisterNewHeadOrTail( pos, theNew );// common
-			// list points to all ECs it has
-			if ( env.ensureVector( name, theNew.getAsSymbol() ) ) {
-				RunTime.bug( "the link shouldn't already exist" );
-			}
 			break;
 		
 		default:
 			RunTime.badCall( "bad position" );
 			break;
 		}
+		this.assumedValid();
 	}
 	
 	public int size() {
