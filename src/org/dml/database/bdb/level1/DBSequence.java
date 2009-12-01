@@ -26,6 +26,8 @@ package org.dml.database.bdb.level1;
 
 
 import org.dml.tools.RunTime;
+import org.dml.tools.StaticInstanceTracker;
+import org.references.method.MethodParams;
 
 import com.sleepycat.je.DatabaseException;
 import com.sleepycat.je.Sequence;
@@ -42,11 +44,11 @@ import com.sleepycat.je.SequenceConfig;
  * that is, a sequence used for another database will only have one key and
  * one data in this BerkeleyDB
  */
-public class DBSequence {
+public class DBSequence extends StaticInstanceTracker {
 	
 	
 
-	// FIXME: maybe we dont' want to keep it same for all?
+	// FIXME: maybe we don't want to keep it same for all?
 	// SequenceConfig will be kept the same for all Sequence -s, for now;that is
 	// same settings not same variable
 	private final SequenceConfig			allSequencesConfig	= new MySequenceConfig();
@@ -94,15 +96,18 @@ public class DBSequence {
 		return thisSeq;
 	}
 	
-	/**
-	 * 
-	 */
-	/**
-	 * @return null
-	 */
-	public DBSequence done() {
+	
+	@Override
+	protected void done( MethodParams<Object> params ) {
 
 		thisSeq = bdb.closeAnySeq_silent( thisSeq, thisSeqName );
-		return null;
+		
+	}
+	
+	@Override
+	protected void start( MethodParams<Object> params ) {
+
+		RunTime.assumedNull( params );
+		
 	}
 }

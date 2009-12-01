@@ -129,13 +129,18 @@ public class Level1_Storage_BerkeleyDB extends StaticInstanceTracker {
 			throw new StorageException( e );
 		}// forces env open or create
 		
-		RunTime.assumedNull( symGen );
-		symGen = new UniqueSymbolsGenerator( this );// implied init
 	}
 	
 	public UniqueSymbolsGenerator getUniqueSymbolsGenerator() {
 
-		RunTime.assumedNotNull( symGen );
+		if ( null == symGen ) {
+			symGen = new UniqueSymbolsGenerator( this );
+			symGen.init( null );
+		} else {
+			if ( !symGen.isInited() ) {
+				symGen.reInit();
+			}
+		}
 		return symGen;
 	}
 	
@@ -151,7 +156,7 @@ public class Level1_Storage_BerkeleyDB extends StaticInstanceTracker {
 			db_JavaID_To_Symbol.deInit();
 		}
 		if ( null != symGen ) {
-			symGen = symGen.deInit();
+			symGen.deInit();
 		}
 		this.deInitSeqSystem_silent();// first
 		this.closeAllOpenDatabases_silent();// second

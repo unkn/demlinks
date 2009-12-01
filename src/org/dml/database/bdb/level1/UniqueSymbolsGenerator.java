@@ -27,6 +27,8 @@ package org.dml.database.bdb.level1;
 
 import org.dml.level1.Symbol;
 import org.dml.tools.RunTime;
+import org.dml.tools.StaticInstanceTracker;
+import org.references.method.MethodParams;
 
 import com.sleepycat.je.DatabaseException;
 
@@ -36,7 +38,7 @@ import com.sleepycat.je.DatabaseException;
  * 
  *
  */
-public class UniqueSymbolsGenerator {
+public class UniqueSymbolsGenerator extends StaticInstanceTracker {
 	
 	private DBSequence			seq						= null;
 	private final String		seq_UniqueSymbolsPuller	= "pulling unique Symbols";
@@ -62,26 +64,14 @@ public class UniqueSymbolsGenerator {
 		if ( null == seq ) {
 			// init once:
 			seq = new DBSequence( bdbL1, seq_UniqueSymbolsPuller );
+			seq.init( null );
 			RunTime.assumedNotNull( seq );
+		} else {
+			if ( !seq.isInited() ) {
+				seq.reInit();
+			}
 		}
 		return seq;
-	}
-	
-	public void silentClose() {
-
-		// close seq
-		if ( null != seq ) {
-			seq = seq.done();
-		}
-	}
-	
-	/**
-	 * @return null
-	 */
-	public UniqueSymbolsGenerator deInit() {
-
-		this.silentClose();
-		return null;
 	}
 	
 	/**
@@ -102,5 +92,21 @@ public class UniqueSymbolsGenerator {
 		Symbol nid = Symbol.internalNewSymbolRepresentationFor( this.getUniqueLong() );
 		RunTime.assumedNotNull( nid );
 		return nid;
+	}
+	
+	@Override
+	protected void done( MethodParams<Object> params ) {
+
+		// close seq
+		if ( null != seq ) {
+			// seq = seq.done();
+			seq.deInit();
+		}
+	}
+	
+	@Override
+	protected void start( MethodParams<Object> params ) {
+
+		RunTime.assumedNull( params );
 	}
 }
