@@ -173,8 +173,6 @@ public abstract class MainLevel0 extends StaticInstanceTracker {
 	}
 	
 	/**
-	 * override this and call super first, then your code<br>
-	 * 
 	 * @param params
 	 *            can accept a passed VarLevel or other params needed to init a
 	 *            new VarLevel; if null or empty then defaults are used; params

@@ -33,20 +33,18 @@ import org.references.method.MethodParams;
 
 
 /**
- * 
- * 1. implement init() and deInit() but remember to always call super of them
- * first line, in both; if you decide to go wild and call it lastly make sure in
- * both you do that<br>
- * 2. use constructor to create, and then call init() <br>
- * 3. NEVER call init() inside a constructor<br>
+ * 1. implement start() and done() but call init() and deInit() instead; because
+ * init() calls start() inside it; same for deInit() calling done()<br>
+ * 2. use constructor to create, and then call init() don't call init() from
+ * within the constructor<br>
+ * NEVER call init() inside a constructor<br>
+ * 3. sometime when done with it, you have to use deInit()<br>
  * 4. sometime when done with it, you have to use deInit()<br>
  * you can init() again but only if u previously used deInit()<br>
  * 5. you can use restart() which does deInit and init again with original
  * params<br>
  * 6. or use reInit() if you already used deInit(), and it will use the original
  * params to init it again<br>
- * DON'T forget to call super.init() and super.deInit() when you override, first
- * line! it's made like this so F3 in eclipse would work well
  */
 public abstract class StaticInstanceTracker {
 	
@@ -153,8 +151,6 @@ public abstract class StaticInstanceTracker {
 	protected abstract void done( MethodParams<Object> params );
 	
 	/**
-	 * call super.deInit() first, then do your code
-	 * 
 	 * @return
 	 */
 	public final void deInit() {
