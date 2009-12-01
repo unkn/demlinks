@@ -166,6 +166,7 @@ public abstract class StaticInstanceTracker {
 	}
 	
 	
+	@Deprecated
 	/**
 	 * LIFO manner deinit, only for the same class type<br>
 	 * instances with same class name as this instance, will be deinited<br>
@@ -191,6 +192,7 @@ public abstract class StaticInstanceTracker {
 		// RunTime.assertTrue( ALL_INSTANCES.isEmpty() );
 	}
 	
+	@Deprecated
 	/**
 	 * LIFO manner deinit, for ALL class types<br>
 	 * you may consider this as silent, as it won't deInit those that are

@@ -67,7 +67,8 @@ public class StaticInstanceTrackerTest {
 
 		// t.deInit();
 		// t2.deInit();
-		// FIXME: need callback;StaticInstanceTracker.deInitAllThatExtendMe();
+		// FIXME: need callback; or just silentDeInits everywhere
+		// StaticInstanceTracker.deInitAllThatExtendMe();
 		params.deInitSilently();
 	}
 	
