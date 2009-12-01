@@ -153,7 +153,10 @@ public class DomainPointer extends Pointer {
 	
 	public boolean isValidDomainPointeeTuple( Symbol domain1, Symbol pointee ) {
 
-		RunTime.assumedNotNull( domain1, pointee );
+		RunTime.assumedNotNull( domain1 );
+		if ( !allowNull ) {
+			RunTime.assumedNotNull( pointee );
+		}
 		RunTime.assumedFalse( self == domain1 );
 		return envL2.isVector( domain1, pointee );
 	}
@@ -191,11 +194,14 @@ public class DomainPointer extends Pointer {
 	@Override
 	public Symbol pointTo( Symbol toWhat ) {
 
-		RunTime.assumedNotNull( toWhat );
 		this.assumedValid();
-		if ( !this.isValidDomainPointeeTuple( domain, toWhat ) ) {
-			RunTime.badCall( "new pointee not from domain, you insipid bugger! :D" );
+		if ( !allowNull ) {
+			RunTime.assumedNotNull( toWhat );
+			if ( !this.isValidDomainPointeeTuple( domain, toWhat ) ) {
+				RunTime.badCall( "new pointee not from domain, you insipid bugger! :D" );
+			}
 		}
+		
 		return super.pointTo( toWhat );
 	}
 	

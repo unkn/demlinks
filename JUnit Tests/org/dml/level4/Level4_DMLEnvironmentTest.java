@@ -26,6 +26,7 @@ package org.dml.level4;
 
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import org.dml.level1.JavaID;
@@ -68,23 +69,38 @@ public class Level4_DMLEnvironmentTest {
 	@Test
 	public void test1() {
 
-		JavaID name = JavaID.ensureJavaIDFor( "boo" );
+		JavaID name = JavaID.ensureJavaIDFor( "booList" );
 		Symbol name2 = l4.createSymbol( name );
-		ListOrderedOfSymbols list = l4.newList( name2 );
+		
+		ListOrderedOfSymbols list = l4.getAsList( name2 );
 		list.assumedValid();
+		
+		assertNull( list.get( Position.FIRST ) );
+		assertNull( list.get( Position.LAST ) );
+		assertTrue( list.size() == 0 );
+		
+		Symbol e1 = l4.newUniqueSymbol();
+		list.add( Position.LAST, e1 );
+		assertTrue( list.get( Position.LAST ) == e1 );
+		assertTrue( list.get( Position.FIRST ) == e1 );
+		
+		Symbol e2 = l4.newUniqueSymbol();
+		list.add( e2, Position.BEFORE, e1 );
+		assertTrue( list.get( Position.FIRST ) == e2 );
+		assertTrue( list.get( Position.AFTER, e2 ) == e1 );
 	}
 	
 	@Test
 	public void test2() {
 
 		Symbol name = l4.newUniqueSymbol();
-		ListOrderedOfElementCapsules eclist = new ListOrderedOfElementCapsules(
+		ListOrderedOfElementCapsules eclist = ListOrderedOfElementCapsules.getListOOEC(
 				l4, name );
 		eclist.assumedValid();
 		
 		Symbol ec1name = l4.newUniqueSymbol();
 		ElementCapsule ec1 = ElementCapsule.getElementCapsule( l4, ec1name );
-		eclist.add_ElementCapsule( ec1, Position.FIRST );
+		eclist.add_ElementCapsule( Position.FIRST, ec1 );
 		assertTrue( l4.isVector( l4.allHeads_Symbol, ec1.getAsSymbol() ) );
 		assertTrue( l4.isVector( eclist.getAsSymbol(), ec1.getAsSymbol() ) );
 		ElementCapsule tmpLast = eclist.get_ElementCapsule( Position.LAST );

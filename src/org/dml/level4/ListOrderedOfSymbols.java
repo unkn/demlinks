@@ -26,6 +26,8 @@ package org.dml.level4;
 
 
 import org.dml.level1.Symbol;
+import org.dml.tools.RunTime;
+import org.dml.tools.TwoKeyHashMap;
 import org.references.Position;
 
 
@@ -40,10 +42,51 @@ import org.references.Position;
  */
 public class ListOrderedOfSymbols extends ListOrderedOfElementCapsules {
 	
+	private static final TwoKeyHashMap<Level4_DMLEnvironment, Symbol, ListOrderedOfSymbols>	allListOOSInstances	= new TwoKeyHashMap<Level4_DMLEnvironment, Symbol, ListOrderedOfSymbols>();
 	
-	public ListOrderedOfSymbols( Level4_DMLEnvironment envDML, Symbol name1 ) {
+	/**
+	 * don't use this constructor directly
+	 * 
+	 * @param envDML
+	 * @param name1
+	 */
+	private ListOrderedOfSymbols( Level4_DMLEnvironment envDML, Symbol name1 ) {
 
 		super( envDML, name1 );
+	}
+	
+	private final static void registerInstance( Level4_DMLEnvironment env,
+			Symbol name, ListOrderedOfSymbols newOne ) {
+
+		RunTime.assumedNotNull( env, name, newOne );
+		RunTime.assumedFalse( allListOOSInstances.ensure( env, name, newOne ) );
+	}
+	
+	private final static ListOrderedOfSymbols getInstance(
+			Level4_DMLEnvironment env, Symbol name ) {
+
+		RunTime.assumedNotNull( env, name );
+		return allListOOSInstances.get( env, name );
+	}
+	
+	/**
+	 * @param envL4
+	 * @param existingSymbol
+	 *            can be a list already, or just a new unique symbol to be
+	 *            transformed into a list
+	 * @return
+	 */
+	public static ListOrderedOfSymbols getListOOSymbols(
+			Level4_DMLEnvironment envL4, Symbol existingSymbol ) {
+
+		RunTime.assumedNotNull( envL4, existingSymbol );
+		ListOrderedOfSymbols existingOne = getInstance( envL4, existingSymbol );
+		if ( null == existingOne ) {
+			existingOne = new ListOrderedOfSymbols( envL4, existingSymbol );
+			registerInstance( envL4, existingSymbol, existingOne );
+		}
+		existingOne.assumedValid();
+		return existingOne;
 	}
 	
 	@Override
@@ -60,13 +103,79 @@ public class ListOrderedOfSymbols extends ListOrderedOfElementCapsules {
 	
 	
 
-	synchronized public void addLast( Symbol whichSymbol ) {
+	synchronized public void add( Position where, Symbol whichSymbol ) {
 
-		ElementCapsule ec = internal_encapsulateSymbol( whichSymbol );
-		this.add_ElementCapsule( ec, Position.LAST );
+		RunTime.assumedNotNull( where, whichSymbol );
+		switch ( where ) {
+		case FIRST:
+		case LAST:
+			break;
+		default:
+			RunTime.badCall( "unsupported position" );
+		}
+		ElementCapsule ec = this.getAsEC( whichSymbol );
+		this.add_ElementCapsule( where, ec );
+		this.assumedValid();
 	}
 	
-	public void addFirst( Symbol whichSymbol ) {
+	public void add( Symbol whichSymbol, Position pos, Symbol posSymbol ) {
 
+		RunTime.assumedNotNull( whichSymbol, pos, posSymbol );
+		ElementCapsule posEC = this.getAsEC( posSymbol );
+		ElementCapsule newEC = this.getAsEC( whichSymbol );
+		this.add_ElementCapsule( newEC, pos, posEC );
+		this.assumedValid();
+	}
+	
+	synchronized public Symbol get( Position pos ) {
+
+		Symbol ret = this.internalGet( pos );
+		this.assumedValid();
+		return ret;
+	}
+	
+	public Symbol get( Position pos, Symbol posSymbol ) {
+
+		RunTime.assumedNotNull( pos, posSymbol );
+		ElementCapsule posEC = this.getAsEC( posSymbol );
+		ElementCapsule foundEC = this.get_ElementCapsule( pos, posEC );
+		if ( null != foundEC ) {
+			return foundEC.getAsSymbol();
+		} else {
+			return null;
+		}
+	}
+	
+	private Symbol internalGet( Position pos ) {
+
+		RunTime.assumedNotNull( pos );
+		switch ( pos ) {
+		case FIRST:
+		case LAST:
+			break;
+		default:
+			RunTime.badCall( "unsupported position" );
+		}
+		ElementCapsule ec = this.get_ElementCapsule( pos );
+		if ( null != ec ) {
+			return ec.getAsSymbol();
+		} else {
+			return null;
+		}
+	}
+	
+	private final ElementCapsule getAsEC( Symbol which ) {
+
+		return ElementCapsule.getElementCapsule( env, which );
+	}
+	
+	@Override
+	public void assumedValid() {
+
+		super.assumedValid();
+		if ( this.size() > 0 ) {
+			RunTime.assumedNotNull( this.internalGet( Position.FIRST ) );
+			RunTime.assumedNotNull( this.internalGet( Position.LAST ) );
+		}
 	}
 }

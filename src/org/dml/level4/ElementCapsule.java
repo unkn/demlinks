@@ -64,7 +64,9 @@ public class ElementCapsule {
 	
 	/**
 	 * @param env
-	 * @param x
+	 * @param existingSymbol
+	 *            could be already existing as EC, or just a newly added unique
+	 *            symbol(empty one) waiting to be transformed into an EC
 	 * @return
 	 */
 	public static ElementCapsule getElementCapsule(
@@ -175,8 +177,8 @@ public class ElementCapsule {
 	 */
 	public boolean isAlone() {
 
-		boolean ret1 = ( this.getSideCapsule( Position.FIRST ) == null );
-		boolean ret2 = ( this.getSideCapsule( Position.LAST ) == null );
+		boolean ret1 = ( this.getSideCapsule( Position.BEFORE ) == null );
+		boolean ret2 = ( this.getSideCapsule( Position.AFTER ) == null );
 		if ( ret1 != ret2 ) {
 			RunTime.bug( "they should be same value" );
 		}
@@ -184,18 +186,17 @@ public class ElementCapsule {
 	}
 	
 	/**
-	 * @param opposite
+	 * @param pos
+	 *            BEFORE aka prev or AFTER aka next
 	 * @return
 	 */
 	public ElementCapsule getSideCapsule( Position pos ) {
 
 		Symbol the = null;
 		switch ( pos ) {
-		case FIRST:
 		case BEFORE:
 			the = cachedPrev.getPointee();
 			break;
-		case LAST:
 		case AFTER:
 			the = cachedNext.getPointee();
 			break;
@@ -203,8 +204,7 @@ public class ElementCapsule {
 			RunTime.bug( "shouldn't be here" );
 		}
 		if ( null != the ) {
-			// FIXME: a lot of new
-			return new ElementCapsule( envL4, the );
+			return ElementCapsule.getElementCapsule( envL4, the );
 		} else {
 			return null;
 		}
@@ -217,7 +217,6 @@ public class ElementCapsule {
 	public void setCapsule( Position pos, ElementCapsule newPointer ) {
 
 		switch ( pos ) {
-		case FIRST:
 		case BEFORE:
 			if ( null == newPointer ) {
 				cachedPrev.pointTo( null );
@@ -225,7 +224,6 @@ public class ElementCapsule {
 				cachedPrev.pointTo( newPointer.getAsSymbol() );
 			}
 			break;
-		case LAST:
 		case AFTER:
 			if ( null == newPointer ) {
 				cachedNext.pointTo( null );

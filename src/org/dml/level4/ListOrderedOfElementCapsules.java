@@ -27,6 +27,7 @@ package org.dml.level4;
 
 import org.dml.level1.Symbol;
 import org.dml.tools.RunTime;
+import org.dml.tools.TwoKeyHashMap;
 import org.references.Position;
 
 
@@ -34,14 +35,21 @@ import org.references.Position;
 /**
  * a list where the order is maintained<br>
  * list of ElementCapsules<br>
- * 
+ * will yield the same list instance for the same env/symbol tuple
  */
 public class ListOrderedOfElementCapsules {
 	
-	Level4_DMLEnvironment	env;
-	Symbol					name;
+	private static final TwoKeyHashMap<Level4_DMLEnvironment, Symbol, ListOrderedOfElementCapsules>	allListOOECInstances	= new TwoKeyHashMap<Level4_DMLEnvironment, Symbol, ListOrderedOfElementCapsules>();
+	Level4_DMLEnvironment																			env;
+	Symbol																							name;
 	
-	public ListOrderedOfElementCapsules( Level4_DMLEnvironment envDML,
+	/**
+	 * don't explicitly use this constructor
+	 * 
+	 * @param envDML
+	 * @param name1
+	 */
+	protected ListOrderedOfElementCapsules( Level4_DMLEnvironment envDML,
 			Symbol name1 ) {
 
 		RunTime.assumedNotNull( envDML, name1 );
@@ -52,6 +60,42 @@ public class ListOrderedOfElementCapsules {
 		// Level3_DMLEnvironment.listSymbolJavaID );
 		this.internal_setName();
 		this.assumedValid();
+	}
+	
+	private final static void registerInstance( Level4_DMLEnvironment env,
+			Symbol name, ListOrderedOfElementCapsules newOne ) {
+
+		RunTime.assumedNotNull( env, name, newOne );
+		RunTime.assumedFalse( allListOOECInstances.ensure( env, name, newOne ) );
+	}
+	
+	private final static ListOrderedOfElementCapsules getInstance(
+			Level4_DMLEnvironment env, Symbol name ) {
+
+		RunTime.assumedNotNull( env, name );
+		return allListOOECInstances.get( env, name );
+	}
+	
+	/**
+	 * @param envL4
+	 * @param existingSymbol
+	 *            can be a list already, or just a new unique symbol to be
+	 *            transformed into a list
+	 * @return
+	 */
+	public static ListOrderedOfElementCapsules getListOOEC(
+			Level4_DMLEnvironment envL4, Symbol existingSymbol ) {
+
+		RunTime.assumedNotNull( envL4, existingSymbol );
+		ListOrderedOfElementCapsules existingOne = getInstance( envL4,
+				existingSymbol );
+		if ( null == existingOne ) {
+			existingOne = new ListOrderedOfElementCapsules( envL4,
+					existingSymbol );
+			registerInstance( envL4, existingSymbol, existingOne );
+		}
+		existingOne.assumedValid();
+		return existingOne;
 	}
 	
 	/**
@@ -80,12 +124,15 @@ public class ListOrderedOfElementCapsules {
 			RunTime.assumedTrue( env.isVector( name, first.getAsSymbol() ) );
 			RunTime.assumedTrue( this.hasElementCapsule( first ) );
 			RunTime.assumedTrue( last != null );
+		} else {
+			RunTime.assumedTrue( this.isEmpty() );
 		}
 		if ( null != last ) {
 			RunTime.assumedTrue( env.isVector( name, last.getAsSymbol() ) );
 			RunTime.assumedTrue( this.hasElementCapsule( last ) );
 			RunTime.assumedTrue( first != null );
 		}
+		
 		// TODO maybe check that all terminals of 'name' are ECs
 	}
 	
@@ -121,7 +168,8 @@ public class ListOrderedOfElementCapsules {
 			}
 		}
 		// new one
-		env.ensureVector( parent, candidate.getAsSymbol() );
+		RunTime.assumedFalse( env.ensureVector( parent, candidate.getAsSymbol() ) );
+		this.assumedValid();
 	}
 	
 	/**
@@ -145,12 +193,14 @@ public class ListOrderedOfElementCapsules {
 			RunTime.assumedTrue( this.hasElementCapsule( posElement ) );
 			// RunTime.assumedFalse( posElement.isAlone() ); could be alone
 			
+			// list always points to all ECs
+			RunTime.assumedFalse( env.ensureVector( name, theNew.getAsSymbol() ) );
 			// assuming pos is AFTER, for comments only
 			// get oldnext
 			ElementCapsule oldOne = posElement.getSideCapsule( pos );
 			if ( null == oldOne ) {
 				// then posElement is last
-				RunTime.assumedTrue( this.get_ElementCapsule( pos ) == posElement );
+				RunTime.assumedTrue( this.get_ElementCapsule( Position.getAsEdge( pos ) ) == posElement );
 			} else {
 				// it's not the last
 				// oldnext.prev=theNew
@@ -165,6 +215,11 @@ public class ListOrderedOfElementCapsules {
 			
 			// new.prev=posElement
 			theNew.setCapsule( Position.opposite( pos ), posElement );
+			if ( theNew.getSideCapsule( pos ) == null ) {
+				// no prev, then make it FIRST
+				this.internal_dmlRegisterNewHeadOrTail(
+						Position.getAsEdge( pos ), theNew );
+			}
 			break;
 		default:
 			RunTime.badCall( "bad position for this method" );
@@ -184,11 +239,11 @@ public class ListOrderedOfElementCapsules {
 	}
 	
 	/**
-	 * @param theNew
 	 * @param pos
 	 *            FIRST or LAST only
+	 * @param theNew
 	 */
-	public void add_ElementCapsule( ElementCapsule theNew, Position pos ) {
+	public void add_ElementCapsule( Position pos, ElementCapsule theNew ) {
 
 		switch ( pos ) {
 		case FIRST:
@@ -210,20 +265,22 @@ public class ListOrderedOfElementCapsules {
 				RunTime.assumedNotNull( theOld );// current first exists!
 				
 				// first.prev is null
-				RunTime.assumedNull( theOld.getSideCapsule( pos ) );
+				RunTime.assumedNull( theOld.getSideCapsule( Position.getAsNear( pos ) ) );
 				
 				// redundant check:
 				RunTime.assumedTrue( theNew.isAlone() );// prev=next=null
 				
 				// newfirst.next=oldfirst
-				theNew.setCapsule( Position.opposite( pos ), theOld );
+				theNew.setCapsule(
+						Position.opposite( Position.getAsNear( pos ) ), theOld );
 				// oldfirst.prev=newfirst
-				theOld.setCapsule( pos, theNew );
+				theOld.setCapsule( Position.getAsNear( pos ), theNew );
 				// setFirst=newfirst
 				theNew.assumedIsValidCapsule();
 			}
 			// new HEAD
 			this.internal_dmlRegisterNewHeadOrTail( pos, theNew );// common
+			// list points to all ECs it has
 			if ( env.ensureVector( name, theNew.getAsSymbol() ) ) {
 				RunTime.bug( "the link shouldn't already exist" );
 			}
@@ -249,7 +306,7 @@ public class ListOrderedOfElementCapsules {
 	
 	/**
 	 * @param pos
-	 *            FIRST or BEFORE / LAST or AFTER
+	 *            FIRST /LAST
 	 * @return
 	 */
 	public ElementCapsule get_ElementCapsule( Position pos ) {
@@ -258,11 +315,9 @@ public class ListOrderedOfElementCapsules {
 		Symbol sym = null;
 		switch ( pos ) {
 		case FIRST:
-		case BEFORE:
 			sym = env.allHeads_Symbol;
 			break;
 		case LAST:
-		case AFTER:
 			sym = env.allTails_Symbol;
 			break;
 		default:

@@ -79,9 +79,10 @@ public class Level4_DMLEnvironment extends Level3_DMLEnvironment {
 		allElementsOfEC_Symbol = this.ensureSymbol( allElementsOfEC_JavaID );
 	}
 	
-	public ListOrderedOfSymbols newList( Symbol listName ) {
+	public ListOrderedOfSymbols getAsList( Symbol listName ) {
 
-		ListOrderedOfSymbols list = new ListOrderedOfSymbols( this, listName );
+		ListOrderedOfSymbols list = ListOrderedOfSymbols.getListOOSymbols(
+				this, listName );
 		return list;
 	}
 	

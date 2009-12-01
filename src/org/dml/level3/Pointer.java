@@ -44,7 +44,7 @@ public class Pointer {
 	private static final TwoKeyHashMap<Level2_DMLEnvironment, Symbol, Pointer>	allPointerInstances	= new TwoKeyHashMap<Level2_DMLEnvironment, Symbol, Pointer>();
 	protected final Level2_DMLEnvironment										envL2;
 	protected final Symbol														self;
-	private boolean																allowNull			= true;
+	protected boolean															allowNull			= true;
 	
 	/**
 	 * constructor, not to be used by user

@@ -50,4 +50,40 @@ public enum Position {
 		}
 		return null;// won't reach this
 	}
+	
+	public static Position getAsEdge( Position pos ) {
+
+		switch ( pos ) {
+		case BEFORE:
+			return FIRST;
+		case AFTER:
+			return LAST;
+		case LAST:
+		case FIRST:
+			RunTime.badCall( "already edge" );
+		default:
+			RunTime.bug( "shouldn't reach this" );
+		}
+		return null;// won't reach this
+	}
+	
+	/**
+	 * @param pos
+	 * @return
+	 */
+	public static Position getAsNear( Position pos ) {
+
+		switch ( pos ) {
+		case FIRST:
+			return BEFORE;
+		case LAST:
+			return AFTER;
+		case BEFORE:
+		case AFTER:
+			RunTime.badCall( "already near" );
+		default:
+			RunTime.bug( "shouldn't reach this" );
+		}
+		return null;// won't reach this
+	}
 }
