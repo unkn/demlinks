@@ -181,9 +181,8 @@ public abstract class MainLevel0 extends StaticInstanceTracker {
 	 *            are passed down to the VarLevel
 	 */
 	@Override
-	public void init( MethodParams<Object> params ) {
+	protected void start( MethodParams<Object> params ) {
 
-		super.init( params );
 		// allows null argument
 		MethodParams<Object> mixedParams = this.getDefaults().getClone();
 		try {
@@ -236,9 +235,8 @@ public abstract class MainLevel0 extends StaticInstanceTracker {
 	 * @see org.dml.tools.StaticInstanceTracker#done()
 	 */
 	@Override
-	public void deInit() {
+	protected void done( MethodParams<Object> params ) {
 
-		super.deInit();
 		if ( null != this.getVarLevelX() ) {
 			// could be not yet inited due to throws in initMainLevel()
 			if ( usingOwnVarLevel ) {

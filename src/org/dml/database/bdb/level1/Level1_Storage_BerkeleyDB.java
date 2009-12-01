@@ -112,9 +112,8 @@ public class Level1_Storage_BerkeleyDB extends StaticInstanceTracker {
 	}
 	
 	@Override
-	public void init( MethodParams<Object> params ) {
+	protected void start( MethodParams<Object> params ) {
 
-		super.init( params );
 		envHomeDir = params.getExString( PossibleParams.homeDir );
 		Log.entry( envHomeDir );
 		if ( (Boolean)params.getEx( PossibleParams.jUnit_wipeDB ) ) {
@@ -150,9 +149,8 @@ public class Level1_Storage_BerkeleyDB extends StaticInstanceTracker {
 	 * @see org.dml.tools.StaticInstanceTracker#done()
 	 */
 	@Override
-	public void deInit() {
+	protected void done( MethodParams<Object> params ) {
 
-		super.deInit();
 		if ( null != db_JavaID_To_Symbol ) {
 			db_JavaID_To_Symbol.deInit();
 		}
@@ -163,8 +161,6 @@ public class Level1_Storage_BerkeleyDB extends StaticInstanceTracker {
 		this.closeAllOpenDatabases_silent();// second
 		this.closeDBEnvironment();// last
 		
-		MethodParams<Object> params = this.getInitParams();
-		RunTime.assumedNotNull( params );
 		Reference<Object> killWhenDoneRef = params.get( PossibleParams.jUnit_wipeDBWhenDone );
 		if ( null != killWhenDoneRef ) {
 			if ( (Boolean)killWhenDoneRef.getObject() ) {

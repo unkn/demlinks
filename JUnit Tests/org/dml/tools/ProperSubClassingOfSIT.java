@@ -41,11 +41,10 @@ public class ProperSubClassingOfSIT extends StaticInstanceTracker {
 	}
 	
 	@Override
-	public void init( MethodParams<Object> params ) {
+	protected void start( MethodParams<Object> params ) {
 
 		System.err.println( this.getClass().getCanonicalName()
 				+ " is initializing." );
-		super.init( params );
 	}
 	
 	/*
@@ -54,10 +53,8 @@ public class ProperSubClassingOfSIT extends StaticInstanceTracker {
 	 * @see org.dml.tools.StaticInstanceTracker#done()
 	 */
 	@Override
-	public void deInit() {
+	protected void done( MethodParams<Object> params ) {
 
-		super.deInit();
-		
 		System.err.println( this.getClass().getCanonicalName()
 				+ " is preparing to finish....step 1/2" );
 		if ( 1 == 1 ) {

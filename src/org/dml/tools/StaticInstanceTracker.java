@@ -82,16 +82,15 @@ public abstract class StaticInstanceTracker {
 	/**
 	 * implement this start(), but use init() instead
 	 */
-	// protected abstract void start( MethodParams<Object> params );
+	protected abstract void start( MethodParams<Object> params );
 	
 	/**
 	 * the params will be cloned (or copied) to be used by reInit()<br>
-	 * the norm is to call super.init(*) first, then do your code<br>
 	 * 
 	 * @param params
 	 *            null or the params
 	 */
-	public void init( MethodParams<Object> params ) {
+	public final void init( MethodParams<Object> params ) {
 
 		if ( this.isInited() ) {
 			RunTime.badCall( "already inited, you must deInit() before calling init(...) again" );
@@ -112,13 +111,13 @@ public abstract class StaticInstanceTracker {
 				formerParams = params.getClone();
 			} // else is null
 		} // else called by reInit() we don't mod them
-		// this.start( formerParams );
+		this.start( formerParams );
 	}
 	
-	public MethodParams<Object> getInitParams() {
-
-		return formerParams;
-	}
+	// public MethodParams<Object> getInitParams() {
+	//
+	// return formerParams;
+	// }
 	
 	/**
 	 * this will call deInit() and then init(params) where params are the last
@@ -151,14 +150,14 @@ public abstract class StaticInstanceTracker {
 	 * try to not modify the contents of params... since they will be used on
 	 * reInit() or well maybe it won't matter anymore<br>
 	 */
-	// protected abstract void done( MethodParams<Object> params );
+	protected abstract void done( MethodParams<Object> params );
 	
 	/**
 	 * call super.deInit() first, then do your code
 	 * 
 	 * @return
 	 */
-	public void deInit() {
+	public final void deInit() {
 
 		if ( !this.isInited() ) {
 			RunTime.badCall( this.toString() + " was not already init()-ed" );
@@ -177,7 +176,7 @@ public abstract class StaticInstanceTracker {
 		if ( this.isInited() ) {
 			this.setInited( false );
 			removeOldInstance( this );
-			// this.done( formerParams );
+			this.done( formerParams );
 			// formerParams are not managed here, only on init() ie. discarded
 		}
 	}

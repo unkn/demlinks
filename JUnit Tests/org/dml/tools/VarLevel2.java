@@ -51,26 +51,15 @@ public class VarLevel2 extends VarLevel1 implements VarLevel2Interface {
 		System.out.println( this.getName() + "'s home is: " + homeDir );
 	}
 	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.temporary.tests.VarLevel1#done()
-	 */
-	@Override
-	public void deInit() {
-
-		super.deInit();
-	}
-	
 	
 	/**
 	 * @param params
 	 */
 	@Override
-	public void init( MethodParams<Object> params ) {
+	protected void start( MethodParams<Object> params ) {
 
-		super.init( params );
 		RunTime.assumedNotNull( params );
+		super.start( params );
 		homeDir = params.getExString( PossibleParams.homeDir );
 		
 	}

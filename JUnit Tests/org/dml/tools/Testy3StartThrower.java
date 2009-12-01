@@ -50,9 +50,9 @@ public class Testy3StartThrower extends Testy {
 	}
 	
 	@Override
-	public void init( org.references.method.MethodParams<Object> params ) {
+	protected void start( org.references.method.MethodParams<Object> params ) {
 
-		super.init( params );
+		// super.start( params ); see? no need to call prev one, just override
 		RunTime.thro( new RuntimeException( "start" ) );
 	}
 	

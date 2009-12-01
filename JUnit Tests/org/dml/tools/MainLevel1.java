@@ -73,10 +73,10 @@ public class MainLevel1 extends MainLevel0 {
 	 * @see org.temporary.tests.MainLevel0#start()
 	 */
 	@Override
-	public void init( MethodParams<Object> params ) {
+	protected void start( MethodParams<Object> params ) {
 
 		System.out.println( this.getName() + " Initing..." );
-		super.init( params );
+		super.start( params );
 	}
 	
 	/**
@@ -93,9 +93,9 @@ public class MainLevel1 extends MainLevel0 {
 	 * @see org.temporary.tests.MainLevel0#done()
 	 */
 	@Override
-	public void deInit() {
+	protected void done( MethodParams<Object> params ) {
 
 		System.out.println( this.getName() + " deiniting..." );
-		super.deInit();
+		super.done( params );
 	}
 }

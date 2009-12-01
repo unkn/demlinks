@@ -98,17 +98,14 @@ public class DBSequence extends StaticInstanceTracker {
 	
 	
 	@Override
-	public void deInit() {
+	protected void done( MethodParams<Object> params ) {
 
-		super.deInit();
 		thisSeq = bdb.closeAnySeq_silent( thisSeq, thisSeqName );
-		
 	}
 	
 	@Override
-	public void init( MethodParams<Object> params ) {
+	protected void start( MethodParams<Object> params ) {
 
-		super.init( params );
 		RunTime.assumedNull( params );
 		
 	}

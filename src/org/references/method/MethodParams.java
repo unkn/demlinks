@@ -314,9 +314,8 @@ public class MethodParams<T> extends StaticInstanceTracker {
 	}
 	
 	@Override
-	public void deInit() {
+	protected void done( MethodParams<Object> params ) {
 
-		super.deInit();
 		this.clear();
 		RunTime.assumedTrue( this.size() == 0 );
 		RunTime.assumedTrue( redundantListOfNames.size() == 0 );
@@ -324,9 +323,8 @@ public class MethodParams<T> extends StaticInstanceTracker {
 	
 	
 	@Override
-	public void init( MethodParams<Object> params ) {
+	protected void start( MethodParams<Object> params ) {
 
-		super.init( params );
 		// params should be null, passed via init(...)
 		RunTime.assumedTrue( null == params );
 		

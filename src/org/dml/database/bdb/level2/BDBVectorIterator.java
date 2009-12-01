@@ -191,10 +191,8 @@ public class BDBVectorIterator<InitialType, TerminalType> extends
 	}
 	
 	@Override
-	public void deInit() {
+	protected void done( MethodParams<Object> params ) {
 
-		super.deInit();
-		
 		try {
 			this.close();
 		} catch ( DatabaseException e ) {
@@ -219,9 +217,8 @@ public class BDBVectorIterator<InitialType, TerminalType> extends
 	}
 	
 	@Override
-	public void init( MethodParams<Object> params ) {
+	protected void start( MethodParams<Object> params ) {
 
-		super.init( params );
 		if ( null != params ) {
 			RunTime.badCall( "not accepting any parameters here" );
 		}
