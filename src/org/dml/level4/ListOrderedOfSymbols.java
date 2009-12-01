@@ -45,14 +45,8 @@ import org.references.Position;
 public class ListOrderedOfSymbols extends ListOrderedOfElementCapsules {
 	
 	private static final TwoKeyHashMap<Level4_DMLEnvironment, Symbol, ListOrderedOfSymbols>	allListOOSInstances	= new TwoKeyHashMap<Level4_DMLEnvironment, Symbol, ListOrderedOfSymbols>();
-	private boolean																			allowNull			= false;
+	private final boolean																	allowNull;
 	private final boolean																	allowDUPs;
-	
-	public void setAllowNull( boolean allow ) {
-
-		RunTime.assumedNotNull( allow );
-		allowNull = allow;
-	}
 	
 	/**
 	 * don't use this constructor directly
@@ -61,11 +55,12 @@ public class ListOrderedOfSymbols extends ListOrderedOfElementCapsules {
 	 * @param name1
 	 */
 	private ListOrderedOfSymbols( Level4_DMLEnvironment envDML, Symbol name1,
-			boolean allowDUPs1 ) {
+			boolean allowNull1, boolean allowDUPs1 ) {
 
 		super( envDML, name1 );
 		RunTime.assumedNotNull( allowDUPs1 );
 		allowDUPs = allowDUPs1;
+		allowNull = allowNull1;
 	}
 	
 	private final static void registerInstance( Level4_DMLEnvironment env,
@@ -91,20 +86,28 @@ public class ListOrderedOfSymbols extends ListOrderedOfElementCapsules {
 	 */
 	public static ListOrderedOfSymbols getListOOSymbols(
 			Level4_DMLEnvironment envL4, Symbol existingSymbol,
-			boolean allowDUPs ) {
+			boolean allowNulls, boolean allowDUPs ) {
 
 		RunTime.assumedNotNull( envL4, existingSymbol, allowDUPs );
 		ListOrderedOfSymbols existingOne = getInstance( envL4, existingSymbol );
 		if ( null == existingOne ) {
 			existingOne = new ListOrderedOfSymbols( envL4, existingSymbol,
-					allowDUPs );
+					allowNulls, allowDUPs );
 			registerInstance( envL4, existingSymbol, existingOne );
 		}
-		if ( existingOne.allowDUPs != allowDUPs ) {
-			RunTime.BadCallError();
+		if ( existingOne.isDUPAllowed() != allowDUPs ) {
+			RunTime.badCall( "that Symbol was already a list with different setting for allowDUPs" );
+		}
+		if ( existingOne.isNullAllowed() != allowNulls ) {
+			RunTime.badCall( "that Symbol was already a list with different setting for allowNulls" );
 		}
 		existingOne.assumedValid();
 		return existingOne;
+	}
+	
+	public boolean isDUPAllowed() {
+
+		return allowDUPs;
 	}
 	
 	@Override
@@ -124,7 +127,7 @@ public class ListOrderedOfSymbols extends ListOrderedOfElementCapsules {
 	synchronized public void add( Position where, Symbol whichSymbol ) {
 
 		RunTime.assumedNotNull( where );
-		if ( !allowNull ) {
+		if ( !this.isNullAllowed() ) {
 			RunTime.assumedNotNull( whichSymbol );
 		}
 		switch ( where ) {
@@ -134,7 +137,7 @@ public class ListOrderedOfSymbols extends ListOrderedOfElementCapsules {
 		default:
 			RunTime.badCall( "unsupported position" );
 		}
-		if ( !allowDUPs ) {
+		if ( !this.isDUPAllowed() ) {
 			// must not already exist
 			if ( this.hasSymbol( whichSymbol ) ) {
 				// exists already
@@ -151,11 +154,11 @@ public class ListOrderedOfSymbols extends ListOrderedOfElementCapsules {
 	public void add( Symbol whichSymbol, Position pos, Symbol posSymbol ) {
 
 		RunTime.assumedNotNull( pos );
-		if ( !allowNull ) {
+		if ( !this.isNullAllowed() ) {
 			RunTime.assumedNotNull( whichSymbol, posSymbol );
 		}
 		
-		if ( !allowDUPs ) {
+		if ( !this.isNullAllowed() ) {
 			if ( this.hasSymbol( whichSymbol ) ) {
 				RunTime.badCall( "the Symbol already exists and the list doesn't do DUPs" );
 			}
@@ -174,10 +177,10 @@ public class ListOrderedOfSymbols extends ListOrderedOfElementCapsules {
 	
 	public boolean hasSymbol( Symbol whichSymbol ) {
 
-		if ( !allowNull ) {
+		if ( !this.isNullAllowed() ) {
 			RunTime.assumedNotNull( whichSymbol );
 		}
-		RunTime.assumedFalse( allowDUPs );
+		RunTime.assumedFalse( this.isDUPAllowed() );
 		return ( null != this.get_ElementCapsule( whichSymbol ) );
 	}
 	
@@ -190,13 +193,13 @@ public class ListOrderedOfSymbols extends ListOrderedOfElementCapsules {
 	 */
 	private ElementCapsule get_ElementCapsule( Symbol posSymbol ) {
 
-		if ( !allowNull ) {
+		if ( !this.isNullAllowed() ) {
 			RunTime.assumedNotNull( posSymbol );
 		}
 		// this method is not to be used while DUPs are allowed, because it will
 		// only find first occurrence and this is not explicitly stated in
 		// calling it
-		RunTime.assumedFalse( allowDUPs );
+		RunTime.assumedFalse( this.isDUPAllowed() );
 		
 		ElementCapsule iter = this.get_ElementCapsule( Position.FIRST );
 		ElementCapsule found = null;
@@ -241,11 +244,12 @@ public class ListOrderedOfSymbols extends ListOrderedOfElementCapsules {
 			RunTime.badCall( "bad position" );
 		}
 		
-		if ( !allowNull ) {
+		if ( !this.isNullAllowed() ) {
 			RunTime.assumedNotNull( posSymbol );
 		}
 		
-		RunTime.assumedFalse( allowDUPs );// don't call it when DUPS allowed!
+		RunTime.assumedFalse( this.isDUPAllowed() );// don't call it when DUPS
+		// allowed!
 		
 		// acquire posElementCapsule
 		ElementCapsule posEC = this.get_ElementCapsule( posSymbol );
@@ -257,13 +261,18 @@ public class ListOrderedOfSymbols extends ListOrderedOfElementCapsules {
 		Symbol fe = null;
 		if ( null != foundEC ) {
 			fe = foundEC.getElement();
-			if ( !allowNull ) {
+			if ( !this.isNullAllowed() ) {
 				RunTime.assumedNotNull( fe );// consistency check,redundant
 			}
 		}
 		return fe;// can be null;
 	}
 	
+	/**
+	 * @param pos
+	 * @return the Symbol or null if Symbol is null in an allow null list; or
+	 *         null if not found in an non-null allowing list
+	 */
 	private Symbol internalGet( Position pos ) {
 
 		RunTime.assumedNotNull( pos );
@@ -278,7 +287,9 @@ public class ListOrderedOfSymbols extends ListOrderedOfElementCapsules {
 		Symbol ret = null;
 		if ( null != ec ) {
 			ret = ec.getElement();
-			RunTime.assumedNotNull( ret );
+			if ( !this.isNullAllowed() ) {
+				RunTime.assumedNotNull( ret );
+			}
 		}
 		return ret;
 	}
@@ -288,9 +299,30 @@ public class ListOrderedOfSymbols extends ListOrderedOfElementCapsules {
 
 		super.assumedValid();
 		if ( this.size() > 0 ) {
-			RunTime.assumedNotNull( this.internalGet( Position.FIRST ) );
-			RunTime.assumedNotNull( this.internalGet( Position.LAST ) );
+			if ( !this.isNullAllowed() ) {
+				RunTime.assumedNotNull( this.internalGet( Position.FIRST ) );
+				RunTime.assumedNotNull( this.internalGet( Position.LAST ) );
+			}
 		}
-		// TODO check allowDUPS and allowNull compliance
+	}
+	
+	/**
+	 * @return
+	 */
+	public boolean isNullAllowed() {
+
+		return allowNull;
+	}
+	
+	@Override
+	protected void perItemCheck( ElementCapsule item ) {
+
+		super.perItemCheck( item );
+		Symbol elem = item.getElement();
+		if ( !this.isNullAllowed() ) {
+			RunTime.assumedNotNull( elem );
+		}
+		// TODO: can't really check for dups I guess, unless I make a new no
+		// dups list and add all items to it
 	}
 }

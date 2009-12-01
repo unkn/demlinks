@@ -116,7 +116,7 @@ public class DomainPointer extends Pointer {
 		DomainPointer existingOne = getDPInstance( level2DMLEnvironment, self );
 		if ( null != existingOne ) {
 			if ( existingOne.allowNull != allowNull ) {
-				RunTime.BadCallError();
+				RunTime.badCall();
 			}
 			return existingOne;
 		}

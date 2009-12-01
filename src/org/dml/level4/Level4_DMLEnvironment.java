@@ -85,8 +85,7 @@ public class Level4_DMLEnvironment extends Level3_DMLEnvironment {
 
 		RunTime.assumedNotNull( listName, allowNull, allowDUPs );
 		ListOrderedOfSymbols list = ListOrderedOfSymbols.getListOOSymbols(
-				this, listName, allowDUPs );
-		list.setAllowNull( allowNull );
+				this, listName, allowNull, allowDUPs );
 		return list;
 	}
 	

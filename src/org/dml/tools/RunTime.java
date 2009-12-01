@@ -47,7 +47,7 @@ public class RunTime {
 		throw new BugError( "Bug detected: " + msg );
 	}
 	
-	public static void BadCallError() {
+	public static void badCall() {
 
 		badCall( "" );
 	}

@@ -32,6 +32,7 @@ import static org.junit.Assert.assertTrue;
 import org.dml.error.BadCallError;
 import org.dml.level1.JavaID;
 import org.dml.level1.Symbol;
+import org.dml.tools.RunTime;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -139,5 +140,47 @@ public class Level4_DMLEnvironmentTest {
 		assertNotNull( tmpLast );
 		assertTrue( tmpLast == ec1 );
 		assertTrue( eclist.get_ElementCapsule( Position.FIRST ) == ec1 );
+	}
+	
+	@Test
+	public void testAllowNull() {
+
+		Symbol name = l4.newUniqueSymbol();
+		ListOrderedOfSymbols list = l4.getAsList( name, true, false );
+		list.assumedValid();
+		Symbol e1 = l4.newUniqueSymbol();
+		RunTime.assumedTrue( list.isNullAllowed() );
+		list.add( Position.LAST, null );
+		boolean threw = false;
+		try {
+			list.add( Position.LAST, null );
+		} catch ( BadCallError bce ) {
+			threw = true;
+		}
+		assertTrue( threw );
+		
+		RunTime.assumedTrue( 1 == list.size() );
+		list.add( Position.LAST, e1 );
+		RunTime.assumedTrue( 2 == list.size() );
+		
+		threw = false;
+		try {
+			list.add( Position.LAST, null );
+		} catch ( BadCallError bce ) {
+			threw = true;
+		}
+		assertTrue( threw );
+		RunTime.assumedTrue( list.isNullAllowed() );
+		RunTime.assumedTrue( 2 == list.size() );
+		list.checkIntegrity();
+		
+		threw = false;
+		try {
+			@SuppressWarnings( "unused" )
+			ListOrderedOfSymbols list2 = l4.getAsList( name, false, false );
+		} catch ( BadCallError bce ) {
+			threw = true;
+		}
+		assertTrue( threw );
 	}
 }

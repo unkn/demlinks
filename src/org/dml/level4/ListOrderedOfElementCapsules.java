@@ -120,29 +120,22 @@ public class ListOrderedOfElementCapsules {
 		RunTime.assumedTrue( this.internal_hasNameSetRight() );
 		ElementCapsule first = this.get_ElementCapsule( Position.FIRST );
 		ElementCapsule last = this.get_ElementCapsule( Position.LAST );
-		int netSize = 0;
+		
 		if ( null != first ) {
 			RunTime.assumedTrue( env.isVector( name, first.getAsSymbol() ) );
 			RunTime.assumedTrue( this.hasElementCapsule( first ) );
 			RunTime.assumedTrue( last != null );
-			// parse all
-			ElementCapsule current = first;
-			do {
-				netSize++;
-				RunTime.assumedTrue( env.isVector( name, current.getAsSymbol() ) );
-				// RunTime.assumedNotNull( current.getElement() );
-				current = this.get_ElementCapsule( Position.AFTER, current );
-			} while ( null != current );
 		} else {
 			RunTime.assumedTrue( this.isEmpty() );
 		}
+		
 		if ( null != last ) {
 			RunTime.assumedTrue( env.isVector( name, last.getAsSymbol() ) );
 			RunTime.assumedTrue( this.hasElementCapsule( last ) );
 			RunTime.assumedTrue( first != null );
 		}
 		
-		RunTime.assumedTrue( netSize == this.size() );
+
 		// TODO maybe check that all terminals of 'name' are ECs
 		// BDBVectorIterator<Symbol, Symbol> iter =
 		// env.getIterator_on_Terminals_of( name );
@@ -326,7 +319,9 @@ public class ListOrderedOfElementCapsules {
 	
 	public int size() {
 
-		return env.countTerminals( name );
+		int ret = env.countTerminals( name );
+		RunTime.assumedTrue( ret >= 0 );
+		return ret;
 	}
 	
 	public boolean isEmpty() {
@@ -385,5 +380,28 @@ public class ListOrderedOfElementCapsules {
 		this.assumedValid();
 		RunTime.assumedNotNull( name );
 		return name;
+	}
+	
+	/**
+	 * 
+	 */
+	public void checkIntegrity() {
+
+		// parse all
+		int netSize = 0;
+		ElementCapsule current = this.get_ElementCapsule( Position.FIRST );
+		while ( null != current ) {
+			netSize++;
+			this.perItemCheck( current );
+			// RunTime.assumedNotNull( current.getElement() );
+			current = this.get_ElementCapsule( Position.AFTER, current );
+		}
+		RunTime.assumedTrue( netSize == this.size() );
+	}
+	
+	protected void perItemCheck( ElementCapsule item ) {
+
+		item.assumedIsValidCapsule();
+		RunTime.assumedTrue( env.isVector( name, item.getAsSymbol() ) );
 	}
 }
