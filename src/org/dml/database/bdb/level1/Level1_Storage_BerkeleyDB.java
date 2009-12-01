@@ -91,7 +91,12 @@ public class Level1_Storage_BerkeleyDB extends StaticInstanceTracker {
 		if ( null == db_JavaID_To_Symbol ) {
 			db_JavaID_To_Symbol = new DBMap_JavaIDs_To_Symbols( this,
 					dbNAME_JavaID_To_NodeID );
+			db_JavaID_To_Symbol.init( null );
 			RunTime.assumedNotNull( db_JavaID_To_Symbol );
+		} else {
+			if ( !db_JavaID_To_Symbol.isInited() ) {
+				db_JavaID_To_Symbol.reInit();
+			}
 		}
 		return db_JavaID_To_Symbol;
 	}
@@ -143,7 +148,7 @@ public class Level1_Storage_BerkeleyDB extends StaticInstanceTracker {
 	protected void done( MethodParams<Object> params ) {
 
 		if ( null != db_JavaID_To_Symbol ) {
-			db_JavaID_To_Symbol = db_JavaID_To_Symbol.deInit();
+			db_JavaID_To_Symbol.deInit();
 		}
 		if ( null != symGen ) {
 			symGen = symGen.deInit();
@@ -289,6 +294,7 @@ public class Level1_Storage_BerkeleyDB extends StaticInstanceTracker {
 						+ secDbName );
 				// ignore
 			} finally {
+				RunTime.assumedFalse( allOpenSecondaryDatabases.isEmpty() );
 				if ( !allOpenSecondaryDatabases.removeObject( secDb ) ) {
 					RunTime.bug( "should've existed" );
 				}
@@ -456,6 +462,7 @@ public class Level1_Storage_BerkeleyDB extends StaticInstanceTracker {
 			}
 			// iter = allOpenPrimaryDatabases.getObjectAt( Position.FIRST );
 		}
+		RunTime.assumedTrue( allOpenSecondaryDatabases.isEmpty() );
 	}
 	
 	

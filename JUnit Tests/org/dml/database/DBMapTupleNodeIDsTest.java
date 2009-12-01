@@ -71,6 +71,7 @@ public class DBMapTupleNodeIDsTest {
 		bdb.init( params );
 		params.deInit();
 		tdb = new DBMapSymbolsTuple( bdb, "tupleIDs" );
+		tdb.init( null );
 		
 	}
 	

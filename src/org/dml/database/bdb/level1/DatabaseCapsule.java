@@ -27,7 +27,6 @@ package org.dml.database.bdb.level1;
 
 import org.dml.tools.RunTime;
 import org.dml.tools.StaticInstanceTracker;
-import org.javapart.logger.Log;
 import org.references.Reference;
 import org.references.method.MethodParams;
 import org.references.method.PossibleParams;
@@ -58,7 +57,9 @@ public class DatabaseCapsule extends StaticInstanceTracker {
 	@Override
 	protected void done( MethodParams<Object> params ) {
 
-		this.silentClose();
+		if ( null != db ) {
+			db = bdbL1.closePriDB_silent( db );
+		}
 	}
 	
 	/**
@@ -99,23 +100,13 @@ public class DatabaseCapsule extends StaticInstanceTracker {
 	 */
 	public Database getDB() throws DatabaseException {
 
+		RunTime.assumedTrue( this.isInited() );
 		if ( null == db ) {
 			// first time init:
 			db = bdbL1.openAnyDatabase( dbName, dbConf );
 			RunTime.assumedNotNull( db );
 		}
 		return db;
-	}
-	
-	/**
-	 * 
-	 */
-	public void silentClose() {
-
-		Log.entry();
-		if ( null != db ) {
-			db = bdbL1.closePriDB_silent( db );
-		}
 	}
 	
 

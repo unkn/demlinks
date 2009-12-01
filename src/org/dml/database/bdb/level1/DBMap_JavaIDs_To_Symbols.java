@@ -30,6 +30,7 @@ import org.dml.level1.JavaID;
 import org.dml.level1.Symbol;
 import org.dml.tools.RunTime;
 import org.javapart.logger.Log;
+import org.references.method.MethodParams;
 
 import com.sleepycat.je.DatabaseException;
 
@@ -55,14 +56,19 @@ public class DBMap_JavaIDs_To_Symbols extends OneToOneDBMap<JavaID, Symbol> {
 				AllTupleBindings.getBinding( Symbol.class ) );
 	}
 	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.dml.database.bdb.level1.OneToOneDBMap#done(org.references.method.
+	 * MethodParams)
+	 */
 	@Override
-	public OneToOneDBMap<JavaID, Symbol> silentClose() {
+	protected void done( MethodParams<Object> params ) {
 
-		Log.entry( "closing " + this.getClass().getSimpleName()
-				+ " with name: " + dbName );
-		
-		// close DBs
-		return super.silentClose();
+		Log.entry( "deinit " + this.getClass().getSimpleName() + " with name: "
+				+ dbName );
+		super.done( params );
 	}
 	
 	/**
@@ -190,14 +196,4 @@ public class DBMap_JavaIDs_To_Symbols extends OneToOneDBMap<JavaID, Symbol> {
 		return jid;
 	}
 	
-	/**
-	 * @return null
-	 */
-	public DBMap_JavaIDs_To_Symbols deInit() {
-
-		this.silentClose();
-		return null;
-	}
-	
-
 }

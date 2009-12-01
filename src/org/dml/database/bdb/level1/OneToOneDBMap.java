@@ -26,6 +26,7 @@ package org.dml.database.bdb.level1;
 
 
 import org.dml.tools.RunTime;
+import org.dml.tools.StaticInstanceTracker;
 import org.javapart.logger.Log;
 import org.references.method.MethodParams;
 import org.references.method.PossibleParams;
@@ -50,7 +51,7 @@ import com.sleepycat.je.SecondaryDatabase;
  * they're internally stored as primary and secondary databases:
  * key->data and data->key
  */
-public class OneToOneDBMap<KeyType, DataType> {
+public class OneToOneDBMap<KeyType, DataType> extends StaticInstanceTracker {
 	
 	private final Class<KeyType>				keyClass;
 	private final Class<DataType>				dataClass;
@@ -124,6 +125,10 @@ public class OneToOneDBMap<KeyType, DataType> {
 		if ( null == forwardDB ) {
 			this.internal_initBoth();
 			RunTime.assumedNotNull( forwardDB );
+		} else {
+			if ( !forwardDB.isInited() ) {
+				forwardDB.reInit();
+			}
 		}
 		return forwardDB.getDB();
 	}
@@ -137,43 +142,12 @@ public class OneToOneDBMap<KeyType, DataType> {
 		if ( null == backwardDB ) {
 			this.internal_initBoth();
 			RunTime.assumedNotNull( backwardDB );
-		}
-		return backwardDB.getSecDB();
-	}
-	
-	
-	/**
-	 * @return null
-	 */
-	public OneToOneDBMap<KeyType, DataType> silentClose() {
-
-		Log.entry( "closing OneToOneDBMap: " + dbName );
-		boolean one = false;
-		boolean two = false;
-		
-		// we don't have to set these to null, because they can be getDB() again
-		if ( null != backwardDB ) {
-			backwardDB.silentClose();// first close this
 		} else {
-			one = true;
-		}
-		if ( null != forwardDB ) {
-			forwardDB.silentClose();// then this
-		} else {
-			two = true;
-		}
-		
-		if ( one ^ two ) {
-			RunTime.bug( "they should both be the same value, otherwise one of "
-					+ "backwardDB and forwardDB was open and the other closed "
-					+ "and we should've had both open always" );
-		} else {
-			if ( one ) {
-				Log.warn( "close called on a not yet inited/open database" );
+			if ( !backwardDB.isInited() ) {
+				backwardDB.reInit();
 			}
 		}
-		
-		return null;
+		return backwardDB.getSecDB();
 	}
 	
 	/**
@@ -281,6 +255,41 @@ public class OneToOneDBMap<KeyType, DataType> {
 		RunTime.assumedNotNull( data );
 		this.checkData( data );
 		return data;// Level1_Storage_BerkeleyDB.entryToString( deData );
+	}
+	
+	@Override
+	protected void done( MethodParams<Object> params ) {
+
+		Log.entry( "deinit OneToOneDBMap: " + dbName );
+		boolean one = false;
+		boolean two = false;
+		
+		// we don't have to set these to null, because they can be getDB() again
+		if ( null != backwardDB ) {
+			backwardDB.deInit();// first close this
+			one = true;
+		}
+		if ( null != forwardDB ) {
+			forwardDB.deInit();// then this
+			two = true;
+		}
+		
+		if ( one != two ) {
+			RunTime.bug( "they should both be the same value, otherwise one of "
+					+ "backwardDB and forwardDB was open and the other closed "
+					+ "and we should've had both open always" );
+		} else {
+			if ( one ) {
+				Log.warn( "close called on a not yet inited/open database" );
+			}
+		}
+	}
+	
+	@Override
+	protected void start( MethodParams<Object> params ) {
+
+		RunTime.assumedNull( params );
+		
 	}
 	
 

@@ -120,11 +120,23 @@ public abstract class StaticInstanceTracker {
 	 * this will call deInit() and then init(params) where params are the last
 	 * used params which were saved/cloned internally
 	 */
-	public final void reInit() {
+	public final void restart() {
 
 		this.deInit();
 		this.init( formerParams );
 	}
+	
+	/**
+	 * reInit with original params, can only be used if not already inited
+	 */
+	public final void reInit() {
+
+		if ( this.isInited() ) {
+			RunTime.badCall( "already inited. Maybe you wanted to use restart()" );
+		}
+		this.init( formerParams );
+	}
+	
 	
 	/**
 	 * implement this done(), but use deInit() instead<br>
@@ -181,7 +193,8 @@ public abstract class StaticInstanceTracker {
 			if ( this.getClass() == iter.getClass() ) {
 				iter.deInit();
 				// need to reparse list because maybe next item disappeared due
-				// to prev deInit() call
+				// to prev deInit() call; ie. current deInit called a
+				// child.deInit and thus 2 disappeared from ALL_INSTANCES list
 				next = ALL_INSTANCES.getObjectAt( Position.FIRST );
 			}
 			
@@ -208,11 +221,13 @@ public abstract class StaticInstanceTracker {
 
 		Log.entry();
 		StaticInstanceTracker iter;
-		while ( null != ( iter = ALL_INSTANCES.getObjectAt( Position.LAST ) ) ) {
+		while ( null != ( iter = ALL_INSTANCES.getObjectAt( Position.FIRST ) ) ) {
 			// System.out.println( iter.getClass().getSimpleName() + " / " +
 			// iter
 			// + "!!!!!!" + ALL_INSTANCES.size() );
 			iter.deInit();
+			// the list may decrease by more than 1 element, more might be
+			// removed after the above call
 		}
 		RunTime.assumedTrue( ALL_INSTANCES.isEmpty() );
 	}

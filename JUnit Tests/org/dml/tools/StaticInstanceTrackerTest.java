@@ -84,7 +84,7 @@ public class StaticInstanceTrackerTest {
 			t.show();
 			t.deInit();
 			
-			params.reInit();// this will empty params
+			params.restart();// this will empty params
 			assertTrue( params.size() == 0 );
 			
 			params.set( PossibleParams.homeDir, "2/2" );
@@ -95,7 +95,7 @@ public class StaticInstanceTrackerTest {
 			t.deInit();
 			
 			assertTrue( params.size() == 1 );
-			params.reInit();
+			params.restart();
 			assertTrue( params.size() == 0 );
 			
 			tt.show();
@@ -160,10 +160,10 @@ public class StaticInstanceTrackerTest {
 		// params.deInit();
 		errored = false;
 		try {
-			t.reInit();
-			t.reInit();
-			t.reInit();
-			t.reInit();
+			t.restart();
+			t.restart();
+			t.restart();
+			t.restart();
 		} catch ( BadCallError bce ) {
 			errored = true;
 		} finally {
@@ -263,7 +263,7 @@ public class StaticInstanceTrackerTest {
 		params.deInit();
 		assertTrue( params.size() == 0 );
 		assertTrue( t.getHome() == home );
-		t.reInit();
+		t.restart();
 		t.show();
 		assertTrue( t.getHome() == home );
 		t.deInit();
@@ -272,7 +272,7 @@ public class StaticInstanceTrackerTest {
 		t.init( params );
 		assertTrue( t.getHome() == home2 );
 		assertTrue( home != home2 );
-		t.reInit();
+		t.restart();
 		assertTrue( t.getHome() == home2 );
 		t.deInit();
 		assertTrue( t.getHome() == null );

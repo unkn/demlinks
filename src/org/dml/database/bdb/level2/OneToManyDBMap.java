@@ -29,6 +29,7 @@ import org.dml.database.bdb.level1.DatabaseCapsule;
 import org.dml.database.bdb.level1.Level1_Storage_BerkeleyDB;
 import org.dml.error.BugError;
 import org.dml.tools.RunTime;
+import org.dml.tools.StaticInstanceTracker;
 import org.javapart.logger.Log;
 import org.references.method.MethodParams;
 import org.references.method.PossibleParams;
@@ -54,7 +55,8 @@ import com.sleepycat.je.OperationStatus;
  * - and we can't store these as secondary because we can only delete from
  * secondaries
  */
-public class OneToManyDBMap<InitialType, TerminalType> {
+public class OneToManyDBMap<InitialType, TerminalType> extends
+		StaticInstanceTracker {
 	
 	private final Class<InitialType>			initialClass;
 	private final Class<TerminalType>			terminalClass;
@@ -122,6 +124,10 @@ public class OneToManyDBMap<InitialType, TerminalType> {
 			params.deInit();
 			
 			RunTime.assumedNotNull( forwardDB );
+		} else {
+			if ( !forwardDB.isInited() ) {
+				forwardDB.reInit();
+			}
 		}
 		return forwardDB.getDB();
 	}
@@ -142,27 +148,12 @@ public class OneToManyDBMap<InitialType, TerminalType> {
 			backwardDB.init( params );
 			params.deInit();
 			// RunTime.assertNotNull( backwardDB );
+		} else {
+			if ( !backwardDB.isInited() ) {
+				backwardDB.reInit();
+			}
 		}
 		return backwardDB.getDB();
-	}
-	
-	/**
-	 * @return null
-	 */
-	public OneToManyDBMap<InitialType, TerminalType> silentClose() {
-
-		Log.entry( "closing OneToManyDBMap: " + dbName );
-		
-		if ( null != forwardDB ) {
-			forwardDB.silentClose();
-		}
-		
-		if ( null != backwardDB ) {
-			backwardDB.silentClose();
-		}
-		
-
-		return null;
 	}
 	
 	private void checkData( TerminalType data ) {
@@ -461,5 +452,36 @@ public class OneToManyDBMap<InitialType, TerminalType> {
 		}
 		RunTime.assumedFalse( this.isVector( initialObject, terminalObject ) );
 		return found1;
+	}
+	
+	@Override
+	protected void done( MethodParams<Object> params ) {
+
+		
+		Log.entry( "done OneToManyDBMap: " + dbName );
+		
+		boolean one = false;
+		boolean two = false;
+		
+		if ( null != forwardDB ) {
+			forwardDB.deInit();
+			one = true;
+		}
+		
+		if ( null != backwardDB ) {
+			backwardDB.deInit();
+			two = true;
+		}
+		if ( one != two ) {
+			RunTime.bug( "only one of the databases was open, which is bad" );
+		}
+		
+	}
+	
+	@Override
+	protected void start( MethodParams<Object> params ) {
+
+		RunTime.assumedNull( params );
+		
 	}
 }

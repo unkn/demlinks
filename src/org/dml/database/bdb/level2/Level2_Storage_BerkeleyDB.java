@@ -48,7 +48,12 @@ public class Level2_Storage_BerkeleyDB extends Level1_Storage_BerkeleyDB {
 
 		if ( null == dbSymbolsTuple ) {
 			dbSymbolsTuple = new DBMapSymbolsTuple( this, dbSymbolsTuple_NAME );
+			dbSymbolsTuple.init( null );
 			RunTime.assumedNotNull( dbSymbolsTuple );
+		} else {
+			if ( !dbSymbolsTuple.isInited() ) {
+				dbSymbolsTuple.reInit();
+			}
 		}
 		return dbSymbolsTuple;
 	}
@@ -62,7 +67,7 @@ public class Level2_Storage_BerkeleyDB extends Level1_Storage_BerkeleyDB {
 	protected void done( MethodParams<Object> params ) {
 
 		if ( null != dbSymbolsTuple ) {
-			dbSymbolsTuple = (DBMapSymbolsTuple)dbSymbolsTuple.silentClose();
+			dbSymbolsTuple.deInit();
 		}
 		super.done( params );
 	}

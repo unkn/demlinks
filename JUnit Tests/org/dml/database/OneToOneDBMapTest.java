@@ -71,13 +71,13 @@ public class OneToOneDBMapTest {
 		x = new OneToOneDBMap<String, String>( bdb, "someMap", String.class,
 				AllTupleBindings.getBinding( String.class ), String.class,
 				AllTupleBindings.getBinding( String.class ) );
+		x.init( null );
 	}
 	
 	@After
 	public void tearDown() {
 
-		x = x.silentClose();
-		assertTrue( null == x );
+		x.deInit();
 		bdb.deInit();
 	}
 	

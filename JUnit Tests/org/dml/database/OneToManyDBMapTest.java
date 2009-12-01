@@ -31,8 +31,8 @@ import static org.junit.Assert.assertTrue;
 import org.dml.JUnits.Consts;
 import org.dml.database.bdb.level1.AllTupleBindings;
 import org.dml.database.bdb.level1.Level1_Storage_BerkeleyDB;
-import org.dml.database.bdb.level2.OneToManyDBMap;
 import org.dml.database.bdb.level2.BDBVectorIterator;
+import org.dml.database.bdb.level2.OneToManyDBMap;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -72,12 +72,13 @@ public class OneToManyDBMapTest {
 		o2m = new OneToManyDBMap<String, String>( bdb, "one to many",
 				String.class, AllTupleBindings.getBinding( String.class ),
 				String.class, AllTupleBindings.getBinding( String.class ) );
+		o2m.init( null );
 	}
 	
 	@After
 	public void tearDown() {
 
-		o2m.silentClose();
+		o2m.deInit();
 		bdb.deInit();
 	}
 	
