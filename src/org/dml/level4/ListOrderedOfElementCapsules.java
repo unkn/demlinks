@@ -193,7 +193,6 @@ public class ListOrderedOfElementCapsules {
 		}
 		// new one
 		RunTime.assumedFalse( env.ensureVector( parent, candidate.getAsSymbol() ) );
-		this.assumedValid();
 	}
 	
 	/**
@@ -209,6 +208,7 @@ public class ListOrderedOfElementCapsules {
 		theNew.assumedIsValidCapsule();
 		RunTime.assumedTrue( theNew.isAlone() );
 		RunTime.assumedFalse( this.hasElementCapsule( theNew ) );
+		this.assumedValid();
 		switch ( pos ) {
 		case BEFORE:
 		case AFTER:
@@ -249,7 +249,7 @@ public class ListOrderedOfElementCapsules {
 			RunTime.badCall( "bad position for this method" );
 			break;
 		}
-		
+		this.assumedValid();
 	}
 	
 	/**

@@ -87,7 +87,13 @@ public class Level4_DMLEnvironmentTest {
 		Symbol e2 = l4.newUniqueSymbol();
 		list.add( e2, Position.BEFORE, e1 );
 		assertTrue( list.get( Position.FIRST ) == e2 );
+		assertTrue( list.get( Position.LAST ) == e1 );
 		assertTrue( list.get( Position.AFTER, e2 ) == e1 );
+		assertNull( list.get( Position.AFTER, e1 ) );
+		assertTrue( list.get( Position.BEFORE, e1 ) == e2 );
+		assertNull( list.get( Position.BEFORE, e2 ) );
+		assertTrue( list.size() == 2 );
+		list.assumedValid();
 	}
 	
 	@Test
