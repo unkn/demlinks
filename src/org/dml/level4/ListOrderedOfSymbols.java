@@ -38,7 +38,9 @@ import org.references.Position;
  * list<br>
  * the order of insertion is kept<br>
  * this will be a double linked list represented in DMLEnvironment<br>
- * this is level 4
+ * this is level 4<br>
+ * NULL elements are not allowed, DUPS are allowed<br>
+ * //FIXME: maybe allow NULLs
  */
 public class ListOrderedOfSymbols extends ListOrderedOfElementCapsules {
 	
@@ -113,18 +115,42 @@ public class ListOrderedOfSymbols extends ListOrderedOfElementCapsules {
 		default:
 			RunTime.badCall( "unsupported position" );
 		}
-		ElementCapsule ec = this.getAsEC( whichSymbol );
+		ElementCapsule ec = ElementCapsule.getElementCapsule( env,
+				env.newUniqueSymbol() );
+		RunTime.assumedNull( ec.setElement( whichSymbol ) );
 		this.add_ElementCapsule( where, ec );
 		this.assumedValid();
 	}
 	
+	// FIXME: add this in next subclass
+	@Deprecated
 	public void add( Symbol whichSymbol, Position pos, Symbol posSymbol ) {
 
 		RunTime.assumedNotNull( whichSymbol, pos, posSymbol );
-		ElementCapsule posEC = this.getAsEC( posSymbol );
-		ElementCapsule newEC = this.getAsEC( whichSymbol );
+		ElementCapsule posEC = this.get_ElementCapsule( posSymbol );
+		ElementCapsule newEC = ElementCapsule.getElementCapsule( env,
+				env.newUniqueSymbol() );
+		RunTime.assumedNull( newEC.setElement( whichSymbol ) );
 		this.add_ElementCapsule( newEC, pos, posEC );
 		this.assumedValid();
+	}
+	
+	// FIXME: I dno yet
+	@Deprecated
+	/**
+	 * @param posSymbol
+	 * @return
+	 */
+	protected ElementCapsule get_ElementCapsule( Symbol posSymbol ) {
+
+		RunTime.assumedNotNull( posSymbol );
+		ElementCapsule iter = this.get_ElementCapsule( Position.FIRST );
+		while ( null != iter ) {
+			if ( iter.getElement() == posSymbol ) {
+				return iter;
+			}
+		}
+		return null;
 	}
 	
 	synchronized public Symbol get( Position pos ) {
@@ -140,7 +166,7 @@ public class ListOrderedOfSymbols extends ListOrderedOfElementCapsules {
 		ElementCapsule posEC = this.getAsEC( posSymbol );
 		ElementCapsule foundEC = this.get_ElementCapsule( pos, posEC );
 		if ( null != foundEC ) {
-			return foundEC.getAsSymbol();
+			return foundEC.getElement();
 		} else {
 			return null;
 		}
@@ -158,7 +184,7 @@ public class ListOrderedOfSymbols extends ListOrderedOfElementCapsules {
 		}
 		ElementCapsule ec = this.get_ElementCapsule( pos );
 		if ( null != ec ) {
-			return ec.getAsSymbol();
+			return ec.getElement();
 		} else {
 			return null;
 		}

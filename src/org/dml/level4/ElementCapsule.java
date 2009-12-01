@@ -246,4 +246,22 @@ public class ElementCapsule {
 		return name;
 	}
 	
+	/**
+	 * @return
+	 */
+	public Symbol getElement() {
+
+		RunTime.assumedNotNull( element );
+		Symbol ret = element.getPointee();
+		return ret;
+	}
+	
+	public Symbol setElement( Symbol newElement ) {
+
+		RunTime.assumedNotNull( newElement, element );
+		Symbol old = this.getElement();
+		element.pointTo( newElement );
+		RunTime.assumedTrue( this.getElement() == newElement );
+		return old;// can be null
+	}
 }

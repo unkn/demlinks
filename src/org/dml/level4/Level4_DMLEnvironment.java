@@ -38,9 +38,9 @@ import org.references.method.MethodParams;
  */
 public class Level4_DMLEnvironment extends Level3_DMLEnvironment {
 	
-	private static final JavaID	listJavaID							= JavaID.ensureJavaIDFor( "AllLists" );
+	private static final JavaID	listJavaID							= JavaID.ensureJavaIDFor( "AllListOrderedOfSymbols" );
 	public Symbol				allListsSymbol						= null;
-	private static final JavaID	listOrderedOfElementCapsules_JavaID	= JavaID.ensureJavaIDFor( "ListOrderedOfElementCapsules" );
+	private static final JavaID	listOrderedOfElementCapsules_JavaID	= JavaID.ensureJavaIDFor( "AllListOrderedOfElementCapsules" );
 	public Symbol				listOrderedOfElementCapsules_Symbol	= null;
 	private static final JavaID	allHeads_JavaID						= JavaID.ensureJavaIDFor( "allHEADs" );
 	public Symbol				allHeads_Symbol						= null;

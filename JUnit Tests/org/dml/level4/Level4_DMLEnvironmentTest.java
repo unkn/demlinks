@@ -94,6 +94,22 @@ public class Level4_DMLEnvironmentTest {
 		assertNull( list.get( Position.BEFORE, e2 ) );
 		assertTrue( list.size() == 2 );
 		list.assumedValid();
+		
+		Symbol e3 = l4.newUniqueSymbol();
+		list.add( e3, Position.AFTER, e1 );
+		assertTrue( list.get( Position.LAST ) == e3 );
+		assertTrue( list.size() == 3 );
+		
+		Symbol e4 = l4.newUniqueSymbol();
+		list.add( Position.LAST, e4 );
+		assertTrue( list.get( Position.LAST ) == e4 );
+		assertTrue( list.size() == 4 );
+		assertTrue( list.get( Position.BEFORE, e4 ) == e3 );
+		
+		list.add( list.getAsSymbol(), Position.AFTER, e1 );
+		assertTrue( list.getAsSymbol() == list.get( Position.BEFORE, e3 ) );
+		assertTrue( list.size() == 5 );
+		list.assumedValid();
 	}
 	
 	@Test
@@ -106,6 +122,7 @@ public class Level4_DMLEnvironmentTest {
 		
 		Symbol ec1name = l4.newUniqueSymbol();
 		ElementCapsule ec1 = ElementCapsule.getElementCapsule( l4, ec1name );
+		ec1.setElement( l4.newUniqueSymbol() );
 		eclist.add_ElementCapsule( Position.FIRST, ec1 );
 		assertTrue( l4.isVector( l4.allHeads_Symbol, ec1.getAsSymbol() ) );
 		assertTrue( l4.isVector( eclist.getAsSymbol(), ec1.getAsSymbol() ) );
