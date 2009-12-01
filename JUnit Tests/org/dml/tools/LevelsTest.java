@@ -66,7 +66,7 @@ public class LevelsTest {
 		ml2.deInitSilently();
 		ml3.deInitSilently();
 		
-		StaticInstanceTracker.deInitAllThatExtendMe();
+		// FIXME: StaticInstanceTracker.deInitAllThatExtendMe();
 	}
 	
 	@Test

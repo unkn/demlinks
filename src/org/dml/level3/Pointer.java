@@ -90,6 +90,9 @@ public class Pointer {
 		RunTime.assumedNotNull( l2DML, name, allowNull );
 		Pointer existingOne = allPointerInstances.get( l2DML, name );
 		if ( null != existingOne ) {
+			if ( existingOne.allowNull != allowNull ) {
+				RunTime.badCall( "caller is not smart :)" );
+			}
 			return existingOne;
 		}
 		// else make it

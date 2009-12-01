@@ -100,6 +100,9 @@ public class ListOrderedOfSymbols extends ListOrderedOfElementCapsules {
 					allowDUPs );
 			registerInstance( envL4, existingSymbol, existingOne );
 		}
+		if ( existingOne.allowDUPs != allowDUPs ) {
+			RunTime.BadCallError();
+		}
 		existingOne.assumedValid();
 		return existingOne;
 	}

@@ -70,7 +70,6 @@ public class Level3_DMLEnvironmentTest {
 
 		JavaID name = JavaID.ensureJavaIDFor( "Ptr1" );
 		Symbol name2 = l3.createSymbol( name );
-		// TODO
 		
 		Pointer p1 = l3.getExistingPointer( name2, true );
 		// l3.associateJavaIDWithSymbol( name, p1.getAsSymbol() );
@@ -93,7 +92,7 @@ public class Level3_DMLEnvironmentTest {
 		Pointer p3 = l3.getNewNonNullPointer( pointsTo );
 		// must already point to something, which it does
 		Pointer p3_3 = l3.getExistingPointer( p3.getAsSymbol(), false );
-		assertTrue( p3 != p3_3 );
+		assertTrue( p3 == p3_3 );
 		assertTrue( p3_3.getPointee() == pointsTo );
 		assertTrue( p3.getPointee() == pointsTo );
 		boolean threw = false;
@@ -105,17 +104,17 @@ public class Level3_DMLEnvironmentTest {
 		assertTrue( threw );
 		
 		// allow null
-		Pointer p4 = l3.getExistingPointer( p3.getAsSymbol(), true );
+		Pointer p4 = l3.getNewNullPointer();
 		assertTrue( p4 != p3 );
-		assertTrue( p4.getPointee() == pointsTo );
-		assertTrue( p4.pointTo( null ) == pointsTo );
+		assertTrue( p4.getPointee() == null );
+		assertTrue( p4.pointTo( null ) == null );
 		threw = false;
 		try {
 			p3.assumedValid();
 		} catch ( AssertionError ae ) {
 			threw = true;
 		}
-		assertTrue( threw );
+		assertFalse( threw );
 		
 		threw = false;
 		try {
@@ -123,7 +122,7 @@ public class Level3_DMLEnvironmentTest {
 		} catch ( AssertionError ae ) {
 			threw = true;
 		}
-		assertTrue( threw );
+		assertFalse( threw );
 		
 		threw = false;
 		try {
@@ -131,7 +130,7 @@ public class Level3_DMLEnvironmentTest {
 		} catch ( AssertionError ae ) {
 			threw = true;
 		}
-		assertTrue( threw );
+		assertFalse( threw );
 		
 		threw = false;
 		try {
@@ -139,7 +138,7 @@ public class Level3_DMLEnvironmentTest {
 		} catch ( AssertionError ae ) {
 			threw = true;
 		}
-		assertTrue( threw );
+		assertFalse( threw );
 	}
 	
 	@Test
@@ -153,13 +152,21 @@ public class Level3_DMLEnvironmentTest {
 				domain, false );
 		assertTrue( dp1_1.getPointee() == pointTo );
 		assertTrue( dp1_1.getDomain() == domain );
-		assertTrue( dp1 != dp1_1 );
+		assertTrue( dp1 == dp1_1 );
 		
 		DomainPointer dp2 = l3.getNewNullDomainPointer( domain );
 		DomainPointer dp2_2 = l3.getExistingDomainPointer( dp2.getAsSymbol(),
 				domain, true );
 		assertTrue( dp2.getDomain() == domain );
 		assertTrue( dp2_2.getDomain() == dp2.getDomain() );
+		assertTrue( dp2 == dp2_2 );
+		boolean threw = false;
+		try {
+			dp2.setDomain( dp2.getAsSymbol() );
+		} catch ( AssertionError ae ) {
+			threw = true;
+		}
+		assertTrue( threw );
 		// TODO more tests
 	}
 }
