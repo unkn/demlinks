@@ -196,9 +196,11 @@ public class ElementCapsule {
 		Symbol the = null;
 		switch ( pos ) {
 		case BEFORE:
+			RunTime.assumedTrue( envL4.isVector( name, cachedPrev.getAsSymbol() ) );
 			the = cachedPrev.getPointee();
 			break;
 		case AFTER:
+			RunTime.assumedTrue( envL4.isVector( name, cachedNext.getAsSymbol() ) );
 			the = cachedNext.getPointee();
 			break;
 		default:
