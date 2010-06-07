@@ -53,8 +53,8 @@ public class Level010_DMLEnvironmentTest {
 	@Before
 	public void setUp() throws StorageException {
 
-		params = new MethodParams();
-		params.init( null );
+		params = MethodParams.getNew();
+		// params.init( null );
 		
 		dml1 = new Level010_DMLEnvironment();
 		params.set( PossibleParams.homeDir, Consts.BDB_ENV_PATH );

@@ -63,6 +63,7 @@ public abstract class MainLevel0 extends StaticInstanceTracker {
 	// we won't deInit passed 'var' param
 	private boolean									usingOwnVarLevel		= false;
 	
+	// FIXME: likely a bad idea to be static here:
 	private static MethodParams						defaults				= null;
 	
 	private final ListOfUniqueNonNullObjects<Field>	listOfAnnotatedFields	= new ListOfUniqueNonNullObjects<Field>();
@@ -243,8 +244,8 @@ public abstract class MainLevel0 extends StaticInstanceTracker {
 	protected MethodParams getDefaults() {
 
 		if ( null == defaults ) {
-			defaults = new MethodParams();
-			defaults.init( null );// FIXME: when's this deInit-ed?
+			defaults = MethodParams.getNew();// FIXME: when's this deInit-ed?
+			// defaults.init( null );
 		}
 		
 		return defaults;

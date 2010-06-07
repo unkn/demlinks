@@ -43,16 +43,16 @@ import org.references.Reference;
 public class MethodParamsTest {
 	
 	MethodParams	mp1, mp2, mp3;
-	ParamName		paramString1;
-	ParamName		paramNull2, paramInteger3, paramBoolean4;
-	ParamName		compulsoryParam1	= ParamName.getNew( "compulsoryParam1" );
-	ParamName		compulsoryParam2	= ParamName.getNew( "compulsoryParam2" );
-	ParamName		optionalParam1		= ParamName.getNew( "optionalParam1" );
+	ParamID			paramString1;
+	ParamID			paramNull2, paramInteger3, paramBoolean4;
+	ParamID			compulsoryParam1	= ParamID.getNew( "compulsoryParam1" );
+	ParamID			compulsoryParam2	= ParamID.getNew( "compulsoryParam2" );
+	ParamID			optionalParam1		= ParamID.getNew( "optionalParam1" );
 	
 	@Test
 	public void caller() {
 
-		MethodParams params = new MethodParams();
+		MethodParams params = MethodParams.getNew();
 		
 		assertTrue( 0 == params.size() );
 		params.set( compulsoryParam1, null );
@@ -60,6 +60,9 @@ public class MethodParamsTest {
 		params.set( compulsoryParam2, null );
 		assertTrue( 2 == params.size() );
 		this.someMethod1( params );
+		
+		// params.deInit();
+		MethodParams.doneWith( params );
 	}
 	
 	public void someMethod1( MethodParams allParams ) {
@@ -76,13 +79,13 @@ public class MethodParamsTest {
 	@Before
 	public void setUp() {
 
-		paramString1 = ParamName.getNew( "paramString1" );
-		paramNull2 = ParamName.getNew( "paramNull2" );
-		paramInteger3 = ParamName.getNew( "paramInteger3" );
-		paramBoolean4 = ParamName.getNew( "paramBoolean4" );
-		mp1 = new MethodParams();
-		mp2 = new MethodParams();
-		mp3 = new MethodParams();
+		paramString1 = ParamID.getNew( "paramString1" );
+		paramNull2 = ParamID.getNew( "paramNull2" );
+		paramInteger3 = ParamID.getNew( "paramInteger3" );
+		paramBoolean4 = ParamID.getNew( "paramBoolean4" );
+		mp1 = MethodParams.getNew();
+		mp2 = MethodParams.getNew();
+		mp3 = MethodParams.getNew();
 	}
 	
 	@Test

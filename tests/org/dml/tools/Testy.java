@@ -52,8 +52,8 @@ public class Testy extends StaticInstanceTracker {
 
 		Testy t = new Testy();
 		
-		MethodParams params = new MethodParams();
-		params.init( null );
+		MethodParams params = MethodParams.getNew();
+		// params.init( null );
 		params.set( PossibleParams.homeDir, "one/" + new Object() );
 		t.init( params );
 		params.deInit();

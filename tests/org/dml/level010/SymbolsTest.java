@@ -47,12 +47,13 @@ public class SymbolsTest {
 	@Before
 	public void setUp() throws StorageException {
 
-		MethodParams params = new MethodParams();
+		MethodParams params = MethodParams.getNew();
 		params.set( PossibleParams.homeDir, Consts.BDB_ENV_PATH );
 		params.set( PossibleParams.jUnit_wipeDB, true );
 		params.set( PossibleParams.jUnit_wipeDBWhenDone, true );
 		dml = new Level010_DMLEnvironment();
 		dml.init( params );
+		params.deInit();
 	}
 	
 	@After

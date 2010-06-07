@@ -48,58 +48,48 @@ import org.references.Reference;
  * so there's a one to one mapping between a ParamName and it's value<br>
  * although the same ParamName can be used with another value in a different MethodParams<br>
  */
-/**
- * 
- *
- */
-/**
- * 
- *
- */
-/**
- * 
- *
- */
-/**
- * 
- *
- */
-/**
- * 
- *
- */
 public class MethodParams extends StaticInstanceTracker {
 	
-	// T= base class, usually just Object
-	// TODO make this allow any subclass of T
-	
-	// a list of instances ie. String, Integer, or even null(s) which can repeat
-	// ie. A==B
-	// objects of this list are the values
-	
-	// this actually contains references to those objects(but the objects are not touched):
-	// private final ListOfObjects<T> listOfParams = new ListOfObjects<T>();
-	//
-	// private final ListOfUniqueNonNullObjects<ParamName<T>> redundantListOfNames = new
-	// ListOfUniqueNonNullObjects<ParamName<T>>();
 	
 	// ParamName, and it's Value(any subclass of Object or even just Object)
-	private final HashMap<ParamName, Reference<Object>>	listOfParamsWithValues	= new HashMap<ParamName, Reference<Object>>();
+	private final HashMap<ParamID, Reference<Object>>	listOfParamsWithValues	= new HashMap<ParamID, Reference<Object>>();
 	
 	// can't use a Set or HashSet or TwoWayHashSet because we need to parse the
 	// list, which could be done with an Iterator but I forgot why can't
 	
+	/**
+	 * don't forget to use either .deInit()<br>
+	 * or the static method MethodParams.doneWith(this)<br>
+	 * 
+	 * @return new instance of MethodParams
+	 */
+	public static MethodParams getNew() {
 
+		MethodParams one = new MethodParams();
+		one.init( null );
+		RunTime.assumedTrue( one.isInited() );
+		return one;
+	}
+	
+	public static void doneWith( MethodParams thisOne ) {
+
+		RunTime.assumedNotNull( thisOne );
+		RunTime.assumedTrue( thisOne.isInited() );
+		thisOne.deInit();
+	}
+	
+	
 	/**
 	 * don't forget to call init() and deInit() when done
 	 */
-	public MethodParams() {
+	private MethodParams() {
 
 		super();
 	}
 	
 	public int size() {
 
+		RunTime.assumedTrue( this.isInited() );
 		return listOfParamsWithValues.size();
 	}
 	
@@ -112,8 +102,9 @@ public class MethodParams extends StaticInstanceTracker {
 	 * @throws NoSuchElementException
 	 *             if there is no mapping between paramName and a value
 	 */
-	public Object getEx( ParamName paramName ) {
+	public Object getEx( ParamID paramName ) {
 
+		RunTime.assumedTrue( this.isInited() );
 		Reference<Object> ref = this.get( paramName );
 		if ( null == ref ) {
 			throw new NoSuchElementException( "a certain parameter was expected but was not specified by caller" );
@@ -143,8 +134,9 @@ public class MethodParams extends StaticInstanceTracker {
 	 *         such ref indicated by returning null<br>
 	 *         return null if not found; use .getObject() to get the value
 	 */
-	public Reference<Object> get( ParamName paramName ) {
+	public Reference<Object> get( ParamID paramName ) {
 
+		RunTime.assumedTrue( this.isInited() );
 		RunTime.assumedNotNull( paramName );
 		return listOfParamsWithValues.get( paramName );
 		
@@ -179,8 +171,9 @@ public class MethodParams extends StaticInstanceTracker {
 	 *            can be null or an object that was already used as a parameter
 	 *            one or more times
 	 */
-	public void set( ParamName paramName, Object value ) {
+	public void set( ParamID paramName, Object value ) {
 
+		RunTime.assumedTrue( this.isInited() );
 		RunTime.assumedNotNull( paramName );
 		
 		Reference<Object> ref = this.get( paramName );
@@ -201,8 +194,9 @@ public class MethodParams extends StaticInstanceTracker {
 	 * @param paramName
 	 * @return
 	 */
-	public String getExString( ParamName paramName ) {
+	public String getExString( ParamID paramName ) {
 
+		RunTime.assumedTrue( this.isInited() );
 		RunTime.assumedNotNull( paramName );
 		return (String)this.getEx( paramName );
 	}
@@ -213,8 +207,9 @@ public class MethodParams extends StaticInstanceTracker {
 	 * @return false if didn't exist; true if it did exist, but it doesn't now
 	 *         after call
 	 */
-	public boolean remove( ParamName paramName ) {
+	public boolean remove( ParamID paramName ) {
 
+		RunTime.assumedTrue( this.isInited() );
 		RunTime.assumedNotNull( paramName );
 		return null != listOfParamsWithValues.remove( paramName );
 		// ChainedReference<T> cref = this.internalGet( paramName );
@@ -244,17 +239,18 @@ public class MethodParams extends StaticInstanceTracker {
 	 */
 	public void mergeWith( MethodParams withThisNewOnes, boolean overwrite ) {
 
+		RunTime.assumedTrue( this.isInited() );
 		RunTime.assumedNotNull( withThisNewOnes, overwrite );
 		if ( this == withThisNewOnes ) {
 			RunTime.badCall( "attempted to merge with self" );
 		}
 		
-		Iterator<Entry<ParamName, Reference<Object>>> iter = withThisNewOnes.getIter();
+		Iterator<Entry<ParamID, Reference<Object>>> iter = withThisNewOnes.getIter();
 		
 
 		while ( iter.hasNext() ) {
-			Entry<ParamName, Reference<Object>> current = iter.next();
-			ParamName paramName = current.getKey();
+			Entry<ParamID, Reference<Object>> current = iter.next();
+			ParamID paramName = current.getKey();
 			Reference<Object> refToValue = current.getValue();
 			boolean alreadyExists = this.get( paramName ) != null;
 			if ( ( alreadyExists && overwrite ) || ( !alreadyExists ) ) {
@@ -273,14 +269,16 @@ public class MethodParams extends StaticInstanceTracker {
 	 * @return
 	 * 
 	 */
-	private Iterator<Entry<ParamName, Reference<Object>>> getIter() {
+	private Iterator<Entry<ParamID, Reference<Object>>> getIter() {
 
+		RunTime.assumedTrue( this.isInited() );
 		return listOfParamsWithValues.entrySet().iterator();
 		
 	}
 	
 	public void clear() {
 
+		RunTime.assumedTrue( this.isInited() );
 		listOfParamsWithValues.clear();
 		RunTime.assumedTrue( this.size() == 0 );
 		
@@ -320,6 +318,7 @@ public class MethodParams extends StaticInstanceTracker {
 	 */
 	public MethodParams getClone() {
 
+		RunTime.assumedTrue( this.isInited() );
 		MethodParams clone = new MethodParams();
 		clone.init( null );// must be null or recursion
 		RunTime.assumedTrue( clone.size() == 0 );
@@ -359,6 +358,7 @@ public class MethodParams extends StaticInstanceTracker {
 	@Override
 	public String toString() {
 
+		RunTime.assumedTrue( this.isInited() );
 		return listOfParamsWithValues.toString();
 	}
 }

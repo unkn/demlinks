@@ -36,18 +36,18 @@ public class PossibleParams {
 	// these paramNames are 1to1 mapped with objects in the list of MethodParams, such as Object or String etc.
 	// two different MethodParams instances can use the same ParamName with different values in each instance
 	
-	public static final ParamName	varLevelAll				= ParamName.getNew( "varLevelAll" );
-	public static final ParamName	homeDir					= ParamName.getNew( "homeDir" );
+	public static final ParamID	varLevelAll				= ParamID.getNew( "varLevelAll" );
+	public static final ParamID	homeDir					= ParamID.getNew( "homeDir" );
 	
 	// true if a call to BDB init should empty the database(s) before init
-	public static final ParamName	jUnit_wipeDB			= ParamName.getNew( "jUnit_wipeDB" );
-	public static final ParamName	jUnit_wipeDBWhenDone	= ParamName.getNew( "jUnit_wipeDBWhenDone" );
+	public static final ParamID	jUnit_wipeDB			= ParamID.getNew( "jUnit_wipeDB" );
+	public static final ParamID	jUnit_wipeDBWhenDone	= ParamID.getNew( "jUnit_wipeDBWhenDone" );
 	
 	// DatabaseCapsule:
-	public static final ParamName	level1_BDBStorage		= ParamName.getNew( "level1_BDBStorage" );
-	public static final ParamName	dbName					= ParamName.getNew( "dbName" );
-	public static final ParamName	priDbConfig				= ParamName.getNew( "priDbConfig" );
-	public static final ParamName	secDbConfig				= ParamName.getNew( "secDbConfig" );
-	public static final ParamName	priDb					= ParamName.getNew( "priDb" );
+	public static final ParamID	level1_BDBStorage		= ParamID.getNew( "level1_BDBStorage" );
+	public static final ParamID	dbName					= ParamID.getNew( "dbName" );
+	public static final ParamID	priDbConfig				= ParamID.getNew( "priDbConfig" );
+	public static final ParamID	secDbConfig				= ParamID.getNew( "secDbConfig" );
+	public static final ParamID	priDb					= ParamID.getNew( "priDb" );
 	
 }

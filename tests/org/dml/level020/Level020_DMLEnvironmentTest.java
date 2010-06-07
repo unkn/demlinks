@@ -49,7 +49,7 @@ public class Level020_DMLEnvironmentTest {
 	@Test
 	public void multiple() throws Exception {
 
-		MethodParams params = new MethodParams();
+		MethodParams params = MethodParams.getNew();
 		params.set( PossibleParams.jUnit_wipeDB, true );
 		params.set( PossibleParams.jUnit_wipeDBWhenDone, true );
 		
@@ -120,6 +120,7 @@ public class Level020_DMLEnvironmentTest {
 			assertFalse( d1.isInited() );
 			assertFalse( d2.isInited() );
 			assertFalse( d3.isInited() );
+			params.deInit();
 		}
 	}
 }

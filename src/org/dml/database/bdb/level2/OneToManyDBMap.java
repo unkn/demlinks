@@ -112,8 +112,8 @@ public class OneToManyDBMap<InitialType, TerminalType> extends StaticInstanceTra
 		if ( null == forwardDB ) {
 			
 			forwardDB = new DatabaseCapsule();
-			MethodParams params = new MethodParams();
-			params.init( null );
+			MethodParams params = MethodParams.getNew();
+			// params.init( null );
 			params.set( PossibleParams.level1_BDBStorage, this.getBDBL1() );
 			params.set( PossibleParams.dbName, dbName );
 			params.set( PossibleParams.priDbConfig, new OneToManyDBConfig() );
@@ -136,9 +136,8 @@ public class OneToManyDBMap<InitialType, TerminalType> extends StaticInstanceTra
 	private Database getBackwardDB() throws DatabaseException {
 
 		if ( null == backwardDB ) {
-			MethodParams params = new MethodParams();
+			MethodParams params = MethodParams.getNew();
 			backwardDB = new DatabaseCapsule();
-			params.init( null );
 			params.set( PossibleParams.level1_BDBStorage, this.getBDBL1() );
 			params.set( PossibleParams.dbName, dbName + backwardSuffix );
 			params.set( PossibleParams.priDbConfig, new OneToManyDBConfig() );

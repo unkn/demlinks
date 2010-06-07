@@ -53,8 +53,8 @@ public class Level040_DMLEnvironmentTest {
 	@Before
 	public void setUp() {
 
-		MethodParams params = new MethodParams();
-		params.init( null );
+		MethodParams params = MethodParams.getNew();
+		// params.init( null );
 		params.set( PossibleParams.jUnit_wipeDB, true );
 		params.set( PossibleParams.jUnit_wipeDBWhenDone, true );
 		l4 = new Level040_DMLEnvironment();

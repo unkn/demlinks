@@ -57,8 +57,8 @@ public class StaticInstanceTrackerTest {
 		tt = Testy.getNew();
 		tt2 = new Testy2();
 		
-		params = new MethodParams();
-		params.init( null );
+		params = MethodParams.getNew();
+		// params.init( null );
 		
 	}
 	
@@ -224,7 +224,7 @@ public class StaticInstanceTrackerTest {
 			try {
 				psc.deInit();
 			} catch ( RuntimeException re ) {
-				// ignore
+				// ignore, threw by overridden done() method
 				rted = true;
 			} finally {
 				try {
@@ -260,7 +260,7 @@ public class StaticInstanceTrackerTest {
 		String home = "home";
 		params.set( PossibleParams.homeDir, home );
 		t.init( params );
-		params.deInit();
+		params.clear();
 		assertTrue( params.size() == 0 );
 		assertTrue( t.getHome() == home );
 		t.restart();
@@ -276,6 +276,7 @@ public class StaticInstanceTrackerTest {
 		assertTrue( t.getHome() == home2 );
 		t.deInit();
 		assertTrue( t.getHome() == null );
+		params.deInit();
 	}
 	
 }

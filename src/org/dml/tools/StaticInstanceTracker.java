@@ -80,6 +80,7 @@ public abstract class StaticInstanceTracker {
 	/**
 	 * implement this start(), but use init() instead<br>
 	 * the params here are already cloned from those passed to init(params)<br>
+	 * isInited() will return true while in start() and it will remain true even if start() throws<br>
 	 */
 	protected abstract void start( MethodParams params );
 	
@@ -96,6 +97,7 @@ public abstract class StaticInstanceTracker {
 		}
 		addNewInstance( this );
 		this.setInited( true );
+		// try {
 		
 		if ( params != formerParams ) {
 			// NOT called by reInit() or restart()
@@ -111,6 +113,9 @@ public abstract class StaticInstanceTracker {
 			} // else is null
 		} // else called by reInit() we don't mod them
 		this.start( formerParams );
+		// } finally {
+		// this.setInited( true );
+		// }
 	}
 	
 	// public MethodParams<Object> getInitParams() {
@@ -148,6 +153,9 @@ public abstract class StaticInstanceTracker {
 	 * but this means you can access them in your own done(..) implementation<br>
 	 * try to not modify the contents of params... since they will be used on
 	 * reInit() or well maybe it won't matter anymore<br>
+	 * 
+	 * isInited() will be true while in done(), but even if done() throws, it will be set to false after a call to
+	 * done() !!
 	 */
 	protected abstract void done( MethodParams params );
 	
@@ -171,10 +179,13 @@ public abstract class StaticInstanceTracker {
 	public final void deInitSilently() {
 
 		if ( this.isInited() ) {
-			this.setInited( false );
-			removeOldInstance( this );
-			this.done( formerParams );
-			// formerParams are not managed here, only on init() ie. discarded
+			try {
+				removeOldInstance( this );
+				this.done( formerParams );
+				// formerParams are not managed here, only on init() ie. discarded
+			} finally {
+				this.setInited( false ); // ignore this:don't move this below .done() because .done() may throw
+			}
 		}
 	}
 	

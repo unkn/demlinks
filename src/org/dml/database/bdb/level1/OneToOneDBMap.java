@@ -92,8 +92,8 @@ public class OneToOneDBMap<KeyType, DataType> extends StaticInstanceTracker {
 	private void internal_initBoth() throws DatabaseException {
 
 		forwardDB = new DatabaseCapsule();
-		MethodParams params = new MethodParams();
-		params.init( null );
+		MethodParams params = MethodParams.getNew();
+		// params.init( null );
 		params.set( PossibleParams.level1_BDBStorage, bdb );
 		params.set( PossibleParams.dbName, dbName );
 		params.set( PossibleParams.priDbConfig, new OneToOneDBConfig() );
