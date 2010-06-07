@@ -1,8 +1,7 @@
 /**
- * File creation: Nov 4, 2009 5:59:16 PM
  * 
- * Copyright (C) 2005-2009 AtKaaZ <atkaaz@users.sourceforge.net>
- * Copyright (C) 2005-2009 UnKn <unkn@users.sourceforge.net>
+ * Copyright (C) 2005-2010 AtKaaZ <atkaaz@users.sourceforge.net>
+ * Copyright (C) 2005-2010 UnKn <unkn@users.sourceforge.net>
  * 
  * This file and its contents are part of DeMLinks.
  * 
@@ -19,6 +18,7 @@
  * You should have received a copy of the GNU General Public License
  * along with DeMLinks. If not, see <http://www.gnu.org/licenses/>.
  */
+
 
 
 package org.dml.tools;
@@ -67,6 +67,10 @@ public abstract class MainLevel0 extends StaticInstanceTracker {
 	
 	private final ListOfUniqueNonNullObjects<Field>	listOfAnnotatedFields	= new ListOfUniqueNonNullObjects<Field>();
 	
+	// true if at least 1 of the VarLevel fields is not a subclass of SIT ie. maybe is an interface, so we know to throw
+	// bug only if we're about to new it ourselves ie. when not supplied by the user as already init-ed VarLevel
+	private boolean									notSIT					= false;
+	
 	// TODO: accept more than 1 variable per subclass, should be easy, maybe add
 	// a param to annotation indicating fields that pertain to same group (same
 	// group in each subclass equates with same VarLevel)
@@ -111,13 +115,13 @@ public abstract class MainLevel0 extends StaticInstanceTracker {
 
 	private void newVarLevelX() {
 
+		RunTime.assumedFalse( notSIT );// so it is a subclass of SIT, that is, it has init() and deInit()
 		Field lastField = this.getFieldInLastSubClassWhichIs_This();
 		Constructor<?> con;
 		try {
 			con = lastField.getType().getConstructor( (Class<?>[])null );
 			this.setAllVarLevelX( con.newInstance( (Object[])null ) );
 		} catch ( Exception e ) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			RunTime.bug();
 		}
@@ -144,8 +148,7 @@ public abstract class MainLevel0 extends StaticInstanceTracker {
 			// !true if lastField's class is a superclass(ie. base class) of the
 			// obj's class, or the same class; OR obj is a subclass or same
 			// class of the lastField's class
-			RunTime.badCall( "wrong type passed, must be a subclass of "
-					+ lastField.getType().getSimpleName() );
+			RunTime.badCall( "wrong type passed, must be a subclass of " + lastField.getType().getSimpleName() );
 		}
 	}
 	
@@ -191,12 +194,26 @@ public abstract class MainLevel0 extends StaticInstanceTracker {
 			// FIXME: maybe using same param here is bad idea
 			Reference<Object> ref = mixedParams.get( PossibleParams.varLevelAll );
 			if ( null == ref ) {
+				if ( notSIT ) {
+					RunTime.badCall( "caller must either have all VarLevels subclass of "
+							+ StaticInstanceTracker.class.getSimpleName()
+							+ " so that we can new and init the var, or the caller must pass us that var already new-ed and init-ed!" );
+				}
 				// not specified own VarLevel by user, then we make one which we
 				// will deInit later
 				if ( null == this.getVarLevelX() ) {
 					this.newVarLevelX();// 1
 				}
 				usingOwnVarLevel = true;// 2
+				// FIXME: if this VarLevel is also a MainLevel0 expecting a PossibleParams.varLevelAll we're passing the
+				// same above varLevelAll to it, which is bad that's why we need a user settable name in the annotation,
+				// or a new random one of each annotation; the latter seems to be a better idea except that on call we
+				// don't know what to set
+				// if we want to pass a varlevel to the below init? hmm since we did the new maybe we don't have to
+				// so maybe all I just said above is crap
+				
+				// if we're here PossibleParams.varLevelAll doesn't exist so, this init won't see it either, just in
+				// case it's a MainLevel0 too.
 				this.getVarLevelX().init( mixedParams );// 3
 			} else {
 				Object obj = ref.getObject();
@@ -213,7 +230,13 @@ public abstract class MainLevel0 extends StaticInstanceTracker {
 	
 	/**
 	 * override this WITH calling its super first<br>
-	 * and set your own defaults
+	 * and set your own defaults<br>
+	 * over these defaults are merged the params you pass on init/start<br>
+	 * like this:
+	 * MethodParams&ltObject&gt def = super.getDefaults();<br>
+	 * def.set( PossibleParams.homeDir, DEFAULT_BDB_ENV_PATH );<br>
+	 * def.set( PossibleParams.jUnit_wipeDB, false );<br>
+	 * return def;<br>
 	 * 
 	 * @return
 	 */
@@ -227,8 +250,8 @@ public abstract class MainLevel0 extends StaticInstanceTracker {
 		return defaults;
 	}
 	
-	/*
-	 * (non-Javadoc)
+	/**
+	 * you must deAlloc whatever you want before calling super<br>
 	 * 
 	 * @see org.dml.tools.StaticInstanceTracker#done()
 	 */
@@ -238,6 +261,7 @@ public abstract class MainLevel0 extends StaticInstanceTracker {
 		if ( null != this.getVarLevelX() ) {
 			// could be not yet inited due to throws in initMainLevel()
 			if ( usingOwnVarLevel ) {
+				RunTime.assumedFalse( notSIT );
 				// we inited it, then we deinit it
 				usingOwnVarLevel = false;// 1 //this did the trick
 				( this.getVarLevelX() ).deInit();// 2
@@ -286,8 +310,9 @@ public abstract class MainLevel0 extends StaticInstanceTracker {
 							// if ( !( field.get( this ) instanceof
 							// StaticInstanceTrackerWithMethodParams ) ) {
 							if ( !StaticInstanceTracker.class.isAssignableFrom( field.getType() ) ) {
-								RunTime.bug( "wrong field type, must be a subclass of "
-										+ StaticInstanceTracker.class.getSimpleName() );
+								notSIT = true;
+								// RunTime.bug( "wrong field type, must be a subclass of "
+								// + StaticInstanceTracker.class.getSimpleName() );
 							}
 							// make sure this class' field is last!
 							// by using LIFO
@@ -308,7 +333,7 @@ public abstract class MainLevel0 extends StaticInstanceTracker {
 			// // must?
 			// // FIXME: 2. maybe we have multiple fields per class... then
 			// // what?
-			//				
+			//
 			// if ( currentClass != this.getClass() ) {
 			// // 3. for now we allow last class to have no annotated
 			// // fields

@@ -1,8 +1,7 @@
 /**
- * File creation: Oct 17, 2009 8:44:01 AM
  * 
- * Copyright (C) 2005-2009 AtKaaZ <atkaaz@users.sourceforge.net>
- * Copyright (C) 2005-2009 UnKn <unkn@users.sourceforge.net>
+ * Copyright (C) 2005-2010 AtKaaZ <atkaaz@users.sourceforge.net>
+ * Copyright (C) 2005-2010 UnKn <unkn@users.sourceforge.net>
  * 
  * This file and its contents are part of DeMLinks.
  * 
@@ -21,6 +20,7 @@
  */
 
 
+
 package org.dml.JUnits;
 
 
@@ -35,9 +35,7 @@ import java.io.File;
  */
 public class Consts {
 	
-	public static final String	BDB_ENV_PATH	= "." + File.separator + "bin"
-														+ File.separator
-														+ "JUnitTests"
+	public static final String	BDB_ENV_PATH	= "." + File.separator + "bin" + File.separator + "JUnitTests"
 														+ File.separator;
 	
 }

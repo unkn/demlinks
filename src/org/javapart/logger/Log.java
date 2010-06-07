@@ -1,6 +1,7 @@
 /**
- * Copyright (C) 2005-2009 AtKaaZ <atkaaz@users.sourceforge.net>
- * Copyright (C) 2005-2009 UnKn <unkn@users.sourceforge.net>
+ * 
+ * Copyright (C) 2005-2010 AtKaaZ <atkaaz@users.sourceforge.net>
+ * Copyright (C) 2005-2010 UnKn <unkn@users.sourceforge.net>
  * 
  * This file and its contents are part of DeMLinks.
  * 
@@ -19,6 +20,7 @@
  */
 
 
+
 package org.javapart.logger;
 
 
@@ -32,8 +34,7 @@ public class Log {
 	
 	private final static LogFlags		CurrentLogFlags[]						= {
 			// LogFlags.Entry, // LogFlags.Mid,
-			LogFlags.Bug, LogFlags.Warn, LogFlags.Result, LogFlags.Special,
-			LogFlags.Thro,
+			LogFlags.Bug, LogFlags.Warn, LogFlags.Result, LogFlags.Special, LogFlags.Thro,
 																				// LogFlags.Exit,
 																				};
 	
@@ -153,7 +154,7 @@ public class Log {
 		// StackTraceElement[] stea = Thread.currentThread().getStackTrace();
 		// System.out.println( " !" + stea.length + "! " );
 		// // throw new AssertionError();
-		//		
+		//
 		//
 		// StackTraceElement ste = stea[stea.length - 3];
 		// ste = ( new Exception() ).getStackTrace()[4];
@@ -226,8 +227,7 @@ public class Log {
 		}
 		msg = msg.concat( ste.getMethodName() );
 		
-		return String.format( "%-" + width + "s %-" + ( fileAndLineWidth )
-				+ "s ", msg, "(" + ste.getFileName() + ":"
+		return String.format( "%-" + width + "s %-" + ( fileAndLineWidth ) + "s ", msg, "(" + ste.getFileName() + ":"
 				+ ste.getLineNumber() + ")" );
 	}
 	

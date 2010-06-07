@@ -1,8 +1,7 @@
 /**
- * File creation: May 30, 2009 12:09:58 AM
  * 
- * Copyright (C) 2005-2009 AtKaaZ <atkaaz@users.sourceforge.net>
- * Copyright (C) 2005-2009 UnKn <unkn@users.sourceforge.net>
+ * Copyright (C) 2005-2010 AtKaaZ <atkaaz@users.sourceforge.net>
+ * Copyright (C) 2005-2010 UnKn <unkn@users.sourceforge.net>
  * 
  * This file and its contents are part of DeMLinks.
  * 
@@ -21,12 +20,13 @@
  */
 
 
+
 package org.dml.error;
 
 
 /**
  * thrown when a programming error is detected<br>
- *such as bad parameter value specified on call or other unexpected logic
+ * such as bad parameter value specified on call or other unexpected logic
  * errors
  */
 public class BugError extends AssertionError {

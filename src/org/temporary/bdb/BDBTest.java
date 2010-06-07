@@ -1,8 +1,7 @@
 /**
- * File creation: Oct 19, 2009 3:26:40 AM
  * 
- * Copyright (C) 2005-2009 AtKaaZ <atkaaz@users.sourceforge.net>
- * Copyright (C) 2005-2009 UnKn <unkn@users.sourceforge.net>
+ * Copyright (C) 2005-2010 AtKaaZ <atkaaz@users.sourceforge.net>
+ * Copyright (C) 2005-2010 UnKn <unkn@users.sourceforge.net>
  * 
  * This file and its contents are part of DeMLinks.
  * 
@@ -21,14 +20,15 @@
  */
 
 
+
 package org.temporary.bdb;
 
 
 
 import org.dml.JUnits.Consts;
 import org.dml.database.bdb.level1.Level1_Storage_BerkeleyDB;
-import org.dml.level1.Symbol;
-import org.dml.level1.JavaID;
+import org.dml.level010.JavaID;
+import org.dml.level010.Symbol;
 import org.references.method.MethodParams;
 import org.references.method.PossibleParams;
 
@@ -62,8 +62,7 @@ public class BDBTest {
 			f1 = b.getDBMap_JavaIDs_To_Symbols().createSymbol( jid2 );
 			f2 = b.getDBMap_JavaIDs_To_Symbols().getSymbol( jid2 );
 			
-			System.out.println( b.getDBMap_JavaIDs_To_Symbols().getJavaID(
-					f1 ) );
+			System.out.println( b.getDBMap_JavaIDs_To_Symbols().getJavaID( f1 ) );
 		} finally {
 			b.deInit();
 		}

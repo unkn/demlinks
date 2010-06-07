@@ -1,8 +1,7 @@
 /**
- * File creation: Nov 30, 2009 7:41:51 PM
  * 
- * Copyright (C) 2005-2009 AtKaaZ <atkaaz@users.sourceforge.net>
- * Copyright (C) 2005-2009 UnKn <unkn@users.sourceforge.net>
+ * Copyright (C) 2005-2010 AtKaaZ <atkaaz@users.sourceforge.net>
+ * Copyright (C) 2005-2010 UnKn <unkn@users.sourceforge.net>
  * 
  * This file and its contents are part of DeMLinks.
  * 
@@ -21,11 +20,14 @@
  */
 
 
+
 package org.dml.tools;
 
 
 
 import java.util.HashMap;
+
+import org.dml.error.BadCallError;
 
 
 
@@ -38,12 +40,20 @@ import java.util.HashMap;
  */
 public class TwoKeyHashMap<K1, K2, DATA> {
 	
-	HashMap<K1, HashMap<K2, DATA>>	first	= new HashMap<K1, HashMap<K2, DATA>>();
+	private final HashMap<K1, HashMap<K2, DATA>>	first	= new HashMap<K1, HashMap<K2, DATA>>();
 	
 	public TwoKeyHashMap() {
 
 	}
 	
+	/**
+	 * @param key1
+	 * @param key2
+	 * @param data
+	 * @return
+	 * @throws BadCallError
+	 *             when overwrite detected
+	 */
 	public boolean ensure( K1 key1, K2 key2, DATA data ) {
 
 		RunTime.assumedNotNull( key1, key2, data );
@@ -99,6 +109,11 @@ public class TwoKeyHashMap<K1, K2, DATA> {
 		RunTime.bug( "requested pair was not found!" );
 	}
 	
+	/**
+	 * @param key1
+	 * @param key2
+	 * @return null if not found, else the DATA
+	 */
 	public DATA get( K1 key1, K2 key2 ) {
 
 		RunTime.assumedNotNull( key1, key2 );
@@ -108,5 +123,13 @@ public class TwoKeyHashMap<K1, K2, DATA> {
 			ret = second.get( key2 );
 		}
 		return ret;// can be null
+	}
+	
+	/**
+	 * 
+	 */
+	public void clear() {
+
+		first.clear();
 	}
 }

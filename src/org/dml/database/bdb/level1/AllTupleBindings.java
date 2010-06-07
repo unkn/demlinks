@@ -1,8 +1,7 @@
 /**
- * File creation: Nov 15, 2009 4:07:07 PM
  * 
- * Copyright (C) 2005-2009 AtKaaZ <atkaaz@users.sourceforge.net>
- * Copyright (C) 2005-2009 UnKn <unkn@users.sourceforge.net>
+ * Copyright (C) 2005-2010 AtKaaZ <atkaaz@users.sourceforge.net>
+ * Copyright (C) 2005-2010 UnKn <unkn@users.sourceforge.net>
  * 
  * This file and its contents are part of DeMLinks.
  * 
@@ -21,6 +20,7 @@
  */
 
 
+
 package org.dml.database.bdb.level1;
 
 
@@ -30,10 +30,10 @@ import java.util.Map;
 
 import org.dml.database.JUnit_Base1;
 import org.dml.database.JUnit_Base1Binding;
-import org.dml.level1.Symbol;
-import org.dml.level1.SymbolBinding;
-import org.dml.level1.JavaID;
-import org.dml.level1.JavaIDBinding;
+import org.dml.level010.JavaID;
+import org.dml.level010.JavaIDBinding;
+import org.dml.level010.Symbol;
+import org.dml.level010.SymbolBinding;
 import org.dml.tools.RunTime;
 
 import com.sleepycat.bind.tuple.TupleBinding;
@@ -46,7 +46,7 @@ import com.sleepycat.bind.tuple.TupleBinding;
  */
 public class AllTupleBindings {
 	
-	@SuppressWarnings( "unchecked" )
+	@SuppressWarnings( "rawtypes" )
 	private static final Map<Class, TupleBinding>	nonPrimitives	= new HashMap<Class, TupleBinding>();
 	static {
 		// add to this list any objects that you expect to store into a BDB
@@ -57,8 +57,7 @@ public class AllTupleBindings {
 	}
 	
 	// parametric method
-	private static <T> void addNonPrimitive( Class<T> cls,
-			TupleBinding<T> binding ) {
+	private static <T> void addNonPrimitive( Class<T> cls, TupleBinding<T> binding ) {
 
 		int formerSize = nonPrimitives.size();
 		nonPrimitives.put( cls, binding );
@@ -66,15 +65,16 @@ public class AllTupleBindings {
 		RunTime.assumedTrue( nonPrimitives.size() == formerSize + 1 );
 	}
 	
-	@SuppressWarnings( "unchecked" )
+	@SuppressWarnings( {
+			"rawtypes", "unchecked"
+	} )
 	public static <T> TupleBinding<T> getBinding( Class<T> cls ) {
 
 		TupleBinding t = nonPrimitives.get( cls );// first
 		if ( null == t ) {
 			t = TupleBinding.getPrimitiveBinding( cls );// second
 			if ( null == t ) {
-				RunTime.bug( "TupleBinding not yet defined for class '"
-						+ cls.getSimpleName()
+				RunTime.bug( "TupleBinding not yet defined for class '" + cls.getSimpleName()
 						+ "' you may want to add it to the above list when defined!" );
 			}
 		}

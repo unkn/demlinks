@@ -1,8 +1,7 @@
 /**
- * File creation: Nov 5, 2009 8:31:10 AM
  * 
- * Copyright (C) 2005-2009 AtKaaZ <atkaaz@users.sourceforge.net>
- * Copyright (C) 2005-2009 UnKn <unkn@users.sourceforge.net>
+ * Copyright (C) 2005-2010 AtKaaZ <atkaaz@users.sourceforge.net>
+ * Copyright (C) 2005-2010 UnKn <unkn@users.sourceforge.net>
  * 
  * This file and its contents are part of DeMLinks.
  * 
@@ -19,6 +18,7 @@
  * You should have received a copy of the GNU General Public License
  * along with DeMLinks. If not, see <http://www.gnu.org/licenses/>.
  */
+
 
 
 package org.dml.tools;
@@ -39,7 +39,7 @@ import java.lang.annotation.Target;
  * if you tag one field per subclass with this annotation, it means that field
  * is considered that it will be a different type in each subclass following
  * with the purpose of that field leveling up with the class, a level that's on
- * top of previous level and using previous level<br>
+ * top of previous level and using previous level.<br>
  * 
  * this field, set it to null on declaration
  */

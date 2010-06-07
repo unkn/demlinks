@@ -16,21 +16,25 @@ Finish
 * if you get java.lang.NoClassDefFoundError
    do this: Window->Preferences->Java->Installed JREs->Search, tick one, Ok
    also do a Clean
-
+ 
 ---------- jme2
 Check out jME2 from SVN using Eclipse Galileo SR1
 
 Help->Install New Software... 
-Work with: Galileo - http://download.eclipse.org/releases/galileo
-expand Collaboration
-    Subversive SVN Team Provider (Incubation) 0.7.8.I20090904-1300 
+
+Work with: 
+Subversive Site - http://download.eclipse.org/technology/subversive/0.7/weekly-site/
+
+expand Subversive SVN Team provider Plugin (Incubation)
+select Subversive SVN Team Provider (Incubation) 0.7.8.I20091207-1900 
+Finish
 ...
 restart eclipse
 
 Window->Show View->Other, SVN->SVN Repositories
 
 Install Connectors window appears
-tick SVN Kit 1.3.0, Finish
+tick SVN Kit 1.3.2, Finish
 
 restart eclipse
 
@@ -57,6 +61,10 @@ java.lang.UnsatisfiedLinkError: O:\eclipse.workspace\jme\lib\lwjgl\native\window
 try using 32 bit JRE (Project->Properties->Java Build Path->Libraries->JRE System Library... Edit)
 // the other fix is, to add JRE to PATH, so lwjgl64.dll can find jawt.dll while retaining JRE 64bit
 
+
+-- may need to add jar swt_64.jar if getting SWT errors on compilation in about 6 files
+on 64bit jdk atm
+
 ---------//jme2
 
 ---- jme2 physics
@@ -65,4 +73,17 @@ http://jmephysics.googlecode.com/svn/
 ----
 
 the above were tested under Win7 ultimate 64bit, jdk1.6.0 u16, 64bit and 32bit JREs
+
+------------- see source javadoc offline, for ie. System.out.append
+Window->Preferences->Java->Installed JREs->jre6->Edit->...rt.jar -> Source Attachment-> C:/Program Files/Java/jdk1.6.0_20/src.zip
+maybe also the javadoc one point it to the .zip file u get from inet ie. jdk-6u18-docs.zip
+
+--------------- SceneMonitor put it in lib folder in project folder, in lib\SceneMonitor
+http://code.google.com/p/scenemonitor/downloads/detail?name=scenemonitor-jme2-1_32.zip&can=2&q=
+---------- SceneWorker same lib folder, lib\SceneWroker
+http://code.google.com/p/scenemonitor/downloads/detail?name=SceneWorkerWithDependencies_v1.2a2.zip&can=2&q=
+---------------------
+
+use gvim (in windows) or vim in *nix to edit files like .gitignore
+---------
 

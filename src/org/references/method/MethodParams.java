@@ -1,8 +1,7 @@
 /**
- * File creation: Oct 27, 2009 3:48:48 AM
  * 
- * Copyright (C) 2005-2009 AtKaaZ <atkaaz@users.sourceforge.net>
- * Copyright (C) 2005-2009 UnKn <unkn@users.sourceforge.net>
+ * Copyright (C) 2005-2010 AtKaaZ <atkaaz@users.sourceforge.net>
+ * Copyright (C) 2005-2010 UnKn <unkn@users.sourceforge.net>
  * 
  * This file and its contents are part of DeMLinks.
  * 
@@ -19,6 +18,7 @@
  * You should have received a copy of the GNU General Public License
  * along with DeMLinks. If not, see <http://www.gnu.org/licenses/>.
  */
+
 
 
 package org.references.method;
@@ -80,8 +80,7 @@ public class MethodParams<T> extends StaticInstanceTracker {
 
 		Reference<T> ref = this.get( paramName );
 		if ( null == ref ) {
-			throw new NoSuchElementException(
-					"a certain parameter was expected but was not specified by caller" );
+			throw new NoSuchElementException( "a certain parameter was expected but was not specified by caller" );
 		} else {
 			return ref.getObject();
 		}
@@ -162,7 +161,7 @@ public class MethodParams<T> extends StaticInstanceTracker {
 		if ( null == cref ) {
 			int bug = listOfParams.size();// FIXME: remove
 			cref = listOfParams.addFirst( value );
-			RunTime.assumedTrue( listOfParams.size() > bug );
+			RunTime.assumedTrue( listOfParams.size() == 1 + bug );
 			paramName.add( cref );
 			redundantListOfNames.addFirst( paramName );
 			// FIXME: transaction needed
@@ -211,15 +210,12 @@ public class MethodParams<T> extends StaticInstanceTracker {
 	 * this will merge the two, such as <code>this</code> will have both<br>
 	 * 
 	 * @param withThisNewOnes
-	 *            the contents of this parameter will be copied to
-	 *            <code>this</code>
+	 *            the contents of this parameter will be copied to <code>this</code>
 	 * @param overwrite
-	 *            if true then overwrite the params that already exist in
-	 *            <code>this</code> with those that exist in
+	 *            if true then overwrite the params that already exist in <code>this</code> with those that exist in
 	 *            <code>withThisNewOnes</code><br>
-	 *            clearly this means that those that don't exist in
-	 *            <code>this</code> will be added, but those that do exist in
-	 *            <code>this</code> will be lost
+	 *            clearly this means that those that don't exist in <code>this</code> will be added, but those that do
+	 *            exist in <code>this</code> will be lost
 	 */
 	public void mergeWith( MethodParams<T> withThisNewOnes, boolean overwrite ) {
 
@@ -259,8 +255,7 @@ public class MethodParams<T> extends StaticInstanceTracker {
 		return redundantListOfNames.getObjectAt( Position.AFTER, nextOfThis );
 	}
 	
-	private ParamName<T> internalGetParamName(
-			ChainedReference<T> thatPointsToThisRef ) {
+	private ParamName<T> internalGetParamName( ChainedReference<T> thatPointsToThisRef ) {
 
 		RunTime.assumedNotNull( thatPointsToThisRef );
 		

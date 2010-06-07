@@ -1,8 +1,7 @@
 /**
- * File creation: Nov 26, 2009 5:36:39 AM
  * 
- * Copyright (C) 2005-2009 AtKaaZ <atkaaz@users.sourceforge.net>
- * Copyright (C) 2005-2009 UnKn <unkn@users.sourceforge.net>
+ * Copyright (C) 2005-2010 AtKaaZ <atkaaz@users.sourceforge.net>
+ * Copyright (C) 2005-2010 UnKn <unkn@users.sourceforge.net>
  * 
  * This file and its contents are part of DeMLinks.
  * 
@@ -21,11 +20,12 @@
  */
 
 
+
 package org.dml.database.bdb.level1;
 
 
 
-import org.dml.level1.Symbol;
+import org.dml.level010.Symbol;
 import org.dml.tools.RunTime;
 import org.dml.tools.StaticInstanceTracker;
 import org.references.method.MethodParams;
@@ -89,9 +89,11 @@ public class UniqueSymbolsGenerator extends StaticInstanceTracker {
 		// this new Symbol is not saved anywhere in the database, but it's
 		// ensured that it will not be created again, so it's unique even if you
 		// don't save it in the database later
-		Symbol nid = Symbol.internalNewSymbolRepresentationFor( this.getUniqueLong() );
-		RunTime.assumedNotNull( nid );
-		return nid;
+		long l = this.getUniqueLong();
+		RunTime.assumedTrue( l < 4123123123l );// just one silly limit, it can go way much higher (forgot how much tho)
+		Symbol sym = Bridge_SymbolAndBDB.newSymbolFrom( l );
+		RunTime.assumedNotNull( sym );
+		return sym;
 	}
 	
 	@Override

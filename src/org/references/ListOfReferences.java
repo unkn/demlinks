@@ -1,5 +1,7 @@
-/*
- * Copyright (C) 2005-2008 AtKaaZ <atkaaz@users.sourceforge.net>
+/**
+ * 
+ * Copyright (C) 2005-2010 AtKaaZ <atkaaz@users.sourceforge.net>
+ * Copyright (C) 2005-2010 UnKn <unkn@users.sourceforge.net>
  * 
  * This file and its contents are part of DeMLinks.
  * 
@@ -16,6 +18,7 @@
  * You should have received a copy of the GNU General Public License
  * along with DeMLinks. If not, see <http://www.gnu.org/licenses/>.
  */
+
 
 
 package org.references;
@@ -151,8 +154,7 @@ public class ListOfReferences<Obje> {
 	 */
 	public boolean isEmpty() {
 
-		return ( 0 == this.size() ) || ( this.getFirstRef() == null )
-				|| ( this.getLastRef() == null );
+		return ( 0 == this.size() ) || ( this.getFirstRef() == null ) || ( this.getLastRef() == null );
 	}
 	
 	/**
@@ -231,8 +233,7 @@ public class ListOfReferences<Obje> {
 	 * @throws NoSuchElementException
 	 *             if posRef not found
 	 */
-	public boolean insertRefAt( ChainedReference<Obje> newRef, Position pos,
-			ChainedReference<Obje> posRef ) {
+	public boolean insertRefAt( ChainedReference<Obje> newRef, Position pos, ChainedReference<Obje> posRef ) {
 
 		if ( !this.containsRef( posRef ) ) {// this first for buggy calls
 			throw new NoSuchElementException();
@@ -381,8 +382,7 @@ public class ListOfReferences<Obje> {
 	 * @return the ref or null
 	 * @see #getRefAt(Position)
 	 */
-	public ChainedReference<Obje> getRefAt( Position location,
-			ChainedReference<Obje> locationRef ) {
+	public ChainedReference<Obje> getRefAt( Position location, ChainedReference<Obje> locationRef ) {
 
 		RunTime.assumedNotNull( location, locationRef );
 		if ( this.containsRef( locationRef ) ) {

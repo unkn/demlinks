@@ -1,8 +1,7 @@
 /**
- * File creation: Jun 4, 2009 7:47:37 PM
  * 
- * Copyright (C) 2005-2009 AtKaaZ <atkaaz@users.sourceforge.net>
- * Copyright (C) 2005-2009 UnKn <unkn@users.sourceforge.net>
+ * Copyright (C) 2005-2010 AtKaaZ <atkaaz@users.sourceforge.net>
+ * Copyright (C) 2005-2010 UnKn <unkn@users.sourceforge.net>
  * 
  * This file and its contents are part of DeMLinks.
  * 
@@ -21,13 +20,14 @@
  */
 
 
+
 package org.dml.database.bdb.level2;
 
 
 
 import org.dml.database.bdb.level1.AllTupleBindings;
 import org.dml.database.bdb.level1.Level1_Storage_BerkeleyDB;
-import org.dml.level1.Symbol;
+import org.dml.level010.Symbol;
 import org.dml.storagewrapper.StorageException;
 import org.dml.tools.RunTime;
 
@@ -67,8 +67,7 @@ public class DBMapSymbolsTuple extends OneToManyDBMap<Symbol, Symbol> {
 	 */
 	public DBMapSymbolsTuple( Level1_Storage_BerkeleyDB bdb1, String dbName1 ) {
 
-		super( bdb1, dbName1, Symbol.class,
-				AllTupleBindings.getBinding( Symbol.class ), Symbol.class,
+		super( bdb1, dbName1, Symbol.class, AllTupleBindings.getBinding( Symbol.class ), Symbol.class,
 				AllTupleBindings.getBinding( Symbol.class ) );
 	}
 	
@@ -83,8 +82,7 @@ public class DBMapSymbolsTuple extends OneToManyDBMap<Symbol, Symbol> {
 	 * @throws DatabaseException
 	 */
 	@Override
-	public boolean ensureVector( Symbol initialNode, Symbol terminalNode )
-			throws DatabaseException {
+	public boolean ensureVector( Symbol initialNode, Symbol terminalNode ) throws DatabaseException {
 
 		RunTime.assumedNotNull( initialNode, terminalNode );
 		
@@ -102,8 +100,7 @@ public class DBMapSymbolsTuple extends OneToManyDBMap<Symbol, Symbol> {
 	 * @throws DatabaseException
 	 */
 	@Override
-	public boolean isVector( Symbol initialNode, Symbol terminalNode )
-			throws DatabaseException {
+	public boolean isVector( Symbol initialNode, Symbol terminalNode ) throws DatabaseException {
 
 		RunTime.assumedNotNull( initialNode, terminalNode );
 		
@@ -111,32 +108,30 @@ public class DBMapSymbolsTuple extends OneToManyDBMap<Symbol, Symbol> {
 	}
 	
 	@Override
-	public BDBVectorIterator<Symbol, Symbol> getIterator_on_Initials_of(
-			Symbol terminalObject ) throws DatabaseException {
+	public BDBVectorIterator<Symbol, Symbol> getIterator_on_Initials_of( Symbol terminalObject )
+			throws DatabaseException {
 
 		RunTime.assumedNotNull( terminalObject );
 		return super.getIterator_on_Initials_of( terminalObject );
 	}
 	
 	@Override
-	public BDBVectorIterator<Symbol, Symbol> getIterator_on_Terminals_of(
-			Symbol initialObject ) throws DatabaseException {
+	public BDBVectorIterator<Symbol, Symbol> getIterator_on_Terminals_of( Symbol initialObject )
+			throws DatabaseException {
 
 		RunTime.assumedNotNull( initialObject );
 		return super.getIterator_on_Terminals_of( initialObject );
 	}
 	
 	@Override
-	public int countInitials( Symbol ofTerminalObject )
-			throws DatabaseException {
+	public int countInitials( Symbol ofTerminalObject ) throws DatabaseException {
 
 		RunTime.assumedNotNull( ofTerminalObject );
 		return super.countInitials( ofTerminalObject );
 	}
 	
 	@Override
-	public int countTerminals( Symbol ofInitialObject )
-			throws DatabaseException {
+	public int countTerminals( Symbol ofInitialObject ) throws DatabaseException {
 
 		RunTime.assumedNotNull( ofInitialObject );
 		return super.countTerminals( ofInitialObject );
@@ -149,8 +144,7 @@ public class DBMapSymbolsTuple extends OneToManyDBMap<Symbol, Symbol> {
 	 * @throws DatabaseException
 	 */
 	@Override
-	public Symbol findCommonTerminalForInitials( Symbol initial1,
-			Symbol initial2 ) throws DatabaseException {
+	public Symbol findCommonTerminalForInitials( Symbol initial1, Symbol initial2 ) throws DatabaseException {
 
 		RunTime.assumedNotNull( initial1, initial2 );
 		return super.findCommonTerminalForInitials( initial1, initial2 );
@@ -163,10 +157,11 @@ public class DBMapSymbolsTuple extends OneToManyDBMap<Symbol, Symbol> {
 	 * @throws DatabaseException
 	 */
 	@Override
-	public boolean removeVector( Symbol initial, Symbol terminal )
-			throws DatabaseException {
+	public boolean removeVector( Symbol initial, Symbol terminal ) throws DatabaseException {
 
 		RunTime.assumedNotNull( initial, terminal );
 		return super.removeVector( initial, terminal );
 	}
+	
+
 }

@@ -1,8 +1,7 @@
 /**
- * File creation: May 31, 2009 7:46:58 PM
  * 
- * Copyright (C) 2005-2009 AtKaaZ <atkaaz@users.sourceforge.net>
- * Copyright (C) 2005-2009 UnKn <unkn@users.sourceforge.net>
+ * Copyright (C) 2005-2010 AtKaaZ <atkaaz@users.sourceforge.net>
+ * Copyright (C) 2005-2010 UnKn <unkn@users.sourceforge.net>
  * 
  * This file and its contents are part of DeMLinks.
  * 
@@ -21,13 +20,13 @@
  */
 
 
+
 package org.dml.database.bdb.level1;
 
 
 
 import java.io.File;
 
-import org.dml.storagewrapper.StorageException;
 import org.dml.tools.RunTime;
 import org.dml.tools.StaticInstanceTracker;
 import org.javapart.logger.Log;
@@ -42,6 +41,7 @@ import com.sleepycat.je.Database;
 import com.sleepycat.je.DatabaseConfig;
 import com.sleepycat.je.DatabaseEntry;
 import com.sleepycat.je.DatabaseException;
+import com.sleepycat.je.Durability;
 import com.sleepycat.je.Environment;
 import com.sleepycat.je.EnvironmentConfig;
 import com.sleepycat.je.SecondaryConfig;
@@ -85,12 +85,10 @@ public class Level1_Storage_BerkeleyDB extends StaticInstanceTracker {
 	 *         Symbols
 	 * @throws DatabaseException
 	 */
-	public DBMap_JavaIDs_To_Symbols getDBMap_JavaIDs_To_Symbols()
-			throws DatabaseException {
+	public DBMap_JavaIDs_To_Symbols getDBMap_JavaIDs_To_Symbols() throws DatabaseException {
 
 		if ( null == db_JavaID_To_Symbol ) {
-			db_JavaID_To_Symbol = new DBMap_JavaIDs_To_Symbols( this,
-					dbNAME_JavaID_To_NodeID );
+			db_JavaID_To_Symbol = new DBMap_JavaIDs_To_Symbols( this, dbNAME_JavaID_To_NodeID );
 			db_JavaID_To_Symbol.init( null );
 			RunTime.assumedNotNull( db_JavaID_To_Symbol );
 		} else {
@@ -120,13 +118,7 @@ public class Level1_Storage_BerkeleyDB extends StaticInstanceTracker {
 			Log.special( "destroying previous environment, before we begin..." );
 			this.internalWipeEnv();
 		}
-		try {
-			this.getEnvironment();
-		} catch ( DatabaseException e ) {
-			// FIXME: can't mod method signature
-			e.printStackTrace();
-			throw new StorageException( e );
-		}// forces env open or create
+		this.getEnvironment();
 		
 	}
 	
@@ -190,8 +182,7 @@ public class Level1_Storage_BerkeleyDB extends StaticInstanceTracker {
 				if ( !n.isFile() ) {
 					continue;
 				}
-				if ( ( !n.getPath().matches( ".*\\.jdb" ) )
-						&& ( !( n.getPath().matches( ".*\\.lck" ) ) ) ) {
+				if ( ( !n.getPath().matches( ".*\\.jdb" ) ) && ( !( n.getPath().matches( ".*\\.lck" ) ) ) ) {
 					continue;
 				}
 				Log.special( "removing " + n.getPath() );
@@ -228,7 +219,7 @@ public class Level1_Storage_BerkeleyDB extends StaticInstanceTracker {
 	// RunTime.assertNotNull( input, output );
 	// StringBinding.stringToEntry( input, output );
 	// }
-	//	
+	//
 	// /**
 	// * @param input
 	// * @return
@@ -249,16 +240,13 @@ public class Level1_Storage_BerkeleyDB extends StaticInstanceTracker {
 
 		environmentConfig.setAllowCreate( true );
 		environmentConfig.setLocking( true );
-		environmentConfig.setTransactional( true );
-		environmentConfig.setTxnNoSync( false );
+		environmentConfig.setTransactional( true ).setDurability( Durability.COMMIT_NO_SYNC );
 		environmentConfig.setTxnSerializableIsolation( true );
-		environmentConfig.setTxnWriteNoSync( false );
 		environmentConfig.setSharedCache( false );
-		environmentConfig.setConfigParam( EnvironmentConfig.TRACE_LEVEL, "FINE" );
-		environmentConfig.setConfigParam( EnvironmentConfig.TRACE_CONSOLE,
-				"false" );
-		environmentConfig.setConfigParam( EnvironmentConfig.TRACE_FILE, "true" );
-		environmentConfig.setConfigParam( EnvironmentConfig.TRACE_DB, "false" );
+		// environmentConfig.setConfigParam( EnvironmentConfig.TRACE_LEVEL, "OFF" );
+		// environmentConfig.setConfigParam( EnvironmentConfig.TRACE_CONSOLE, "false" );
+		// environmentConfig.setConfigParam( EnvironmentConfig.TRACE_FILE, "false" );
+		// environmentConfig.setConfigParam( EnvironmentConfig.TRACE_DB, "false" );
 		
 		// perform other environment configurations
 		File file = new File( envHomeDir );
@@ -266,8 +254,7 @@ public class Level1_Storage_BerkeleyDB extends StaticInstanceTracker {
 			file.mkdirs();
 			env = new Environment( file, environmentConfig );
 		} catch ( DatabaseException de ) {
-			Log.thro( "when creating BerkeleyDB Environment: "
-					+ de.getMessage() );
+			Log.thro( "when creating BerkeleyDB Environment: " + de.getMessage() );
 			throw de;
 		}
 		
@@ -292,8 +279,7 @@ public class Level1_Storage_BerkeleyDB extends StaticInstanceTracker {
 				secDb.close();
 				Log.mid( "closed SecDB with name: " + secDbName );
 			} catch ( DatabaseException de ) {
-				Log.thro( "failed closing SecDB with specified name: '"
-						+ secDbName );
+				Log.thro( "failed closing SecDB with specified name: '" + secDbName );
 				// ignore
 			} finally {
 				RunTime.assumedFalse( allOpenSecondaryDatabases.isEmpty() );
@@ -317,8 +303,7 @@ public class Level1_Storage_BerkeleyDB extends StaticInstanceTracker {
 				env.close();
 				Log.exit( "BerkeleyDB env closed" );
 			} catch ( DatabaseException de ) {
-				Log.thro( "failed BerkeleyDB environment close:"
-						+ de.getLocalizedMessage() );
+				Log.thro( "failed BerkeleyDB environment close:" + de.getLocalizedMessage() );
 				// ignore
 			} finally {
 				env = null;
@@ -336,8 +321,7 @@ public class Level1_Storage_BerkeleyDB extends StaticInstanceTracker {
 	 * @return never null
 	 * @throws DatabaseException
 	 */
-	public Sequence getNewSequence( String thisSeqName,
-			SequenceConfig allSequencesConfig ) throws DatabaseException {
+	public Sequence getNewSequence( String thisSeqName, SequenceConfig allSequencesConfig ) throws DatabaseException {
 
 		RunTime.assumedNotNull( thisSeqName, allSequencesConfig );
 		// allSequencesConfig can be null though, to use BDB defaults
@@ -345,8 +329,7 @@ public class Level1_Storage_BerkeleyDB extends StaticInstanceTracker {
 		// init once:
 		DatabaseEntry deKey = new DatabaseEntry();
 		StringBinding.stringToEntry( thisSeqName, deKey );
-		Sequence seq = this.getSeqsDB().openSequence( null, deKey,
-				allSequencesConfig );
+		Sequence seq = this.getSeqsDB().openSequence( null, deKey, allSequencesConfig );
 		if ( allSequenceInstances.addFirstQ( seq ) ) {
 			RunTime.bug( "couldn't have already existed!" );
 		}
@@ -366,8 +349,7 @@ public class Level1_Storage_BerkeleyDB extends StaticInstanceTracker {
 				thisSeq.close();
 				Log.exit( "closed seq with name: " + thisSeqName );
 			} catch ( DatabaseException de ) {
-				Log.thro( "failed closing seq with specified name: '"
-						+ thisSeqName );
+				Log.thro( "failed closing seq with specified name: '" + thisSeqName );
 				// ignore
 			} finally {
 				if ( !allSequenceInstances.removeObject( thisSeq ) ) {
@@ -517,8 +499,7 @@ public class Level1_Storage_BerkeleyDB extends StaticInstanceTracker {
 	 * @return
 	 * @throws DatabaseException
 	 */
-	public Database openAnyDatabase( String dbName, DatabaseConfig dbConf )
-			throws DatabaseException {
+	public Database openAnyDatabase( String dbName, DatabaseConfig dbConf ) throws DatabaseException {
 
 		Log.entry( dbName );
 		// should not use this openDatabase() method anywhere else
@@ -538,13 +519,11 @@ public class Level1_Storage_BerkeleyDB extends StaticInstanceTracker {
 	 * @return
 	 * @throws DatabaseException
 	 */
-	public SecondaryDatabase openAnySecDatabase( String secDbName,
-			Database primaryDb, SecondaryConfig secDbConf )
+	public SecondaryDatabase openAnySecDatabase( String secDbName, Database primaryDb, SecondaryConfig secDbConf )
 			throws DatabaseException {
 
 		Log.entry( secDbName );
-		SecondaryDatabase secDb = this.getEnvironment().openSecondaryDatabase(
-				null, secDbName, primaryDb, secDbConf );
+		SecondaryDatabase secDb = this.getEnvironment().openSecondaryDatabase( null, secDbName, primaryDb, secDbConf );
 		if ( allOpenSecondaryDatabases.addFirstQ( secDb ) ) {
 			RunTime.bug( "couldn't have already existed" );
 		}
@@ -570,8 +549,8 @@ public class Level1_Storage_BerkeleyDB extends StaticInstanceTracker {
 				db.close();// the only place this should be used is this line
 				Log.mid( "closed BerkeleyDB with name: " + dbname );
 			} catch ( DatabaseException de ) {
-				Log.thro( "failed closing BerkeleyDB with specified name: '"
-						+ dbname + "; reason: " + de.getLocalizedMessage() );
+				Log.thro( "failed closing BerkeleyDB with specified name: '" + dbname + "; reason: "
+						+ de.getLocalizedMessage() );
 				// ignore
 			} finally {
 				if ( !allOpenPrimaryDatabases.removeObject( db ) ) {

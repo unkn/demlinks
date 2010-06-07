@@ -1,8 +1,7 @@
 /**
- * File creation: Jun 3, 2009 12:32:27 PM
  * 
- * Copyright (C) 2005-2009 AtKaaZ <atkaaz@users.sourceforge.net>
- * Copyright (C) 2005-2009 UnKn <unkn@users.sourceforge.net>
+ * Copyright (C) 2005-2010 AtKaaZ <atkaaz@users.sourceforge.net>
+ * Copyright (C) 2005-2010 UnKn <unkn@users.sourceforge.net>
  * 
  * This file and its contents are part of DeMLinks.
  * 
@@ -21,13 +20,14 @@
  */
 
 
+
 package org.dml.database.bdb.level1;
 
 
 
 import org.dml.error.BugError;
-import org.dml.level1.JavaID;
-import org.dml.level1.Symbol;
+import org.dml.level010.JavaID;
+import org.dml.level010.Symbol;
 import org.dml.tools.RunTime;
 import org.javapart.logger.Log;
 import org.references.method.MethodParams;
@@ -37,9 +37,9 @@ import com.sleepycat.je.DatabaseException;
 
 
 /**
- *this adds a Sequence for NodeID generation (ie. get a new unique NodeID)<br>
- *and the methods that use NodeID and NodeJavaID objects<br>
- *lookup by either NodeJavaID or NodeID<br>
+ * this adds a Sequence for NodeID generation (ie. get a new unique NodeID)<br>
+ * and the methods that use NodeID and NodeJavaID objects<br>
+ * lookup by either NodeJavaID or NodeID<br>
  */
 public class DBMap_JavaIDs_To_Symbols extends OneToOneDBMap<JavaID, Symbol> {
 	
@@ -48,11 +48,9 @@ public class DBMap_JavaIDs_To_Symbols extends OneToOneDBMap<JavaID, Symbol> {
 	 * @param dbName1
 	 * @throws DatabaseException
 	 */
-	public DBMap_JavaIDs_To_Symbols( Level1_Storage_BerkeleyDB bdb1,
-			String dbName1 ) throws DatabaseException {
+	public DBMap_JavaIDs_To_Symbols( Level1_Storage_BerkeleyDB bdb1, String dbName1 ) throws DatabaseException {
 
-		super( bdb1, dbName1, JavaID.class,
-				AllTupleBindings.getBinding( JavaID.class ), Symbol.class,
+		super( bdb1, dbName1, JavaID.class, AllTupleBindings.getBinding( JavaID.class ), Symbol.class,
 				AllTupleBindings.getBinding( Symbol.class ) );
 	}
 	
@@ -66,8 +64,7 @@ public class DBMap_JavaIDs_To_Symbols extends OneToOneDBMap<JavaID, Symbol> {
 	@Override
 	protected void done( MethodParams<Object> params ) {
 
-		Log.entry( "deinit " + this.getClass().getSimpleName() + " with name: "
-				+ dbName );
+		Log.entry( "deinit " + this.getClass().getSimpleName() + " with name: " + dbName );
 		super.done( params );
 	}
 	
@@ -115,8 +112,7 @@ public class DBMap_JavaIDs_To_Symbols extends OneToOneDBMap<JavaID, Symbol> {
 	 *         never null
 	 * @throws DatabaseException
 	 */
-	private final Symbol internal_makeNewSymbol( JavaID fromJavaID )
-			throws DatabaseException {
+	private final Symbol internal_makeNewSymbol( JavaID fromJavaID ) throws DatabaseException {
 
 		RunTime.assumedNotNull( fromJavaID );
 		Symbol uniqueSymbol = bdb.getUniqueSymbolsGenerator().getNewUniqueSymbol();
@@ -136,8 +132,7 @@ public class DBMap_JavaIDs_To_Symbols extends OneToOneDBMap<JavaID, Symbol> {
 	 * @return true if already existed
 	 * @throws DatabaseException
 	 */
-	public final boolean ensureVector( JavaID javaID, Symbol symbol )
-			throws DatabaseException {
+	public final boolean ensureVector( JavaID javaID, Symbol symbol ) throws DatabaseException {
 
 		RunTime.assumedNotNull( javaID, symbol );
 		
@@ -154,8 +149,7 @@ public class DBMap_JavaIDs_To_Symbols extends OneToOneDBMap<JavaID, Symbol> {
 	 * @throws Bug
 	 *             if already exists
 	 */
-	public final void newVector( JavaID javaID, Symbol symbol )
-			throws DatabaseException {
+	public final void newVector( JavaID javaID, Symbol symbol ) throws DatabaseException {
 
 		RunTime.assumedNotNull( javaID, symbol );
 		

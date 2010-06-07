@@ -1,0 +1,16 @@
+These are the things that are decided to be used, one way or another.
+Things that are depreciated or obsolete won't be here.
+
+
+//1. sorted elements will be searched via divide et impera algorithm
+//	- ie. keys even though not necessarily consecutive will be kept in sorted order and thus 
+//	when searching for one, we will find it using divide et impera
+//	- it's presumably easier than implementing a Btree
+1. using bdb so it's doing that for us
+	
+	 
+2. using DejaVu Sans Mono 14, in eclipse for editing (General->Appearance->Colors and Fonts)
+
+3. methods will usually return TRUE if already existed; false otherwise; but they will not fail, if they do they throw exception
+
+4. give almost no regard to efficiency and size; give most regard to accessibility!

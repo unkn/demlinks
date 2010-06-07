@@ -1,8 +1,7 @@
 /**
- * File creation: Nov 17, 2009 4:39:48 PM
  * 
- * Copyright (C) 2005-2009 AtKaaZ <atkaaz@users.sourceforge.net>
- * Copyright (C) 2005-2009 UnKn <unkn@users.sourceforge.net>
+ * Copyright (C) 2005-2010 AtKaaZ <atkaaz@users.sourceforge.net>
+ * Copyright (C) 2005-2010 UnKn <unkn@users.sourceforge.net>
  * 
  * This file and its contents are part of DeMLinks.
  * 
@@ -21,12 +20,12 @@
  */
 
 
+
 package org.dml.database.bdb.level2;
 
 
 
 import org.dml.database.bdb.level1.Level1_Storage_BerkeleyDB;
-import org.dml.storagewrapper.StorageException;
 import org.dml.tools.RunTime;
 import org.dml.tools.StaticInstanceTracker;
 import org.javapart.logger.Log;
@@ -51,16 +50,13 @@ import com.sleepycat.je.OperationStatus;
  * the iteration order is not guaranteed, ie. the terminals are stored as in a
  * Set, not as in an ordered list; however in practice they're sorted
  * alphabetically so to speak, but shouldn't count on this!<br>
- * //FIXME: maybe make a way to not throw DatabaseException from here, because
- * it's
- * being used in environment
+ * //FIXME: maybe make a way to not throw DatabaseException from here, because this is being used in dml environment
  */
-public class BDBVectorIterator<InitialType, TerminalType> extends
-		StaticInstanceTracker {
+public class BDBVectorIterator<InitialType, TerminalType> extends StaticInstanceTracker {
 	
 	private final Database						db;
-	private final InitialType					initialObject;					// key
-																				
+	private final InitialType					initialObject;								// key
+																							
 	private final EntryBinding<InitialType>		initialBinding;
 	private final EntryBinding<TerminalType>	terminalBinding;
 	private Cursor								cursor					= null;
@@ -71,13 +67,13 @@ public class BDBVectorIterator<InitialType, TerminalType> extends
 	private DatabaseEntry						deKey					= null;
 	private DatabaseEntry						deData					= null;
 	
-	public BDBVectorIterator( Level1_Storage_BerkeleyDB bdb_L1,
-			Database whichPriDB, InitialType initialObject1,
-			EntryBinding<InitialType> initialBinding1,
-			EntryBinding<TerminalType> terminalBinding1 ) {
+	// only read locks (I hope)
+	private static final LockMode				Locky					= LockMode.DEFAULT;
+	
+	public BDBVectorIterator( Level1_Storage_BerkeleyDB bdb_L1, Database whichPriDB, InitialType initialObject1,
+			EntryBinding<InitialType> initialBinding1, EntryBinding<TerminalType> terminalBinding1 ) {
 
-		RunTime.assumedNotNull( bdb_L1, whichPriDB, initialObject1,
-				initialBinding1, terminalBinding1 );
+		RunTime.assumedNotNull( bdb_L1, whichPriDB, initialObject1, initialBinding1, terminalBinding1 );
 		bdbL1 = bdb_L1;
 		db = whichPriDB;
 		initialObject = initialObject1;
@@ -107,8 +103,7 @@ public class BDBVectorIterator<InitialType, TerminalType> extends
 
 		deData.setSize( 0 );
 		RunTime.assumedTrue( deData.getOffset() == 0 );
-		OperationStatus ret = this.getCursor().getSearchKey( deKey, deData,
-				LockMode.RMW );
+		OperationStatus ret = this.getCursor().getSearchKey( deKey, deData, Locky );
 		if ( OperationStatus.SUCCESS == ret ) {
 			this.setNow( terminalBinding.entryToObject( deData ) );
 		} else {
@@ -120,8 +115,7 @@ public class BDBVectorIterator<InitialType, TerminalType> extends
 
 		terminalBinding.objectToEntry( terminal, deData );
 		RunTime.assumedTrue( deData.getOffset() == 0 );
-		OperationStatus ret = this.getCursor().getSearchBoth( deKey, deData,
-				LockMode.RMW );
+		OperationStatus ret = this.getCursor().getSearchBoth( deKey, deData, Locky );
 		if ( OperationStatus.SUCCESS == ret ) {
 			this.setNow( terminalBinding.entryToObject( deData ) );
 		} else {
@@ -143,8 +137,7 @@ public class BDBVectorIterator<InitialType, TerminalType> extends
 
 		if ( null != this.now() ) {
 			RunTime.assumedTrue( deData.getOffset() == 0 );
-			OperationStatus ret = this.getCursor().getNextDup( deKey, deData,
-					LockMode.RMW );
+			OperationStatus ret = this.getCursor().getNextDup( deKey, deData, Locky );
 			if ( OperationStatus.SUCCESS == ret ) {
 				this.setNow( terminalBinding.entryToObject( deData ) );
 			} else {
@@ -159,8 +152,7 @@ public class BDBVectorIterator<InitialType, TerminalType> extends
 
 		if ( null != this.now() ) {
 			RunTime.assumedTrue( deData.getOffset() == 0 );
-			OperationStatus ret = this.getCursor().getPrevDup( deKey, deData,
-					LockMode.RMW );
+			OperationStatus ret = this.getCursor().getPrevDup( deKey, deData, Locky );
 			if ( OperationStatus.SUCCESS == ret ) {
 				this.setNow( terminalBinding.entryToObject( deData ) );
 			} else {
@@ -222,14 +214,14 @@ public class BDBVectorIterator<InitialType, TerminalType> extends
 		if ( null != params ) {
 			RunTime.badCall( "not accepting any parameters here" );
 		}
-		try {
-			this.goFirst();// init cursor
-			// if ( this.now() == null ) {
-			// RunTime.bug( "cursor init failed" );
-			// }
-		} catch ( DatabaseException de ) {
-			throw new StorageException( de );
-		}
+		// try {
+		// this.goFirst();// init cursor
+		// // if ( this.now() == null ) {
+		// // RunTime.bug( "cursor init failed" );
+		// // }
+		// } catch ( DatabaseException de ) {
+		// throw new StorageException( de );
+		// }
 	}
 	
 	/**

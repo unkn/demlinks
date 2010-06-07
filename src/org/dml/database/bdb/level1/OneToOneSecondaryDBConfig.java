@@ -1,8 +1,7 @@
 /**
- * File creation: Jun 1, 2009 2:17:53 PM
  * 
- * Copyright (C) 2005-2009 AtKaaZ <atkaaz@users.sourceforge.net>
- * Copyright (C) 2005-2009 UnKn <unkn@users.sourceforge.net>
+ * Copyright (C) 2005-2010 AtKaaZ <atkaaz@users.sourceforge.net>
+ * Copyright (C) 2005-2010 UnKn <unkn@users.sourceforge.net>
  * 
  * This file and its contents are part of DeMLinks.
  * 
@@ -19,6 +18,7 @@
  * You should have received a copy of the GNU General Public License
  * along with DeMLinks. If not, see <http://www.gnu.org/licenses/>.
  */
+
 
 
 package org.dml.database.bdb.level1;
@@ -59,9 +59,8 @@ public class OneToOneSecondaryDBConfig extends SecondaryConfig {
 		SecondaryKeyCreator keyCreator = new SecondaryKeyCreator() {
 			
 			@Override
-			public boolean createSecondaryKey( SecondaryDatabase secondary,
-					DatabaseEntry key, DatabaseEntry data, DatabaseEntry result )
-					throws DatabaseException {
+			public boolean createSecondaryKey( SecondaryDatabase secondary, DatabaseEntry key, DatabaseEntry data,
+					DatabaseEntry result ) throws DatabaseException {
 
 				// if this differs, then we need perhaps to set it to result
 				// also

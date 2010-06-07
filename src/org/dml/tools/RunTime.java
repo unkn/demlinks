@@ -1,7 +1,7 @@
 /**
  * 
- * Copyright (C) 2005-2009 AtKaaZ <atkaaz@users.sourceforge.net>
- * Copyright (C) 2005-2009 UnKn <unkn@users.sourceforge.net>
+ * Copyright (C) 2005-2010 AtKaaZ <atkaaz@users.sourceforge.net>
+ * Copyright (C) 2005-2010 UnKn <unkn@users.sourceforge.net>
  * 
  * This file and its contents are part of DeMLinks.
  * 
@@ -18,6 +18,7 @@
  * You should have received a copy of the GNU General Public License
  * along with DeMLinks. If not, see <http://www.gnu.org/licenses/>.
  */
+
 
 
 package org.dml.tools;
@@ -88,8 +89,7 @@ public class RunTime {
 
 		for ( int i = 0; i < obj.length; i++ ) {
 			if ( null == obj[i] ) {
-				throw new AssertionError( "expected non-null object["
-						+ ( i + 1 ) + "] was null!" );
+				throw new AssertionError( "expected non-null object[" + ( i + 1 ) + "] was null!" );
 			}
 		}
 	}
@@ -98,8 +98,7 @@ public class RunTime {
 
 		for ( int i = 0; i < obj.length; i++ ) {
 			if ( null != obj[i] ) {
-				throw new AssertionError( "expected null object[" + ( i + 1 )
-						+ "] was NOT null!" );
+				throw new AssertionError( "expected null object[" + ( i + 1 ) + "] was NOT null!" );
 			}
 		}
 	}

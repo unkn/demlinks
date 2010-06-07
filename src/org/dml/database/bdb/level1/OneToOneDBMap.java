@@ -1,8 +1,7 @@
 /**
- * File creation: Jun 1, 2009 10:47:12 PM
  * 
- * Copyright (C) 2005-2009 AtKaaZ <atkaaz@users.sourceforge.net>
- * Copyright (C) 2005-2009 UnKn <unkn@users.sourceforge.net>
+ * Copyright (C) 2005-2010 AtKaaZ <atkaaz@users.sourceforge.net>
+ * Copyright (C) 2005-2010 UnKn <unkn@users.sourceforge.net>
  * 
  * This file and its contents are part of DeMLinks.
  * 
@@ -19,6 +18,7 @@
  * You should have received a copy of the GNU General Public License
  * along with DeMLinks. If not, see <http://www.gnu.org/licenses/>.
  */
+
 
 
 package org.dml.database.bdb.level1;
@@ -70,9 +70,8 @@ public class OneToOneDBMap<KeyType, DataType> extends StaticInstanceTracker {
 	 * 
 	 * @param dbName1
 	 */
-	public OneToOneDBMap( Level1_Storage_BerkeleyDB bdb1, String dbName1,
-			Class<KeyType> keyClass1, EntryBinding<KeyType> keyBinding1,
-			Class<DataType> dataClass1, EntryBinding<DataType> dataBinding1 ) {
+	public OneToOneDBMap( Level1_Storage_BerkeleyDB bdb1, String dbName1, Class<KeyType> keyClass1,
+			EntryBinding<KeyType> keyBinding1, Class<DataType> dataClass1, EntryBinding<DataType> dataBinding1 ) {
 
 		RunTime.assumedNotNull( bdb1 );
 		RunTime.assumedNotNull( dbName1 );
@@ -165,8 +164,8 @@ public class OneToOneDBMap<KeyType, DataType> extends StaticInstanceTracker {
 		keyBinding.objectToEntry( key, deKey );
 		DatabaseEntry deData = new DatabaseEntry();
 		dataBinding.objectToEntry( data, deData );
-		OperationStatus ret = this.getForwardDB().putNoOverwrite( null, deKey,
-				deData );// this will auto put in secondary also
+		OperationStatus ret = this.getForwardDB().putNoOverwrite( null, deKey, deData );// this will auto put in
+																						// secondary also
 		// if ( OperationStatus.KEYEXIST == ret ) {
 		// RunTime.bug(
 		// "this is supposed to make a new unexisting key->data pair, apparently it failed!"

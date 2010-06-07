@@ -1,8 +1,7 @@
 /**
- * File creation: Oct 27, 2009 6:20:06 PM
  * 
- * Copyright (C) 2005-2009 AtKaaZ <atkaaz@users.sourceforge.net>
- * Copyright (C) 2005-2009 UnKn <unkn@users.sourceforge.net>
+ * Copyright (C) 2005-2010 AtKaaZ <atkaaz@users.sourceforge.net>
+ * Copyright (C) 2005-2010 UnKn <unkn@users.sourceforge.net>
  * 
  * This file and its contents are part of DeMLinks.
  * 
@@ -21,6 +20,7 @@
  */
 
 
+
 package org.references.method;
 
 
@@ -34,7 +34,7 @@ import org.references.Reference;
 /**
  * elements of this list don't point to instances like String or null<br>
  * elements of this list point to references from another list<br>
- *each object in this list is a Reference<Object> from one or more
+ * each object in this list is a Reference<Object> from one or more
  * {MethodParams ListOfObjects<Object> list}
  */
 public class ParamName<T> {
@@ -45,8 +45,7 @@ public class ParamName<T> {
 	
 	/**
 	 * 
-	 * you're attaching this ParamName to a value pointed to by
-	 * <code>refToValue</code>
+	 * you're attaching this ParamName to a value pointed to by <code>refToValue</code>
 	 * 
 	 * @param refToValue
 	 */

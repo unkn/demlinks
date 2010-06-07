@@ -1,8 +1,7 @@
 /**
- * File creation: Jun 6, 2009 10:13:37 PM
  * 
- * Copyright (C) 2005-2009 AtKaaZ <atkaaz@users.sourceforge.net>
- * Copyright (C) 2005-2009 UnKn <unkn@users.sourceforge.net>
+ * Copyright (C) 2005-2010 AtKaaZ <atkaaz@users.sourceforge.net>
+ * Copyright (C) 2005-2010 UnKn <unkn@users.sourceforge.net>
  * 
  * This file and its contents are part of DeMLinks.
  * 
@@ -21,6 +20,7 @@
  */
 
 
+
 package org.dml.database.bdb.level2;
 
 
@@ -29,6 +29,7 @@ import org.dml.database.bdb.level1.Level1_Storage_BerkeleyDB;
 import org.dml.tools.RunTime;
 
 import com.sleepycat.je.DatabaseException;
+import com.sleepycat.je.Durability;
 import com.sleepycat.je.Transaction;
 import com.sleepycat.je.TransactionConfig;
 
@@ -51,19 +52,18 @@ public class TransactionCapsule {
 	 * @return never null
 	 * @throws DatabaseException
 	 */
-	public final static TransactionCapsule getNewTransaction(
-			Level1_Storage_BerkeleyDB bdb ) throws DatabaseException {
+	public final static TransactionCapsule getNewTransaction( Level1_Storage_BerkeleyDB bdb ) throws DatabaseException {
 
 		TransactionCapsule txn = new TransactionCapsule();
 		
 		txn.txConf = new TransactionConfig();
-		txn.txConf.setNoSync( false );
-		txn.txConf.setNoWait( true );
+		// txn.txConf.setNoSync( false );
+		txn.txConf.setNoWait( true ).setDurability( Durability.COMMIT_NO_SYNC );
 		// txn.txConf.setReadCommitted( true );
 		txn.txConf.setReadUncommitted( false );
 		txn.txConf.setSerializableIsolation( true );
-		txn.txConf.setSync( true );
-		txn.txConf.setWriteNoSync( false );
+		// txn.txConf.setSync( true );
+		// txn.txConf.setWriteNoSync( false );
 		RunTime.assumedFalse( txn.txConf.getReadUncommitted() );
 		txn.tx = bdb.getEnvironment().beginTransaction( null, txn.txConf );
 		

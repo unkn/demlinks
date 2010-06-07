@@ -1,8 +1,7 @@
 /**
- * File creation: Jun 3, 2009 12:41:32 PM
  * 
- * Copyright (C) 2005-2009 AtKaaZ <atkaaz@users.sourceforge.net>
- * Copyright (C) 2005-2009 UnKn <unkn@users.sourceforge.net>
+ * Copyright (C) 2005-2010 AtKaaZ <atkaaz@users.sourceforge.net>
+ * Copyright (C) 2005-2010 UnKn <unkn@users.sourceforge.net>
  * 
  * This file and its contents are part of DeMLinks.
  * 
@@ -19,6 +18,7 @@
  * You should have received a copy of the GNU General Public License
  * along with DeMLinks. If not, see <http://www.gnu.org/licenses/>.
  */
+
 
 
 package org.dml.database.bdb.level1;
@@ -55,12 +55,8 @@ public class DBSequence extends StaticInstanceTracker {
 	
 
 
-	private static final String				seqPrefix			= (char)0
-																		+ "_preseq_"
-																		+ (char)0;
-	private static final String				seqSuffix			= (char)255
-																		+ "_postseq_"
-																		+ (char)255;
+	private static final String				seqPrefix			= (char)0 + "_preseq_" + (char)0;
+	private static final String				seqSuffix			= (char)255 + "_postseq_" + (char)255;
 	
 	// non-static follows:
 	private Sequence						thisSeq				= null;

@@ -1,8 +1,7 @@
 /**
- * File creation: Oct 27, 2009 3:45:28 AM
  * 
- * Copyright (C) 2005-2009 AtKaaZ <atkaaz@users.sourceforge.net>
- * Copyright (C) 2005-2009 UnKn <unkn@users.sourceforge.net>
+ * Copyright (C) 2005-2010 AtKaaZ <atkaaz@users.sourceforge.net>
+ * Copyright (C) 2005-2010 UnKn <unkn@users.sourceforge.net>
  * 
  * This file and its contents are part of DeMLinks.
  * 
@@ -21,13 +20,14 @@
  */
 
 
+
 package org.references.method;
 
 
 
 /**
  * 
- *this will have fields that are lists of objects that are references to real
+ * this will have fields that are lists of objects that are references to real
  * instances like String<br>
  * 
  */
@@ -39,18 +39,18 @@ public class PossibleParams {
 	// these lists can hold objects but the objects that they will hold are the
 	// references from similar typed list, not the instances that these refs
 	// point at
-	public static final ParamName<Object>	varLevelAll			= new ParamName<Object>();
-	public static final ParamName<Object>	homeDir				= new ParamName<Object>();
+	public static final ParamName<Object>	varLevelAll				= new ParamName<Object>();
+	public static final ParamName<Object>	homeDir					= new ParamName<Object>();
 	
 	// true if a call to BDB init should empty the database(s) before init
-	public static final ParamName<Object>	jUnit_wipeDB				= new ParamName<Object>();
-	public static final ParamName<Object>	jUnit_wipeDBWhenDone		= new ParamName<Object>();
+	public static final ParamName<Object>	jUnit_wipeDB			= new ParamName<Object>();
+	public static final ParamName<Object>	jUnit_wipeDBWhenDone	= new ParamName<Object>();
 	
 	// DatabaseCapsule:
-	public static final ParamName<Object>	level1_BDBStorage	= new ParamName<Object>();
-	public static final ParamName<Object>	dbName				= new ParamName<Object>();
-	public static final ParamName<Object>	priDbConfig			= new ParamName<Object>();
-	public static final ParamName<Object>	secDbConfig			= new ParamName<Object>();
-	public static final ParamName<Object>	priDb				= new ParamName<Object>();
+	public static final ParamName<Object>	level1_BDBStorage		= new ParamName<Object>();
+	public static final ParamName<Object>	dbName					= new ParamName<Object>();
+	public static final ParamName<Object>	priDbConfig				= new ParamName<Object>();
+	public static final ParamName<Object>	secDbConfig				= new ParamName<Object>();
+	public static final ParamName<Object>	priDb					= new ParamName<Object>();
 	
 }
