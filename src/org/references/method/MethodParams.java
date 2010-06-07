@@ -315,7 +315,6 @@ public class MethodParams extends StaticInstanceTracker {
 	/**
 	 * after calling this, you will need to use deInit() on the returned,
 	 * because the returned did an init()
-	 * FIXME: apparently bugged
 	 * 
 	 * @return
 	 */
@@ -323,12 +322,11 @@ public class MethodParams extends StaticInstanceTracker {
 
 		MethodParams clone = new MethodParams();
 		clone.init( null );// must be null or recursion
-		// we parse all ref to values, which are in 'this' and add each to the
-		// cloned
 		RunTime.assumedTrue( clone.size() == 0 );
 		clone.mergeWith( this, false );// there's nothing to overwrite
 		RunTime.assumedTrue( clone.size() == this.size() );
 		RunTime.assumedTrue( clone.listOfParamsWithValues.size() == listOfParamsWithValues.size() );
+		RunTime.assumedTrue( clone.listOfParamsWithValues != listOfParamsWithValues );
 		RunTime.assumedTrue( clone != this );
 		
 		return clone;

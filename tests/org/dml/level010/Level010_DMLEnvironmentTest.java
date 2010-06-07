@@ -68,7 +68,7 @@ public class Level010_DMLEnvironmentTest {
 
 		dml1.deInitSilently();
 		dml1 = null;
-		params.deInit();// they were cloned anyway
+		params.deInit();// don't move this to setUp() because is used in tests still
 		params = null;
 	}
 	

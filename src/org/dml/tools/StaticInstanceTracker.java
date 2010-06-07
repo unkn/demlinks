@@ -78,7 +78,8 @@ public abstract class StaticInstanceTracker {
 	}
 	
 	/**
-	 * implement this start(), but use init() instead
+	 * implement this start(), but use init() instead<br>
+	 * the params here are already cloned from those passed to init(params)<br>
 	 */
 	protected abstract void start( MethodParams params );
 	
