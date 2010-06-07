@@ -42,17 +42,17 @@ import org.references.Reference;
  */
 public class MethodParamsTest {
 	
-	MethodParams<Object>	mp1, mp2, mp3;
-	ParamName<Object>		paramString1;
-	ParamName<Object>		paramNull2, paramInteger3, paramBoolean4;
-	ParamName<Object>		compulsoryParam1	= new ParamName<Object>();
-	ParamName<Object>		compulsoryParam2	= new ParamName<Object>();
-	ParamName<Object>		optionalParam1		= new ParamName<Object>();
+	MethodParams	mp1, mp2, mp3;
+	ParamName		paramString1;
+	ParamName		paramNull2, paramInteger3, paramBoolean4;
+	ParamName		compulsoryParam1	= ParamName.getNew( "compulsoryParam1" );
+	ParamName		compulsoryParam2	= ParamName.getNew( "compulsoryParam2" );
+	ParamName		optionalParam1		= ParamName.getNew( "optionalParam1" );
 	
 	@Test
 	public void caller() {
 
-		MethodParams<Object> params = new MethodParams<Object>();
+		MethodParams params = new MethodParams();
 		
 		assertTrue( 0 == params.size() );
 		params.set( compulsoryParam1, null );
@@ -62,7 +62,7 @@ public class MethodParamsTest {
 		this.someMethod1( params );
 	}
 	
-	public void someMethod1( MethodParams<Object> allParams ) {
+	public void someMethod1( MethodParams allParams ) {
 
 		assertNull( allParams.get( optionalParam1 ) );
 		
@@ -76,13 +76,13 @@ public class MethodParamsTest {
 	@Before
 	public void setUp() {
 
-		paramString1 = new ParamName<Object>();
-		paramNull2 = new ParamName<Object>();
-		paramInteger3 = new ParamName<Object>();
-		paramBoolean4 = new ParamName<Object>();
-		mp1 = new MethodParams<Object>();
-		mp2 = new MethodParams<Object>();
-		mp3 = new MethodParams<Object>();
+		paramString1 = ParamName.getNew( "paramString1" );
+		paramNull2 = ParamName.getNew( "paramNull2" );
+		paramInteger3 = ParamName.getNew( "paramInteger3" );
+		paramBoolean4 = ParamName.getNew( "paramBoolean4" );
+		mp1 = new MethodParams();
+		mp2 = new MethodParams();
+		mp3 = new MethodParams();
 	}
 	
 	@Test
@@ -148,11 +148,16 @@ public class MethodParamsTest {
 		mp1.set( paramString1, null );
 		mp1.set( paramBoolean4, true );
 		assertTrue( 2 == mp1.size() );
-		MethodParams<Object> clone = mp1.getClone();
+		MethodParams clone = mp1.getClone();
 		assertTrue( 2 == clone.size() );
 		Reference<Object> ref = mp1.get( paramString1 );
 		Reference<Object> cref = clone.get( paramString1 );
+		assertNotNull( ref );
+		assertNotNull( cref );
 		assertTrue( ref != cref );
+		System.out.println( ref.getObject() + "!1" );
+		System.out.println( cref.getObject() + "!2" );
+		assertTrue( null == null );
 		assertTrue( ref.getObject() == cref.getObject() );
 		
 		ref = mp1.get( paramBoolean4 );

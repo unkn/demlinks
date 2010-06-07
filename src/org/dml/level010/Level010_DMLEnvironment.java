@@ -65,7 +65,7 @@ public class Level010_DMLEnvironment extends MainLevel0 implements Level010_DMLS
 	 * this will be called on init, when no storage was specified or passed to us on init<br>
 	 * override but NEVER call super!<br>
 	 */
-	protected void internal_allocDefaultStorage( MethodParams<Object> params ) {
+	protected void internal_allocDefaultStorage( MethodParams params ) {
 
 		Level010_DMLStorage_BerkeleyDB stor = new Level010_DMLStorage_BerkeleyDB();
 		// MethodParams<Object> storageParams = new MethodParams<Object>();
@@ -85,7 +85,7 @@ public class Level010_DMLEnvironment extends MainLevel0 implements Level010_DMLS
 	 * @see org.dml.tools.MainLevel0#start(org.references.method.MethodParams)
 	 */
 	@Override
-	protected void start( MethodParams<Object> params ) {
+	protected void start( MethodParams params ) {
 
 		if ( ( null == params ) || ( null == params.get( PossibleParams.varLevelAll ) ) ) {
 			// need own default storage type new-ed and init-ed
@@ -101,7 +101,7 @@ public class Level010_DMLEnvironment extends MainLevel0 implements Level010_DMLS
 	 * @see org.dml.tools.MainLevel0#done(org.references.method.MethodParams)
 	 */
 	@Override
-	protected void done( MethodParams<Object> params ) {
+	protected void done( MethodParams params ) {
 
 		if ( usedDefaultStorage ) {
 			RunTime.assumedNotNull( storage );// wicked if null

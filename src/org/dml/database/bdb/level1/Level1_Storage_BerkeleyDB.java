@@ -110,7 +110,7 @@ public class Level1_Storage_BerkeleyDB extends StaticInstanceTracker {
 	}
 	
 	@Override
-	protected void start( MethodParams<Object> params ) {
+	protected void start( MethodParams params ) {
 
 		envHomeDir = params.getExString( PossibleParams.homeDir );
 		Log.entry( envHomeDir );
@@ -141,7 +141,7 @@ public class Level1_Storage_BerkeleyDB extends StaticInstanceTracker {
 	 * @see org.dml.tools.StaticInstanceTracker#done()
 	 */
 	@Override
-	protected void done( MethodParams<Object> params ) {
+	protected void done( MethodParams params ) {
 
 		if ( null != db_JavaID_To_Symbol ) {
 			db_JavaID_To_Symbol.deInit();

@@ -61,9 +61,9 @@ public class Level010_DMLStorage_BerkeleyDB extends MainLevel0 implements Level0
 	}
 	
 	@Override
-	protected MethodParams<Object> getDefaults() {
+	protected MethodParams getDefaults() {
 
-		MethodParams<Object> def = super.getDefaults();
+		MethodParams def = super.getDefaults();
 		
 		def.set( PossibleParams.homeDir, DEFAULT_BDB_ENV_PATH );
 		def.set( PossibleParams.jUnit_wipeDB, false );

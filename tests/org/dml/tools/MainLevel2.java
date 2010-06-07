@@ -50,9 +50,9 @@ public class MainLevel2 extends MainLevel1 {
 	}
 	
 	@Override
-	protected MethodParams<Object> getDefaults() {
+	protected MethodParams getDefaults() {
 
-		MethodParams<Object> def = super.getDefaults();
+		MethodParams def = super.getDefaults();
 		def.set( PossibleParams.homeDir, "level2defaultHOME" );
 		
 		return def;

@@ -57,7 +57,7 @@ public class VarLevel2 extends VarLevel1 implements VarLevel2Interface {
 	 * @param params
 	 */
 	@Override
-	protected void start( MethodParams<Object> params ) {
+	protected void start( MethodParams params ) {
 
 		RunTime.assumedNotNull( params );
 		super.start( params );

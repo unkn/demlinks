@@ -51,7 +51,7 @@ public abstract class StaticInstanceTracker {
 	// LIFO list tracking all instances of ALL subclasses
 	private final static ListOfUniqueNonNullObjects<StaticInstanceTracker>	ALL_INSTANCES	= new ListOfUniqueNonNullObjects<StaticInstanceTracker>();
 	private boolean															inited			= false;
-	private MethodParams<Object>											formerParams	= null;
+	private MethodParams													formerParams	= null;
 	
 	/**
 	 * @param inited1
@@ -80,7 +80,7 @@ public abstract class StaticInstanceTracker {
 	/**
 	 * implement this start(), but use init() instead
 	 */
-	protected abstract void start( MethodParams<Object> params );
+	protected abstract void start( MethodParams params );
 	
 	/**
 	 * the params will be cloned (or copied) to be used by reInit()<br>
@@ -88,7 +88,7 @@ public abstract class StaticInstanceTracker {
 	 * @param params
 	 *            null or the params
 	 */
-	public final void init( MethodParams<Object> params ) {
+	public final void init( MethodParams params ) {
 
 		if ( this.isInited() ) {
 			RunTime.badCall( "already inited, you must deInit() before calling init(...) again" );
@@ -148,7 +148,7 @@ public abstract class StaticInstanceTracker {
 	 * try to not modify the contents of params... since they will be used on
 	 * reInit() or well maybe it won't matter anymore<br>
 	 */
-	protected abstract void done( MethodParams<Object> params );
+	protected abstract void done( MethodParams params );
 	
 	/**
 	 * @return

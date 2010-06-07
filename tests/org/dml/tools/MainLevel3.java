@@ -51,9 +51,9 @@ public class MainLevel3 extends MainLevel2 {
 	 * @see org.temporary.tests.MainLevel2#getDefaults()
 	 */
 	@Override
-	protected MethodParams<Object> getDefaults() {
+	protected MethodParams getDefaults() {
 
-		MethodParams<Object> ret = super.getDefaults();
+		MethodParams ret = super.getDefaults();
 		
 		// the following will overwrite prev param set in Level2
 		ret.set( PossibleParams.homeDir, "level3HOMEDir" );

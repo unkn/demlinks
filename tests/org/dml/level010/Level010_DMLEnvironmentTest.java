@@ -48,12 +48,12 @@ public class Level010_DMLEnvironmentTest {
 	
 	Level010_DMLEnvironment	dml1;
 	Symbol					a, b, c;
-	MethodParams<Object>	params;
+	MethodParams			params;
 	
 	@Before
 	public void setUp() throws StorageException {
 
-		params = new MethodParams<Object>();
+		params = new MethodParams();
 		params.init( null );
 		
 		dml1 = new Level010_DMLEnvironment();
@@ -68,7 +68,7 @@ public class Level010_DMLEnvironmentTest {
 
 		dml1.deInitSilently();
 		dml1 = null;
-		params.deInit();
+		params.deInit();// they were cloned anyway
 		params = null;
 	}
 	

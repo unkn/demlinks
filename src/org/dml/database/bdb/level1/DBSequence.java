@@ -94,13 +94,13 @@ public class DBSequence extends StaticInstanceTracker {
 	
 	
 	@Override
-	protected void done( MethodParams<Object> params ) {
+	protected void done( MethodParams params ) {
 
 		thisSeq = bdb.closeAnySeq_silent( thisSeq, thisSeqName );
 	}
 	
 	@Override
-	protected void start( MethodParams<Object> params ) {
+	protected void start( MethodParams params ) {
 
 		RunTime.assumedNull( params );
 		

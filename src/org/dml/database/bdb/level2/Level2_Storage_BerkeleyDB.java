@@ -64,7 +64,7 @@ public class Level2_Storage_BerkeleyDB extends Level1_Storage_BerkeleyDB {
 	 * @see org.dml.database.bdb.level1.Level1_Storage_BerkeleyDB#done()
 	 */
 	@Override
-	protected void done( MethodParams<Object> params ) {
+	protected void done( MethodParams params ) {
 
 		if ( null != dbSymbolsTuple ) {
 			dbSymbolsTuple.deInit();

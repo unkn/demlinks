@@ -49,7 +49,7 @@ public class Level020_DMLEnvironmentTest {
 	@Test
 	public void multiple() throws Exception {
 
-		MethodParams<Object> params = new MethodParams<Object>();
+		MethodParams params = new MethodParams();
 		params.set( PossibleParams.jUnit_wipeDB, true );
 		params.set( PossibleParams.jUnit_wipeDBWhenDone, true );
 		

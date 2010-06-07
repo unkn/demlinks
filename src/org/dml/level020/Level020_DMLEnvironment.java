@@ -51,7 +51,7 @@ public class Level020_DMLEnvironment extends Level010_DMLEnvironment implements 
 	 * @see org.dml.level010.Level010_DMLEnvironment#internal_allocDefaultStorage(org.references.method.MethodParams)
 	 */
 	@Override
-	protected void internal_allocDefaultStorage( MethodParams<Object> params ) {
+	protected void internal_allocDefaultStorage( MethodParams params ) {
 
 		// don't call super!
 		Level020_DMLStorage_BerkeleyDB stor = new Level020_DMLStorage_BerkeleyDB();

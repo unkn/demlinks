@@ -40,7 +40,7 @@ public class Testy3StartThrower extends Testy {
 
 		Testy3StartThrower t2 = new Testy3StartThrower();
 		
-		MethodParams<Object> params = new MethodParams<Object>();
+		MethodParams params = new MethodParams();
 		params.init( null );
 		params.set( PossibleParams.homeDir, "two" + new Object() );
 		t2.init( params );
@@ -50,7 +50,7 @@ public class Testy3StartThrower extends Testy {
 	}
 	
 	@Override
-	protected void start( org.references.method.MethodParams<Object> params ) {
+	protected void start( MethodParams params ) {
 
 		// super.start( params ); see? no need to call prev one, just override
 		RunTime.thro( new RuntimeException( "start" ) );

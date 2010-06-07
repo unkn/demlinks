@@ -76,17 +76,17 @@ public class LevelsTest {
 
 		VarLevel1 v1 = new VarLevel1();
 		v1.init( null );
-		MethodParams<Object> params1 = new MethodParams<Object>();
+		MethodParams params1 = new MethodParams();
 		params1.set( PossibleParams.varLevelAll, v1 );
 		ml1.init( params1 );
 		ml1.do1();
 		
-		MethodParams<Object> v2params = new MethodParams<Object>();
+		MethodParams v2params = new MethodParams();
 		v2params.set( PossibleParams.homeDir, "home2" );
 		VarLevel2 v2 = new VarLevel2();
 		v2.init( v2params );
 		
-		MethodParams<Object> params2 = new MethodParams<Object>();
+		MethodParams params2 = new MethodParams();
 		params2.set( PossibleParams.varLevelAll, v2 );
 		
 		boolean threw = false;
@@ -164,12 +164,12 @@ public class LevelsTest {
 		assertTrue( threw );
 		
 		// Level 3:
-		MethodParams<Object> v3params = new MethodParams<Object>();
+		MethodParams v3params = new MethodParams();
 		v3params.set( PossibleParams.homeDir, "homedirL3" );
 		VarLevel3 v3 = new VarLevel3();
 		v3.init( v3params );
 		
-		MethodParams<Object> params3 = new MethodParams<Object>();
+		MethodParams params3 = new MethodParams();
 		params3.set( PossibleParams.varLevelAll, null );
 		try {
 			threw = false;
@@ -236,13 +236,13 @@ public class LevelsTest {
 		
 		// now using not own, after used own
 		VarLevel3 notOwn = new VarLevel3();
-		MethodParams<Object> params = new MethodParams<Object>();
+		MethodParams params = new MethodParams();
 		String homeDir = "homeNotOwn";
 		params.set( PossibleParams.homeDir, homeDir );
 		notOwn.init( params );
 		assertTrue( notOwn.isInited() );
 		
-		MethodParams<Object> mlParams = new MethodParams<Object>();
+		MethodParams mlParams = new MethodParams();
 		mlParams.set( PossibleParams.varLevelAll, notOwn );
 		
 		int count = 3;
@@ -294,7 +294,7 @@ public class LevelsTest {
 	public void test3() {
 
 		// the parameters won't get modified
-		MethodParams<Object> mp = new MethodParams<Object>();
+		MethodParams mp = new MethodParams();
 		mp.init( null );
 		assertTrue( 0 == mp.size() );
 		ml2.init( mp );
@@ -308,7 +308,7 @@ public class LevelsTest {
 
 		ml3.deInit();
 		VarLevel3 vl3 = new VarLevel3();
-		MethodParams<Object> v3params = new MethodParams<Object>();
+		MethodParams v3params = new MethodParams();
 		v3params.init( null );
 		v3params.set( PossibleParams.homeDir, "homeDir3" );
 		vl3.init( v3params );
@@ -351,10 +351,10 @@ public class LevelsTest {
 	@Test
 	public void test4() {
 
-		MethodParams<Object> mp = new MethodParams<Object>();
+		MethodParams mp = new MethodParams();
 		mp.init( null );
 		VarLevel3 vl3 = new VarLevel3();
-		MethodParams<Object> vl3mp = new MethodParams<Object>();
+		MethodParams vl3mp = new MethodParams();
 		vl3mp.init( null );
 		vl3mp.set( PossibleParams.homeDir, "homeDir3" );
 		vl3.init( vl3mp );

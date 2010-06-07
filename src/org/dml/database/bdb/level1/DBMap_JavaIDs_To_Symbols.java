@@ -62,7 +62,7 @@ public class DBMap_JavaIDs_To_Symbols extends OneToOneDBMap<JavaID, Symbol> {
 	 * MethodParams)
 	 */
 	@Override
-	protected void done( MethodParams<Object> params ) {
+	protected void done( MethodParams params ) {
 
 		Log.entry( "deinit " + this.getClass().getSimpleName() + " with name: " + dbName );
 		super.done( params );

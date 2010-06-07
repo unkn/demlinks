@@ -107,9 +107,9 @@ public class Reference<T> {
 	public String toString() {
 
 		if ( null != this.getObject() ) {
-			return this.getObject().toString();
+			return this.getClass().getCanonicalName() + ":" + this.getObject().toString();
 		} else {
-			return "null";
+			return this.getClass().getCanonicalName() + ":null";
 		}
 	}
 }

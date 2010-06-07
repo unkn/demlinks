@@ -33,24 +33,21 @@ package org.references.method;
  */
 public class PossibleParams {
 	
-	// these paramNames will point to objects in the list of MethodParams, but
-	// these objects are the references that point to the real instances such as
-	// String
-	// these lists can hold objects but the objects that they will hold are the
-	// references from similar typed list, not the instances that these refs
-	// point at
-	public static final ParamName<Object>	varLevelAll				= new ParamName<Object>();
-	public static final ParamName<Object>	homeDir					= new ParamName<Object>();
+	// these paramNames are 1to1 mapped with objects in the list of MethodParams, such as Object or String etc.
+	// two different MethodParams instances can use the same ParamName with different values in each instance
+	
+	public static final ParamName	varLevelAll				= ParamName.getNew( "varLevelAll" );
+	public static final ParamName	homeDir					= ParamName.getNew( "homeDir" );
 	
 	// true if a call to BDB init should empty the database(s) before init
-	public static final ParamName<Object>	jUnit_wipeDB			= new ParamName<Object>();
-	public static final ParamName<Object>	jUnit_wipeDBWhenDone	= new ParamName<Object>();
+	public static final ParamName	jUnit_wipeDB			= ParamName.getNew( "jUnit_wipeDB" );
+	public static final ParamName	jUnit_wipeDBWhenDone	= ParamName.getNew( "jUnit_wipeDBWhenDone" );
 	
 	// DatabaseCapsule:
-	public static final ParamName<Object>	level1_BDBStorage		= new ParamName<Object>();
-	public static final ParamName<Object>	dbName					= new ParamName<Object>();
-	public static final ParamName<Object>	priDbConfig				= new ParamName<Object>();
-	public static final ParamName<Object>	secDbConfig				= new ParamName<Object>();
-	public static final ParamName<Object>	priDb					= new ParamName<Object>();
+	public static final ParamName	level1_BDBStorage		= ParamName.getNew( "level1_BDBStorage" );
+	public static final ParamName	dbName					= ParamName.getNew( "dbName" );
+	public static final ParamName	priDbConfig				= ParamName.getNew( "priDbConfig" );
+	public static final ParamName	secDbConfig				= ParamName.getNew( "secDbConfig" );
+	public static final ParamName	priDb					= ParamName.getNew( "priDb" );
 	
 }

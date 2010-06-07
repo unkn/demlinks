@@ -65,7 +65,7 @@ public class Level040_DMLEnvironment extends Level030_DMLEnvironment {
 	public SetOfTerminalSymbols	allRef2ElementsInEC_Set			= null;
 	
 	@Override
-	protected void start( MethodParams<Object> params ) {
+	protected void start( MethodParams params ) {
 
 		super.start( params );
 		this.initGeneralSymbols();

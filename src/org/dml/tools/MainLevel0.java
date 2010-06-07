@@ -63,7 +63,7 @@ public abstract class MainLevel0 extends StaticInstanceTracker {
 	// we won't deInit passed 'var' param
 	private boolean									usingOwnVarLevel		= false;
 	
-	private static MethodParams<Object>				defaults				= null;
+	private static MethodParams						defaults				= null;
 	
 	private final ListOfUniqueNonNullObjects<Field>	listOfAnnotatedFields	= new ListOfUniqueNonNullObjects<Field>();
 	
@@ -182,10 +182,10 @@ public abstract class MainLevel0 extends StaticInstanceTracker {
 	 *            are passed down to the VarLevel
 	 */
 	@Override
-	protected void start( MethodParams<Object> params ) {
+	protected void start( MethodParams params ) {
 
 		// allows null argument
-		MethodParams<Object> mixedParams = this.getDefaults().getClone();
+		MethodParams mixedParams = this.getDefaults().getClone();
 		try {
 			if ( null != params ) {
 				mixedParams.mergeWith( params, true );// prio on passed params
@@ -240,10 +240,10 @@ public abstract class MainLevel0 extends StaticInstanceTracker {
 	 * 
 	 * @return
 	 */
-	protected MethodParams<Object> getDefaults() {
+	protected MethodParams getDefaults() {
 
 		if ( null == defaults ) {
-			defaults = new MethodParams<Object>();
+			defaults = new MethodParams();
 			defaults.init( null );// FIXME: when's this deInit-ed?
 		}
 		
@@ -256,7 +256,7 @@ public abstract class MainLevel0 extends StaticInstanceTracker {
 	 * @see org.dml.tools.StaticInstanceTracker#done()
 	 */
 	@Override
-	protected void done( MethodParams<Object> params ) {
+	protected void done( MethodParams params ) {
 
 		if ( null != this.getVarLevelX() ) {
 			// could be not yet inited due to throws in initMainLevel()

@@ -55,7 +55,7 @@ public class DatabaseCapsule extends StaticInstanceTracker {
 	 * @see org.dml.tools.StaticInstanceTracker#done()
 	 */
 	@Override
-	protected void done( MethodParams<Object> params ) {
+	protected void done( MethodParams params ) {
 
 		if ( null != db ) {
 			db = bdbL1.closePriDB_silent( db );
@@ -74,7 +74,7 @@ public class DatabaseCapsule extends StaticInstanceTracker {
 	 * @param params
 	 */
 	@Override
-	protected void start( MethodParams<Object> params ) {
+	protected void start( MethodParams params ) {
 
 		// compulsory
 		bdbL1 = (Level1_Storage_BerkeleyDB)params.getEx( PossibleParams.level1_BDBStorage );

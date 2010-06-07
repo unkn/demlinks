@@ -35,5 +35,5 @@ import org.references.method.MethodParams;
  */
 public interface StaticInstanceTrackerWithMethodParamsInterface {
 	
-	public void init( MethodParams<Object> params );
+	public void init( MethodParams params );
 }

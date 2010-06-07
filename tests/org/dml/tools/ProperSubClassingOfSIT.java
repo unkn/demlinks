@@ -41,7 +41,7 @@ public class ProperSubClassingOfSIT extends StaticInstanceTracker {
 	}
 	
 	@Override
-	protected void start( MethodParams<Object> params ) {
+	protected void start( MethodParams params ) {
 
 		System.err.println( this.getClass().getCanonicalName() + " is initializing." );
 	}
@@ -53,7 +53,7 @@ public class ProperSubClassingOfSIT extends StaticInstanceTracker {
 	 */
 	@SuppressWarnings( "unused" )
 	@Override
-	protected void done( MethodParams<Object> params ) {
+	protected void done( MethodParams params ) {
 
 		System.err.println( this.getClass().getCanonicalName() + " is preparing to finish....step 1/2" );
 		if ( true ) {

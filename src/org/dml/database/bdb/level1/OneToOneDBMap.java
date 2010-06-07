@@ -92,7 +92,7 @@ public class OneToOneDBMap<KeyType, DataType> extends StaticInstanceTracker {
 	private void internal_initBoth() throws DatabaseException {
 
 		forwardDB = new DatabaseCapsule();
-		MethodParams<Object> params = new MethodParams<Object>();
+		MethodParams params = new MethodParams();
 		params.init( null );
 		params.set( PossibleParams.level1_BDBStorage, bdb );
 		params.set( PossibleParams.dbName, dbName );
@@ -257,7 +257,7 @@ public class OneToOneDBMap<KeyType, DataType> extends StaticInstanceTracker {
 	}
 	
 	@Override
-	protected void done( MethodParams<Object> params ) {
+	protected void done( MethodParams params ) {
 
 		Log.entry( "deinit OneToOneDBMap: " + dbName );
 		boolean one = false;
@@ -285,7 +285,7 @@ public class OneToOneDBMap<KeyType, DataType> extends StaticInstanceTracker {
 	}
 	
 	@Override
-	protected void start( MethodParams<Object> params ) {
+	protected void start( MethodParams params ) {
 
 		RunTime.assumedNull( params );
 	}

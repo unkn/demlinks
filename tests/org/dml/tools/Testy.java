@@ -52,7 +52,7 @@ public class Testy extends StaticInstanceTracker {
 
 		Testy t = new Testy();
 		
-		MethodParams<Object> params = new MethodParams<Object>();
+		MethodParams params = new MethodParams();
 		params.init( null );
 		params.set( PossibleParams.homeDir, "one/" + new Object() );
 		t.init( params );
@@ -67,7 +67,7 @@ public class Testy extends StaticInstanceTracker {
 	 * @see org.dml.tools.StaticInstanceTracker#done()
 	 */
 	@Override
-	protected void done( MethodParams<Object> params ) {
+	protected void done( MethodParams params ) {
 
 		System.out.println( this.getName() + " is done." );
 		home = null;
@@ -82,7 +82,7 @@ public class Testy extends StaticInstanceTracker {
 	}
 	
 	@Override
-	protected void start( MethodParams<Object> params ) {
+	protected void start( MethodParams params ) {
 
 		System.out.println( this.getName() + " start()" );
 		RunTime.assumedNotNull( params );

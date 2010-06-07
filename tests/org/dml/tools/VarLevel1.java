@@ -53,14 +53,14 @@ public class VarLevel1 extends StaticInstanceTracker implements VarLevel1Interfa
 	 * @see org.dml.tools.StaticInstanceTracker#done()
 	 */
 	@Override
-	protected void done( MethodParams<Object> params ) {
+	protected void done( MethodParams params ) {
 
 		System.out.println( this.getName() + " DeInited." );
 		
 	}
 	
 	@Override
-	protected void start( MethodParams<Object> params ) {
+	protected void start( MethodParams params ) {
 
 		System.out.println( this.getName() + " inited." );
 	}

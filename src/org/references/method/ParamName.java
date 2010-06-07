@@ -26,53 +26,46 @@ package org.references.method;
 
 
 import org.dml.tools.RunTime;
-import org.references.ListOfUniqueNonNullObjects;
-import org.references.Reference;
 
 
 
 /**
- * elements of this list don't point to instances like String or null<br>
- * elements of this list point to references from another list<br>
- * each object in this list is a Reference<Object> from one or more
- * {MethodParams ListOfObjects<Object> list}
+ * just an ID that will uniquely identify a specific parameter<br>
+ * its value is not stored here<br>
  */
-public class ParamName<T> {
+public class ParamName {
 	
-	// all the values that this ParamName has, which means each value is in a
-	// different MethodParams instance
-	ListOfUniqueNonNullObjects<Reference<T>>	listOfValues	= new ListOfUniqueNonNullObjects<Reference<T>>();
-	
+	private final String	selfName;	// only for debugging purposes!
+										
 	/**
-	 * 
-	 * you're attaching this ParamName to a value pointed to by <code>refToValue</code>
-	 * 
-	 * @param refToValue
+	 * dummy constructor, private to prevent init
 	 */
-	protected void add( Reference<T> refToValue ) {
+	private ParamName() {
 
-		RunTime.assumedNotNull( refToValue );
-		RunTime.assumedFalse( listOfValues.containsObject( refToValue ) );
-		listOfValues.addFirst( refToValue );
+		selfName = null;
+	};
+	
+	private ParamName( String name ) {
+
+		RunTime.assumedNotNull( name );
+		selfName = name;
 	}
 	
-	/**
-	 * @param refToValue
-	 * @return true if existed; either way after call it's removed
-	 */
-	protected boolean remove( Reference<T> refToValue ) {
+	// FIXME: throw if 'name' already used when calling getNew! which means keep static list of all names
+	public static ParamName getNew( String name ) {
 
-		RunTime.assumedNotNull( refToValue );
-		return listOfValues.removeObject( refToValue );
+		return new ParamName( name );
 	}
 	
-	/**
-	 * @param refToValue
-	 * @return
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#toString()
 	 */
-	protected boolean contains( Reference<T> refToValue ) {
+	@Override
+	public String toString() {
 
-		return listOfValues.containsObject( refToValue );
+		return this.getClass().getCanonicalName() + ":" + selfName;
 	}
 	
 }

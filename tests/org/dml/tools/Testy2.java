@@ -40,7 +40,7 @@ public class Testy2 extends Testy {
 
 		Testy2 t2 = new Testy2();
 		
-		MethodParams<Object> params = new MethodParams<Object>();
+		MethodParams params = new MethodParams();
 		params.init( null );
 		params.set( PossibleParams.homeDir, "two" + new Object() );
 		t2.init( params );

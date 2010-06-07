@@ -183,7 +183,7 @@ public class BDBVectorIterator<InitialType, TerminalType> extends StaticInstance
 	}
 	
 	@Override
-	protected void done( MethodParams<Object> params ) {
+	protected void done( MethodParams params ) {
 
 		try {
 			this.close();
@@ -209,7 +209,7 @@ public class BDBVectorIterator<InitialType, TerminalType> extends StaticInstance
 	}
 	
 	@Override
-	protected void start( MethodParams<Object> params ) {
+	protected void start( MethodParams params ) {
 
 		if ( null != params ) {
 			RunTime.badCall( "not accepting any parameters here" );

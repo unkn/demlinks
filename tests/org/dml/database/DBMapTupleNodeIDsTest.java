@@ -62,7 +62,7 @@ public class DBMapTupleNodeIDsTest {
 	@Before
 	public void setUp() throws DatabaseException {
 
-		MethodParams<Object> params = new MethodParams<Object>();
+		MethodParams params = new MethodParams();
 		params.init( null );
 		params.set( PossibleParams.homeDir, Consts.BDB_ENV_PATH );
 		params.set( PossibleParams.jUnit_wipeDB, true );

@@ -46,7 +46,7 @@ public class StaticInstanceTrackerTest {
 	Testy					t, tt;
 	Testy2					t2, tt2;
 	ProperSubClassingOfSIT	psc;
-	MethodParams<Object>	params	= null;
+	MethodParams			params	= null;
 	
 	@Before
 	public void setUp() {
@@ -57,7 +57,7 @@ public class StaticInstanceTrackerTest {
 		tt = Testy.getNew();
 		tt2 = new Testy2();
 		
-		params = new MethodParams<Object>();
+		params = new MethodParams();
 		params.init( null );
 		
 	}
