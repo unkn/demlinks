@@ -71,6 +71,7 @@ public class Testy extends StaticInstanceTracker {
 
 		System.out.println( this.getName() + " is done." );
 		home = null;
+		RunTime.assumedTrue( this.isInited() );
 	}
 	
 	/**
