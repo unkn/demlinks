@@ -414,7 +414,7 @@ public class HelloIntersection extends SimpleFixedLogicrateGame implements IScen
 			rootNode.attachChild( tube );
 			tube.updateRenderState();
 			
-			bullet.addController( new BulletMover( tube, bullet, new Vector3f( cam.getDirection() ),
+			bullet.addController( new BulletMover( tube, bullet, new Vector3f( cam.getDirection().clone() ),
 					cam.getUp().clone() ) );
 			assert cam.getUp() != cam.getUp().clone();
 			// bullet.addController( new BulletMover( bullet, lT ) );
@@ -458,10 +458,31 @@ public class HelloIntersection extends SimpleFixedLogicrateGame implements IScen
 
 			tube = tube1;
 			bullet = bullet1;
+			
+			// Quaternion q = new Quaternion( direction.x, direction.y, direction.z, 0 );
+			// up = q.getRotationColumn( 1 );
+			// LWJGLCamera ac = new LWJGLCamera( display.getWidth(), display.getHeight(), false );
+			// ac.setDirection( direction1 );
+			// ac.update();
+			// up = ac.getUp();
+			// up = cam.getUp();
+			// direction = ac.getDirection();
+			
 			direction = direction1;
 			direction.normalizeLocal();
+			// Quaternion q = new Quaternion( direction.x, direction.y, direction.z, 1 );
+			// Quaternion q = new Quaternion();
+			// q.fromAngleAxis( 3, direction );
+			// Vector3f[] axis = new Vector3f[3];
+			// q.toAxes( axis );
+			//
+			// up = axis[1];
+			
+
 			up = up1;
 			up.normalizeLocal();
+			System.out.println( "UP:" + up );
+			System.out.println( "dir:" + direction );
 		}
 		
 		@Override
@@ -506,8 +527,23 @@ public class HelloIntersection extends SimpleFixedLogicrateGame implements IScen
 			// up.y = FastMath.abs( up.y );
 			// up = direction.cross( Vector3f.UNIT_Y );
 			// up.normalizeLocal();
-			// Quaternion q = new Quaternion( direction.x, direction.y, direction.z, 0 );
+			// Quaternion q = new Quaternion( direction.x, direction.y, direction.z, 1 );
+			// Vector3f[] axis = new Vector3f[3];
+			// q.toAxes( axis );
+			// up = axis[0];
+			// LWJGLCamera ac = new LWJGLCamera( display.getWidth(), display.getHeight(), true );
+			// ac.setDirection( direction );
+			// ac.update();
+			// up = ac.getUp();
+			// up.normalizeLocal();
+			// Quaternion q = new Quaternion();
+			// q.fromAngleAxis( 90, direction );
+			// q.toAxes( axis )
 			// up = q.getRotationColumn( 1 );
+			// q.lookAt( direction, Vector3f.UNIT_Y );
+			// up.x = q.getX();
+			// up.y = q.getY();
+			// up.z = q.getZ();
 			
 			float x = up.x * 1 * vary;
 			float y = up.y * 1 * vary;
