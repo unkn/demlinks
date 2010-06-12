@@ -3,7 +3,6 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="tests"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/jme"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jME Physics 2"/>
 	<classpathentry kind="lib" path="lib/je/je-4.0.103.jar" sourcepath="lib/je/src"/>
 	<classpathentry kind="lib" path="lib/junit/junit-4.8.2.jar" sourcepath="lib/junit/junit-4.8.2-src.jar"/>
@@ -18,5 +17,6 @@
 	<classpathentry kind="lib" path="lib/SceneWorker/scenemonitor_jme2.jar"/>
 	<classpathentry kind="lib" path="lib/SceneWorker/sceneworker.jar"/>
 	<classpathentry kind="lib" path="lib/SceneWorker/sm_properties_jme2.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/jme"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

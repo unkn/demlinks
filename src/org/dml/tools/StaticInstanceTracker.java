@@ -156,6 +156,8 @@ public abstract class StaticInstanceTracker {
 	 * 
 	 * isInited() will be true while in done(), but even if done() throws, it will be set to false after a call to
 	 * done() !!
+	 * FIXME: good luck preventing this from being called directly; should be called only from deInit(); but should also
+	 * be overriddable
 	 */
 	protected abstract void done( MethodParams params );
 	

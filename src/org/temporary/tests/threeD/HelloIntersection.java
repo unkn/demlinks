@@ -42,7 +42,7 @@ import java.util.logging.Logger;
 import org.jme.addons.SimpleFixedLogicrateGame;
 
 import com.acarter.scenemonitor.SceneMonitor;
-import com.jme.bounding.BoundingSphere;
+import com.jme.bounding.BoundingBox;
 import com.jme.bounding.OrientedBoundingBox;
 import com.jme.image.Texture;
 import com.jme.input.InputHandler;
@@ -50,8 +50,6 @@ import com.jme.input.KeyInput;
 import com.jme.input.action.InputAction;
 import com.jme.input.action.InputActionEvent;
 import com.jme.input.action.KeyInputAction;
-import com.jme.intersection.BoundingCollisionResults;
-import com.jme.intersection.CollisionResults;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
@@ -63,6 +61,7 @@ import com.jme.scene.Spatial;
 import com.jme.scene.Text;
 import com.jme.scene.TriMesh;
 import com.jme.scene.shape.Sphere;
+import com.jme.scene.shape.Tube;
 import com.jme.scene.state.CullState;
 import com.jme.scene.state.MaterialState;
 import com.jme.system.DisplaySystem;
@@ -124,24 +123,27 @@ public class HelloIntersection extends SimpleFixedLogicrateGame implements IScen
 	private Text					liveBulletsText;
 	private static String			liveBulletsTxt		= "Live bullets: ";
 	private int						liveBullets, oldLiveBullets;
-	private boolean					collision;
-	private CollisionResults		results;
-	private Node					scene, n1Target, n2Bullet;
+	// private boolean collision;
+	// private CollisionResults results;
+	// private Node scene, n1Target, n2Bullet;
 	private SceneWorkerAppHandler	sceneWorkerHandler;
 	
 	// get the current input handler
+	@Override
 	public InputHandler getInputHandler() {
 
 		return input;
 	}
 	
 	// get the root node of the scene
+	@Override
 	public Node getRootNode() {
 
 		return rootNode;
 	}
 	
 	// get the tpf parameter for updates
+	@Override
 	public float getTimePerFrame() {
 
 		return tpf;
@@ -152,18 +154,21 @@ public class HelloIntersection extends SimpleFixedLogicrateGame implements IScen
 	 * the keyboard.
 	 * This will toggle between the applications input handler or scene workers
 	 */
+	@Override
 	public void setInputHandler( InputHandler cl_ip ) {
 
 		input = cl_ip;
 	}
 	
 	// get the display system
+	@Override
 	public DisplaySystem getDisplaySystem() {
 
 		return display;
 	}
 	
 	// get the current camera
+	@Override
 	public Camera getCamera() {
 
 		return cam;
@@ -179,9 +184,9 @@ public class HelloIntersection extends SimpleFixedLogicrateGame implements IScen
 	@Override
 	protected void simpleInitGame() {
 
-		scene = new Node( "3D Scene Root" );
-		n1Target = new Node( "node1Target" );
-		n2Bullet = new Node( "node2Bullet" );
+		// scene = new Node( "3D Scene Root" );
+		// n1Target = new Node( "node1Target" );
+		// n2Bullet = new Node( "node2Bullet" );
 		
 		this.setLogicTicksPerSecond( 60 );// seems this class is already running
 		// at a fixed rate; thus setting this to 10 emulates crappy computer
@@ -235,29 +240,31 @@ public class HelloIntersection extends SimpleFixedLogicrateGame implements IScen
 		// y = x.transform( q1.clone(), trans1.clone(), scale1.clone() );
 		
 		// target.setModelBound( new OrientedBoundingBox() );
-		target.setModelBound( new OrientedBoundingBox() );// BUGGED
+		target.setModelBound( new OrientedBoundingBox() );// BUGGED with BoundingSphere
 		target.updateModelBound();
+		target.updateWorldBound();
 		
 
-		results = new BoundingCollisionResults() {
-			
-			@Override
-			public void processCollisions() {
-
-				if ( this.getNumber() > 0 ) {
-					collision = true;
-				} else {
-					collision = false;
-				}
-			}
-		};
+		// results = new BoundingCollisionResults() {
+		//
+		// @Override
+		// public void processCollisions() {
+		//
+		// if ( this.getNumber() > 0 ) {
+		// collision = true;
+		// } else {
+		// collision = false;
+		// }
+		// }
+		// };
 		
-		n1Target.attachChild( target );
-		scene.attachChild( n1Target );
-		scene.attachChild( n2Bullet );
+		rootNode.attachChild( target );
+		// n1Target.attachChild( target );
+		// scene.attachChild( n1Target );
+		// scene.attachChild( n2Bullet );
 		// scene.attachChild(n2);
 		
-		rootNode.attachChild( scene );
+		// rootNode.attachChild( scene );
 		
 		/** Create a skybox to surround our world */
 		this.setupSky();
@@ -270,6 +277,7 @@ public class HelloIntersection extends SimpleFixedLogicrateGame implements IScen
 		// create an action to shown button activity//copied from TestInputHandler.java
 		InputAction buttonAction = new InputAction() {
 			
+			@Override
 			public void performAction( InputActionEvent evt ) {
 
 				// String actionString;
@@ -303,7 +311,7 @@ public class HelloIntersection extends SimpleFixedLogicrateGame implements IScen
 		SceneWorker.inst().initialiseSceneWorkerAndMonitor();
 		SceneMonitor.getMonitor().registerNode( rootNode, "root" );
 		SceneMonitor.getMonitor().registerNode( statNode, "stat" );
-		// initialise the application handler so we get tools palette, input handler and rendering
+		// Initialize the application handler so we get tools palette, input handler and rendering
 		// sceneWorkerHandler = new SceneWorkerAppHandler( this );
 		// sceneWorkerHandler.initialise();
 		
@@ -382,10 +390,12 @@ public class HelloIntersection extends SimpleFixedLogicrateGame implements IScen
 			/** Create bullet */
 			liveBullets++;
 			Sphere bullet = new Sphere( "bullet" + numBullets++, 8, 8, .25f );
-			bullet.setModelBound( new BoundingSphere() );
+			bullet.setModelBound( new BoundingBox() );
 			bullet.updateModelBound();
 			/** Move bullet to the camera location */
-			bullet.setLocalTranslation( new Vector3f( cam.getLocation() ) );
+			Vector3f lT = cam.getLocation().add( cam.getDirection().mult( 2f ) );
+			// bullet.setLocalTranslation( new Vector3f( cam.getLocation() ) );
+			bullet.setLocalTranslation( lT );
 			bullet.setRenderState( bulletMaterial );
 			/**
 			 * Update the new world location for the bullet before I add a
@@ -396,12 +406,27 @@ public class HelloIntersection extends SimpleFixedLogicrateGame implements IScen
 			 * Add a movement controller to the bullet going in the camera's
 			 * direction
 			 */
-			bullet.addController( new BulletMover( bullet, new Vector3f( cam.getDirection() ) ) );
-			n2Bullet.attachChild( bullet );
+			Tube tube;
+			tube = new Tube( "tuberay", 0.2f, 0.1f, 1f );
+			tube.setModelBound( new OrientedBoundingBox() );
+			tube.updateModelBound();
+			// tube.lookAt( lT, cam.getDirection() );
+			rootNode.attachChild( tube );
+			tube.updateRenderState();
+			
+			bullet.addController( new BulletMover( tube, bullet, new Vector3f( cam.getDirection() ),
+					cam.getUp().clone() ) );
+			assert cam.getUp() != cam.getUp().clone();
+			// bullet.addController( new BulletMover( bullet, lT ) );
+			// n2Bullet.attachChild( bullet );
+			rootNode.attachChild( bullet );
 			bullet.updateRenderState();
 			/** Signal our sound to play laser during rendering */
-			laserSound.setWorldPosition( cam.getLocation() );
+			// laserSound.setWorldPosition( cam.getLocation() );
+			laserSound.setWorldPosition( lT );
 			laserSound.play();
+			
+
 		}
 	}
 	
@@ -410,22 +435,33 @@ public class HelloIntersection extends SimpleFixedLogicrateGame implements IScen
 		private static final long	serialVersionUID	= 1L;
 		/** Bullet that's moving */
 		TriMesh						bullet;
+		Tube						tube;
 		
 		/** Direction of bullet */
 		Vector3f					direction;
+		Vector3f					up;
 		
 		/** speed of bullet */
-		float						speed				= 10;	// if too big,
+		float						speed				= 10;		// if too big,
 		// it might miss
+		float						vary				= 0;
+		float						maxVary				= 0.1f;
+		float						varyStep			= 0.01f;
+		float						vary2Step			= 0.02f;
+		boolean						dir					= true;
+		float						vary2				= 0;
 		
 		/** Seconds it will last before going away */
 		float						lifeTime			= 50;
 		
-		BulletMover( TriMesh bullet1, Vector3f direction1 ) {
+		BulletMover( Tube tube1, TriMesh bullet1, Vector3f direction1, Vector3f up1 ) {
 
+			tube = tube1;
 			bullet = bullet1;
 			direction = direction1;
 			direction.normalizeLocal();
+			up = up1;
+			up.normalizeLocal();
 		}
 		
 		@Override
@@ -437,7 +473,8 @@ public class HelloIntersection extends SimpleFixedLogicrateGame implements IScen
 			if ( lifeTime < 0 ) {
 				liveBullets--;
 				assert liveBullets >= 0;
-				n2Bullet.detachChild( bullet );
+				// n2Bullet.detachChild( bullet );
+				rootNode.detachChild( bullet );
 				boolean test1 = bullet.removeController( this );
 				assert test1;
 				return;
@@ -445,9 +482,60 @@ public class HelloIntersection extends SimpleFixedLogicrateGame implements IScen
 			/** Move bullet */
 			Vector3f bulletPos = bullet.getLocalTranslation();
 			bulletPos.addLocal( direction.mult( time * speed ) );
+			// bulletPos.addLocal( direction.mult( time * speed ) );
+			// bulletPos.addLocal( direction.mult( FastMath.sin( time * speed ) ) );
+			
+			if ( dir ) {
+				vary += varyStep;
+				vary2 += vary2Step;
+				if ( vary >= maxVary ) {
+					dir = false;
+				}
+			} else {
+				vary -= varyStep;
+				vary2 -= vary2Step;
+				if ( vary <= -maxVary ) {
+					dir = true;
+				}
+			}
+			
+			// float x = direction.x * time * speed + direction.x * vary;
+			// float y = direction.y * time * speed + direction.y * vary;
+			// float z = direction.z * time * speed + direction.z * vary;
+			// up = direction.clone();
+			// up.y = FastMath.abs( up.y );
+			// up = direction.cross( Vector3f.UNIT_Y );
+			// up.normalizeLocal();
+			// Quaternion q = new Quaternion( direction.x, direction.y, direction.z, 0 );
+			// up = q.getRotationColumn( 1 );
+			
+			float x = up.x * 1 * vary;
+			float y = up.y * 1 * vary;
+			float z = up.z * 1 * vary;
+			Vector3f res = new Vector3f( x, y, z );
+			
+
+
+			// res = cam.getUp().clone();
+			// res.multLocal( vary );
+			// res.multLocal( cam.getUp() );
+			// res.normalizeLocal();
+			// res.cross( cam.getUp() );
+			bulletPos.addLocal( res );// direction.x + x, direction.y + y, direction.z + z );
+			tube.setLocalTranslation( bulletPos.add( up.mult( 1f ) ) );
+			tube.lookAt( bulletPos, direction );
+			// tube.lookAt( direction, up );
+			
+			// direction.x = time * FastMath.sin( direction.x );
+			// direction.y = time * FastMath.sin( direction.y );
+			// direction.z = time * FastMath.sin( direction.z );
+			// // direction.addLocal( cam.getDirection() );
+			// direction.normalizeLocal();
+			
 			bullet.setLocalTranslation( bulletPos );
 			/** Does the bullet intersect with target? */
-			if ( bullet.getWorldBound().intersects( target.getWorldBound() ) ) {
+			// if ( bullet.getWorldBound().intersects( target.getWorldBound() ) ) {
+			if ( bullet.hasCollision( target, true ) ) {
 				score += scoreWhenBulletHits;
 				hits++;
 				logger.info( "OUCH!!!" );
@@ -496,11 +584,11 @@ public class HelloIntersection extends SimpleFixedLogicrateGame implements IScen
 		// update scene worker tools
 		// sceneWorkerHandler.update();
 		
-		results.clear();
-		n1Target.calculateCollisions( scene, results );
-		if ( n1Target.hasCollision( scene, false ) ) {
-			logger.info( "hasCollision also reports true" );
-		}
+		// results.clear();
+		// n1Target.calculateCollisions( scene, results );
+		// if ( n1Target.hasCollision( scene, false ) ) {
+		// logger.info( "hasCollision also reports true" );
+		// }
 	}
 	
 	@Override

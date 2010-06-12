@@ -55,7 +55,6 @@ import com.jme.scene.Skybox;
 import com.jme.scene.Spatial;
 import com.jme.scene.Text;
 import com.jme.scene.TriMesh;
-import com.jme.scene.shape.Box;
 import com.jme.scene.shape.Sphere;
 import com.jme.scene.state.CullState;
 import com.jme.scene.state.MaterialState;
@@ -123,6 +122,8 @@ public class OrientedBoundingBoxExampleTest3 extends SimpleGame {
 		target.setModelBound( new OrientedBoundingBox() );// BUGGED?
 		target.updateModelBound();
 		target.updateGeometricState( 0, true );
+		target.updateWorldBound();
+		target.updateWorldVectors();
 		
 		Sphere clone = new Sphere( "my sphere clone", 15, 15, 1 );
 		clone.setLocalScale( scale1.clone() );
@@ -149,6 +150,7 @@ public class OrientedBoundingBoxExampleTest3 extends SimpleGame {
 			
 			private long	oldTime;
 			
+			@Override
 			public void performAction( InputActionEvent evt ) {
 
 				// String actionString;
@@ -181,6 +183,13 @@ public class OrientedBoundingBoxExampleTest3 extends SimpleGame {
 		redMaterial.setDiffuse( ColorRGBA.red.clone() );
 		target.setRenderState( redMaterial );
 		
+
+		rootNode.updateGeometricState( 0, true );
+		rootNode.updateModelBound();
+		rootNode.updateWorldBound();
+		rootNode.updateModelBound();
+		rootNode.updateGeometricState( 0, true );
+		rootNode.updateWorldBound();
 	}
 	
 	
@@ -227,12 +236,15 @@ public class OrientedBoundingBoxExampleTest3 extends SimpleGame {
 
 			logger.info( "BANG" );
 			/** Create bullet */
-			// Sphere bullet = new Sphere( "bullet" + numBullets++, 8, 8, .25f );
-			Box bullet = new Box( "bullet" + numBullets++, Vector3f.ZERO, .25f, .25f, .25f );
+			Sphere bullet = new Sphere( "bullet" + numBullets++, 8, 8, .25f );
+			// Box bullet = new Box( "bullet" + numBullets++, Vector3f.ZERO, .25f, .25f, .25f );
 			bullet.setModelBound( new BoundingSphere() );
 			bullet.updateModelBound();
 			/** Move bullet to the camera location */
-			bullet.setLocalTranslation( new Vector3f( cam.getLocation() ) );
+			float unitsAwayFromCam = 3f;
+			Vector3f targetTranslation = cam.getLocation().add( cam.getDirection().mult( unitsAwayFromCam ) );
+			bullet.setLocalTranslation( targetTranslation );
+			// bullet.setLocalTranslation( new Vector3f( cam.getLocation() ) );
 			bullet.setRenderState( bulletMaterial );
 			/**
 			 * Update the new world location for the bullet before I add a
@@ -293,9 +305,17 @@ public class OrientedBoundingBoxExampleTest3 extends SimpleGame {
 			Vector3f bulletPos = bullet.getLocalTranslation();
 			bulletPos.addLocal( direction.mult( time * speed ) );
 			bullet.setLocalTranslation( bulletPos );
+			// bullet.updateGeometricState( time, true );
+			bullet.updateModelBound();
+			bullet.updateWorldBound();
+			target.updateGeometricState( time, true );
+			target.updateModelBound();
+			target.updateWorldBound();
+			
 			/** Does the bullet intersect with target? */
 			// if ( target.hasCollision( bullet, false ) ) {
-			if ( bullet.getWorldBound().intersects( target.getWorldBound() ) ) {
+			if ( ( bullet.hasCollision( target, false ) ) || ( ( target.hasCollision( bullet, false ) ) ) ) {
+				// if ( bullet.getWorldBound().intersects( target.getWorldBound() ) ) {
 				logger.info( "OUCH!!!" );
 				
 				// target.setLocalTranslation( new Vector3f( r.nextFloat() * 10, r.nextFloat() * 10, r.nextFloat() * 10
