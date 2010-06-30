@@ -50,6 +50,8 @@ import com.jme.input.KeyInput;
 import com.jme.input.action.InputAction;
 import com.jme.input.action.InputActionEvent;
 import com.jme.input.action.KeyInputAction;
+import com.jme.math.FastMath;
+import com.jme.math.Matrix3f;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
@@ -447,42 +449,45 @@ public class HelloIntersection extends SimpleFixedLogicrateGame implements IScen
 		float						vary				= 0;
 		float						maxVary				= 0.1f;
 		float						varyStep			= 0.01f;
-		float						vary2Step			= 0.02f;
+		float						varyAngle			= 0;
 		boolean						dir					= true;
-		float						vary2				= 0;
+		boolean						dir2				= true;
 		
 		/** Seconds it will last before going away */
 		float						lifeTime			= 50;
+		Quaternion					q;
+		Matrix3f					rotation;
 		
 		BulletMover( Tube tube1, TriMesh bullet1, Vector3f direction1, Vector3f up1 ) {
 
 			tube = tube1;
 			bullet = bullet1;
-			
-			// Quaternion q = new Quaternion( direction.x, direction.y, direction.z, 0 );
-			// up = q.getRotationColumn( 1 );
-			// LWJGLCamera ac = new LWJGLCamera( display.getWidth(), display.getHeight(), false );
-			// ac.setDirection( direction1 );
-			// ac.update();
-			// up = ac.getUp();
-			// up = cam.getUp();
-			// direction = ac.getDirection();
-			
 			direction = direction1;
 			direction.normalizeLocal();
-			// Quaternion q = new Quaternion( direction.x, direction.y, direction.z, 1 );
-			// Quaternion q = new Quaternion();
-			// q.fromAngleAxis( 3, direction );
-			// Vector3f[] axis = new Vector3f[3];
-			// q.toAxes( axis );
-			//
-			// up = axis[1];
-			
-
 			up = up1;
 			up.normalizeLocal();
-			System.out.println( "UP:" + up );
-			System.out.println( "dir:" + direction );
+			
+			q = new Quaternion();
+			Vector3f[] axis = new Vector3f[3];
+			axis[0] = cam.getLeft().normalize();// X
+			axis[1] = up;// Y
+			axis[2] = direction;// Z
+			rotation = new Matrix3f();
+			rotation.setColumn( 0, cam.getLeft().normalize() );
+			rotation.setColumn( 1, up );
+			rotation.setColumn( 2, direction );
+			
+			q.fromAxes( axis );
+			// Ray r=new Ray( Vector3f.ZERO, direction );
+			System.out.println( "left:" + cam.getLeft() );
+			System.out.println( "up :" + cam.getUp() );
+			System.out.println( "dir:" + cam.getDirection() );
+			axis[1] = new Vector3f( 10, 25, 15 );
+			axis[1].normalizeLocal();
+			System.out.println( "norm:" + axis[1] );
+			
+
+
 		}
 		
 		@Override
@@ -506,67 +511,67 @@ public class HelloIntersection extends SimpleFixedLogicrateGame implements IScen
 			// bulletPos.addLocal( direction.mult( time * speed ) );
 			// bulletPos.addLocal( direction.mult( FastMath.sin( time * speed ) ) );
 			
-			if ( dir ) {
-				vary += varyStep;
-				vary2 += vary2Step;
-				if ( vary >= maxVary ) {
-					dir = false;
-				}
+			// if ( dir ) {
+			// vary += varyStep;
+			// if ( vary >= maxVary ) {
+			// dir = false;
+			// }
+			// } else {
+			// vary -= varyStep;
+			// if ( vary <= -maxVary ) {
+			// dir = true;
+			// }
+			// }
+			
+			// float x = up.x * 1 * vary;
+			// float y = up.y * 1 * vary;
+			// float z = up.z * 1 * vary;
+			// Vector3f res = new Vector3f( x, y, z );
+			// if ( dir2 ) {
+			varyAngle += 0.1;
+			if ( varyAngle > 2 * FastMath.PI ) {
+				// dir2 = false;
+				varyAngle = 0;
+				dir = true;
 			} else {
-				vary -= varyStep;
-				vary2 -= vary2Step;
-				if ( vary <= -maxVary ) {
-					dir = true;
+				if ( varyAngle > FastMath.PI ) {
+					dir = false;
 				}
 			}
 			
-			// float x = direction.x * time * speed + direction.x * vary;
-			// float y = direction.y * time * speed + direction.y * vary;
-			// float z = direction.z * time * speed + direction.z * vary;
-			// up = direction.clone();
-			// up.y = FastMath.abs( up.y );
-			// up = direction.cross( Vector3f.UNIT_Y );
-			// up.normalizeLocal();
-			// Quaternion q = new Quaternion( direction.x, direction.y, direction.z, 1 );
-			// Vector3f[] axis = new Vector3f[3];
-			// q.toAxes( axis );
-			// up = axis[0];
-			// LWJGLCamera ac = new LWJGLCamera( display.getWidth(), display.getHeight(), true );
-			// ac.setDirection( direction );
-			// ac.update();
-			// up = ac.getUp();
-			// up.normalizeLocal();
-			// Quaternion q = new Quaternion();
-			// q.fromAngleAxis( 90, direction );
-			// q.toAxes( axis )
-			// up = q.getRotationColumn( 1 );
-			// q.lookAt( direction, Vector3f.UNIT_Y );
-			// up.x = q.getX();
-			// up.y = q.getY();
-			// up.z = q.getZ();
+			if ( dir ) {
+				vary += varyStep;
+				// if ( vary >= maxVary ) {
+				// dir = false;
+				// }
+			} else {
+				vary -= varyStep;
+				// if ( vary <= -maxVary ) {
+				// dir = true;
+				// }
+			}
+			// } else {
+			// varyAngle -= 0.1;
+			// if ( varyAngle <= 0 ) {
+			// dir2 = true;
+			// }
+			// }
 			
-			float x = up.x * 1 * vary;
-			float y = up.y * 1 * vary;
-			float z = up.z * 1 * vary;
-			Vector3f res = new Vector3f( x, y, z );
+			q.fromAngleNormalAxis( varyAngle, direction );// on Z axis
+			Vector3f[] axis = new Vector3f[3];
+			q.toAxes( axis );
+			Vector3f tmpUp = axis[1];// Y
+			tmpUp.normalizeLocal();
+			// tmpUp=Vector3f.UNIT_X;
+			// tube.rotatePoints( q );
+			// bullet.rotateUpTo( tmpUp );
 			
 
-
-			// res = cam.getUp().clone();
-			// res.multLocal( vary );
-			// res.multLocal( cam.getUp() );
-			// res.normalizeLocal();
-			// res.cross( cam.getUp() );
-			bulletPos.addLocal( res );// direction.x + x, direction.y + y, direction.z + z );
-			tube.setLocalTranslation( bulletPos.add( up.mult( 1f ) ) );
-			tube.lookAt( bulletPos, direction );
+			bulletPos.addLocal( tmpUp.mult( 0.01f ) );// direction.x + x, direction.y + y, direction.z + z );
+			tube.setLocalTranslation( bulletPos.add( tmpUp.mult( 1f ) ) );
+			tube.setLocalRotation( q.toRotationMatrix() );
+			// tube.lookAt( bulletPos, direction );
 			// tube.lookAt( direction, up );
-			
-			// direction.x = time * FastMath.sin( direction.x );
-			// direction.y = time * FastMath.sin( direction.y );
-			// direction.z = time * FastMath.sin( direction.z );
-			// // direction.addLocal( cam.getDirection() );
-			// direction.normalizeLocal();
 			
 			bullet.setLocalTranslation( bulletPos );
 			/** Does the bullet intersect with target? */
