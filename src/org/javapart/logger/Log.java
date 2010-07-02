@@ -28,9 +28,10 @@ package org.javapart.logger;
 public class Log {
 	
 	
-	static final int					methodWOClassNameWidth					= 30;
-	static final int					methodWithClassNameWidth				= 50;
-	static final int					fileAndLineWidth						= 30;
+	// static final int methodWOClassNameWidth = 30;
+	// static final int methodWithClassNameWidth = 50;
+	static final int					fileAndLineWidth						= 30 + 50;
+	static final int					spacesBeforeMsg							= 10;
 	
 	private final static LogFlags		CurrentLogFlags[]						= {
 			// LogFlags.Entry, // LogFlags.Mid,
@@ -48,8 +49,8 @@ public class Log {
 	
 	private static StackTraceElement[]	stea									= null;
 	
-	private static final Integer		currentMethodLocation					= 5;
-	
+	private static final Integer		currentMethodLocation					= 5;		// 5
+																							
 	private final static String			nl										= "\n";
 	
 	/*
@@ -58,24 +59,29 @@ public class Log {
 	 * this.log( "Logger initialized." ); }
 	 */
 
-	private static void thro0( String msg ) {
+	private static void thro0( int modifier, String msg ) {
 
-		log( LogFlags.Thro, "Throws: " + msg );
+		log( modifier, LogFlags.Thro, "Throws: " + msg );
 	}
 	
 	public static void thro( String msg ) {
 
-		thro0( msg + nl );
+		thro0( 0, msg + nl );
+	}
+	
+	public static void thro1( String msg ) {
+
+		thro0( +1, msg + nl );
 	}
 	
 	public static void thro() {
 
-		thro0( nl );
+		thro0( 0, nl );
 	}
 	
 	private static void special0( String msg ) {
 
-		log( LogFlags.Special, "special: " + msg );
+		log( 0, LogFlags.Special, "special: " + msg );
 	}
 	
 	// public static void specialb( String msg ) {
@@ -95,7 +101,7 @@ public class Log {
 	
 	private static void entry0( String msg ) {
 
-		log( LogFlags.Entry, "entry : " + msg );
+		log( 0, LogFlags.Entry, "entry : " + msg );
 	}
 	
 	// public static void entryb( String msg ) {
@@ -116,7 +122,7 @@ public class Log {
 	
 	private static void exit0( String msg ) {
 
-		log( LogFlags.Exit, "exit  : " + msg );
+		log( 0, LogFlags.Exit, "exit  : " + msg );
 	}
 	
 	// public static void exitb( String msg ) {
@@ -136,7 +142,7 @@ public class Log {
 	
 	public static void mid0( String msg ) {
 
-		log( LogFlags.Mid, "mid  : " + msg );
+		log( 0, LogFlags.Mid, "mid  : " + msg );
 	}
 	
 	public static void mid( String msg ) {
@@ -149,7 +155,7 @@ public class Log {
 		mid0( nl );
 	}
 	
-	private static void log( LogFlags logFlag, String msg ) {
+	private static void log( int modifier, LogFlags logFlag, String msg ) {
 
 		// StackTraceElement[] stea = Thread.currentThread().getStackTrace();
 		// System.out.println( " !" + stea.length + "! " );
@@ -162,10 +168,10 @@ public class Log {
 			// if ( logFlag == LogFlags.Result ) {
 			// System.err.print( msg );
 			// } else {
-			String loc = getCurrentLocation();
-			if ( mustShowCurrentMethod() ) {
+			String loc = getCurrentLocation( modifier );
+			if ( mustShowCurrentMethod( modifier ) ) {
 				
-				System.err.print( loc + msg );
+				System.err.print( loc + nl + String.format( "%-" + spacesBeforeMsg + "s%s", " ", msg ) );
 				// }
 			}
 		}
@@ -175,7 +181,7 @@ public class Log {
 	 * @return true if currentMethod is a method that must show logs for, or a
 	 *         child of such method
 	 */
-	private static boolean mustShowCurrentMethod() {
+	private static boolean mustShowCurrentMethod( int modifier ) {
 
 		if ( ShowOnlyTheseMethodsAndTheirChildren.length == 0 ) {
 			return true;// show all
@@ -184,7 +190,7 @@ public class Log {
 		int init = 0;
 		int dest = stea.length;
 		if ( !alsoShowChildrenMethods ) {
-			init = currentMethodLocation;
+			init = currentMethodLocation + modifier;
 			dest = init + 1;
 		}
 		for ( int x = init; x < dest; x++ ) {
@@ -208,7 +214,7 @@ public class Log {
 		return false;
 	}
 	
-	private static String getCurrentLocation() {
+	private static String getCurrentLocation( int modifier ) {
 
 		// try {
 		// throw new Exception();
@@ -216,21 +222,23 @@ public class Log {
 		// e.printStackTrace();
 		// }
 		stea = Thread.currentThread().getStackTrace();
-		StackTraceElement ste = stea[currentMethodLocation];
+		StackTraceElement ste = stea[currentMethodLocation + modifier];
 		
-		String msg = new String();
-		int width = methodWOClassNameWidth;// methodName size
+		// String msg = new String();
+		// int width = methodWOClassNameWidth;// methodName size
 		
-		if ( hasFlag( LogFlags.ShowClassName ) ) {
-			msg = msg.concat( ste.getClassName() + "." );
-			width = methodWithClassNameWidth;
-		}
-		msg = msg.concat( ste.getMethodName() );
+		// if ( hasFlag( LogFlags.ShowClassName ) ) {
+		// msg = msg.concat( ste.getClassName() + "." );
+		// width = methodWithClassNameWidth;
+		// }
+		// msg = msg.concat( ste.getMethodName() );
 		
-		return String.format( "%-" + width + "s %-" + ( fileAndLineWidth ) + "s ", msg, "(" + ste.getFileName() + ":"
-				+ ste.getLineNumber() + ")" );
+		// this was a workaround for eclipse showing links properly when clicked to go at the right source even if other
+		// projects were open that would've make it go to their sources in rt.jar file
+		// return String.format( /* "%-" + width + "s "+ */"%-" + ( fileAndLineWidth ) + "s", /* msg, */
+		return ste.getClassName() + "." + ste.getMethodName() + "(" + ste.getFileName() + ":" + ste.getLineNumber()
+				+ ")";// );
 	}
-	
 	
 	public static void result( boolean boo ) {
 
@@ -249,12 +257,12 @@ public class Log {
 	
 	private static void result0( String msg ) {
 
-		log( LogFlags.Result, "result: " + msg );
+		log( 0, LogFlags.Result, "result: " + msg );
 	}
 	
 	public static void warn0( String msg ) {
 
-		log( LogFlags.Warn, "warn  : " + msg );
+		log( 0, LogFlags.Warn, "warn  : " + msg );
 	}
 	
 	public static void warn( String msg ) {
@@ -269,7 +277,7 @@ public class Log {
 	
 	public static void bug0( String msg ) {
 
-		log( LogFlags.Bug, "BUG   : " + msg );
+		log( 0, LogFlags.Bug, "BUG   : " + msg );
 	}
 	
 	public static void bug( String msg ) {

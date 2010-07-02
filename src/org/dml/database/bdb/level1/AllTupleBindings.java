@@ -56,7 +56,7 @@ public class AllTupleBindings {
 		addNonPrimitive( JUnit_Base1.class, new JUnit_Base1Binding() );
 	}
 	
-	// parametric method
+	// parametric method erm, generic method see generics-tutorial.pdf on inet
 	private static <T> void addNonPrimitive( Class<T> cls, TupleBinding<T> binding ) {
 
 		int formerSize = nonPrimitives.size();

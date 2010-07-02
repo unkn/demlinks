@@ -118,6 +118,7 @@ public abstract class MainLevel0 extends StaticInstanceTracker {
 
 		RunTime.assumedFalse( notSIT );// so it is a subclass of SIT, that is, it has init() and deInit()
 		Field lastField = this.getFieldInLastSubClassWhichIs_This();
+		// constructor like new
 		Constructor<?> con;
 		try {
 			con = lastField.getType().getConstructor( (Class<?>[])null );

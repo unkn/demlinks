@@ -28,7 +28,6 @@ package org.dml.tools;
 import org.javapart.logger.Log;
 import org.references.ListOfUniqueNonNullObjects;
 import org.references.Position;
-import org.references.method.MethodParams;
 
 
 
@@ -46,30 +45,13 @@ import org.references.method.MethodParams;
  * 6. or use reInit() if you already used deInit(), and it will use the original
  * params to init it again<br>
  */
-public abstract class StaticInstanceTracker {
+public abstract class StaticInstanceTracker extends Initer {
 	
 	// LIFO list tracking all instances of ALL subclasses
 	private final static ListOfUniqueNonNullObjects<StaticInstanceTracker>	ALL_INSTANCES	= new ListOfUniqueNonNullObjects<StaticInstanceTracker>();
-	private boolean															inited			= false;
-	private MethodParams													formerParams	= null;
 	
-	/**
-	 * @param inited1
-	 *            the inited to set
-	 */
-	private final void setInited( boolean inited1 ) {
+	
 
-		inited = inited1;
-	}
-	
-	/**
-	 * @return the inited
-	 */
-	public final boolean isInited() {
-
-		return inited;
-	}
-	
 	/**
 	 * constructor
 	 */
@@ -77,117 +59,34 @@ public abstract class StaticInstanceTracker {
 
 	}
 	
-	/**
-	 * implement this start(), but use init() instead<br>
-	 * the params here are already cloned from those passed to init(params)<br>
-	 * isInited() will return true while in start() and it will remain true even if start() throws<br>
-	 */
-	protected abstract void start( MethodParams params );
 	
-	/**
-	 * the params will be cloned (or copied) to be used by reInit()<br>
-	 * 
-	 * @param params
-	 *            null or the params
-	 */
-	public final void init( MethodParams params ) {
+	@Override
+	protected void beforeInit() {
 
-		if ( this.isInited() ) {
-			RunTime.badCall( "already inited, you must deInit() before calling init(...) again" );
-		}
 		addNewInstance( this );
-		this.setInited( true );
-		// try {
-		
-		if ( params != formerParams ) {
-			// NOT called by reInit() or restart()
-			if ( null != formerParams ) {
-				// was used before, we discard the one before
-				formerParams.deInit();
-				formerParams = null;
-			}
-			
-			if ( null != params ) {// we get a copy of passed params
-				// this does init(null) inside
-				formerParams = params.getClone();
-			} // else is null
-		} // else called by reInit() we don't mod them
-		this.start( formerParams );
-		// } finally {
-		// this.setInited( true );
-		// }
 	}
 	
-	// public MethodParams<Object> getInitParams() {
-	//
-	// return formerParams;
-	// }
-	
-	/**
-	 * this will call deInit() and then init(params) where params are the last
-	 * used params which were saved/cloned internally
-	 */
-	public final void restart() {
+	@Override
+	protected void beforeDeInit() {
 
-		this.deInit();
-		this.init( formerParams );
+		removeOldInstance( this );
 	}
 	
-	/**
-	 * reInit with original params, can only be used if not already inited
-	 */
-	public final void reInit() {
+	
+	private final static void addNewInstance( StaticInstanceTracker instance ) {
 
-		if ( this.isInited() ) {
-			RunTime.badCall( "already inited. Maybe you wanted to use restart()" );
+		RunTime.assumedNotNull( instance );
+		if ( ALL_INSTANCES.addFirstQ( instance ) ) {
+			RunTime.bug( "should not have existed" );
 		}
-		this.init( formerParams );
 	}
 	
-	
-	/**
-	 * implement this done(), but use deInit() instead<br>
-	 * the parameters that were passed to init(params) will be passed to this
-	 * done(...) and yes they were saved(or cloned)<br>
-	 * deInit() is passing them to done() not you<br>
-	 * but this means you can access them in your own done(..) implementation<br>
-	 * try to not modify the contents of params... since they will be used on
-	 * reInit() or well maybe it won't matter anymore<br>
-	 * 
-	 * isInited() will be true while in done(), but even if done() throws, it will be set to false after a call to
-	 * done() !!
-	 * FIXME: good luck preventing this from being called directly; should be called only from deInit(); but should also
-	 * be overriddable
-	 */
-	protected abstract void done( MethodParams params );
-	
-	/**
-	 * @return
-	 */
-	public final void deInit() {
+	private final static void removeOldInstance( StaticInstanceTracker instance ) {
 
-		if ( !this.isInited() ) {
-			RunTime.badCall( this.toString() + " was not already init()-ed" );
-		}
-		
-		this.deInitSilently();
-	}
-	
-	/**
-	 * this will not except if already deInit()-ed
-	 * 
-	 * @see #deInit()
-	 */
-	public final void deInitSilently() {
-
-		if ( this.isInited() ) {
-			try {
-				removeOldInstance( this );
-				this.done( formerParams );
-				// formerParams are not managed here, only on init() ie. discarded
-			} finally {
-				this.setInited( false ); // ignore this:don't move this below .done() because .done() may throw
-			}
+		Log.entry( instance.toString() );
+		RunTime.assumedNotNull( instance );
+		if ( !ALL_INSTANCES.removeObject( instance ) ) {
+			RunTime.bug( "should've existed" );
 		}
 	}
 	
@@ -204,7 +103,12 @@ public abstract class StaticInstanceTracker {
 		while ( null != iter ) {
 			StaticInstanceTracker next = ALL_INSTANCES.getObjectAt( Position.AFTER, iter );
 			if ( this.getClass() == iter.getClass() ) {
-				iter.deInit();
+				try {
+					iter.deInit();
+				} catch ( Throwable e ) {
+					// ignore exceptions
+					e.printStackTrace();
+				}
 				// need to reparse list because maybe next item disappeared due
 				// to prev deInit() call; ie. current deInit called a
 				// child.deInit and thus 2 disappeared from ALL_INSTANCES list
@@ -244,23 +148,4 @@ public abstract class StaticInstanceTracker {
 		}
 		RunTime.assumedTrue( ALL_INSTANCES.isEmpty() );
 	}
-	
-	
-	private final static void addNewInstance( StaticInstanceTracker instance ) {
-
-		RunTime.assumedNotNull( instance );
-		if ( ALL_INSTANCES.addFirstQ( instance ) ) {
-			RunTime.bug( "should not have existed" );
-		}
-	}
-	
-	private final static void removeOldInstance( StaticInstanceTracker instance ) {
-
-		Log.entry( instance.toString() );
-		RunTime.assumedNotNull( instance );
-		if ( !ALL_INSTANCES.removeObject( instance ) ) {
-			RunTime.bug( "should've existed" );
-		}
-	}
-	
 }

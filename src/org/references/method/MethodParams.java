@@ -82,7 +82,7 @@ public class MethodParams extends StaticInstanceTracker {
 	/**
 	 * don't forget to call init() and deInit() when done
 	 */
-	private MethodParams() {
+	public MethodParams() {
 
 		super();
 	}
