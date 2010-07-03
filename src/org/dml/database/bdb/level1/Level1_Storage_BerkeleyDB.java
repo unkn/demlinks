@@ -29,6 +29,7 @@ import java.io.File;
 
 import org.dml.tools.RunTime;
 import org.dml.tools.StaticInstanceTracker;
+import org.dml.tracking.Factory;
 import org.javapart.logger.Log;
 import org.references.ListOfUniqueNonNullObjects;
 import org.references.Position;
@@ -144,10 +145,10 @@ public class Level1_Storage_BerkeleyDB extends StaticInstanceTracker {
 	protected void done( MethodParams params ) {
 
 		if ( null != db_JavaID_To_Symbol ) {
-			db_JavaID_To_Symbol.deInit();
+			Factory.deInit( db_JavaID_To_Symbol );
 		}
 		if ( null != symGen ) {
-			symGen.deInit();
+			Factory.deInit( symGen );
 		}
 		this.deInitSeqSystem_silent();// first
 		this.closeAllOpenDatabases_silent();// second

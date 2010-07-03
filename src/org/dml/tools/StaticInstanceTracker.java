@@ -62,13 +62,13 @@ public abstract class StaticInstanceTracker extends Initer {
 	
 	
 	@Override
-	protected void beforeInit() {
+	protected void beforeStart() {
 
 		addNewInstance( this );
 	}
 	
 	@Override
-	protected void beforeDeInit() {
+	protected void beforeDone() {
 
 		removeOldInstance( this );
 	}

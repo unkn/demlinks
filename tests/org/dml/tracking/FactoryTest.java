@@ -26,9 +26,6 @@ package org.dml.tracking;
 
 
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-
 import org.dml.tools.Initer;
 import org.dml.tools.RunTime;
 import org.junit.Test;
@@ -78,7 +75,7 @@ public class FactoryTest {
 		 * @see org.dml.tools.Initer#beforeDeInit()
 		 */
 		@Override
-		protected void beforeDeInit() {
+		protected void beforeDone() {
 
 			// TODO Auto-generated method stub
 			
@@ -90,7 +87,7 @@ public class FactoryTest {
 		 * @see org.dml.tools.Initer#beforeInit()
 		 */
 		@Override
-		protected void beforeInit() {
+		protected void beforeStart() {
 
 			// TODO Auto-generated method stub
 			
@@ -148,7 +145,7 @@ public class FactoryTest {
 		 * @see org.dml.tools.Initer#beforeDeInit()
 		 */
 		@Override
-		protected void beforeDeInit() {
+		protected void beforeDone() {
 
 			// TODO Auto-generated method stub
 			
@@ -160,7 +157,7 @@ public class FactoryTest {
 		 * @see org.dml.tools.Initer#beforeInit()
 		 */
 		@Override
-		protected void beforeInit() {
+		protected void beforeStart() {
 
 			// TODO Auto-generated method stub
 			
@@ -188,36 +185,4 @@ public class FactoryTest {
 		RunTime.assumedFalse( a.initedOurOwn );
 	}
 	
-	@Test
-	public void test2() {
-
-		Object ret = null;
-		Constructor<Object> con = null;
-		try {
-			con = Object.class.getConstructor();
-		} catch ( SecurityException e1 ) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} catch ( NoSuchMethodException e1 ) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		try {
-			ret = con.newInstance();// no params constructor
-			// ret = type.newInstance();
-		} catch ( IllegalArgumentException e ) {
-			// e.printStackTrace();
-			RunTime.bug( e );
-		} catch ( InstantiationException e ) {
-			// e.printStackTrace();
-			RunTime.bug( e );
-		} catch ( IllegalAccessException e ) {
-			// e.printStackTrace();
-			RunTime.bug( e );
-		} catch ( InvocationTargetException e ) {
-			RunTime.bug( e );
-			// comment for eclipse bug test when debug tracing over this
-			System.out.println( "the debugger passes on this w/o executing it?!" );
-		}
-	}
 }

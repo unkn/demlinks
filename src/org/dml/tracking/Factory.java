@@ -31,7 +31,6 @@ import java.lang.reflect.InvocationTargetException;
 
 import org.dml.tools.Initer;
 import org.dml.tools.RunTime;
-import org.javapart.logger.Log;
 import org.references.ListOfUniqueNonNullObjects;
 import org.references.method.MethodParams;
 
@@ -46,8 +45,8 @@ public class Factory {
 	
 	
 	// TODO
-	// LIFO list tracking all instances of ALL subclasses
-	private final static ListOfUniqueNonNullObjects<Initer>	ALL_INSTANCES	= new ListOfUniqueNonNullObjects<Initer>();
+	// LIFO list tracking all instances of ALL subclasses that are inited
+	private final static ListOfUniqueNonNullObjects<Initer>	ALL_INITED_INSTANCES	= new ListOfUniqueNonNullObjects<Initer>();
 	
 	
 
@@ -64,8 +63,50 @@ public class Factory {
 		return getNewInstance( type, null );
 	}
 	
+	
 	/**
-	 * this will do a new with the default constructor which should be public and an .init(params)
+	 * using default constructor, do a new()<br>
+	 * 
+	 * @param <T>
+	 * @param type
+	 * @return
+	 */
+	private static <T extends Initer> T getGenericNewInstance( Class<T> type ) {
+
+		T ret = null;
+		
+		Constructor<T> con = null;
+		try {
+			con = type.getConstructor();
+		} catch ( SecurityException e ) {
+			RunTime.bug( e, "method not accessible ie. private init() method instead of public" );
+		} catch ( NoSuchMethodException e ) {
+			RunTime.bug( e, "private default constructor? or a public one doesn't exist ? "
+					+ "or you're calling this on an inner class which is not public static; "
+					+ "and yet we do have the right class or subclass of Initer; "
+					+ "or default constructor not explicitly defined" );
+		}
+		
+		try {
+			ret = con.newInstance();// no params constructor
+			// ret = type.newInstance(); this works but we want to catch more exceptions above
+		} catch ( IllegalArgumentException e ) {
+			RunTime.bug( e );
+		} catch ( InstantiationException e ) {
+			RunTime.bug( e );
+		} catch ( IllegalAccessException e ) {
+			RunTime.bug( e );
+		} catch ( InvocationTargetException e ) {
+			RunTime.bug( e );
+			// eclipse bug gone since this part was moved here
+		}
+		
+		return ret;
+	}
+	
+	/**
+	 * this will do a new with the default constructor which should be public <br>
+	 * and an .init(params)<br>
 	 * 
 	 * @param class1
 	 *            any subclass of StaticInstanceTracker
@@ -75,59 +116,25 @@ public class Factory {
 	 */
 	public static <T extends Initer> T getNewInstance( Class<T> type, MethodParams params ) {
 
-		T ret = null;
-		
-		Constructor<T> con = null;
-		try {
-			con = type.getConstructor();
-		} catch ( SecurityException e ) {
-			// e.printStackTrace();
-			RunTime.bug( e, "method not accessible ie. private init() method instead of public" );
-		} catch ( NoSuchMethodException e ) {
-			// e.printStackTrace();
-			// System.out.println( e.getClass().getName() );
-			// try {
-			// RunTime.thro( e );
-			//
-			// } finally {
-			// RunTime.bug( e );
-			RunTime.bug(
-					e,
-					"private default constructor? or a public one doesn't exist ? or you're calling this on an inner class which is not public static; and yet we do have the right class or subclass of Initer; or default constructor not explicitly defined" );
-			// }
-		}
-		
-		try {
-			ret = con.newInstance();// no params constructor
-			// ret = type.newInstance();
-		} catch ( IllegalArgumentException e ) {
-			// e.printStackTrace();
-			RunTime.bug( e );
-		} catch ( InstantiationException e ) {
-			// e.printStackTrace();
-			RunTime.bug( e );
-		} catch ( IllegalAccessException e ) {
-			// e.printStackTrace();
-			RunTime.bug( e );
-		} catch ( InvocationTargetException e ) {
-			RunTime.bug( e );
-			// comment for eclipse bug test when debug tracing over this
-			System.out.println( "the debugger passes on this w/o executing it?! eclipse bug? and yeah no exception was thrown,"
-					+ " I think it tried to position cursor on the '}' below; put breakpoint on the statement in try"
-					+ " if you want to check this" );
-		}
-		
-		RunTime.assumedNotNull( ret );
-		RunTime.assumedFalse( ret.isInited() );
-		// FIXME: this may throw
-		try {
-			ret.internal_Init_use_Factory_instead( params );// params may be null
-		} finally {
-			// any exceptions from the try block are postponed until after finally block is done
-			addNewInstance( ret );
-		}
+		T ret = Factory.getGenericNewInstance( type );
+		Factory.init( ret, params );
 		RunTime.assumedTrue( ret.isInited() );
 		return ret;
+	}
+	
+	public static <T extends Initer> void init( T instance, MethodParams params ) {
+
+		RunTime.assumedNotNull( instance );
+		if ( instance.isInited() ) {
+			RunTime.badCall( "must not be already init-ed" );
+		}
+		try {
+			instance._init( params );// params may be null
+		} finally {
+			// any exceptions from the try block are postponed until after finally block is done
+			addNewInitedInstance( instance );// shouldn't already exist since wasn't inited so not in our list
+		}
+		RunTime.assumedTrue( instance.isInited() );
 	}
 	
 	/**
@@ -139,32 +146,45 @@ public class Factory {
 
 		RunTime.assumedNotNull( instance );
 		RunTime.assumedTrue( instance.isInited() );
-		Factory.deInitSilently( instance );
+		try {
+			instance._deInit();
+		} finally {
+			removeExistingInitedInstance( instance );
+		}
 		RunTime.assumedFalse( instance.isInited() );
 	}
 	
-	public static <T extends Initer> void deInitSilently( T instance ) {
+	/**
+	 * this will keep the instance (ie. no new again) and just do a deInit() and init()<br>
+	 * it MUST be already inited<br>
+	 * 
+	 * @param <T>
+	 * @param instance
+	 */
+	public static <T extends Initer> void restart( T instance ) {
 
-		if ( null != instance ) {
-			if ( instance.isInited() ) {
-				try {
-					// FIXME: this may throw, do we want to silence it?
-					instance.internal_DeInitSilently_use_Factory_instead();
-				} finally {
-					// FIXME: this may also throw
-					removeOldInstance( instance );
-				}
-			} else {
-				Log.warn( "was not already inited, so nothing to deInit" );
-			}
-		} else {
-			Log.warn( "got null instance passed as param" );
+		RunTime.assumedNotNull( instance );
+		if ( !instance.isInited() ) {
+			RunTime.badCall( "must be inited" );
 		}
+		// must be already in our list
+		if ( !ALL_INITED_INSTANCES.containsObject( instance ) ) {
+			RunTime.bug( "bug somewhere this instance should've been added before, or it's a badcall" );
+		}
+		try {
+			instance._restart_aka_deInit_and_initAgain_WithOriginalPassedParams();
+		} finally {
+			if ( !instance.isInited() ) {
+				removeExistingInitedInstance( instance );
+				RunTime.bug( "yeah dno how to handle this one, maybe remove instance from our list? and continue" );
+			}
+		}
+		RunTime.assumedTrue( instance.isInited() );
 	}
 	
 	/**
-	 * after this you can call deInit() or reInit() again<br>
-	 * this will keep the instance (ie. no new again) and just do a reInit()<br>
+	 * this will keep the instance (ie. no new again) and just do a init() again<br>
+	 * it MUST NOT be already inited<br>
 	 * 
 	 * @param <T>
 	 * @param instance
@@ -172,29 +192,40 @@ public class Factory {
 	public static <T extends Initer> void reInit( T instance ) {
 
 		RunTime.assumedNotNull( instance );
-		boolean wasInited = instance.isInited();
-		instance.reInit();
-		if ( !wasInited ) {
-			addNewInstance( instance );
+		RunTime.assumedFalse( instance.isInited() );
+		// must NOT be already in our list
+		if ( ALL_INITED_INSTANCES.containsObject( instance ) ) {
+			RunTime.bug( "bug somewhere this instance must NOT be in the list, and it is in list and it's also not inited?!!" );
+		}
+		try {
+			instance._reInit_aka_initAgain_WithOriginalPassedParams();
+		} finally {
+			if ( !instance.isInited() ) {
+				// removeExistingInitedInstance( instance );
+				RunTime.bug( "so, reinit failed but it's still not inited, bug somewhere" );
+			}
+			addNewInitedInstance( instance );
 		}
 		RunTime.assumedTrue( instance.isInited() );
 	}
 	
 	
-	private final static void addNewInstance( Initer instance ) {
+	private final static void addNewInitedInstance( Initer instance ) {
 
 		RunTime.assumedNotNull( instance );
-		if ( ALL_INSTANCES.addFirstQ( instance ) ) {
-			RunTime.bug( "should not have existed" );
+		RunTime.assumedTrue( instance.isInited() );
+		if ( ALL_INITED_INSTANCES.addFirstQ( instance ) ) {
+			RunTime.badCall( "should not have existed" );
 		}
 	}
 	
-	private final static void removeOldInstance( Initer instance ) {
+	private final static void removeExistingInitedInstance( Initer instance ) {
 
-		Log.entry( instance.toString() );
 		RunTime.assumedNotNull( instance );
-		if ( !ALL_INSTANCES.removeObject( instance ) ) {
-			RunTime.bug( "should've existed" );
+		RunTime.assumedFalse( instance.isInited() );
+		// Log.entry( instance.toString() );
+		if ( !ALL_INITED_INSTANCES.removeObject( instance ) ) {
+			RunTime.badCall( "should've existed" );
 		}
 	}
 }

@@ -184,7 +184,7 @@ public class MethodParams extends StaticInstanceTracker {
 		
 		Reference<Object> ref = this.get( paramName );
 		if ( null == ref ) {
-			ref = new Reference<Object>();
+			ref = new Reference<Object>();// FIXME: maybe cleanup if needed on .clear()
 			int bug = listOfParamsWithValues.size();// FIXME: remove
 			Object oldValue = listOfParamsWithValues.put( paramName, ref );
 			RunTime.assumedNull( oldValue );
