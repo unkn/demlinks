@@ -54,7 +54,8 @@ public class RunTime {
 	 * -NOTE: there's no need (but you can) to declare a "throws" clause on method header definition because all throws
 	 * are wrapped
 	 * around RuntimeException<br>
-	 * 
+	 * -err, we're kinda assuming these will not be caught and handled, so they'll eventually cause program exit (but
+	 * cleanly shut down) and so this is useful for logging<br>
 	 * 
 	 * @param newOne
 	 * @throws Throwable
@@ -125,6 +126,16 @@ public class RunTime {
 	}
 	
 	/**
+	 * for jUnit; really don't use these; if you catch an exception you're not certain that it was the last one, unless
+	 * you're catching Throwable instance
+	 */
+	public static void clearLastThrown() {
+
+		allExceptionsChained = allExceptionsChained.getCause();
+	}
+	
+	
+	/**
 	 * @param t
 	 *            the previous (normally thrown) java exception to chain as cause of this bug<br>
 	 */
@@ -139,15 +150,15 @@ public class RunTime {
 	}
 	
 	/**
-	 * @param t
+	 * @param cause
 	 *            the previous (normally thrown) java exception to chain as cause of this bug<br>
 	 * @msg
 	 */
-	private static void bug0( Throwable t, String msg ) {
+	private static void bug0( Throwable cause, String msg ) {
 
 		try {
-			if ( null != t ) {
-				RunTime.thro2( t );// chain it
+			if ( null != cause ) {
+				RunTime.thro2( cause );// chain it
 			}
 		} finally {
 			RunTime.thro2( new BugError( msg ) );
@@ -170,23 +181,37 @@ public class RunTime {
 		bug0( null, "Bug detected: " + msg );
 	}
 	
-	// TODO: FIXME: do the same for badCall and others(if any) as we did for bug() with the chained Throwable
-	
 	public static void badCall() {
 
-		badCall0( "" );
+		badCall0( null, "" );
 	}
 	
 	public static void badCall( String msg ) {
 
-		badCall0( msg );
+		badCall0( null, msg );
 	}
 	
-	private static void badCall0( String msg ) {
+	public static void badCall( Throwable cause ) {
+
+		badCall0( cause, "" );
+	}
+	
+	public static void badCall( Throwable cause, String msg ) {
+
+		badCall0( cause, msg );
+	}
+	
+	private static void badCall0( Throwable cause, String msg ) {
 
 		// String msg2 = "BADCALL: " + msg;
 		// Log.thro2( msg2 );
-		RunTime.thro2( new BadCallError( msg ) );
+		try {
+			if ( null != cause ) {
+				RunTime.thro2( cause );// chain it
+			}
+		} finally {
+			RunTime.thro2( new BadCallError( msg ) );
+		}
 	}
 	
 	// public static void thro( Exception ex ) throws Exception {

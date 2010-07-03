@@ -110,8 +110,11 @@ public class Factory {
 			// e.printStackTrace();
 			RunTime.bug( e );
 		} catch ( InvocationTargetException e ) {
-			// e.printStackTrace();
 			RunTime.bug( e );
+			// comment for eclipse bug test when debug tracing over this
+			System.out.println( "the debugger passes on this w/o executing it?! eclipse bug? and yeah no exception was thrown,"
+					+ " I think it tried to position cursor on the '}' below; put breakpoint on the statement in try"
+					+ " if you want to check this" );
 		}
 		
 		RunTime.assumedNotNull( ret );

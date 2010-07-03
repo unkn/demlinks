@@ -256,6 +256,19 @@ public class RunTimeTest {
 	}
 	
 	@Test
+	public void testChainingOfBadCall() {
+
+		try {
+			// the console will show this line and also eclipse too
+			this.throwy2();
+			// throw new BadCallError();
+		} catch ( Throwable t ) {
+			// the console will also show this line and eclipse also
+			RunTime.badCall( t );
+		}
+	}
+	
+	@Test
 	public void testThroAndAssumed() {
 
 		// all of the following should be accessible from console links and also from eclipse Failure Trace
@@ -281,5 +294,71 @@ public class RunTimeTest {
 				}
 			}
 		}
+	}
+	
+	@Test
+	public void testCaughtAlready() {
+
+		// both exceptions are shown on console, but only last one is shown in eclipse Failure Trace
+		try {
+			RunTime.thro( new Exception( "something" ) );
+		} catch ( Exception e ) {
+			// caught, handled , wtw
+			RunTime.clearThrow();// this clears all previous ones hmm
+		}
+		// somewhere later, this throw should not be chained with above one
+		RunTime.thro( new IOException( "else" ) );
+	}
+	
+	@Test
+	public void testCaughtAlreadyClearingOnlyLastOne() {
+
+		// first and third are shown in eclipse; all 3 in console
+		try {
+			try {
+				RunTime.thro( new Exception( "something2" ) );
+			} finally {
+				RunTime.thro( new Exception( "this gets cleared" ) );
+			}
+		} catch ( Exception e ) {
+			// caught, handled , wtw
+			RunTime.clearLastThrown();// this clears only the previously thrown one aka last one thrown
+		}
+		// somewhere later, this throw should not be chained with above one
+		RunTime.thro( new IOException( "else2" ) );
+	}
+	
+	@Test
+	public void testCaughtAlreadyWronglyClearingOnlyLastOneInsteadOfCaughtOne() {
+
+		// first and third are shown in eclipse, all 3 are shown in console
+		try {
+			try {
+				RunTime.thro( new Exception( "first, this is caught but it should be cleared but it's not" ) );
+			} finally {
+				RunTime.thro( new RuntimeException( "second, not caught but gets cleared since it's last" ) );
+			}
+		} catch ( Exception e ) {// we catch only first one
+			RunTime.clearLastThrown();// this clears the second one, but we wanted to clear the caught one heh
+		}
+		// somewhere later, this throw should not be chained with above one
+		RunTime.thro( new IOException( "else3" ) );
+	}
+	
+	@Test
+	public void testCaughtAlreadyRightlyClearingOnlyLastOneAkaCaughtOne() {
+
+		// first and third are shown in eclipse, all 3 are shown in console
+		try {
+			try {
+				RunTime.thro( new Exception( "first, not caught" ) );
+			} finally {
+				RunTime.thro( new RuntimeException( "second, caught and cleared" ) );
+			}
+		} catch ( Throwable t ) {// we catch only second one which is last heh
+			RunTime.clearLastThrown();// this clears the second one, but that's the one we caught anyway
+		}
+		// somewhere later, this throw should not be chained with above one
+		RunTime.thro( new IOException( "else4" ) );
 	}
 }

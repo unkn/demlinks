@@ -26,6 +26,9 @@ package org.dml.tracking;
 
 
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+
 import org.dml.tools.Initer;
 import org.dml.tools.RunTime;
 import org.junit.Test;
@@ -43,7 +46,7 @@ public class FactoryTest {
 	
 	static ParamID	specB	= ParamID.getNew( "specB" );
 	
-	class B extends Initer {
+	public static class B extends Initer {
 		
 		/*
 		 * (non-Javadoc)
@@ -114,7 +117,7 @@ public class FactoryTest {
 
 			Reference<Object> tempRef2B = null;
 			if ( null != params ) {
-				params.get( specB );
+				tempRef2B = params.get( specB );
 			}
 			if ( null == tempRef2B ) {
 				initedOurOwn = true;
@@ -183,5 +186,38 @@ public class FactoryTest {
 		RunTime.assumedTrue( a.b == newB );
 		Factory.deInit( a );
 		RunTime.assumedFalse( a.initedOurOwn );
+	}
+	
+	@Test
+	public void test2() {
+
+		Object ret = null;
+		Constructor<Object> con = null;
+		try {
+			con = Object.class.getConstructor();
+		} catch ( SecurityException e1 ) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch ( NoSuchMethodException e1 ) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		try {
+			ret = con.newInstance();// no params constructor
+			// ret = type.newInstance();
+		} catch ( IllegalArgumentException e ) {
+			// e.printStackTrace();
+			RunTime.bug( e );
+		} catch ( InstantiationException e ) {
+			// e.printStackTrace();
+			RunTime.bug( e );
+		} catch ( IllegalAccessException e ) {
+			// e.printStackTrace();
+			RunTime.bug( e );
+		} catch ( InvocationTargetException e ) {
+			RunTime.bug( e );
+			// comment for eclipse bug test when debug tracing over this
+			System.out.println( "the debugger passes on this w/o executing it?!" );
+		}
 	}
 }
