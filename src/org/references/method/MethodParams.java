@@ -48,6 +48,9 @@ import org.references.Reference;
  * same ParamName cannot have two objects in the same MethodParams list<br>
  * so there's a one to one mapping between a ParamName and it's value<br>
  * although the same ParamName can be used with another value in a different MethodParams<br>
+ * 
+ * TODO: maybe somehow do type checking or something when get/write and store the type in ParamID ? but also allow like
+ * subclass of , or superclass of , to be specified as type
  */
 public class MethodParams extends StaticInstanceTracker {
 	

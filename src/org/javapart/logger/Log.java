@@ -58,6 +58,11 @@ public class Log {
 	 * this.log( "Logger initialized." ); }
 	 */
 
+	public static void throwReport( Throwable t, int modifier ) {
+
+		logThrowable( modifier, LogFlags.Thro, t );
+	}
+	
 	public static void thro0( int modifier, String msg ) {
 
 		log( modifier, LogFlags.Thro, "Throws: " + msg );
@@ -145,6 +150,73 @@ public class Log {
 		mid0( "" );
 	}
 	
+	private static void logThrowable( int modifier, LogFlags logFlag, Throwable t ) {
+
+		// StackTraceElement[] stea = Thread.currentThread().getStackTrace();
+		// System.out.println( " !" + stea.length + "! " );
+		// // throw new AssertionError();
+		//
+		//
+		// StackTraceElement ste = stea[stea.length - 3];
+		// ste = ( new Exception() ).getStackTrace()[4];
+		if ( hasFlag( logFlag ) ) {
+			// if ( logFlag == LogFlags.Result ) {
+			// System.err.print( msg );
+			// } else {
+			
+			// we attempt to find the location of the thrown exception, in the same method as caller, and caller is
+			// identified using 'modifier', that's where it's position is in stack trace
+			StackTraceElement[] stea1 = t.getStackTrace();
+			// System.out.print( "T: " );
+			// t.printStackTrace();
+			StackTraceElement[] steaCur = Thread.currentThread().getStackTrace();
+			StackTraceElement findCaller = steaCur[modifier + currentMethodLocation];
+			// System.out.println( "Cur: " + findCaller );
+			// intersect on same method or keep current Caller:
+			try {
+				for ( StackTraceElement element : stea1 ) {
+					// System.out.println( element );
+					// FIXME: test for null on all 6 of the following, before using dot
+					if ( element.getMethodName().equals( findCaller.getMethodName() ) ) {
+						if ( element.getClassName().equals( findCaller.getClassName() ) ) {
+							if ( element.getFileName().equals( findCaller.getFileName() ) ) {
+								// ok found common ground between current and where exception was thrown
+								findCaller = element;
+								break;// very important heh
+								// System.out.println( findCaller );
+							} else {
+								// System.err.println( "almost_got_tricked3 at " + Log.getThisLineLocation() );
+								reportErrorHere( "almost_got_tricked3" );
+							}
+						} else {
+							reportErrorHere( "almost_got_tricked2" );
+							// System.err.println( "almost_got_tricked2 at " + Log.getThisLineLocation() );
+						}
+					}// else we go to next in stack trace, to check
+				}
+			} catch ( Throwable h ) {
+				h.printStackTrace();
+				reportError( "probably null pointer exception?" );
+			}
+			// reportErrorHere( "test" );
+			String loc = formatLocation( findCaller );// getLine( t.getStackTrace(), modifier );
+			
+
+			System.err.print( t.getClass().getName() + ": " + t.getLocalizedMessage() + nl
+					+ String.format( "%-" + spacesBeforeMsg + "s%s", " ", loc ) + nl );
+		}
+	}
+	
+	private static void reportError( String msg ) {
+
+		System.err.println( msg );
+	}
+	
+	private static void reportErrorHere( String msg ) {
+
+		reportError( msg + " at " + getThisLineLocation( 1 ) );
+	}
+	
 	private static void log( int modifier, LogFlags logFlag, String msg ) {
 
 		// StackTraceElement[] stea = Thread.currentThread().getStackTrace();
@@ -205,6 +277,58 @@ public class Log {
 		return false;
 	}
 	
+	public static String getLine( StackTraceElement[] stea1, int position ) {
+
+		if ( null == stea1 ) {
+			// yeah and can't call RunTime.badCall() here, or similar because of recursion
+			reportError( "pathetic bad call, null parameter passed" );
+		}
+		
+		StackTraceElement ste = null;
+		
+		try {
+			ste = stea1[position];
+			// } catch ( ArrayIndexOutOfBoundsException ae ) {
+			// ae.printStackTrace();
+			// return "";
+		} catch ( Throwable t ) {
+			String bc = "bad call wrong position number";
+			reportError( bc );
+			t.printStackTrace();
+			return bc;
+		}
+		if ( null == ste ) {
+			String bc = "weird bug in getLine";
+			reportError( bc );
+			return bc;
+		}
+		return formatLocation( ste );
+	}
+	
+	public static String formatLocation( StackTraceElement ste ) {
+
+		if ( null == ste ) {
+			String bc = "bad call: null parameter";
+			reportError( bc );
+			// can't throw in here, 'cause it will get overwritten anyway; and to avoid recursion not calling own throw
+			// methods
+			return bc;
+		} else {
+			return ste.getClassName() + "." + ste.getMethodName() + "(" + ste.getFileName() + ":" + ste.getLineNumber()
+					+ ")";
+		}
+	}
+	
+	public static String getThisLineLocation() {
+
+		return getThisLineLocation( 0 );// getLine( Thread.currentThread().getStackTrace(), 2 );
+	}
+	
+	public static String getThisLineLocation( int modifier ) {
+
+		return getLine( Thread.currentThread().getStackTrace(), 2 + modifier );
+	}
+	
 	private static String getCurrentLocation( int modifier ) {
 
 		// try {
@@ -213,7 +337,8 @@ public class Log {
 		// e.printStackTrace();
 		// }
 		stea = Thread.currentThread().getStackTrace();
-		StackTraceElement ste = stea[currentMethodLocation + modifier];
+		return getLine( stea, currentMethodLocation + modifier );
+		// StackTraceElement ste = stea[currentMethodLocation + modifier];
 		
 		// String msg = new String();
 		// int width = methodWOClassNameWidth;// methodName size
@@ -227,8 +352,8 @@ public class Log {
 		// this was a workaround for eclipse showing links properly when clicked to go at the right source even if other
 		// projects were open that would've make it go to their sources in rt.jar file
 		// return String.format( /* "%-" + width + "s "+ */"%-" + ( fileAndLineWidth ) + "s", /* msg, */
-		return ste.getClassName() + "." + ste.getMethodName() + "(" + ste.getFileName() + ":" + ste.getLineNumber()
-				+ ")";// );
+		// return ste.getClassName() + "." + ste.getMethodName() + "(" + ste.getFileName() + ":" + ste.getLineNumber()
+		// + ")";// );
 	}
 	
 	public static void result( boolean boo ) {

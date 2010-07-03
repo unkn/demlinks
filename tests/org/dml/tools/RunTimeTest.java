@@ -28,6 +28,7 @@ package org.dml.tools;
 
 import java.io.IOException;
 
+import org.dml.error.BadCallError;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,6 +37,7 @@ import org.junit.Test;
 
 /**
  * tests here are supposed to fail, it's supposed to show how exceptions are thrown and shown in eclipse<br>
+ * these tests can only be manually tested, ie. by a human<br>
  * 
  */
 public class RunTimeTest {
@@ -201,5 +203,83 @@ public class RunTimeTest {
 
 		// the link in console should point to this line
 		RunTime.badCall( "message" );
+	}
+	
+	@Test
+	public void testBadCall2() {
+
+		RunTime.thro( new BadCallError( "wtw" ) );
+	}
+	
+	@Test
+	public void testBadCall3() {
+
+		BadCallError b = new BadCallError();
+		// the below throw should point to the above line;
+		RunTime.thro( b );
+	}
+	
+	@Test
+	public void testBadCall4() {
+
+		// this should have the console point to the line with 'new' and the last badCall() statement
+		try {
+			BadCallError b = new BadCallError();
+			// the below throw should point to the above line;
+			RunTime.thro( b );
+		} finally {
+			RunTime.badCall();// autochained the above as cause
+		}
+	}
+	
+	private void throwy1() {
+
+		throw new BadCallError( "throwy1" );
+	}
+	
+	private void throwy2() {
+
+		this.throwy1();
+	}
+	
+	@Test
+	public void testChainingOfBug() {
+
+		try {
+			// the console will show this line and also eclipse too
+			this.throwy2();
+			// throw new BadCallError();
+		} catch ( Throwable t ) {
+			// the console will also show this line and eclipse also
+			RunTime.bug( t );
+		}
+	}
+	
+	@Test
+	public void testThroAndAssumed() {
+
+		// all of the following should be accessible from console links and also from eclipse Failure Trace
+		// the links should point on these lines exactly, not on their sub procedures
+		try {
+			RunTime.assumedTrue( 1 == 2 );
+			
+		} finally {
+			try {
+				RunTime.thro( new AssertionError( "expected true condition was false!" ) );
+				
+			} finally {
+				try {
+					int a = 2;
+					RunTime.assumedFalse( a == 1 + 1 );
+				} finally {
+					try {
+						Object o = null;
+						RunTime.assumedNotNull( o );
+					} finally {
+						RunTime.assumedNull( new Object() );
+					}
+				}
+			}
+		}
 	}
 }

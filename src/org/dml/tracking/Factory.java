@@ -26,6 +26,9 @@ package org.dml.tracking;
 
 
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+
 import org.dml.tools.Initer;
 import org.dml.tools.RunTime;
 import org.javapart.logger.Log;
@@ -35,8 +38,9 @@ import org.references.method.MethodParams;
 
 
 /**
+ * this does not work for inner classes, to init them fails; unless it's an inner public static class 'cause obviously
+ * its default constructor must be accessible from Factory class<br>
  * 
- *
  */
 public class Factory {
 	
@@ -71,35 +75,43 @@ public class Factory {
 	 */
 	public static <T extends Initer> T getNewInstance( Class<T> type, MethodParams params ) {
 
-		// Constructor<T> con = null;
 		T ret = null;
-		// try {
-		// con = type.getConstructor();
-		// } catch ( SecurityException e ) {
-		// e.printStackTrace();
-		// RunTime.bug( "method not accessible ie. private init() method instead of public" );
-		// } catch ( NoSuchMethodException e ) {
-		// e.printStackTrace();
-		// RunTime.bug(
-		// "private default constructor? or a public one doesn't exist and yet we do have the right class or subclass of wtw"
-		// );
-		// }
-		//
+		
+		Constructor<T> con = null;
 		try {
-			// ret = con.newInstance();// no params constructor
-			ret = type.newInstance();
-		} catch ( IllegalArgumentException e ) {
-			e.printStackTrace();
-			RunTime.bug();
-		} catch ( InstantiationException e ) {
-			e.printStackTrace();
-			RunTime.bug();
-		} catch ( IllegalAccessException e ) {
-			e.printStackTrace();
-			RunTime.bug();
-			// } catch ( InvocationTargetException e ) {
+			con = type.getConstructor();
+		} catch ( SecurityException e ) {
 			// e.printStackTrace();
-			// RunTime.bug();
+			RunTime.bug( e, "method not accessible ie. private init() method instead of public" );
+		} catch ( NoSuchMethodException e ) {
+			// e.printStackTrace();
+			// System.out.println( e.getClass().getName() );
+			// try {
+			// RunTime.thro( e );
+			//
+			// } finally {
+			// RunTime.bug( e );
+			RunTime.bug(
+					e,
+					"private default constructor? or a public one doesn't exist ? or you're calling this on an inner class which is not public static; and yet we do have the right class or subclass of Initer; or default constructor not explicitly defined" );
+			// }
+		}
+		
+		try {
+			ret = con.newInstance();// no params constructor
+			// ret = type.newInstance();
+		} catch ( IllegalArgumentException e ) {
+			// e.printStackTrace();
+			RunTime.bug( e );
+		} catch ( InstantiationException e ) {
+			// e.printStackTrace();
+			RunTime.bug( e );
+		} catch ( IllegalAccessException e ) {
+			// e.printStackTrace();
+			RunTime.bug( e );
+		} catch ( InvocationTargetException e ) {
+			// e.printStackTrace();
+			RunTime.bug( e );
 		}
 		
 		RunTime.assumedNotNull( ret );

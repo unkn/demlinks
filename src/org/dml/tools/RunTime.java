@@ -61,9 +61,32 @@ public class RunTime {
 	 */
 	public static void thro( Throwable newOne ) {
 
-		if ( null == allExceptionsChained ) {
-			allExceptionsChained = newOne;
-		} else {
+		thro0( 0, newOne );
+	}
+	
+	/**
+	 * @see #thro(Throwable)
+	 * @param newOne
+	 */
+	public static void thro1( Throwable newOne ) {
+
+		thro0( +1, newOne );
+	}
+	
+	/**
+	 * @see #thro(Throwable)
+	 * @param newOne
+	 */
+	public static void thro2( Throwable newOne ) {
+
+		thro0( +2, newOne );
+	}
+	
+	private static void thro0( int modifier, Throwable newOne ) {
+
+		if ( null != allExceptionsChained ) {
+			// allExceptionsChained = newOne;
+			// } else {
 			if ( null == newOne.getCause() ) {
 				try {
 					newOne.initCause( allExceptionsChained );
@@ -80,12 +103,15 @@ public class RunTime {
 				// Log.thro1( newOne.getLocalizedMessage() );
 				// newOne.printStackTrace();
 			}
-			
-			// for both paths in above if:
-			allExceptionsChained = newOne;
 		}
-		Log.thro1( allExceptionsChained.getClass().getCanonicalName() + ": "
-				+ allExceptionsChained.getLocalizedMessage() );
+		// for both (1+2)paths in above if:
+		allExceptionsChained = newOne;
+		// }
+		Log.throwReport( allExceptionsChained, modifier );
+		// ( modifier,
+		// allExceptionsChained.getClass().getCanonicalName() + ": " + allExceptionsChained.getLocalizedMessage() );
+		// System.out.println( Log.getLine( allExceptionsChained.getStackTrace(), 2 ) );
+		
 		// wrapping this into RuntimeException 'cause it's unchecked aka no throws declaration needed
 		throw new RuntimeException( allExceptionsChained );
 	}
@@ -98,15 +124,53 @@ public class RunTime {
 		allExceptionsChained = null;
 	}
 	
+	/**
+	 * @param t
+	 *            the previous (normally thrown) java exception to chain as cause of this bug<br>
+	 */
+	public static void bug( Throwable t ) {
+
+		bug0( t, "Bug detected." );
+	}
+	
 	public static void bug() {
 
-		bug( "Bug detected." );
+		bug0( null, "Bug detected." );
+	}
+	
+	/**
+	 * @param t
+	 *            the previous (normally thrown) java exception to chain as cause of this bug<br>
+	 * @msg
+	 */
+	private static void bug0( Throwable t, String msg ) {
+
+		try {
+			if ( null != t ) {
+				RunTime.thro2( t );// chain it
+			}
+		} finally {
+			RunTime.thro2( new BugError( msg ) );
+		}
+	}
+	
+	/**
+	 * @param cause
+	 *            a normally thrown java exception (ie. not thrown with RunTime.thro()) that will be chained as cause of
+	 *            this bug<br>
+	 * @param msg
+	 */
+	public static void bug( Throwable cause, String msg ) {
+
+		bug0( cause, "Bug detected: " + msg );
 	}
 	
 	public static void bug( String msg ) {
 
-		RunTime.thro( new BugError( "Bug detected: " + msg ) );
+		bug0( null, "Bug detected: " + msg );
 	}
+	
+	// TODO: FIXME: do the same for badCall and others(if any) as we did for bug() with the chained Throwable
 	
 	public static void badCall() {
 
@@ -120,9 +184,9 @@ public class RunTime {
 	
 	private static void badCall0( String msg ) {
 
-		String msg2 = "BADCALL: " + msg;
-		Log.thro2( msg2 );
-		RunTime.thro( new BadCallError( msg2 ) );
+		// String msg2 = "BADCALL: " + msg;
+		// Log.thro2( msg2 );
+		RunTime.thro2( new BadCallError( msg ) );
 	}
 	
 	// public static void thro( Exception ex ) throws Exception {
@@ -146,7 +210,7 @@ public class RunTime {
 	public static void assumedTrue( boolean b ) {
 
 		if ( !b ) {
-			RunTime.thro( new AssertionError( "expected true condition was false!" ) );
+			RunTime.thro1( new AssertionError( "expected true condition was false!" ) );
 		}
 	}
 	
@@ -154,7 +218,7 @@ public class RunTime {
 
 		for ( int i = 0; i < obj.length; i++ ) {
 			if ( null == obj[i] ) {
-				RunTime.thro( new AssertionError( "expected non-null object[" + ( i + 1 ) + "] was null!" ) );
+				RunTime.thro1( new AssertionError( "expected non-null object[" + ( i + 1 ) + "] was null!" ) );
 			}
 		}
 	}
@@ -163,7 +227,7 @@ public class RunTime {
 
 		for ( int i = 0; i < obj.length; i++ ) {
 			if ( null != obj[i] ) {
-				RunTime.thro( new AssertionError( "expected null object[" + ( i + 1 ) + "] was NOT null!" ) );
+				RunTime.thro1( new AssertionError( "expected null object[" + ( i + 1 ) + "] was NOT null!" ) );
 			}
 		}
 	}
@@ -171,7 +235,7 @@ public class RunTime {
 	public static void assumedFalse( boolean b ) {
 
 		if ( b ) {
-			RunTime.thro( new AssertionError( "expected false condition was true!" ) );
+			RunTime.thro1( new AssertionError( "expected false condition was true!" ) );
 		}
 		
 	}
