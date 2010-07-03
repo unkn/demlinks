@@ -41,16 +41,20 @@ public class RunTime {
 	private static Throwable	allExceptionsChained	= null;
 	
 	/**
-	 * this method will attempt to chain all exceptions thrown by it and it also throws them as it's called<br>
-	 * if you're trying to re-throw a caught exception do not chain it with new Exception(e) as a param to this method<br>
-	 * if you're trying to throw new exception, obviously then use new Exception("msg") as param<br>
-	 * if you're passing an exception which is already part of a chain, then the previous chain is discarded and the
+	 * -this method will attempt to chain all exceptions thrown by it and it also throws them as it's called<br>
+	 * -if you're trying to re-throw a caught exception do not chain it with new Exception(e) as a param to this method<br>
+	 * -so basically when you're trying to rethrow normally thrown exceptions ie. thos with 'throw new' well after you
+	 * catch them just do a RunTime.thro(e) and not a 'new Exception(e)'<br>
+	 * -if you're trying to throw new exception, obviously then use new Exception("msg") as param<br>
+	 * -if you're passing an exception which is already part of a chain, then the previous chain is discarded and the
 	 * exception becomes the new chain<br>
-	 * note that by default throw new Exception(msg) will override all previous exceptions thrown (ie. they're
+	 * -note that by default throw new Exception(msg) will override all previous exceptions thrown (ie. they're
 	 * forgotten) unless you throw new Exception(msg, prevException) where prevException is an exception just like this:
 	 * chained; at least they are not visible in eclipse unless they are chained<br>
-	 * NOTE: there's no need to declare a "throws" clause on method header definition because all throws are wrapped
+	 * -NOTE: there's no need (but you can) to declare a "throws" clause on method header definition because all throws
+	 * are wrapped
 	 * around RuntimeException<br>
+	 * 
 	 * 
 	 * @param newOne
 	 * @throws Throwable
@@ -64,10 +68,15 @@ public class RunTime {
 				try {
 					newOne.initCause( allExceptionsChained );
 				} catch ( Throwable t ) {
-					Log.bug( "this shouldn't happen and btw exception here is unable to be thrown, even if no catch block" );
+					// ignoring thrown irrelevant ones from initCause
+					Log.bug( "this shouldn't happen and btw exception here is unable to be thrown, even if no catch block exists" );
 				}
 			} else {
-				Log.warn( "we got passed a chained exception(/throwable) so we discard the previous chain; so this should work well apparently" );
+				// ok so at this point, whatever chain of exceptions we had, is going to be lost and unreported within
+				// eclipse, the only way to see them is if you look at console and that could be messy because you won't
+				// know where in the console and which one of the following warnings (if in a junit with many tests
+				// failed) is the right one
+				Log.warn( "we got passed a chained exception(/throwable) so we discard the previous chain; so this should work well apparently unless we didn't chain the previous exception in this new exception that already had a chain" );
 				// Log.thro1( newOne.getLocalizedMessage() );
 				// newOne.printStackTrace();
 			}
@@ -96,19 +105,24 @@ public class RunTime {
 	
 	public static void bug( String msg ) {
 
-		throw new BugError( "Bug detected: " + msg );
+		RunTime.thro( new BugError( "Bug detected: " + msg ) );
 	}
 	
 	public static void badCall() {
 
-		badCall( "" );
+		badCall0( "" );
 	}
 	
 	public static void badCall( String msg ) {
 
+		badCall0( msg );
+	}
+	
+	private static void badCall0( String msg ) {
+
 		String msg2 = "BADCALL: " + msg;
-		Log.thro( msg2 );// FIXME: add a minus level param to show caller's pos
-		throw new BadCallError( msg2 );
+		Log.thro2( msg2 );
+		RunTime.thro( new BadCallError( msg2 ) );
 	}
 	
 	// public static void thro( Exception ex ) throws Exception {
@@ -132,7 +146,7 @@ public class RunTime {
 	public static void assumedTrue( boolean b ) {
 
 		if ( !b ) {
-			throw new AssertionError( "expected true condition was false!" );
+			RunTime.thro( new AssertionError( "expected true condition was false!" ) );
 		}
 	}
 	
@@ -140,7 +154,7 @@ public class RunTime {
 
 		for ( int i = 0; i < obj.length; i++ ) {
 			if ( null == obj[i] ) {
-				throw new AssertionError( "expected non-null object[" + ( i + 1 ) + "] was null!" );
+				RunTime.thro( new AssertionError( "expected non-null object[" + ( i + 1 ) + "] was null!" ) );
 			}
 		}
 	}
@@ -149,7 +163,7 @@ public class RunTime {
 
 		for ( int i = 0; i < obj.length; i++ ) {
 			if ( null != obj[i] ) {
-				throw new AssertionError( "expected null object[" + ( i + 1 ) + "] was NOT null!" );
+				RunTime.thro( new AssertionError( "expected null object[" + ( i + 1 ) + "] was NOT null!" ) );
 			}
 		}
 	}
@@ -157,7 +171,7 @@ public class RunTime {
 	public static void assumedFalse( boolean b ) {
 
 		if ( b ) {
-			throw new AssertionError( "expected false condition was true!" );
+			RunTime.thro( new AssertionError( "expected false condition was true!" ) );
 		}
 		
 	}

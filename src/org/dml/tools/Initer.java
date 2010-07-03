@@ -26,6 +26,7 @@ package org.dml.tools;
 
 
 
+import org.dml.tracking.Factory;
 import org.references.method.MethodParams;
 
 
@@ -36,7 +37,9 @@ import org.references.method.MethodParams;
  */
 public abstract class Initer {
 	
+	// true on calling .start(); and true on calling .done()
 	private boolean			inited			= false;
+	
 	private MethodParams	formerParams	= null;
 	
 	/**
@@ -69,8 +72,10 @@ public abstract class Initer {
 	 */
 	public final void restart() {
 
-		this.deInit();
-		this.init( formerParams );
+		// this.deInit();
+		Factory.deInit( this );
+		// this.init( formerParams );
+		Factory.reInit( formerParams );
 	}
 	
 	/**
@@ -81,7 +86,9 @@ public abstract class Initer {
 		if ( this.isInited() ) {
 			RunTime.badCall( "already inited. Maybe you wanted to use restart()" );
 		}
-		this.init( formerParams );
+		// so wasn't inited then:
+		// this.init( formerParams );
+		Factory.reInit( formerParams );
 	}
 	
 	/**
@@ -105,16 +112,19 @@ public abstract class Initer {
 	/**
 	 * @return
 	 */
-	public final void deInit() {
+	public final void internal_DeInit_use_Factory_instead() {
 
 		if ( !this.isInited() ) {
 			RunTime.badCall( this.toString() + " was not already init()-ed" );
 		}
 		
-		this.deInitSilently();
+		this.internal_DeInitSilently_use_Factory_instead();
 	}
 	
 	
+	/**
+	 * isInited() is true while in this method<br>
+	 */
 	protected abstract void beforeDeInit();
 	
 	/**
@@ -122,15 +132,17 @@ public abstract class Initer {
 	 * 
 	 * @see #deInit()
 	 */
-	public final void deInitSilently() {
+	public final void internal_DeInitSilently_use_Factory_instead() {
 
+		// FIXME: this is used in deInit() also, but there we don't want it silent
 		if ( this.isInited() ) {
 			try {
 				try {
 					this.beforeDeInit();
-				} catch ( Throwable e ) {
+				} catch ( Throwable e ) {// FIXME: remove this catch if we still want to throw but deferred
 					e.printStackTrace();
 				} finally {
+					// FIXME: this may throw but since we're in silent mode, we may want to muff it
 					this.done( formerParams );
 				}
 				// formerParams are not managed here, only on init() ie. discarded
@@ -142,28 +154,38 @@ public abstract class Initer {
 	
 	
 
+	/**
+	 * isInited() is false until after this method completes; so you see it as false from within this method<br>
+	 */
 	protected abstract void beforeInit();
 	
 	/**
+	 * should only be called by one method: Factory.getNewInstance(...)<br>
 	 * the params will be cloned (or copied) to be used by reInit()<br>
 	 * 
 	 * @param params
 	 *            null or the params
 	 */
-	public final void init( MethodParams params ) {
+	public final void internal_Init_use_Factory_instead( MethodParams params ) {
 
 		if ( this.isInited() ) {
 			RunTime.badCall( "already inited, you must deInit() before calling init(...) again" );
 		}
-		this.beforeInit();
-		this.setInited( true );
+		try {
+			// this may throw
+			this.beforeInit();
+		} finally {
+			this.setInited( true );
+		}
+		
 		// try {
 		
 		if ( params != formerParams ) {
-			// NOT called by reInit() or restart()
+			// means: NOT called by reInit() or restart()
 			if ( null != formerParams ) {
-				// was used before, we discard the one before
-				formerParams.deInit();
+				// means: was used before, we discard the one before
+				// formerParams.deInit();
+				Factory.deInit( formerParams );
 				formerParams = null;
 			}
 			
@@ -172,6 +194,8 @@ public abstract class Initer {
 				formerParams = params.getClone();
 			} // else is null
 		} // else called by reInit() we don't mod them
+		
+		// FIXME: this may throw
 		this.start( formerParams );
 		// } finally {
 		// this.setInited( true );

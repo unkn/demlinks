@@ -70,6 +70,30 @@ public class RunTimeTest {
 	}
 	
 	@Test
+	public void testChainedException1_1() {
+
+		// this will successfully chain all the last 3 throwables and eclipse will show them on the exact lines they
+		// happen
+		// however the first thrown exception "err" will not be seen in eclipse, 'cause it got overwritten by the new
+		// thrown exception which already had in its chain a normal exception that was caught from java normal throws
+		System.err.println( "1_1" );
+		try {
+			RunTime.thro( new Error( "err" ) );
+		} catch ( Throwable e ) {
+			try {
+				throw new IOException( "rogue java method that we cannot control throws this" );
+			} catch ( Throwable f ) {
+				RunTime.thro( new Exception( "new one that also chains f", f ) );
+				// mustn't chain these like: new Exception( f ) ); because all is lost from before ie. the 'err'
+				// exception from above, is lost; and also the f exception is not pointed out in console output, only in
+				// eclipse Failure Trace window
+			}
+		} finally {
+			RunTime.thro( new Exception( "final" ) );
+		}
+	}
+	
+	@Test
 	public void testChainedException2() {
 
 		// this will not show the Error one
@@ -93,7 +117,7 @@ public class RunTimeTest {
 		try {
 			RunTime.thro( new Error( "err" ) );
 		} catch ( Throwable e ) {
-			e.printStackTrace();
+			// e.printStackTrace();
 			RunTime.thro( e );// this will not be shown
 		} finally {
 			RunTime.thro( new Exception( "final" ) );
@@ -103,6 +127,8 @@ public class RunTimeTest {
 	@Test
 	public void testChainedException4() throws Throwable {
 
+		
+		// Log.thro( "x" );
 		// this will successfully chain all 3 throwables and eclipse will show them on the exact lines they happen
 		try {
 			RunTime.thro( new Error( "err" ) );
@@ -111,5 +137,69 @@ public class RunTimeTest {
 		} finally {
 			RunTime.thro( new Exception( "final" ) );
 		}
+	}
+	
+	@Test
+	public void testDefer() {
+
+		try {
+			RunTime.thro( new Error( "this was deferred" ) );
+		} catch ( Throwable e ) {
+			// ignore
+		}
+		System.out.println( "doing something else until the next exception occurs which will show the deferred one also" );
+		RunTime.thro( new Exception( "the now" ) );
+	}
+	
+	@Test
+	public void testDeferIfChained() {
+
+		// so all 4 are chained in normal order and eclipse show show them all in Failure Trace window
+		try {
+			RunTime.thro( new Error( "Zthis was deferred" ) );
+		} catch ( Throwable e ) {
+			// ignore
+		}
+		System.out.println( "doing something else until the next exception occurs which will show the deferred one also" );
+		try {
+			RunTime.thro( new Exception( "A" ) );
+		} catch ( Throwable e ) {
+			// ignoring A
+			try {
+				throw new IOException( "rogue java method that we cannot control throws this" );
+			} catch ( Throwable f ) {
+				RunTime.thro( f ); // mustn't chain these like: new Exception( f ) );
+			}
+		} finally {
+			RunTime.thro( new RuntimeException( "B, which is chained to A" ) );
+		}
+	}
+	
+	@Test
+	public void testDeferredNormal() throws IOException {
+
+		try {
+			try {
+				throw new IOException( "x" );
+			} finally {
+				System.out.println( "doing some stuff first" );
+			}
+		} finally {
+			System.out.println( "reachable" );
+		}
+	}
+	
+	@Test
+	public void testBadCallNoParams() {
+
+		// the link in console should point to this line
+		RunTime.badCall();
+	}
+	
+	@Test
+	public void testBadCallWithParams() {
+
+		// the link in console should point to this line
+		RunTime.badCall( "message" );
 	}
 }

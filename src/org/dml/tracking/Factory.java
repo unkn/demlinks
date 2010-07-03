@@ -26,11 +26,9 @@ package org.dml.tracking;
 
 
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-
 import org.dml.tools.Initer;
 import org.dml.tools.RunTime;
+import org.javapart.logger.Log;
 import org.references.ListOfUniqueNonNullObjects;
 import org.references.method.MethodParams;
 
@@ -73,20 +71,23 @@ public class Factory {
 	 */
 	public static <T extends Initer> T getNewInstance( Class<T> type, MethodParams params ) {
 
-		Constructor<T> con = null;
+		// Constructor<T> con = null;
 		T ret = null;
+		// try {
+		// con = type.getConstructor();
+		// } catch ( SecurityException e ) {
+		// e.printStackTrace();
+		// RunTime.bug( "method not accessible ie. private init() method instead of public" );
+		// } catch ( NoSuchMethodException e ) {
+		// e.printStackTrace();
+		// RunTime.bug(
+		// "private default constructor? or a public one doesn't exist and yet we do have the right class or subclass of wtw"
+		// );
+		// }
+		//
 		try {
-			con = type.getConstructor();
-		} catch ( SecurityException e ) {
-			e.printStackTrace();
-			RunTime.bug( "method not accessible ie. private init() method instead of public" );
-		} catch ( NoSuchMethodException e ) {
-			e.printStackTrace();
-			RunTime.bug( "private default constructor? or a public one doesn't exist and yet we do have the right class or subclass of wtw" );
-		}
-		
-		try {
-			ret = con.newInstance();// no params constructor
+			// ret = con.newInstance();// no params constructor
+			ret = type.newInstance();
 		} catch ( IllegalArgumentException e ) {
 			e.printStackTrace();
 			RunTime.bug();
@@ -96,14 +97,20 @@ public class Factory {
 		} catch ( IllegalAccessException e ) {
 			e.printStackTrace();
 			RunTime.bug();
-		} catch ( InvocationTargetException e ) {
-			e.printStackTrace();
-			RunTime.bug();
+			// } catch ( InvocationTargetException e ) {
+			// e.printStackTrace();
+			// RunTime.bug();
 		}
 		
 		RunTime.assumedNotNull( ret );
 		RunTime.assumedFalse( ret.isInited() );
-		ret.init( params );
+		// FIXME: this may throw
+		try {
+			ret.internal_Init_use_Factory_instead( params );// params may be null
+		} finally {
+			// any exceptions from the try block are postponed until after finally block is done
+			addNewInstance( ret );
+		}
 		RunTime.assumedTrue( ret.isInited() );
 		return ret;
 	}
@@ -117,12 +124,32 @@ public class Factory {
 
 		RunTime.assumedNotNull( instance );
 		RunTime.assumedTrue( instance.isInited() );
-		instance.deInit();
+		Factory.deInitSilently( instance );
 		RunTime.assumedFalse( instance.isInited() );
 	}
 	
+	public static <T extends Initer> void deInitSilently( T instance ) {
+
+		if ( null != instance ) {
+			if ( instance.isInited() ) {
+				try {
+					// FIXME: this may throw, do we want to silence it?
+					instance.internal_DeInitSilently_use_Factory_instead();
+				} finally {
+					// FIXME: this may also throw
+					removeOldInstance( instance );
+				}
+			} else {
+				Log.warn( "was not already inited, so nothing to deInit" );
+			}
+		} else {
+			Log.warn( "got null instance passed as param" );
+		}
+	}
+	
 	/**
-	 * after this you can call deInit() or reInit() again
+	 * after this you can call deInit() or reInit() again<br>
+	 * this will keep the instance (ie. no new again) and just do a reInit()<br>
 	 * 
 	 * @param <T>
 	 * @param instance
@@ -130,8 +157,29 @@ public class Factory {
 	public static <T extends Initer> void reInit( T instance ) {
 
 		RunTime.assumedNotNull( instance );
+		boolean wasInited = instance.isInited();
 		instance.reInit();
+		if ( !wasInited ) {
+			addNewInstance( instance );
+		}
 		RunTime.assumedTrue( instance.isInited() );
 	}
 	
+	
+	private final static void addNewInstance( Initer instance ) {
+
+		RunTime.assumedNotNull( instance );
+		if ( ALL_INSTANCES.addFirstQ( instance ) ) {
+			RunTime.bug( "should not have existed" );
+		}
+	}
+	
+	private final static void removeOldInstance( Initer instance ) {
+
+		Log.entry( instance.toString() );
+		RunTime.assumedNotNull( instance );
+		if ( !ALL_INSTANCES.removeObject( instance ) ) {
+			RunTime.bug( "should've existed" );
+		}
+	}
 }

@@ -32,6 +32,7 @@ import java.util.NoSuchElementException;
 
 import org.dml.tools.RunTime;
 import org.dml.tools.StaticInstanceTracker;
+import org.dml.tracking.Factory;
 import org.references.Reference;
 
 
@@ -65,8 +66,9 @@ public class MethodParams extends StaticInstanceTracker {
 	 */
 	public static MethodParams getNew() {
 
-		MethodParams one = new MethodParams();
-		one.init( null );
+		MethodParams one = Factory.getNewInstance( MethodParams.class );
+		// new MethodParams();
+		// one.init( null );
 		RunTime.assumedTrue( one.isInited() );
 		return one;
 	}
@@ -75,7 +77,8 @@ public class MethodParams extends StaticInstanceTracker {
 
 		RunTime.assumedNotNull( thisOne );
 		RunTime.assumedTrue( thisOne.isInited() );
-		thisOne.deInit();
+		Factory.deInit( thisOne );
+		// thisOne.deInit();
 	}
 	
 	
@@ -319,8 +322,9 @@ public class MethodParams extends StaticInstanceTracker {
 	public MethodParams getClone() {
 
 		RunTime.assumedTrue( this.isInited() );
-		MethodParams clone = new MethodParams();
-		clone.init( null );// must be null or recursion
+		MethodParams clone = Factory.getNewInstance( MethodParams.class );
+		// MethodParams clone = new MethodParams();
+		// clone.init( null );// must be null or recursion
 		RunTime.assumedTrue( clone.size() == 0 );
 		clone.mergeWith( this, false );// there's nothing to overwrite
 		RunTime.assumedTrue( clone.size() == this.size() );

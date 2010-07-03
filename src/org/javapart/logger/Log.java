@@ -34,9 +34,8 @@ public class Log {
 	static final int					spacesBeforeMsg							= 10;
 	
 	private final static LogFlags		CurrentLogFlags[]						= {
-			// LogFlags.Entry, // LogFlags.Mid,
+			// LogFlags.Entry, LogFlags.Mid, LogFlags.Exit,
 			LogFlags.Bug, LogFlags.Warn, LogFlags.Result, LogFlags.Special, LogFlags.Thro,
-																				// LogFlags.Exit,
 																				};
 	
 	// if no elements, then all methods are shown
@@ -59,65 +58,61 @@ public class Log {
 	 * this.log( "Logger initialized." ); }
 	 */
 
-	private static void thro0( int modifier, String msg ) {
+	public static void thro0( int modifier, String msg ) {
 
 		log( modifier, LogFlags.Thro, "Throws: " + msg );
 	}
 	
 	public static void thro( String msg ) {
 
-		thro0( 0, msg + nl );
+		thro0( 0, msg );
 	}
 	
 	public static void thro1( String msg ) {
 
-		thro0( +1, msg + nl );
+		thro0( +1, msg );
+	}
+	
+	public static void thro2( String msg ) {
+
+		thro0( +2, msg );
 	}
 	
 	public static void thro() {
 
-		thro0( 0, nl );
+		thro0( 0, "" );
 	}
 	
+	// don't merge the three methods, else line numbers will get screwed
 	private static void special0( String msg ) {
 
 		log( 0, LogFlags.Special, "special: " + msg );
 	}
 	
-	// public static void specialb( String msg ) {
-	//
-	// special0( msg );
-	// }
-	
 	public static void special( String msg ) {
 
-		special0( msg + nl );
+		special0( msg );
 	}
 	
 	public static void special() {
 
-		special0( nl );
+		special0( "" );
 	}
+	
 	
 	private static void entry0( String msg ) {
 
 		log( 0, LogFlags.Entry, "entry : " + msg );
 	}
 	
-	// public static void entryb( String msg ) {
-	//
-	// entry0( msg );
-	// }
-	
-
 	public static void entry( String msg ) {
 
-		entry0( msg + nl );
+		entry0( msg );
 	}
 	
 	public static void entry() {
 
-		entry0( nl );
+		entry0( "" );
 	}
 	
 	private static void exit0( String msg ) {
@@ -125,34 +120,29 @@ public class Log {
 		log( 0, LogFlags.Exit, "exit  : " + msg );
 	}
 	
-	// public static void exitb( String msg ) {
-	//
-	// exit0( msg );
-	// }
-	
 	public static void exit( String msg ) {
 
-		exit0( msg + nl );
+		exit0( msg );
 	}
 	
 	public static void exit() {
 
-		exit0( nl );
+		exit0( "" );
 	}
 	
-	public static void mid0( String msg ) {
+	private static void mid0( String msg ) {
 
 		log( 0, LogFlags.Mid, "mid  : " + msg );
 	}
 	
 	public static void mid( String msg ) {
 
-		mid0( msg + nl );
+		mid0( msg );
 	}
 	
 	public static void mid() {
 
-		mid0( nl );
+		mid0( "" );
 	}
 	
 	private static void log( int modifier, LogFlags logFlag, String msg ) {
@@ -171,7 +161,8 @@ public class Log {
 			String loc = getCurrentLocation( modifier );
 			if ( mustShowCurrentMethod( modifier ) ) {
 				
-				System.err.print( loc + nl + String.format( "%-" + spacesBeforeMsg + "s%s", " ", msg ) );
+				// System.err.print( loc + nl + String.format( "%-" + spacesBeforeMsg + "s%s", " ", msg ) );
+				System.err.print( msg + nl + String.format( "%-" + spacesBeforeMsg + "s%s", " ", loc ) + nl );
 				// }
 			}
 		}
@@ -245,48 +236,43 @@ public class Log {
 		result0( ( boo == true ? "true" : "false" ) + nl );
 	}
 	
-	public static void result( String msg ) {
-
-		result0( msg + nl );
-	}
-	
-	// public static void resultb( String msg ) {
-	//
-	// result0( msg );
-	// }
-	
 	private static void result0( String msg ) {
 
 		log( 0, LogFlags.Result, "result: " + msg );
 	}
 	
-	public static void warn0( String msg ) {
+	public static void result( String msg ) {
+
+		result0( msg );
+	}
+	
+	private static void warn0( String msg ) {
 
 		log( 0, LogFlags.Warn, "warn  : " + msg );
 	}
 	
 	public static void warn( String msg ) {
 
-		warn0( msg + nl );
+		warn0( msg );
 	}
 	
 	public static void warn() {
 
-		warn0( nl );
+		warn0( "" );
 	}
 	
-	public static void bug0( String msg ) {
+	private static void bug0( String msg ) {
 
 		log( 0, LogFlags.Bug, "BUG   : " + msg );
 	}
 	
 	public static void bug( String msg ) {
 
-		bug0( msg + nl );
+		bug0( msg );
 	}
 	
 	public static void bug() {
 
-		bug0( nl );
+		bug0( "" );
 	}
 }

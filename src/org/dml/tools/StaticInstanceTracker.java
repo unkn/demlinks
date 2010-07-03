@@ -25,6 +25,7 @@ package org.dml.tools;
 
 
 
+import org.dml.tracking.Factory;
 import org.javapart.logger.Log;
 import org.references.ListOfUniqueNonNullObjects;
 import org.references.Position;
@@ -104,7 +105,8 @@ public abstract class StaticInstanceTracker extends Initer {
 			StaticInstanceTracker next = ALL_INSTANCES.getObjectAt( Position.AFTER, iter );
 			if ( this.getClass() == iter.getClass() ) {
 				try {
-					iter.deInit();
+					// iter.deInit();
+					Factory.deInit( iter );
 				} catch ( Throwable e ) {
 					// ignore exceptions
 					e.printStackTrace();
@@ -142,7 +144,8 @@ public abstract class StaticInstanceTracker extends Initer {
 			// System.out.println( iter.getClass().getSimpleName() + " / " +
 			// iter
 			// + "!!!!!!" + ALL_INSTANCES.size() );
-			iter.deInit();
+			// iter.deInit();
+			Factory.deInit( iter );// FIXME: this may throw and all others will not be deInit-ed
 			// the list may decrease by more than 1 element, more might be
 			// removed after the above call
 		}
