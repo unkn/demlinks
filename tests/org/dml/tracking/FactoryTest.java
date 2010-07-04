@@ -186,7 +186,7 @@ public class FactoryTest {
 			RunTime.assumedTrue( a.b == newB );
 			Factory.deInit( a );
 			RunTime.assumedFalse( a.initedOurOwn );
-			Factory.reInit( a );
+			Factory.reInit_aka_InitAgain_WithOriginalPassedParams( a );
 		} finally {
 			Factory.deInitAll();
 		}
@@ -200,8 +200,10 @@ public class FactoryTest {
 		try {
 			@SuppressWarnings( "unused" )
 			A a = Factory.getNewInstanceAndInit( A.class );
+			// so init A, init B
 		} finally {
 			Factory.deInitAll();
+			// deinit A (which also deInits B)
 		}
 	}
 }

@@ -98,14 +98,14 @@ public class DBTest {
 	public void testReInit() {
 
 		Factory.deInit( bdb );
-		Factory.reInit( bdb );
+		Factory.reInit_aka_InitAgain_WithOriginalPassedParams( bdb );
 		
 	}
 	
 	@Test
 	public void testRestart() {
 
-		Factory.restart( bdb );
+		Factory.restart_aka_DeInitAndInitAgain_WithOriginalPassedParams( bdb );
 	}
 	
 

@@ -296,6 +296,7 @@ public class ListOfReferences<Obje> {
 	/**
 	 * @param killRef
 	 *            the ref in that will be removed from the list<br>
+	 *            this ref is also KILL-ed and set its fields to null<br>
 	 * @return true if removed, false if it was already inexistent
 	 */
 	public boolean removeRef( ChainedReference<Obje> killRef ) {

@@ -158,12 +158,10 @@ public class Factory {
 		if ( instance.isInited() ) {
 			RunTime.badCall( "must not be already init-ed" );
 		}
-		try {
-			instance._init( params );// params may be null
-		} finally {
-			// any exceptions from the try block are postponed until after finally block is done
-			addNewInitedInstance( instance );// shouldn't already exist since wasn't inited so not in our list
-		}
+		// must add before init because init may init others before we get to add so the order gets foobar-ed
+		addNewInitedInstance( instance );// shouldn't already exist since wasn't inited so not in our list
+		
+		instance._init( params );// params may be null
 		RunTime.assumedTrue( instance.isInited() );
 	}
 	
@@ -176,12 +174,10 @@ public class Factory {
 
 		RunTime.assumedNotNull( instance );
 		RunTime.assumedTrue( instance.isInited() );
-		try {
-			// instance._deInit();
-			internal_deInit( instance );
-		} finally {
-			removeExistingInitedInstance( instance );
-		}
+		
+		removeExistingInitedInstance( instance );
+		internal_deInit( instance );
+		
 		RunTime.assumedFalse( instance.isInited() );
 	}
 	
@@ -206,7 +202,7 @@ public class Factory {
 	 * @param <T>
 	 * @param instance
 	 */
-	public static <T extends Initer> void restart( T instance ) {
+	public static <T extends Initer> void restart_aka_DeInitAndInitAgain_WithOriginalPassedParams( T instance ) {
 
 		RunTime.assumedNotNull( instance );
 		if ( !instance.isInited() ) {
@@ -234,7 +230,7 @@ public class Factory {
 	 * @param <T>
 	 * @param instance
 	 */
-	public static <T extends Initer> void reInit( T instance ) {
+	public static <T extends Initer> void reInit_aka_InitAgain_WithOriginalPassedParams( T instance ) {
 
 		RunTime.assumedNotNull( instance );
 		RunTime.assumedFalse( instance.isInited() );
@@ -259,17 +255,19 @@ public class Factory {
 			if ( ALL_INITED_INSTANCES.containsObject( instance ) ) {
 				RunTime.bug( "bug somewhere this instance must NOT be in the list, and it is in list and it's also not inited?!!" );
 			}
+			
+			// must add before init see on init() why
+			addNewInitedInstance( instance );
+			
 			try {
 				instance._reInit_aka_initAgain_WithOriginalPassedParams();
 			} finally {
 				if ( !instance.isInited() ) {
 					// removeExistingInitedInstance( instance );
 					RunTime.bug( "so, reinit failed but it's still not inited, bug somewhere since a call to reInit "
-							+ "should always set the isInited() flag regardless of thrown exceptions to pave the road "
+							+ "should always set the isInited() flag regardless of thrown exceptions, to pave the road "
 							+ "for a latter deInit()" );
 				}
-				// and we add it if it has the inited flag only
-				addNewInitedInstance( instance );
 			}
 		}
 		
@@ -286,9 +284,11 @@ public class Factory {
 	 */
 	private final static void addNewInitedInstance( Initer instance ) {
 
+		// we're adding these to first, and remove-all will parse from last to first (order)
 		RunTime.assumedNotNull( instance );
-		RunTime.assumedTrue( instance.isInited() );
-		System.out.println( "added: " + instance.getClass().getName() );
+		// yeah must not be inited already but soon after exiting this method it will get init call
+		RunTime.assumedFalse( instance.isInited() );
+		// System.out.println( "added: " + instance.getClass().getName() );
 		if ( ALL_INITED_INSTANCES.addFirstQ( instance ) ) {
 			RunTime.badCall( "should not have existed" );
 		}
@@ -297,7 +297,8 @@ public class Factory {
 	private final static void removeExistingInitedInstance( Initer instance ) {
 
 		RunTime.assumedNotNull( instance );
-		RunTime.assumedFalse( instance.isInited() );
+		// must be already inited but next after this call, a deInit is issued
+		RunTime.assumedTrue( instance.isInited() );
 		// Log.entry( instance.toString() );
 		if ( !ALL_INITED_INSTANCES.removeObject( instance ) ) {
 			RunTime.badCall( "should've existed" );
@@ -313,18 +314,16 @@ public class Factory {
 		Log.entry();
 		while ( true ) {
 			// get the first one (aka next in our context)
-			ChainedReference<Initer> refToInstance = ALL_INITED_INSTANCES.getRefAt( Position.FIRST );
+			ChainedReference<Initer> refToInstance = ALL_INITED_INSTANCES.getRefAt( Position.LAST );
 			if ( null == refToInstance ) {
 				RunTime.assumedTrue( ALL_INITED_INSTANCES.isEmpty() );
 				break;// we're done list is empty
 			}
 			
 			try {
-				Factory.internal_deInit( refToInstance.getObject() );
-				// refToInstance.getObject()._deInit();
-			} catch ( Throwable t ) {
-				// postpone all that were thrown (or re-thrown) with RunTime.thro()
-			} finally {
+				// first remove then deInit
+				// must save this because it's contents are destroyed by removeRef()
+				Initer inst = refToInstance.getObject();
 				try {
 					if ( !ALL_INITED_INSTANCES.removeRef( refToInstance ) ) {
 						// not removed? aka false
@@ -333,6 +332,13 @@ public class Factory {
 				} catch ( Throwable t ) {
 					// postpone any thrown exceptions here also
 				}
+				// and now deInit
+				Factory.internal_deInit( inst );
+				// refToInstance.getObject()._deInit();
+			} catch ( Throwable t ) {
+				// postpone all that were thrown (or re-thrown) with RunTime.thro()
+			} finally {
+				
 			}
 		}// while true
 		
