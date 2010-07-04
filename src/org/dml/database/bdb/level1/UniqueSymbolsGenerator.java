@@ -28,6 +28,7 @@ package org.dml.database.bdb.level1;
 import org.dml.level010.Symbol;
 import org.dml.tools.RunTime;
 import org.dml.tools.StaticInstanceTracker;
+import org.dml.tracking.Factory;
 import org.references.method.MethodParams;
 
 import com.sleepycat.je.DatabaseException;
@@ -40,7 +41,9 @@ import com.sleepycat.je.DatabaseException;
  */
 public class UniqueSymbolsGenerator extends StaticInstanceTracker {
 	
+	// it's null only once even if reInit() is called later
 	private DBSequence			seq						= null;
+	
 	private final String		seq_UniqueSymbolsPuller	= "pulling unique Symbols";
 	
 	// increment-by value, when fetching new unique Symbols >0
@@ -63,14 +66,17 @@ public class UniqueSymbolsGenerator extends StaticInstanceTracker {
 
 		if ( null == seq ) {
 			// init once:
-			seq = new DBSequence( bdbL1, seq_UniqueSymbolsPuller );
-			seq.init( null );
-			RunTime.assumedNotNull( seq );
+			seq = Factory.getNewInstanceAndInit( DBSequence.class, bdbL1, seq_UniqueSymbolsPuller );
+			// seq = new DBSequence( bdbL1, seq_UniqueSymbolsPuller );
+			// seq.init( null );
+			
 		} else {
-			if ( !seq.isInited() ) {
-				seq.reInit();
-			}
+			Factory.reInitIfNotInited( seq );
+			// if ( !seq.isInited() ) {
+			// seq.reInit();
+			// }
 		}
+		RunTime.assumedNotNull( seq );
 		return seq;
 	}
 	
@@ -102,7 +108,7 @@ public class UniqueSymbolsGenerator extends StaticInstanceTracker {
 		// close seq
 		if ( null != seq ) {
 			// seq = seq.done();
-			seq.deInit();
+			Factory.deInit( seq );
 		}
 	}
 	

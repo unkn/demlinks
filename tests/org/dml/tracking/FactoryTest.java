@@ -28,6 +28,7 @@ package org.dml.tracking;
 
 import org.dml.tools.Initer;
 import org.dml.tools.RunTime;
+import org.javapart.logger.Log;
 import org.junit.Test;
 import org.references.Reference;
 import org.references.method.MethodParams;
@@ -168,21 +169,39 @@ public class FactoryTest {
 	@Test
 	public void test1() {
 
-		// System.out.println( Log.getThisLineLocation() );
-		// System.exit( 0 );
-		A a = Factory.getNewInstanceAndInit( A.class );
-		RunTime.assumedTrue( a.initedOurOwn );
-		Factory.deInit( a );
-		RunTime.assumedFalse( a.initedOurOwn );
-		
-		MethodParams params = Factory.getNewInstanceAndInit( MethodParams.class );
-		B newB = Factory.getNewInstanceAndInit( B.class );
-		params.set( specB, newB );
-		a = Factory.getNewInstanceAndInit( A.class, params );
-		RunTime.assumedFalse( a.initedOurOwn );
-		RunTime.assumedTrue( a.b == newB );
-		Factory.deInit( a );
-		RunTime.assumedFalse( a.initedOurOwn );
+		Log.entry();
+		try {
+			// System.out.println( Log.getThisLineLocation() );
+			// System.exit( 0 );
+			A a = Factory.getNewInstanceAndInit( A.class );
+			RunTime.assumedTrue( a.initedOurOwn );
+			Factory.deInit( a );
+			RunTime.assumedFalse( a.initedOurOwn );
+			
+			MethodParams params = Factory.getNewInstanceAndInit( MethodParams.class );
+			B newB = Factory.getNewInstanceAndInit( B.class );
+			params.set( specB, newB );
+			a = Factory.getNewInstanceAndInit( A.class, params );
+			RunTime.assumedFalse( a.initedOurOwn );
+			RunTime.assumedTrue( a.b == newB );
+			Factory.deInit( a );
+			RunTime.assumedFalse( a.initedOurOwn );
+			Factory.reInit( a );
+		} finally {
+			Factory.deInitAll();
+		}
 	}
 	
+	
+	@Test
+	public void testOrder() {
+
+		Log.entry();
+		try {
+			@SuppressWarnings( "unused" )
+			A a = Factory.getNewInstanceAndInit( A.class );
+		} finally {
+			Factory.deInitAll();
+		}
+	}
 }

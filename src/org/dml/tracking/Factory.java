@@ -48,10 +48,9 @@ public class Factory {
 	
 	
 	// LIFO list tracking all instances of ALL subclasses that are inited
+	// add new ones to first, and when remove-all start from last to first
 	private final static ListOfUniqueNonNullObjects<Initer>	ALL_INITED_INSTANCES	= new ListOfUniqueNonNullObjects<Initer>();
 	
-	
-
 	/**
 	 * generic method with a type variable<br>
 	 * this will do a new and an init() with no params
@@ -277,10 +276,19 @@ public class Factory {
 		RunTime.assumedTrue( instance.isInited() );
 	}
 	
+	/**
+	 * basically, the last one added is first and the order to deInit is from first to last<br>
+	 * NOTE that if variables are going to be inited in the new instance's init, then they are not first, and
+	 * these
+	 * instances are first and they will deinit their own variables which follow<br>
+	 * 
+	 * @param instance
+	 */
 	private final static void addNewInitedInstance( Initer instance ) {
 
 		RunTime.assumedNotNull( instance );
 		RunTime.assumedTrue( instance.isInited() );
+		System.out.println( "added: " + instance.getClass().getName() );
 		if ( ALL_INITED_INSTANCES.addFirstQ( instance ) ) {
 			RunTime.badCall( "should not have existed" );
 		}
@@ -302,6 +310,7 @@ public class Factory {
 	 */
 	public static void deInitAll() {
 
+		Log.entry();
 		while ( true ) {
 			// get the first one (aka next in our context)
 			ChainedReference<Initer> refToInstance = ALL_INITED_INSTANCES.getRefAt( Position.FIRST );

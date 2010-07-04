@@ -95,14 +95,23 @@ public class ListOfObjects<E> extends ListOfReferences<E> {
 	 */
 	public ChainedReference<E> getRef( E containingThisObject ) {
 
-		ChainedReference<E> parser = this.getFirstRef();// can be null if empty
-		// list
-		while ( null != parser ) {
-			if ( parser.getObject() == containingThisObject ) {
-				break;
-			}
-			parser = parser.getNext();
-		}
+		RunTime.assumedNotNull( containingThisObject );
+		ChainedReference<E> parser = this.getLastRef();
+		if ( null != parser ) {
+			// check if it's last
+			if ( parser.getObject() != containingThisObject ) {
+				// it's not last then let's start parsing from first
+				parser = this.getFirstRef();// can be null if empty
+				// list
+				while ( null != parser ) {
+					if ( parser.getObject() == containingThisObject ) {
+						break;
+					}
+					parser = parser.getNext();
+					// so here it will eventually end-up checking last one again, np
+				}// parsed all
+			}// last
+		}// null
 		return parser;
 	}
 	
