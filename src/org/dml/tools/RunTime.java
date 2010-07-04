@@ -113,14 +113,20 @@ public class RunTime {
 		// allExceptionsChained.getClass().getCanonicalName() + ": " + allExceptionsChained.getLocalizedMessage() );
 		// System.out.println( Log.getLine( allExceptionsChained.getStackTrace(), 2 ) );
 		
+		internalWrappedThrow();
+		// throw new RuntimeException( allExceptionsChained );
+	}
+	
+	private static void internalWrappedThrow() {
+
 		// wrapping this into RuntimeException 'cause it's unchecked aka no throws declaration needed
 		throw new RuntimeException( allExceptionsChained );
 	}
 	
 	/**
-	 * for jUnit
+	 * not just for jUnit
 	 */
-	public static void clearThrow() {
+	public static void clearThrowChain() {
 
 		allExceptionsChained = null;
 	}
@@ -265,4 +271,25 @@ public class RunTime {
 		
 	}
 	
+	/**
+	 * The purpose of this is to give time to do the deinitializing code<br>
+	 * you can postpone all exceptions thrown with RunTime.thro() as follows:<br>
+	 * try {<br>
+	 * //some exceptions thrown here with RunTime.thro() will happen
+	 * }catch(Throwable t) {<br>
+	 * //do nothing<br>
+	 * }<br>
+	 * //later you can call this method to throw all those postponed exceptions <br>
+	 * throwPostponed(); <br>
+	 * <br>
+	 * all normally thrown exceptions (ie. with keyword 'throw') will just overwrite anything thrown before<br>
+	 */
+	public static void throwPosponed() {
+
+		if ( null != allExceptionsChained ) {
+			internalWrappedThrow();
+			clearThrowChain();
+		}// else ignore
+		
+	}
 }

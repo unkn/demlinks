@@ -69,7 +69,7 @@ public class MethodParams extends StaticInstanceTracker {
 	 */
 	public static MethodParams getNew() {
 
-		MethodParams one = Factory.getNewInstance( MethodParams.class );
+		MethodParams one = Factory.getNewInstanceAndInit( MethodParams.class );
 		// new MethodParams();
 		// one.init( null );
 		RunTime.assumedTrue( one.isInited() );
@@ -325,7 +325,7 @@ public class MethodParams extends StaticInstanceTracker {
 	public MethodParams getClone() {
 
 		RunTime.assumedTrue( this.isInited() );
-		MethodParams clone = Factory.getNewInstance( MethodParams.class );
+		MethodParams clone = Factory.getNewInstanceAndInit( MethodParams.class );
 		// MethodParams clone = new MethodParams();
 		// clone.init( null );// must be null or recursion
 		RunTime.assumedTrue( clone.size() == 0 );

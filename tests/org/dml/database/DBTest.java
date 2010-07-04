@@ -29,13 +29,12 @@ import org.dml.JUnits.Consts;
 import org.dml.database.bdb.level1.Level1_Storage_BerkeleyDB;
 import org.dml.tools.RunTime;
 import org.dml.tracking.Factory;
+import org.javapart.logger.Log;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.references.method.MethodParams;
 import org.references.method.PossibleParams;
-
-import com.sleepycat.je.DatabaseException;
 
 
 
@@ -48,18 +47,22 @@ public class DBTest {
 	Level1_Storage_BerkeleyDB	bdb;
 	
 	@Before
-	public void setUp() throws DatabaseException {
+	public void setUp() throws Exception {
 
+		Log.entry();
+		// System.out.println( "setUp:" );
 		// StaticInstanceTracker
 		MethodParams params;
-		params = Factory.getNewInstance( MethodParams.class );
+		params = Factory.getNewInstanceAndInit( MethodParams.class );
 		
 		params.set( PossibleParams.homeDir, Consts.BDB_ENV_PATH );
 		params.set( PossibleParams.jUnit_wipeDB, false );
 		params.set( PossibleParams.jUnit_wipeDBWhenDone, true );
-		
-		bdb = Factory.getNewInstance( Level1_Storage_BerkeleyDB.class, params );
+		// RunTime.thro( new Exception( "testy" ) );
+		bdb = Factory.getNewInstanceAndInit( Level1_Storage_BerkeleyDB.class, params );
+		// bdb._deInit();
 		Factory.deInit( params );
+		//
 		// Factory.reinit( params );
 		// params.reInit();
 		// params.deInit();
@@ -70,15 +73,19 @@ public class DBTest {
 		
 		// bdb.init( params );
 		// params.deInit();
-		
+		Log.exit();
 	}
 	
 	@After
 	public void tearDown() {
 
+		// System.out.println( "tearDown:" );
+		Log.entry();
 		// bdb.deInit();
-		Factory.deInit( bdb );
-		RunTime.clearThrow();
+		// Factory.deInit( bdb );
+		Factory.deInitAll();
+		RunTime.clearThrowChain();
+		Log.exit();
 	}
 	
 	@Test
@@ -93,6 +100,12 @@ public class DBTest {
 		Factory.deInit( bdb );
 		Factory.reInit( bdb );
 		
+	}
+	
+	@Test
+	public void testRestart() {
+
+		Factory.restart( bdb );
 	}
 	
 

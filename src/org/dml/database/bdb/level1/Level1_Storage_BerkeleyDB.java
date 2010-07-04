@@ -74,7 +74,7 @@ public class Level1_Storage_BerkeleyDB extends StaticInstanceTracker {
 	private final ListOfUniqueNonNullObjects<Sequence>			allSequenceInstances		= new ListOfUniqueNonNullObjects<Sequence>();
 	private final ListOfUniqueNonNullObjects<Database>			allOpenPrimaryDatabases		= new ListOfUniqueNonNullObjects<Database>();
 	private final ListOfUniqueNonNullObjects<SecondaryDatabase>	allOpenSecondaryDatabases	= new ListOfUniqueNonNullObjects<SecondaryDatabase>();
-	private UniqueSymbolsGenerator								symGen						= null;
+	private final UniqueSymbolsGenerator						symGen						= null;
 	
 	private static final String									dbNAME_JavaID_To_NodeID		= "map(JavaID<->NodeID)";
 	private final static String									UNINITIALIZED_STRING		= "uninitializedString";
@@ -89,19 +89,23 @@ public class Level1_Storage_BerkeleyDB extends StaticInstanceTracker {
 	public DBMap_JavaIDs_To_Symbols getDBMap_JavaIDs_To_Symbols() throws DatabaseException {
 
 		if ( null == db_JavaID_To_Symbol ) {
-			db_JavaID_To_Symbol = new DBMap_JavaIDs_To_Symbols( this, dbNAME_JavaID_To_NodeID );
-			db_JavaID_To_Symbol.init( null );
+			db_JavaID_To_Symbol = Factory.getNewInstanceAndInit( DBMap_JavaIDs_To_Symbols.class, this,
+					dbNAME_JavaID_To_NodeID );
+			// db_JavaID_To_Symbol = new DBMap_JavaIDs_To_Symbols( this, dbNAME_JavaID_To_NodeID );
+			// db_JavaID_To_Symbol.init( null );
 			RunTime.assumedNotNull( db_JavaID_To_Symbol );
 		} else {
-			if ( !db_JavaID_To_Symbol.isInited() ) {
-				db_JavaID_To_Symbol.reInit();
-			}
+			Factory.reInitIfNotInited( db_JavaID_To_Symbol );
+			// if ( !db_JavaID_To_Symbol.isInited() ) {
+			// Factory.reInit( db_JavaID_To_Symbol );
+			// // db_JavaID_To_Symbol.reInit();
+			// }
 		}
+		RunTime.assumedTrue( db_JavaID_To_Symbol.isInited() );
 		return db_JavaID_To_Symbol;
 	}
 	
 	
-
 	/**
 	 * constructor, don't forget to call init(..);
 	 */
@@ -126,13 +130,17 @@ public class Level1_Storage_BerkeleyDB extends StaticInstanceTracker {
 	public UniqueSymbolsGenerator getUniqueSymbolsGenerator() {
 
 		if ( null == symGen ) {
-			symGen = new UniqueSymbolsGenerator( this );
-			symGen.init( null );
+			symGen = Factory.getNewInstanceAndInit( UniqueSymbolsGenerator.class, this );
+			// symGen = new UniqueSymbolsGenerator( this );
+			// symGen.init( null );
 		} else {
-			if ( !symGen.isInited() ) {
-				symGen.reInit();
-			}
+			Factory.reInitIfNotInited( symGen );
+			// if ( !symGen.isInited() ) {
+			// Factory.reInitIfNotInited( symGen );
+			// //symGen.reInit();
+			// }
 		}
+		RunTime.assumedTrue( symGen.isInited() );
 		return symGen;
 	}
 	

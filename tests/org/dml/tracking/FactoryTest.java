@@ -118,7 +118,7 @@ public class FactoryTest {
 			}
 			if ( null == tempRef2B ) {
 				initedOurOwn = true;
-				b = Factory.getNewInstance( B.class );
+				b = Factory.getNewInstanceAndInit( B.class );
 			} else {
 				initedOurOwn = false;
 				b = (B)tempRef2B.getObject();
@@ -170,15 +170,15 @@ public class FactoryTest {
 
 		// System.out.println( Log.getThisLineLocation() );
 		// System.exit( 0 );
-		A a = Factory.getNewInstance( A.class );
+		A a = Factory.getNewInstanceAndInit( A.class );
 		RunTime.assumedTrue( a.initedOurOwn );
 		Factory.deInit( a );
 		RunTime.assumedFalse( a.initedOurOwn );
 		
-		MethodParams params = Factory.getNewInstance( MethodParams.class );
-		B newB = Factory.getNewInstance( B.class );
+		MethodParams params = Factory.getNewInstanceAndInit( MethodParams.class );
+		B newB = Factory.getNewInstanceAndInit( B.class );
 		params.set( specB, newB );
-		a = Factory.getNewInstance( A.class, params );
+		a = Factory.getNewInstanceAndInit( A.class, params );
 		RunTime.assumedFalse( a.initedOurOwn );
 		RunTime.assumedTrue( a.b == newB );
 		Factory.deInit( a );

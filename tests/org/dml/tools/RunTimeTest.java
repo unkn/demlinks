@@ -45,13 +45,13 @@ public class RunTimeTest {
 	@Before
 	public void setUp() {
 
-		RunTime.clearThrow();
+		RunTime.clearThrowChain();
 	}
 	
 	@After
 	public void tearDown() {
 
-		RunTime.clearThrow();
+		RunTime.clearThrowChain();
 	}
 	
 	@Test
@@ -304,7 +304,7 @@ public class RunTimeTest {
 			RunTime.thro( new Exception( "something" ) );
 		} catch ( Exception e ) {
 			// caught, handled , wtw
-			RunTime.clearThrow();// this clears all previous ones hmm
+			RunTime.clearThrowChain();// this clears all previous ones hmm
 		}
 		// somewhere later, this throw should not be chained with above one
 		RunTime.thro( new IOException( "else" ) );

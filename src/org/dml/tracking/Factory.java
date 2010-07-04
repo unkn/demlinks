@@ -31,7 +31,10 @@ import java.lang.reflect.InvocationTargetException;
 
 import org.dml.tools.Initer;
 import org.dml.tools.RunTime;
+import org.javapart.logger.Log;
+import org.references.ChainedReference;
 import org.references.ListOfUniqueNonNullObjects;
+import org.references.Position;
 import org.references.method.MethodParams;
 
 
@@ -44,7 +47,6 @@ import org.references.method.MethodParams;
 public class Factory {
 	
 	
-	// TODO
 	// LIFO list tracking all instances of ALL subclasses that are inited
 	private final static ListOfUniqueNonNullObjects<Initer>	ALL_INITED_INSTANCES	= new ListOfUniqueNonNullObjects<Initer>();
 	
@@ -56,11 +58,15 @@ public class Factory {
 	 * 
 	 * @param class1
 	 *            any subclass of StaticInstanceTracker
-	 * @return
+	 * @param constructorParameters
+	 *            a list of objects to be passed to the constructor(which is auto found based on objects passed)<br>
+	 *            can be unspecified aka null<br>
+	 * @return the new instance, don't forget to assign this to a variable (FIXME: I wonder if we can do a warning on
+	 *         this?)
 	 */
-	public static <T extends Initer> T getNewInstance( Class<T> type ) {
+	public static <T extends Initer> T getNewInstanceAndInit( Class<T> type, Object... constructorParameters ) {
 
-		return getNewInstance( type, null );
+		return getNewInstanceAndInit( type, null, constructorParameters );
 	}
 	
 	
@@ -69,15 +75,28 @@ public class Factory {
 	 * 
 	 * @param <T>
 	 * @param type
-	 * @return
+	 *            the class type to do a 'new' on
+	 * @param initargsObjects
+	 *            a list of objects to be passed to the constructor(which is auto found based on objects passed)<br>
+	 *            can be unspecified aka null<br>
+	 * @return the new instance, don't forget to assign this to a variable (FIXME: I wonder if we can do a warning on
+	 *         this?)
 	 */
-	private static <T extends Initer> T getGenericNewInstance( Class<T> type ) {
+	private static <T extends Initer> T getGenericNewInstance( Class<T> type, Object... initargsObjects ) {
 
 		T ret = null;
 		
 		Constructor<T> con = null;
 		try {
-			con = type.getConstructor();
+			Class<?>[] initargsClasses = null;
+			if ( null != initargsObjects ) {
+				initargsClasses = new Class<?>[initargsObjects.length];
+				RunTime.assumedTrue( initargsClasses.length == initargsObjects.length );
+				for ( int i = 0; i < initargsObjects.length; i++ ) {
+					initargsClasses[i] = initargsObjects[i].getClass();
+				}
+			}
+			con = type.getConstructor( initargsClasses );
 		} catch ( SecurityException e ) {
 			RunTime.bug( e, "method not accessible ie. private init() method instead of public" );
 		} catch ( NoSuchMethodException e ) {
@@ -88,7 +107,7 @@ public class Factory {
 		}
 		
 		try {
-			ret = con.newInstance();// no params constructor
+			ret = con.newInstance( initargsObjects );// no params constructor
 			// ret = type.newInstance(); this works but we want to catch more exceptions above
 		} catch ( IllegalArgumentException e ) {
 			RunTime.bug( e );
@@ -108,20 +127,32 @@ public class Factory {
 	 * this will do a new with the default constructor which should be public <br>
 	 * and an .init(params)<br>
 	 * 
-	 * @param class1
-	 *            any subclass of StaticInstanceTracker
+	 * @param type
+	 *            any subclass of Initer
 	 * @param params
 	 *            MethodParams instance for init(params)
-	 * @return
+	 * @param constructorParameters
+	 *            to use a specific constructor based on the specified parameters and passing these to it when doing the
+	 *            'new'
+	 * @return the new instance, don't forget to assign this to a variable (FIXME: I wonder if we can do a warning on
+	 *         this?)
 	 */
-	public static <T extends Initer> T getNewInstance( Class<T> type, MethodParams params ) {
+	public static <T extends Initer> T getNewInstanceAndInit( Class<T> type, MethodParams params,
+			Object... constructorParameters ) {
 
-		T ret = Factory.getGenericNewInstance( type );
+		T ret = Factory.getGenericNewInstance( type, constructorParameters );
 		Factory.init( ret, params );
 		RunTime.assumedTrue( ret.isInited() );
 		return ret;
 	}
 	
+	/**
+	 * @param <T>
+	 * @param instance
+	 *            non null instance to call .init(params) on
+	 * @param params
+	 *            can be null
+	 */
 	public static <T extends Initer> void init( T instance, MethodParams params ) {
 
 		RunTime.assumedNotNull( instance );
@@ -147,11 +178,26 @@ public class Factory {
 		RunTime.assumedNotNull( instance );
 		RunTime.assumedTrue( instance.isInited() );
 		try {
-			instance._deInit();
+			// instance._deInit();
+			internal_deInit( instance );
 		} finally {
 			removeExistingInitedInstance( instance );
 		}
 		RunTime.assumedFalse( instance.isInited() );
+	}
+	
+	/**
+	 * internal<br>
+	 * this will just call deInit, it will not remove the instance from list<br>
+	 * 
+	 * @param <T>
+	 * @param instance
+	 */
+	private static <T extends Initer> void internal_deInit( T instance ) {
+
+		RunTime.assumedNotNull( instance );
+		Log.special( "deInit-ing " + instance.getClass().getName() );
+		instance._deInit();
 	}
 	
 	/**
@@ -184,7 +230,7 @@ public class Factory {
 	
 	/**
 	 * this will keep the instance (ie. no new again) and just do a init() again<br>
-	 * it MUST NOT be already inited<br>
+	 * it MUST NOT be already inited, else this will throw<br>
 	 * 
 	 * @param <T>
 	 * @param instance
@@ -194,21 +240,42 @@ public class Factory {
 		RunTime.assumedNotNull( instance );
 		RunTime.assumedFalse( instance.isInited() );
 		// must NOT be already in our list
-		if ( ALL_INITED_INSTANCES.containsObject( instance ) ) {
-			RunTime.bug( "bug somewhere this instance must NOT be in the list, and it is in list and it's also not inited?!!" );
-		}
-		try {
-			instance._reInit_aka_initAgain_WithOriginalPassedParams();
-		} finally {
-			if ( !instance.isInited() ) {
-				// removeExistingInitedInstance( instance );
-				RunTime.bug( "so, reinit failed but it's still not inited, bug somewhere" );
-			}
-			addNewInitedInstance( instance );
-		}
-		RunTime.assumedTrue( instance.isInited() );
+		reInitIfNotInited( instance );
 	}
 	
+	/**
+	 * whether this was or not inited already, after this call it will be reInited()<br>
+	 * NOTE: that an init() should've been called on this instance at least once before, else the parameters passed to
+	 * start() are null since init() didn't clone-save them before<br>
+	 * 
+	 * @param <T>
+	 * @param instance
+	 */
+	public static <T extends Initer> void reInitIfNotInited( T instance ) {
+
+		RunTime.assumedNotNull( instance );
+		if ( !instance.isInited() ) {
+			// not inited then we reInit it as follows:
+			
+			if ( ALL_INITED_INSTANCES.containsObject( instance ) ) {
+				RunTime.bug( "bug somewhere this instance must NOT be in the list, and it is in list and it's also not inited?!!" );
+			}
+			try {
+				instance._reInit_aka_initAgain_WithOriginalPassedParams();
+			} finally {
+				if ( !instance.isInited() ) {
+					// removeExistingInitedInstance( instance );
+					RunTime.bug( "so, reinit failed but it's still not inited, bug somewhere since a call to reInit "
+							+ "should always set the isInited() flag regardless of thrown exceptions to pave the road "
+							+ "for a latter deInit()" );
+				}
+				// and we add it if it has the inited flag only
+				addNewInitedInstance( instance );
+			}
+		}
+		
+		RunTime.assumedTrue( instance.isInited() );
+	}
 	
 	private final static void addNewInitedInstance( Initer instance ) {
 
@@ -228,4 +295,40 @@ public class Factory {
 			RunTime.badCall( "should've existed" );
 		}
 	}
-}
+	
+	
+	/**
+	 * this will try to postpone all exceptions until after done deInit-ing all<br>
+	 */
+	public static void deInitAll() {
+
+		while ( true ) {
+			// get the first one (aka next in our context)
+			ChainedReference<Initer> refToInstance = ALL_INITED_INSTANCES.getRefAt( Position.FIRST );
+			if ( null == refToInstance ) {
+				RunTime.assumedTrue( ALL_INITED_INSTANCES.isEmpty() );
+				break;// we're done list is empty
+			}
+			
+			try {
+				Factory.internal_deInit( refToInstance.getObject() );
+				// refToInstance.getObject()._deInit();
+			} catch ( Throwable t ) {
+				// postpone all that were thrown (or re-thrown) with RunTime.thro()
+			} finally {
+				try {
+					if ( !ALL_INITED_INSTANCES.removeRef( refToInstance ) ) {
+						// not removed? aka false
+						RunTime.bug( "the ref was not found, some bug somewhere" );
+					}
+				} catch ( Throwable t ) {
+					// postpone any thrown exceptions here also
+				}
+			}
+		}// while true
+		
+		// re-throw all postponed exceptions:
+		RunTime.throwPosponed();
+	}// method
+	
+}// class

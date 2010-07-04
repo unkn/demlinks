@@ -88,7 +88,7 @@ public class ListOfReferences<Obje> {
 	}
 	
 	/**
-	 * @return the firstNodeRef
+	 * @return the firstNodeRef or null if empty list
 	 */
 	protected ChainedReference<Obje> getFirstRef() {
 
@@ -96,7 +96,7 @@ public class ListOfReferences<Obje> {
 	}
 	
 	/**
-	 * @return the lastNodeRef
+	 * @return the lastNodeRef or null if empty list
 	 */
 	protected ChainedReference<Obje> getLastRef() {
 
@@ -295,6 +295,7 @@ public class ListOfReferences<Obje> {
 	
 	/**
 	 * @param killRef
+	 *            the ref in that will be removed from the list<br>
 	 * @return true if removed, false if it was already inexistent
 	 */
 	public boolean removeRef( ChainedReference<Obje> killRef ) {
@@ -359,7 +360,7 @@ public class ListOfReferences<Obje> {
 	/**
 	 * @param location
 	 *            only FIRST/LAST allowed
-	 * @return a reference
+	 * @return a reference or null if list is empty
 	 * @see #getRefAt(Position, ChainedReference)
 	 */
 	public ChainedReference<Obje> getRefAt( Position location ) {
