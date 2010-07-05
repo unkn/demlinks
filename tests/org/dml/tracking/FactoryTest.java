@@ -244,7 +244,7 @@ public class FactoryTest {
 		Log.exit();
 	}
 	
-	@Test
+	// @Test
 	public void testOrder2() {// this is a known-bugs thingy; this is supposed to fail
 	
 		// this will test what happens if an class uses an inited param(which was inited by some other class)

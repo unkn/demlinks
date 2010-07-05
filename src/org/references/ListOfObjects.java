@@ -35,6 +35,7 @@ import org.dml.tools.RunTime;
  * handles the RefsList list at the Object level ie. accepting only Object
  * parameters where Object is the type of element stored in list; that Object is
  * E DOES YES allow adding of NULL or DUPlicate Objects<br>
+ * //NOTE: don't implement Factory/Initer to this
  */
 public class ListOfObjects<E> extends ListOfReferences<E> {
 	

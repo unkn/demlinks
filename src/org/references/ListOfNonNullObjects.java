@@ -33,7 +33,7 @@ import org.dml.tools.RunTime;
 
 /**
  * 
- *
+ * //NOTE: don't implement Factory/Initer to this
  */
 public class ListOfNonNullObjects<E> extends ListOfObjects<E> {
 	

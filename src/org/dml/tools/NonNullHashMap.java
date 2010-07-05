@@ -32,7 +32,7 @@ import java.util.HashMap;
 
 /**
  * 
- *
+ * //NOTE: don't implement Factory/Initer to this
  */
 public class NonNullHashMap<K, V> {
 	

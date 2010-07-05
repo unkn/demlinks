@@ -25,6 +25,7 @@ package org.dml.tools;
 
 
 
+import org.dml.tracking.FactoryTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
@@ -32,7 +33,7 @@ import org.junit.runners.Suite;
 
 @RunWith( Suite.class )
 @Suite.SuiteClasses( value = {
-		StaticInstanceTrackerTest.class, LevelsTest.class,
+		StaticInstanceTrackerTest.class, LevelsTest.class, FactoryTest.class
 } )
 public class AllTestsTools {
 }

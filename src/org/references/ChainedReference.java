@@ -24,7 +24,7 @@
 package org.references;
 
 
-
+// NOTE: don't implement Factory/Initer to this
 public class ChainedReference<Obj> extends Reference<Obj> {
 	
 	/**

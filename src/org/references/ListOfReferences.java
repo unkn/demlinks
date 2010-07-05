@@ -44,6 +44,7 @@ import org.dml.tools.RunTime;
  * ability to insert anywhere<br>
  * 
  * this is handled at Ref level, not at object level<br>
+ * //NOTE: don't implement Factory/Initer to this
  */
 public class ListOfReferences<Obje> {
 	
