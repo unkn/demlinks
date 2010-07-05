@@ -98,7 +98,7 @@ public class SecondaryDatabaseCapsule extends StaticInstanceTracker {
 
 		Log.entry();
 		if ( null != secDb ) {
-			secDb = bdbL1.silentCloseAnySecDB( secDb );
+			secDb = bdbL1.closeAnySecDB( secDb );
 		}
 	}
 	

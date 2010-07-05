@@ -86,6 +86,7 @@ public class DBSequence extends StaticInstanceTracker {
 	public Sequence getSequence() throws DatabaseException {
 
 		if ( null == thisSeq ) {
+			RunTime.assumedNotNull( bdb );
 			thisSeq = bdb.getNewSequence( thisSeqName, allSequencesConfig );
 			RunTime.assumedNotNull( thisSeq );
 		}
@@ -96,7 +97,15 @@ public class DBSequence extends StaticInstanceTracker {
 	@Override
 	protected void done( MethodParams params ) {
 
-		thisSeq = bdb.closeAnySeq_silent( thisSeq, thisSeqName );
+		try {
+			if ( null != thisSeq ) {
+				RunTime.assumedNotNull( bdb, thisSeqName );
+				thisSeq = bdb.closeAnySeq( thisSeq, thisSeqName );
+			}
+		} catch ( Throwable t ) {
+			RunTime.throPostponed( t );
+		}
+		RunTime.throwAllThatWerePosponed();
 	}
 	
 	@Override

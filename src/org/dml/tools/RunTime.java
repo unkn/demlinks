@@ -66,6 +66,46 @@ public class RunTime {
 	}
 	
 	/**
+	 * - same as {@link RunTime#thro(normallyThrownOne)}<br>
+	 * - see also {@link #throPostponed(Throwable)} if you want to wrap and also postpone<br>
+	 * - the point where this was called is not shown on console output.err<br>
+	 * only the point where the exception 'normallyThrownOne' was thrown is shown on console/links<br>
+	 * - however in Eclipse Failure Trace you can also see the point where this method was called<br>
+	 * - so use this method to wrap exceptions thrown by keyword 'throw' ie:<br>
+	 * try {<br>
+	 * throw new Exception();<br>
+	 * } catch (Throwable t) {<br> {@link RunTime#throWrapped(t)};//wrap<br>
+	 * }<br>
+	 * 
+	 * 
+	 * @param normallyThrownOne
+	 *            an exception thrown by java 'throw' keyword which you want to wrap around our RunTime.thro() and thus
+	 *            chain it<br>
+	 * 
+	 */
+	public static void throWrapped( Throwable normallyThrownOne ) {
+
+		RunTime.thro1( normallyThrownOne );
+	}
+	
+	/**
+	 * use this to muff (and wrap) an exception<br>
+	 * same as {@link RunTime#thro(normallyThrownOne)}<br>
+	 * see also {@link #throWrapped(Throwable)}<br>
+	 * use {@link RunTime#throwAllThatWerePosponed()} later on<br>
+	 * 
+	 * @param postponedOne
+	 */
+	public static void throPostponed( Throwable postponedOne ) {
+
+		try {
+			RunTime.thro1( postponedOne );
+		} catch ( Throwable t ) {
+			// postponed
+		}
+	}
+	
+	/**
 	 * @see #thro(Throwable)
 	 * @param newOne
 	 */
@@ -100,7 +140,10 @@ public class RunTime {
 				// eclipse, the only way to see them is if you look at console and that could be messy because you won't
 				// know where in the console and which one of the following warnings (if in a junit with many tests
 				// failed) is the right one
-				Log.warn( "we got passed a chained exception(/throwable) so we discard the previous chain; so this should work well apparently unless we didn't chain the previous exception in this new exception that already had a chain" );
+				Log.mid( "we got passed a chained exception(/throwable) so we discard the previous chain; "
+						+ "so this should work well apparently unless we didn't chain the previous exception "
+						+ "in this new exception that already had a chain; this is the default behavior to discard "
+						+ "prev chain" );
 				// Log.thro1( newOne.getLocalizedMessage() );
 				// newOne.printStackTrace();
 			}
@@ -284,7 +327,7 @@ public class RunTime {
 	 * <br>
 	 * all normally thrown exceptions (ie. with keyword 'throw') will just overwrite anything thrown before<br>
 	 */
-	public static void throwPosponed() {
+	public static void throwAllThatWerePosponed() {
 
 		if ( null != allExceptionsChained ) {
 			internalWrappedThrow();

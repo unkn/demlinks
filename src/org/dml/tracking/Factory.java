@@ -229,11 +229,17 @@ public class Factory {
 	}
 	
 	/**
-	 * after this you can call reInit
+	 * only throws from instance._deInit() are postponed; not others that are related to successfully processing this
+	 * method in its
+	 * system<br>
+	 * -in other words, exceptions thrown by this engine which handles all these wrapping around stuff are thrown as
+	 * they
+	 * occur which usually shouldn't happen unless engine needs some bugfixing<br>
 	 * 
-	 * @param params
+	 * @param <T>
+	 * @param instance
 	 */
-	public static <T extends Initer> void deInit( T instance ) {
+	public static <T extends Initer> void deInit_WithPostponedThrows( T instance ) {
 
 		RunTime.assumedNotNull( instance );
 		RunTime.assumedTrue( instance.isInited() );
@@ -243,6 +249,9 @@ public class Factory {
 			// this will also deInit all in the subTree because that class will deInit all those that it inited itself;
 			// and those are the ones we have in our subtree
 			internal_deInit( instance );
+		} catch ( Throwable t ) {
+			// postpone throws
+			RunTime.throPostponed( t );
 		} finally {
 			// then remove from tree and from QUICK_FIND
 			if ( !removeAnyInstanceFromAnywhereInOurLists( instance ) ) {
@@ -251,6 +260,18 @@ public class Factory {
 		}
 		
 		RunTime.assumedFalse( instance.isInited() );
+		// don't recall postponed here
+	}
+	
+	/**
+	 * after this you can call reInit
+	 * 
+	 * @param params
+	 */
+	public static <T extends Initer> void deInit( T instance ) {
+
+		Factory.deInit_WithPostponedThrows( instance );
+		RunTime.throwAllThatWerePosponed();
 	}
 	
 	/**
@@ -445,6 +466,7 @@ public class Factory {
 			Log.entry();
 		} catch ( Throwable t ) {
 			// postpone
+			RunTime.throPostponed( t );
 		}
 		
 		RunTime.assumedNotNull( currentParent );
@@ -474,6 +496,7 @@ public class Factory {
 				internal_deInit( instance );
 			} catch ( Throwable t ) {
 				// postpone these throws from deInit only
+				RunTime.throPostponed( t );
 			} finally {
 				// then remove from tree and from QUICK_FIND
 				// allow throws from these: to avoid possible recursive loop repeating w/o ever exiting
@@ -486,7 +509,7 @@ public class Factory {
 		}// while true
 		
 		// re-throw all postponed exceptions:
-		RunTime.throwPosponed();
+		RunTime.throwAllThatWerePosponed();
 	}// method
 	
 }// class

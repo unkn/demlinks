@@ -58,7 +58,8 @@ public class DatabaseCapsule extends StaticInstanceTracker {
 	protected void done( MethodParams params ) {
 
 		if ( null != db ) {
-			db = bdbL1.closePriDB_silent( db );
+			RunTime.assumedNotNull( bdbL1 );
+			db = bdbL1.closePriDB( db );
 		}
 	}
 	

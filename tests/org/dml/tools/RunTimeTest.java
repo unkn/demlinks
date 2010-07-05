@@ -361,4 +361,27 @@ public class RunTimeTest {
 		// somewhere later, this throw should not be chained with above one
 		RunTime.thro( new IOException( "else4" ) );
 	}
+	
+	@Test
+	public void testReThrow() {
+
+		// you will see in eclipse Failure Trace all points of throWrapped below and also the 'throw new'
+		try {
+			try {
+				try {
+					try {
+						throw new Exception( "some normal throw happens" );
+					} catch ( Throwable t ) {
+						RunTime.throWrapped( t );// wrap one
+					}
+				} catch ( Throwable t ) {
+					RunTime.throWrapped( t );// wrap two
+				}
+			} catch ( Throwable t ) {
+				RunTime.throWrapped( t );// wrap two
+			}
+		} catch ( Throwable t ) {
+			RunTime.throWrapped( t );// wrap two
+		}
+	}
 }
