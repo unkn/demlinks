@@ -209,7 +209,7 @@ public abstract class Initer {
 				
 				if ( null != params ) {// we get a copy of passed params
 					// this does init(null) inside
-					formerParams = params.getClone();
+					formerParams = params.getClone();// this won't deInit because reInit might need it
 					RunTime.assumedNotNull( formerParams );
 				} // else is null
 			} // else called by reInit() we don't mod them

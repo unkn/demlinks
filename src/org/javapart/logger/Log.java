@@ -89,19 +89,24 @@ public class Log {
 	}
 	
 	// don't merge the three methods, else line numbers will get screwed
-	private static void special0( String msg ) {
+	private static void special0( int modifier, String msg ) {
 
-		log( 0, LogFlags.Special, "special: " + msg );
+		log( modifier, LogFlags.Special, "special: " + msg );
+	}
+	
+	public static void special2( String msg ) {
+
+		special0( 2, msg );
 	}
 	
 	public static void special( String msg ) {
 
-		special0( msg );
+		special0( 0, msg );
 	}
 	
 	public static void special() {
 
-		special0( "" );
+		special0( 0, "" );
 	}
 	
 	
@@ -371,19 +376,24 @@ public class Log {
 		result0( msg );
 	}
 	
-	private static void warn0( String msg ) {
+	private static void warn0( int modifier, String msg ) {
 
-		log( 0, LogFlags.Warn, "warn  : " + msg );
+		log( modifier, LogFlags.Warn, "warn  : " + msg );
+	}
+	
+	public static void warn2( String msg ) {
+
+		warn0( 2, msg );
 	}
 	
 	public static void warn( String msg ) {
 
-		warn0( msg );
+		warn0( 0, msg );
 	}
 	
 	public static void warn() {
 
-		warn0( "" );
+		warn0( 0, "" );
 	}
 	
 	private static void bug0( String msg ) {

@@ -100,9 +100,21 @@ public class FactoryTest {
 		
 		private B		b;
 		private boolean	initedOurOwn	= false;
+		private B		db				= null;
 		
 		public A() {
 
+		}
+		
+		/**
+		 * so this will init these in A, but will never deInit them<br>
+		 * 
+		 * @return
+		 */
+		public B getSomeNewDB() {
+
+			B b = Factory.getNewInstanceAndInit( B.class );
+			return b;
 		}
 		
 		/*
@@ -134,6 +146,10 @@ public class FactoryTest {
 		@Override
 		protected void done( MethodParams params ) {
 
+			if ( null != db ) {
+				// save something to db
+				RunTime.assumedTrue( db.isInited() );// yeah it was deInit-ed by Factory.deInitAll()
+			}
 			if ( initedOurOwn ) {
 				Factory.deInit( b );
 				initedOurOwn = false;
@@ -162,6 +178,16 @@ public class FactoryTest {
 
 			// TODO Auto-generated method stub
 			
+		}
+		
+		/**
+		 * @param someNewDB
+		 */
+		public void setUseDB( B someNewDB ) {
+
+			RunTime.assumedNotNull( someNewDB );
+			RunTime.assumedTrue( someNewDB.isInited() );
+			db = someNewDB;
 		}
 		
 	}
@@ -198,12 +224,50 @@ public class FactoryTest {
 
 		Log.entry();
 		try {
-			@SuppressWarnings( "unused" )
-			A a = Factory.getNewInstanceAndInit( A.class );
+			// A a = Factory.getNewInstanceAndInit( A.class );
+			
+			MethodParams params = Factory.getNewInstanceAndInit( MethodParams.class );
+			B newB = Factory.getNewInstanceAndInit( B.class );
+			params.set( specB, newB );
+			A aa = Factory.getNewInstanceAndInit( A.class, params );
+			RunTime.assumedFalse( aa.initedOurOwn );
+			Factory.deInit( aa );
+			Factory.init( aa, null );
+			RunTime.assumedTrue( aa.initedOurOwn );
+			
+			// Factory.deInit( aa );
 			// so init A, init B
 		} finally {
 			Factory.deInitAll();
 			// deinit A (which also deInits B)
+		}
+		Log.exit();
+	}
+	
+	@Test
+	public void testOrder2() {// this is a known-bugs thingy; this is supposed to fail
+	
+		// this will test what happens if an class uses an inited param(which was inited by some other class)
+		// on its deinit or done method
+		// for example: class A will use a 'db' which was inited by someone else, and this 'db' was passed to it and A
+		// will use it until A dies; and on A.done , A wants to do something with the db ie. write a log entry in db
+		// but if exception happened before A deInit-ed, then db is deinited first, by deInitAll() because db was inited
+		// long after A was inited; and so then after a while when A is deinited by same deInitAll() it will fail
+		// because the db is deInited
+		
+		try {
+			A a = Factory.getNewInstanceAndInit( A.class );
+			// A aa = Factory.getNewInstanceAndInit( A.class );
+			B db = Factory.getNewInstanceAndInit( B.class );// doesn't matter where from
+			a.setUseDB( db );
+			// and assume somehow something throws and a.deInit is never called
+			RunTime.thro( new Exception( "unfortunate" ) );// this jumps to deInitAll() below
+			Factory.deInit( a );
+			Factory.deInit( db );
+			// on deInitAll() below, the db will get deInit-ed first, but 'a' is still going to use it on its own deInit
+			// so fail
+		} finally {
+			Factory.deInitAll();
 		}
 	}
 }

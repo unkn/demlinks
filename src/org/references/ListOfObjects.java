@@ -205,7 +205,8 @@ public class ListOfObjects<E> extends ListOfReferences<E> {
 		if ( null == nr ) {
 			return false;
 		}
-		return this.removeRef( nr );
+		this.removeRef( nr );
+		return true;
 	}
 	
 	// TODO add replace methods

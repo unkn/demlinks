@@ -297,13 +297,12 @@ public class ListOfReferences<Obje> {
 	 * @param killRef
 	 *            the ref in that will be removed from the list<br>
 	 *            this ref is also KILL-ed and set its fields to null<br>
-	 * @return true if removed, false if it was already inexistent
 	 */
-	public boolean removeRef( ChainedReference<Obje> killRef ) {
+	public void removeRef( ChainedReference<Obje> killRef ) {
 
 		RunTime.assumedNotNull( killRef );
 		if ( !this.containsRef( killRef ) ) {
-			return false;
+			RunTime.badCall( "parameter not in list" );
 		}
 		this.setModified();
 		ChainedReference<Obje> cachedPrev = killRef.getPrev();// beware if you
@@ -335,7 +334,6 @@ public class ListOfReferences<Obje> {
 		this.decSize();
 		this.setModified();
 		
-		return true;
 	}
 	
 	/**

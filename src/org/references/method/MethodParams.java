@@ -365,7 +365,7 @@ public class MethodParams extends StaticInstanceTracker {
 	@Override
 	public String toString() {
 
-		RunTime.assumedTrue( this.isInited() );
-		return listOfParamsWithValues.toString();
+		// RunTime.assumedTrue( this.isInited() );
+		return super.toString() + listOfParamsWithValues.toString();
 	}
 }

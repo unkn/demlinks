@@ -33,7 +33,7 @@ import org.dml.tools.RunTime;
 /**
  * 
  * NOTE: the objects must be non-null except when the current tree has no parent aka null parent then value can be null<br>
- * objects can repeat<br>
+ * objects can repeat, so no checks are performed for dups in any direction horiz/vert<br>
  * objects are stored as the field 'value' below<br>
  */
 public class TreeOfNonNullObjects<T> {
@@ -100,12 +100,9 @@ public class TreeOfNonNullObjects<T> {
 	
 	/**
 	 * this will add as first in list of children<br>
-	 * must not already exist, else throws<br>
 	 * 
 	 * @param child
 	 *            non-null
-	 * @throws badCallError
-	 *             is already exists
 	 */
 	public TreeOfNonNullObjects<T> addChildFirst( T childValue ) {
 
@@ -153,7 +150,7 @@ public class TreeOfNonNullObjects<T> {
 	
 	/**
 	 * @param childAKASubTree
-	 * @return true if removed; false if didn't exist
+	 * @return true if existed; false if didn't exist; either way it's removed
 	 */
 	public boolean removeChild( TreeOfNonNullObjects<T> childAKASubTree ) {
 
@@ -177,5 +174,16 @@ public class TreeOfNonNullObjects<T> {
 		} else {
 			return true;
 		}
+	}
+	
+	/**
+	 * @return
+	 */
+	public int size() {
+
+		if ( this.isEmpty() ) {
+			return 0;
+		}
+		return this.getChildren().size();
 	}
 }

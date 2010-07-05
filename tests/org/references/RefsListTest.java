@@ -66,7 +66,7 @@ public class RefsListTest {
 		assertTrue( refList.getLastRef() == ref2 );
 		assertTrue( refList.getRefAt( Position.BEFORE, ref2 ) == ref1 );
 		assertTrue( refList.size() == 3 );
-		assertTrue( refList.removeRef( ref3 ) );
+		refList.removeRef( ref3 );
 		boolean excepted = false;
 		try {
 			// even though ref2 exists, while ref3 doesn't, the call is bugged
