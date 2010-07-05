@@ -32,28 +32,41 @@ import org.dml.tools.RunTime;
 
 /**
  * 
- * NOTE: the objects must be non-null<br>
+ * NOTE: the objects must be non-null except when the current tree has no parent aka null parent then value can be null<br>
  * objects can repeat<br>
  * objects are stored as the field 'value' below<br>
  */
 public class TreeOfNonNullObjects<T> {
 	
 	private ListOfUniqueNonNullObjects<TreeOfNonNullObjects<T>>	children	= null;
+	
+	// null only when this tree is root or head
 	private TreeOfNonNullObjects<T>								parent		= null;
 	
-	// the value must not be null
+	// the value must not be null; it's null only when this tree is the root or head
 	private T													value		= null;
 	
 	/**
-	 * constructor
+	 * constructor<br>
+	 * use this when init-ing the head or root of the tree<br>
+	 * parent and value are both null<br>
+	 */
+	public TreeOfNonNullObjects() {
+
+	}
+	
+	/**
+	 * constructor<br>
+	 * use this when init-ing subtrees, aka not the root or head of the tree<br>
 	 * 
 	 * @param value1
 	 *            non-null value aka object
 	 */
-	public TreeOfNonNullObjects( T value1 ) {
+	public TreeOfNonNullObjects( TreeOfNonNullObjects<T> parent, T objectValue ) {
 
-		RunTime.assumedNotNull( value1 );
-		this.setValue( value1 );
+		RunTime.assumedNotNull( parent, objectValue );
+		this.setParent( parent );
+		this.setValue( objectValue );
 		RunTime.assumedNotNull( value );// constraint
 	}
 	
@@ -76,12 +89,13 @@ public class TreeOfNonNullObjects<T> {
 	 */
 	private void setParent( TreeOfNonNullObjects<T> newParent ) {
 
+		RunTime.assumedNotNull( newParent, value );
 		parent = newParent;
 	}
 	
 	public TreeOfNonNullObjects<T> getParent() {
 
-		return parent;// can be null
+		return parent;// can be null if this is root aka head of tree
 	}
 	
 	/**
@@ -96,8 +110,7 @@ public class TreeOfNonNullObjects<T> {
 	public TreeOfNonNullObjects<T> addChildFirst( T childValue ) {
 
 		RunTime.assumedNotNull( childValue );
-		TreeOfNonNullObjects<T> newChildInCurrent = new TreeOfNonNullObjects<T>( childValue );
-		newChildInCurrent.setParent( this );
+		TreeOfNonNullObjects<T> newChildInCurrent = new TreeOfNonNullObjects<T>( this, childValue );
 		if ( this.getChildren().addFirstQ( newChildInCurrent ) ) {
 			RunTime.bug( "subtree already exists, impossible" );
 		}
@@ -139,16 +152,30 @@ public class TreeOfNonNullObjects<T> {
 	}
 	
 	/**
-	 * @param first
+	 * @param childAKASubTree
+	 * @return true if removed; false if didn't exist
 	 */
-	public void removeChild( T child) {
+	public boolean removeChild( TreeOfNonNullObjects<T> childAKASubTree ) {
 
+		RunTime.assumedNotNull( childAKASubTree );
+		boolean res = false;
+		
 		if ( null != children ) {
-			TreeOfNonNullObjects<T> subTree = this.getChildren().get
-			return subTree.getValue();
-		} else {
-			return null;
+			res = this.getChildren().removeObject( childAKASubTree );
 		}
 		
+		return res;
+	}
+	
+	/**
+	 * @return true if no children aka children list is empty
+	 */
+	public boolean isEmpty() {
+
+		if ( null != children ) {
+			return this.getChildren().isEmpty();
+		} else {
+			return true;
+		}
 	}
 }

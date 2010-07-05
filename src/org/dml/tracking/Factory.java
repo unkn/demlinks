@@ -30,6 +30,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 import org.dml.tools.Initer;
+import org.dml.tools.NonNullHashMap;
 import org.dml.tools.RunTime;
 import org.javapart.logger.Log;
 import org.references.Position;
@@ -49,8 +50,9 @@ public class Factory {
 	// LIFO list tracking all instances of ALL subclasses that are inited
 	// add new ones to first, and when remove-all start from last to first
 	// LIFO manner add/remove on this tree thingy
-	private final static TreeOfNonNullObjects<Initer>	root	= new TreeOfNonNullObjects<Initer>();
-	private static TreeOfNonNullObjects<Initer>			currentParent;
+	private final static TreeOfNonNullObjects<Initer>							root		= new TreeOfNonNullObjects<Initer>();
+	private static TreeOfNonNullObjects<Initer>									currentParent;
+	private final static NonNullHashMap<Initer, TreeOfNonNullObjects<Initer>>	QUICK_FIND	= new NonNullHashMap<Initer, TreeOfNonNullObjects<Initer>>();
 	
 	/**
 	 * generic method with a type variable<br>
@@ -198,6 +200,7 @@ public class Factory {
 		// newChildInCurrent.setParent( currentParent );
 		// newChildInCurrent.setValue( instance );
 		currentParent = currentParent.addChildFirst( instance );
+		QUICK_FIND.put( instance, currentParent );
 		RunTime.assumedNotNull( currentParent );
 	}
 	
@@ -208,13 +211,15 @@ public class Factory {
 	 */
 	private static <T extends Initer> void set_InitWork_DoneInParent( T instance ) {
 
-		// go shallow
+		
 		RunTime.assumedNotNull( instance );
 		RunTime.assumedNotNull( currentParent );
 		RunTime.assumedTrue( root != currentParent );// can't be root yet
 		RunTime.assumedTrue( currentParent.getValue() == instance );
+		RunTime.assumedTrue( QUICK_FIND.getValue( instance ) == currentParent );
+		// go shallow
 		currentParent = currentParent.getParent();
-		RunTime.assumedNotNull( currentParent );
+		RunTime.assumedNotNull( currentParent );// can be root, but not higher
 	}
 	
 	/**
@@ -227,10 +232,44 @@ public class Factory {
 		RunTime.assumedNotNull( instance );
 		RunTime.assumedTrue( instance.isInited() );
 		
-		removeExistingInitedInstance( instance );
-		internal_deInit( instance );
+		try {
+			// first deInit()
+			internal_deInit( instance );
+		} finally {
+			// then remove from tree and from QUICK_FIND
+			if ( !removeAnyInstanceFromAnywhereInOurLists( instance ) ) {
+				RunTime.bug( "failed to find it or remove it, so forgot to add instance to QUICK_FIND ? somewhere" );
+			}
+		}
 		
 		RunTime.assumedFalse( instance.isInited() );
+	}
+	
+	/**
+	 * FIXME: if any subtrees are found in this instance they're added on the same level as instance, but instance will
+	 * be gone<br>
+	 * 
+	 * @param <T>
+	 * @param instance
+	 * @return false if not found; true if found and removed
+	 */
+	private static <T extends Initer> boolean removeAnyInstanceFromAnywhereInOurLists( T instance ) {
+
+		TreeOfNonNullObjects<Initer> subTree = QUICK_FIND.getValue( instance );
+		if ( null == subTree ) {// can't be null here
+			return false;
+		}
+		RunTime.assumedTrue( QUICK_FIND.remove( instance ) == subTree );
+		// the subTree must be empty already if not, then
+		if ( !subTree.isEmpty() ) {
+			Log.warn( "subtree not empty already, means we got a class that didn't properly deInit all the variables it created" );
+			// FIXME: deInit leftover subTree(s) else they're just lost here OR merge this subtree's children with
+			// the parent tree in the same LIFO manner
+		}
+		TreeOfNonNullObjects<Initer> parent = subTree.getParent();
+		RunTime.assumedNotNull( parent );// can't be null, at worst is == root
+		RunTime.assumedTrue( parent.removeChild( subTree ) );// ie. root.remove this subTree
+		return true;
 	}
 	
 	/**
@@ -261,13 +300,15 @@ public class Factory {
 			RunTime.badCall( "must be inited" );
 		}
 		// must be already in our list
-		if ( !ALL_INITED_INSTANCES.containsObject( instance ) ) {
+		if ( null == QUICK_FIND.getValue( instance ) ) {
 			RunTime.bug( "bug somewhere this instance should've been added before, or it's a badcall" );
 		}
 		try {
 			instance._restart_aka_deInit_and_initAgain_WithOriginalPassedParams();
 		} finally {
 			if ( !instance.isInited() ) {
+				// so it was inited before this call, but now it's not inited anymore which means a deInit happened and
+				// remained and thus we need to remove this instance from our lists
 				removeExistingInitedInstance( instance );
 				RunTime.bug( "yeah dno how to handle this one, maybe remove instance from our list? and continue" );
 			}
@@ -365,48 +406,58 @@ public class Factory {
 	 */
 	public static void deInitAll() {
 
-		Log.entry();
+		try {
+			Log.entry();
+		} catch ( Throwable t ) {
+			// postpone
+		}
 		
 		RunTime.assumedTrue( currentParent == root );
 		RunTime.assumedNotNull( root );
-		internal_deInitTree( root );
+		
+		while ( true ) {
+			// get the first subtree in root (aka next in our context)
+			TreeOfNonNullObjects<Initer> currentSubTree = root.getChildAt( Position.FIRST );
+			if ( null == currentSubTree ) {
+				// no subtrees exist in root then:
+				try {
+					// root is empty, consistency check
+					RunTime.assumedTrue( root.isEmpty() );
+				} catch ( Throwable t ) {
+					// postpone
+				}
+				
+				break;// exit while
+			}
+			
+			try {
+				Initer instance = currentSubTree.getValue();
+				// first deInit
+				try {
+					// this should deInit all subtrees of instance and they should be auto-removed from this subtree
+					try {
+						// this will do a chain deInit; this chain is tree-ed as the current subtree and all its
+						// subtrees
+						Factory.deInit( instance );// not the internal deInit
+					} catch ( Throwable t ) {
+						// postpone these
+					} finally {
+						// even if above fails, the subtree should be emptied:
+						RunTime.assumedTrue( currentSubTree.isEmpty() );
+					}
+				} finally {
+					// second, remove; even if above threw
+					root.removeChild( currentSubTree );
+					// so the first is now the one that previously was the second; in root
+				}
+			} catch ( Throwable t ) {
+				// postpone all that were thrown (or re-thrown) with RunTime.thro()
+			}
+		}// while true
+		
 		// re-throw all postponed exceptions:
 		RunTime.throwPosponed();
 	}// method
 	
-	/**
-	 * this will also postpone all throws so use RunTime.throwPosponed(); after calling this<br>
-	 * 
-	 * @param tree
-	 */
-	private static void internal_deInitTree( TreeOfNonNullObjects<Initer> tree ) {
 
-		try {
-			RunTime.assumedNotNull( tree );// 1t
-			while ( true ) {
-				// get the first subtree in this tree (aka next in our context)
-				TreeOfNonNullObjects<Initer> currentSubTree = tree.getChildAt( Position.FIRST );// 1t
-				if ( null != currentSubTree ) {
-					try {
-						Initer instance = currentSubTree.getValue();
-						// first deInit
-						try {
-							Factory.internal_deInit( instance );
-						} finally {
-							// second, remove; even if above threw
-							root.removeChildAt( Position.FIRST );
-						}
-					} catch ( Throwable t ) {
-						// postpone all that were thrown (or re-thrown) with RunTime.thro()
-					} finally {
-						
-					}
-				} else {
-					// no more subtrees so we're at
-				}
-			}// while true
-		} catch ( Throwable t ) {// 1c
-			// postponing all
-		}
-	}
 }// class
