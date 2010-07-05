@@ -50,9 +50,10 @@ public class Factory {
 	// LIFO list tracking all instances of ALL subclasses that are inited
 	// add new ones to first, and when remove-all start from last to first
 	// LIFO manner add/remove on this tree thingy
-	private final static TreeOfNonNullObjects<Initer>							root		= new TreeOfNonNullObjects<Initer>();
-	private static TreeOfNonNullObjects<Initer>									currentParent;
-	private final static NonNullHashMap<Initer, TreeOfNonNullObjects<Initer>>	QUICK_FIND	= new NonNullHashMap<Initer, TreeOfNonNullObjects<Initer>>();
+	// hardwired: add any new ones to first;
+	private final static TreeOfNonNullObjects<Initer>							root			= new TreeOfNonNullObjects<Initer>();
+	private static TreeOfNonNullObjects<Initer>									currentParent	= root;
+	private final static NonNullHashMap<Initer, TreeOfNonNullObjects<Initer>>	QUICK_FIND		= new NonNullHashMap<Initer, TreeOfNonNullObjects<Initer>>();
 	
 	/**
 	 * generic method with a type variable<br>
@@ -199,8 +200,8 @@ public class Factory {
 		// TreeOfUniqueNonNullObjects<Initer> newChildInCurrent = new TreeOfUniqueNonNullObjects<Initer>();
 		// newChildInCurrent.setParent( currentParent );
 		// newChildInCurrent.setValue( instance );
-		currentParent = currentParent.addChildFirst( instance );
-		QUICK_FIND.put( instance, currentParent );
+		currentParent = currentParent.addChildFirst( instance );// hardwired
+		RunTime.assumedFalse( QUICK_FIND.put( instance, currentParent ) );
 		RunTime.assumedNotNull( currentParent );
 	}
 	
@@ -309,8 +310,13 @@ public class Factory {
 			if ( !instance.isInited() ) {
 				// so it was inited before this call, but now it's not inited anymore which means a deInit happened and
 				// remained and thus we need to remove this instance from our lists
-				removeExistingInitedInstance( instance );
-				RunTime.bug( "yeah dno how to handle this one, maybe remove instance from our list? and continue" );
+				try {
+					if ( !removeAnyInstanceFromAnywhereInOurLists( instance ) ) {
+						RunTime.bug( "weird, this should've existed in our lists" );
+					}
+				} finally {
+					RunTime.bug( "the restart(aka deInit+Init) caused the instance to become deInit-ed or bug somewhere" );
+				}
 			}
 		}
 		RunTime.assumedTrue( instance.isInited() );
@@ -345,62 +351,64 @@ public class Factory {
 		if ( !instance.isInited() ) {
 			// not inited then we reInit it as follows:
 			
-			if ( ALL_INITED_INSTANCES.containsObject( instance ) ) {
+			if ( null != QUICK_FIND.getValue( instance ) ) {
 				RunTime.bug( "bug somewhere this instance must NOT be in the list, and it is in list and it's also not inited?!!" );
 			}
 			
 			// must add before init see on init() why
-			addNewInitedInstance( instance );
-			
+			// addNewInitedInstance( instance );
+			set_InitWork_StartsInParent( instance );
 			try {
 				instance._reInit_aka_initAgain_WithOriginalPassedParams();
 			} finally {
-				if ( !instance.isInited() ) {
-					// removeExistingInitedInstance( instance );
-					RunTime.bug( "so, reinit failed but it's still not inited, bug somewhere since a call to reInit "
-							+ "should always set the isInited() flag regardless of thrown exceptions, to pave the road "
-							+ "for a latter deInit()" );
-				}
+				set_InitWork_DoneInParent( instance );
+			}
+			
+			if ( !instance.isInited() ) {
+				// removeExistingInitedInstance( instance );
+				RunTime.bug( "so, reinit failed but it's still not inited, bug somewhere since a call to reInit "
+						+ "should always set the isInited() flag regardless of thrown exceptions, to pave the road "
+						+ "for a latter deInit()" );
 			}
 		}
 		
 		RunTime.assumedTrue( instance.isInited() );
 	}
 	
-	/**
-	 * basically, the last one added is first and the order to deInit is from first to last<br>
-	 * NOTE that if variables are going to be inited in the new instance's init, then they are not first, and
-	 * these
-	 * instances are first and they will deinit their own variables which follow<br>
-	 * 
-	 * @param instance
-	 */
-	@Deprecated
-	private final static void temporary_addNewInitedInstance( Initer instance ) {
+	// /**
+	// * basically, the last one added is first and the order to deInit is from first to last<br>
+	// * NOTE that if variables are going to be inited in the new instance's init, then they are not first, and
+	// * these
+	// * instances are first and they will deinit their own variables which follow<br>
+	// *
+	// * @param instance
+	// */
+	// @Deprecated
+	// private final static void temporary_addNewInitedInstance( Initer instance ) {
+	//
+	// // we're adding these to first, and remove-all will parse from last to first (order)
+	// RunTime.assumedNotNull( instance );
+	// // yeah must not be inited already but soon after exiting this method it will get init call
+	// RunTime.assumedFalse( instance.isInited() );
+	// // System.out.println( "added: " + instance.getClass().getName() );
+	// if ( ALL_INITED_INSTANCES.addFirstQ( instance ) ) {
+	// RunTime.badCall( "should not have existed" );
+	// }
+	// }
+	//
+	// @Deprecated
+	// private final static void temporary_removeExistingInitedInstance( Initer instance ) {
+	//
+	// RunTime.assumedNotNull( instance );
+	// // must be already inited but next after this call, a deInit is issued
+	// RunTime.assumedTrue( instance.isInited() );
+	// // Log.entry( instance.toString() );
+	// if ( !ALL_INITED_INSTANCES.removeObject( instance ) ) {
+	// RunTime.badCall( "should've existed" );
+	// }
+	// }
+	
 
-		// we're adding these to first, and remove-all will parse from last to first (order)
-		RunTime.assumedNotNull( instance );
-		// yeah must not be inited already but soon after exiting this method it will get init call
-		RunTime.assumedFalse( instance.isInited() );
-		// System.out.println( "added: " + instance.getClass().getName() );
-		if ( ALL_INITED_INSTANCES.addFirstQ( instance ) ) {
-			RunTime.badCall( "should not have existed" );
-		}
-	}
-	
-	@Deprecated
-	private final static void temporary_removeExistingInitedInstance( Initer instance ) {
-
-		RunTime.assumedNotNull( instance );
-		// must be already inited but next after this call, a deInit is issued
-		RunTime.assumedTrue( instance.isInited() );
-		// Log.entry( instance.toString() );
-		if ( !ALL_INITED_INSTANCES.removeObject( instance ) ) {
-			RunTime.badCall( "should've existed" );
-		}
-	}
-	
-	
 	/**
 	 * this will try to postpone all exceptions until after done deInit-ing all<br>
 	 */
@@ -412,12 +420,13 @@ public class Factory {
 			// postpone
 		}
 		
+		RunTime.assumedNotNull( currentParent );
 		RunTime.assumedTrue( currentParent == root );
 		RunTime.assumedNotNull( root );
 		
 		while ( true ) {
 			// get the first subtree in root (aka next in our context)
-			TreeOfNonNullObjects<Initer> currentSubTree = root.getChildAt( Position.FIRST );
+			TreeOfNonNullObjects<Initer> currentSubTree = root.getChildAt( Position.FIRST );// hardwired: to first LIFO
 			if ( null == currentSubTree ) {
 				// no subtrees exist in root then:
 				try {

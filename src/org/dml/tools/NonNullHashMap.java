@@ -41,13 +41,15 @@ public class NonNullHashMap<K, V> {
 	/**
 	 * @param key
 	 * @param value
+	 * @return true if key already existed and was overwritten; false if key didn't exist and thus is unique so far<br>
 	 * @see HashMap#put(Object, Object)
 	 */
-	public void put( K key, V value ) {
+	public boolean put( K key, V value ) {
 
 		RunTime.assumedNotNull( key, value );
 		V val = composition.put( key, value );
-		RunTime.assumedTrue( val == value );
+		return null != val;// true means key is unique and didn't exist so val is null
+		// RunTime.assumedTrue( null == val );//no overwriting?
 	}
 	
 	/**

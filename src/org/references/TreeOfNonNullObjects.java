@@ -62,11 +62,11 @@ public class TreeOfNonNullObjects<T> {
 	 * @param value1
 	 *            non-null value aka object
 	 */
-	public TreeOfNonNullObjects( TreeOfNonNullObjects<T> parent, T objectValue ) {
+	public TreeOfNonNullObjects( TreeOfNonNullObjects<T> parentTree, T objectValue ) {
 
-		RunTime.assumedNotNull( parent, objectValue );
-		this.setParent( parent );
-		this.setValue( objectValue );
+		RunTime.assumedNotNull( parentTree, objectValue );
+		this.setValue( objectValue );// 1st
+		this.setParent( parentTree );// 2nd
 		RunTime.assumedNotNull( value );// constraint
 	}
 	
