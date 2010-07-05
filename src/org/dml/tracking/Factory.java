@@ -32,9 +32,8 @@ import java.lang.reflect.InvocationTargetException;
 import org.dml.tools.Initer;
 import org.dml.tools.RunTime;
 import org.javapart.logger.Log;
-import org.references.ChainedReference;
-import org.references.ListOfUniqueNonNullObjects;
 import org.references.Position;
+import org.references.TreeOfNonNullObjects;
 import org.references.method.MethodParams;
 
 
@@ -49,7 +48,9 @@ public class Factory {
 	
 	// LIFO list tracking all instances of ALL subclasses that are inited
 	// add new ones to first, and when remove-all start from last to first
-	private final static ListOfUniqueNonNullObjects<Initer>	ALL_INITED_INSTANCES	= new ListOfUniqueNonNullObjects<Initer>();
+	// LIFO manner add/remove on this tree thingy
+	private final static TreeOfNonNullObjects<Initer>	root	= new TreeOfNonNullObjects<Initer>();
+	private static TreeOfNonNullObjects<Initer>			currentParent;
 	
 	/**
 	 * generic method with a type variable<br>
@@ -159,10 +160,61 @@ public class Factory {
 			RunTime.badCall( "must not be already init-ed" );
 		}
 		// must add before init because init may init others before we get to add so the order gets foobar-ed
-		addNewInitedInstance( instance );// shouldn't already exist since wasn't inited so not in our list
+		// addNewInitedInstance( instance );// shouldn't already exist since wasn't inited so not in our list
 		
-		instance._init( params );// params may be null
+		set_InitWork_StartsInParent( instance );
+		// so if anything else between Start and Done gets inited, it does so as children of 'instance'
+		try {
+			instance._init( params );// params may be null
+		} finally {
+			set_InitWork_DoneInParent( instance );
+		}
+		
+		// addNewInitedInstance_asAfterInit( instance );
+		// goShallowToThisParentInstanceAsChild( instance );
+		
 		RunTime.assumedTrue( instance.isInited() );
+	}
+	
+	// private static <T extends Initer> void internal_init( T instance, MethodParams params ) {
+	//
+	// RunTime.assumedNotNull( instance );
+	// RunTime.assumedFalse( instance.isInited() );
+	//
+	// RunTime.assumedTrue( instance.isInited() );
+	// }
+	
+	/**
+	 * @param <T>
+	 * @param instance
+	 *            the parent
+	 */
+	private static <T extends Initer> void set_InitWork_StartsInParent( T instance ) {
+
+		// go deep
+		RunTime.assumedNotNull( instance );
+		RunTime.assumedNotNull( currentParent );
+		// TreeOfUniqueNonNullObjects<Initer> newChildInCurrent = new TreeOfUniqueNonNullObjects<Initer>();
+		// newChildInCurrent.setParent( currentParent );
+		// newChildInCurrent.setValue( instance );
+		currentParent = currentParent.addChildFirst( instance );
+		RunTime.assumedNotNull( currentParent );
+	}
+	
+	/**
+	 * @param <T>
+	 * @param instance
+	 *            the parent
+	 */
+	private static <T extends Initer> void set_InitWork_DoneInParent( T instance ) {
+
+		// go shallow
+		RunTime.assumedNotNull( instance );
+		RunTime.assumedNotNull( currentParent );
+		RunTime.assumedTrue( root != currentParent );// can't be root yet
+		RunTime.assumedTrue( currentParent.getValue() == instance );
+		currentParent = currentParent.getParent();
+		RunTime.assumedNotNull( currentParent );
 	}
 	
 	/**
@@ -282,7 +334,8 @@ public class Factory {
 	 * 
 	 * @param instance
 	 */
-	private final static void addNewInitedInstance( Initer instance ) {
+	@Deprecated
+	private final static void temporary_addNewInitedInstance( Initer instance ) {
 
 		// we're adding these to first, and remove-all will parse from last to first (order)
 		RunTime.assumedNotNull( instance );
@@ -294,7 +347,8 @@ public class Factory {
 		}
 	}
 	
-	private final static void removeExistingInitedInstance( Initer instance ) {
+	@Deprecated
+	private final static void temporary_removeExistingInitedInstance( Initer instance ) {
 
 		RunTime.assumedNotNull( instance );
 		// must be already inited but next after this call, a deInit is issued
@@ -312,38 +366,47 @@ public class Factory {
 	public static void deInitAll() {
 
 		Log.entry();
-		while ( true ) {
-			// get the first one (aka next in our context)
-			ChainedReference<Initer> refToInstance = ALL_INITED_INSTANCES.getRefAt( Position.LAST );
-			if ( null == refToInstance ) {
-				RunTime.assumedTrue( ALL_INITED_INSTANCES.isEmpty() );
-				break;// we're done list is empty
-			}
-			
-			try {
-				// first remove then deInit
-				// must save this because it's contents are destroyed by removeRef()
-				Initer inst = refToInstance.getObject();
-				try {
-					if ( !ALL_INITED_INSTANCES.removeRef( refToInstance ) ) {
-						// not removed? aka false
-						RunTime.bug( "the ref was not found, some bug somewhere" );
-					}
-				} catch ( Throwable t ) {
-					// postpone any thrown exceptions here also
-				}
-				// and now deInit
-				Factory.internal_deInit( inst );
-				// refToInstance.getObject()._deInit();
-			} catch ( Throwable t ) {
-				// postpone all that were thrown (or re-thrown) with RunTime.thro()
-			} finally {
-				
-			}
-		}// while true
 		
+		RunTime.assumedTrue( currentParent == root );
+		RunTime.assumedNotNull( root );
+		internal_deInitTree( root );
 		// re-throw all postponed exceptions:
 		RunTime.throwPosponed();
 	}// method
 	
+	/**
+	 * this will also postpone all throws so use RunTime.throwPosponed(); after calling this<br>
+	 * 
+	 * @param tree
+	 */
+	private static void internal_deInitTree( TreeOfNonNullObjects<Initer> tree ) {
+
+		try {
+			RunTime.assumedNotNull( tree );// 1t
+			while ( true ) {
+				// get the first subtree in this tree (aka next in our context)
+				TreeOfNonNullObjects<Initer> currentSubTree = tree.getChildAt( Position.FIRST );// 1t
+				if ( null != currentSubTree ) {
+					try {
+						Initer instance = currentSubTree.getValue();
+						// first deInit
+						try {
+							Factory.internal_deInit( instance );
+						} finally {
+							// second, remove; even if above threw
+							root.removeChildAt( Position.FIRST );
+						}
+					} catch ( Throwable t ) {
+						// postpone all that were thrown (or re-thrown) with RunTime.thro()
+					} finally {
+						
+					}
+				} else {
+					// no more subtrees so we're at
+				}
+			}// while true
+		} catch ( Throwable t ) {// 1c
+			// postponing all
+		}
+	}
 }// class

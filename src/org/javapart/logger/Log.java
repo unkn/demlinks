@@ -34,8 +34,8 @@ public class Log {
 	static final int					spacesBeforeMsg							= 10;
 	
 	private final static LogFlags		CurrentLogFlags[]						= {
-			LogFlags.Entry, LogFlags.Mid, LogFlags.Exit, LogFlags.Bug, LogFlags.Warn, LogFlags.Result,
-			LogFlags.Special, LogFlags.Thro,
+			// LogFlags.Entry, LogFlags.Mid, LogFlags.Exit,
+			LogFlags.Bug, LogFlags.Warn, LogFlags.Result, LogFlags.Special, LogFlags.Thro,
 																				};
 	
 	// if no elements, then all methods are shown
