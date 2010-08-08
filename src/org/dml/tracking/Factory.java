@@ -46,7 +46,27 @@ import org.references.method.MethodParams;
  */
 public class Factory {
 	
+	// this will make sure you don't miss calling deInitAll() even if JVM gets interrupted or something
+	private final static ShutDownHook											initFactoryClass	= new ShutDownHook(
+																											new Thread(
+																													null,
+																													null,
+																													"shutdown-hook thread" ) {
+																												
+																												@Override
+																												public void run() {
+
+																													Log.special( "on Factory shutdown-hook entry" );
+																													Factory.deInitAll();
+																													// throw
+																													// new
+																													// RuntimeException(
+																													// "taest"
+																													// );
+																												}
+																											} );
 	
+
 	// LIFO list tracking all instances of ALL subclasses that are inited
 	// add new ones to first, and when remove-all start from last to first
 	// LIFO manner add/remove on this tree thingy
@@ -54,9 +74,9 @@ public class Factory {
 	// this tree is a list of lists; the depth is when each class that got .init()-ed also inits it's own instances
 	// inside that init(); if a class inits new instances while not in it's own init, then's ok they're just added on
 	// the current level ie. root
-	private final static TreeOfNonNullObjects<Initer>							root			= new TreeOfNonNullObjects<Initer>();
-	private static TreeOfNonNullObjects<Initer>									currentParent	= root;
-	private final static NonNullHashMap<Initer, TreeOfNonNullObjects<Initer>>	QUICK_FIND		= new NonNullHashMap<Initer, TreeOfNonNullObjects<Initer>>();
+	private final static TreeOfNonNullObjects<Initer>							root				= new TreeOfNonNullObjects<Initer>();
+	private static TreeOfNonNullObjects<Initer>									currentParent		= root;
+	private final static NonNullHashMap<Initer, TreeOfNonNullObjects<Initer>>	QUICK_FIND			= new NonNullHashMap<Initer, TreeOfNonNullObjects<Initer>>();
 	
 	/**
 	 * generic method with a type variable<br>

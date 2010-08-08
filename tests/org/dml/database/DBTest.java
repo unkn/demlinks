@@ -27,7 +27,6 @@ package org.dml.database;
 
 import org.dml.JUnits.Consts;
 import org.dml.database.bdb.level1.Level1_Storage_BerkeleyDB;
-import org.dml.tools.RunTime;
 import org.dml.tracking.Factory;
 import org.javapart.logger.Log;
 import org.junit.After;
@@ -84,7 +83,7 @@ public class DBTest {
 		// bdb.deInit();
 		// Factory.deInit( bdb );
 		Factory.deInitAll();
-		RunTime.clearThrowChain();
+		// RunTime.clearThrowChain();
 		Log.exit();
 	}
 	

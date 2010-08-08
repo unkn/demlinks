@@ -55,7 +55,7 @@ public class ShutdownHookExample {
 		// Add the shutdown hook as new java thread to the runtime.
 		// can be added as inner class or a separate class that implements
 		// Runnable or extends Thread
-		Runtime.getRuntime().addShutdownHook( new Thread() {
+		Runtime.getRuntime().addShutdownHook( new Thread( null, null, "shutdown-hook thread" ) {
 			
 			@Override
 			public void run() {
@@ -69,9 +69,11 @@ public class ShutdownHookExample {
 						fileWriter.flush();
 						fileWriter.close();
 						System.out.println( "File closed successfully" );
+						// throw new IOException( "user" );
 					} catch ( IOException e ) {
 						System.out.println( "Failed to flush/close the file :" + e.getMessage() );
 						e.printStackTrace();
+						// throw new RuntimeException( e );
 					}
 				}
 				System.out.println( "Shutdown hook completed..." );

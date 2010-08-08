@@ -11,6 +11,25 @@ Things that are depreciated or obsolete won't be here.
 	 
 2. using DejaVu Sans Mono 14, in eclipse for editing (General->Appearance->Colors and Fonts)
 
-3. methods will usually return TRUE if already existed; false otherwise; but they will not fail, if they do they throw exception
+3. methods will usually return TRUE if already existed; false otherwise; but they will not fail, if they do they throw exception using RunTime.thro();
 
-4. give almost no regard to efficiency and size; give most regard to accessibility!
+4. give almost no regard to efficiency and size; give most regard to accessibility and consistency; also use explicitize(whatever) assumptions ie. RunTime.assumedTrue(x==y);
+
+
+5. how to throw exceptions:
+-a) if something throws an exception with "throw" keyword instead of RunTime.thro(); then this exception must be <caught and re-thrown>(aka wrapped) as follows:
+	try {
+			throw new IOException("tesT")://something that throws with throw keyword
+	}catch(Throwable t) {//must use Throwable to make sure we don't miss some
+		RunTime.throWrapped(t);
+	}
+	
+	-if we don't wrap it, then when something throws with the "throw" keyword any chained/postponed exceptions from before will be overwritten and also exceptions thrown 
+	with the throw keyword before(they will also be overwritten aka ignored and not reported); so only last thrown exception is reported
+	
+-b) to throw a postponed exception use RunTime.throPostponed() and later to recall all thrown exceptions use RunTime.throwAllThatWerePosponed(); 
+	and they will be java thrown at that point (chained)
+	
+	
+	
+6. any classes that want to have init and deInit of resources ie. db-related should inherit Initer class and use Factory class to get new instance and init it
