@@ -31,6 +31,7 @@ import org.dml.level010.Symbol;
 import org.dml.storagewrapper.StorageException;
 import org.dml.tools.RunTime;
 import org.dml.tools.VarLevel;
+import org.dml.tracking.Factory;
 import org.references.method.MethodParams;
 import org.references.method.PossibleParams;
 
@@ -54,8 +55,10 @@ public class Level020_DMLEnvironment extends Level010_DMLEnvironment implements 
 	protected void internal_allocDefaultStorage( MethodParams params ) {
 
 		// don't call super!
-		Level020_DMLStorage_BerkeleyDB stor = new Level020_DMLStorage_BerkeleyDB();
-		stor.init( params );
+		// Level020_DMLStorage_BerkeleyDB stor = new Level020_DMLStorage_BerkeleyDB();
+		// stor.init( params );
+		Level020_DMLStorage_BerkeleyDB stor = Factory.getNewInstanceAndInit( Level020_DMLStorage_BerkeleyDB.class,
+				params );
 		params.set( PossibleParams.varLevelAll, stor );
 	}
 	

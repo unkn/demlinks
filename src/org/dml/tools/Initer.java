@@ -119,7 +119,9 @@ public abstract class Initer {
 	/**
 	 * isInited() is true while in this method<br>
 	 */
-	protected abstract void beforeDone();
+	protected void beforeDone() {
+
+	};
 	
 	/**
 	 * @return
@@ -172,7 +174,9 @@ public abstract class Initer {
 	/**
 	 * isInited() is false until after this method completes; so you see it as false from within this method<br>
 	 */
-	protected abstract void beforeStart();
+	protected void beforeStart() {
+
+	};
 	
 	/**
 	 * should only be called by one method: Factory.getNewInstance(...)<br>

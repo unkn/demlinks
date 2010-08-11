@@ -27,8 +27,8 @@ package org.dml.database.bdb.level1;
 
 import java.io.File;
 
+import org.dml.tools.Initer;
 import org.dml.tools.RunTime;
-import org.dml.tools.StaticInstanceTracker;
 import org.dml.tracking.Factory;
 import org.javapart.logger.Log;
 import org.references.ListOfUniqueNonNullObjects;
@@ -56,7 +56,7 @@ import com.sleepycat.je.SequenceConfig;
  * 
  *
  */
-public class Level1_Storage_BerkeleyDB extends StaticInstanceTracker {
+public class Level1_Storage_BerkeleyDB extends Initer {
 	
 	private String												envHomeDir;
 	private final EnvironmentConfig								environmentConfig			= new EnvironmentConfig();
@@ -89,7 +89,7 @@ public class Level1_Storage_BerkeleyDB extends StaticInstanceTracker {
 	public DBMap_JavaIDs_To_Symbols getDBMap_JavaIDs_To_Symbols() throws DatabaseException {
 
 		if ( null == db_JavaID_To_Symbol ) {
-			db_JavaID_To_Symbol = Factory.getNewInstanceAndInit( DBMap_JavaIDs_To_Symbols.class, this,
+			db_JavaID_To_Symbol = Factory.getNewInstanceAndInitWithoutParams( DBMap_JavaIDs_To_Symbols.class, this,
 					dbNAME_JavaID_To_NodeID );
 			// db_JavaID_To_Symbol = new DBMap_JavaIDs_To_Symbols( this, dbNAME_JavaID_To_NodeID );
 			// db_JavaID_To_Symbol.init( null );
@@ -130,7 +130,7 @@ public class Level1_Storage_BerkeleyDB extends StaticInstanceTracker {
 	public UniqueSymbolsGenerator getUniqueSymbolsGenerator() {
 
 		if ( null == symGen ) {
-			symGen = Factory.getNewInstanceAndInit( UniqueSymbolsGenerator.class, this );
+			symGen = Factory.getNewInstanceAndInitWithoutParams( UniqueSymbolsGenerator.class, this );
 			// symGen = new UniqueSymbolsGenerator( this );
 			// symGen.init( null );
 		} else {

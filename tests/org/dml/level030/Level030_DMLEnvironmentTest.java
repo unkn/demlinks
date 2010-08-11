@@ -32,6 +32,7 @@ import static org.junit.Assert.assertTrue;
 import org.dml.error.BadCallError;
 import org.dml.level010.JavaID;
 import org.dml.level010.Symbol;
+import org.dml.tracking.Factory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -55,15 +56,18 @@ public class Level030_DMLEnvironmentTest {
 		// params.init( null );
 		params.set( PossibleParams.jUnit_wipeDB, true );
 		params.set( PossibleParams.jUnit_wipeDBWhenDone, true );
-		l3 = new Level030_DMLEnvironment();
-		l3.init( params );
-		params.deInit();
+		// l3 = new Level030_DMLEnvironment();
+		// l3.init( params );
+		l3 = Factory.getNewInstanceAndInit( Level030_DMLEnvironment.class, params );
+		// params.deInit();
+		Factory.deInit( params );
 	}
 	
 	@After
 	public void tearDown() {
 
-		l3.deInitSilently();
+		Factory.deInit( l3 );
+		// l3.deInitSilently();
 	}
 	
 	@Test

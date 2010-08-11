@@ -113,7 +113,7 @@ public class FactoryTest {
 		 */
 		public B getSomeNewDB() {
 
-			B b = Factory.getNewInstanceAndInit( B.class );
+			B b = Factory.getNewInstanceAndInitWithoutParams( B.class );
 			return b;
 		}
 		
@@ -131,7 +131,7 @@ public class FactoryTest {
 			}
 			if ( null == tempRef2B ) {
 				initedOurOwn = true;
-				b = Factory.getNewInstanceAndInit( B.class );
+				b = Factory.getNewInstanceAndInitWithoutParams( B.class );
 			} else {
 				initedOurOwn = false;
 				b = (B)tempRef2B.getObject();
@@ -199,13 +199,13 @@ public class FactoryTest {
 		try {
 			// System.out.println( Log.getThisLineLocation() );
 			// System.exit( 0 );
-			A a = Factory.getNewInstanceAndInit( A.class );
+			A a = Factory.getNewInstanceAndInitWithoutParams( A.class );
 			RunTime.assumedTrue( a.initedOurOwn );
 			Factory.deInit( a );
 			RunTime.assumedFalse( a.initedOurOwn );
 			
-			MethodParams params = Factory.getNewInstanceAndInit( MethodParams.class );
-			B newB = Factory.getNewInstanceAndInit( B.class );
+			MethodParams params = Factory.getNewInstanceAndInitWithoutParams( MethodParams.class );
+			B newB = Factory.getNewInstanceAndInitWithoutParams( B.class );
 			params.set( specB, newB );
 			a = Factory.getNewInstanceAndInit( A.class, params );
 			RunTime.assumedFalse( a.initedOurOwn );
@@ -226,8 +226,9 @@ public class FactoryTest {
 		try {
 			// A a = Factory.getNewInstanceAndInit( A.class );
 			
-			MethodParams params = Factory.getNewInstanceAndInit( MethodParams.class );
-			B newB = Factory.getNewInstanceAndInit( B.class );
+			MethodParams params = MethodParams.getNew();// Factory.getNewInstanceAndInitWithoutParams(
+														// MethodParams.class );
+			B newB = Factory.getNewInstanceAndInitWithoutParams( B.class );
 			params.set( specB, newB );
 			A aa = Factory.getNewInstanceAndInit( A.class, params );
 			RunTime.assumedFalse( aa.initedOurOwn );
@@ -256,9 +257,9 @@ public class FactoryTest {
 		// because the db is deInited
 		
 		try {
-			A a = Factory.getNewInstanceAndInit( A.class );
+			A a = Factory.getNewInstanceAndInitWithoutParams( A.class );
 			// A aa = Factory.getNewInstanceAndInit( A.class );
-			B db = Factory.getNewInstanceAndInit( B.class );// doesn't matter where from
+			B db = Factory.getNewInstanceAndInitWithoutParams( B.class );// doesn't matter where from
 			a.setUseDB( db );
 			// and assume somehow something throws and a.deInit is never called
 			RunTime.thro( new Exception( "unfortunate" ) );// this jumps to deInitAll() below

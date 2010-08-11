@@ -33,6 +33,7 @@ import org.dml.error.BadCallError;
 import org.dml.level010.JavaID;
 import org.dml.level010.Symbol;
 import org.dml.tools.RunTime;
+import org.dml.tracking.Factory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -57,15 +58,18 @@ public class Level040_DMLEnvironmentTest {
 		// params.init( null );
 		params.set( PossibleParams.jUnit_wipeDB, true );
 		params.set( PossibleParams.jUnit_wipeDBWhenDone, true );
-		l4 = new Level040_DMLEnvironment();
-		l4.init( params );
-		params.deInit();
+		// l4 = new Level040_DMLEnvironment();
+		// l4.init( params );
+		l4 = Factory.getNewInstanceAndInit( Level040_DMLEnvironment.class, params );
+		Factory.deInit( params );
+		// params.deInit();
 	}
 	
 	@After
 	public void tearDown() {
 
-		l4.deInitSilently();
+		Factory.deInit( l4 );
+		// l4.deInitSilently();
 	}
 	
 	@Test

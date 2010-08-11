@@ -30,6 +30,7 @@ import org.dml.level010.Symbol;
 import org.dml.storagewrapper.StorageException;
 import org.dml.tools.RunTime;
 import org.dml.tools.TwoKeyHashMap;
+import org.dml.tracking.Factory;
 import org.references.Position;
 
 import com.sleepycat.je.DatabaseException;
@@ -160,7 +161,8 @@ public class SetOfTerminalSymbols {
 		if ( null == iter ) {
 			iter = env.getIterator_on_Terminals_of( selfAsSymbol );
 		} else {
-			iter.reInit();
+			Factory.reInitIfNotInited( iter );
+			// iter.reInit();
 		}
 		RunTime.assumedNotNull( iter );
 	}
@@ -168,7 +170,8 @@ public class SetOfTerminalSymbols {
 	private void deInitIterator() {
 
 		RunTime.assumedNotNull( iter );
-		iter.deInit();
+		Factory.deInit( iter );
+		// iter.deInit();
 	}
 	
 	

@@ -31,6 +31,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.dml.error.BadCallError;
 import org.dml.level010.Symbol;
+import org.dml.tracking.Factory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -57,9 +58,11 @@ public class SetOfTerminalSymbolsTest {
 		// params.init( null );
 		params.set( PossibleParams.jUnit_wipeDB, true );
 		params.set( PossibleParams.jUnit_wipeDBWhenDone, true );
-		env = new Level025_DMLEnvironment();
-		env.init( params );
-		params.deInit();
+		// env = new Level025_DMLEnvironment();
+		// env.init( params );
+		env = Factory.getNewInstanceAndInit( Level025_DMLEnvironment.class, params );
+		// params.deInit();
+		Factory.deInit( params );
 		
 		sym = env.newUniqueSymbol();
 		set1 = SetOfTerminalSymbols.getAsSet( env, sym );
@@ -68,7 +71,8 @@ public class SetOfTerminalSymbolsTest {
 	@After
 	public void tearDown() {
 
-		env.deInit();
+		Factory.deInit( env );
+		// env.deInit();
 	}
 	
 	@Test

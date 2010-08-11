@@ -35,7 +35,12 @@ import org.dml.storagewrapper.StorageException;
  */
 public interface Level010_DMLStorageWrapper {
 	
-	public void deInit();
+	/**
+	 * calls Factory.deInit(this);
+	 */
+	public void factoryDeInit();
+	
+	// public <T extends Initer> void deInit( T instance );
 	
 	/**
 	 * there's a one to one mapping between Symbol and JavaID<br>

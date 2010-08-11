@@ -29,6 +29,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 
+import org.dml.tracking.Factory;
 import org.references.ListOfUniqueNonNullObjects;
 import org.references.Position;
 import org.references.Reference;
@@ -56,7 +57,7 @@ import org.references.method.PossibleParams;
  * 3. the VarLevel and the MainLevel1 class have to extend
  * StaticInstanceTracker
  */
-public abstract class MainLevel0 extends StaticInstanceTracker {
+public abstract class MainLevel0 extends Initer {
 	
 	
 	// true if we inited a default 'var' so we know to deInit it
@@ -154,14 +155,16 @@ public abstract class MainLevel0 extends StaticInstanceTracker {
 		}
 	}
 	
-	private StaticInstanceTracker getVarLevelX() {
+	private Initer getVarLevelX() {
 
 		Field lastField = this.getFieldInLastSubClassWhichIs_This();
-		StaticInstanceTracker ret = null;
+		Initer ret = null;
 		boolean prevState = lastField.isAccessible();
 		try {
-			lastField.setAccessible( true );
-			ret = (StaticInstanceTracker)lastField.get( this );
+			if ( !prevState ) {
+				lastField.setAccessible( true );
+			}
+			ret = (Initer)lastField.get( this );
 		} catch ( IllegalArgumentException e ) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -171,7 +174,9 @@ public abstract class MainLevel0 extends StaticInstanceTracker {
 			e.printStackTrace();
 			RunTime.bug();
 		} finally {
-			lastField.setAccessible( prevState );
+			if ( !prevState ) {
+				lastField.setAccessible( prevState );// false
+			}
 		}
 		return ret;
 		
@@ -198,7 +203,7 @@ public abstract class MainLevel0 extends StaticInstanceTracker {
 			if ( null == ref ) {
 				if ( notSIT ) {
 					RunTime.badCall( "caller must either have all VarLevels subclass of "
-							+ StaticInstanceTracker.class.getSimpleName()
+							+ Initer.class.getSimpleName()
 							+ " so that we can new and init the var, or the caller must pass us that var already new-ed and init-ed!" );
 				}
 				// not specified own VarLevel by user, then we make one which we
@@ -216,7 +221,8 @@ public abstract class MainLevel0 extends StaticInstanceTracker {
 				
 				// if we're here PossibleParams.varLevelAll doesn't exist so, this init won't see it either, just in
 				// case it's a MainLevel0 too.
-				this.getVarLevelX().init( mixedParams );// 3
+				// this.getVarLevelX().init( mixedParams );// 3
+				Factory.init( this.getVarLevelX(), mixedParams );// 3
 			} else {
 				Object obj = ref.getObject();
 				RunTime.assumedNotNull( obj );
@@ -226,8 +232,10 @@ public abstract class MainLevel0 extends StaticInstanceTracker {
 			}
 			// super.start( null );
 		} finally {
-			mixedParams.deInit();
+			// mixedParams.deInit();
+			Factory.deInit( mixedParams );
 		}
+		RunTime.assumedTrue( this.getVarLevelX().isInited() );
 	}
 	
 	/**
@@ -266,7 +274,8 @@ public abstract class MainLevel0 extends StaticInstanceTracker {
 				RunTime.assumedFalse( notSIT );
 				// we inited it, then we deinit it
 				usingOwnVarLevel = false;// 1 //this did the trick
-				( this.getVarLevelX() ).deInit();// 2
+				// ( this.getVarLevelX() ).deInit();// 2
+				Factory.deInit( this.getVarLevelX() );// 2
 				// not setting it to null, since we might use it on the next
 				// call
 			} else {
@@ -311,7 +320,7 @@ public abstract class MainLevel0 extends StaticInstanceTracker {
 							// field.getType() ) );
 							// if ( !( field.get( this ) instanceof
 							// StaticInstanceTrackerWithMethodParams ) ) {
-							if ( !StaticInstanceTracker.class.isAssignableFrom( field.getType() ) ) {
+							if ( !Initer.class.isAssignableFrom( field.getType() ) ) {
 								notSIT = true;
 								// RunTime.bug( "wrong field type, must be a subclass of "
 								// + StaticInstanceTracker.class.getSimpleName() );
@@ -352,5 +361,14 @@ public abstract class MainLevel0 extends StaticInstanceTracker {
 		}
 		
 
+	}
+	
+	/**
+	 * calls Factory.deInit(this);
+	 * this is done because we cannot call Factory.deInit(storage) where storage is an interface and @ VarLevel
+	 */
+	public void factoryDeInit() {
+
+		Factory.deInit( this );
 	}
 }

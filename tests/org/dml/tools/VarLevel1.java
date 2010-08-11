@@ -25,6 +25,7 @@ package org.dml.tools;
 
 
 
+import org.dml.tracking.Factory;
 import org.references.method.MethodParams;
 
 
@@ -33,7 +34,7 @@ import org.references.method.MethodParams;
  * 
  *
  */
-public class VarLevel1 extends StaticInstanceTracker implements VarLevel1Interface {
+public class VarLevel1 extends Initer implements VarLevel1Interface {
 	
 	
 	public String getName() {
@@ -63,6 +64,17 @@ public class VarLevel1 extends StaticInstanceTracker implements VarLevel1Interfa
 	protected void start( MethodParams params ) {
 
 		System.out.println( this.getName() + " inited." );
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.dml.tools.VarLevel1Interface#sneakyDeInit()
+	 */
+	@Override
+	public void sneakyDeInit() {
+
+		Factory.deInit( this );
 	}
 	
 }

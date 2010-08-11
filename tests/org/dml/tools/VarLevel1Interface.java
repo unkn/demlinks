@@ -34,7 +34,7 @@ public interface VarLevel1Interface {
 	/**
 	 * 
 	 */
-	public void deInit();
+	public void sneakyDeInit();
 	
 	public void sayHello();
 }

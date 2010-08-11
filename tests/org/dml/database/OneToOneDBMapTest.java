@@ -35,6 +35,7 @@ import org.dml.database.bdb.level1.AllTupleBindings;
 import org.dml.database.bdb.level1.Level1_Storage_BerkeleyDB;
 import org.dml.database.bdb.level1.OneToOneDBMap;
 import org.dml.error.BadCallError;
+import org.dml.tracking.Factory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -56,6 +57,7 @@ public class OneToOneDBMapTest {
 	final String					_b	= "BBBBBBBBBBBBBBBBBBBBBBBBB";
 	Level1_Storage_BerkeleyDB		bdb;
 	
+	@SuppressWarnings( "unchecked" )
 	@Before
 	public void setUp() throws DatabaseException {
 
@@ -64,20 +66,26 @@ public class OneToOneDBMapTest {
 		params.set( PossibleParams.homeDir, Consts.BDB_ENV_PATH );
 		params.set( PossibleParams.jUnit_wipeDB, true );
 		params.set( PossibleParams.jUnit_wipeDBWhenDone, true );
-		bdb = new Level1_Storage_BerkeleyDB();
-		bdb.init( params );
-		params.deInit();
+		// bdb = new Level1_Storage_BerkeleyDB();
+		// bdb.init( params );
+		bdb = Factory.getNewInstanceAndInit( Level1_Storage_BerkeleyDB.class, params );
+		// params.deInit();
+		Factory.deInit( params );
 		// bdb = new Level1_Storage_BerkeleyDB( Consts.BDB_ENV_PATH, true );
-		x = new OneToOneDBMap<String, String>( bdb, "someMap", String.class,
+		// x = new OneToOneDBMap<String, String>( bdb, "someMap", String.class,
+		// AllTupleBindings.getBinding( String.class ), String.class, AllTupleBindings.getBinding( String.class ) );
+		// x.init( null );
+		x = Factory.getNewInstanceAndInitWithoutParams( OneToOneDBMap.class, bdb, "someMap", String.class,
 				AllTupleBindings.getBinding( String.class ), String.class, AllTupleBindings.getBinding( String.class ) );
-		x.init( null );
 	}
 	
 	@After
 	public void tearDown() {
 
-		x.deInit();
-		bdb.deInit();
+		Factory.deInit( x );
+		Factory.deInit( bdb );
+		// x.deInit();
+		// bdb.deInit();
 	}
 	
 	

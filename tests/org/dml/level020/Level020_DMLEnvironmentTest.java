@@ -33,6 +33,7 @@ import static org.junit.Assert.assertTrue;
 import org.dml.JUnits.Consts;
 import org.dml.level010.JavaID;
 import org.dml.level010.Symbol;
+import org.dml.tracking.Factory;
 import org.junit.Test;
 import org.references.method.MethodParams;
 import org.references.method.PossibleParams;
@@ -53,16 +54,20 @@ public class Level020_DMLEnvironmentTest {
 		params.set( PossibleParams.jUnit_wipeDB, true );
 		params.set( PossibleParams.jUnit_wipeDBWhenDone, true );
 		
-		Level020_DMLEnvironment d1 = new Level020_DMLEnvironment();
+		// Level020_DMLEnvironment d1 = new Level020_DMLEnvironment();
 		params.set( PossibleParams.homeDir, Consts.BDB_ENV_PATH + "1&2" );
-		d1.init( params );
+		// d1.init( params );
+		Level020_DMLEnvironment d1 = Factory.getNewInstanceAndInit( Level020_DMLEnvironment.class, params );
 		
-		Level020_DMLEnvironment d2 = new Level020_DMLEnvironment();
-		d2.init( params );
+		Level020_DMLEnvironment d2 = Factory.getNewInstanceAndInit( Level020_DMLEnvironment.class, params );
+		// new Level020_DMLEnvironment();
+		// d2.init( params );
 		
 		params.set( PossibleParams.homeDir, Consts.BDB_ENV_PATH + "3" );
-		Level020_DMLEnvironment d3 = new Level020_DMLEnvironment();
-		d3.init( params );
+		Level020_DMLEnvironment d3 = Factory.getNewInstanceAndInit( Level020_DMLEnvironment.class, params );
+		// new Level020_DMLEnvironment();
+		// d3.init( params );
+		Factory.deInit( params );
 		
 		try {
 			// if ( 1 == 1 ) {
@@ -111,16 +116,19 @@ public class Level020_DMLEnvironmentTest {
 			assertTrue( d1.isVector( n1, n1 ) );
 			
 		} finally {
-			d1.deInit();
+			Factory.deInit( d1 );
+			// d1.deInit();
 			// d2.deInit();
 			assertFalse( d1.isInited() );
 			assertTrue( d2.isInited() );
 			assertTrue( d3.isInited() );
-			d1.deInitAllLikeMe();
+			Factory.deInit( d2 );
+			Factory.deInit( d3 );
+			// d1.deInitAllLikeMe();
 			assertFalse( d1.isInited() );
 			assertFalse( d2.isInited() );
 			assertFalse( d3.isInited() );
-			params.deInit();
+			// params.deInit();
 		}
 	}
 }

@@ -25,8 +25,8 @@ package org.dml.database.bdb.level1;
 
 
 
+import org.dml.tools.Initer;
 import org.dml.tools.RunTime;
-import org.dml.tools.StaticInstanceTracker;
 import org.references.Reference;
 import org.references.method.MethodParams;
 import org.references.method.PossibleParams;
@@ -42,7 +42,7 @@ import com.sleepycat.je.DatabaseException;
  * also makes sure the database isn't open unless it's needed<br>
  * once opened it stays open until silentClose() is called<br>
  */
-public class DatabaseCapsule extends StaticInstanceTracker {
+public class DatabaseCapsule extends Initer {
 	
 	private String						dbName;
 	private Database					db		= null;
@@ -60,6 +60,7 @@ public class DatabaseCapsule extends StaticInstanceTracker {
 		if ( null != db ) {
 			RunTime.assumedNotNull( bdbL1 );
 			db = bdbL1.closePriDB( db );
+			RunTime.assumedNull( db );
 		}
 	}
 	

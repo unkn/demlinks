@@ -30,8 +30,8 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 
+import org.dml.tools.Initer;
 import org.dml.tools.RunTime;
-import org.dml.tools.StaticInstanceTracker;
 import org.dml.tracking.Factory;
 import org.references.Reference;
 
@@ -52,7 +52,7 @@ import org.references.Reference;
  * TODO: maybe somehow do type checking or something when get/write and store the type in ParamID ? but also allow like
  * subclass of , or superclass of , to be specified as type
  */
-public class MethodParams extends StaticInstanceTracker {
+public class MethodParams extends Initer {
 	
 	
 	// ParamName, and it's Value(any subclass of Object or even just Object)
@@ -69,7 +69,7 @@ public class MethodParams extends StaticInstanceTracker {
 	 */
 	public static MethodParams getNew() {
 
-		MethodParams one = Factory.getNewInstanceAndInit( MethodParams.class );
+		MethodParams one = Factory.getNewInstanceAndInitWithoutParams( MethodParams.class );
 		// new MethodParams();
 		// one.init( null );
 		RunTime.assumedTrue( one.isInited() );
@@ -325,7 +325,7 @@ public class MethodParams extends StaticInstanceTracker {
 	public MethodParams getClone() {
 
 		RunTime.assumedTrue( this.isInited() );
-		MethodParams clone = Factory.getNewInstanceAndInit( MethodParams.class );
+		MethodParams clone = Factory.getNewInstanceAndInitWithoutParams( MethodParams.class );
 		// MethodParams clone = new MethodParams();
 		// clone.init( null );// must be null or recursion
 		RunTime.assumedTrue( clone.size() == 0 );
@@ -368,4 +368,6 @@ public class MethodParams extends StaticInstanceTracker {
 		// RunTime.assumedTrue( this.isInited() );
 		return super.toString() + listOfParamsWithValues.toString();
 	}
+	
+
 }

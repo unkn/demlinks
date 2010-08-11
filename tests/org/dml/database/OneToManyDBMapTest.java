@@ -34,6 +34,7 @@ import org.dml.database.bdb.level1.AllTupleBindings;
 import org.dml.database.bdb.level1.Level1_Storage_BerkeleyDB;
 import org.dml.database.bdb.level2.BDBVectorIterator;
 import org.dml.database.bdb.level2.OneToManyDBMap;
+import org.dml.tracking.Factory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -58,28 +59,35 @@ public class OneToManyDBMapTest {
 	final String					_c	= "C" + new Object();
 	Level1_Storage_BerkeleyDB		bdb;
 	
+	@SuppressWarnings( "unchecked" )
 	@Before
 	public void setUp() throws DatabaseException {
 
-		bdb = new Level1_Storage_BerkeleyDB();
+		// bdb = new Level1_Storage_BerkeleyDB();
 		MethodParams params = MethodParams.getNew();
 		// params.init( null );
 		params.set( PossibleParams.homeDir, Consts.BDB_ENV_PATH );
 		params.set( PossibleParams.jUnit_wipeDB, true );
 		params.set( PossibleParams.jUnit_wipeDBWhenDone, true );
-		bdb.init( params );
-		params.deInit();
+		// bdb.init( params );
+		bdb = Factory.getNewInstanceAndInit( Level1_Storage_BerkeleyDB.class, params );
+		// params.deInit();
+		Factory.deInit( params );
 		
-		o2m = new OneToManyDBMap<String, String>( bdb, "one to many", String.class,
+		// o2m = new OneToManyDBMap<String, String>( bdb, "one to many", String.class,
+		// AllTupleBindings.getBinding( String.class ), String.class, AllTupleBindings.getBinding( String.class ) );
+		// o2m.init( null );
+		o2m = Factory.getNewInstanceAndInitWithoutParams( OneToManyDBMap.class, bdb, "one to many", String.class,
 				AllTupleBindings.getBinding( String.class ), String.class, AllTupleBindings.getBinding( String.class ) );
-		o2m.init( null );
 	}
 	
 	@After
 	public void tearDown() {
 
-		o2m.deInit();
-		bdb.deInit();
+		Factory.deInit( o2m );
+		Factory.deInit( bdb );
+		// o2m.deInit();
+		// bdb.deInit();
 	}
 	
 	/**
@@ -133,7 +141,8 @@ public class OneToManyDBMapTest {
 				iter.goNext();
 			} while ( null != iter.now() );
 		} finally {
-			iter.deInit();
+			Factory.deInit( iter );
+			// iter.deInit();
 		}
 		
 		iter = o2m.getIterator_on_Terminals_of( _c );
@@ -148,7 +157,8 @@ public class OneToManyDBMapTest {
 				iter.goNext();
 			} while ( null != iter.now() );
 		} finally {
-			iter.deInit();
+			Factory.deInit( iter );
+			// iter.deInit();
 		}
 	}
 	

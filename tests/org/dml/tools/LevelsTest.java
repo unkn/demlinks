@@ -31,6 +31,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import org.dml.error.BadCallError;
+import org.dml.tracking.Factory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -62,9 +63,12 @@ public class LevelsTest {
 	@After
 	public void tearDown() {
 
-		ml1.deInitSilently();
-		ml2.deInitSilently();
-		ml3.deInitSilently();
+		Factory.deInitIfAlreadyInited( ml1 );
+		Factory.deInitIfAlreadyInited( ml2 );
+		Factory.deInitIfAlreadyInited( ml3 );
+		// ml1.deInitSilently();
+		// ml2.deInitSilently();
+		// ml3.deInitSilently();
 		
 		// FIXME: StaticInstanceTracker.deInitAllThatExtendMe();
 	}
@@ -74,37 +78,46 @@ public class LevelsTest {
 
 		
 
-		VarLevel1 v1 = new VarLevel1();
-		v1.init( null );
+		VarLevel1 v1; // new VarLevel1();
+		// v1.init( null );
+		v1 = Factory.getNewInstanceAndInitWithoutParams( VarLevel1.class );
 		MethodParams params1 = MethodParams.getNew();
 		params1.set( PossibleParams.varLevelAll, v1 );
-		ml1.init( params1 );
+		// ml1.init( params1 );
+		Factory.init( ml1, params1 );
 		ml1.do1();
 		
 		MethodParams v2params = MethodParams.getNew();
 		v2params.set( PossibleParams.homeDir, "home2" );
-		VarLevel2 v2 = new VarLevel2();
-		v2.init( v2params );
+		VarLevel2 v2;// = new VarLevel2();
+		// v2.init( v2params );
+		// Factory.init( v2, v2params );
+		v2 = Factory.getNewInstanceAndInit( VarLevel2.class, v2params );
 		
 		MethodParams params2 = MethodParams.getNew();
 		params2.set( PossibleParams.varLevelAll, v2 );
 		
 		boolean threw = false;
 		try {
-			ml2.init( params2 );
+			Factory.init( ml2, params2 );
+			// ml2.init( params2 );
 		} catch ( BadCallError bce ) {
 			threw = true;
 		}
 		assertFalse( threw );
 		
-		ml2.deInit();
-		ml2.init( params2 );
+		Factory.deInit( ml2 );
+		// ml2.deInit();
+		Factory.init( ml2, params2 );
+		// ml2.init( params2 );
 		ml2.showHome();
 		
-		ml1.deInit();
+		// ml1.deInit();
+		Factory.deInit( ml1 );
 		try {
 			threw = false;
-			ml1.init( params2 );
+			// ml1.init( params2 );
+			Factory.init( ml1, params2 );
 		} catch ( BadCallError bce ) {
 			threw = true;
 		}
@@ -113,108 +126,162 @@ public class LevelsTest {
 		
 		try {
 			threw = false;
-			ml2.init( params1 );
-		} catch ( BadCallError bce ) {
-			threw = true;
+			// ml2.init( params1 );
+			try {
+				Factory.init( ml2, params1 );
+			} catch ( Throwable t ) {
+				RunTime.throWrapped( t );
+			}
+		} catch ( Throwable t ) {// BadCallError bce ) {
+			// System.out.println( rte.getCause() );
+			if ( RunTime.isThisWrappedException_of_thisType( t, BadCallError.class ) ) {
+				// if ( rte.getCause().getClass() == BadCallError.class ) {
+				threw = true;
+				RunTime.clearLastThrown();
+				RunTime.clearLastThrown();
+			}
 		}
 		assertTrue( threw );
 		
 		params1.set( PossibleParams.varLevelAll, "something" );
 		try {
 			threw = false;
-			ml2.init( params1 );
-		} catch ( BadCallError bce ) {
-			threw = true;
+			// ml2.init( params1 );
+			Factory.init( ml2, params1 );
+		} catch ( Throwable t ) {
+			if ( RunTime.isThisWrappedException_of_thisType( t, BadCallError.class ) ) {
+				threw = true;
+				RunTime.clearLastThrown();
+			}
 		}
 		assertTrue( threw );
-		ml2.deInit();
+		// ml2.deInit();
+		Factory.deInit( ml2 );
 		
 		params1.set( PossibleParams.varLevelAll, null );
 		try {
 			threw = false;
-			ml2.init( params1 );
-		} catch ( AssertionError ae ) {
-			threw = true;
+			// ml2.init( params1 );
+			Factory.init( ml2, params1 );
+		} catch ( Throwable t ) {
+			if ( RunTime.isThisWrappedException_of_thisType( t, AssertionError.class ) ) {
+				threw = true;
+				RunTime.clearLastThrown();
+			}
 		}
 		assertTrue( threw );
-		ml2.deInit();
+		// ml2.deInit();
+		Factory.deInit( ml2 );
 		
-		ml2.init( params2 );
+		// ml2.init( params2 );
+		Factory.init( ml2, params2 );
 		ml2.showHome();
 		params2.set( PossibleParams.homeDir, "home3" );
 		params2.remove( PossibleParams.varLevelAll );
-		ml2.deInit();
-		ml2.init( params2 );
+		// ml2.deInit();
+		Factory.deInit( ml2 );
+		// ml2.init( params2 );
+		Factory.init( ml2, params2 );
 		ml2.showHome();
 		
-		ml2.deInit();
-		ml2.init( params2 );
+		Factory.deInit( ml2 );
+		// ml2.deInit();
+		Factory.init( ml2, params2 );
+		// ml2.init( params2 );
 		ml2.showHome();
 		ml2.do1();
 		
 
-		ml1.deInit();
+		// ml1.deInit();
+		Factory.deInit( ml1 );
 		params2.set( PossibleParams.varLevelAll, null );
 		try {
 			threw = false;
-			ml1.init( params2 );
-		} catch ( AssertionError ae ) {
-			threw = true;
+			// ml1.init( params2 );
+			Factory.init( ml1, params2 );
+		} catch ( Throwable t ) {
+			if ( RunTime.isThisWrappedException_of_thisType( t, AssertionError.class ) ) {
+				threw = true;
+				RunTime.clearLastThrown();
+			}
 		}
 		assertTrue( threw );
 		
 		// Level 3:
 		MethodParams v3params = MethodParams.getNew();
 		v3params.set( PossibleParams.homeDir, "homedirL3" );
-		VarLevel3 v3 = new VarLevel3();
-		v3.init( v3params );
+		VarLevel3 v3;// = new VarLevel3();
+		// v3.init( v3params );
+		v3 = Factory.getNewInstanceAndInit( VarLevel3.class, v3params );
 		
 		MethodParams params3 = MethodParams.getNew();
 		params3.set( PossibleParams.varLevelAll, null );
 		try {
 			threw = false;
-			ml3.init( params3 );
-		} catch ( AssertionError ae ) {
-			threw = true;
+			// ml3.init( params3 );
+			Factory.init( ml3, params3 );
+		} catch ( Throwable t ) {
+			if ( RunTime.isThisWrappedException_of_thisType( t, AssertionError.class ) ) {
+				threw = true;
+				RunTime.clearLastThrown();
+			}
 		}
 		assertTrue( threw );
 		
 		params3.set( PossibleParams.varLevelAll, v2 );
 		try {
 			threw = false;
-			ml3.init( params3 );
-		} catch ( BadCallError bce ) {
-			threw = true;
+			// ml3.init( params3 );
+			Factory.init( ml3, params3 );
+		} catch ( Throwable t ) {
+			if ( RunTime.isThisWrappedException_of_thisType( t, BadCallError.class ) ) {
+				threw = true;
+				RunTime.clearLastThrown();
+			}
 		}
 		assertTrue( threw );
 		
 		params3.set( PossibleParams.varLevelAll, v1 );
 		try {
 			threw = false;
-			ml3.init( params3 );
-		} catch ( BadCallError bce ) {
-			threw = true;
+			// ml3.init( params3 );
+			Factory.init( ml3, params3 );
+		} catch ( Throwable t ) {
+			if ( RunTime.isThisWrappedException_of_thisType( t, BadCallError.class ) ) {
+				threw = true;
+				RunTime.clearLastThrown();
+			}
 		}
 		assertTrue( threw );
-		ml3.deInit();
+		// ml3.deInit();
+		Factory.deInit( ml3 );
 		
 		params3.set( PossibleParams.varLevelAll, v3 );
-		ml3.init( params3 );
+		// ml3.init( params3 );
+		Factory.init( ml3, params3 );
 		ml3.showHome();
 		
 		params3.remove( PossibleParams.varLevelAll );
 		params3.set( PossibleParams.homeDir, "L3nondefaultHomeDir" );
-		ml3.deInit();
-		ml3.init( params3 );
+		// ml3.deInit();
+		Factory.deInit( ml3 );
+		Factory.init( ml3, params3 );
+		// ml3.init( params3 );
 		ml3.showHome();
 		ml3.do1();
-		ml3.deInit();
+		// ml3.deInit();
+		Factory.deInit( ml3 );
 		
-		params1.deInit();
-		v2params.deInit();
-		params2.deInit();
-		v3params.deInit();
-		params3.deInit();
+		Factory.deInit( params1 );
+		Factory.deInit( v2params );
+		Factory.deInit( params2 );
+		Factory.deInit( v3params );
+		Factory.deInit( params3 );
+		// params1.deInit();
+		// v2params.deInit();
+		// params2.deInit();
+		// v3params.deInit();
+		// params3.deInit();
 	}
 	
 	@Test
@@ -223,7 +290,8 @@ public class LevelsTest {
 		VarLevel3 old = null;
 		int count2 = 3;
 		while ( count2 > 0 ) {
-			ml3.init( null );// using own VarLevel
+			// ml3.init( null );// using own VarLevel
+			Factory.initWithoutParams( ml3 );// using own VarLevel
 			VarLevel3 vl3 = (VarLevel3)ml3.junitGetVar();
 			if ( null == old ) {
 				old = vl3;
@@ -231,7 +299,8 @@ public class LevelsTest {
 			
 			assertNotNull( vl3 );
 			assertTrue( vl3.isInited() );
-			ml3.deInit();// will deInit it
+			// ml3.deInit();// will deInit it
+			Factory.deInit( ml3 ); // will deInit it
 			assertFalse( vl3.isInited() );
 			assertNotNull( ml3.junitGetVar() );// not null if it's own
 			assertTrue( ml3.junitGetVar() == vl3 );
@@ -241,57 +310,67 @@ public class LevelsTest {
 		}
 		
 		// now using not own, after used own
-		VarLevel3 notOwn = new VarLevel3();
+		// VarLevel3 notOwn = new VarLevel3();
 		MethodParams params = MethodParams.getNew();
 		String homeDir = "homeNotOwn";
 		params.set( PossibleParams.homeDir, homeDir );
-		notOwn.init( params );
+		// notOwn.init( params );
+		VarLevel3 notOwn = Factory.getNewInstanceAndInit( VarLevel3.class, params );
 		assertTrue( notOwn.isInited() );
-		params.deInit();
+		// params.deInit();
+		Factory.deInit( params );
 		
 		MethodParams mlParams = MethodParams.getNew();
 		mlParams.set( PossibleParams.varLevelAll, notOwn );
 		
 		int count = 3;
 		while ( count > 0 ) {
-			ml3.init( mlParams );
+			Factory.init( ml3, mlParams );
+			// ml3.init( mlParams );
 			VarLevel3 newVL3 = (VarLevel3)ml3.junitGetVar();
 			assertNotNull( newVL3 );
 			assertTrue( newVL3.isInited() );
-			ml3.deInit();
+			// ml3.deInit();
+			Factory.deInit( ml3 );
 			assertTrue( newVL3.isInited() );
 			assertNull( ml3.junitGetVar() );// null if it's now own
 			assertTrue( newVL3 == notOwn );
 			count--;
 		}
 		
-		ml3.init( null );
+		// ml3.init( null );
+		Factory.initWithoutParams( ml3 );
 		VarLevel3 own = (VarLevel3)ml3.junitGetVar();
 		assertNotNull( own );
 		assertTrue( own.isInited() );
 		assertFalse( own == notOwn );
 		ml3.showHome();
-		ml3.deInit();
+		// ml3.deInit();
+		Factory.deInit( ml3 );
 		assertNotNull( ml3.junitGetVar() );
 		assertTrue( ml3.junitGetVar() == own );
 		assertFalse( own.isInited() );
 		
-		mlParams.deInit();
+		// mlParams.deInit();
+		Factory.deInit( mlParams );
 	}
 	
 	@Test
 	public void test2() {
 
-		
-		ml2.init( null );
+		Factory.initWithoutParams( ml2 );
+		// ml2.init( null );
 		VarLevel1 v1 = ml2.junitGetVar();
 		assertNotNull( v1 );
-		ml2.deInit();
+		Factory.deInit( ml2 );
+		// ml2.deInit();
 		assertNull( ml3.junitGetVar() );
 		
-		ml2.init( null );
+		Factory.initWithoutParams( ml2 );
+		// ml2.init( null );
 		VarLevel1 v1_1 = ml2.junitGetVar();
-		ml2.deInit();
+		Factory.deInit( ml2 );
+		// ml2.deInit();
 		
 		assertTrue( v1 == v1_1 );// same var used on consecutive inits using
 		// defaults
@@ -306,55 +385,70 @@ public class LevelsTest {
 		MethodParams mp = MethodParams.getNew();
 		// mp.init( null );
 		assertTrue( 0 == mp.size() );
-		ml2.init( mp );
+		Factory.init( ml2, mp );
+		// ml2.init( mp );
 		assertTrue( 0 == mp.size() );
-		ml1.init( mp );
+		Factory.init( ml1, mp );
+		// ml1.init( mp );
 		assertTrue( 0 == mp.size() );
-		ml3.init( mp );
+		Factory.init( ml3, mp );
+		// ml3.init( mp );
 		assertTrue( 0 == mp.size() );
 		
 
 
-		ml3.deInit();
-		VarLevel3 vl3 = new VarLevel3();
+		// ml3.deInit();
+		Factory.deInit( ml3 );
+		// VarLevel3 vl3 = new VarLevel3();
 		MethodParams v3params = MethodParams.getNew();
 		// v3params.init( null );
 		v3params.set( PossibleParams.homeDir, "homeDir3" );
-		vl3.init( v3params );
-		v3params.deInit();
+		// vl3.init( v3params );
+		VarLevel3 vl3 = Factory.getNewInstanceAndInit( VarLevel3.class, v3params );
+		// v3params.deInit();
+		Factory.deInit( v3params );
 		mp.set( PossibleParams.varLevelAll, vl3 );
 		assertTrue( 1 == mp.size() );
 		
-		ml3.init( mp );
+		Factory.init( ml3, mp );
+		// ml3.init( mp );
 		assertTrue( 1 == mp.size() );
 		Reference<Object> ref = mp.get( PossibleParams.varLevelAll );
 		assertNotNull( ref );
 		assertTrue( vl3 == ref.getObject() );
 		assertTrue( ml3.junitGetVar() == vl3 );
-		ml3.deInit();
+		// ml3.deInit();
+		Factory.deInit( ml3 );
 		assertNull( ml3.junitGetVar() );
 		
 		boolean ex = false;
 		try {
-			ml3.init( null );
+			// ml3.init( null );
+			Factory.initWithoutParams( ml3 );
 		} catch ( Error err ) {
 			ex = true;
 		}
 		assertFalse( ex );
-		ml3.deInit();
+		// ml3.deInit();
+		Factory.deInit( ml3 );
 		
 		assertNotNull( ml3.junitGetVar() );
-		ml3.init( mp );
+		// ml3.init( mp );
+		Factory.init( ml3, mp );
 		assertTrue( ml3.junitGetVar() == vl3 );
-		ml3.deInit();
+		Factory.deInit( ml3 );
+		// ml3.deInit();
 		assertNull( ml3.junitGetVar() );
-		vl3.deInitSilently();
-		ml3.init( null );
+		Factory.deInit( vl3 );
+		// vl3.deInitSilently();
+		// ml3.init( null );
+		Factory.initWithoutParams( ml3 );
 		assertTrue( ml3.junitGetVar() != vl3 );
 		assertNotNull( ml3.junitGetVar() );
 		ml3.showHome();
 		
-		mp.deInit();
+		// mp.deInit();
+		Factory.deInit( mp );
 	}
 	
 	@Test
@@ -362,30 +456,38 @@ public class LevelsTest {
 
 		MethodParams mp = MethodParams.getNew();
 		// mp.init( null );
-		VarLevel3 vl3 = new VarLevel3();
+		// VarLevel3 vl3 = new VarLevel3();
 		MethodParams vl3mp = MethodParams.getNew();
 		// vl3mp.init( null );
 		vl3mp.set( PossibleParams.homeDir, "homeDir3" );
-		vl3.init( vl3mp );
-		vl3mp.deInit();
+		// vl3.init( vl3mp );
+		VarLevel3 vl3 = Factory.getNewInstanceAndInit( VarLevel3.class, vl3mp );
+		// vl3mp.deInit();
+		Factory.deInit( vl3mp );
 		mp.set( PossibleParams.varLevelAll, vl3 );
 		assertTrue( vl3.isInited() );
-		ml3.init( mp );
-		mp.deInit();
+		// ml3.init( mp );
+		Factory.init( ml3, mp );
+		Factory.deInit( mp );
+		// mp.deInit();
 		assertTrue( vl3.isInited() );
 		assertTrue( ml3.junitGetVar() == vl3 );
 		ml3.showHome();
-		ml3.deInit();
+		// ml3.deInit();
+		Factory.deInit( ml3 );
 		assertTrue( vl3.isInited() );
-		vl3.deInit();
+		// vl3.deInit();
+		Factory.deInit( vl3 );
 		assertFalse( vl3.isInited() );
 		vl3 = null;
 		
-		ml3.init( null );
+		// ml3.init( null );
+		Factory.initWithoutParams( ml3 );
 		VarLevel3 intern = (VarLevel3)ml3.junitGetVar();
 		assertNotNull( intern );
 		assertTrue( intern.isInited() );
-		ml3.deInit();
+		// ml3.deInit();
+		Factory.deInit( ml3 );
 		assertFalse( intern.isInited() );
 		assertNotNull( ml3.junitGetVar() );// not null when using own var
 	}

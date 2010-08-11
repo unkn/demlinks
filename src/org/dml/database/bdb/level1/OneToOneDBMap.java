@@ -25,8 +25,9 @@ package org.dml.database.bdb.level1;
 
 
 
+import org.dml.tools.Initer;
 import org.dml.tools.RunTime;
-import org.dml.tools.StaticInstanceTracker;
+import org.dml.tracking.Factory;
 import org.javapart.logger.Log;
 import org.references.method.MethodParams;
 import org.references.method.PossibleParams;
@@ -51,7 +52,7 @@ import com.sleepycat.je.SecondaryDatabase;
  * they're internally stored as primary and secondary databases:
  * key->data and data->key
  */
-public class OneToOneDBMap<KeyType, DataType> extends StaticInstanceTracker {
+public class OneToOneDBMap<KeyType, DataType> extends Initer {
 	
 	private final Class<KeyType>				keyClass;
 	private final Class<DataType>				dataClass;
@@ -91,23 +92,26 @@ public class OneToOneDBMap<KeyType, DataType> extends StaticInstanceTracker {
 	 */
 	private void internal_initBoth() throws DatabaseException {
 
-		forwardDB = new DatabaseCapsule();
+		// forwardDB = new DatabaseCapsule();
 		MethodParams params = MethodParams.getNew();
 		// params.init( null );
 		params.set( PossibleParams.level1_BDBStorage, bdb );
 		params.set( PossibleParams.dbName, dbName );
 		params.set( PossibleParams.priDbConfig, new OneToOneDBConfig() );
-		forwardDB.init( params );
+		forwardDB = Factory.getNewInstanceAndInit( DatabaseCapsule.class, params );
+		// forwardDB.init( params );
 		
 
 
-		backwardDB = new SecondaryDatabaseCapsule();
+		// backwardDB = new SecondaryDatabaseCapsule();
 		params.set( PossibleParams.dbName, secPrefix + dbName );
 		params.set( PossibleParams.secDbConfig, new OneToOneSecondaryDBConfig() );
 		params.set( PossibleParams.priDb, forwardDB.getDB() );
 		params.remove( PossibleParams.priDbConfig );// not needed
-		backwardDB.init( params );
-		params.deInit();
+		backwardDB = Factory.getNewInstanceAndInit( SecondaryDatabaseCapsule.class, params );
+		// backwardDB.init( params );
+		// params.deInit();
+		Factory.deInit( params );
 		// must make sure second BerkeleyDB is also open!! because all inserts
 		// are done
 		// via first BerkeleyDB
@@ -125,9 +129,11 @@ public class OneToOneDBMap<KeyType, DataType> extends StaticInstanceTracker {
 			this.internal_initBoth();
 			RunTime.assumedNotNull( forwardDB );
 		} else {
-			if ( !forwardDB.isInited() ) {
-				forwardDB.reInit();
-			}
+			Factory.reInitIfNotInited( forwardDB );
+			// if ( !forwardDB.isInited() ) {
+			// // forwardDB.reInit();
+			// Factory.reInit_aka_InitAgain_WithOriginalPassedParams( forwardDB );
+			// }
 		}
 		return forwardDB.getDB();
 	}
@@ -142,9 +148,10 @@ public class OneToOneDBMap<KeyType, DataType> extends StaticInstanceTracker {
 			this.internal_initBoth();
 			RunTime.assumedNotNull( backwardDB );
 		} else {
-			if ( !backwardDB.isInited() ) {
-				backwardDB.reInit();
-			}
+			Factory.reInitIfNotInited( backwardDB );
+			// if ( !backwardDB.isInited() ) {
+			// backwardDB.reInit();
+			// }
 		}
 		return backwardDB.getSecDB();
 	}
@@ -265,11 +272,13 @@ public class OneToOneDBMap<KeyType, DataType> extends StaticInstanceTracker {
 		
 		// we don't have to set these to null, because they can be getDB() again
 		if ( null != backwardDB ) {
-			backwardDB.deInit();// first close this
+			// backwardDB.deInit();
+			Factory.deInit( backwardDB );// first close this
 			one = true;
 		}
 		if ( null != forwardDB ) {
-			forwardDB.deInit();// then this
+			// forwardDB.deInit();
+			Factory.deInit( forwardDB );// then this
 			two = true;
 		}
 		

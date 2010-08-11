@@ -29,6 +29,7 @@ import org.dml.storagewrapper.StorageException;
 import org.dml.tools.MainLevel0;
 import org.dml.tools.RunTime;
 import org.dml.tools.VarLevel;
+import org.dml.tracking.Factory;
 import org.references.method.MethodParams;
 import org.references.method.PossibleParams;
 
@@ -67,13 +68,16 @@ public class Level010_DMLEnvironment extends MainLevel0 implements Level010_DMLS
 	 */
 	protected void internal_allocDefaultStorage( MethodParams params ) {
 
-		Level010_DMLStorage_BerkeleyDB stor = new Level010_DMLStorage_BerkeleyDB();
 		// MethodParams<Object> storageParams = new MethodParams<Object>();
 		// storageParams.init( null );
 		// storageParams.set( PossibleParams.homeDir, Consts.BDB_ENV_PATH );
 		// storageParams.set( PossibleParams.jUnit_wipeDBWhenDone, true );
 		// storageParams.deInit();
-		stor.init( params );
+		
+		// Level010_DMLStorage_BerkeleyDB stor = new Level010_DMLStorage_BerkeleyDB();
+		// stor.init( params );
+		Level010_DMLStorage_BerkeleyDB stor = Factory.getNewInstanceAndInit( Level010_DMLStorage_BerkeleyDB.class,
+				params );
 		params.set( PossibleParams.varLevelAll, stor );
 		// but reInit() or restart() won't see this set varlevel, although it will exec start() again and it will be set
 		// again
@@ -105,7 +109,9 @@ public class Level010_DMLEnvironment extends MainLevel0 implements Level010_DMLS
 
 		if ( usedDefaultStorage ) {
 			RunTime.assumedNotNull( storage );// wicked if null
-			storage.deInit();
+			// storage.deInit();
+			// Factory.deInit( storage );fail 'cause it's interface
+			storage.factoryDeInit();
 			// don't set var to false here, or seems it doesn't matter, reInit() will call start() and set it it true
 			// anyway
 		}

@@ -32,6 +32,7 @@ import static org.junit.Assert.assertTrue;
 import org.dml.JUnits.Consts;
 import org.dml.database.bdb.level1.Bridge_SymbolAndBDB;
 import org.dml.storagewrapper.StorageException;
+import org.dml.tracking.Factory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -56,19 +57,20 @@ public class Level010_DMLEnvironmentTest {
 		params = MethodParams.getNew();
 		// params.init( null );
 		
-		dml1 = new Level010_DMLEnvironment();
+		// dml1 = new Level010_DMLEnvironment();
 		params.set( PossibleParams.homeDir, Consts.BDB_ENV_PATH );
 		params.set( PossibleParams.jUnit_wipeDBWhenDone, true );
-		dml1.init( params );
-		
+		// dml1.init( params );
+		dml1 = Factory.getNewInstanceAndInit( Level010_DMLEnvironment.class, params );
 	}
 	
 	@After
 	public void tearDown() {
 
-		dml1.deInitSilently();
+		Factory.deInit( dml1 );
+		// dml1.deInitSilently();
 		dml1 = null;
-		params.deInit();// don't move this to setUp() because is used in tests still
+		Factory.deInit( params );// don't move this to setUp() because is used in tests still
 		params = null;
 	}
 	
@@ -105,7 +107,8 @@ public class Level010_DMLEnvironmentTest {
 			assertTrue( a == anew );
 			assertTrue( dml1.getJavaID( anew ) == dml1.getJavaID( a ) );
 		} finally {
-			dml1.deInit();
+			Factory.deInit( dml1 );
+			// dml1.deInit();
 		}
 	}
 	
@@ -114,12 +117,15 @@ public class Level010_DMLEnvironmentTest {
 	public void testMultiInits() throws StorageException {
 
 		try {
-			dml1.deInit();
-			dml1.init( params );
+			Factory.deInit( dml1 );
+			// dml1.deInit();
+			Factory.init( dml1, params );
+			// dml1.init( params );
 			// dml2.deInit();
 			// dml2.init( Consts.DEFAULT_BDB_ENV_PATH );
 		} finally {
-			dml1.deInitAllLikeMe();
+			Factory.deInit( dml1 );
+			// dml1.deInitAllLikeMe();
 		}
 	}
 	

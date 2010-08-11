@@ -51,8 +51,8 @@ public class DBTest {
 		Log.entry();
 		// System.out.println( "setUp:" );
 		// StaticInstanceTracker
-		MethodParams params;
-		params = Factory.getNewInstanceAndInit( MethodParams.class );
+		MethodParams params = MethodParams.getNew();
+		// params = Factory.getNewInstanceAndInitWithoutParams( MethodParams.class );
 		
 		params.set( PossibleParams.homeDir, Consts.BDB_ENV_PATH );
 		params.set( PossibleParams.jUnit_wipeDB, false );

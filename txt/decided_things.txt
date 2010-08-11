@@ -31,5 +31,26 @@ Things that are depreciated or obsolete won't be here.
 	and they will be java thrown at that point (chained)
 	
 	
+-c) to catch a specific exception, that is to test if that specific exception occurred you only have to catch(Throwable t) (so that means you catch once) for any and every test
+    for example:
+    try {
+			try {
+				Factory.init( ml2, params1 );//assuming this throws an already wrapped BadCallError - no matter in how many layers of wraps
+			} catch ( Throwable t ) {
+				RunTime.throWrapped( t );//we wrap it again just for fun; doesn't need to be wrapped at all actually, can contain zero wraps
+			}
+	} catch ( Throwable t ) {
+			if ( RunTime.isThisWrappedException_of_thisType( t, BadCallError.class ) ) {
+				//yes it is exactly BadCallError 
+			}
+			if ( RunTime.isThisWrappedException_of_thisType( t, Exception.class ) ) {
+				//yes it is exactly Exception
+			}
+			if ( RunTime.isThisWrappedException_of_thisType( t, Error.class ) ) {
+				//yes it is exactly Error, note that although BadCallError extends Error, if you caught BadCallError above, you will NOT catch it here as just Error.class
+				//why? because this only tests for exactly that specific exception, no subclass or superclass of it!
+			}
+	} 
+	NOTE: that you cannot test for a subclass of ie. Error, you can only test specifically for the named class (though it's easy to make a method for this, will do when needed) 
 	
 6. any classes that want to have init and deInit of resources ie. db-related should inherit Initer class and use Factory class to get new instance and init it

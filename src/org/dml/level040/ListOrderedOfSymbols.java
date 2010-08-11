@@ -32,6 +32,7 @@ import org.dml.level025.SetOfTerminalSymbols;
 import org.dml.storagewrapper.StorageException;
 import org.dml.tools.RunTime;
 import org.dml.tools.TwoKeyHashMap;
+import org.dml.tracking.Factory;
 import org.javapart.logger.Log;
 import org.references.Position;
 
@@ -508,7 +509,8 @@ public class ListOrderedOfSymbols extends ListOrderedOfElementCapsules implement
 								secIter.goNext();
 							}
 						} finally {
-							secIter.deInit();
+							Factory.deInit( secIter );
+							// secIter.deInit();
 						}
 						
 					}
@@ -517,7 +519,8 @@ public class ListOrderedOfSymbols extends ListOrderedOfElementCapsules implement
 			} catch ( DatabaseException e ) {
 				throw new StorageException( e );
 			} finally {
-				iter.deInit();
+				Factory.deInit( iter );
+				// iter.deInit();
 			}
 			if ( foundECAsSymbol != null ) {
 				found = ElementCapsule.getExistingElementCapsule( env, foundECAsSymbol );

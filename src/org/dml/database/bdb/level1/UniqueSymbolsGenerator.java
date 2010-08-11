@@ -26,8 +26,8 @@ package org.dml.database.bdb.level1;
 
 
 import org.dml.level010.Symbol;
+import org.dml.tools.Initer;
 import org.dml.tools.RunTime;
-import org.dml.tools.StaticInstanceTracker;
 import org.dml.tracking.Factory;
 import org.references.method.MethodParams;
 
@@ -39,7 +39,7 @@ import com.sleepycat.je.DatabaseException;
  * 
  *
  */
-public class UniqueSymbolsGenerator extends StaticInstanceTracker {
+public class UniqueSymbolsGenerator extends Initer {
 	
 	// it's null only once even if reInit() is called later
 	private DBSequence			seq						= null;
@@ -66,7 +66,7 @@ public class UniqueSymbolsGenerator extends StaticInstanceTracker {
 
 		if ( null == seq ) {
 			// init once:
-			seq = Factory.getNewInstanceAndInit( DBSequence.class, bdbL1, seq_UniqueSymbolsPuller );
+			seq = Factory.getNewInstanceAndInitWithoutParams( DBSequence.class, bdbL1, seq_UniqueSymbolsPuller );
 			// seq = new DBSequence( bdbL1, seq_UniqueSymbolsPuller );
 			// seq.init( null );
 			

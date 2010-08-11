@@ -25,6 +25,7 @@ package org.dml.tools;
 
 
 
+import org.dml.tracking.Factory;
 import org.references.method.MethodParams;
 import org.references.method.PossibleParams;
 
@@ -38,13 +39,15 @@ public class Testy3StartThrower extends Testy {
 	
 	public static Testy3StartThrower getNew() {
 
-		Testy3StartThrower t2 = new Testy3StartThrower();
+		// Testy3StartThrower t2 = new Testy3StartThrower();
 		
 		MethodParams params = MethodParams.getNew();
 		// params.init( null );
 		params.set( PossibleParams.homeDir, "two" + new Object() );
-		t2.init( params );
-		params.deInit();
+		// t2.init( params );
+		Testy3StartThrower t2 = Factory.getNewInstanceAndInit( Testy3StartThrower.class, params );
+		// params.deInit();
+		Factory.deInit( params );
 		return t2;
 		
 	}

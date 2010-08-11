@@ -33,7 +33,7 @@ import org.references.method.MethodParams;
  * 
  *
  */
-public class ProperSubClassingOfSIT extends StaticInstanceTracker {
+public class ProperSubClassingOfSIT extends Initer {
 	
 	public ProperSubClassingOfSIT() {
 

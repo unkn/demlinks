@@ -28,8 +28,9 @@ package org.dml.database.bdb.level2;
 import org.dml.database.bdb.level1.DatabaseCapsule;
 import org.dml.database.bdb.level1.Level1_Storage_BerkeleyDB;
 import org.dml.error.BugError;
+import org.dml.tools.Initer;
 import org.dml.tools.RunTime;
-import org.dml.tools.StaticInstanceTracker;
+import org.dml.tracking.Factory;
 import org.javapart.logger.Log;
 import org.references.method.MethodParams;
 import org.references.method.PossibleParams;
@@ -55,7 +56,7 @@ import com.sleepycat.je.OperationStatus;
  * - and we can't store these as secondary because we can only delete from
  * secondaries
  */
-public class OneToManyDBMap<InitialType, TerminalType> extends StaticInstanceTracker {
+public class OneToManyDBMap<InitialType, TerminalType> extends Initer {
 	
 	private final Class<InitialType>			initialClass;
 	private final Class<TerminalType>			terminalClass;
@@ -111,20 +112,23 @@ public class OneToManyDBMap<InitialType, TerminalType> extends StaticInstanceTra
 
 		if ( null == forwardDB ) {
 			
-			forwardDB = new DatabaseCapsule();
+			// forwardDB = new DatabaseCapsule();
 			MethodParams params = MethodParams.getNew();
 			// params.init( null );
 			params.set( PossibleParams.level1_BDBStorage, this.getBDBL1() );
 			params.set( PossibleParams.dbName, dbName );
 			params.set( PossibleParams.priDbConfig, new OneToManyDBConfig() );
-			forwardDB.init( params );
-			params.deInit();
+			// forwardDB.init( params );
+			forwardDB = Factory.getNewInstanceAndInit( DatabaseCapsule.class, params );
+			Factory.deInit( params );
+			// params.deInit();
 			
 			RunTime.assumedNotNull( forwardDB );
 		} else {
-			if ( !forwardDB.isInited() ) {
-				forwardDB.reInit();
-			}
+			Factory.reInitIfNotInited( forwardDB );
+			// if ( !forwardDB.isInited() ) {
+			// forwardDB.reInit();
+			// }
 		}
 		return forwardDB.getDB();
 	}
@@ -137,17 +141,20 @@ public class OneToManyDBMap<InitialType, TerminalType> extends StaticInstanceTra
 
 		if ( null == backwardDB ) {
 			MethodParams params = MethodParams.getNew();
-			backwardDB = new DatabaseCapsule();
+			// backwardDB = new DatabaseCapsule();
 			params.set( PossibleParams.level1_BDBStorage, this.getBDBL1() );
 			params.set( PossibleParams.dbName, dbName + backwardSuffix );
 			params.set( PossibleParams.priDbConfig, new OneToManyDBConfig() );
-			backwardDB.init( params );
-			params.deInit();
+			// backwardDB.init( params );
+			backwardDB = Factory.getNewInstanceAndInit( DatabaseCapsule.class, params );
+			// params.deInit();
+			Factory.deInit( params );
 			// RunTime.assertNotNull( backwardDB );
 		} else {
-			if ( !backwardDB.isInited() ) {
-				backwardDB.reInit();
-			}
+			Factory.reInitIfNotInited( backwardDB );
+			// if ( !backwardDB.isInited() ) {
+			// backwardDB.reInit();
+			// }
 		}
 		return backwardDB.getDB();
 	}
@@ -281,18 +288,27 @@ public class OneToManyDBMap<InitialType, TerminalType> extends StaticInstanceTra
 
 		// DatabaseEntry keyEntry = new DatabaseEntry();
 		// initialBinding.objectToEntry( initialObject, keyEntry );
-		BDBVectorIterator<InitialType, TerminalType> ret = new BDBVectorIterator<InitialType, TerminalType>(
-				this.getBDBL1(), this.getForwardDB(), initialObject, initialBinding, terminalBinding );
-		ret.init( null );
+		@SuppressWarnings( "unchecked" )
+		BDBVectorIterator<InitialType, TerminalType> ret =
+		// new BDBVectorIterator<InitialType, TerminalType>(
+		// this.getBDBL1(), this.getForwardDB(), initialObject, initialBinding, terminalBinding );
+		// ret.init( null );
+		Factory.getNewInstanceAndInitWithoutParams( BDBVectorIterator.class, this.getBDBL1(), this.getForwardDB(), initialObject,
+				initialBinding, terminalBinding );
 		return ret;
+		
 	}
 	
 	public BDBVectorIterator<TerminalType, InitialType> getIterator_on_Initials_of( TerminalType terminalObject )
 			throws DatabaseException {
 
-		BDBVectorIterator<TerminalType, InitialType> ret = new BDBVectorIterator<TerminalType, InitialType>(
-				this.getBDBL1(), this.getBackwardDB(), terminalObject, terminalBinding, initialBinding );
-		ret.init( null );
+		@SuppressWarnings( "unchecked" )
+		BDBVectorIterator<TerminalType, InitialType> ret =
+		// new BDBVectorIterator<TerminalType, InitialType>(
+		// this.getBDBL1(), this.getBackwardDB(), terminalObject, terminalBinding, initialBinding );
+		// ret.init( null );
+		Factory.getNewInstanceAndInitWithoutParams( BDBVectorIterator.class, this.getBDBL1(), this.getBackwardDB(), terminalObject,
+				terminalBinding, initialBinding );
 		return ret;
 	}
 	
@@ -303,7 +319,8 @@ public class OneToManyDBMap<InitialType, TerminalType> extends StaticInstanceTra
 		try {
 			count = vi.count();
 		} finally {
-			vi.deInit();
+			Factory.deInit( vi );
+			// vi.deInit();
 		}
 		return count;
 	}
@@ -315,7 +332,8 @@ public class OneToManyDBMap<InitialType, TerminalType> extends StaticInstanceTra
 		try {
 			count = vi.count();
 		} finally {
-			vi.deInit();
+			// vi.deInit();
+			Factory.deInit( vi );
 		}
 		return count;
 	}
@@ -347,9 +365,11 @@ public class OneToManyDBMap<InitialType, TerminalType> extends StaticInstanceTra
 			} finally {
 				// deInit the unused one
 				if ( iterator == iter2 ) {
-					iter1.deInit();
+					Factory.deInit( iter1 );
+					// iter1.deInit();
 				} else {
-					iter2.deInit();
+					// iter2.deInit();
+					Factory.deInit( iter2 );
 				}
 			}
 			
@@ -370,7 +390,8 @@ public class OneToManyDBMap<InitialType, TerminalType> extends StaticInstanceTra
 				now = iterator.now();
 			}
 		} finally {
-			iterator.deInit();
+			Factory.deInit( iterator );
+			// iterator.deInit();
 		}
 		RunTime.assumedFalse( iter1.isInited() );
 		RunTime.assumedFalse( iter2.isInited() );
@@ -426,12 +447,14 @@ public class OneToManyDBMap<InitialType, TerminalType> extends StaticInstanceTra
 					RunTime.assumedTrue( size1 - 1 == iter.count() );
 					RunTime.assumedTrue( size2 - 1 == reverseIter.count() );
 				} finally {
-					reverseIter.deInit();
+					Factory.deInit( reverseIter );
+					// reverseIter.deInit();
 				}
 			}
 			
 		} finally {
-			iter.deInit();
+			Factory.deInit( iter );
+			// iter.deInit();
 		}
 		RunTime.assumedFalse( this.isVector( initialObject, terminalObject ) );
 		return found1;
@@ -446,12 +469,14 @@ public class OneToManyDBMap<InitialType, TerminalType> extends StaticInstanceTra
 		boolean two = false;
 		
 		if ( null != forwardDB ) {
-			forwardDB.deInit();
+			// forwardDB.deInit();
+			Factory.deInit( forwardDB );
 			one = true;
 		}
 		
 		if ( null != backwardDB ) {
-			backwardDB.deInit();
+			Factory.deInit( backwardDB );
+			// backwardDB.deInit();
 			two = true;
 		}
 		if ( one != two ) {

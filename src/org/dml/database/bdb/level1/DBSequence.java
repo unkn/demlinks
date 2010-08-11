@@ -25,8 +25,8 @@ package org.dml.database.bdb.level1;
 
 
 
+import org.dml.tools.Initer;
 import org.dml.tools.RunTime;
-import org.dml.tools.StaticInstanceTracker;
 import org.references.method.MethodParams;
 
 import com.sleepycat.je.DatabaseException;
@@ -44,7 +44,7 @@ import com.sleepycat.je.SequenceConfig;
  * that is, a sequence used for another database will only have one key and
  * one data in this BerkeleyDB
  */
-public class DBSequence extends StaticInstanceTracker {
+public class DBSequence extends Initer {
 	
 	
 

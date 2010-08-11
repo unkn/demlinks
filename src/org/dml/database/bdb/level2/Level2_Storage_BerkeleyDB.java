@@ -27,6 +27,7 @@ package org.dml.database.bdb.level2;
 
 import org.dml.database.bdb.level1.Level1_Storage_BerkeleyDB;
 import org.dml.tools.RunTime;
+import org.dml.tracking.Factory;
 import org.references.method.MethodParams;
 
 
@@ -37,8 +38,8 @@ import org.references.method.MethodParams;
  */
 public class Level2_Storage_BerkeleyDB extends Level1_Storage_BerkeleyDB {
 	
-	private DBMapSymbolsTuple	dbSymbolsTuple		= null;
-	private final static String	dbSymbolsTuple_NAME	= "tuple(Symbol<->Symbol)";
+	private final DBMapSymbolsTuple	dbSymbolsTuple		= null;
+	private final static String		dbSymbolsTuple_NAME	= "tuple(Symbol<->Symbol)";
 	
 	
 	/**
@@ -47,13 +48,15 @@ public class Level2_Storage_BerkeleyDB extends Level1_Storage_BerkeleyDB {
 	public DBMapSymbolsTuple getDBMapSymbolsTuple() {
 
 		if ( null == dbSymbolsTuple ) {
-			dbSymbolsTuple = new DBMapSymbolsTuple( this, dbSymbolsTuple_NAME );
-			dbSymbolsTuple.init( null );
+			// dbSymbolsTuple = new DBMapSymbolsTuple( this, dbSymbolsTuple_NAME );
+			// dbSymbolsTuple.init( null );
+			Factory.getNewInstanceAndInitWithoutParams( DBMapSymbolsTuple.class, this, dbSymbolsTuple_NAME );
 			RunTime.assumedNotNull( dbSymbolsTuple );
 		} else {
-			if ( !dbSymbolsTuple.isInited() ) {
-				dbSymbolsTuple.reInit();
-			}
+			Factory.reInitIfNotInited( dbSymbolsTuple );
+			// if ( !dbSymbolsTuple.isInited() ) {
+			// dbSymbolsTuple.reInit();
+			// }
 		}
 		return dbSymbolsTuple;
 	}
@@ -67,7 +70,8 @@ public class Level2_Storage_BerkeleyDB extends Level1_Storage_BerkeleyDB {
 	protected void done( MethodParams params ) {
 
 		if ( null != dbSymbolsTuple ) {
-			dbSymbolsTuple.deInit();
+			// dbSymbolsTuple.deInit();
+			Factory.deInit( dbSymbolsTuple );
 		}
 		// the above must be deInit-ed first
 		super.done( params );// last

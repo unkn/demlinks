@@ -47,6 +47,7 @@ import org.references.method.MethodParams;
 public class Factory {
 	
 	// this will make sure you don't miss calling deInitAll() even if JVM gets interrupted or something
+	@SuppressWarnings( "unused" )
 	private final static ShutDownHook											initFactoryClass	= new ShutDownHook(
 																											new Thread(
 																													null,
@@ -90,7 +91,8 @@ public class Factory {
 	 * @return the new instance, don't forget to assign this to a variable (FIXME: I wonder if we can do a warning on
 	 *         this?)
 	 */
-	public static <T extends Initer> T getNewInstanceAndInit( Class<T> type, Object... constructorParameters ) {
+	public static <T extends Initer> T getNewInstanceAndInitWithoutParams( Class<T> type,
+			Object... constructorParameters ) {
 
 		return getNewInstanceAndInit( type, null, constructorParameters );
 	}
@@ -107,6 +109,7 @@ public class Factory {
 	 *            can be unspecified aka null<br>
 	 * @return the new instance, don't forget to assign this to a variable (FIXME: I wonder if we can do a warning on
 	 *         this?)
+	 *         cannot return null!
 	 */
 	private static <T extends Initer> T getGenericNewInstance( Class<T> type, Object... initargsObjects ) {
 
@@ -145,7 +148,7 @@ public class Factory {
 			RunTime.bug( e );
 			// eclipse bug gone since this part was moved here
 		}
-		
+		RunTime.assumedNotNull( ret );
 		return ret;
 	}
 	
@@ -170,6 +173,12 @@ public class Factory {
 		Factory.init( ret, params );
 		RunTime.assumedTrue( ret.isInited() );
 		return ret;
+	}
+	
+	
+	public static <T extends Initer> void initWithoutParams( T instance ) {
+
+		Factory.init( instance, null );
 	}
 	
 	/**
@@ -249,6 +258,21 @@ public class Factory {
 	}
 	
 	/**
+	 * throws if not inited<br>
+	 * 
+	 * @see #deInitIfInited_WithPostponedThrows(Initer)
+	 * 
+	 * @param <T>
+	 * @param instance
+	 */
+	public static <T extends Initer> void deInit_WithPostponedThrows( T instance ) {
+
+		RunTime.assumedNotNull( instance );
+		RunTime.assumedTrue( instance.isInited() );
+		deInitIfInited_WithPostponedThrows( instance );
+	}
+	
+	/**
 	 * only throws from instance._deInit() are postponed; not others that are related to successfully processing this
 	 * method in its
 	 * system<br>
@@ -258,11 +282,14 @@ public class Factory {
 	 * 
 	 * @param <T>
 	 * @param instance
+	 *            must not be null, can be deInited already - will not throw in this latter case
 	 */
-	public static <T extends Initer> void deInit_WithPostponedThrows( T instance ) {
+	public static <T extends Initer> void deInitIfInited_WithPostponedThrows( T instance ) {
 
 		RunTime.assumedNotNull( instance );
-		RunTime.assumedTrue( instance.isInited() );
+		if ( !instance.isInited() ) {
+			return;// silently
+		}
 		
 		try {
 			// first deInit()
@@ -286,11 +313,24 @@ public class Factory {
 	/**
 	 * after this you can call reInit
 	 * 
+	 * @see #deInitIfAlreadyInited(Initer)
 	 * @param params
 	 */
 	public static <T extends Initer> void deInit( T instance ) {
 
 		Factory.deInit_WithPostponedThrows( instance );
+		RunTime.throwAllThatWerePosponed();
+	}
+	
+	/**
+	 * only deInit if it's inited, so in other words it won't throw if not inited<br>
+	 * 
+	 * @param <T>
+	 * @param instance
+	 */
+	public static <T extends Initer> void deInitIfAlreadyInited( T instance ) {
+
+		Factory.deInitIfInited_WithPostponedThrows( instance );
 		RunTime.throwAllThatWerePosponed();
 	}
 	

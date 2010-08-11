@@ -25,6 +25,7 @@ package org.dml.tools;
 
 
 
+import org.dml.tracking.Factory;
 import org.references.method.MethodParams;
 import org.references.method.PossibleParams;
 
@@ -34,7 +35,7 @@ import org.references.method.PossibleParams;
  * 
  *
  */
-public class Testy extends StaticInstanceTracker {
+public class Testy extends Initer {
 	
 	String	home;
 	
@@ -50,13 +51,15 @@ public class Testy extends StaticInstanceTracker {
 	
 	public static Testy getNew() {
 
-		Testy t = new Testy();
+		// Testy t = new Testy();
 		
 		MethodParams params = MethodParams.getNew();
 		// params.init( null );
 		params.set( PossibleParams.homeDir, "one/" + new Object() );
-		t.init( params );
-		params.deInit();
+		// t.init( params );
+		Testy t = Factory.getNewInstanceAndInit( Testy.class, params );
+		// params.deInit();
+		Factory.deInit( params );
 		
 		return t;
 	}

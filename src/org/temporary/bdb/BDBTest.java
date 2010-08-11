@@ -29,6 +29,7 @@ import org.dml.JUnits.Consts;
 import org.dml.database.bdb.level1.Level1_Storage_BerkeleyDB;
 import org.dml.level010.JavaID;
 import org.dml.level010.Symbol;
+import org.dml.tracking.Factory;
 import org.references.method.MethodParams;
 import org.references.method.PossibleParams;
 
@@ -49,9 +50,12 @@ public class BDBTest {
 		params.set( PossibleParams.homeDir, Consts.BDB_ENV_PATH );
 		params.set( PossibleParams.jUnit_wipeDB, true );
 		params.set( PossibleParams.jUnit_wipeDBWhenDone, true );
-		Level1_Storage_BerkeleyDB b = new Level1_Storage_BerkeleyDB();
-		b.init( params );
-		params.deInit();
+		Level1_Storage_BerkeleyDB b =
+		// new Level1_Storage_BerkeleyDB();
+		// b.init( params );
+		b = Factory.getNewInstanceAndInit( Level1_Storage_BerkeleyDB.class, params );
+		// params.deInit();
+		Factory.deInit( params );
 		params = null;
 		Symbol n1, n2, f1, f2;
 		try {
@@ -64,7 +68,8 @@ public class BDBTest {
 			
 			System.out.println( b.getDBMap_JavaIDs_To_Symbols().getJavaID( f1 ) );
 		} finally {
-			b.deInit();
+			Factory.deInit( b );
+			// b.deInit();
 		}
 		System.out.println( "end. " + n1 + "==" + n2 );
 		System.out.println( "end. " + f1 + "==" + f2 );

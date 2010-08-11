@@ -26,8 +26,8 @@ package org.dml.database.bdb.level2;
 
 
 import org.dml.database.bdb.level1.Level1_Storage_BerkeleyDB;
+import org.dml.tools.Initer;
 import org.dml.tools.RunTime;
-import org.dml.tools.StaticInstanceTracker;
 import org.javapart.logger.Log;
 import org.references.method.MethodParams;
 
@@ -52,7 +52,7 @@ import com.sleepycat.je.OperationStatus;
  * alphabetically so to speak, but shouldn't count on this!<br>
  * //FIXME: maybe make a way to not throw DatabaseException from here, because this is being used in dml environment
  */
-public class BDBVectorIterator<InitialType, TerminalType> extends StaticInstanceTracker {
+public class BDBVectorIterator<InitialType, TerminalType> extends Initer {
 	
 	private final Database						db;
 	private final InitialType					initialObject;								// key

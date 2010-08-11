@@ -163,7 +163,51 @@ public class RunTime {
 	private static void internalWrappedThrow() {
 
 		// wrapping this into RuntimeException 'cause it's unchecked aka no throws declaration needed
-		throw new RuntimeException( allExceptionsChained );
+		throw new RuntimeWrappedThrowException( allExceptionsChained );
+	}
+	
+	/**
+	 * since RunTime.throWrapped(exception) we need to unwrap all of those RuntimeWrappedThrowException to get to the
+	 * initial cause exception<br>
+	 * 
+	 * @param fromWhat
+	 *            caught exception ie. from a catch block
+	 * @return null OR the unwrapped exception (which won't be of RuntimeWrappedThrowException type)
+	 */
+	public static Throwable getUnwrappedException( Throwable fromWhat ) {
+
+		RunTime.assumedNotNull( fromWhat );
+		Throwable tmpParser = fromWhat;
+		while ( tmpParser.getClass() == RuntimeWrappedThrowException.class ) {
+			tmpParser = tmpParser.getCause();
+			if ( null == tmpParser ) {
+				break;// return null;//and break from while
+			}
+		}
+		
+		return tmpParser;// can be null
+	}
+	
+	/**
+	 * this is used to compare if the just caught exception <tt>wrappedException</tt> is of the type of
+	 * <tt>ofThisExceptionType</tt><br>
+	 * 
+	 * @param wrappedException
+	 *            usually a freshly caught exception from a catch block (which is potentially but not necessarily a
+	 *            wrapped exception)
+	 * @param ofThisExceptionType
+	 *            ie. BadCallError.class
+	 * @return
+	 */
+	public static boolean isThisWrappedException_of_thisType( Throwable wrappedException,
+			Class<? extends Throwable> ofThisExceptionType ) {
+
+		RunTime.assumedNotNull( wrappedException, ofThisExceptionType );
+		Throwable unwrappedException = RunTime.getUnwrappedException( wrappedException );
+		if ( null == unwrappedException ) {
+			RunTime.bug( "that exception contained only wraps ie. the RuntimeWrappedThrowException was peeled off and yet there was no Cause detected; must be bug somewhere" );
+		}
+		return ( unwrappedException.getClass() == ofThisExceptionType );
 	}
 	
 	/**

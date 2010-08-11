@@ -27,6 +27,7 @@ package org.dml.level010;
 
 import org.dml.JUnits.Consts;
 import org.dml.storagewrapper.StorageException;
+import org.dml.tracking.Factory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -51,15 +52,18 @@ public class SymbolsTest {
 		params.set( PossibleParams.homeDir, Consts.BDB_ENV_PATH );
 		params.set( PossibleParams.jUnit_wipeDB, true );
 		params.set( PossibleParams.jUnit_wipeDBWhenDone, true );
-		dml = new Level010_DMLEnvironment();
-		dml.init( params );
-		params.deInit();
+		// dml = new Level010_DMLEnvironment();
+		// dml.init( params );
+		dml = Factory.getNewInstanceAndInit( Level010_DMLEnvironment.class, params );
+		// params.deInit();
+		Factory.deInit( params );
 	}
 	
 	@After
 	public void tearDown() {
 
-		dml.deInit();
+		Factory.deInit( dml );
+		// dml.deInit();
 	}
 	
 	@Test

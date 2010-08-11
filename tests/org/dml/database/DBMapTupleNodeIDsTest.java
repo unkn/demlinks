@@ -39,6 +39,7 @@ import org.dml.level010.JavaID;
 import org.dml.level010.Level010_DMLEnvironment;
 import org.dml.level010.Symbol;
 import org.dml.storagewrapper.StorageException;
+import org.dml.tracking.Factory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -67,11 +68,14 @@ public class DBMapTupleNodeIDsTest {
 		params.set( PossibleParams.homeDir, Consts.BDB_ENV_PATH );
 		params.set( PossibleParams.jUnit_wipeDB, true );
 		params.set( PossibleParams.jUnit_wipeDBWhenDone, true );
-		bdb = new Level1_Storage_BerkeleyDB();
-		bdb.init( params );
-		params.deInit();
-		tdb = new DBMapSymbolsTuple( bdb, "tupleIDs" );
-		tdb.init( null );
+		bdb = Factory.getNewInstanceAndInit( Level1_Storage_BerkeleyDB.class, params );
+		// bdb = new Level1_Storage_BerkeleyDB();
+		// bdb.init( params );
+		// params.deInit();
+		Factory.deInit( params );
+		// tdb = new DBMapSymbolsTuple( bdb, "tupleIDs" );
+		// tdb.init( null );
+		tdb = Factory.getNewInstanceAndInitWithoutParams( DBMapSymbolsTuple.class, bdb, "tupleIDs" );
 		
 	}
 	
@@ -80,7 +84,8 @@ public class DBMapTupleNodeIDsTest {
 
 		// tdb.silentClose();
 		tdb = null;
-		bdb.deInit();
+		Factory.deInit( bdb );
+		// bdb.deInit();
 		bdb = null;
 	}
 	
@@ -146,7 +151,8 @@ public class DBMapTupleNodeIDsTest {
 			iter.goPrev();
 			assertTrue( iter.now() == _b );
 		} finally {
-			iter.deInit();
+			Factory.deInit( iter );
+			// iter.deInit();
 		}
 		
 
@@ -185,7 +191,8 @@ public class DBMapTupleNodeIDsTest {
 			// assertTrue( _a.equals( iter.now() ) );
 			assertTrue( _a == iter.now() );// indeed
 		} finally {
-			iter.deInit();
+			Factory.deInit( iter );
+			// iter.deInit();
 		}
 		
 		iter = tdb.getIterator_on_Initials_of( _b );
@@ -195,7 +202,8 @@ public class DBMapTupleNodeIDsTest {
 		} catch ( BadCallError bc ) {
 			threw = true;// should throw!
 		} finally {
-			iter.deInit();
+			Factory.deInit( iter );
+			// iter.deInit();
 		}
 		assertTrue( threw );
 		
@@ -206,7 +214,8 @@ public class DBMapTupleNodeIDsTest {
 		} catch ( BadCallError bce ) {
 			threw = true;// shouldn't throw though
 		} finally {
-			iter.deInit();
+			Factory.deInit( iter );
+			// iter.deInit();
 		}
 		assertTrue( threw );
 		

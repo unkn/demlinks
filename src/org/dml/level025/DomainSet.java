@@ -30,6 +30,7 @@ import org.dml.level010.Symbol;
 import org.dml.storagewrapper.StorageException;
 import org.dml.tools.RunTime;
 import org.dml.tools.TwoKeyHashMap;
+import org.dml.tracking.Factory;
 
 import com.sleepycat.je.DatabaseException;
 
@@ -108,7 +109,7 @@ public class DomainSet extends SetOfTerminalSymbols {
 		} catch ( DatabaseException e ) {
 			throw new StorageException( e );
 		} finally {
-			iter.deInit();
+			Factory.deInit( iter );
 		}
 	}
 	

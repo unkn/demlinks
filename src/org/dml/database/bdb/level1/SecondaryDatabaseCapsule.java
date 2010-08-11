@@ -25,8 +25,8 @@ package org.dml.database.bdb.level1;
 
 
 
+import org.dml.tools.Initer;
 import org.dml.tools.RunTime;
-import org.dml.tools.StaticInstanceTracker;
 import org.javapart.logger.Log;
 import org.references.Reference;
 import org.references.method.MethodParams;
@@ -44,7 +44,7 @@ import com.sleepycat.je.SecondaryDatabase;
  * also makes sure the database isn't open unless it's needed<br>
  * once opened it stays open until silentClose() is called<br>
  */
-public class SecondaryDatabaseCapsule extends StaticInstanceTracker {
+public class SecondaryDatabaseCapsule extends Initer {
 	
 	private String						secDbName;
 	private SecondaryDatabase			secDb	= null;

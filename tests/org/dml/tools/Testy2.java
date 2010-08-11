@@ -25,6 +25,7 @@ package org.dml.tools;
 
 
 
+import org.dml.tracking.Factory;
 import org.references.method.MethodParams;
 import org.references.method.PossibleParams;
 
@@ -38,16 +39,17 @@ public class Testy2 extends Testy {
 	
 	public static Testy2 getNew() {
 
-		Testy2 t2 = new Testy2();
+		// Testy2 t2 = new Testy2();
 		
 		MethodParams params = MethodParams.getNew();
 		// params.init( null );
 		params.set( PossibleParams.homeDir, "two" + new Object() );
-		t2.init( params );
-		params.deInit();
+		// t2.init( params );
+		Testy2 t2 = Factory.getNewInstanceAndInit( Testy2.class, params );
+		// params.deInit();
+		Factory.deInit( params );
 		
 		return t2;
 		
 	}
-	
 }
