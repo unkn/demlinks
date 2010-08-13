@@ -172,20 +172,21 @@ public class RunTime {
 	 * 
 	 * @param fromWhat
 	 *            caught exception ie. from a catch block
-	 * @return null OR the unwrapped exception (which won't be of RuntimeWrappedThrowException type)
+	 * @return never null; the unwrapped exception (which won't be of RuntimeWrappedThrowException type)
 	 */
-	public static Throwable getUnwrappedException( Throwable fromWhat ) {
+	public static Throwable getUnwrappedExceptionNeverNull( Throwable fromWhat ) {
 
 		RunTime.assumedNotNull( fromWhat );
 		Throwable tmpParser = fromWhat;
 		while ( tmpParser.getClass() == RuntimeWrappedThrowException.class ) {
 			tmpParser = tmpParser.getCause();
 			if ( null == tmpParser ) {
-				break;// return null;//and break from while
+				RunTime.bug( "should not be null! else what did the wraps wrap? heh bug somewhere" );
+				// break;// return null;//and break from while
 			}
 		}
 		
-		return tmpParser;// can be null
+		return tmpParser;// can NOT be null
 	}
 	
 	/**
@@ -203,7 +204,7 @@ public class RunTime {
 			Class<? extends Throwable> ofThisExceptionType ) {
 
 		RunTime.assumedNotNull( wrappedException, ofThisExceptionType );
-		Throwable unwrappedException = RunTime.getUnwrappedException( wrappedException );
+		Throwable unwrappedException = RunTime.getUnwrappedExceptionNeverNull( wrappedException );
 		if ( null == unwrappedException ) {
 			RunTime.bug( "that exception contained only wraps ie. the RuntimeWrappedThrowException was peeled off and yet there was no Cause detected; must be bug somewhere" );
 		}
@@ -220,13 +221,32 @@ public class RunTime {
 	
 	/**
 	 * for jUnit; really don't use these; if you catch an exception you're not certain that it was the last one, unless
-	 * you're catching Throwable instance
+	 * you're catching Throwable instance<br>
+	 * this will clear the last thrown exception which may be a wrap, so maybe you want to use the other method:
+	 * 
+	 * @see #clearLastThrown_andAllItsWraps()
 	 */
 	public static void clearLastThrown() {
 
-		allExceptionsChained = allExceptionsChained.getCause();
+		if ( null != allExceptionsChained ) {
+			allExceptionsChained = allExceptionsChained.getCause();
+		}
 	}
 	
+	/**
+	 * this will unwrap to the real thrown exception and then it will clear it, but it's cause won't be cleared<br>
+	 * so all wraps and the last real exception are cleared<br>
+	 */
+	public static void clearLastThrown_andAllItsWraps() {
+
+		if ( null != allExceptionsChained ) {
+			allExceptionsChained = RunTime.getUnwrappedExceptionNeverNull( allExceptionsChained );
+			if ( null == allExceptionsChained ) {
+				RunTime.bug( "what? it was all only wraps? bug somewhere" );
+			}
+			allExceptionsChained = allExceptionsChained.getCause();
+		}
+	}
 	
 	/**
 	 * @param t

@@ -115,6 +115,22 @@ public class TreeOfNonNullObjects<T> {
 	}
 	
 	/**
+	 * this will add as LAST in list of children<br>
+	 * 
+	 * @param child
+	 *            non-null
+	 */
+	public TreeOfNonNullObjects<T> addChildLast( T childValue ) {
+
+		RunTime.assumedNotNull( childValue );
+		TreeOfNonNullObjects<T> newChildInCurrent = new TreeOfNonNullObjects<T>( this, childValue );
+		if ( this.getChildren().addLastQ( newChildInCurrent ) ) {
+			RunTime.bug( "subtree already exists, impossible" );
+		}
+		return newChildInCurrent;
+	}
+	
+	/**
 	 * @param pos
 	 *            only Position.FIRST and LAST
 	 * @return null if none
@@ -186,4 +202,6 @@ public class TreeOfNonNullObjects<T> {
 		}
 		return this.getChildren().size();
 	}
+	
+
 }

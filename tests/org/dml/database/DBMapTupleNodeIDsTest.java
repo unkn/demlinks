@@ -39,6 +39,7 @@ import org.dml.level010.JavaID;
 import org.dml.level010.Level010_DMLEnvironment;
 import org.dml.level010.Symbol;
 import org.dml.storagewrapper.StorageException;
+import org.dml.tools.RunTime;
 import org.dml.tracking.Factory;
 import org.junit.After;
 import org.junit.Before;
@@ -87,6 +88,7 @@ public class DBMapTupleNodeIDsTest {
 		Factory.deInit( bdb );
 		// bdb.deInit();
 		bdb = null;
+		Factory.deInitAll();
 	}
 	
 	@Test
@@ -181,8 +183,11 @@ public class DBMapTupleNodeIDsTest {
 			boolean threw = false;
 			try {
 				iter.goPrev();
-			} catch ( BadCallError bce ) {
-				threw = true;
+			} catch ( Throwable t ) {
+				if ( RunTime.isThisWrappedException_of_thisType( t, BadCallError.class ) ) {
+					threw = true;
+					RunTime.clearLastThrown_andAllItsWraps();
+				}
 			}
 			assertTrue( threw );
 			iter.goFirst();
@@ -199,8 +204,11 @@ public class DBMapTupleNodeIDsTest {
 		boolean threw = false;
 		try {
 			iter.goNext();// w/o goFirst
-		} catch ( BadCallError bc ) {
-			threw = true;// should throw!
+		} catch ( Throwable t ) {
+			if ( RunTime.isThisWrappedException_of_thisType( t, BadCallError.class ) ) {
+				threw = true;// should throw!
+				RunTime.clearLastThrown_andAllItsWraps();
+			}
 		} finally {
 			Factory.deInit( iter );
 			// iter.deInit();
@@ -211,8 +219,11 @@ public class DBMapTupleNodeIDsTest {
 		threw = false;
 		try {
 			iter.goPrev();// w/o goFirst
-		} catch ( BadCallError bce ) {
-			threw = true;// shouldn't throw though
+		} catch ( Throwable t ) {
+			if ( RunTime.isThisWrappedException_of_thisType( t, BadCallError.class ) ) {
+				threw = true;// shouldn't throw though
+				RunTime.clearLastThrown_andAllItsWraps();
+			}
 		} finally {
 			Factory.deInit( iter );
 			// iter.deInit();

@@ -72,18 +72,20 @@ public class OneToOneDBMapTest {
 		// params.deInit();
 		Factory.deInit( params );
 		// bdb = new Level1_Storage_BerkeleyDB( Consts.BDB_ENV_PATH, true );
-		// x = new OneToOneDBMap<String, String>( bdb, "someMap", String.class,
-		// AllTupleBindings.getBinding( String.class ), String.class, AllTupleBindings.getBinding( String.class ) );
-		// x.init( null );
-		x = Factory.getNewInstanceAndInitWithoutParams( OneToOneDBMap.class, bdb, "someMap", String.class,
+		x = new OneToOneDBMap<String, String>( bdb, "someMap", String.class,
 				AllTupleBindings.getBinding( String.class ), String.class, AllTupleBindings.getBinding( String.class ) );
+		// x.init( null );
+		// x = Factory.getNewInstanceAndInitWithoutParams( OneToOneDBMap.class, bdb, "someMap", String.class,
+		// AllTupleBindings.getBinding( String.class ), String.class, AllTupleBindings.getBinding( String.class ) );
+		Factory.initWithoutParams( x );
 	}
 	
 	@After
 	public void tearDown() {
 
-		Factory.deInit( x );
-		Factory.deInit( bdb );
+		Factory.deInitAll();
+		// ( x );
+		// Factory.deInit( bdb );
 		// x.deInit();
 		// bdb.deInit();
 	}

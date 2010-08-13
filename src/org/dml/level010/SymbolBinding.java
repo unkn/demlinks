@@ -35,8 +35,8 @@ import com.sleepycat.bind.tuple.TupleOutput;
 
 
 /**
+ * unfortunately enough, here we don't know from/to which DB the date is coming/going from/to<br>
  * 
- *
  */
 public class SymbolBinding extends TupleBinding<Symbol> {
 	

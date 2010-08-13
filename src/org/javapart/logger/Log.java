@@ -34,8 +34,12 @@ public class Log {
 	static final int					spacesBeforeMsg							= 10;
 	
 	private final static LogFlags		CurrentLogFlags[]						= {
-			// LogFlags.Entry, LogFlags.Mid, LogFlags.Exit,
-			LogFlags.Bug, LogFlags.Warn, LogFlags.Result, LogFlags.Special, LogFlags.Thro,
+																					// LogFlags.Entry, LogFlags.Mid,
+																					// LogFlags.Exit,
+																					// LogFlags.Bug, LogFlags.Warn,
+																					// LogFlags.Result,
+																					LogFlags.Special,
+																				// LogFlags.Thro,
 																				};
 	
 	// if no elements, then all methods are shown
@@ -97,6 +101,12 @@ public class Log {
 	public static void special2( String msg ) {
 
 		special0( 2, msg );
+	}
+	
+	// FIXME: show the line outside of Factory and have a param to spec that "Factory"
+	public static void special4( String msg ) {
+
+		special0( 4, msg );
 	}
 	
 	public static void special( String msg ) {

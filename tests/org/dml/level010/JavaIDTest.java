@@ -28,6 +28,7 @@ package org.dml.level010;
 import static org.junit.Assert.assertTrue;
 
 import org.dml.storagewrapper.StorageException;
+import org.dml.tools.RunTime;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -112,8 +113,11 @@ public class JavaIDTest {
 		boolean aeGot = false;
 		try {
 			JavaID.ensureJavaIDFor( null );
-		} catch ( AssertionError ae ) {
-			aeGot = true;
+		} catch ( Throwable t ) {
+			if ( RunTime.isThisWrappedException_of_thisType( t, AssertionError.class ) ) {
+				aeGot = true;
+				RunTime.clearLastThrown_andAllItsWraps();
+			}
 		}
 		assertTrue( aeGot );
 		

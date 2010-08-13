@@ -79,10 +79,19 @@ public class DBTest {
 	public void tearDown() {
 
 		// System.out.println( "tearDown:" );
+		// RunTime.clearThrowChain();
 		Log.entry();
 		// bdb.deInit();
 		// Factory.deInit( bdb );
+		// Factory.tzt();
+		
+		// throw new RuntimeException();
+		// try {
 		Factory.deInitAll();
+		// } finally {
+		// / Factory.tzt();
+		// }
+		
 		// RunTime.clearThrowChain();
 		Log.exit();
 	}

@@ -65,7 +65,7 @@ public abstract class MainLevel0 extends Initer {
 	private boolean									usingOwnVarLevel		= false;
 	
 	// FIXME: likely a bad idea to be static here:
-	private static MethodParams						defaults				= null;
+	private MethodParams							defaults				= null;
 	
 	private final ListOfUniqueNonNullObjects<Field>	listOfAnnotatedFields	= new ListOfUniqueNonNullObjects<Field>();
 	

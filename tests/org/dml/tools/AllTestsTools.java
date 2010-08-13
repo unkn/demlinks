@@ -33,7 +33,7 @@ import org.junit.runners.Suite;
 
 @RunWith( Suite.class )
 @Suite.SuiteClasses( value = {
-		StaticInstanceTrackerTest.class, LevelsTest.class, FactoryTest.class
+		IniterTest.class, LevelsTest.class, FactoryTest.class
 } )
 public class AllTestsTools {
 }

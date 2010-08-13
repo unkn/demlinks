@@ -66,6 +66,25 @@ public class ListOfUniqueNonNullObjects<E> extends ListOfNonNullObjects<E> {
 	
 	/**
 	 * @param obj
+	 *            that doesn't already exist; not null
+	 * @return true if existed and nothing was changed; false if it didn't
+	 *         exist, but it does now
+	 */
+	public boolean addLastQ( E obj ) {
+
+		RunTime.assumedNotNull( obj );// redundant
+		ChainedReference<E> ref = this.getRef( obj );
+		if ( null != ref ) {
+			// already exists, not added/moved
+			return true;
+		}
+		
+		RunTime.assumedNotNull( super.addLast( obj ) );
+		return false;// didn't exist
+	}
+	
+	/**
+	 * @param obj
 	 *            that doesn't already exist; not allowing null
 	 * @return the ref to the object, if it existed; or the new ref if it didn't
 	 *         exist

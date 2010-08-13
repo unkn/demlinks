@@ -132,7 +132,9 @@ public class Factory {
 			RunTime.bug( e, "private default constructor? or a public one doesn't exist ? "
 					+ "or you're calling this on an inner class which is not public static; "
 					+ "and yet we do have the right class or subclass of Initer; "
-					+ "or default constructor not explicitly defined" );
+					+ "or default constructor not explicitly defined"
+					+ "OR you're using that on a generic class ie. GenericClass<A,B> using it as GenericClass.class"
+					+ "that won't work, you need to 'new' that yourself and then call Factory.init()" );
 		}
 		
 		try {
@@ -157,7 +159,8 @@ public class Factory {
 	 * and an .init(params)<br>
 	 * 
 	 * @param type
-	 *            any subclass of Initer
+	 *            any subclass of Initer, EXCEPT gerenic classes ie. GenericClass<X,Y,Z> for these you have to new
+	 *            manually and then call {@link #init(Initer, MethodParams)} OR {@link #initWithoutParams(Initer)}
 	 * @param params
 	 *            MethodParams instance for init(params)
 	 * @param constructorParameters
@@ -201,6 +204,7 @@ public class Factory {
 		// so if anything else between Start and Done gets inited, it does so as children of 'instance'
 		try {
 			instance._init( params );// params may be null
+			Log.special2( "init-ed: " + instance.getClass().getCanonicalName() );
 		} finally {
 			set_InitWork_DoneInParent( instance );
 		}
@@ -268,7 +272,9 @@ public class Factory {
 	public static <T extends Initer> void deInit_WithPostponedThrows( T instance ) {
 
 		RunTime.assumedNotNull( instance );
-		RunTime.assumedTrue( instance.isInited() );
+		if ( !instance.isInited() ) {
+			RunTime.badCall( "not already inited" );
+		}
 		deInitIfInited_WithPostponedThrows( instance );
 	}
 	
@@ -359,14 +365,17 @@ public class Factory {
 					+ ") that didn't properly deInit all the variables it created+inited" );
 			// FIXME: deInit leftover subTree(s) else they're just lost here OR merge this subtree's children with
 			// the root tree(not to parent tree) in the same LIFO manner
+			// FIXME: commented below:
 			while ( !subTree.isEmpty() ) {
-				TreeOfNonNullObjects<Initer> t = subTree.getChildAt( Position.LAST );// hardwired (opposite to FIRST)
+				TreeOfNonNullObjects<Initer> t = subTree.getChildAt( Position.FIRST );// hardwired to LAST(opposite to
+																						// FIRST)
 				RunTime.assumedNotNull( t );
 				
 				Initer inst = t.getValue();
 				// RunTime.assumedTrue( QUICK_FIND.remove( inst ) == t );
 				RunTime.assumedTrue( subTree.removeChild( t ) );
-				t = root.addChildFirst( inst );// hardwired
+				t = root.addChildLast( inst );// hardwired to FIRST
+				RunTime.assumedTrue( root.getChildAt( Position.LAST ) == t );
 				RunTime.assumedTrue( QUICK_FIND.put( inst, t ) );
 				RunTime.assumedTrue( QUICK_FIND.getValue( inst ) == t );
 			}
@@ -391,7 +400,7 @@ public class Factory {
 	private static <T extends Initer> void internal_deInit( T instance ) {
 
 		RunTime.assumedNotNull( instance );
-		Log.special2( "deInit-ing " + instance.getClass().getName() );
+		Log.special4( "deInit-ing " + instance.getClass().getName() );
 		instance._deInit();
 	}
 	
@@ -516,7 +525,6 @@ public class Factory {
 	// }
 	// }
 	
-
 	/**
 	 * this will try to postpone all exceptions until after done deInit-ing all<br>
 	 */
@@ -534,8 +542,9 @@ public class Factory {
 		RunTime.assumedNotNull( root );
 		
 		while ( true ) {
-			// get the first subtree in root (aka next in our context)
-			TreeOfNonNullObjects<Initer> currentSubTree = root.getChildAt( Position.FIRST );// hardwired: to first LIFO
+			// get the last subtree in root (aka next in our context)
+			// which means get the one which was first inited FIFO manner
+			TreeOfNonNullObjects<Initer> currentSubTree = root.getChildAt( Position.LAST );// hardwired: to first LIFO
 			if ( null == currentSubTree ) {
 				// no subtrees exist in root then:
 				// root is empty, consistency check
@@ -545,6 +554,7 @@ public class Factory {
 			
 			Initer instance = currentSubTree.getValue();
 			RunTime.assumedNotNull( instance );
+			RunTime.assumedTrue( instance.isInited() );
 			// first deInit
 			// this should deInit all subtrees of instance and they should be auto-removed from this subtree
 			try {

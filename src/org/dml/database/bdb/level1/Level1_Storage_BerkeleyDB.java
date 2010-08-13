@@ -304,13 +304,13 @@ public class Level1_Storage_BerkeleyDB extends Initer {
 	 * silently closing SecondaryDatabase
 	 * no throws
 	 * 
-	 * @return null
 	 * @param secDb
 	 */
-	public final SecondaryDatabase closeAnySecDB( SecondaryDatabase secDb ) {
+	public final void closeAnySecDB( SecondaryDatabase secDb ) {
 
 		Log.entry();
 		if ( null != secDb ) {
+			
 			String secDbName = UNINITIALIZED_STRING;
 			try {
 				try {
@@ -332,7 +332,6 @@ public class Level1_Storage_BerkeleyDB extends Initer {
 		} else {
 			Log.mid( "wasn't open SecDB" );
 		}
-		return null;
 	}
 	
 	/**
@@ -462,7 +461,8 @@ public class Level1_Storage_BerkeleyDB extends Initer {
 		
 		try {
 			if ( null != seqDb ) {
-				seqDb = this.closePriDB( seqDb );
+				this.closeAnyPriDB( seqDb );
+				seqDb = null;
 			}
 		} catch ( Throwable t ) {
 			// postpone
@@ -511,7 +511,7 @@ public class Level1_Storage_BerkeleyDB extends Initer {
 		Database iter;
 		while ( null != ( iter = allOpenPrimaryDatabases.getObjectAt( Position.FIRST ) ) ) {
 			try {
-				this.closePriDB( iter );
+				this.closeAnyPriDB( iter );
 			} catch ( Throwable t ) {
 				// postpone only these
 				RunTime.throPostponed( t );
@@ -522,7 +522,9 @@ public class Level1_Storage_BerkeleyDB extends Initer {
 				}
 			}
 		}
+		
 		RunTime.assumedTrue( allOpenSecondaryDatabases.isEmpty() );
+		RunTime.assumedTrue( allOpenPrimaryDatabases.isEmpty() );
 		
 		RunTime.throwAllThatWerePosponed();
 	}
@@ -611,14 +613,14 @@ public class Level1_Storage_BerkeleyDB extends Initer {
 	 * silently closing database
 	 * no throws
 	 * 
-	 * @return null
 	 * @param db
 	 *            just for information
 	 */
-	public final Database closePriDB( Database db ) {
+	public final void closeAnyPriDB( Database db ) {
 
 		Log.entry();
 		if ( null != db ) {
+			
 			String dbname = UNINITIALIZED_STRING;
 			try {
 				try {
@@ -626,6 +628,7 @@ public class Level1_Storage_BerkeleyDB extends Initer {
 					Log.mid( "closing dbname: " + dbname );
 				} finally {
 					db.close();// the only place this should be used is this line
+					RunTime.assumedNotNull( db );
 					Log.mid( "closed BerkeleyDB with name: " + dbname );
 				}
 			} catch ( Throwable t ) {
@@ -633,6 +636,8 @@ public class Level1_Storage_BerkeleyDB extends Initer {
 						+ t.getLocalizedMessage() );
 				RunTime.throWrapped( t );// wrap around and throw now
 			} finally {
+				RunTime.assumedNotNull( db );
+				RunTime.assumedFalse( allOpenPrimaryDatabases.isEmpty() );
 				if ( !allOpenPrimaryDatabases.removeObject( db ) ) {
 					RunTime.bug( "should've succeeded" );
 				}
@@ -641,7 +646,6 @@ public class Level1_Storage_BerkeleyDB extends Initer {
 			Log.mid( "close db was called on null db object" );
 		}
 		
-		return null;
 	}
 	
 

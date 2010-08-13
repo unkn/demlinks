@@ -33,6 +33,9 @@ import org.dml.tools.TwoWayHashMap;
 
 /**
  * this maps Symbol and its representation in BDB (as a long)<br>
+ * TODO: but this may be called for two or more different BDBs and
+ * they will likely not have the same long associated with the same Symbol, but more than one BDB is not supported yet!
+ * FIXME: above<br>
  * Symbol is in java only, and it's just a new instance in java with no other special meaning<br>
  */
 public final class Bridge_SymbolAndBDB {

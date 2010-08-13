@@ -288,13 +288,13 @@ public class OneToManyDBMap<InitialType, TerminalType> extends Initer {
 
 		// DatabaseEntry keyEntry = new DatabaseEntry();
 		// initialBinding.objectToEntry( initialObject, keyEntry );
-		@SuppressWarnings( "unchecked" )
-		BDBVectorIterator<InitialType, TerminalType> ret =
-		// new BDBVectorIterator<InitialType, TerminalType>(
-		// this.getBDBL1(), this.getForwardDB(), initialObject, initialBinding, terminalBinding );
+		BDBVectorIterator<InitialType, TerminalType> ret = new BDBVectorIterator<InitialType, TerminalType>(
+				this.getBDBL1(), this.getForwardDB(), initialObject, initialBinding, terminalBinding );
 		// ret.init( null );
-		Factory.getNewInstanceAndInitWithoutParams( BDBVectorIterator.class, this.getBDBL1(), this.getForwardDB(), initialObject,
-				initialBinding, terminalBinding );
+		// Factory.getNewInstanceAndInitWithoutParams( BDBVectorIterator.class, this.getBDBL1(), this.getForwardDB(),
+		// initialObject,
+		// initialBinding, terminalBinding );
+		Factory.initWithoutParams( ret );
 		return ret;
 		
 	}
@@ -302,13 +302,12 @@ public class OneToManyDBMap<InitialType, TerminalType> extends Initer {
 	public BDBVectorIterator<TerminalType, InitialType> getIterator_on_Initials_of( TerminalType terminalObject )
 			throws DatabaseException {
 
-		@SuppressWarnings( "unchecked" )
-		BDBVectorIterator<TerminalType, InitialType> ret =
-		// new BDBVectorIterator<TerminalType, InitialType>(
-		// this.getBDBL1(), this.getBackwardDB(), terminalObject, terminalBinding, initialBinding );
+		BDBVectorIterator<TerminalType, InitialType> ret = new BDBVectorIterator<TerminalType, InitialType>(
+				this.getBDBL1(), this.getBackwardDB(), terminalObject, terminalBinding, initialBinding );
 		// ret.init( null );
-		Factory.getNewInstanceAndInitWithoutParams( BDBVectorIterator.class, this.getBDBL1(), this.getBackwardDB(), terminalObject,
-				terminalBinding, initialBinding );
+		// Factory.getNewInstanceAndInitWithoutParams( BDBVectorIterator.class, this.getBDBL1(), this.getBackwardDB(),
+		// terminalObject, terminalBinding, initialBinding );
+		Factory.initWithoutParams( ret );
 		return ret;
 	}
 	

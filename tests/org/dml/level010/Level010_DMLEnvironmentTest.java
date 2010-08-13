@@ -104,7 +104,6 @@ public class Level010_DMLEnvironmentTest {
 			long la = Bridge_SymbolAndBDB.getLongFrom( a );
 			Symbol anew = Bridge_SymbolAndBDB.newSymbolFrom( la );
 			assertTrue( a == anew );// indeed
-			assertTrue( a == anew );
 			assertTrue( dml1.getJavaID( anew ) == dml1.getJavaID( a ) );
 		} finally {
 			Factory.deInit( dml1 );

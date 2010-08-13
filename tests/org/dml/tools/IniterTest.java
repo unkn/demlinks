@@ -29,6 +29,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.dml.error.BadCallError;
+import org.dml.tracking.Factory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -41,7 +42,7 @@ import org.references.method.PossibleParams;
  * 
  *
  */
-public class StaticInstanceTrackerTest {
+public class IniterTest {
 	
 	Testy					t, tt;
 	Testy2					t2, tt2;
@@ -69,10 +70,11 @@ public class StaticInstanceTrackerTest {
 		// t2.deInit();
 		// else
 		// StaticInstanceTracker.deInitAllThatExtendMe();
-		params.deInitSilently();
+		// params.deInitSilently();
+		Factory.deInitIfAlreadyInited( params );
+		Factory.deInitAll();
 	}
 	
-	@SuppressWarnings( "deprecation" )
 	@Test
 	public void test1() throws Exception {
 
@@ -81,40 +83,55 @@ public class StaticInstanceTrackerTest {
 			params.set( PossibleParams.homeDir, "1/2" );
 			assertTrue( params.size() == 1 );
 			
-			t.init( params );
+			Factory.init( t, params );
+			// t.init( params );
 			t.show();
-			t.deInit();
+			Factory.deInit( t );
+			// t.deInit();
 			
-			params.restart();// this will empty params
+			Factory.restart_aka_DeInitAndInitAgain_WithOriginalPassedParams( params );
+			// params.restart();// this will empty params
 			assertTrue( params.size() == 0 );
 			
 			params.set( PossibleParams.homeDir, "2/2" );
 			assertTrue( params.size() == 1 );
 			
-			t.init( params );
+			// t.init( params );
+			Factory.init( t, params );
 			t.show();
-			t.deInit();
+			// t.deInit();
+			Factory.deInit( t );
 			
 			assertTrue( params.size() == 1 );
-			params.restart();
+			// params.restart();
+			Factory.restart_aka_DeInitAndInitAgain_WithOriginalPassedParams( params );
+			
 			assertTrue( params.size() == 0 );
 			
 			tt.show();
 			t2.show();
 			
 			params.set( PossibleParams.homeDir, "3+ 1/2" );
-			tt2.init( params );
+			// tt2.init( params );
+			Factory.init( tt2, params );
 			tt2.show();
-			tt2.deInit();
+			// tt2.deInit();
+			Factory.deInit( tt2 );
 			
 			params.set( PossibleParams.homeDir, "3+ 2/2" );
-			tt2.init( params );
+			// tt2.init( params );
+			Factory.init( tt2, params );
 			tt2.show();
-			tt2.deInit();
+			// tt2.deInit();
+			Factory.deInit( tt2 );
 			// throw new Exception();
 		} finally {
-			tt.deInitAllLikeMe();
-			t2.deInitAllLikeMe();
+			Factory.deInitIfAlreadyInited( tt );
+			Factory.deInitIfAlreadyInited( t2 );
+			Factory.deInitIfAlreadyInited( tt2 );
+			Factory.deInitIfAlreadyInited( t );
+			// tt.deInitAllLikeMe();
+			// t2.deInitAllLikeMe();
 		}
 	}
 	
@@ -125,10 +142,15 @@ public class StaticInstanceTrackerTest {
 		assertTrue( params.size() == 1 );
 		boolean errored = false;
 		try {
-			t.init( params );
-			t.init( params );
-		} catch ( BadCallError bce ) {
-			errored = true;
+			Factory.init( t, params );
+			Factory.init( t, params );
+			// t.init( params );
+			// t.init( params );
+		} catch ( Throwable zt ) {
+			if ( RunTime.isThisWrappedException_of_thisType( zt, BadCallError.class ) ) {
+				errored = true;
+				RunTime.clearLastThrown_andAllItsWraps();
+			}
 		} finally {
 			assertTrue( errored );
 		}
@@ -136,10 +158,15 @@ public class StaticInstanceTrackerTest {
 		
 		errored = false;
 		try {
-			t.deInit();
-			t.deInit();
-		} catch ( BadCallError bce ) {
-			errored = true;
+			Factory.deInit( t );
+			Factory.deInit( t );
+			// t.deInit();
+			// t.deInit();
+		} catch ( Throwable t1 ) {
+			if ( RunTime.isThisWrappedException_of_thisType( t1, BadCallError.class ) ) {
+				errored = true;
+				RunTime.clearLastThrown_andAllItsWraps();
+			}
 		} finally {
 			assertTrue( errored );
 		}
@@ -148,23 +175,33 @@ public class StaticInstanceTrackerTest {
 		errored = false;
 		try {
 			Testy2 r = new Testy2();
-			r.deInit();
-		} catch ( BadCallError bce ) {
-			errored = true;
+			// r.deInit();
+			Factory.deInit( r );
+		} catch ( Throwable t1 ) {
+			if ( RunTime.isThisWrappedException_of_thisType( t1, BadCallError.class ) ) {
+				errored = true;
+				RunTime.clearLastThrown_andAllItsWraps();
+			}
 		} finally {
 			assertTrue( errored );
 		}
 		
 		assertTrue( params.size() == 1 );
 		System.out.println( params.getExString( PossibleParams.homeDir ) );
-		t.init( params );
+		// t.init( params );
+		Factory.init( t, params );
 		// params.deInit();
 		errored = false;
 		try {
-			t.restart();
-			t.restart();
-			t.restart();
-			t.restart();
+			Factory.restart_aka_DeInitAndInitAgain_WithOriginalPassedParams( t );
+			Factory.restart_aka_DeInitAndInitAgain_WithOriginalPassedParams( t );
+			Factory.restart_aka_DeInitAndInitAgain_WithOriginalPassedParams( t );
+			Factory.restart_aka_DeInitAndInitAgain_WithOriginalPassedParams( t );
+			
+			// t.restart();
+			// t.restart();
+			// t.restart();
+			// t.restart();
 		} catch ( BadCallError bce ) {
 			errored = true;
 		} finally {
@@ -177,8 +214,10 @@ public class StaticInstanceTrackerTest {
 
 		System.out.println( "===============" );
 		params.set( PossibleParams.homeDir, "nothing" );
-		t.init( params );
-		tt2.init( params );
+		Factory.init( t, params );
+		Factory.init( tt2, params );
+		// t.init( params );
+		// tt2.init( params );
 	}
 	
 	@Test
@@ -186,8 +225,10 @@ public class StaticInstanceTrackerTest {
 
 		boolean excepted = false;
 		try {
-			t2.deInitSilently();
-			t2.deInitSilently();
+			Factory.deInitIfAlreadyInited( t2 );
+			Factory.deInitIfAlreadyInited( t2 );
+			// t2.deInitSilently();
+			// t2.deInitSilently();
 		} catch ( BadCallError bce ) {
 			excepted = true;
 		} finally {
@@ -196,11 +237,14 @@ public class StaticInstanceTrackerTest {
 		
 		excepted = false;
 		params.set( PossibleParams.homeDir, "some" );
-		t2.init( params );
-		t2.deInit();
+		Factory.init( t2, params );
+		// t2.init( params );
+		Factory.deInit( t2 );
+		// t2.deInit();
 		try {
 			
-			t2.deInitSilently();
+			Factory.deInitIfAlreadyInited( t2 );
+			// t2.deInitSilently();
 		} catch ( BadCallError bce ) {
 			excepted = true;
 		} finally {
@@ -216,21 +260,30 @@ public class StaticInstanceTrackerTest {
 		
 		// params.set( PossibleParams.homeDir, "homePSC" );
 		try {
-			psc.init( null );
+			Factory.initWithoutParams( psc );
+			// psc.init( null );
 			psc.exec();
 		} finally {
 			boolean rted = false;
 			boolean excepted = false;
 			try {
-				psc.deInit();
-			} catch ( RuntimeException re ) {
-				// ignore, threw by overridden done() method
-				rted = true;
+				Factory.deInit( psc );
+				// psc.deInit();
+			} catch ( Throwable t1 ) {
+				if ( RunTime.isThisWrappedException_of_thisType( t1, RuntimeException.class ) ) {
+					// ignore, threw by overridden done() method
+					rted = true;
+					RunTime.clearLastThrown_andAllItsWraps();
+				}
 			} finally {
 				try {
-					psc.deInit();
-				} catch ( BadCallError bce ) {
-					excepted = true;
+					Factory.deInit( psc );
+					// psc.deInit();
+				} catch ( Throwable zt ) {
+					if ( RunTime.isThisWrappedException_of_thisType( zt, BadCallError.class ) ) {
+						excepted = true;
+						RunTime.clearLastThrown_andAllItsWraps();
+					}
 				} finally {
 					assertTrue( excepted );
 				}
@@ -246,12 +299,17 @@ public class StaticInstanceTrackerTest {
 		Testy3StartThrower t3 = new Testy3StartThrower();
 		boolean threw = false;
 		try {
-			t3.init( null );
-		} catch ( RuntimeException rte ) {
-			threw = true;
+			Factory.initWithoutParams( t3 );
+			// t3.init( null );
+		} catch ( Throwable zt ) {
+			if ( RunTime.isThisWrappedException_of_thisType( zt, RuntimeException.class ) ) {
+				threw = true;
+				RunTime.clearLastThrown_andAllItsWraps();
+			}
 		}
 		assertTrue( threw );
-		t3.deInit();
+		// t3.deInit();
+		Factory.deInit( t3 );
 	}
 	
 	@Test
@@ -259,24 +317,31 @@ public class StaticInstanceTrackerTest {
 
 		String home = "home";
 		params.set( PossibleParams.homeDir, home );
-		t.init( params );
+		Factory.init( t, params );
+		// t.init( params );
 		params.clear();
 		assertTrue( params.size() == 0 );
 		assertTrue( t.getHome() == home );
-		t.restart();
+		Factory.restart_aka_DeInitAndInitAgain_WithOriginalPassedParams( t );
+		// t.restart();
 		t.show();
 		assertTrue( t.getHome() == home );
-		t.deInit();
+		Factory.deInit( t );
+		// t.deInit();
 		String home2 = "home2";
 		params.set( PossibleParams.homeDir, home2 );
-		t.init( params );
+		// t.init( params );
+		Factory.init( t, params );
 		assertTrue( t.getHome() == home2 );
 		assertTrue( home != home2 );
-		t.restart();
+		Factory.restart_aka_DeInitAndInitAgain_WithOriginalPassedParams( t );
+		// t.restart();
 		assertTrue( t.getHome() == home2 );
-		t.deInit();
+		// t.deInit();
+		Factory.deInit( t );
 		assertTrue( t.getHome() == null );
-		params.deInit();
+		Factory.deInit( params );
+		// params.deInit();
 	}
 	
 }

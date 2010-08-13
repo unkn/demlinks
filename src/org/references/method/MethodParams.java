@@ -61,6 +61,14 @@ public class MethodParams extends Initer {
 	// can't use a Set or HashSet or TwoWayHashSet because we need to parse the
 	// list, which could be done with an Iterator but I forgot why can't
 	
+	// /**
+	// * prevent constructor, use {@link #getNew()} instead<br>
+	// */
+	// private MethodParams() {
+	//
+	// super();
+	// }
+	
 	/**
 	 * don't forget to use either .deInit()<br>
 	 * or the static method MethodParams.doneWith(this)<br>

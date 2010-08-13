@@ -98,7 +98,8 @@ public class SecondaryDatabaseCapsule extends Initer {
 
 		Log.entry();
 		if ( null != secDb ) {
-			secDb = bdbL1.closeAnySecDB( secDb );
+			bdbL1.closeAnySecDB( secDb );
+			secDb = null;
 		}
 	}
 	

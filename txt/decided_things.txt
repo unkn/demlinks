@@ -31,26 +31,49 @@ Things that are depreciated or obsolete won't be here.
 	and they will be java thrown at that point (chained)
 	
 	
--c) to catch a specific exception, that is to test if that specific exception occurred you only have to catch(Throwable t) (so that means you catch once) for any and every test
-    for example:
+-c) to catch a specific exception, that is to test if that specific exception occurred you only have to catch(Throwable t) (so that means you catch once) for any and every test.
+    The following code is for testing only for one specific exception if it was thrown or not:
     try {
 			try {
 				Factory.init( ml2, params1 );//assuming this throws an already wrapped BadCallError - no matter in how many layers of wraps
 			} catch ( Throwable t ) {
 				RunTime.throWrapped( t );//we wrap it again just for fun; doesn't need to be wrapped at all actually, can contain zero wraps
 			}
-	} catch ( Throwable t ) {
-			if ( RunTime.isThisWrappedException_of_thisType( t, BadCallError.class ) ) {
+	} catch ( Throwable t ) { //1
+			if ( RunTime.isThisWrappedException_of_thisType( t, BadCallError.class ) ) { //2
 				//yes it is exactly BadCallError 
 			}
-			if ( RunTime.isThisWrappedException_of_thisType( t, Exception.class ) ) {
+			
+			//clear the just caught exception and all its wraps, previously thrown exceptions will(should) remain active, so later when seeing the list of exceptions in eclipse,
+			//you won't see this exception we just handled here
+			RunTime.clearLastThrown_andAllItsWraps();//3
+	} 
+	NOTE: that you cannot test for a subclass of ie. Error, you can only test specifically for the named class (though it's easy to make a method for this, will do when needed)
+	
+	alternatively (if there is more than one test in the catch you should use the following instead):
+	try {
+			try {
+				Factory.init( ml2, params1 );//assuming this throws an already wrapped BadCallError - no matter in how many layers of wraps
+			} catch ( Throwable t ) {
+				RunTime.throWrapped( t );//we wrap it again just for fun; doesn't need to be wrapped at all actually, can contain zero wraps
+			}
+	} catch ( Throwable t ) { //1
+			Throwable unwrappedLastThrownOne=RunTime.getUnwrappedExceptionNeverNull( t );//2
+			
+			RunTime.clearLastThrown_andAllItsWraps();//3 ;clear it now because the following code (when testing for what was thrown) may throw depending on what you call
+			
+			if (BadCallError.class == unwrappedLastThrownOne) {
+				//yes it is exactly BadCallError 
+			}
+			if (Exception.class == unwrappedLastThrownOne) {
 				//yes it is exactly Exception
 			}
-			if ( RunTime.isThisWrappedException_of_thisType( t, Error.class ) ) {
+			if (Error.class == unwrappedLastThrownOne) {
 				//yes it is exactly Error, note that although BadCallError extends Error, if you caught BadCallError above, you will NOT catch it here as just Error.class
 				//why? because this only tests for exactly that specific exception, no subclass or superclass of it!
 			}
-	} 
-	NOTE: that you cannot test for a subclass of ie. Error, you can only test specifically for the named class (though it's easy to make a method for this, will do when needed) 
+	}
 	
 6. any classes that want to have init and deInit of resources ie. db-related should inherit Initer class and use Factory class to get new instance and init it
+
+7. nothing is thread safe, unless explicitly specified.

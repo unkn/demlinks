@@ -59,7 +59,12 @@ public class DatabaseCapsule extends Initer {
 
 		if ( null != db ) {
 			RunTime.assumedNotNull( bdbL1 );
-			db = bdbL1.closePriDB( db );
+			try {
+				bdbL1.closeAnyPriDB( db );
+				
+			} finally {
+				db = null;
+			}
 			RunTime.assumedNull( db );
 		}
 	}
