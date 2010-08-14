@@ -379,6 +379,91 @@ public class RunTime {
 	}
 	
 	/**
+	 * @return non-null StackTraceElement of the caller, that is the method that has us as statement<br>
+	 *         ie. return unqualified method name of the caller<br>
+	 *         public void something() {<br>
+	 *         //...code<br>
+	 *         System.out.println(RunTime.getCurrentStackTraceElement().getMethodName());<br>
+	 *         //...more code<br>
+	 *         }<br>
+	 *         //the above prints "something"<br>
+	 */
+	public static StackTraceElement getCurrentStackTraceElement() {
+
+		// be careful moving stuff here, the number depends on the location of statement before call
+		return RunTime.getCurrentStackTraceElement( +1 );
+	}
+	
+	/**
+	 * @param modifier
+	 *            use positive values to get caller of caller's method<br>
+	 *            a value of 0 gets current method's name that is, the caller of this method<br>
+	 * @return non-null StackTraceElement<br>
+	 *         unqualified method name of the caller<br>
+	 *         ie. public void something() {<br>
+	 *         //...code<br>
+	 *         System.out.println(RunTime.getMethodName(0));<br>
+	 *         //...more code<br>
+	 *         }<br>
+	 *         //the above prints "something"<br>
+	 */
+	public static StackTraceElement getCurrentStackTraceElement( int modifier ) {
+
+		RunTime.assumedNotNull( modifier );
+		// do not reorganize the following code into more methods, else the below number will have to change
+		StackTraceElement[] stea = Thread.currentThread().getStackTrace();
+		RunTime.assumedNotNull( (Object)stea );
+		final int whereIsCaller = 2 + modifier;
+		RunTime.assumedTrue( stea.length >= 1 + whereIsCaller );
+		StackTraceElement ste = stea[whereIsCaller];
+		RunTime.assumedNotNull( ste );
+		return ste;// never null
+	}
+	
+	public static StackTraceElement getTheCaller_OutsideOfThisClass() {// Class<?> whichClass ) {
+	
+		StackTraceElement ourCaller = RunTime.getCurrentStackTraceElement( +1 );
+		
+		// Class<?> whichClass = ourCaller.getClassName()
+		// RunTime.assumedNotNull( whichClass );
+		String whichClassName = ourCaller.getClassName();// .getCanonicalName();
+		RunTime.assumedNotNull( whichClassName );
+		
+		String ourCallersName = ourCaller.getMethodName();
+		RunTime.assumedNotNull( ourCallersName );
+		// System.out.println( whichClassName + "!" + ourCallersName );
+		
+		StackTraceElement[] stea = Thread.currentThread().getStackTrace();
+		
+		int i = 0;
+		boolean findThisClassFirst = true;
+		while ( i < stea.length ) {
+			StackTraceElement ste = stea[i];
+			i++;
+			if ( findThisClassFirst ) {
+				if ( whichClassName.equals( ste.getClassName() ) ) {
+					// System.out.println( ste.getMethodName() );
+					// we found this class aka Factory class
+					if ( ourCallersName.equals( ste.getMethodName() ) ) {
+						// we found exactly this method we're in aka init()
+						// System.out.println( ste );
+						findThisClassFirst = false;
+					}
+				}
+			} else {// found factory already, now we must find non-factory
+				if ( !whichClassName.equals( ste.getClassName() ) ) {
+					// we found the one that is outside Factory class and that called us
+					// System.out.println( ste );
+					return ste;
+					// break;
+				}
+			}
+			
+		}
+		return null;
+	}
+	
+	/**
 	 * The purpose of this is to give time to do the deinitializing code<br>
 	 * you can postpone all exceptions thrown with RunTime.thro() as follows:<br>
 	 * try {<br>

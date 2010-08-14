@@ -194,36 +194,12 @@ public class Factory {
 			RunTime.badCall( "must not be already init-ed" );
 		}
 		
-		StackTraceElement[] stea = Thread.currentThread().getStackTrace();
-		String factClassThisMethod = stea[1].getMethodName();
-		System.out.println( "!" + factClassThisMethod );
-		StackTraceElement ste;
-		String factClassName = Factory.class.getCanonicalName();
-		RunTime.assumedNotNull( factClassName );
-		int i = 0;
-		boolean findFactoryFirst = true;
-		while ( i < stea.length ) {
-			ste = stea[i];
-			i++;
-			if ( findFactoryFirst ) {
-				if ( factClassName.equals( ste.getClassName() ) ) {
-					// System.out.println( ste.getMethodName() );
-					// we found this class aka Factory class
-					if ( factClassThisMethod.equals( ste.getMethodName() ) ) {
-						// we found exactly this method we're in aka init()
-						System.out.println( ste );
-						findFactoryFirst = false;
-					}
-				}
-			} else {// found factory already, now we must find non-factory
-				if ( !factClassName.equals( ste.getClassName() ) ) {
-					// we found the one that is outside Factory class and that called us
-					System.out.println( ste );
-					break;
-				}
-			}
-		}
-		
+
+		// String factClassThisMethod = RunTime.getCurrentMethodName();// stea[1].getMethodName();
+		// System.out.println( "!" + factClassThisMethod );
+		System.out.println( RunTime.getTheCaller_OutsideOfThisClass() );
+		// ,RunTime.getCurrentMethodName())
+		// System.out.println( RunTime.getCurrentStackTraceElement() );
 		// must add before init because init may init others before we get to add so the order gets foobar-ed
 		// addNewInitedInstance( instance );// shouldn't already exist since wasn't inited so not in our list
 		
