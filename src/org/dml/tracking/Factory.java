@@ -193,6 +193,37 @@ public class Factory {
 		if ( instance.isInited() ) {
 			RunTime.badCall( "must not be already init-ed" );
 		}
+		
+		StackTraceElement[] stea = Thread.currentThread().getStackTrace();
+		String factClassThisMethod = stea[1].getMethodName();
+		System.out.println( "!" + factClassThisMethod );
+		StackTraceElement ste;
+		String factClassName = Factory.class.getCanonicalName();
+		RunTime.assumedNotNull( factClassName );
+		int i = 0;
+		boolean findFactoryFirst = true;
+		while ( i < stea.length ) {
+			ste = stea[i];
+			i++;
+			if ( findFactoryFirst ) {
+				if ( factClassName.equals( ste.getClassName() ) ) {
+					// System.out.println( ste.getMethodName() );
+					// we found this class aka Factory class
+					if ( factClassThisMethod.equals( ste.getMethodName() ) ) {
+						// we found exactly this method we're in aka init()
+						System.out.println( ste );
+						findFactoryFirst = false;
+					}
+				}
+			} else {// found factory already, now we must find non-factory
+				if ( !factClassName.equals( ste.getClassName() ) ) {
+					// we found the one that is outside Factory class and that called us
+					System.out.println( ste );
+					break;
+				}
+			}
+		}
+		
 		// must add before init because init may init others before we get to add so the order gets foobar-ed
 		// addNewInitedInstance( instance );// shouldn't already exist since wasn't inited so not in our list
 		
@@ -523,6 +554,14 @@ public class Factory {
 	
 	/**
 	 * this will try to postpone all exceptions until after done deInit-ing all<br>
+	 * this will deInit all in LIFO manner, also note that if a class inited other instances white inside it's init
+	 * method, then those will be deInited first (since they're stored as a tree, the root is the class that inited
+	 * first) BUT <br>
+	 * FIXME: if a class that was already inited does more inits while running then those inits will be
+	 * deInited before that class, so when that class will be deInited it will probably call some deInits in it's done
+	 * method and it will get that they were already deinited and likely some exception will be thrown<br>
+	 * FIXME: we need to fix that (above) by putting all inits done from within class X into the tree at the right
+	 * position so that we deinit the class first and then we see if it left anything still inited for us to deinit<br>
 	 */
 	public static void deInitAll() {
 
