@@ -51,6 +51,9 @@ public class LevelsTest {
 	MainLevel2	ml2;
 	MainLevel3	ml3;
 	
+	/**
+	 * 
+	 */
 	@Before
 	public void setUp() {
 
@@ -60,6 +63,9 @@ public class LevelsTest {
 		ml2 = new MainLevel2();
 	}
 	
+	/**
+	 * 
+	 */
 	@After
 	public void tearDown() {
 
@@ -74,6 +80,9 @@ public class LevelsTest {
 		Factory.deInitAll();
 	}
 	
+	/**
+	 * 
+	 */
 	@Test
 	public void test1() {
 
@@ -81,7 +90,7 @@ public class LevelsTest {
 
 		VarLevel1 v1; // new VarLevel1();
 		// v1.init( null );
-		v1 = Factory.getNewInstanceAndInitWithoutParams( VarLevel1.class );
+		v1 = Factory.getNewInstanceAndInitWithoutMethodParams( VarLevel1.class );
 		MethodParams params1 = MethodParams.getNew();
 		params1.set( PossibleParams.varLevelAll, v1 );
 		// ml1.init( params1 );
@@ -285,6 +294,9 @@ public class LevelsTest {
 		// params3.deInit();
 	}
 	
+	/**
+	 * 
+	 */
 	@Test
 	public void testOwn() {
 
@@ -356,6 +368,9 @@ public class LevelsTest {
 		Factory.deInit( mlParams );
 	}
 	
+	/**
+	 * 
+	 */
 	@Test
 	public void test2() {
 
@@ -379,6 +394,9 @@ public class LevelsTest {
 		// own var
 	}
 	
+	/**
+	 * 
+	 */
 	@Test
 	public void test3() {
 
@@ -452,6 +470,9 @@ public class LevelsTest {
 		Factory.deInit( mp );
 	}
 	
+	/**
+	 * 
+	 */
 	@Test
 	public void test4() {
 

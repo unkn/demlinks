@@ -55,6 +55,9 @@ import com.sleepycat.je.OperationStatus;
  * while associated with secondary, although secondary can have dup data)
  * - and we can't store these as secondary because we can only delete from
  * secondaries
+ * 
+ * @param <InitialType>
+ * @param <TerminalType>
  */
 public class OneToManyDBMap<InitialType, TerminalType> extends Initer {
 	
@@ -74,6 +77,10 @@ public class OneToManyDBMap<InitialType, TerminalType> extends Initer {
 	 * 
 	 * @param bdb1
 	 * @param dbName1
+	 * @param initialClass1
+	 * @param initialBinding1
+	 * @param terminalClass1
+	 * @param terminalBinding1
 	 */
 	public OneToManyDBMap( Level1_Storage_BerkeleyDB bdb1, String dbName1, Class<InitialType> initialClass1,
 			EntryBinding<InitialType> initialBinding1, Class<TerminalType> terminalClass1,
@@ -119,7 +126,15 @@ public class OneToManyDBMap<InitialType, TerminalType> extends Initer {
 			params.set( PossibleParams.dbName, dbName );
 			params.set( PossibleParams.priDbConfig, new OneToManyDBConfig() );
 			// forwardDB.init( params );
-			forwardDB = Factory.getNewInstanceAndInit( DatabaseCapsule.class, params );
+			// Initer x = null;
+			// Initer x[] = {
+			// this, this.getBDBL1()
+			// };
+			forwardDB = Factory.getNewInstanceAndInit( this, new Initer[]
+				{
+						this,
+						this.getBDBL1()
+				}, DatabaseCapsule.class, params );
 			Factory.deInit( params );
 			// params.deInit();
 			
@@ -344,6 +359,7 @@ public class OneToManyDBMap<InitialType, TerminalType> extends Initer {
 	 * @param initial1
 	 * @param initial2
 	 * @return null if not found
+	 * @throws DatabaseException
 	 */
 	public TerminalType findCommonTerminalForInitials( InitialType initial1, InitialType initial2 )
 			throws DatabaseException {

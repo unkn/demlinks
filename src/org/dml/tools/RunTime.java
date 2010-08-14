@@ -483,8 +483,12 @@ public class RunTime {
 	public static void throwAllThatWerePosponed() {
 
 		if ( null != allExceptionsChained ) {
-			internalWrappedThrow();
-			clearThrowChain();
+			try {
+				internalWrappedThrow();
+				
+			} finally {
+				clearThrowChain();
+			}
 		}// else ignore
 		
 	}

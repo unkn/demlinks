@@ -59,11 +59,10 @@ public class DBMapSymbolsTuple extends OneToManyDBMap<Symbol, Symbol> {
 	/**
 	 * constructor
 	 * 
+	 * @param bdb1
+	 * 
 	 * @param dbName1
 	 *            the name of the database that will hold the tuples
-	 * @param db
-	 *            the database holding the JavaIDs to NodeIDs 1to1 mappings,
-	 *            that's currently BerkeleyDB.getDBMapJavaIDsToNodeIDs()
 	 */
 	public DBMapSymbolsTuple( Level1_Storage_BerkeleyDB bdb1, String dbName1 ) {
 

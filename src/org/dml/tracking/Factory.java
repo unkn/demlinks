@@ -91,7 +91,7 @@ public class Factory {
 	 * @return the new instance, don't forget to assign this to a variable (FIXME: I wonder if we can do a warning on
 	 *         this?)
 	 */
-	public static <T extends Initer> T getNewInstanceAndInitWithoutParams( Class<T> type,
+	public static <T extends Initer> T getNewInstanceAndInitWithoutMethodParams( Class<T> type,
 			Object... constructorParameters ) {
 
 		return getNewInstanceAndInit( type, null, constructorParameters );
@@ -158,26 +158,68 @@ public class Factory {
 	 * this will do a new with the default constructor which should be public <br>
 	 * and an .init(params)<br>
 	 * 
-	 * @param type
+	 * @param deIniterInstance
+	 *            the parent instance to this new instance, that will deInit this new instance
+	 * @param listOfOtherMoreParents
+	 *            other parents to this new instance that means they will not be deInited before this new instance is
+	 *            deInited; Note that deIniterInstance is already considered a parent, do not specify it again inhere
+	 * 
+	 * @param typeOfInstanceToInit
 	 *            any subclass of Initer, EXCEPT gerenic classes ie. GenericClass<X,Y,Z> for these you have to new
 	 *            manually and then call {@link #init(Initer, MethodParams)} OR {@link #initWithoutParams(Initer)}
-	 * @param params
+	 * @param methodParams
 	 *            MethodParams instance for init(params)
-	 * @param constructorParameters
+	 * @param constructorParams
 	 *            to use a specific constructor based on the specified parameters and passing these to it when doing the
 	 *            'new'
 	 * @return the new instance, don't forget to assign this to a variable (FIXME: I wonder if we can do a warning on
 	 *         this?)
 	 */
-	public static <T extends Initer> T getNewInstanceAndInit( Class<T> type, MethodParams params,
-			Object... constructorParameters ) {
+	public static <T extends Initer> T getNewInstanceAndInit( Initer deIniterInstance, Initer[] listOfOtherMoreParents,
+			Class<T> typeOfInstanceToInit, MethodParams methodParams, Object... constructorParams ) {
 
-		T ret = Factory.getGenericNewInstance( type, constructorParameters );
-		Factory.init( ret, params );
+		T ret = Factory.getGenericNewInstance( typeOfInstanceToInit, constructorParams );
+		
+		TreeOfNonNullObjects<Initer> parent = null;
+		// try to find an already inited instance from constructorParameters and use that as a parent for this init
+		// because that means this 'ret' instance uses that parent instance and we will have to deinit that first
+		for ( Object param : constructorParams ) {
+			if ( param instanceof Initer ) {
+				// is Initer or subclass of Initer
+				parent = QUICK_FIND.getValue( (Initer)param );
+				if ( parent != null ) {
+					System.out.println( parent.getValue().getClass().getCanonicalName() );
+					break;// FIXME: we cannot handle more than one parent that this "ret" instance depends upon
+				}
+			}
+		}
+		
+		TreeOfNonNullObjects<Initer> savedParent = null;
+		if ( null != parent ) {
+			RunTime.assumedNotNull( parent.getValue() );
+			// set_InitWork_StartsInParent( parent.getValue() );
+			savedParent = currentParent;
+			currentParent = parent;
+			
+			StackTraceElement caller = RunTime.getTheCaller_OutsideOfThisClass();
+			System.out.println( String.format( "%-" + initDepth * 3 + "s", " " ) + "i->" + initDepth + " "
+					+ parent.getValue().getClass().getSimpleName() + " caller: " + caller );
+			initDepth++;
+		}
+		try {
+			Factory.init( ret, methodParams );// /////////////////////////
+		} finally {
+			if ( null != parent ) {
+				RunTime.assumedNotNull( parent.getValue(), currentParent );
+				RunTime.assumedTrue( currentParent.getParent() == savedParent );
+				currentParent = savedParent;
+				// set_InitWork_DoneInParent( parent.getValue() );
+				initDepth--;
+			}
+		}
 		RunTime.assumedTrue( ret.isInited() );
 		return ret;
 	}
-	
 	
 	public static <T extends Initer> void initWithoutParams( T instance ) {
 
@@ -201,10 +243,7 @@ public class Factory {
 
 		// String factClassThisMethod = RunTime.getCurrentMethodName();// stea[1].getMethodName();
 		// System.out.println( "!" + factClassThisMethod );
-		StackTraceElement caller = RunTime.getTheCaller_OutsideOfThisClass();
-		System.out.println( String.format( "%-" + initDepth * 3 + "s", " " ) + "i->" + initDepth + " "
-				+ instance.getClass().getSimpleName() + " caller: " + caller );
-		initDepth++;
+		
 		// ,RunTime.getCurrentMethodName())
 		// System.out.println( RunTime.getCurrentStackTraceElement() );
 		// must add before init because init may init others before we get to add so the order gets foobar-ed
@@ -217,7 +256,6 @@ public class Factory {
 			Log.special2( "init-ed: " + instance.getClass().getCanonicalName() );
 		} finally {
 			set_InitWork_DoneInParent( instance );
-			initDepth--;
 			// System.out.println( "i<-" + depth + " " + caller );
 			// System.out.println( String.format( "%-" + initDepth * 3 + "s", " " ) + "i<-" + initDepth + " "
 			// + instance.getClass().getSimpleName() + " caller: " + caller );
@@ -247,6 +285,13 @@ public class Factory {
 
 		// go deep
 		RunTime.assumedNotNull( instance );
+		
+
+		StackTraceElement caller = RunTime.getTheCaller_OutsideOfThisClass();
+		System.out.println( String.format( "%-" + initDepth * 3 + "s", " " ) + "i->" + initDepth + " "
+				+ instance.getClass().getSimpleName() + " caller: " + caller );
+		initDepth++;
+		
 		// System.out.println( "STRT:" + instance.getClass().getName() + "/" + instance );
 		RunTime.assumedNotNull( currentParent );
 		// TreeOfUniqueNonNullObjects<Initer> newChildInCurrent = new TreeOfUniqueNonNullObjects<Initer>();
@@ -254,6 +299,7 @@ public class Factory {
 		// newChildInCurrent.setValue( instance );
 		currentParent = currentParent.addChildAtPos( Position.FIRST, instance );// hardwired to first, LIFO
 		RunTime.assumedFalse( QUICK_FIND.put( instance, currentParent ) );
+		
 		RunTime.assumedNotNull( currentParent );
 	}
 	
@@ -266,6 +312,7 @@ public class Factory {
 
 		
 		RunTime.assumedNotNull( instance );
+		initDepth--;
 		// System.out.println( "DONE:" + instance.getClass().getName() + "/" + instance );
 		RunTime.assumedNotNull( currentParent );
 		RunTime.assumedTrue( root != currentParent );// can't be root yet

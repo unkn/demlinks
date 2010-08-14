@@ -36,7 +36,6 @@ import org.dml.database.bdb.level2.BDBVectorIterator;
 import org.dml.database.bdb.level2.DBMapSymbolsTuple;
 import org.dml.error.BadCallError;
 import org.dml.level010.JavaID;
-import org.dml.level010.Level010_DMLEnvironment;
 import org.dml.level010.Symbol;
 import org.dml.storagewrapper.StorageException;
 import org.dml.tools.RunTime;
@@ -58,7 +57,7 @@ import com.sleepycat.je.DatabaseException;
 public class DBMapTupleNodeIDsTest {
 	
 	DBMapSymbolsTuple			tdb;
-	Level010_DMLEnvironment		dmlEnv;
+	// Level010_DMLEnvironment dmlEnv;
 	Level1_Storage_BerkeleyDB	bdb;
 	
 	@Before
@@ -76,21 +75,22 @@ public class DBMapTupleNodeIDsTest {
 		Factory.deInit( params );
 		// tdb = new DBMapSymbolsTuple( bdb, "tupleIDs" );
 		// tdb.init( null );
-		tdb = Factory.getNewInstanceAndInitWithoutParams( DBMapSymbolsTuple.class, bdb, "tupleIDs" );
+		tdb = Factory.getNewInstanceAndInitWithoutMethodParams( DBMapSymbolsTuple.class, bdb, "tupleIDs" );
 		
 	}
 	
 	@After
 	public void tearDown() {
 
-		// tdb.silentClose();
-		tdb = null;
+		
 		Factory.deInit( bdb );
-		// bdb.deInit();
 		bdb = null;
-		System.out.println( "all:" );
-		Factory.deInitAll();
-		System.out.println( "done" );
+		System.out.println( "tdb:" );
+		Factory.deInit( tdb );
+		tdb = null;
+		// System.out.println( "all:" );
+		// Factory.deInitAll();
+		// System.out.println( "done" );
 	}
 	
 	@Test

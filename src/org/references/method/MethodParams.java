@@ -77,7 +77,7 @@ public class MethodParams extends Initer {
 	 */
 	public static MethodParams getNew() {
 
-		MethodParams one = Factory.getNewInstanceAndInitWithoutParams( MethodParams.class );
+		MethodParams one = Factory.getNewInstanceAndInitWithoutMethodParams( MethodParams.class );
 		// new MethodParams();
 		// one.init( null );
 		RunTime.assumedTrue( one.isInited() );
@@ -333,7 +333,7 @@ public class MethodParams extends Initer {
 	public MethodParams getClone() {
 
 		RunTime.assumedTrue( this.isInited() );
-		MethodParams clone = Factory.getNewInstanceAndInitWithoutParams( MethodParams.class );
+		MethodParams clone = Factory.getNewInstanceAndInitWithoutMethodParams( MethodParams.class );
 		// MethodParams clone = new MethodParams();
 		// clone.init( null );// must be null or recursion
 		RunTime.assumedTrue( clone.size() == 0 );

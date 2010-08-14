@@ -38,8 +38,8 @@ import org.references.method.MethodParams;
  */
 public class Level2_Storage_BerkeleyDB extends Level1_Storage_BerkeleyDB {
 	
-	private final DBMapSymbolsTuple	dbSymbolsTuple		= null;
-	private final static String		dbSymbolsTuple_NAME	= "tuple(Symbol<->Symbol)";
+	private DBMapSymbolsTuple	dbSymbolsTuple		= null;
+	private final static String	dbSymbolsTuple_NAME	= "tuple(Symbol<->Symbol)";
 	
 	
 	/**
@@ -50,7 +50,8 @@ public class Level2_Storage_BerkeleyDB extends Level1_Storage_BerkeleyDB {
 		if ( null == dbSymbolsTuple ) {
 			// dbSymbolsTuple = new DBMapSymbolsTuple( this, dbSymbolsTuple_NAME );
 			// dbSymbolsTuple.init( null );
-			Factory.getNewInstanceAndInitWithoutParams( DBMapSymbolsTuple.class, this, dbSymbolsTuple_NAME );
+			dbSymbolsTuple = Factory.getNewInstanceAndInitWithoutMethodParams( DBMapSymbolsTuple.class, this,
+					dbSymbolsTuple_NAME );
 			RunTime.assumedNotNull( dbSymbolsTuple );
 		} else {
 			Factory.reInitIfNotInited( dbSymbolsTuple );

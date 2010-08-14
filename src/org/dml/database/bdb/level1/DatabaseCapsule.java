@@ -69,7 +69,6 @@ public class DatabaseCapsule extends Initer {
 	}
 	
 	/**
-	 * @param string
 	 */
 	public DatabaseCapsule() {
 

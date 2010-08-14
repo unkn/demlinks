@@ -66,7 +66,7 @@ public class UniqueSymbolsGenerator extends Initer {
 
 		if ( null == seq ) {
 			// init once:
-			seq = Factory.getNewInstanceAndInitWithoutParams( DBSequence.class, bdbL1, seq_UniqueSymbolsPuller );
+			seq = Factory.getNewInstanceAndInitWithoutMethodParams( DBSequence.class, bdbL1, seq_UniqueSymbolsPuller );
 			// seq = new DBSequence( bdbL1, seq_UniqueSymbolsPuller );
 			// seq.init( null );
 			
@@ -109,6 +109,7 @@ public class UniqueSymbolsGenerator extends Initer {
 		if ( null != seq ) {
 			// seq = seq.done();
 			Factory.deInit( seq );
+			// don't null it
 		}
 	}
 	

@@ -90,7 +90,7 @@ public class Level1_Storage_BerkeleyDB extends Initer {
 	public DBMap_JavaIDs_To_Symbols getDBMap_JavaIDs_To_Symbols() throws DatabaseException {
 
 		if ( null == db_JavaID_To_Symbol ) {
-			db_JavaID_To_Symbol = Factory.getNewInstanceAndInitWithoutParams( DBMap_JavaIDs_To_Symbols.class, this,
+			db_JavaID_To_Symbol = Factory.getNewInstanceAndInitWithoutMethodParams( DBMap_JavaIDs_To_Symbols.class, this,
 					dbNAME_JavaID_To_NodeID );
 			// db_JavaID_To_Symbol = new DBMap_JavaIDs_To_Symbols( this, dbNAME_JavaID_To_NodeID );
 			// db_JavaID_To_Symbol.init( null );
@@ -131,7 +131,7 @@ public class Level1_Storage_BerkeleyDB extends Initer {
 	public UniqueSymbolsGenerator getUniqueSymbolsGenerator() {
 
 		if ( null == symGen ) {
-			symGen = Factory.getNewInstanceAndInitWithoutParams( UniqueSymbolsGenerator.class, this );
+			symGen = Factory.getNewInstanceAndInitWithoutMethodParams( UniqueSymbolsGenerator.class, this );
 			// symGen = new UniqueSymbolsGenerator( this );
 			// symGen.init( null );
 		} else {
@@ -360,6 +360,9 @@ public class Level1_Storage_BerkeleyDB extends Initer {
 	 * new instance of Sequence, keeping track of it inside BerkeleyDB class
 	 * just in case we need to shutdown all when Exception detected
 	 * 
+	 * @param thisSeqName
+	 * @param allSequencesConfig
+	 * 
 	 * @return never null
 	 * @throws DatabaseException
 	 */
@@ -380,6 +383,8 @@ public class Level1_Storage_BerkeleyDB extends Initer {
 	}
 	
 	/**
+	 * @param thisSeq
+	 * @param thisSeqName
 	 * @return null
 	 */
 	public Sequence closeAnySeq( Sequence thisSeq, String thisSeqName ) {
@@ -574,11 +579,9 @@ public class Level1_Storage_BerkeleyDB extends Initer {
 	
 	
 	/**
-	 * @param env2
-	 * @param object
 	 * @param dbName
 	 * @param dbConf
-	 * @return
+	 * @return the db
 	 * @throws DatabaseException
 	 */
 	public Database openAnyDatabase( String dbName, DatabaseConfig dbConf ) throws DatabaseException {
@@ -599,7 +602,7 @@ public class Level1_Storage_BerkeleyDB extends Initer {
 	 * @param secDbName
 	 * @param primaryDb
 	 * @param secDbConf
-	 * @return
+	 * @return the secondary db
 	 * @throws DatabaseException
 	 */
 	public SecondaryDatabase openAnySecDatabase( String secDbName, Database primaryDb, SecondaryConfig secDbConf )

@@ -33,21 +33,25 @@ public class Log {
 	static final int					fileAndLineWidth						= 30 + 50;
 	static final int					spacesBeforeMsg							= 10;
 	
-	private final static LogFlags		CurrentLogFlags[]						= {
-																				// LogFlags.Entry, LogFlags.Mid,
-																				// LogFlags.Exit,
-																				// LogFlags.Bug, LogFlags.Warn,
-																				// LogFlags.Result,
-																				// LogFlags.Special,
-																				// LogFlags.Thro,
-																				};
+	private final static LogFlags		CurrentLogFlags[]						=
+																					{
+			LogFlags.Entry,
+			LogFlags.Mid,
+			LogFlags.Exit,
+			LogFlags.Bug,
+			LogFlags.Warn,
+			LogFlags.Result,
+			LogFlags.Special,
+			LogFlags.Thro,
+																					};
 	
 	// if no elements, then all methods are shown
-	private final static String			ShowOnlyTheseMethodsAndTheirChildren[]	= {
-																				// "<init>"
-																				
-																				// "appendLinkPC"
-																				};
+	private final static String			ShowOnlyTheseMethodsAndTheirChildren[]	=
+																					{
+																					// "<init>"
+																					
+																					// "appendLinkPC"
+																					};
 	private final static boolean		alsoShowChildrenMethods					= true;
 	
 	private static StackTraceElement[]	stea									= null;
