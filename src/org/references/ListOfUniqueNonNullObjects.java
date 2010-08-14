@@ -108,16 +108,26 @@ public class ListOfUniqueNonNullObjects<E> extends ListOfNonNullObjects<E> {
 	 * @return true if existed and nothing was changed; false if it didn't
 	 *         exist, but it does now
 	 */
-	public boolean addFirstQ( E obj ) {
+	public boolean addObjectAtPosition( Position position, E obj ) {
 
-		RunTime.assumedNotNull( obj );
+		RunTime.assumedNotNull( position, obj );
 		
 		ChainedReference<E> ref = this.getRef( obj );
 		if ( null != ref ) {
 			// already exists, not added/moved
 			return true;
 		}
-		RunTime.assumedNotNull( super.addFirst( obj ) );
+		
+		switch ( position ) {
+		case FIRST:
+			RunTime.assumedNotNull( super.addFirst( obj ) );
+			break;
+		case LAST:
+			RunTime.assumedNotNull( super.addLast( obj ) );
+			break;
+		default:
+			RunTime.badCall( "bad position" );
+		}
 		
 		return false;// didn't exist
 	}

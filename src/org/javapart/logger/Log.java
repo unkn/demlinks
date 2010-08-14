@@ -34,11 +34,11 @@ public class Log {
 	static final int					spacesBeforeMsg							= 10;
 	
 	private final static LogFlags		CurrentLogFlags[]						= {
-																					// LogFlags.Entry, LogFlags.Mid,
-																					// LogFlags.Exit,
-																					// LogFlags.Bug, LogFlags.Warn,
-																					// LogFlags.Result,
-																					LogFlags.Special,
+																				// LogFlags.Entry, LogFlags.Mid,
+																				// LogFlags.Exit,
+																				// LogFlags.Bug, LogFlags.Warn,
+																				// LogFlags.Result,
+																				// LogFlags.Special,
 																				// LogFlags.Thro,
 																				};
 	

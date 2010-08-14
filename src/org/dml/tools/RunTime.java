@@ -354,9 +354,13 @@ public class RunTime {
 	
 	public static void assumedNotNull( Object... obj ) {
 
-		for ( int i = 0; i < obj.length; i++ ) {
-			if ( null == obj[i] ) {
-				RunTime.thro1( new AssertionError( "expected non-null object[" + ( i + 1 ) + "] was null!" ) );
+		if ( null == obj ) {
+			RunTime.badCall( "must supply at least one parameter" );
+		} else {
+			for ( int i = 0; i < obj.length; i++ ) {
+				if ( null == obj[i] ) {
+					RunTime.thro1( new AssertionError( "expected non-null object[" + ( i + 1 ) + "] was null!" ) );
+				}
 			}
 		}
 	}

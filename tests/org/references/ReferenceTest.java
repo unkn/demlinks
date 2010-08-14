@@ -131,7 +131,7 @@ public class ReferenceTest {
 		// this tests the list
 		ListOfUniqueNonNullObjects<Reference<String>> list = new ListOfUniqueNonNullObjects<Reference<String>>();
 		assertFalse( list.containsObject( one ) );
-		assertFalse( list.addFirstQ( one ) );
+		assertFalse( list.addObjectAtPosition( Position.FIRST, one ) );
 		assertTrue( list.containsObject( one ) );
 		assertFalse( list.containsObject( two ) );
 		list.addLast( two );

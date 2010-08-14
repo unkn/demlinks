@@ -59,8 +59,8 @@ public class ObjRefsListTest {
 	public void test1() {
 
 		assertTrue( ol.isEmpty() );
-		assertFalse( ol.addFirstQ( "second" ) );
-		assertFalse( ol.addFirstQ( "first" ) );
+		assertFalse( ol.addObjectAtPosition( Position.FIRST, "second" ) );
+		assertFalse( ol.addObjectAtPosition( Position.FIRST, "first" ) );
 		ol.addLast( "last" );
 		ol.insert( "antelast", Position.BEFORE, ol.getObjectAt( Position.LAST ) );
 		ol.insert( "middle", Position.AFTER, ol.getObjectAt( 1 ) );

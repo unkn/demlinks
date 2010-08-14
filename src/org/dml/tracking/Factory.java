@@ -48,21 +48,25 @@ public class Factory {
 	
 	// this will make sure you don't miss calling deInitAll() even if JVM gets interrupted or something
 	static { // Factory INIT
-		new ShutDownHook( new Thread( null, null, "shutdown-hook thread" ) {
-			
-			@Override
-			public void run() {
-
-				Log.special( "on Factory shutdown-hook entry" );
-				Factory.deInitAll();
-				// throw
-				// new
-				// RuntimeException(
-				// "taest"
-				// );
-			}
-		} );
+		// FIXME: temporarily disabled
+		// new ShutDownHook( new Thread( null, null, "shutdown-hook thread" ) {
+		//
+		// @Override
+		// public void run() {
+		//
+		// Log.special( "on Factory shutdown-hook entry" );
+		// Factory.deInitAll();
+		// // throw
+		// // new
+		// // RuntimeException(
+		// // "taest"
+		// // );
+		// }
+		// } );
 	}
+	
+	static int																	initDepth		= 1;
+	static int																	deInitDepth		= 1;
 	
 	// LIFO list tracking all instances of ALL subclasses that are inited
 	// add new ones to first, and when remove-all start from last to first
@@ -197,7 +201,10 @@ public class Factory {
 
 		// String factClassThisMethod = RunTime.getCurrentMethodName();// stea[1].getMethodName();
 		// System.out.println( "!" + factClassThisMethod );
-		System.out.println( RunTime.getTheCaller_OutsideOfThisClass() );
+		StackTraceElement caller = RunTime.getTheCaller_OutsideOfThisClass();
+		System.out.println( String.format( "%-" + initDepth * 3 + "s", " " ) + "i->" + initDepth + " "
+				+ instance.getClass().getSimpleName() + " caller: " + caller );
+		initDepth++;
 		// ,RunTime.getCurrentMethodName())
 		// System.out.println( RunTime.getCurrentStackTraceElement() );
 		// must add before init because init may init others before we get to add so the order gets foobar-ed
@@ -210,6 +217,11 @@ public class Factory {
 			Log.special2( "init-ed: " + instance.getClass().getCanonicalName() );
 		} finally {
 			set_InitWork_DoneInParent( instance );
+			initDepth--;
+			// System.out.println( "i<-" + depth + " " + caller );
+			// System.out.println( String.format( "%-" + initDepth * 3 + "s", " " ) + "i<-" + initDepth + " "
+			// + instance.getClass().getSimpleName() + " caller: " + caller );
+			
 		}
 		
 		// addNewInitedInstance_asAfterInit( instance );
@@ -240,7 +252,7 @@ public class Factory {
 		// TreeOfUniqueNonNullObjects<Initer> newChildInCurrent = new TreeOfUniqueNonNullObjects<Initer>();
 		// newChildInCurrent.setParent( currentParent );
 		// newChildInCurrent.setValue( instance );
-		currentParent = currentParent.addChildFirst( instance );// hardwired to first
+		currentParent = currentParent.addChildAtPos( Position.FIRST, instance );// hardwired to first, LIFO
 		RunTime.assumedFalse( QUICK_FIND.put( instance, currentParent ) );
 		RunTime.assumedNotNull( currentParent );
 	}
@@ -369,6 +381,8 @@ public class Factory {
 			// FIXME: deInit leftover subTree(s) else they're just lost here OR merge this subtree's children with
 			// the root tree(not to parent tree) in the same LIFO manner
 			// FIXME: commented below:
+			
+			final Position tmpPos = Position.FIRST;// hardwired to FIRST
 			while ( !subTree.isEmpty() ) {
 				TreeOfNonNullObjects<Initer> t = subTree.getChildAt( Position.LAST );// hardwired to LAST(opposite to
 																						// FIRST)
@@ -377,8 +391,8 @@ public class Factory {
 				Initer inst = t.getValue();
 				// RunTime.assumedTrue( QUICK_FIND.remove( inst ) == t );
 				RunTime.assumedTrue( subTree.removeChild( t ) );
-				t = root.addChildFirst( inst );// hardwired to FIRST
-				RunTime.assumedTrue( root.getChildAt( Position.FIRST ) == t );// first
+				t = root.addChildAtPos( tmpPos, inst );
+				RunTime.assumedTrue( root.getChildAt( tmpPos ) == t );// first
 				RunTime.assumedTrue( QUICK_FIND.put( inst, t ) );
 				RunTime.assumedTrue( QUICK_FIND.getValue( inst ) == t );
 			}
@@ -404,7 +418,18 @@ public class Factory {
 
 		RunTime.assumedNotNull( instance );
 		Log.special4( "deInit-ing " + instance.getClass().getName() );
-		instance._deInit();
+		
+		StackTraceElement caller = RunTime.getTheCaller_OutsideOfThisClass();
+		System.out.println( String.format( "%-" + deInitDepth * 3 + "s", " " ) + "d->" + deInitDepth + " "
+				+ instance.getClass().getSimpleName() + " caller: " + caller );
+		deInitDepth++;
+		try {
+			instance._deInit();
+		} finally {
+			deInitDepth--;
+			// System.out.println( String.format( "%-" + deInitDepth * 3 + "s", " " ) + "d<-" + deInitDepth + " "
+			// + instance.getClass().getSimpleName() + " caller: " + caller );
+		}
 	}
 	
 	/**
@@ -551,6 +576,8 @@ public class Factory {
 		RunTime.assumedNotNull( currentParent );
 		RunTime.assumedTrue( currentParent == root );
 		RunTime.assumedNotNull( root );
+		
+		System.out.println( root.size() );// FIXME: remove
 		
 		while ( true ) {
 			// get the last subtree in root (aka next in our context)

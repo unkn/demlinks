@@ -72,6 +72,7 @@ public class Level1_Storage_BerkeleyDB extends Initer {
 	// we keep track of open stuffs just in case we need to emergency shutdown
 	// ie. on Exception
 	private final ListOfUniqueNonNullObjects<Sequence>			allSequenceInstances		= new ListOfUniqueNonNullObjects<Sequence>();
+	// LIFO: allOpenPrimaryDatabases
 	private final ListOfUniqueNonNullObjects<Database>			allOpenPrimaryDatabases		= new ListOfUniqueNonNullObjects<Database>();
 	private final ListOfUniqueNonNullObjects<SecondaryDatabase>	allOpenSecondaryDatabases	= new ListOfUniqueNonNullObjects<SecondaryDatabase>();
 	private UniqueSymbolsGenerator								symGen						= null;
@@ -371,7 +372,7 @@ public class Level1_Storage_BerkeleyDB extends Initer {
 		DatabaseEntry deKey = new DatabaseEntry();
 		StringBinding.stringToEntry( thisSeqName, deKey );
 		Sequence seq = this.getSeqsDB().openSequence( null, deKey, allSequencesConfig );
-		if ( allSequenceInstances.addFirstQ( seq ) ) {
+		if ( allSequenceInstances.addObjectAtPosition( Position.FIRST, seq ) ) {
 			RunTime.bug( "couldn't have already existed!" );
 		}
 		RunTime.assumedNotNull( seq );
@@ -395,6 +396,7 @@ public class Level1_Storage_BerkeleyDB extends Initer {
 					RunTime.throWrapped( t );// wrap around and don't postpone
 				}
 			} finally {
+				RunTime.assumedFalse( allSequenceInstances.isEmpty() );
 				if ( !allSequenceInstances.removeObject( thisSeq ) ) {
 					RunTime.bug( "should've existed" );// this will not be postponed
 				}
@@ -427,7 +429,8 @@ public class Level1_Storage_BerkeleyDB extends Initer {
 				// postpone all, until all sequence instances are closed
 			} finally {
 				// but we won't postpone these since these signal bugs in the 'shutdown engine'
-				if ( allSequenceInstances.removeObject( iter ) ) {
+				RunTime.assumedFalse( allSequenceInstances.isEmpty() );
+				if ( !allSequenceInstances.removeObject( iter ) ) {
 					RunTime.bug( "should've existed before" );
 				}
 			}
@@ -507,7 +510,7 @@ public class Level1_Storage_BerkeleyDB extends Initer {
 			// );
 		}
 		
-		// closing primaries:
+		// closing primaries: LIFO manner
 		Database iter;
 		while ( null != ( iter = allOpenPrimaryDatabases.getObjectAt( Position.FIRST ) ) ) {
 			try {
@@ -583,9 +586,10 @@ public class Level1_Storage_BerkeleyDB extends Initer {
 		Log.entry( dbName );
 		// should not use this openDatabase() method anywhere else
 		Database db = this.getEnvironment().openDatabase( null, dbName, dbConf );
-		if ( allOpenPrimaryDatabases.addFirstQ( db ) ) {
+		if ( allOpenPrimaryDatabases.addObjectAtPosition( Position.FIRST, db ) ) {
 			RunTime.bug( "couldn't have already existed!" );
 		}
+		RunTime.assumedNotNull( allOpenPrimaryDatabases.getRef( db ) );
 		return db;
 		// this should be the only method doing open on any database in this
 		// environment
@@ -603,7 +607,7 @@ public class Level1_Storage_BerkeleyDB extends Initer {
 
 		Log.entry( secDbName );
 		SecondaryDatabase secDb = this.getEnvironment().openSecondaryDatabase( null, secDbName, primaryDb, secDbConf );
-		if ( allOpenSecondaryDatabases.addFirstQ( secDb ) ) {
+		if ( allOpenSecondaryDatabases.addObjectAtPosition( Position.FIRST, secDb ) ) {
 			RunTime.bug( "couldn't have already existed" );
 		}
 		return secDb;

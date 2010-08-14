@@ -88,7 +88,9 @@ public class DBMapTupleNodeIDsTest {
 		Factory.deInit( bdb );
 		// bdb.deInit();
 		bdb = null;
+		System.out.println( "all:" );
 		Factory.deInitAll();
+		System.out.println( "done" );
 	}
 	
 	@Test

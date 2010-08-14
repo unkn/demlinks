@@ -104,31 +104,33 @@ public class TreeOfNonNullObjects<T> {
 	 * @param child
 	 *            non-null
 	 */
-	public TreeOfNonNullObjects<T> addChildFirst( T childValue ) {
+	public TreeOfNonNullObjects<T> addChildAtPos( Position position, T childValue ) {
 
-		RunTime.assumedNotNull( childValue );
+		RunTime.assumedNotNull( position, childValue );
+		RunTime.assumedTrue( Position.isInList( position, Position.FIRST, Position.LAST ) );
+		
 		TreeOfNonNullObjects<T> newChildInCurrent = new TreeOfNonNullObjects<T>( this, childValue );
-		if ( this.getChildren().addFirstQ( newChildInCurrent ) ) {
+		if ( this.getChildren().addObjectAtPosition( position, newChildInCurrent ) ) {
 			RunTime.bug( "subtree already exists, impossible" );
 		}
 		return newChildInCurrent;
 	}
 	
-	/**
-	 * this will add as LAST in list of children<br>
-	 * 
-	 * @param child
-	 *            non-null
-	 */
-	public TreeOfNonNullObjects<T> addChildLast( T childValue ) {
-
-		RunTime.assumedNotNull( childValue );
-		TreeOfNonNullObjects<T> newChildInCurrent = new TreeOfNonNullObjects<T>( this, childValue );
-		if ( this.getChildren().addLastQ( newChildInCurrent ) ) {
-			RunTime.bug( "subtree already exists, impossible" );
-		}
-		return newChildInCurrent;
-	}
+	// /**
+	// * this will add as LAST in list of children<br>
+	// *
+	// * @param child
+	// * non-null
+	// */
+	// public TreeOfNonNullObjects<T> addChildLast( T childValue ) {
+	//
+	// RunTime.assumedNotNull( childValue );
+	// TreeOfNonNullObjects<T> newChildInCurrent = new TreeOfNonNullObjects<T>( this, childValue );
+	// if ( this.getChildren().addLastQ( newChildInCurrent ) ) {
+	// RunTime.bug( "subtree already exists, impossible" );
+	// }
+	// return newChildInCurrent;
+	// }
 	
 	/**
 	 * @param pos

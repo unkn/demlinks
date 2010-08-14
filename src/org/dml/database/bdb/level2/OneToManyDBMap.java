@@ -124,6 +124,7 @@ public class OneToManyDBMap<InitialType, TerminalType> extends Initer {
 			// params.deInit();
 			
 			RunTime.assumedNotNull( forwardDB );
+			RunTime.assumedTrue( forwardDB.isInited() );
 		} else {
 			Factory.reInitIfNotInited( forwardDB );
 			// if ( !forwardDB.isInited() ) {
@@ -463,19 +464,22 @@ public class OneToManyDBMap<InitialType, TerminalType> extends Initer {
 	protected void done( MethodParams params ) {
 
 		Log.entry( "done OneToManyDBMap: " + dbName );
-		
+		// System.out.println( RunTime.getCurrentStackTraceElement( +4 ) );
+		// System.out.println( forwardDB.isInited() );
 		boolean one = false;
 		boolean two = false;
 		
 		if ( null != forwardDB ) {
 			// forwardDB.deInit();
 			Factory.deInit( forwardDB );
+			// do not make it null, we need it for reinit and we dno't want to waste space
 			one = true;
 		}
 		
 		if ( null != backwardDB ) {
 			Factory.deInit( backwardDB );
-			// backwardDB.deInit();
+			// backwardDB.deInit();\
+			// don't null it
 			two = true;
 		}
 		if ( one != two ) {

@@ -33,6 +33,27 @@ public enum Position {
 	FIRST, LAST, BEFORE, AFTER;
 	
 	/**
+	 * @param whichPosition
+	 *            the position to be checked against the list
+	 * @param posList
+	 *            non-null, non-empty list of allowed positions
+	 * @return true if the position is in list
+	 */
+	public static boolean isInList( Position whichPosition, Position... posList ) {
+
+		RunTime.assumedNotNull( whichPosition, posList );// no null array aka posList must exist
+		RunTime.assumedTrue( posList.length > 0 );
+		boolean found1 = false;
+		for ( Position currentPos : posList ) {
+			RunTime.assumedNotNull( currentPos );// no null parameters!
+			if ( whichPosition == currentPos ) {
+				found1 = true;
+			}
+		}
+		return found1;
+	}
+	
+	/**
 	 * @param pos
 	 * @return
 	 */
