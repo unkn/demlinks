@@ -47,27 +47,23 @@ import org.references.method.MethodParams;
 public class Factory {
 	
 	// this will make sure you don't miss calling deInitAll() even if JVM gets interrupted or something
-	@SuppressWarnings( "unused" )
-	private final static ShutDownHook											initFactoryClass	= new ShutDownHook(
-																											new Thread(
-																													null,
-																													null,
-																													"shutdown-hook thread" ) {
-																												
-																												@Override
-																												public void run() {
+	static { // Factory INIT
+		new ShutDownHook( new Thread( null, null, "shutdown-hook thread" ) {
+			
+			@Override
+			public void run() {
 
-																													Log.special( "on Factory shutdown-hook entry" );
-																													Factory.deInitAll();
-																													// throw
-																													// new
-																													// RuntimeException(
-																													// "taest"
-																													// );
-																												}
-																											} );
+				Log.special( "on Factory shutdown-hook entry" );
+				Factory.deInitAll();
+				// throw
+				// new
+				// RuntimeException(
+				// "taest"
+				// );
+			}
+		} );
+	}
 	
-
 	// LIFO list tracking all instances of ALL subclasses that are inited
 	// add new ones to first, and when remove-all start from last to first
 	// LIFO manner add/remove on this tree thingy
@@ -75,9 +71,9 @@ public class Factory {
 	// this tree is a list of lists; the depth is when each class that got .init()-ed also inits it's own instances
 	// inside that init(); if a class inits new instances while not in it's own init, then's ok they're just added on
 	// the current level ie. root
-	private final static TreeOfNonNullObjects<Initer>							root				= new TreeOfNonNullObjects<Initer>();
-	private static TreeOfNonNullObjects<Initer>									currentParent		= root;
-	private final static NonNullHashMap<Initer, TreeOfNonNullObjects<Initer>>	QUICK_FIND			= new NonNullHashMap<Initer, TreeOfNonNullObjects<Initer>>();
+	private final static TreeOfNonNullObjects<Initer>							root			= new TreeOfNonNullObjects<Initer>();
+	private static TreeOfNonNullObjects<Initer>									currentParent	= root;
+	private final static NonNullHashMap<Initer, TreeOfNonNullObjects<Initer>>	QUICK_FIND		= new NonNullHashMap<Initer, TreeOfNonNullObjects<Initer>>();
 	
 	/**
 	 * generic method with a type variable<br>
@@ -237,7 +233,7 @@ public class Factory {
 		// TreeOfUniqueNonNullObjects<Initer> newChildInCurrent = new TreeOfUniqueNonNullObjects<Initer>();
 		// newChildInCurrent.setParent( currentParent );
 		// newChildInCurrent.setValue( instance );
-		currentParent = currentParent.addChildFirst( instance );// hardwired
+		currentParent = currentParent.addChildFirst( instance );// hardwired to first
 		RunTime.assumedFalse( QUICK_FIND.put( instance, currentParent ) );
 		RunTime.assumedNotNull( currentParent );
 	}
@@ -367,15 +363,15 @@ public class Factory {
 			// the root tree(not to parent tree) in the same LIFO manner
 			// FIXME: commented below:
 			while ( !subTree.isEmpty() ) {
-				TreeOfNonNullObjects<Initer> t = subTree.getChildAt( Position.FIRST );// hardwired to LAST(opposite to
+				TreeOfNonNullObjects<Initer> t = subTree.getChildAt( Position.LAST );// hardwired to LAST(opposite to
 																						// FIRST)
 				RunTime.assumedNotNull( t );
 				
 				Initer inst = t.getValue();
 				// RunTime.assumedTrue( QUICK_FIND.remove( inst ) == t );
 				RunTime.assumedTrue( subTree.removeChild( t ) );
-				t = root.addChildLast( inst );// hardwired to FIRST
-				RunTime.assumedTrue( root.getChildAt( Position.LAST ) == t );
+				t = root.addChildFirst( inst );// hardwired to FIRST
+				RunTime.assumedTrue( root.getChildAt( Position.FIRST ) == t );// first
 				RunTime.assumedTrue( QUICK_FIND.put( inst, t ) );
 				RunTime.assumedTrue( QUICK_FIND.getValue( inst ) == t );
 			}
@@ -544,7 +540,7 @@ public class Factory {
 		while ( true ) {
 			// get the last subtree in root (aka next in our context)
 			// which means get the one which was first inited FIFO manner
-			TreeOfNonNullObjects<Initer> currentSubTree = root.getChildAt( Position.LAST );// hardwired: to first LIFO
+			TreeOfNonNullObjects<Initer> currentSubTree = root.getChildAt( Position.FIRST );// hardwired: to first LIFO
 			if ( null == currentSubTree ) {
 				// no subtrees exist in root then:
 				// root is empty, consistency check

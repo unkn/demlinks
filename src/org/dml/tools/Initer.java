@@ -48,6 +48,14 @@ public abstract class Initer {
 	private MethodParams	formerParams	= null;
 	
 	/**
+	 * constructor
+	 */
+	public Initer() {
+
+		super();
+	}
+	
+	/**
 	 * @param inited1
 	 *            the inited to set
 	 */
