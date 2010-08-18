@@ -83,7 +83,12 @@ public class Factory {
 	 * generic method with a type variable<br>
 	 * this will do a new and an init() with no params
 	 * 
-	 * @param class1
+	 * @param <T>
+	 * 
+	 * @param parentDeIniterInstance
+	 * @param listOfOtherMoreParents
+	 * 
+	 * @param type
 	 *            any subclass of StaticInstanceTracker
 	 * @param constructorParameters
 	 *            a list of objects to be passed to the constructor(which is auto found based on objects passed)<br>
@@ -91,10 +96,10 @@ public class Factory {
 	 * @return the new instance, don't forget to assign this to a variable (FIXME: I wonder if we can do a warning on
 	 *         this?)
 	 */
-	public static <T extends Initer> T getNewInstanceAndInitWithoutMethodParams( Class<T> type,
-			Object... constructorParameters ) {
+	public static <T extends Initer> T getNewInstanceAndInitWithoutMethodParams( Initer parentDeIniterInstance,
+			Initer[] listOfOtherMoreParents, Class<T> type, Object... constructorParameters ) {
 
-		return getNewInstanceAndInit( type, null, constructorParameters );
+		return getNewInstanceAndInit( parentDeIniterInstance, listOfOtherMoreParents, type, null, constructorParameters );
 	}
 	
 	
@@ -158,25 +163,33 @@ public class Factory {
 	 * this will do a new with the default constructor which should be public <br>
 	 * and an .init(params)<br>
 	 * 
-	 * @param deIniterInstance
-	 *            the parent instance to this new instance, that will deInit this new instance
+	 * @param parentDeIniterInstance
+	 *            the parent instance to this new instance, that will deInit this new instance when it is
+	 *            deInited itself; so this means we won't deinit this new instance before we deinit this parent
+	 *            instance; instead we will deinit this parent instance and it will auto deinit this new instance
 	 * @param listOfOtherMoreParents
 	 *            other parents to this new instance that means they will not be deInited before this new instance is
-	 *            deInited; Note that deIniterInstance is already considered a parent, do not specify it again inhere
+	 *            deInited; Note that <tt>parentDeIniterInstance</tt> is already considered a parent, do not specify it
+	 *            again inhere<br>
+	 *            can use new Initer[]{a,b,c,d}
 	 * 
 	 * @param typeOfInstanceToInit
-	 *            any subclass of Initer, EXCEPT gerenic classes ie. GenericClass<X,Y,Z> for these you have to new
+	 *            any subclass of Initer, EXCEPT generic classes ie. GenericClass<X,Y,Z> for these you have to new
 	 *            manually and then call {@link #init(Initer, MethodParams)} OR {@link #initWithoutParams(Initer)}
 	 * @param methodParams
-	 *            MethodParams instance for init(params)
+	 *            MethodParams instance for init(params)<br>
+	 *            can be null
 	 * @param constructorParams
 	 *            to use a specific constructor based on the specified parameters and passing these to it when doing the
-	 *            'new'
+	 *            'new'<br>
+	 *            can be unspecified or nulls<br>
+	 *            can use comma to separate them<br>
 	 * @return the new instance, don't forget to assign this to a variable (FIXME: I wonder if we can do a warning on
 	 *         this?)
 	 */
-	public static <T extends Initer> T getNewInstanceAndInit( Initer deIniterInstance, Initer[] listOfOtherMoreParents,
-			Class<T> typeOfInstanceToInit, MethodParams methodParams, Object... constructorParams ) {
+	public static <T extends Initer> T getNewInstanceAndInit( Initer parentDeIniterInstance,
+			Initer[] listOfOtherMoreParents, Class<T> typeOfInstanceToInit, MethodParams methodParams,
+			Object... constructorParams ) {
 
 		T ret = Factory.getGenericNewInstance( typeOfInstanceToInit, constructorParams );
 		
