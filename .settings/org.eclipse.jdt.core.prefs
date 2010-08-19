@@ -1,4 +1,4 @@
-#Thu Aug 19 12:45:42 CEST 2010
+#Thu Aug 19 13:07:05 CEST 2010
 eclipse.preferences.version=1
 org.eclipse.jdt.core.compiler.codegen.inlineJsrBytecode=enabled
 org.eclipse.jdt.core.compiler.codegen.targetPlatform=1.6
@@ -39,7 +39,7 @@ org.eclipse.jdt.core.formatter.blank_lines_before_field=0
 org.eclipse.jdt.core.formatter.blank_lines_before_first_class_body_declaration=1
 org.eclipse.jdt.core.formatter.blank_lines_before_imports=3
 org.eclipse.jdt.core.formatter.blank_lines_before_member_type=1
-org.eclipse.jdt.core.formatter.blank_lines_before_method=1
+org.eclipse.jdt.core.formatter.blank_lines_before_method=2
 org.eclipse.jdt.core.formatter.blank_lines_before_new_chunk=1
 org.eclipse.jdt.core.formatter.blank_lines_before_package=2
 org.eclipse.jdt.core.formatter.blank_lines_between_import_groups=1
@@ -269,7 +269,7 @@ org.eclipse.jdt.core.formatter.keep_then_statement_on_same_line=false
 org.eclipse.jdt.core.formatter.lineSplit=120
 org.eclipse.jdt.core.formatter.never_indent_block_comments_on_first_column=false
 org.eclipse.jdt.core.formatter.never_indent_line_comments_on_first_column=false
-org.eclipse.jdt.core.formatter.number_of_blank_lines_at_beginning_of_method_body=1
+org.eclipse.jdt.core.formatter.number_of_blank_lines_at_beginning_of_method_body=0
 org.eclipse.jdt.core.formatter.number_of_empty_lines_to_preserve=3
 org.eclipse.jdt.core.formatter.put_empty_statement_on_new_line=true
 org.eclipse.jdt.core.formatter.tabulation.char=tab

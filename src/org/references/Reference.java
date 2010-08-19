@@ -28,50 +28,77 @@ package org.references;
 /**
  * 
  * NOTE: don't implement Factory/Initer to this
+ * 
+ * @param <T>
  */
-public class Reference<T> {
+public class Reference<T>
+{
 	
 	private T	object	= null;
 	
-	public Reference() {
+	public Reference()
+	{
 
+		// constructor
+	}
+	
+	
+	public
+			void
+			setObject(
+				T obj )
+	{
+
+		object = obj;
 	}
 	
 	/**
 	 * @return the object that this reference refers to
 	 */
-	public void setObject( T obj ) {
-
-		object = obj;
-	}
-	
-	public T getObject() {
+	public
+			T
+			getObject()
+	{
 
 		return object;
 	}
 	
 	
+
+	/**
+	 * compares by contents that is:<br>
+	 * refa.equals(refb) if refa.object == refb.object OR refa.object.equals(refb.object)<br>
+	 * so if the object references aren't equal the .equals() on objects is invoked
+	 * 
+	 */
 	@SuppressWarnings( "unchecked" )
 	@Override
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	public boolean equals( Object obj1 ) {
+	public
+			boolean
+			equals(
+				Object obj1 )
+	{
 
 		boolean ret = true;
-		if ( !super.equals( obj1 ) ) {
+		if ( !super.equals( obj1 ) )
+		{
 			ret = false;
-			if ( null != obj1 ) {
-				if ( obj1.getClass() == this.getClass() ) {
+			if ( null != obj1 )
+			{
+				if ( obj1.getClass() == this.getClass() )
+				{
 					T thisObj = this.getObject();
 					T thatO = ( (Reference<T>)obj1 ).getObject();
-					if ( thisObj == thatO ) {
+					if ( thisObj == thatO )
+					{
 						ret = true;
-					} else {
-						if ( thisObj != null ) {
-							if ( thisObj.equals( thatO ) ) {
+					}
+					else
+					{
+						if ( thisObj != null )
+						{
+							if ( thisObj.equals( thatO ) )
+							{
 								ret = true;
 							}
 						}
@@ -88,12 +115,18 @@ public class Reference<T> {
 	 * @see java.lang.Object#hashCode()
 	 */
 	@Override
-	public int hashCode() {
+	public
+			int
+			hashCode()
+	{
 
 		// TODO: maybe add hashCode() to all other .equals() that are overridden
-		if ( null != this.getObject() ) {
+		if ( null != this.getObject() )
+		{
 			return this.getObject().hashCode();
-		} else {
+		}
+		else
+		{
 			return super.hashCode();
 		}
 	}
@@ -104,11 +137,17 @@ public class Reference<T> {
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
-	public String toString() {
+	public
+			String
+			toString()
+	{
 
-		if ( null != this.getObject() ) {
+		if ( null != this.getObject() )
+		{
 			return this.getClass().getCanonicalName() + ":" + this.getObject().toString();
-		} else {
+		}
+		else
+		{
 			return this.getClass().getCanonicalName() + ":null";
 		}
 	}

@@ -33,39 +33,50 @@ import org.dml.tools.RunTime;
  * just an ID that will uniquely identify a specific parameter<br>
  * its value is not stored here<br>
  */
-public class ParamID {
+public class ParamID
+{
 	
 	private final String	selfName;	// only for debugging purposes!
 										
+
 	/**
 	 * dummy constructor, private to prevent init
 	 */
-	private ParamID() {
-
+	private ParamID()
+	{
 		selfName = null;
-	};
+	}
 	
-	private ParamID( String name ) {
 
+	private ParamID(
+			String name )
+	{
 		RunTime.assumedNotNull( name );
 		selfName = name;
 	}
 	
-	// TODO: throw if 'name' already used when calling getNew! which means keep static list of all names
-	public static ParamID getNew( String name ) {
 
-		return new ParamID( name );
+	// TODO: throw if 'name' already used when calling getNew! which means keep static list of all names
+	public static
+			ParamID
+			getNew(
+				String name )
+	{
+		return new ParamID(
+				name );
 	}
 	
-	
+
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
-	public String toString() {
-
+	public
+			String
+			toString()
+	{
 		return this.getClass().getCanonicalName() + ":" + selfName;
 	}
 	
