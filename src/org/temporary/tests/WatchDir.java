@@ -88,11 +88,12 @@ public class WatchDir {
 	 * Register the given directory, and all its sub-directories, with the
 	 * WatchService.
 	 */
-	private void registerAll( final Path start ) throws IOException {
+	private void registerAll( final Path start ) {
 
 		// register directory and sub-directories
 		Files.walkFileTree( start, new SimpleFileVisitor<Path>() {
 			
+			@SuppressWarnings( "synthetic-access" )
 			@Override
 			public FileVisitResult preVisitDirectory( Path dir ) {
 
@@ -149,6 +150,7 @@ public class WatchDir {
 			}
 			
 			for ( WatchEvent<?> event : key.pollEvents() ) {
+				@SuppressWarnings( "rawtypes" )
 				WatchEvent.Kind kind = event.kind();
 				
 				// TBD - provide example of how OVERFLOW event is handled
