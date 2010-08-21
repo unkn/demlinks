@@ -47,48 +47,77 @@ import org.references.method.PossibleParams;
  * 
  *
  */
-public class Level040_DMLEnvironmentTest {
+public class Level040_DMLEnvironmentTest
+{
 	
 	Level040_DMLEnvironment	l4;
 	
+	
 	@Before
-	public void setUp() {
-
+	public
+			void
+			setUp()
+	{
+		
 		MethodParams params = MethodParams.getNew();
 		// params.init( null );
-		params.set( PossibleParams.jUnit_wipeDB, true );
-		params.set( PossibleParams.jUnit_wipeDBWhenDone, true );
+		params.set(
+					PossibleParams.jUnit_wipeDB,
+					true );
+		params.set(
+					PossibleParams.jUnit_wipeDBWhenDone,
+					true );
 		// l4 = new Level040_DMLEnvironment();
 		// l4.init( params );
-		l4 = Factory.getNewInstanceAndInit( Level040_DMLEnvironment.class, params );
-		Factory.deInit( params );
+		l4 = Factory.getNewInstanceAndInit(
+											Level040_DMLEnvironment.class,
+											params );
+		// Factory.deInit( params );
 		// params.deInit();
 	}
 	
-	@After
-	public void tearDown() {
 
+	@After
+	public
+			void
+			tearDown()
+	{
+		
 		Factory.deInit( l4 );
 		// l4.deInitSilently();
 	}
 	
-	@Test
-	public void test1() {
 
+	@Test
+	public
+			void
+			test1()
+	{
+		
 		JavaID name = JavaID.ensureJavaIDFor( "booList" );
 		Symbol name2 = l4.createSymbol( name );
 		
-		ListOrderedOfSymbols list = l4.getNewListOOS( name2, false, false );
+		ListOrderedOfSymbols list = l4.getNewListOOS(
+														name2,
+														false,
+														false );
 		// RunTime.assumedFalse( l4.ensureLink( list.getAsSymbol(), name ) );
 		
 		this.test1_1( list );
 		Symbol name3 = l4.createSymbol( JavaID.ensureJavaIDFor( "WWFlist" ) );
-		ListOrderedOfSymbolsWithFastFind list2 = l4.getNewListOOSWFF( name3, false );
+		ListOrderedOfSymbolsWithFastFind list2 = l4.getNewListOOSWFF(
+																		name3,
+																		false );
 		this.test1_1( list2 );
 	}
 	
-	private void test1_1( OrderedList list ) {
 
+	private
+			void
+			test1_1(
+						OrderedList list )
+	{
+		
 		list.assumedValid();
 		
 		assertNull( list.get( Position.FIRST ) );
@@ -96,59 +125,108 @@ public class Level040_DMLEnvironmentTest {
 		assertTrue( list.size() == 0 );
 		
 		Symbol e1 = l4.newUniqueSymbol();
-		list.add( e1, Position.LAST );
+		list.add(
+					e1,
+					Position.LAST );
 		assertTrue( list.get( Position.LAST ) == e1 );
 		assertTrue( list.get( Position.FIRST ) == e1 );
 		
 		Symbol e2 = l4.newUniqueSymbol();
-		list.add( e2, Position.BEFORE, e1 );
+		list.add(
+					e2,
+					Position.BEFORE,
+					e1 );
 		assertTrue( list.get( Position.FIRST ) == e2 );
 		assertTrue( list.get( Position.LAST ) == e1 );
-		assertTrue( list.get( Position.AFTER, e2 ) == e1 );
-		assertNull( list.get( Position.AFTER, e1 ) );
-		assertTrue( list.get( Position.BEFORE, e1 ) == e2 );
-		assertNull( list.get( Position.BEFORE, e2 ) );
+		assertTrue( list.get(
+								Position.AFTER,
+								e2 ) == e1 );
+		assertNull( list.get(
+								Position.AFTER,
+								e1 ) );
+		assertTrue( list.get(
+								Position.BEFORE,
+								e1 ) == e2 );
+		assertNull( list.get(
+								Position.BEFORE,
+								e2 ) );
 		assertTrue( list.size() == 2 );
 		list.assumedValid();
 		
 		Symbol e3 = l4.newUniqueSymbol();
-		list.add( e3, Position.AFTER, e1 );
+		list.add(
+					e3,
+					Position.AFTER,
+					e1 );
 		assertTrue( list.get( Position.LAST ) == e3 );
 		assertTrue( list.size() == 3 );
 		
 		Symbol e4 = l4.newUniqueSymbol();
-		list.add( e4, Position.LAST );
+		list.add(
+					e4,
+					Position.LAST );
 		assertTrue( list.get( Position.LAST ) == e4 );
 		assertTrue( list.size() == 4 );
-		assertTrue( list.get( Position.BEFORE, e4 ) == e3 );
+		assertTrue( list.get(
+								Position.BEFORE,
+								e4 ) == e3 );
 		
 		// adding self in the list
-		list.add( list.getAsSymbol(), Position.AFTER, e1 );
-		assertTrue( list.getAsSymbol() == list.get( Position.BEFORE, e3 ) );
+		list.add(
+					list.getAsSymbol(),
+					Position.AFTER,
+					e1 );
+		assertTrue( list.getAsSymbol() == list.get(
+													Position.BEFORE,
+													e3 ) );
 		assertTrue( list.size() == 5 );
 		list.assumedValid();
 		
 		boolean threw = false;
-		try {
-			list.add( e4, Position.FIRST );
-		} catch ( BadCallError bce ) {
+		try
+		{
+			list.add(
+						e4,
+						Position.FIRST );
+		}
+		catch ( BadCallError bce )
+		{
 			threw = true;
 		}
 		assertTrue( threw );
 		
-		l4.newLink( e1, JavaID.ensureJavaIDFor( "e1 " + list ) );
-		l4.newLink( e2, JavaID.ensureJavaIDFor( "e2 " + list ) );
-		l4.newLink( e3, JavaID.ensureJavaIDFor( "e3 " + list ) );
-		l4.newLink( e4, JavaID.ensureJavaIDFor( "e4 " + list ) );
+		l4.newLink(
+					e1,
+					JavaID.ensureJavaIDFor( "e1 " + list ) );
+		l4.newLink(
+					e2,
+					JavaID.ensureJavaIDFor( "e2 " + list ) );
+		l4.newLink(
+					e3,
+					JavaID.ensureJavaIDFor( "e3 " + list ) );
+		l4.newLink(
+					e4,
+					JavaID.ensureJavaIDFor( "e4 " + list ) );
 		Symbol iter = list.get( Position.FIRST );
-		while ( null != iter ) {
+		while ( null != iter )
+		{
 			System.out.println( l4.getJavaID( iter ) );
-			iter = list.get( Position.AFTER, iter );
+			iter = list.get(
+								Position.AFTER,
+								iter );
 		}
 		// 2,1,list, 3,4
-		assertTrue( list.get( Position.BEFORE, e3 ) == list.get( Position.AFTER, e1 ) );
-		assertTrue( list.get( Position.AFTER, e1 ) == list.getAsSymbol() );
-		Symbol removedOne = list.remove( Position.AFTER, e1 );
+		assertTrue( list.get(
+								Position.BEFORE,
+								e3 ) == list.get(
+													Position.AFTER,
+													e1 ) );
+		assertTrue( list.get(
+								Position.AFTER,
+								e1 ) == list.getAsSymbol() );
+		Symbol removedOne = list.remove(
+											Position.AFTER,
+											e1 );
 		
 		System.out.println( l4.getJavaID( removedOne ) );
 		RunTime.assumedNotNull( removedOne );
@@ -156,50 +234,83 @@ public class Level040_DMLEnvironmentTest {
 		RunTime.assumedTrue( list.size() == 4 );
 	}
 	
-	@Test
-	public void test2() {
 
+	@Test
+	public
+			void
+			test2()
+	{
+		
 		Symbol name = l4.newUniqueSymbol();
-		ListOrderedOfElementCapsules eclist = ListOrderedOfElementCapsules.getListOOEC( l4, name );
+		ListOrderedOfElementCapsules eclist = ListOrderedOfElementCapsules.getListOOEC(
+																						l4,
+																						name );
 		eclist.assumedValid();
 		
 		Symbol ec1name = l4.newUniqueSymbol();
-		ElementCapsule ec1 = ElementCapsule.getNewEmptyElementCapsule( l4, ec1name );
+		ElementCapsule ec1 = ElementCapsule.getNewEmptyElementCapsule(
+																		l4,
+																		ec1name );
 		ec1.setElement( l4.newUniqueSymbol() );
-		eclist.add_ElementCapsule( Position.FIRST, ec1 );
+		eclist.add_ElementCapsule(
+									Position.FIRST,
+									ec1 );
 		assertTrue( l4.allHeads_Set.hasSymbol( ec1.getAsSymbol() ) );
-		assertTrue( l4.isVector( eclist.getAsSymbol(), ec1.getAsSymbol() ) );
+		assertTrue( l4.isVector(
+									eclist.getAsSymbol(),
+									ec1.getAsSymbol() ) );
 		ElementCapsule tmpLast = eclist.get_ElementCapsule( Position.LAST );
 		assertNotNull( tmpLast );
 		assertTrue( tmpLast == ec1 );
 		assertTrue( eclist.get_ElementCapsule( Position.FIRST ) == ec1 );
 	}
 	
-	@Test
-	public void testAllowNull() {
 
+	@Test
+	public
+			void
+			testAllowNull()
+	{
+		
 		Symbol name = l4.newUniqueSymbol();
-		ListOrderedOfSymbols list = l4.getNewListOOS( name, true, false );
+		ListOrderedOfSymbols list = l4.getNewListOOS(
+														name,
+														true,
+														false );
 		list.assumedValid();
 		Symbol e1 = l4.newUniqueSymbol();
 		RunTime.assumedTrue( list.isNullAllowed() );
-		list.add( null, Position.LAST );
+		list.add(
+					null,
+					Position.LAST );
 		boolean threw = false;
-		try {
-			list.add( null, Position.LAST );
-		} catch ( BadCallError bce ) {
+		try
+		{
+			list.add(
+						null,
+						Position.LAST );
+		}
+		catch ( BadCallError bce )
+		{
 			threw = true;
 		}
 		assertTrue( threw );
 		
 		RunTime.assumedTrue( 1 == list.size() );
-		list.add( e1, Position.LAST );
+		list.add(
+					e1,
+					Position.LAST );
 		RunTime.assumedTrue( 2 == list.size() );
 		
 		threw = false;
-		try {
-			list.add( null, Position.LAST );
-		} catch ( BadCallError bce ) {
+		try
+		{
+			list.add(
+						null,
+						Position.LAST );
+		}
+		catch ( BadCallError bce )
+		{
 			threw = true;
 		}
 		assertTrue( threw );
@@ -208,10 +319,16 @@ public class Level040_DMLEnvironmentTest {
 		list.checkIntegrity();
 		
 		threw = false;
-		try {
+		try
+		{
 			@SuppressWarnings( "unused" )
-			ListOrderedOfSymbols list2 = l4.getNewListOOS( name, false, false );
-		} catch ( BadCallError bce ) {
+			ListOrderedOfSymbols list2 = l4.getNewListOOS(
+															name,
+															false,
+															false );
+		}
+		catch ( BadCallError bce )
+		{
 			threw = true;
 		}
 		assertTrue( threw );

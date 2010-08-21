@@ -86,7 +86,7 @@ public class OneToOneDBMapTest
 												Level1_Storage_BerkeleyDB.class,
 												params );
 		// params.deInit();
-		Factory.deInit( params );
+		// Factory.deInit( params );
 		// bdb = new Level1_Storage_BerkeleyDB( Consts.BDB_ENV_PATH, true );
 		x = new OneToOneDBMap<String, String>(
 												bdb,

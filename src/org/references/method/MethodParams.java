@@ -53,10 +53,9 @@ import org.references.Reference;
  * subclass of , or superclass of , to be specified as type
  */
 public class MethodParams
-		extends
-		Initer
 {
 	
+	// DO NOT MAKE THIS to extend Initer because there's no point, we can't really deInit it when Initer.deInit() anyway
 	
 	// ParamName, and it's Value(any subclass of Object or even just Object)
 	private final HashMap<ParamID, Reference<Object>>	listOfParamsWithValues	= new HashMap<ParamID, Reference<Object>>();
@@ -74,8 +73,7 @@ public class MethodParams
 	// }
 	
 	/**
-	 * don't forget to use either .deInit()<br>
-	 * or the static method MethodParams.doneWith(this)<br>
+	 * this will never be deInit-ed or similar<br>
 	 * 
 	 * @return new instance of MethodParams
 	 */
@@ -84,31 +82,33 @@ public class MethodParams
 			getNew()
 	{
 		
-		MethodParams one = Factory.getNewInstanceAndInitWithoutMethodParams( MethodParams.class );
+		MethodParams one = new MethodParams();
+		// Factory.getNewInstanceAndInitWithoutMethodParams( MethodParams.class );
 		// new MethodParams();
 		// one.init( null );
-		RunTime.assumedTrue( one.isInited() );
+		// RunTime.assumedTrue( one.isInited() );
 		return one;
 	}
 	
 
-	public static
-			void
-			doneWith(
-						MethodParams thisOne )
-	{
-		
-		RunTime.assumedNotNull( thisOne );
-		RunTime.assumedTrue( thisOne.isInited() );
-		Factory.deInit( thisOne );
-		// thisOne.deInit();
-	}
+	// @Deprecated
+	// public static
+	// void
+	// doneWith(
+	// MethodParams thisOne )
+	// {
+	//
+	// RunTime.assumedNotNull( thisOne );
+	// RunTime.assumedTrue( thisOne.isInited() );
+	// Factory.deInit( thisOne );
+	// // thisOne.deInit();
+	// }
 	
 
 	/**
-	 * don't forget to call init() and deInit() when done
+	 * private constructor
 	 */
-	public MethodParams()
+	private MethodParams()
 	{
 		
 		super();
@@ -120,7 +120,7 @@ public class MethodParams
 			size()
 	{
 		
-		RunTime.assumedTrue( this.isInited() );
+		// RunTime.assumedTrue( this.isInited() );
 		return listOfParamsWithValues.size();
 	}
 	
@@ -139,7 +139,7 @@ public class MethodParams
 					ParamID paramName )
 	{
 		
-		RunTime.assumedTrue( this.isInited() );
+		// RunTime.assumedTrue( this.isInited() );
 		Reference<Object> ref = this.get( paramName );
 		if ( null == ref )
 		{
@@ -180,7 +180,7 @@ public class MethodParams
 					ParamID paramName )
 	{
 		
-		RunTime.assumedTrue( this.isInited() );
+		// RunTime.assumedTrue( this.isInited() );
 		RunTime.assumedNotNull( paramName );
 		return listOfParamsWithValues.get( paramName );
 		
@@ -223,7 +223,7 @@ public class MethodParams
 					Object value )
 	{
 		
-		RunTime.assumedTrue( this.isInited() );
+		// RunTime.assumedTrue( this.isInited() );
 		RunTime.assumedNotNull( paramName );
 		
 		Reference<Object> ref = this.get( paramName );
@@ -253,11 +253,15 @@ public class MethodParams
 			getExString(
 							ParamID paramName )
 	{
-		
-		RunTime.assumedTrue( this.isInited() );
+		// RunTime.assumedTrue( this.isInited() );
 		RunTime.assumedNotNull( paramName );
 		// TODO: check if can be cast and wrap throws
-		return (String)this.getEx( paramName );
+		Object o = this.getEx( paramName );
+		if ( !( o instanceof String ) )
+		{
+			RunTime.badCall( "that parameter didn't have a String in it - cast fail" );
+		}
+		return (String)o;
 	}
 	
 
@@ -272,7 +276,7 @@ public class MethodParams
 					ParamID paramName )
 	{
 		
-		RunTime.assumedTrue( this.isInited() );
+		// RunTime.assumedTrue( this.isInited() );
 		RunTime.assumedNotNull( paramName );
 		return null != listOfParamsWithValues.remove( paramName );
 		// ChainedReference<T> cref = this.internalGet( paramName );
@@ -308,7 +312,7 @@ public class MethodParams
 						boolean overwrite )
 	{
 		
-		RunTime.assumedTrue( this.isInited() );
+		// RunTime.assumedTrue( this.isInited() );
 		RunTime.assumedNotNull(
 								withThisNewOnes,
 								overwrite );
@@ -351,7 +355,7 @@ public class MethodParams
 			getIter()
 	{
 		
-		RunTime.assumedTrue( this.isInited() );
+		// RunTime.assumedTrue( this.isInited() );
 		return listOfParamsWithValues.entrySet().iterator();
 		
 	}
@@ -362,7 +366,7 @@ public class MethodParams
 			clear()
 	{
 		
-		RunTime.assumedTrue( this.isInited() );
+		// RunTime.assumedTrue( this.isInited() );
 		listOfParamsWithValues.clear();
 		RunTime.assumedTrue( this.size() == 0 );
 		
@@ -406,8 +410,8 @@ public class MethodParams
 			getClone()
 	{
 		
-		RunTime.assumedTrue( this.isInited() );
-		MethodParams clone = Factory.getNewInstanceAndInitWithoutMethodParams( MethodParams.class );
+		// RunTime.assumedTrue( this.isInited() );
+		MethodParams clone = getNew();// Factory.getNewInstanceAndInitWithoutMethodParams( MethodParams.class );
 		// MethodParams clone = new MethodParams();
 		// clone.init( null );// must be null or recursion
 		RunTime.assumedTrue( clone.size() == 0 );
@@ -424,32 +428,32 @@ public class MethodParams
 	}
 	
 
-	@Override
-	protected
-			void
-			done(
-					MethodParams params )
-	{
-		RunTime.assumedNull( params );
-		this.clear();
-		RunTime.assumedTrue( this.size() == 0 );
-		RunTime.assumedTrue( listOfParamsWithValues.size() == 0 );
-	}
+	// @Override
+	// protected
+	// void
+	// done(
+	// MethodParams params )
+	// {
+	// RunTime.assumedNull( params );
+	// this.clear();
+	// RunTime.assumedTrue( this.size() == 0 );
+	// RunTime.assumedTrue( listOfParamsWithValues.size() == 0 );
+	// }
 	
 
-	@Override
-	protected
-			void
-			start(
-					MethodParams params )
-	{
-		
-		// params should be null, passed via init(...)
-		RunTime.assumedTrue( null == params );
-		
-		// assumed it's empty on start, or else bugged
-		RunTime.assumedTrue( this.size() == 0 );
-	}
+	// @Override
+	// protected
+	// void
+	// start(
+	// MethodParams params )
+	// {
+	//
+	// // params should be null, passed via init(...)
+	// RunTime.assumedTrue( null == params );
+	//
+	// // assumed it's empty on start, or else bugged
+	// RunTime.assumedTrue( this.size() == 0 );
+	// }
 	
 
 	/*

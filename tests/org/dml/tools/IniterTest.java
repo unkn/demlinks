@@ -42,16 +42,21 @@ import org.references.method.PossibleParams;
  * 
  *
  */
-public class IniterTest {
+public class IniterTest
+{
 	
 	Testy					t, tt;
 	Testy2					t2, tt2;
 	ProperSubClassingOfSIT	psc;
 	MethodParams			params	= null;
 	
+	
 	@Before
-	public void setUp() {
-
+	public
+			void
+			setUp()
+	{
+		
 		t = new Testy();
 		
 		t2 = Testy2.getNew();
@@ -63,69 +68,101 @@ public class IniterTest {
 		
 	}
 	
-	@After
-	public void tearDown() {
 
+	@After
+	public
+			void
+			tearDown()
+	{
+		Factory.deInitIfAlreadyInited( tt2 );
+		Factory.deInitIfAlreadyInited( tt );
+		Factory.deInitIfAlreadyInited( t2 );
+		Factory.deInitIfAlreadyInited( t );
 		// t.deInit();
 		// t2.deInit();
 		// else
 		// StaticInstanceTracker.deInitAllThatExtendMe();
 		// params.deInitSilently();
-		Factory.deInitIfAlreadyInited( params );
-		Factory.deInitAll();
+		// Factory.deInitIfAlreadyInited( params );
+		// Factory.deInitAll();
 	}
 	
-	@Test
-	public void test1() throws Exception {
 
-		try {
+	@Test
+	public
+			void
+			test1()
+					throws Exception
+	{
+		
+		try
+		{
 			assertTrue( params.size() == 0 );
-			params.set( PossibleParams.homeDir, "1/2" );
+			params.set(
+						PossibleParams.homeDir,
+						"1/2" );
 			assertTrue( params.size() == 1 );
 			
-			Factory.init( t, params );
+			Factory.init(
+							t,
+							params );
 			// t.init( params );
 			t.show();
 			Factory.deInit( t );
 			// t.deInit();
 			
-			Factory.restart_aka_DeInitAndInitAgain_WithOriginalPassedParams( params );
-			// params.restart();// this will empty params
+			// Factory.restart_aka_DeInitAndInitAgain_WithOriginalPassedParams( params );
+			params.clear();// this will empty params
+			// params.restart();
 			assertTrue( params.size() == 0 );
 			
-			params.set( PossibleParams.homeDir, "2/2" );
+			params.set(
+						PossibleParams.homeDir,
+						"2/2" );
 			assertTrue( params.size() == 1 );
 			
 			// t.init( params );
-			Factory.init( t, params );
+			Factory.init(
+							t,
+							params );
 			t.show();
 			// t.deInit();
 			Factory.deInit( t );
 			
 			assertTrue( params.size() == 1 );
 			// params.restart();
-			Factory.restart_aka_DeInitAndInitAgain_WithOriginalPassedParams( params );
-			
+			// Factory.restart_aka_DeInitAndInitAgain_WithOriginalPassedParams( params );
+			params.clear();
 			assertTrue( params.size() == 0 );
 			
 			tt.show();
 			t2.show();
 			
-			params.set( PossibleParams.homeDir, "3+ 1/2" );
+			params.set(
+						PossibleParams.homeDir,
+						"3+ 1/2" );
 			// tt2.init( params );
-			Factory.init( tt2, params );
+			Factory.init(
+							tt2,
+							params );
 			tt2.show();
 			// tt2.deInit();
 			Factory.deInit( tt2 );
 			
-			params.set( PossibleParams.homeDir, "3+ 2/2" );
+			params.set(
+						PossibleParams.homeDir,
+						"3+ 2/2" );
 			// tt2.init( params );
-			Factory.init( tt2, params );
+			Factory.init(
+							tt2,
+							params );
 			tt2.show();
 			// tt2.deInit();
 			Factory.deInit( tt2 );
 			// throw new Exception();
-		} finally {
+		}
+		finally
+		{
 			Factory.deInitIfAlreadyInited( tt );
 			Factory.deInitIfAlreadyInited( t2 );
 			Factory.deInitIfAlreadyInited( tt2 );
@@ -135,64 +172,101 @@ public class IniterTest {
 		}
 	}
 	
-	@Test
-	public void test2() {
 
-		params.set( PossibleParams.homeDir, "something" );
+	@Test
+	public
+			void
+			test2()
+	{
+		
+		params.set(
+					PossibleParams.homeDir,
+					"something" );
 		assertTrue( params.size() == 1 );
 		boolean errored = false;
-		try {
-			Factory.init( t, params );
-			Factory.init( t, params );
+		try
+		{
+			Factory.init(
+							t,
+							params );
+			Factory.init(
+							t,
+							params );
 			// t.init( params );
 			// t.init( params );
-		} catch ( Throwable zt ) {
-			if ( RunTime.isThisWrappedException_of_thisType( zt, BadCallError.class ) ) {
+		}
+		catch ( Throwable zt )
+		{
+			if ( RunTime.isThisWrappedException_of_thisType(
+																zt,
+																BadCallError.class ) )
+			{
 				errored = true;
 				RunTime.clearLastThrown_andAllItsWraps();
 			}
-		} finally {
+		}
+		finally
+		{
 			assertTrue( errored );
 		}
 		assertTrue( params.size() == 1 );
 		
 		errored = false;
-		try {
+		try
+		{
 			Factory.deInit( t );
 			Factory.deInit( t );
 			// t.deInit();
 			// t.deInit();
-		} catch ( Throwable t1 ) {
-			if ( RunTime.isThisWrappedException_of_thisType( t1, BadCallError.class ) ) {
+		}
+		catch ( Throwable t1 )
+		{
+			if ( RunTime.isThisWrappedException_of_thisType(
+																t1,
+																BadCallError.class ) )
+			{
 				errored = true;
 				RunTime.clearLastThrown_andAllItsWraps();
 			}
-		} finally {
+		}
+		finally
+		{
 			assertTrue( errored );
 		}
 		assertTrue( params.size() == 1 );
 		
 		errored = false;
-		try {
+		try
+		{
 			Testy2 r = new Testy2();
 			// r.deInit();
 			Factory.deInit( r );
-		} catch ( Throwable t1 ) {
-			if ( RunTime.isThisWrappedException_of_thisType( t1, BadCallError.class ) ) {
+		}
+		catch ( Throwable t1 )
+		{
+			if ( RunTime.isThisWrappedException_of_thisType(
+																t1,
+																BadCallError.class ) )
+			{
 				errored = true;
 				RunTime.clearLastThrown_andAllItsWraps();
 			}
-		} finally {
+		}
+		finally
+		{
 			assertTrue( errored );
 		}
 		
 		assertTrue( params.size() == 1 );
 		System.out.println( params.getExString( PossibleParams.homeDir ) );
 		// t.init( params );
-		Factory.init( t, params );
+		Factory.init(
+						t,
+						params );
 		// params.deInit();
 		errored = false;
-		try {
+		try
+		{
 			Factory.restart_aka_DeInitAndInitAgain_WithOriginalPassedParams( t );
 			Factory.restart_aka_DeInitAndInitAgain_WithOriginalPassedParams( t );
 			Factory.restart_aka_DeInitAndInitAgain_WithOriginalPassedParams( t );
@@ -202,89 +276,144 @@ public class IniterTest {
 			// t.restart();
 			// t.restart();
 			// t.restart();
-		} catch ( BadCallError bce ) {
+		}
+		catch ( BadCallError bce )
+		{
 			errored = true;
-		} finally {
+		}
+		finally
+		{
 			assertFalse( errored );
 		}
 	}
 	
-	@Test
-	public void testDeInitAllExtenders() {
 
+	@Test
+	public
+			void
+			testDeInitAllExtenders()
+	{
+		
 		System.out.println( "===============" );
-		params.set( PossibleParams.homeDir, "nothing" );
-		Factory.init( t, params );
-		Factory.init( tt2, params );
+		params.set(
+					PossibleParams.homeDir,
+					"nothing" );
+		Factory.init(
+						t,
+						params );
+		Factory.init(
+						tt2,
+						params );
 		// t.init( params );
 		// tt2.init( params );
 	}
 	
-	@Test
-	public void testSilent() {
 
+	@Test
+	public
+			void
+			testSilent()
+	{
+		
 		boolean excepted = false;
-		try {
+		try
+		{
 			Factory.deInitIfAlreadyInited( t2 );
 			Factory.deInitIfAlreadyInited( t2 );
 			// t2.deInitSilently();
 			// t2.deInitSilently();
-		} catch ( BadCallError bce ) {
+		}
+		catch ( BadCallError bce )
+		{
 			excepted = true;
-		} finally {
+		}
+		finally
+		{
 			assertFalse( excepted );
 		}
 		
 		excepted = false;
-		params.set( PossibleParams.homeDir, "some" );
-		Factory.init( t2, params );
+		params.set(
+					PossibleParams.homeDir,
+					"some" );
+		Factory.init(
+						t2,
+						params );
 		// t2.init( params );
 		Factory.deInit( t2 );
 		// t2.deInit();
-		try {
+		try
+		{
 			
 			Factory.deInitIfAlreadyInited( t2 );
 			// t2.deInitSilently();
-		} catch ( BadCallError bce ) {
+		}
+		catch ( BadCallError bce )
+		{
 			excepted = true;
-		} finally {
+		}
+		finally
+		{
 			assertFalse( excepted );
 		}
 		
 	}
 	
-	@Test
-	public void testPSC() {
 
+	@Test
+	public
+			void
+			testPSC()
+	{
+		
 		psc = new ProperSubClassingOfSIT();
 		
 		// params.set( PossibleParams.homeDir, "homePSC" );
-		try {
+		try
+		{
 			Factory.initWithoutParams( psc );
 			// psc.init( null );
 			psc.exec();
-		} finally {
+		}
+		finally
+		{
 			boolean rted = false;
 			boolean excepted = false;
-			try {
+			try
+			{
 				Factory.deInit( psc );
 				// psc.deInit();
-			} catch ( Throwable t1 ) {
-				if ( RunTime.isThisWrappedException_of_thisType( t1, RuntimeException.class ) ) {
+			}
+			catch ( Throwable t1 )
+			{
+				if ( RunTime.isThisWrappedException_of_thisType(
+																	t1,
+																	RuntimeException.class ) )
+				{
 					// ignore, threw by overridden done() method
 					rted = true;
 					RunTime.clearLastThrown_andAllItsWraps();
 				}
-			} finally {
-				try {
+			}
+			finally
+			{
+				try
+				{
 					Factory.deInit( psc );
 					// psc.deInit();
-				} catch ( Throwable zt ) {
-					if ( RunTime.isThisWrappedException_of_thisType( zt, BadCallError.class ) ) {
+				}
+				catch ( Throwable zt )
+				{
+					if ( RunTime.isThisWrappedException_of_thisType(
+																		zt,
+																		BadCallError.class ) )
+					{
 						excepted = true;
 						RunTime.clearLastThrown_andAllItsWraps();
 					}
-				} finally {
+				}
+				finally
+				{
 					assertTrue( excepted );
 				}
 			}
@@ -293,16 +422,26 @@ public class IniterTest {
 		}
 	}
 	
-	@Test
-	public void testExceptionOnStart() {
 
+	@Test
+	public
+			void
+			testExceptionOnStart()
+	{
+		
 		Testy3StartThrower t3 = new Testy3StartThrower();
 		boolean threw = false;
-		try {
+		try
+		{
 			Factory.initWithoutParams( t3 );
 			// t3.init( null );
-		} catch ( Throwable zt ) {
-			if ( RunTime.isThisWrappedException_of_thisType( zt, RuntimeException.class ) ) {
+		}
+		catch ( Throwable zt )
+		{
+			if ( RunTime.isThisWrappedException_of_thisType(
+																zt,
+																RuntimeException.class ) )
+			{
 				threw = true;
 				RunTime.clearLastThrown_andAllItsWraps();
 			}
@@ -312,12 +451,20 @@ public class IniterTest {
 		Factory.deInit( t3 );
 	}
 	
-	@Test
-	public void testParams() {
 
+	@Test
+	public
+			void
+			testParams()
+	{
+		
 		String home = "home";
-		params.set( PossibleParams.homeDir, home );
-		Factory.init( t, params );
+		params.set(
+					PossibleParams.homeDir,
+					home );
+		Factory.init(
+						t,
+						params );
 		// t.init( params );
 		params.clear();
 		assertTrue( params.size() == 0 );
@@ -329,9 +476,13 @@ public class IniterTest {
 		Factory.deInit( t );
 		// t.deInit();
 		String home2 = "home2";
-		params.set( PossibleParams.homeDir, home2 );
+		params.set(
+					PossibleParams.homeDir,
+					home2 );
 		// t.init( params );
-		Factory.init( t, params );
+		Factory.init(
+						t,
+						params );
 		assertTrue( t.getHome() == home2 );
 		assertTrue( home != home2 );
 		Factory.restart_aka_DeInitAndInitAgain_WithOriginalPassedParams( t );
@@ -340,7 +491,7 @@ public class IniterTest {
 		// t.deInit();
 		Factory.deInit( t );
 		assertTrue( t.getHome() == null );
-		Factory.deInit( params );
+		// Factory.deInit( params );
 		// params.deInit();
 	}
 	

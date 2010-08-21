@@ -85,7 +85,7 @@ public class Level020_DMLEnvironmentTest
 																	params );
 		// new Level020_DMLEnvironment();
 		// d3.init( params );
-		Factory.deInit( params );
+		// Factory.deInit( params );
 		
 		try
 		{

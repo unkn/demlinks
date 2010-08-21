@@ -40,35 +40,58 @@ import org.references.method.PossibleParams;
  * 
  *
  */
-public class SymbolsTest {
+public class SymbolsTest
+{
 	
 	Symbol					n1, n2, n3;
 	Level010_DMLEnvironment	dml;
 	
+	
 	@Before
-	public void setUp() throws StorageException {
-
+	public
+			void
+			setUp()
+					throws StorageException
+	{
+		
 		MethodParams params = MethodParams.getNew();
-		params.set( PossibleParams.homeDir, Consts.BDB_ENV_PATH );
-		params.set( PossibleParams.jUnit_wipeDB, true );
-		params.set( PossibleParams.jUnit_wipeDBWhenDone, true );
+		params.set(
+					PossibleParams.homeDir,
+					Consts.BDB_ENV_PATH );
+		params.set(
+					PossibleParams.jUnit_wipeDB,
+					true );
+		params.set(
+					PossibleParams.jUnit_wipeDBWhenDone,
+					true );
 		// dml = new Level010_DMLEnvironment();
 		// dml.init( params );
-		dml = Factory.getNewInstanceAndInit( Level010_DMLEnvironment.class, params );
+		dml = Factory.getNewInstanceAndInit(
+												Level010_DMLEnvironment.class,
+												params );
 		// params.deInit();
-		Factory.deInit( params );
+		// Factory.deInit( params );
 	}
 	
-	@After
-	public void tearDown() {
 
+	@After
+	public
+			void
+			tearDown()
+	{
+		
 		Factory.deInit( dml );
 		// dml.deInit();
 	}
 	
-	@Test
-	public void test1() throws StorageException {
 
+	@Test
+	public
+			void
+			test1()
+					throws StorageException
+	{
+		
 		n1 = dml.ensureSymbol( JavaID.ensureJavaIDFor( "A" ) );
 		n2 = dml.ensureSymbol( JavaID.ensureJavaIDFor( "B" ) );
 		

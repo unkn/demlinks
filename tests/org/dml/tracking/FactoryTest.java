@@ -196,17 +196,20 @@ public class FactoryTest
 	{
 		
 		Log.entry();
+		A a = null;
+		B newB = null;
 		try
 		{
 			// System.out.println( Log.getThisLineLocation() );
 			// System.exit( 0 );
-			A a = Factory.getNewInstanceAndInitWithoutMethodParams( A.class );
+			a = Factory.getNewInstanceAndInitWithoutMethodParams( A.class );
 			RunTime.assumedTrue( a.initedOurOwn );
 			Factory.deInit( a );
 			RunTime.assumedFalse( a.initedOurOwn );
 			
-			MethodParams params = Factory.getNewInstanceAndInitWithoutMethodParams( MethodParams.class );
-			B newB = Factory.getNewInstanceAndInitWithoutMethodParams( B.class );
+			MethodParams params = MethodParams.getNew();// Factory.getNewInstanceAndInitWithoutMethodParams(
+														// MethodParams.class );
+			newB = Factory.getNewInstanceAndInitWithoutMethodParams( B.class );
 			params.set(
 						specB,
 						newB );
@@ -221,7 +224,9 @@ public class FactoryTest
 		}
 		finally
 		{
-			Factory.deInitAll();
+			// Factory.deInitAll();
+			Factory.deInitIfAlreadyInited( a );
+			Factory.deInitIfAlreadyInited( newB );
 		}
 	}
 	
@@ -233,19 +238,21 @@ public class FactoryTest
 	{
 		
 		Log.entry();
+		B newB = null;
+		A aa = null;
 		try
 		{
 			// A a = Factory.getNewInstanceAndInit( A.class );
 			
 			MethodParams params = MethodParams.getNew();// Factory.getNewInstanceAndInitWithoutParams(
 														// MethodParams.class );
-			B newB = Factory.getNewInstanceAndInitWithoutMethodParams( B.class );
+			newB = Factory.getNewInstanceAndInitWithoutMethodParams( B.class );
 			params.set(
 						specB,
 						newB );
-			A aa = Factory.getNewInstanceAndInit(
-													A.class,
-													params );
+			aa = Factory.getNewInstanceAndInit(
+												A.class,
+												params );
 			RunTime.assumedFalse( aa.initedOurOwn );
 			Factory.deInit( aa );
 			Factory.init(
@@ -258,7 +265,9 @@ public class FactoryTest
 		}
 		finally
 		{
-			Factory.deInitAll();
+			Factory.deInitIfInited_WithPostponedThrows( aa );
+			Factory.deInitIfInited_WithPostponedThrows( newB );
+			// Factory.deInitAll();
 			// deinit A (which also deInits B)
 		}
 		Log.exit();
@@ -279,11 +288,13 @@ public class FactoryTest
 		// long after A was inited; and so then after a while when A is deinited by same deInitAll() it will fail
 		// because the db is deInited
 		
+		A a = null;
+		B db = null;
 		try
 		{
-			A a = Factory.getNewInstanceAndInitWithoutMethodParams( A.class );
+			a = Factory.getNewInstanceAndInitWithoutMethodParams( A.class );
 			// A aa = Factory.getNewInstanceAndInit( A.class );
-			B db = Factory.getNewInstanceAndInitWithoutMethodParams( B.class );// doesn't matter where from
+			db = Factory.getNewInstanceAndInitWithoutMethodParams( B.class );// doesn't matter where from
 			a.setUseDB( db );
 			// and assume somehow something throws and a.deInit is never called
 			RunTime.thro( new Exception(
@@ -295,7 +306,9 @@ public class FactoryTest
 		}
 		finally
 		{
-			Factory.deInitAll();
+			Factory.deInitIfInited_WithPostponedThrows( db );
+			Factory.deInitIfInited_WithPostponedThrows( a );
+			// Factory.deInitAll();
 		}
 	}
 	

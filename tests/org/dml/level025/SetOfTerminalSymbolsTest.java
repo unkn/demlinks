@@ -45,39 +45,60 @@ import org.references.method.PossibleParams;
  * 
  *
  */
-public class SetOfTerminalSymbolsTest {
+public class SetOfTerminalSymbolsTest
+{
 	
 	SetOfTerminalSymbols	set1;
 	Symbol					sym;
 	Level025_DMLEnvironment	env;
 	
+	
 	@Before
-	public void setUp() {
-
+	public
+			void
+			setUp()
+	{
+		
 		MethodParams params = MethodParams.getNew();
 		// params.init( null );
-		params.set( PossibleParams.jUnit_wipeDB, true );
-		params.set( PossibleParams.jUnit_wipeDBWhenDone, true );
+		params.set(
+					PossibleParams.jUnit_wipeDB,
+					true );
+		params.set(
+					PossibleParams.jUnit_wipeDBWhenDone,
+					true );
 		// env = new Level025_DMLEnvironment();
 		// env.init( params );
-		env = Factory.getNewInstanceAndInit( Level025_DMLEnvironment.class, params );
+		env = Factory.getNewInstanceAndInit(
+												Level025_DMLEnvironment.class,
+												params );
 		// params.deInit();
-		Factory.deInit( params );
+		// Factory.deInit( params );
 		
 		sym = env.newUniqueSymbol();
-		set1 = SetOfTerminalSymbols.getAsSet( env, sym );
+		set1 = SetOfTerminalSymbols.getAsSet(
+												env,
+												sym );
 	}
 	
-	@After
-	public void tearDown() {
 
+	@After
+	public
+			void
+			tearDown()
+	{
+		
 		Factory.deInit( env );
 		// env.deInit();
 	}
 	
-	@Test
-	public void test1() {
 
+	@Test
+	public
+			void
+			test1()
+	{
+		
 		assertTrue( set1.size() == 0 );
 		
 		Symbol one = env.newUniqueSymbol();
@@ -86,9 +107,12 @@ public class SetOfTerminalSymbolsTest {
 		assertTrue( set1.addToSet( one ) );
 		
 		boolean threw = false;
-		try {
+		try
+		{
 			set1.addToSet( sym );
-		} catch ( BadCallError bce ) {
+		}
+		catch ( BadCallError bce )
+		{
 			threw = true;
 		}
 		assertTrue( threw );
@@ -104,19 +128,43 @@ public class SetOfTerminalSymbolsTest {
 		
 		assertTrue( set1.getSide( Position.FIRST ) == one );
 		
-		assertNull( set1.getSideOf( Position.BEFORE, one ) );
-		assertTrue( two == set1.getSideOf( Position.AFTER, one ) );
-		assertTrue( three == set1.getSideOf( Position.AFTER, two ) );
-		assertNull( set1.getSideOf( Position.AFTER, three ) );
-		assertTrue( one == set1.getSideOf( Position.BEFORE, two ) );
-		assertTrue( two == set1.getSideOf( Position.BEFORE, three ) );
+		assertNull( set1.getSideOf(
+									Position.BEFORE,
+									one ) );
+		assertTrue( two == set1.getSideOf(
+											Position.AFTER,
+											one ) );
+		assertTrue( three == set1.getSideOf(
+												Position.AFTER,
+												two ) );
+		assertNull( set1.getSideOf(
+									Position.AFTER,
+									three ) );
+		assertTrue( one == set1.getSideOf(
+											Position.BEFORE,
+											two ) );
+		assertTrue( two == set1.getSideOf(
+											Position.BEFORE,
+											three ) );
 		
 		assertTrue( set1.remove( two ) );
-		assertNull( set1.getSideOf( Position.BEFORE, two ) );
-		assertNull( set1.getSideOf( Position.AFTER, two ) );
-		assertNull( set1.getSideOf( Position.BEFORE, one ) );
-		assertNull( set1.getSideOf( Position.AFTER, three ) );
-		assertTrue( set1.getSideOf( Position.AFTER, one ) == three );
-		assertTrue( set1.getSideOf( Position.BEFORE, three ) == one );
+		assertNull( set1.getSideOf(
+									Position.BEFORE,
+									two ) );
+		assertNull( set1.getSideOf(
+									Position.AFTER,
+									two ) );
+		assertNull( set1.getSideOf(
+									Position.BEFORE,
+									one ) );
+		assertNull( set1.getSideOf(
+									Position.AFTER,
+									three ) );
+		assertTrue( set1.getSideOf(
+									Position.AFTER,
+									one ) == three );
+		assertTrue( set1.getSideOf(
+									Position.BEFORE,
+									three ) == one );
 	}
 }

@@ -54,55 +54,87 @@ import com.sleepycat.je.DatabaseException;
  * 
  *
  */
-public class DBMapTupleNodeIDsTest {
+public class DBMapTupleNodeIDsTest
+{
 	
 	DBMapSymbolsTuple			tdb;
 	// Level010_DMLEnvironment dmlEnv;
 	Level1_Storage_BerkeleyDB	bdb;
 	
+	
 	@Before
-	public void setUp() throws DatabaseException {
-
+	public
+			void
+			setUp()
+					throws DatabaseException
+	{
+		
 		MethodParams params = MethodParams.getNew();
 		// params.init( null );
-		params.set( PossibleParams.homeDir, Consts.BDB_ENV_PATH );
-		params.set( PossibleParams.jUnit_wipeDB, true );
-		params.set( PossibleParams.jUnit_wipeDBWhenDone, true );
-		bdb = Factory.getNewInstanceAndInit( Level1_Storage_BerkeleyDB.class, params );
+		params.set(
+					PossibleParams.homeDir,
+					Consts.BDB_ENV_PATH );
+		params.set(
+					PossibleParams.jUnit_wipeDB,
+					true );
+		params.set(
+					PossibleParams.jUnit_wipeDBWhenDone,
+					true );
+		bdb = Factory.getNewInstanceAndInit(
+												Level1_Storage_BerkeleyDB.class,
+												params );
 		// bdb = new Level1_Storage_BerkeleyDB();
 		// bdb.init( params );
 		// params.deInit();
-		Factory.deInit( params );
+		// Factory.deInit( params );
 		// tdb = new DBMapSymbolsTuple( bdb, "tupleIDs" );
 		// tdb.init( null );
-		tdb = Factory.getNewInstanceAndInitWithoutMethodParams( DBMapSymbolsTuple.class, bdb, "tupleIDs" );
+		tdb = Factory.getNewInstanceAndInitWithoutMethodParams(
+																DBMapSymbolsTuple.class,
+																bdb,
+																"tupleIDs" );
 		
 	}
 	
-	@After
-	public void tearDown() {
 
+	@After
+	public
+			void
+			tearDown()
+	{
 		
-		Factory.deInit( bdb );
+
+		Factory.deInitIfInited_WithPostponedThrows( bdb );
 		bdb = null;
 		System.out.println( "tdb:" );
-		Factory.deInit( tdb );
+		Factory.deInitIfInited_WithPostponedThrows( tdb );
 		tdb = null;
 		// System.out.println( "all:" );
 		// Factory.deInitAll();
 		// System.out.println( "done" );
 	}
 	
-	@Test
-	public void test1() throws DatabaseException, StorageException {
 
+	@Test
+	public
+			void
+			test1()
+					throws DatabaseException,
+					StorageException
+	{
+		
 		String strA = "A";
 		JavaID jidA = JavaID.ensureJavaIDFor( strA );
-		Symbol _a = bdb.getDBMap_JavaIDs_To_Symbols().ensureSymbol( jidA );
-		Symbol _b = bdb.getDBMap_JavaIDs_To_Symbols().ensureSymbol( JavaID.ensureJavaIDFor( "B" ) );
-		Symbol _d = bdb.getDBMap_JavaIDs_To_Symbols().ensureSymbol( JavaID.ensureJavaIDFor( "D" ) );
-		Symbol _e = bdb.getDBMap_JavaIDs_To_Symbols().ensureSymbol( JavaID.ensureJavaIDFor( "E" ) );
-		Symbol _c = bdb.getDBMap_JavaIDs_To_Symbols().ensureSymbol( JavaID.ensureJavaIDFor( "C" ) );
+		Symbol _a = bdb.getDBMap_JavaIDs_To_Symbols().ensureSymbol(
+																	jidA );
+		Symbol _b = bdb.getDBMap_JavaIDs_To_Symbols().ensureSymbol(
+																	JavaID.ensureJavaIDFor( "B" ) );
+		Symbol _d = bdb.getDBMap_JavaIDs_To_Symbols().ensureSymbol(
+																	JavaID.ensureJavaIDFor( "D" ) );
+		Symbol _e = bdb.getDBMap_JavaIDs_To_Symbols().ensureSymbol(
+																	JavaID.ensureJavaIDFor( "E" ) );
+		Symbol _c = bdb.getDBMap_JavaIDs_To_Symbols().ensureSymbol(
+																	JavaID.ensureJavaIDFor( "C" ) );
 		
 		assertNotNull( _a );
 		assertNotNull( _b );
@@ -110,34 +142,63 @@ public class DBMapTupleNodeIDsTest {
 		assertNotNull( _e );
 		assertNotNull( _c );
 		
-		assertTrue( jidA.equals( bdb.getDBMap_JavaIDs_To_Symbols().getJavaID( _a ) ) );
-		assertTrue( bdb.getDBMap_JavaIDs_To_Symbols().getJavaID( _a ) == jidA );
+		assertTrue( jidA.equals( bdb.getDBMap_JavaIDs_To_Symbols().getJavaID(
+																				_a ) ) );
+		assertTrue( bdb.getDBMap_JavaIDs_To_Symbols().getJavaID(
+																	_a ) == jidA );
 		
-		org.junit.Assert.assertFalse( tdb.isVector( _a, _b ) );
-		org.junit.Assert.assertFalse( tdb.ensureVector( _a, _b ) );
+		org.junit.Assert.assertFalse( tdb.isVector(
+													_a,
+													_b ) );
+		org.junit.Assert.assertFalse( tdb.ensureVector(
+														_a,
+														_b ) );
 		
-		assertTrue( tdb.isVector( _a, _b ) );
-		assertTrue( tdb.ensureVector( _a, _b ) );
+		assertTrue( tdb.isVector(
+									_a,
+									_b ) );
+		assertTrue( tdb.ensureVector(
+										_a,
+										_b ) );
 		
-		assertFalse( tdb.ensureVector( _d, _e ) );
+		assertFalse( tdb.ensureVector(
+										_d,
+										_e ) );
 		
-		assertFalse( tdb.ensureVector( _a, _c ) );
-		assertTrue( tdb.isVector( _a, _c ) );
+		assertFalse( tdb.ensureVector(
+										_a,
+										_c ) );
+		assertTrue( tdb.isVector(
+									_a,
+									_c ) );
 		
-		assertFalse( tdb.ensureVector( _c, _a ) );
-		assertFalse( tdb.ensureVector( _c, _b ) );
-		assertTrue( tdb.isVector( _c, _a ) );
-		assertTrue( tdb.isVector( _c, _b ) );
+		assertFalse( tdb.ensureVector(
+										_c,
+										_a ) );
+		assertFalse( tdb.ensureVector(
+										_c,
+										_b ) );
+		assertTrue( tdb.isVector(
+									_c,
+									_a ) );
+		assertTrue( tdb.isVector(
+									_c,
+									_b ) );
 		
 		BDBVectorIterator<Symbol, Symbol> iter = tdb.getIterator_on_Terminals_of( _a );
-		try {
+		try
+		{
 			iter.goFirst();
-			do {
-				if ( null != iter.now() ) {
-					System.out.println( bdb.getDBMap_JavaIDs_To_Symbols().getJavaID( iter.now() ) );
+			do
+			{
+				if ( null != iter.now() )
+				{
+					System.out.println( bdb.getDBMap_JavaIDs_To_Symbols().getJavaID(
+																						iter.now() ) );
 				}
 				iter.goNext();
-			} while ( iter.now() != null );
+			}
+			while ( iter.now() != null );
 			
 			iter.goFirst();
 			// assertTrue( _b.equals( iter.now() ) );
@@ -154,25 +215,33 @@ public class DBMapTupleNodeIDsTest {
 			assertTrue( iter.now() == _c );
 			iter.goPrev();
 			assertTrue( iter.now() == _b );
-		} finally {
+		}
+		finally
+		{
 			Factory.deInit( iter );
 			// iter.deInit();
 		}
 		
 
 		iter = tdb.getIterator_on_Initials_of( _b );
-		try {
+		try
+		{
 			iter.goFirst();
-			do {
-				if ( null != iter.now() ) {
-					System.out.println( "/2/" + bdb.getDBMap_JavaIDs_To_Symbols().getJavaID( iter.now() ) );
+			do
+			{
+				if ( null != iter.now() )
+				{
+					System.out.println( "/2/" + bdb.getDBMap_JavaIDs_To_Symbols().getJavaID(
+																								iter.now() ) );
 				}
 				iter.goNext();
-			} while ( iter.now() != null );
+			}
+			while ( iter.now() != null );
 			
 
 			iter.goFirst();
-			System.out.println( "//" + bdb.getDBMap_JavaIDs_To_Symbols().getJavaID( iter.now() ) );
+			System.out.println( "//" + bdb.getDBMap_JavaIDs_To_Symbols().getJavaID(
+																					iter.now() ) );
 			// assertTrue( _a.equals( iter.now() ) );
 			assertTrue( _a == iter.now() );// also as refs
 			
@@ -183,10 +252,16 @@ public class DBMapTupleNodeIDsTest {
 			iter.goNext();
 			assertNull( iter.now() );
 			boolean threw = false;
-			try {
+			try
+			{
 				iter.goPrev();
-			} catch ( Throwable t ) {
-				if ( RunTime.isThisWrappedException_of_thisType( t, BadCallError.class ) ) {
+			}
+			catch ( Throwable t )
+			{
+				if ( RunTime.isThisWrappedException_of_thisType(
+																	t,
+																	BadCallError.class ) )
+				{
 					threw = true;
 					RunTime.clearLastThrown_andAllItsWraps();
 				}
@@ -197,21 +272,31 @@ public class DBMapTupleNodeIDsTest {
 			iter.goPrev();
 			// assertTrue( _a.equals( iter.now() ) );
 			assertTrue( _a == iter.now() );// indeed
-		} finally {
+		}
+		finally
+		{
 			Factory.deInit( iter );
 			// iter.deInit();
 		}
 		
 		iter = tdb.getIterator_on_Initials_of( _b );
 		boolean threw = false;
-		try {
+		try
+		{
 			iter.goNext();// w/o goFirst
-		} catch ( Throwable t ) {
-			if ( RunTime.isThisWrappedException_of_thisType( t, BadCallError.class ) ) {
+		}
+		catch ( Throwable t )
+		{
+			if ( RunTime.isThisWrappedException_of_thisType(
+																t,
+																BadCallError.class ) )
+			{
 				threw = true;// should throw!
 				RunTime.clearLastThrown_andAllItsWraps();
 			}
-		} finally {
+		}
+		finally
+		{
 			Factory.deInit( iter );
 			// iter.deInit();
 		}
@@ -219,14 +304,22 @@ public class DBMapTupleNodeIDsTest {
 		
 		iter = tdb.getIterator_on_Initials_of( _b );
 		threw = false;
-		try {
+		try
+		{
 			iter.goPrev();// w/o goFirst
-		} catch ( Throwable t ) {
-			if ( RunTime.isThisWrappedException_of_thisType( t, BadCallError.class ) ) {
+		}
+		catch ( Throwable t )
+		{
+			if ( RunTime.isThisWrappedException_of_thisType(
+																t,
+																BadCallError.class ) )
+			{
 				threw = true;// shouldn't throw though
 				RunTime.clearLastThrown_andAllItsWraps();
 			}
-		} finally {
+		}
+		finally
+		{
 			Factory.deInit( iter );
 			// iter.deInit();
 		}
@@ -235,11 +328,15 @@ public class DBMapTupleNodeIDsTest {
 		assertTrue( tdb.countInitials( _b ) == 2 );
 		assertTrue( tdb.countTerminals( _a ) == 2 );
 		
-		assertTrue( tdb.removeVector( _a, _b ) );
+		assertTrue( tdb.removeVector(
+										_a,
+										_b ) );
 		assertTrue( tdb.countInitials( _b ) == 1 );
 		assertTrue( tdb.countTerminals( _a ) == 1 );
 		
-		assertFalse( tdb.removeVector( _a, _b ) );
+		assertFalse( tdb.removeVector(
+										_a,
+										_b ) );
 		assertTrue( tdb.countInitials( _b ) == 1 );
 		assertTrue( tdb.countTerminals( _a ) == 1 );
 	}

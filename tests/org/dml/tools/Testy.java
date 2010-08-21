@@ -35,59 +35,92 @@ import org.references.method.PossibleParams;
  * 
  *
  */
-public class Testy extends Initer {
+public class Testy
+		extends
+		Initer
+{
 	
 	String	home;
 	
-	public void show() {
-
+	
+	public
+			void
+			show()
+	{
+		
 		System.out.println( this.getName() + " shows home=" + home );
 	}
 	
-	public String getHome() {
 
+	public
+			String
+			getHome()
+	{
+		
 		return home;
 	}
 	
-	public static Testy getNew() {
 
+	public static
+			Testy
+			getNew()
+	{
+		
 		// Testy t = new Testy();
 		
 		MethodParams params = MethodParams.getNew();
 		// params.init( null );
-		params.set( PossibleParams.homeDir, "one/" + new Object() );
+		params.set(
+					PossibleParams.homeDir,
+					"one/" + new Object() );
 		// t.init( params );
-		Testy t = Factory.getNewInstanceAndInit( Testy.class, params );
+		Testy t = Factory.getNewInstanceAndInit(
+													Testy.class,
+													params );
 		// params.deInit();
-		Factory.deInit( params );
+		// Factory.deInit( params );
 		
 		return t;
 	}
 	
+
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see org.dml.tools.StaticInstanceTracker#done()
 	 */
 	@Override
-	protected void done( MethodParams params ) {
-
+	protected
+			void
+			done(
+					MethodParams params )
+	{
+		
 		System.out.println( this.getName() + " is done." );
 		home = null;
 		RunTime.assumedTrue( this.isInited() );
 	}
 	
+
 	/**
 	 * @return
 	 */
-	public String getName() {
-
+	public
+			String
+			getName()
+	{
+		
 		return this.getClass().getName();
 	}
 	
-	@Override
-	protected void start( MethodParams params ) {
 
+	@Override
+	protected
+			void
+			start(
+					MethodParams params )
+	{
+		
 		System.out.println( this.getName() + " start()" );
 		RunTime.assumedNotNull( params );
 		RunTime.assumedTrue( params.size() > 0 );

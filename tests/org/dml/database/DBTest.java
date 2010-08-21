@@ -27,6 +27,7 @@ package org.dml.database;
 
 import org.dml.JUnits.Consts;
 import org.dml.database.bdb.level1.Level1_Storage_BerkeleyDB;
+import org.dml.tools.RunTime;
 import org.dml.tracking.Factory;
 import org.javapart.logger.Log;
 import org.junit.After;
@@ -74,7 +75,7 @@ public class DBTest
 												Level1_Storage_BerkeleyDB.class,
 												params );
 		// bdb._deInit();
-		Factory.deInit( params );
+		// Factory.deInit( params );
 		//
 		// Factory.reinit( params );
 		// params.reInit();
@@ -100,7 +101,7 @@ public class DBTest
 		// RunTime.clearThrowChain();
 		Log.entry();
 		// bdb.deInit();
-		Factory.deInit( bdb );
+		Factory.deInitIfAlreadyInited( bdb );
 		// Factory.tzt();
 		
 		// throw new RuntimeException();
@@ -133,7 +134,7 @@ public class DBTest
 		
 		Factory.deInit( bdb );
 		Factory.reInit_aka_InitAgain_WithOriginalPassedParams( bdb );
-		
+		RunTime.throwAllThatWerePosponed();
 	}
 	
 

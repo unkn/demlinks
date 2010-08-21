@@ -41,33 +41,55 @@ import com.sleepycat.je.DatabaseException;
  * 
  *
  */
-public class BDBTest {
+public class BDBTest
+{
 	
-	public static void main( String[] args ) throws DatabaseException {
-
+	public static
+			void
+			main(
+					String[] args )
+					throws DatabaseException
+	{
+		
 		MethodParams params = MethodParams.getNew();
 		// params.init( null );
-		params.set( PossibleParams.homeDir, Consts.BDB_ENV_PATH );
-		params.set( PossibleParams.jUnit_wipeDB, true );
-		params.set( PossibleParams.jUnit_wipeDBWhenDone, true );
-		Level1_Storage_BerkeleyDB b =
+		params.set(
+					PossibleParams.homeDir,
+					Consts.BDB_ENV_PATH );
+		params.set(
+					PossibleParams.jUnit_wipeDB,
+					true );
+		params.set(
+					PossibleParams.jUnit_wipeDBWhenDone,
+					true );
+		Level1_Storage_BerkeleyDB b;
 		// new Level1_Storage_BerkeleyDB();
 		// b.init( params );
-		b = Factory.getNewInstanceAndInit( Level1_Storage_BerkeleyDB.class, params );
+		b = Factory.getNewInstanceAndInit(
+											Level1_Storage_BerkeleyDB.class,
+											params );
 		// params.deInit();
-		Factory.deInit( params );
+		// Factory.deInit( params );
 		params = null;
 		Symbol n1, n2, f1, f2;
-		try {
+		try
+		{
 			JavaID fromJavaID = JavaID.ensureJavaIDFor( "duh" );
-			n1 = b.getDBMap_JavaIDs_To_Symbols().createSymbol( fromJavaID );
-			n2 = b.getDBMap_JavaIDs_To_Symbols().getSymbol( fromJavaID );
+			n1 = b.getDBMap_JavaIDs_To_Symbols().createSymbol(
+																fromJavaID );
+			n2 = b.getDBMap_JavaIDs_To_Symbols().getSymbol(
+															fromJavaID );
 			JavaID jid2 = JavaID.ensureJavaIDFor( "duh2" );
-			f1 = b.getDBMap_JavaIDs_To_Symbols().createSymbol( jid2 );
-			f2 = b.getDBMap_JavaIDs_To_Symbols().getSymbol( jid2 );
+			f1 = b.getDBMap_JavaIDs_To_Symbols().createSymbol(
+																jid2 );
+			f2 = b.getDBMap_JavaIDs_To_Symbols().getSymbol(
+															jid2 );
 			
-			System.out.println( b.getDBMap_JavaIDs_To_Symbols().getJavaID( f1 ) );
-		} finally {
+			System.out.println( b.getDBMap_JavaIDs_To_Symbols().getJavaID(
+																			f1 ) );
+		}
+		finally
+		{
 			Factory.deInit( b );
 			// b.deInit();
 		}

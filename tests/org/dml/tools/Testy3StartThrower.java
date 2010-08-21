@@ -35,28 +35,44 @@ import org.references.method.PossibleParams;
  * 
  *
  */
-public class Testy3StartThrower extends Testy {
+public class Testy3StartThrower
+		extends
+		Testy
+{
 	
-	public static Testy3StartThrower getNew() {
-
+	public static
+			Testy3StartThrower
+			getNew()
+	{
+		
 		// Testy3StartThrower t2 = new Testy3StartThrower();
 		
 		MethodParams params = MethodParams.getNew();
 		// params.init( null );
-		params.set( PossibleParams.homeDir, "two" + new Object() );
+		params.set(
+					PossibleParams.homeDir,
+					"two" + new Object() );
 		// t2.init( params );
-		Testy3StartThrower t2 = Factory.getNewInstanceAndInit( Testy3StartThrower.class, params );
+		Testy3StartThrower t2 = Factory.getNewInstanceAndInit(
+																Testy3StartThrower.class,
+																params );
 		// params.deInit();
-		Factory.deInit( params );
+		// Factory.deInit( params );
 		return t2;
 		
 	}
 	
-	@Override
-	protected void start( MethodParams params ) {
 
+	@Override
+	protected
+			void
+			start(
+					MethodParams params )
+	{
+		
 		// super.start( params ); see? no need to call prev one, just override
-		RunTime.thro( new RuntimeException( "start" ) );
+		RunTime.thro( new RuntimeException(
+											"start" ) );
 	}
 	
 }

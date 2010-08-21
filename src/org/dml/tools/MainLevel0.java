@@ -57,7 +57,10 @@ import org.references.method.PossibleParams;
  * 3. the VarLevel and the MainLevel1 class have to extend
  * StaticInstanceTracker
  */
-public abstract class MainLevel0 extends Initer {
+public abstract class MainLevel0
+		extends
+		Initer
+{
 	
 	
 	// true if we inited a default 'var' so we know to deInit it
@@ -73,81 +76,119 @@ public abstract class MainLevel0 extends Initer {
 	// bug only if we're about to new it ourselves ie. when not supplied by the user as already init-ed VarLevel
 	private boolean									notSIT					= false;
 	
+	
 	// TODO: accept more than 1 variable per subclass, should be easy, maybe add
 	// a param to annotation indicating fields that pertain to same group (same
 	// group in each subclass equates with same VarLevel)
 	
-	public MainLevel0() {
-
+	public MainLevel0()
+	{
+		
 		super();
 		this.processAnnotatedFields();
 	}
 	
-	private void setAllVarLevelX( Object toValue ) {
 
+	private
+			void
+			setAllVarLevelX(
+								Object toValue )
+	{
+		
 		Field iter = listOfAnnotatedFields.getObjectAt( Position.FIRST );
-		while ( null != iter ) {
+		while ( null != iter )
+		{
 			boolean prevState = iter.isAccessible();
-			try {
+			try
+			{
 				iter.setAccessible( true );
-				iter.set( this, toValue );
+				iter.set(
+							this,
+							toValue );
 				// System.out.println( iter.getName() + " / " + iter.getType()
 				// + " / " + iter.get( this ) );
 				RunTime.assumedTrue( iter.get( this ) == toValue );
-			} catch ( IllegalArgumentException e ) {
+			}
+			catch ( IllegalArgumentException e )
+			{
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-				RunTime.bug( "this usually happens when the VarLevel in each subclass are of class types that are not subclasses of previous VarLevel's type" );
+				RunTime
+						.bug( "this usually happens when the VarLevel in each subclass are of class types that are not subclasses of previous VarLevel's type" );
 				// for example: class A has Z var; and class B extends A has X
 				// var and X doesn't extend Z, that is bad it should extend Z
-			} catch ( IllegalAccessException e ) {
+			}
+			catch ( IllegalAccessException e )
+			{
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 				RunTime.bug();
-			} finally {
+			}
+			finally
+			{
 				iter.setAccessible( prevState );
 			}
 			
 			// next
-			iter = listOfAnnotatedFields.getObjectAt( Position.AFTER, iter );
+			iter = listOfAnnotatedFields.getObjectAt(
+														Position.AFTER,
+														iter );
 		}
 	}
 	
+
 	
-
-	private void newVarLevelX() {
-
+	private
+			void
+			newVarLevelX()
+	{
+		
 		RunTime.assumedFalse( notSIT );// so it is a subclass of SIT, that is, it has init() and deInit()
 		Field lastField = this.getFieldInLastSubClassWhichIs_This();
 		// constructor like new
 		Constructor<?> con;
-		try {
-			con = lastField.getType().getConstructor( (Class<?>[])null );
+		try
+		{
+			con = lastField.getType().getConstructor(
+														(Class<?>[])null );
 			this.setAllVarLevelX( con.newInstance( (Object[])null ) );
-		} catch ( Exception e ) {
+		}
+		catch ( Exception e )
+		{
 			e.printStackTrace();
 			RunTime.bug();
 		}
 		
 	}
 	
-	private Field getFieldInLastSubClassWhichIs_This() {
 
+	private
+			Field
+			getFieldInLastSubClassWhichIs_This()
+	{
+		
 		Field ret = listOfAnnotatedFields.getObjectAt( Position.LAST );
 		RunTime.assumedTrue( null != ret );
 		return ret;
 	}
 	
+
 	/**
 	 * @param obj
 	 *            to check if it's at least of the required level type, could be
 	 *            higher(subclassed) but not lower(superclass)
 	 */
-	private void checkVarLevelX( Object obj ) {
-
+	private
+			void
+			checkVarLevelX(
+							Object obj )
+	{
+		
 		RunTime.assumedNotNull( obj );
 		Field lastField = this.getFieldInLastSubClassWhichIs_This();
-		if ( !lastField.getType().isAssignableFrom( obj.getClass() ) ) {
+		if ( !lastField.getType().isAssignableFrom(
+													obj.getClass() ) )
+		{
 			// !true if lastField's class is a superclass(ie. base class) of the
 			// obj's class, or the same class; OR obj is a subclass or same
 			// class of the lastField's class
@@ -155,26 +196,39 @@ public abstract class MainLevel0 extends Initer {
 		}
 	}
 	
-	private Initer getVarLevelX() {
 
+	private
+			Initer
+			getVarLevelX()
+	{
+		
 		Field lastField = this.getFieldInLastSubClassWhichIs_This();
 		Initer ret = null;
 		boolean prevState = lastField.isAccessible();
-		try {
-			if ( !prevState ) {
+		try
+		{
+			if ( !prevState )
+			{
 				lastField.setAccessible( true );
 			}
 			ret = (Initer)lastField.get( this );
-		} catch ( IllegalArgumentException e ) {
+		}
+		catch ( IllegalArgumentException e )
+		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			RunTime.bug();
-		} catch ( IllegalAccessException e ) {
+		}
+		catch ( IllegalAccessException e )
+		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			RunTime.bug();
-		} finally {
-			if ( !prevState ) {
+		}
+		finally
+		{
+			if ( !prevState )
+			{
 				lastField.setAccessible( prevState );// false
 			}
 		}
@@ -182,6 +236,7 @@ public abstract class MainLevel0 extends Initer {
 		
 	}
 	
+
 	/**
 	 * @param params
 	 *            can accept a passed VarLevel or other params needed to init a
@@ -189,55 +244,71 @@ public abstract class MainLevel0 extends Initer {
 	 *            are passed down to the VarLevel
 	 */
 	@Override
-	protected void start( MethodParams params ) {
-
+	protected
+			void
+			start(
+					MethodParams params )
+	{
+		
 		// allows null argument
 		MethodParams mixedParams = this.getDefaults().getClone();
-		try {
-			if ( null != params ) {
-				mixedParams.mergeWith( params, true );// prio on passed params
-			}
-			
-			// FIXME: maybe using same param here is bad idea
-			Reference<Object> ref = mixedParams.get( PossibleParams.varLevelAll );
-			if ( null == ref ) {
-				if ( notSIT ) {
-					RunTime.badCall( "caller must either have all VarLevels subclass of "
-							+ Initer.class.getSimpleName()
-							+ " so that we can new and init the var, or the caller must pass us that var already new-ed and init-ed!" );
-				}
-				// not specified own VarLevel by user, then we make one which we
-				// will deInit later
-				if ( null == this.getVarLevelX() ) {
-					this.newVarLevelX();// 1
-				}
-				usingOwnVarLevel = true;// 2
-				// FIXME: if this VarLevel is also a MainLevel0 expecting a PossibleParams.varLevelAll we're passing the
-				// same above varLevelAll to it, which is bad that's why we need a user settable name in the annotation,
-				// or a new random one of each annotation; the latter seems to be a better idea except that on call we
-				// don't know what to set
-				// if we want to pass a varlevel to the below init? hmm since we did the new maybe we don't have to
-				// so maybe all I just said above is crap
-				
-				// if we're here PossibleParams.varLevelAll doesn't exist so, this init won't see it either, just in
-				// case it's a MainLevel0 too.
-				// this.getVarLevelX().init( mixedParams );// 3
-				Factory.init( this.getVarLevelX(), mixedParams );// 3
-			} else {
-				Object obj = ref.getObject();
-				RunTime.assumedNotNull( obj );
-				this.checkVarLevelX( obj );
-				this.setAllVarLevelX( obj );
-				// it's already inited by caller (assumed) so we won't init it
-			}
-			// super.start( null );
-		} finally {
-			// mixedParams.deInit();
-			Factory.deInit( mixedParams );
+		// try {
+		if ( null != params )
+		{
+			mixedParams.mergeWith(
+									params,
+									true );// prio on passed params
 		}
+		
+		// FIXME: maybe using same param here is bad idea
+		Reference<Object> ref = mixedParams.get( PossibleParams.varLevelAll );
+		if ( null == ref )
+		{
+			if ( notSIT )
+			{
+				RunTime
+						.badCall( "caller must either have all VarLevels subclass of "
+								+ Initer.class.getSimpleName()
+								+ " so that we can new and init the var, or the caller must pass us that var already new-ed and init-ed!" );
+			}
+			// not specified own VarLevel by user, then we make one which we
+			// will deInit later
+			if ( null == this.getVarLevelX() )
+			{
+				this.newVarLevelX();// 1
+			}
+			usingOwnVarLevel = true;// 2
+			// FIXME: if this VarLevel is also a MainLevel0 expecting a PossibleParams.varLevelAll we're passing the
+			// same above varLevelAll to it, which is bad that's why we need a user settable name in the annotation,
+			// or a new random one of each annotation; the latter seems to be a better idea except that on call we
+			// don't know what to set
+			// if we want to pass a varlevel to the below init? hmm since we did the new maybe we don't have to
+			// so maybe all I just said above is crap
+			
+			// if we're here PossibleParams.varLevelAll doesn't exist so, this init won't see it either, just in
+			// case it's a MainLevel0 too.
+			// this.getVarLevelX().init( mixedParams );// 3
+			Factory.init(
+							this.getVarLevelX(),
+							mixedParams );// 3
+		}
+		else
+		{
+			Object obj = ref.getObject();
+			RunTime.assumedNotNull( obj );
+			this.checkVarLevelX( obj );
+			this.setAllVarLevelX( obj );
+			// it's already inited by caller (assumed) so we won't init it
+		}
+		// super.start( null );
+		// } finally {
+		// // mixedParams.deInit();
+		// Factory.deInit( mixedParams );
+		// }
 		RunTime.assumedTrue( this.getVarLevelX().isInited() );
 	}
 	
+
 	/**
 	 * override this WITH calling its super first<br>
 	 * and set your own defaults<br>
@@ -250,9 +321,13 @@ public abstract class MainLevel0 extends Initer {
 	 * 
 	 * @return
 	 */
-	protected MethodParams getDefaults() {
-
-		if ( null == defaults ) {
+	protected
+			MethodParams
+			getDefaults()
+	{
+		
+		if ( null == defaults )
+		{
 			defaults = MethodParams.getNew();// FIXME: when's this deInit-ed?
 			// defaults.init( null );
 		}
@@ -260,17 +335,24 @@ public abstract class MainLevel0 extends Initer {
 		return defaults;
 	}
 	
+
 	/**
 	 * you must deAlloc whatever you want before calling super<br>
 	 * 
 	 * @see org.dml.tools.StaticInstanceTracker#done()
 	 */
 	@Override
-	protected void done( MethodParams params ) {
-
-		if ( null != this.getVarLevelX() ) {
+	protected
+			void
+			done(
+					MethodParams params )
+	{
+		
+		if ( null != this.getVarLevelX() )
+		{
 			// could be not yet inited due to throws in initMainLevel()
-			if ( usingOwnVarLevel ) {
+			if ( usingOwnVarLevel )
+			{
 				RunTime.assumedFalse( notSIT );
 				// we inited it, then we deinit it
 				usingOwnVarLevel = false;// 1 //this did the trick
@@ -278,32 +360,43 @@ public abstract class MainLevel0 extends Initer {
 				Factory.deInit( this.getVarLevelX() );// 2
 				// not setting it to null, since we might use it on the next
 				// call
-			} else {
+			}
+			else
+			{
 				this.setAllVarLevelX( null );
 			}
 		}
 	}
 	
+
 	/**
 	 * fields from subclasses
 	 */
-	private void processAnnotatedFields() {
-
+	private
+			void
+			processAnnotatedFields()
+	{
+		
 		Class<?> currentClass = this.getClass();
-		while ( currentClass != MainLevel0.class ) {
+		while ( currentClass != MainLevel0.class )
+		{
 			Field[] fields = currentClass.getDeclaredFields();
 			
 			// how many fields are VarLevel annotated per class
 			int count = 0;
 			
-			for ( Field field : fields ) {
+			for ( Field field : fields )
+			{
 				Annotation[] allAnno = field.getAnnotations();
-				for ( Annotation annotation : allAnno ) {
-					if ( annotation instanceof VarLevel ) {
+				for ( Annotation annotation : allAnno )
+				{
+					if ( annotation instanceof VarLevel )
+					{
 						count++;
 						
 						boolean prev = field.isAccessible();
-						try {
+						try
+						{
 							field.setAccessible( true );
 							// System.out.println( field.get( this )
 							// + " / "
@@ -320,7 +413,8 @@ public abstract class MainLevel0 extends Initer {
 							// field.getType() ) );
 							// if ( !( field.get( this ) instanceof
 							// StaticInstanceTrackerWithMethodParams ) ) {
-							if ( !Initer.class.isAssignableFrom( field.getType() ) ) {
+							if ( !Initer.class.isAssignableFrom( field.getType() ) )
+							{
 								notSIT = true;
 								// RunTime.bug( "wrong field type, must be a subclass of "
 								// + StaticInstanceTracker.class.getSimpleName() );
@@ -328,11 +422,15 @@ public abstract class MainLevel0 extends Initer {
 							// make sure this class' field is last!
 							// by using LIFO
 							listOfAnnotatedFields.addFirst( field );
-						} catch ( IllegalArgumentException e ) {
+						}
+						catch ( IllegalArgumentException e )
+						{
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 							RunTime.bug();
-						} finally {
+						}
+						finally
+						{
 							field.setAccessible( prev );
 						}// try
 					}// if
@@ -363,12 +461,16 @@ public abstract class MainLevel0 extends Initer {
 
 	}
 	
+
 	/**
 	 * calls Factory.deInit(this);
 	 * this is done because we cannot call Factory.deInit(storage) where storage is an interface and @ VarLevel
 	 */
-	public void factoryDeInit() {
-
+	public
+			void
+			factoryDeInit()
+	{
+		
 		Factory.deInit( this );
 	}
 }

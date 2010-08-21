@@ -47,7 +47,7 @@ public class Log
 			LogFlags.Bug,
 			LogFlags.Warn,
 			LogFlags.Result,
-			LogFlags.Special,
+			// LogFlags.Special,
 			LogFlags.Thro,
 																			};
 	

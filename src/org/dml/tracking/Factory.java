@@ -44,28 +44,40 @@ import org.references.method.MethodParams;
  * its default constructor must be accessible from Factory class<br>
  * 
  */
+
 public class Factory
 {
 	
 	// this will make sure you don't miss calling deInitAll() even if JVM gets interrupted or something
-	static
-	{ // Factory INIT
-		// FIXME: temporarily disabled
-		// new ShutDownHook( new Thread( null, null, "shutdown-hook thread" ) {
-		//
-		// @Override
-		// public void run() {
-		//
-		// Log.special( "on Factory shutdown-hook entry" );
-		// Factory.deInitAll();
-		// // throw
-		// // new
-		// // RuntimeException(
-		// // "taest"
-		// // );
-		// }
-		// } );
-	}
+	// static
+	// { // Factory INIT
+	// // FIXME: temporarily disabled
+	// @SuppressWarnings( "unused" )
+	// ShutDownHook o = new ShutDownHook(
+	// new Thread(
+	// null,
+	// null,
+	// "shutdown-hook thread" )
+	// {
+	//
+	// @Override
+	// public
+	// void
+	// run()
+	// {
+	//
+	// Log.special( "on Factory shutdown-hook entry" );
+	// RunTime.throwAllThatWerePosponed();
+	// RunTime.clearThrowChain();
+	// // Factory.deInitAll();
+	// // throw
+	// // new
+	// // RuntimeException(
+	// // "taest"
+	// // );
+	// }
+	// } );
+	// }
 	
 	static int																	initDepth		= 1;
 	static int																	deInitDepth		= 1;
@@ -819,86 +831,87 @@ public class Factory
 	// }
 	// }
 	
-	/**
-	 * this will try to postpone all exceptions until after done deInit-ing all<br>
-	 * this will deInit all in LIFO manner, also note that if a class inited other instances white inside it's init
-	 * method, then those will be deInited first (since they're stored as a tree, the root is the class that inited
-	 * first) BUT <br>
-	 * FIXME: if a class that was already inited does more inits while running then those inits will be
-	 * deInited before that class, so when that class will be deInited it will probably call some deInits in it's done
-	 * method and it will get that they were already deinited and likely some exception will be thrown<br>
-	 * FIXME: we need to fix that (above) by putting all inits done from within class X into the tree at the right
-	 * position so that we deinit the class first and then we see if it left anything still inited for us to deinit<br>
-	 */
-	@Deprecated
-	public static
-			void
-			deInitAll()
-	{
-		
-		try
-		{
-			Log.entry();
-		}
-		catch ( Throwable t )
-		{
-			// postpone
-			RunTime.throPostponed( t );
-		}
-		
-		RunTime.assumedNotNull( currentParent );
-		RunTime.assumedTrue( currentParent == root );
-		RunTime.assumedNotNull( root );
-		
-		System.out.println( root.size() );// FIXME: remove
-		
-		while ( true )
-		{
-			// get the last subtree in root (aka next in our context)
-			// which means get the one which was first inited FIFO manner
-			TreeOfNonNullObjects<Initer> currentSubTree = root.getChildAt( Position.FIRST );// hardwired: to first LIFO
-			if ( null == currentSubTree )
-			{
-				// no subtrees exist in root then:
-				// root is empty, consistency check
-				RunTime.assumedTrue( root.isEmpty() );
-				break;// exit while
-			}
-			
-			Initer instance = currentSubTree.getValue();
-			RunTime.assumedNotNull( instance );
-			RunTime.assumedTrue( instance.isInited() );
-			// first deInit
-			// this should deInit all subtrees of instance and they should be auto-removed from this subtree
-			try
-			{
-				// this will do a chain deInit; this chain is tree-ed as the current subtree and all its
-				// subtrees
-				// Factory.deInit( instance );// not the internal deInit
-				// NOTE: we didn't call Factory.deInit() here because we want to postpone only internal_deInit()
-				// exceptions
-				internal_deInit( instance );
-			}
-			catch ( Throwable t )
-			{
-				// postpone these throws from deInit only
-				RunTime.throPostponed( t );
-			}
-			finally
-			{
-				// then remove from tree and from QUICK_FIND
-				// allow throws from these: to avoid possible recursive loop repeating w/o ever exiting
-				if ( !removeAnyInstanceFromAnywhereInOurLists( instance ) )
-				{
-					RunTime.bug( "failed to find it or remove it, so forgot to add instance to QUICK_FIND ? somewhere" );
-				}
-				// even if above fails, the subtree should be emptied:
-				RunTime.assumedTrue( currentSubTree.isEmpty() );
-			}
-		}// while true
-		
-		// re-throw all postponed exceptions:
-		RunTime.throwAllThatWerePosponed();
-	}// method
+	// /**
+	// * this will try to postpone all exceptions until after done deInit-ing all<br>
+	// * this will deInit all in LIFO manner, also note that if a class inited other instances white inside it's init
+	// * method, then those will be deInited first (since they're stored as a tree, the root is the class that inited
+	// * first) BUT <br>
+	// * FIXME: if a class that was already inited does more inits while running then those inits will be
+	// * deInited before that class, so when that class will be deInited it will probably call some deInits in it's done
+	// * method and it will get that they were already deinited and likely some exception will be thrown<br>
+	// * FIXME: we need to fix that (above) by putting all inits done from within class X into the tree at the right
+	// * position so that we deinit the class first and then we see if it left anything still inited for us to
+	// deinit<br>
+	// */
+	// @Deprecated
+	// public static
+	// void
+	// deInitAll()
+	// {
+	//
+	// try
+	// {
+	// Log.entry();
+	// }
+	// catch ( Throwable t )
+	// {
+	// // postpone
+	// RunTime.throPostponed( t );
+	// }
+	//
+	// RunTime.assumedNotNull( currentParent );
+	// RunTime.assumedTrue( currentParent == root );
+	// RunTime.assumedNotNull( root );
+	//
+	// System.out.println( root.size() );// FIXME: remove
+	//
+	// while ( true )
+	// {
+	// // get the last subtree in root (aka next in our context)
+	// // which means get the one which was first inited FIFO manner
+	// TreeOfNonNullObjects<Initer> currentSubTree = root.getChildAt( Position.FIRST );// hardwired: to first LIFO
+	// if ( null == currentSubTree )
+	// {
+	// // no subtrees exist in root then:
+	// // root is empty, consistency check
+	// RunTime.assumedTrue( root.isEmpty() );
+	// break;// exit while
+	// }
+	//
+	// Initer instance = currentSubTree.getValue();
+	// RunTime.assumedNotNull( instance );
+	// RunTime.assumedTrue( instance.isInited() );
+	// // first deInit
+	// // this should deInit all subtrees of instance and they should be auto-removed from this subtree
+	// try
+	// {
+	// // this will do a chain deInit; this chain is tree-ed as the current subtree and all its
+	// // subtrees
+	// // Factory.deInit( instance );// not the internal deInit
+	// // NOTE: we didn't call Factory.deInit() here because we want to postpone only internal_deInit()
+	// // exceptions
+	// internal_deInit( instance );
+	// }
+	// catch ( Throwable t )
+	// {
+	// // postpone these throws from deInit only
+	// RunTime.throPostponed( t );
+	// }
+	// finally
+	// {
+	// // then remove from tree and from QUICK_FIND
+	// // allow throws from these: to avoid possible recursive loop repeating w/o ever exiting
+	// if ( !removeAnyInstanceFromAnywhereInOurLists( instance ) )
+	// {
+	// RunTime.bug( "failed to find it or remove it, so forgot to add instance to QUICK_FIND ? somewhere" );
+	// }
+	// // even if above fails, the subtree should be emptied:
+	// RunTime.assumedTrue( currentSubTree.isEmpty() );
+	// }
+	// }// while true
+	//
+	// // re-throw all postponed exceptions:
+	// RunTime.throwAllThatWerePosponed();
+	// }// method
 	
 }// class

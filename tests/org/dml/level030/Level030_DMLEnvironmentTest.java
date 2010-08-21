@@ -45,38 +45,59 @@ import org.references.method.PossibleParams;
  * 
  *
  */
-public class Level030_DMLEnvironmentTest {
+public class Level030_DMLEnvironmentTest
+{
 	
 	Level030_DMLEnvironment	l3;
 	
+	
 	@Before
-	public void setUp() {
-
+	public
+			void
+			setUp()
+	{
+		
 		MethodParams params = MethodParams.getNew();
 		// params.init( null );
-		params.set( PossibleParams.jUnit_wipeDB, true );
-		params.set( PossibleParams.jUnit_wipeDBWhenDone, true );
+		params.set(
+					PossibleParams.jUnit_wipeDB,
+					true );
+		params.set(
+					PossibleParams.jUnit_wipeDBWhenDone,
+					true );
 		// l3 = new Level030_DMLEnvironment();
 		// l3.init( params );
-		l3 = Factory.getNewInstanceAndInit( Level030_DMLEnvironment.class, params );
+		l3 = Factory.getNewInstanceAndInit(
+											Level030_DMLEnvironment.class,
+											params );
 		// params.deInit();
-		Factory.deInit( params );
+		// Factory.deInit( params );
 	}
 	
-	@After
-	public void tearDown() {
 
+	@After
+	public
+			void
+			tearDown()
+	{
+		
 		Factory.deInit( l3 );
 		// l3.deInitSilently();
 	}
 	
-	@Test
-	public void testPointer() {
 
+	@Test
+	public
+			void
+			testPointer()
+	{
+		
 		JavaID name = JavaID.ensureJavaIDFor( "Ptr1" );
 		Symbol name2 = l3.createSymbol( name );
 		
-		Pointer p1 = l3.getExistingPointer( name2, true );
+		Pointer p1 = l3.getExistingPointer(
+											name2,
+											true );
 		// l3.associateJavaIDWithSymbol( name, p1.getAsSymbol() );
 		p1.assumedValid();
 		assertNull( p1.getPointee() );
@@ -85,7 +106,9 @@ public class Level030_DMLEnvironmentTest {
 		assertNull( p2.getPointee() );
 		
 		// can point to nothing
-		Pointer p1_1 = l3.getExistingPointer( name2, true );
+		Pointer p1_1 = l3.getExistingPointer(
+												name2,
+												true );
 		assertNull( p1_1.getPointee() );
 		Symbol uni1 = l3.newUniqueSymbol();
 		assertNull( p1.pointTo( uni1 ) );
@@ -96,14 +119,19 @@ public class Level030_DMLEnvironmentTest {
 		Symbol pointsTo = l3.newUniqueSymbol();
 		Pointer p3 = l3.getNewNonNullPointer( pointsTo );
 		// must already point to something, which it does
-		Pointer p3_3 = l3.getExistingPointer( p3.getAsSymbol(), false );
+		Pointer p3_3 = l3.getExistingPointer(
+												p3.getAsSymbol(),
+												false );
 		assertTrue( p3 == p3_3 );
 		assertTrue( p3_3.getPointee() == pointsTo );
 		assertTrue( p3.getPointee() == pointsTo );
 		boolean threw = false;
-		try {
+		try
+		{
 			p3.pointTo( null );
-		} catch ( AssertionError ae ) {
+		}
+		catch ( AssertionError ae )
+		{
 			threw = true;
 		}
 		assertTrue( threw );
@@ -114,63 +142,98 @@ public class Level030_DMLEnvironmentTest {
 		assertTrue( p4.getPointee() == null );
 		assertTrue( p4.pointTo( null ) == null );
 		threw = false;
-		try {
+		try
+		{
 			p3.assumedValid();
-		} catch ( AssertionError ae ) {
+		}
+		catch ( AssertionError ae )
+		{
 			threw = true;
 		}
 		assertFalse( threw );
 		
 		threw = false;
-		try {
+		try
+		{
 			p3.getPointee();
-		} catch ( AssertionError ae ) {
+		}
+		catch ( AssertionError ae )
+		{
 			threw = true;
 		}
 		assertFalse( threw );
 		
 		threw = false;
-		try {
+		try
+		{
 			p3.pointTo( pointsTo );
-		} catch ( AssertionError ae ) {
+		}
+		catch ( AssertionError ae )
+		{
 			threw = true;
 		}
 		assertFalse( threw );
 		
 		threw = false;
-		try {
+		try
+		{
 			p3.getAsSymbol();
-		} catch ( AssertionError ae ) {
+		}
+		catch ( AssertionError ae )
+		{
 			threw = true;
 		}
 		assertFalse( threw );
 	}
 	
-	@Test
-	public void testDomainPointer() {
 
+	@Test
+	public
+			void
+			testDomainPointer()
+	{
+		
 		Symbol domain = l3.ensureSymbol( JavaID.ensureJavaIDFor( "domain" ) );
 		Symbol pointTo = l3.newUniqueSymbol();
-		assertFalse( l3.ensureVector( domain, pointTo ) );
-		DomainPointer dp1 = l3.getNewNonNullDomainPointer( domain, pointTo );
-		DomainPointer dp1_1 = l3.getExistingDomainPointer( dp1.getAsSymbol(), domain, false );
+		assertFalse( l3.ensureVector(
+										domain,
+										pointTo ) );
+		DomainPointer dp1 = l3.getNewNonNullDomainPointer(
+															domain,
+															pointTo );
+		DomainPointer dp1_1 = l3.getExistingDomainPointer(
+															dp1.getAsSymbol(),
+															domain,
+															false );
 		
 		boolean must = false;
-		try {
+		try
+		{
 			// existing with different domain this time
 			@SuppressWarnings( "unused" )
-			DomainPointer diffDom = l3.getExistingDomainPointer( dp1.getAsSymbol(), pointTo, false );
-		} catch ( BadCallError bce ) {
+			DomainPointer diffDom = l3.getExistingDomainPointer(
+																	dp1.getAsSymbol(),
+																	pointTo,
+																	false );
+		}
+		catch ( BadCallError bce )
+		{
 			must = true;
 		}
 		assertTrue( must );
 		
 		must = false;
-		try {
+		try
+		{
 			// existing with different domain this time
 			@SuppressWarnings( "unused" )
-			DomainPointer diffDom = l3.getExistingDomainPointer( dp1.getAsSymbol(), domain, true );
-		} catch ( BadCallError bce ) {
+			DomainPointer diffDom = l3.getExistingDomainPointer(
+																	dp1.getAsSymbol(),
+																	domain,
+																	true );
+		}
+		catch ( BadCallError bce )
+		{
 			must = true;
 		}
 		assertTrue( must );
@@ -180,14 +243,20 @@ public class Level030_DMLEnvironmentTest {
 		assertTrue( dp1 == dp1_1 );
 		
 		DomainPointer dp2 = l3.getNewNullDomainPointer( domain );
-		DomainPointer dp2_2 = l3.getExistingDomainPointer( dp2.getAsSymbol(), domain, true );
+		DomainPointer dp2_2 = l3.getExistingDomainPointer(
+															dp2.getAsSymbol(),
+															domain,
+															true );
 		assertTrue( dp2.getDomain() == domain );
 		assertTrue( dp2_2.getDomain() == dp2.getDomain() );
 		assertTrue( dp2 == dp2_2 );
 		boolean threw = false;
-		try {
+		try
+		{
 			dp2.setDomain( dp2.getAsSymbol() );
-		} catch ( AssertionError ae ) {
+		}
+		catch ( AssertionError ae )
+		{
 			threw = true;
 		}
 		assertTrue( threw );

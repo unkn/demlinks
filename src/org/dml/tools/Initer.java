@@ -161,12 +161,11 @@ public abstract class Initer
 			void
 			beforeDone()
 	{
-		
-	};
+		//
+	}
 	
 
 	/**
-	 * @return
 	 */
 	public final
 			void
@@ -233,8 +232,8 @@ public abstract class Initer
 			void
 			beforeStart()
 	{
-		
-	};
+		//
+	}
 	
 
 	/**
@@ -273,14 +272,14 @@ public abstract class Initer
 				{
 					// means: was used before, we discard the one before
 					// formerParams.deInit();
-					try
-					{
-						Factory.deInit( formerParams );
-					}
-					finally
-					{
-						formerParams = null;
-					}
+					// try
+					// {
+					// Factory.deInit( formerParams );
+					// }
+					// finally
+					// {
+					formerParams = null;
+					// }
 				}
 				
 				RunTime.assumedNull( formerParams );
@@ -294,7 +293,7 @@ public abstract class Initer
 			} // else called by reInit() we don't mod them
 			
 			this.start( formerParams );// can be null params
-		}
+		}// wasn't inited
 	}
 	
 }

@@ -45,39 +45,61 @@ import org.references.method.PossibleParams;
  * 
  *
  */
-public class Level010_DMLEnvironmentTest {
+public class Level010_DMLEnvironmentTest
+{
 	
 	Level010_DMLEnvironment	dml1;
 	Symbol					a, b, c;
 	MethodParams			params;
 	
+	
 	@Before
-	public void setUp() throws StorageException {
-
+	public
+			void
+			setUp()
+					throws StorageException
+	{
+		
 		params = MethodParams.getNew();
 		// params.init( null );
 		
 		// dml1 = new Level010_DMLEnvironment();
-		params.set( PossibleParams.homeDir, Consts.BDB_ENV_PATH );
-		params.set( PossibleParams.jUnit_wipeDBWhenDone, true );
+		params.set(
+					PossibleParams.homeDir,
+					Consts.BDB_ENV_PATH );
+		params.set(
+					PossibleParams.jUnit_wipeDBWhenDone,
+					true );
 		// dml1.init( params );
-		dml1 = Factory.getNewInstanceAndInit( Level010_DMLEnvironment.class, params );
+		dml1 = Factory.getNewInstanceAndInit(
+												Level010_DMLEnvironment.class,
+												params );
 	}
 	
-	@After
-	public void tearDown() {
 
+	@After
+	public
+			void
+			tearDown()
+	{
+		
 		Factory.deInit( dml1 );
 		// dml1.deInitSilently();
 		dml1 = null;
-		Factory.deInit( params );// don't move this to setUp() because is used in tests still
+		// Factory.deInit( params );// don't move this to setUp() because is used in tests still
 		params = null;
 	}
 	
-	@Test
-	public void test1() throws StorageException {
 
-		try {
+	@Test
+	public
+			void
+			test1()
+					throws StorageException
+	{
+		
+		try
+		{
 			a = dml1.ensureSymbol( JavaID.ensureJavaIDFor( "A" ) );
 			b = dml1.ensureSymbol( JavaID.ensureJavaIDFor( "B" ) );
 			c = dml1.ensureSymbol( JavaID.ensureJavaIDFor( "C" ) );
@@ -105,40 +127,60 @@ public class Level010_DMLEnvironmentTest {
 			Symbol anew = Bridge_SymbolAndBDB.newSymbolFrom( la );
 			assertTrue( a == anew );// indeed
 			assertTrue( dml1.getJavaID( anew ) == dml1.getJavaID( a ) );
-		} finally {
+		}
+		finally
+		{
 			Factory.deInit( dml1 );
 			// dml1.deInit();
 		}
 	}
 	
+
 	@SuppressWarnings( "deprecation" )
 	@Test
-	public void testMultiInits() throws StorageException {
-
-		try {
+	public
+			void
+			testMultiInits()
+					throws StorageException
+	{
+		
+		try
+		{
 			Factory.deInit( dml1 );
 			// dml1.deInit();
-			Factory.init( dml1, params );
+			Factory.init(
+							dml1,
+							params );
 			// dml1.init( params );
 			// dml2.deInit();
 			// dml2.init( Consts.DEFAULT_BDB_ENV_PATH );
-		} finally {
+		}
+		finally
+		{
 			Factory.deInit( dml1 );
 			// dml1.deInitAllLikeMe();
 		}
 	}
 	
-	@Test
-	public void testUniqueAndAssociation() {
 
+	@Test
+	public
+			void
+			testUniqueAndAssociation()
+	{
+		
 		Symbol noID = dml1.newUniqueSymbol();
 		assertNotNull( noID );
 		JavaID jid = JavaID.ensureJavaIDFor( "UniqueSymbol" );
 		assertNull( dml1.getJavaID( noID ) );
 		assertNull( dml1.getSymbol( jid ) );
-		dml1.newLink( noID, jid );// no throws
+		dml1.newLink(
+						noID,
+						jid );// no throws
 		assertTrue( dml1.getJavaID( noID ) == jid );
 		assertTrue( dml1.getSymbol( jid ) == noID );
-		assertTrue( dml1.ensureLink( noID, jid ) );
+		assertTrue( dml1.ensureLink(
+										noID,
+										jid ) );
 	}
 }
