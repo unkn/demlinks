@@ -42,11 +42,11 @@ Things that are depreciated or obsolete won't be here.
 	} catch ( Throwable t ) { //1
 			if ( RunTime.isThisWrappedException_of_thisType( t, BadCallError.class ) ) { //2
 				//yes it is exactly BadCallError 
-			}
 			
-			//clear the just caught exception and all its wraps, previously thrown exceptions will(should) remain active, so later when seeing the list of exceptions in eclipse,
-			//you won't see this exception we just handled here
-			RunTime.clearLastThrown_andAllItsWraps();//3
+				//clear the just caught exception and all its wraps, previously thrown exceptions will(should) remain active, so later when seeing the list of exceptions in eclipse,
+				//you won't see this exception we just handled here
+				RunTime.clearLastThrown_andAllItsWraps();//3
+			}//else don't clear it 'cause it's something else - unexpected
 	} 
 	NOTE: that you cannot test for a subclass of ie. Error, you can only test specifically for the named class (though it's easy to make a method for this, will do when needed)
 	

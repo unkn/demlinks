@@ -41,24 +41,38 @@ import org.references.method.PossibleParams;
  * 
  *
  */
-public class DBTest {
+public class DBTest
+{
 	
 	Level1_Storage_BerkeleyDB	bdb;
 	
+	
 	@Before
-	public void setUp() throws Exception {
-
+	public
+			void
+			setUp()
+					throws Exception
+	{
+		
 		Log.entry();
 		// System.out.println( "setUp:" );
 		// StaticInstanceTracker
 		MethodParams params = MethodParams.getNew();
 		// params = Factory.getNewInstanceAndInitWithoutParams( MethodParams.class );
 		
-		params.set( PossibleParams.homeDir, Consts.BDB_ENV_PATH );
-		params.set( PossibleParams.jUnit_wipeDB, false );
-		params.set( PossibleParams.jUnit_wipeDBWhenDone, true );
+		params.set(
+					PossibleParams.homeDir,
+					Consts.BDB_ENV_PATH );
+		params.set(
+					PossibleParams.jUnit_wipeDB,
+					false );
+		params.set(
+					PossibleParams.jUnit_wipeDBWhenDone,
+					true );
 		// RunTime.thro( new Exception( "testy" ) );
-		bdb = Factory.getNewInstanceAndInit( Level1_Storage_BerkeleyDB.class, params );
+		bdb = Factory.getNewInstanceAndInit(
+												Level1_Storage_BerkeleyDB.class,
+												params );
 		// bdb._deInit();
 		Factory.deInit( params );
 		//
@@ -75,19 +89,23 @@ public class DBTest {
 		Log.exit();
 	}
 	
-	@After
-	public void tearDown() {
 
+	@After
+	public
+			void
+			tearDown()
+	{
+		
 		// System.out.println( "tearDown:" );
 		// RunTime.clearThrowChain();
 		Log.entry();
 		// bdb.deInit();
-		// Factory.deInit( bdb );
+		Factory.deInit( bdb );
 		// Factory.tzt();
 		
 		// throw new RuntimeException();
 		// try {
-		Factory.deInitAll();
+		// Factory.deInitAll();
 		// } finally {
 		// / Factory.tzt();
 		// }
@@ -96,23 +114,35 @@ public class DBTest {
 		Log.exit();
 	}
 	
-	@Test
-	public void testInitDeInit() {
 
+	@Test
+	public
+			void
+			testInitDeInit()
+	{
+		
 		// @Before and @After kicking in;
 	}
 	
-	@Test
-	public void testReInit() {
 
+	@Test
+	public
+			void
+			testReInit()
+	{
+		
 		Factory.deInit( bdb );
 		Factory.reInit_aka_InitAgain_WithOriginalPassedParams( bdb );
 		
 	}
 	
-	@Test
-	public void testRestart() {
 
+	@Test
+	public
+			void
+			testRestart()
+	{
+		
 		Factory.restart_aka_DeInitAndInitAgain_WithOriginalPassedParams( bdb );
 	}
 	

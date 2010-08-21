@@ -39,7 +39,8 @@ import org.references.method.MethodParams;
  * 
  *
  */
-public abstract class Initer {
+public abstract class Initer
+{
 	
 	// true on calling .start(); and true on calling .done()
 	private boolean			inited			= false;
@@ -47,59 +48,84 @@ public abstract class Initer {
 	// saved params to be used on reInit(); they are always clone of passed params
 	private MethodParams	formerParams	= null;
 	
+	
 	/**
 	 * constructor
 	 */
-	public Initer() {
-
+	public Initer()
+	{
+		
 		super();
 	}
 	
+
 	/**
 	 * @param inited1
 	 *            the inited to set
 	 */
-	private final void setInited( boolean inited1 ) {
-
+	private final
+			void
+			setInited(
+						boolean inited1 )
+	{
+		
 		inited = inited1;
 	}
 	
+
 	/**
 	 * @return the inited
 	 */
-	public final boolean isInited() {
-
+	public final
+			boolean
+			isInited()
+	{
+		
 		return inited;
 	}
 	
+
 	/**
 	 * implement this start(), but use init() instead<br>
 	 * the params here are already cloned from those passed to init(params)<br>
 	 * isInited() will return true while in start() and it will remain true even if start() throws<br>
 	 */
-	protected abstract void start( MethodParams params );
+	protected abstract
+			void
+			start(
+					MethodParams params );
 	
+
 	/**
 	 * this will call deInit() and then init(params) where params are the last
 	 * used params which were saved/cloned internally<br>
 	 */
-	public final void _restart_aka_deInit_and_initAgain_WithOriginalPassedParams() {
-
-		if ( !this.isInited() ) {
+	public final
+			void
+			_restart_aka_deInit_and_initAgain_WithOriginalPassedParams()
+	{
+		
+		if ( !this.isInited() )
+		{
 			RunTime.badCall( "not already inited. Just use reInit" );
 		}
 		this._deInit();
 		this._reInit_aka_initAgain_WithOriginalPassedParams();
 	}
 	
+
 	/**
 	 * reInit with original params, can only be used if not already inited<br>
 	 * should've been already inited once, but now it should be in deInit-ed state; if wasn't init-ed ever, then params
 	 * are null<br>
 	 */
-	public final void _reInit_aka_initAgain_WithOriginalPassedParams() {
-
-		if ( this.isInited() ) {
+	public final
+			void
+			_reInit_aka_initAgain_WithOriginalPassedParams()
+	{
+		
+		if ( this.isInited() )
+		{
 			RunTime.badCall( "already inited. Maybe you wanted to use restart()" );
 		}
 		// so wasn't inited then:
@@ -107,6 +133,7 @@ public abstract class Initer {
 		// Factory.reInit( formerParams );
 	}
 	
+
 	/**
 	 * implement this done(), but use deInit() instead<br>
 	 * the parameters that were passed to init(params) will be passed to this
@@ -121,37 +148,57 @@ public abstract class Initer {
 	 * FIXME: good luck preventing this from being called directly; should be called only from deInit(); but should also
 	 * be overriddable
 	 */
-	protected abstract void done( MethodParams params );
+	protected abstract
+			void
+			done(
+					MethodParams params );
 	
-	
+
 	/**
 	 * isInited() is true while in this method<br>
 	 */
-	protected void beforeDone() {
-
+	protected
+			void
+			beforeDone()
+	{
+		
 	};
 	
+
 	/**
 	 * @return
 	 */
-	public final void _deInit() {
-
-		if ( !this.isInited() ) {
+	public final
+			void
+			_deInit()
+	{
+		
+		if ( !this.isInited() )
+		{
 			RunTime.badCall( this.toString() + " was not already init()-ed" );
-		} else {
-			try {
-				try {
+		}
+		else
+		{
+			try
+			{
+				try
+				{
 					this.beforeDone();
-				} finally {
+				}
+				finally
+				{
 					this.done( formerParams );
 				}
 				// formerParams are not managed here, only on init() ie. they're discarded in init()
-			} finally {
+			}
+			finally
+			{
 				this.setInited( false ); // ignore this:don't move this below .done() because .done() may throw
 			}
 		}
 	}
 	
+
 	// /**
 	// * this will not except if already deInit()-ed
 	// *
@@ -167,7 +214,7 @@ public abstract class Initer {
 	// } catch ( Throwable e ) {// FIXME: remove this catch if we still want to throw but deferred
 	// e.printStackTrace();
 	// } finally {
-	// // FIXME: this may throw but since we're in silent mode, we may want to muff it
+	// // FIXME: this may throw but since we're in silent mode, we may want to mute it
 	// this.done( formerParams );
 	// }
 	// // formerParams are not managed here, only on init() ie. discarded
@@ -182,10 +229,14 @@ public abstract class Initer {
 	/**
 	 * isInited() is false until after this method completes; so you see it as false from within this method<br>
 	 */
-	protected void beforeStart() {
-
+	protected
+			void
+			beforeStart()
+	{
+		
 	};
 	
+
 	/**
 	 * should only be called by one method: Factory.getNewInstance(...)<br>
 	 * the params will be cloned (or copied) to be used by reInit()<br>
@@ -193,33 +244,49 @@ public abstract class Initer {
 	 * @param params
 	 *            null or the params
 	 */
-	public final void _init( MethodParams params ) {
-
-		if ( this.isInited() ) {
+	public final
+			void
+			_init(
+					MethodParams params )
+	{
+		
+		if ( this.isInited() )
+		{
 			RunTime.badCall( "already inited, you must deInit() before calling init(...) again" );
-		} else {
-			try {
+		}
+		else
+		{
+			try
+			{
 				// this may throw
 				this.beforeStart();
-			} finally {
+			}
+			finally
+			{
 				this.setInited( true );
 			}
 			
-			if ( params != formerParams ) {
+			if ( params != formerParams )
+			{
 				// means: NOT called by reInit() or restart()
-				if ( null != formerParams ) {
+				if ( null != formerParams )
+				{
 					// means: was used before, we discard the one before
 					// formerParams.deInit();
-					try {
+					try
+					{
 						Factory.deInit( formerParams );
-					} finally {
+					}
+					finally
+					{
 						formerParams = null;
 					}
 				}
 				
 				RunTime.assumedNull( formerParams );
 				
-				if ( null != params ) {// we get a copy of passed params
+				if ( null != params )
+				{// we get a copy of passed params
 					// this does init(null) inside
 					formerParams = params.getClone();// this won't deInit because reInit might need it
 					RunTime.assumedNotNull( formerParams );

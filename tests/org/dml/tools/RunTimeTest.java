@@ -26,6 +26,8 @@ package org.dml.tools;
 
 
 
+import static org.junit.Assert.*;
+
 import java.io.IOException;
 
 import org.dml.error.BadCallError;
@@ -40,255 +42,441 @@ import org.junit.Test;
  * these tests can only be manually tested, ie. by a human<br>
  * 
  */
-public class RunTimeTest {
+public class RunTimeTest
+{
 	
 	@Before
-	public void setUp() {
-
+	public
+			void
+			setUp()
+	{
+		
 		RunTime.clearThrowChain();
 	}
 	
+
 	@After
-	public void tearDown() {
-
+	public
+			void
+			tearDown()
+	{
+		
 		RunTime.clearThrowChain();
 	}
 	
-	@Test
-	public void testChainedException1() {
 
+	@Test
+	public
+			void
+			testChainedException1()
+	{
+		
 		// this will successfully chain all 3 throwables and eclipse will show them on the exact lines they happen
-		try {
-			RunTime.thro( new Error( "err" ) );
-		} catch ( Throwable e ) {
-			try {
-				throw new IOException( "rogue java method that we cannot control throws this" );
-			} catch ( Throwable f ) {
+		try
+		{
+			RunTime.thro( new Error(
+										"err" ) );
+		}
+		catch ( Throwable e )
+		{
+			try
+			{
+				throw new IOException(
+										"rogue java method that we cannot control throws this" );
+			}
+			catch ( Throwable f )
+			{
 				RunTime.thro( f ); // mustn't chain these like: new Exception( f ) );
 			}
-		} finally {
-			RunTime.thro( new Exception( "final" ) );
+		}
+		finally
+		{
+			RunTime.thro( new Exception(
+											"final" ) );
 		}
 	}
 	
-	@Test
-	public void testChainedException1_1() {
 
+	@Test
+	public
+			void
+			testChainedException1_1()
+	{
+		
 		// this will successfully chain all the last 3 throwables and eclipse will show them on the exact lines they
 		// happen
 		// however the first thrown exception "err" will not be seen in eclipse, 'cause it got overwritten by the new
 		// thrown exception which already had in its chain a normal exception that was caught from java normal throws
 		System.err.println( "1_1" );
-		try {
-			RunTime.thro( new Error( "err" ) );
-		} catch ( Throwable e ) {
-			try {
-				throw new IOException( "rogue java method that we cannot control throws this" );
-			} catch ( Throwable f ) {
-				RunTime.thro( new Exception( "new one that also chains f", f ) );
+		try
+		{
+			RunTime.thro( new Error(
+										"err" ) );
+		}
+		catch ( Throwable e )
+		{
+			try
+			{
+				throw new IOException(
+										"rogue java method that we cannot control throws this" );
+			}
+			catch ( Throwable f )
+			{
+				RunTime.thro( new Exception(
+												"new one that also chains f",
+												f ) );
 				// mustn't chain these like: new Exception( f ) ); because all is lost from before ie. the 'err'
 				// exception from above, is lost; and also the f exception is not pointed out in console output, only in
 				// eclipse Failure Trace window
 			}
-		} finally {
-			RunTime.thro( new Exception( "final" ) );
+		}
+		finally
+		{
+			RunTime.thro( new Exception(
+											"final" ) );
 		}
 	}
 	
-	@Test
-	public void testChainedException2() {
 
+	@Test
+	public
+			void
+			testChainedException2()
+	{
+		
 		// this will not show the Error one
-		try {
-			throw new Error( "err1" );// this gets overridden by IOException below, which is java normal
-		} catch ( Throwable e ) {
-			try {
-				throw new IOException( "rogue java method that we cannot control throws this" );
-			} catch ( Throwable f ) {
+		try
+		{
+			throw new Error(
+								"err1" );// this gets overridden by IOException below, which is java normal
+		}
+		catch ( Throwable e )
+		{
+			try
+			{
+				throw new IOException(
+										"rogue java method that we cannot control throws this" );
+			}
+			catch ( Throwable f )
+			{
 				RunTime.thro( f ); // mustn't chain these like: new Exception( f ) );
 			}
-		} finally {
-			RunTime.thro( new Exception( "final" ) );
+		}
+		finally
+		{
+			RunTime.thro( new Exception(
+											"final" ) );
 		}
 	}
 	
-	@Test
-	public void testChainedException3() {
 
+	@Test
+	public
+			void
+			testChainedException3()
+	{
+		
 		// this only shows the first and last throwed ones
-		try {
-			RunTime.thro( new Error( "err" ) );
-		} catch ( Throwable e ) {
+		try
+		{
+			RunTime.thro( new Error(
+										"err" ) );
+		}
+		catch ( Throwable e )
+		{
 			// e.printStackTrace();
 			RunTime.thro( e );// this will not be shown
-		} finally {
-			RunTime.thro( new Exception( "final" ) );
+		}
+		finally
+		{
+			RunTime.thro( new Exception(
+											"final" ) );
 		}
 	}
 	
-	@Test
-	public void testChainedException4() throws Throwable {
 
+	@Test
+	public
+			void
+			testChainedException4()
+					throws Throwable
+	{
 		
+
 		// Log.thro( "x" );
 		// this will successfully chain all 3 throwables and eclipse will show them on the exact lines they happen
-		try {
-			RunTime.thro( new Error( "err" ) );
-		} catch ( Throwable e ) {
-			RunTime.thro( new RuntimeException( "rte", e ) );// and this is chained
-		} finally {
-			RunTime.thro( new Exception( "final" ) );
+		try
+		{
+			RunTime.thro( new Error(
+										"err" ) );
+		}
+		catch ( Throwable e )
+		{
+			RunTime.thro( new RuntimeException(
+												"rte",
+												e ) );// and this is chained
+		}
+		finally
+		{
+			RunTime.thro( new Exception(
+											"final" ) );
 		}
 	}
 	
-	@Test
-	public void testDefer() {
 
-		try {
-			RunTime.thro( new Error( "this was deferred" ) );
-		} catch ( Throwable e ) {
+	@Test
+	public
+			void
+			testDefer()
+	{
+		
+		try
+		{
+			RunTime.thro( new Error(
+										"this was deferred" ) );
+		}
+		catch ( Throwable e )
+		{
 			// ignore
 		}
-		System.out.println( "doing something else until the next exception occurs which will show the deferred one also" );
-		RunTime.thro( new Exception( "the now" ) );
+		System.out
+				.println( "doing something else until the next exception occurs which will show the deferred one also" );
+		RunTime.thro( new Exception(
+										"the now" ) );
 	}
 	
-	@Test
-	public void testDeferIfChained() {
 
+	@Test
+	public
+			void
+			testDeferIfChained()
+	{
+		
 		// so all 4 are chained in normal order and eclipse show show them all in Failure Trace window
-		try {
-			RunTime.thro( new Error( "Zthis was deferred" ) );
-		} catch ( Throwable e ) {
+		try
+		{
+			RunTime.thro( new Error(
+										"Zthis was deferred" ) );
+		}
+		catch ( Throwable e )
+		{
 			// ignore
 		}
-		System.out.println( "doing something else until the next exception occurs which will show the deferred one also" );
-		try {
-			RunTime.thro( new Exception( "A" ) );
-		} catch ( Throwable e ) {
+		System.out
+				.println( "doing something else until the next exception occurs which will show the deferred one also" );
+		try
+		{
+			RunTime.thro( new Exception(
+											"A" ) );
+		}
+		catch ( Throwable e )
+		{
 			// ignoring A
-			try {
-				throw new IOException( "rogue java method that we cannot control throws this" );
-			} catch ( Throwable f ) {
+			try
+			{
+				throw new IOException(
+										"rogue java method that we cannot control throws this" );
+			}
+			catch ( Throwable f )
+			{
 				RunTime.thro( f ); // mustn't chain these like: new Exception( f ) );
 			}
-		} finally {
-			RunTime.thro( new RuntimeException( "B, which is chained to A" ) );
+		}
+		finally
+		{
+			RunTime.thro( new RuntimeException(
+												"B, which is chained to A" ) );
 		}
 	}
 	
-	@Test
-	public void testDeferredNormal() throws IOException {
 
-		try {
-			try {
-				throw new IOException( "x" );
-			} finally {
+	@Test
+	public
+			void
+			testDeferredNormal()
+					throws IOException
+	{
+		
+		try
+		{
+			try
+			{
+				throw new IOException(
+										"x" );
+			}
+			finally
+			{
 				System.out.println( "doing some stuff first" );
 			}
-		} finally {
+		}
+		finally
+		{
 			System.out.println( "reachable" );
 		}
 	}
 	
-	@Test
-	public void testBadCallNoParams() {
 
+	@Test
+	public
+			void
+			testBadCallNoParams()
+	{
+		
 		// the link in console should point to this line
 		RunTime.badCall();
 	}
 	
-	@Test
-	public void testBadCallWithParams() {
 
+	@Test
+	public
+			void
+			testBadCallWithParams()
+	{
+		
 		// the link in console should point to this line
 		RunTime.badCall( "message" );
 	}
 	
-	@Test
-	public void testBadCall2() {
 
-		RunTime.thro( new BadCallError( "wtw" ) );
+	@Test
+	public
+			void
+			testBadCall2()
+	{
+		
+		RunTime.thro( new BadCallError(
+										"wtw" ) );
 	}
 	
-	@Test
-	public void testBadCall3() {
 
+	@Test
+	public
+			void
+			testBadCall3()
+	{
+		
 		BadCallError b = new BadCallError();
 		// the below throw should point to the above line;
 		RunTime.thro( b );
 	}
 	
-	@Test
-	public void testBadCall4() {
 
+	@Test
+	public
+			void
+			testBadCall4()
+	{
+		
 		// this should have the console point to the line with 'new' and the last badCall() statement
-		try {
+		try
+		{
 			BadCallError b = new BadCallError();
 			// the below throw should point to the above line;
 			RunTime.thro( b );
-		} finally {
+		}
+		finally
+		{
 			RunTime.badCall();// autochained the above as cause
 		}
 	}
 	
-	private void throwy1() {
 
-		throw new BadCallError( "throwy1" );
+	private
+			void
+			throwy1()
+	{
+		
+		throw new BadCallError(
+								"throwy1" );
 	}
 	
-	private void throwy2() {
 
+	private
+			void
+			throwy2()
+	{
+		
 		this.throwy1();
 	}
 	
-	@Test
-	public void testChainingOfBug() {
 
-		try {
+	@Test
+	public
+			void
+			testChainingOfBug()
+	{
+		
+		try
+		{
 			// the console will show this line and also eclipse too
 			this.throwy2();
 			// throw new BadCallError();
-		} catch ( Throwable t ) {
+		}
+		catch ( Throwable t )
+		{
 			// the console will also show this line and eclipse also
 			RunTime.bug( t );
 		}
 	}
 	
-	@Test
-	public void testChainingOfBadCall() {
 
-		try {
+	@Test
+	public
+			void
+			testChainingOfBadCall()
+	{
+		
+		try
+		{
 			// the console will show this line and also eclipse too
 			this.throwy2();
 			// throw new BadCallError();
-		} catch ( Throwable t ) {
+		}
+		catch ( Throwable t )
+		{
 			// the console will also show this line and eclipse also
 			RunTime.badCall( t );
 		}
 	}
 	
-	@Test
-	public void testThroAndAssumed() {
 
+	@Test
+	public
+			void
+			testThroAndAssumed()
+	{
+		
 		// all of the following should be accessible from console links and also from eclipse Failure Trace
 		// the links should point on these lines exactly, not on their sub procedures
-		try {
+		try
+		{
 			RunTime.assumedTrue( 1 == 2 );
 			
-		} finally {
-			try {
-				RunTime.thro( new AssertionError( "expected true condition was false!" ) );
+		}
+		finally
+		{
+			try
+			{
+				RunTime.thro( new AssertionError(
+													"expected true condition was false!" ) );
 				
-			} finally {
-				try {
+			}
+			finally
+			{
+				try
+				{
 					int a = 2;
 					RunTime.assumedFalse( a == 1 + 1 );
-				} finally {
-					try {
+				}
+				finally
+				{
+					try
+					{
 						Object o = null;
 						RunTime.assumedNotNull( o );
-					} finally {
+					}
+					finally
+					{
 						RunTime.assumedNull( new Object() );
 					}
 				}
@@ -296,92 +484,182 @@ public class RunTimeTest {
 		}
 	}
 	
-	@Test
-	public void testCaughtAlready() {
 
+	@Test
+	public
+			void
+			testCaughtAlready()
+	{
+		
 		// both exceptions are shown on console, but only last one is shown in eclipse Failure Trace
-		try {
-			RunTime.thro( new Exception( "something" ) );
-		} catch ( Exception e ) {
+		try
+		{
+			RunTime.thro( new Exception(
+											"something" ) );
+		}
+		catch ( Exception e )
+		{
 			// caught, handled , wtw
 			RunTime.clearThrowChain();// this clears all previous ones hmm
 		}
 		// somewhere later, this throw should not be chained with above one
-		RunTime.thro( new IOException( "else" ) );
+		RunTime.thro( new IOException(
+										"else" ) );
 	}
 	
-	@Test
-	public void testCaughtAlreadyClearingOnlyLastOne() {
 
+	@Test
+	public
+			void
+			testCaughtAlreadyClearingOnlyLastOne()
+	{
+		
 		// first and third are shown in eclipse; all 3 in console
-		try {
-			try {
-				RunTime.thro( new Exception( "something2" ) );
-			} finally {
-				RunTime.thro( new Exception( "this gets cleared" ) );
+		try
+		{
+			try
+			{
+				RunTime.thro( new Exception(
+												"something2" ) );
 			}
-		} catch ( Exception e ) {
+			finally
+			{
+				RunTime.thro( new Exception(
+												"this gets cleared" ) );
+			}
+		}
+		catch ( Exception e )
+		{
 			// caught, handled , wtw
 			RunTime.clearLastThrown();// this clears only the previously thrown one aka last one thrown
 		}
 		// somewhere later, this throw should not be chained with above one
-		RunTime.thro( new IOException( "else2" ) );
+		RunTime.thro( new IOException(
+										"else2" ) );
 	}
 	
-	@Test
-	public void testCaughtAlreadyWronglyClearingOnlyLastOneInsteadOfCaughtOne() {
 
+	@Test
+	public
+			void
+			testCaughtAlreadyWronglyClearingOnlyLastOneInsteadOfCaughtOne()
+	{
+		
 		// first and third are shown in eclipse, all 3 are shown in console
-		try {
-			try {
-				RunTime.thro( new Exception( "first, this is caught but it should be cleared but it's not" ) );
-			} finally {
-				RunTime.thro( new RuntimeException( "second, not caught but gets cleared since it's last" ) );
+		try
+		{
+			try
+			{
+				RunTime.thro( new Exception(
+												"first, this is caught but it should be cleared but it's not" ) );
 			}
-		} catch ( Exception e ) {// we catch only first one
+			finally
+			{
+				RunTime.thro( new RuntimeException(
+													"second, not caught but gets cleared since it's last" ) );
+			}
+		}
+		catch ( Exception e )
+		{// we catch only first one
 			RunTime.clearLastThrown();// this clears the second one, but we wanted to clear the caught one heh
 		}
 		// somewhere later, this throw should not be chained with above one
-		RunTime.thro( new IOException( "else3" ) );
+		RunTime.thro( new IOException(
+										"else3" ) );
 	}
 	
-	@Test
-	public void testCaughtAlreadyRightlyClearingOnlyLastOneAkaCaughtOne() {
 
+	@Test
+	public
+			void
+			testCaughtAlreadyRightlyClearingOnlyLastOneAkaCaughtOne()
+	{
+		
 		// first and third are shown in eclipse, all 3 are shown in console
-		try {
-			try {
-				RunTime.thro( new Exception( "first, not caught" ) );
-			} finally {
-				RunTime.thro( new RuntimeException( "second, caught and cleared" ) );
+		try
+		{
+			try
+			{
+				RunTime.thro( new Exception(
+												"first, not caught" ) );
 			}
-		} catch ( Throwable t ) {// we catch only second one which is last heh
+			finally
+			{
+				RunTime.thro( new RuntimeException(
+													"second, caught and cleared" ) );
+			}
+		}
+		catch ( Throwable t )
+		{// we catch only second one which is last heh
 			RunTime.clearLastThrown();// this clears the second one, but that's the one we caught anyway
 		}
 		// somewhere later, this throw should not be chained with above one
-		RunTime.thro( new IOException( "else4" ) );
+		RunTime.thro( new IOException(
+										"else4" ) );
 	}
 	
-	@Test
-	public void testReThrow() {
 
+	@Test
+	public
+			void
+			testReThrow()
+	{
+		
 		// you will see in eclipse Failure Trace all points of throWrapped below and also the 'throw new'
-		try {
-			try {
-				try {
-					try {
-						throw new Exception( "some normal throw happens" );
-					} catch ( Throwable t ) {
+		try
+		{
+			try
+			{
+				try
+				{
+					try
+					{
+						throw new Exception(
+												"some normal throw happens" );
+					}
+					catch ( Throwable t )
+					{
 						RunTime.throWrapped( t );// wrap one
 					}
-				} catch ( Throwable t ) {
+				}
+				catch ( Throwable t )
+				{
 					RunTime.throWrapped( t );// wrap two
 				}
-			} catch ( Throwable t ) {
+			}
+			catch ( Throwable t )
+			{
 				RunTime.throWrapped( t );// wrap two
 			}
-		} catch ( Throwable t ) {
+		}
+		catch ( Throwable t )
+		{
 			RunTime.throWrapped( t );// wrap two
 		}
+	}
+	
+
+	private
+			StackTraceElement
+			tc()
+	{
+		return RunTime.getTheCaller_OutsideOfClass( this.getClass() );
+	}
+	
+
+	@Test
+	public
+			void
+			testCaller()
+	{
+		// StackTraceElement st = this.tc();
+		assertTrue( this.tc().getMethodName() == RunTime.getTheCaller_OutsideOfThisClass().getMethodName() );
+		assertTrue( this.tc().getMethodName() == "invoke0" );
+		// System.out.println();// st.getMethodName() );
+		// StackTraceElement[] sta = Thread.currentThread().getStackTrace();
+		// for ( StackTraceElement element : sta )
+		// {
+		// System.out.println( element );
+		// }
 	}
 }

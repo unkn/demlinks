@@ -279,12 +279,12 @@ public class Factory
 			savedParent = currentParent;
 			currentParent = parent;
 			
-			StackTraceElement caller = RunTime.getTheCaller_OutsideOfThisClass();
-			System.out.println( String.format(
-												"%-" + initDepth * 3 + "s",
-												" " ) + "i->" + initDepth + " "
-					+ parent.getValue().getClass().getSimpleName() + " caller: " + caller );
-			initDepth++;
+			// StackTraceElement caller = RunTime.getTheCaller_OutsideOfThisClass();
+			// System.out.println( String.format(
+			// "%-" + initDepth * 3 + "s",
+			// " " ) + "i->" + initDepth + " "
+			// + parent.getValue().getClass().getSimpleName() + " caller: " + caller );
+			// initDepth++;
 		}
 		try
 		{
@@ -302,7 +302,7 @@ public class Factory
 				RunTime.assumedTrue( currentParent.getParent() == savedParent );
 				currentParent = savedParent;
 				// set_InitWork_DoneInParent( parent.getValue() );
-				initDepth--;
+				// initDepth--;
 			}
 		}
 		RunTime.assumedTrue( ret.isInited() );
@@ -358,7 +358,7 @@ public class Factory
 		try
 		{
 			instance._init( params );// params may be null
-			Log.special2( "init-ed: " + instance.getClass().getCanonicalName() );
+			Log.exit1( "init-ed: " + instance.getClass().getCanonicalName() );
 		}
 		finally
 		{
@@ -400,12 +400,12 @@ public class Factory
 		RunTime.assumedNotNull( instance );
 		
 
-		StackTraceElement caller = RunTime.getTheCaller_OutsideOfThisClass();
-		System.out.println( String.format(
-											"%-" + initDepth * 3 + "s",
-											" " ) + "i->" + initDepth + " " + instance.getClass().getSimpleName()
-				+ " caller: " + caller );
-		initDepth++;
+		// StackTraceElement caller = RunTime.getTheCaller_OutsideOfThisClass();
+		// System.out.println( String.format(
+		// "%-" + initDepth * 3 + "s",
+		// " " ) + "i->" + initDepth + " " + instance.getClass().getSimpleName()
+		// + " caller: " + caller );
+		// initDepth++;
 		
 		// System.out.println( "STRT:" + instance.getClass().getName() + "/" + instance );
 		RunTime.assumedNotNull( currentParent );
@@ -437,7 +437,7 @@ public class Factory
 		
 
 		RunTime.assumedNotNull( instance );
-		initDepth--;
+		// initDepth--;
 		// System.out.println( "DONE:" + instance.getClass().getName() + "/" + instance );
 		RunTime.assumedNotNull( currentParent );
 		RunTime.assumedTrue( root != currentParent );// can't be root yet
@@ -641,21 +641,21 @@ public class Factory
 	{
 		
 		RunTime.assumedNotNull( instance );
-		Log.special4( "deInit-ing " + instance.getClass().getName() );
+		Log.entry1( "deInit-ing " + instance.getClass().getName() );
 		
-		StackTraceElement caller = RunTime.getTheCaller_OutsideOfThisClass();
-		System.out.println( String.format(
-											"%-" + deInitDepth * 3 + "s",
-											" " ) + "d->" + deInitDepth + " " + instance.getClass().getSimpleName()
-				+ " caller: " + caller );
-		deInitDepth++;
+		// StackTraceElement caller = RunTime.getTheCaller_OutsideOfThisClass();
+		// System.out.println( String.format(
+		// "%-" + deInitDepth * 3 + "s",
+		// " " ) + "d->" + deInitDepth + " " + instance.getClass().getSimpleName()
+		// + " caller: " + caller );
+		// deInitDepth++;
 		try
 		{
 			instance._deInit();
 		}
 		finally
 		{
-			deInitDepth--;
+			// deInitDepth--;
 			// System.out.println( String.format( "%-" + deInitDepth * 3 + "s", " " ) + "d<-" + deInitDepth + " "
 			// + instance.getClass().getSimpleName() + " caller: " + caller );
 		}

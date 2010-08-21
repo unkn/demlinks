@@ -44,32 +44,51 @@ import org.references.method.PossibleParams;
  * 
  *
  */
-public class Level020_DMLEnvironmentTest {
+public class Level020_DMLEnvironmentTest
+{
 	
-	@SuppressWarnings( "deprecation" )
 	@Test
-	public void multiple() throws Exception {
-
+	public
+			void
+			multiple()
+					throws Exception
+	{
+		
 		MethodParams params = MethodParams.getNew();
-		params.set( PossibleParams.jUnit_wipeDB, true );
-		params.set( PossibleParams.jUnit_wipeDBWhenDone, true );
+		params.set(
+					PossibleParams.jUnit_wipeDB,
+					true );
+		params.set(
+					PossibleParams.jUnit_wipeDBWhenDone,
+					true );
 		
 		// Level020_DMLEnvironment d1 = new Level020_DMLEnvironment();
-		params.set( PossibleParams.homeDir, Consts.BDB_ENV_PATH + "1&2" );
+		params.set(
+					PossibleParams.homeDir,
+					Consts.BDB_ENV_PATH + "1&2" );
 		// d1.init( params );
-		Level020_DMLEnvironment d1 = Factory.getNewInstanceAndInit( Level020_DMLEnvironment.class, params );
+		Level020_DMLEnvironment d1 = Factory.getNewInstanceAndInit(
+																	Level020_DMLEnvironment.class,
+																	params );
 		
-		Level020_DMLEnvironment d2 = Factory.getNewInstanceAndInit( Level020_DMLEnvironment.class, params );
+		Level020_DMLEnvironment d2 = Factory.getNewInstanceAndInit(
+																	Level020_DMLEnvironment.class,
+																	params );
 		// new Level020_DMLEnvironment();
 		// d2.init( params );
 		
-		params.set( PossibleParams.homeDir, Consts.BDB_ENV_PATH + "3" );
-		Level020_DMLEnvironment d3 = Factory.getNewInstanceAndInit( Level020_DMLEnvironment.class, params );
+		params.set(
+					PossibleParams.homeDir,
+					Consts.BDB_ENV_PATH + "3" );
+		Level020_DMLEnvironment d3 = Factory.getNewInstanceAndInit(
+																	Level020_DMLEnvironment.class,
+																	params );
 		// new Level020_DMLEnvironment();
 		// d3.init( params );
 		Factory.deInit( params );
 		
-		try {
+		try
+		{
 			// if ( 1 == 1 ) {
 			// throw new Exception( "blah" );
 			// }
@@ -86,7 +105,9 @@ public class Level020_DMLEnvironmentTest {
 			Symbol n2 = d1.createSymbol( j2 );
 			assertNotNull( n1 );
 			assertNotNull( d1.getJavaID( n1 ) );
-			assertTrue( d1.getJavaID( n1 ).equals( j1 ) );
+			assertTrue( d1.getJavaID(
+										n1 ).equals(
+														j1 ) );
 			assertTrue( d1.getJavaID( n1 ) == j1 );
 			assertTrue( n1 == d1.getSymbol( j1 ) );
 			
@@ -106,16 +127,34 @@ public class Level020_DMLEnvironmentTest {
 			assertNull( n3 );
 			System.out.println( d1.getJavaID( n1 ) );
 			System.out.println( d3.getJavaID( n1 ) );
-			assertFalse( d1.isVector( n1, n2 ) );
-			assertFalse( d1.isVector( n1, n1 ) );
-			assertFalse( d1.ensureVector( n1, n2 ) );
-			assertFalse( d1.ensureVector( n1, n1 ) );
-			assertTrue( d1.ensureVector( n1, n2 ) );
-			assertTrue( d1.ensureVector( n1, n1 ) );
-			assertTrue( d1.isVector( n1, n2 ) );
-			assertTrue( d1.isVector( n1, n1 ) );
+			assertFalse( d1.isVector(
+										n1,
+										n2 ) );
+			assertFalse( d1.isVector(
+										n1,
+										n1 ) );
+			assertFalse( d1.ensureVector(
+											n1,
+											n2 ) );
+			assertFalse( d1.ensureVector(
+											n1,
+											n1 ) );
+			assertTrue( d1.ensureVector(
+											n1,
+											n2 ) );
+			assertTrue( d1.ensureVector(
+											n1,
+											n1 ) );
+			assertTrue( d1.isVector(
+										n1,
+										n2 ) );
+			assertTrue( d1.isVector(
+										n1,
+										n1 ) );
 			
-		} finally {
+		}
+		finally
+		{
 			Factory.deInit( d1 );
 			// d1.deInit();
 			// d2.deInit();

@@ -40,11 +40,15 @@ import org.references.method.ParamID;
  * 
  *
  */
-public class FactoryTest {
+public class FactoryTest
+{
 	
 	static ParamID	specB	= ParamID.getNew( "specB" );
 	
-	public static class B extends Initer {
+	public static class B
+			extends
+			Initer
+	{
 		
 		/*
 		 * (non-Javadoc)
@@ -52,139 +56,131 @@ public class FactoryTest {
 		 * @see org.dml.tools.Initer#start(org.references.method.MethodParams)
 		 */
 		@Override
-		protected void start( MethodParams params ) {
-
+		protected
+				void
+				start(
+						MethodParams params )
+		{
+			
 			// TODO Auto-generated method stub
 			
 		}
 		
+
 		/*
 		 * (non-Javadoc)
 		 * 
 		 * @see org.dml.tools.Initer#done(org.references.method.MethodParams)
 		 */
 		@Override
-		protected void done( MethodParams params ) {
-
+		protected
+				void
+				done(
+						MethodParams params )
+		{
+			
 			// TODO Auto-generated method stub
 			
 		}
 		
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see org.dml.tools.Initer#beforeDeInit()
-		 */
-		@Override
-		protected void beforeDone() {
 
-			// TODO Auto-generated method stub
-			
-		}
-		
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see org.dml.tools.Initer#beforeInit()
-		 */
-		@Override
-		protected void beforeStart() {
-
-			// TODO Auto-generated method stub
-			
-		}
-		
 	}
 	
-	public static class A extends Initer {
+	public static class A
+			extends
+			Initer
+	{
 		
-		private B		b;
-		private boolean	initedOurOwn	= false;
-		private B		db				= null;
+		protected B			b;
+		protected boolean	initedOurOwn	= false;
+		private B			db				= null;
 		
-		public A() {
-
+		
+		public A()
+		{
+			//
 		}
 		
+
 		/**
 		 * so this will init these in A, but will never deInit them<br>
 		 * 
-		 * @return
+		 * @return B class instance
 		 */
-		public B getSomeNewDB() {
-
-			B b = Factory.getNewInstanceAndInitWithoutMethodParams( B.class );
-			return b;
+		public
+				B
+				getSomeNewDB()
+		{
+			
+			B b1 = Factory.getNewInstanceAndInitWithoutMethodParams( B.class );
+			return b1;
 		}
 		
+
 		/*
 		 * (non-Javadoc)
 		 * 
 		 * @see org.dml.tools.Initer#start(org.references.method.MethodParams)
 		 */
 		@Override
-		protected void start( MethodParams params ) {
-
+		protected
+				void
+				start(
+						MethodParams params )
+		{
+			
 			Reference<Object> tempRef2B = null;
-			if ( null != params ) {
+			if ( null != params )
+			{
 				tempRef2B = params.get( specB );
 			}
-			if ( null == tempRef2B ) {
+			if ( null == tempRef2B )
+			{
 				initedOurOwn = true;
 				b = Factory.getNewInstanceAndInitWithoutMethodParams( B.class );
-			} else {
+			}
+			else
+			{
 				initedOurOwn = false;
 				b = (B)tempRef2B.getObject();
 			}
 		}
 		
+
 		/*
 		 * (non-Javadoc)
 		 * 
 		 * @see org.dml.tools.Initer#done(org.references.method.MethodParams)
 		 */
 		@Override
-		protected void done( MethodParams params ) {
-
-			if ( null != db ) {
+		protected
+				void
+				done(
+						MethodParams params )
+		{
+			
+			if ( null != db )
+			{
 				// save something to db
 				RunTime.assumedTrue( db.isInited() );// yeah it was deInit-ed by Factory.deInitAll()
 			}
-			if ( initedOurOwn ) {
+			if ( initedOurOwn )
+			{
 				Factory.deInit( b );
 				initedOurOwn = false;
 			}
 		}
 		
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see org.dml.tools.Initer#beforeDeInit()
-		 */
-		@Override
-		protected void beforeDone() {
 
-			// TODO Auto-generated method stub
-			
-		}
-		
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see org.dml.tools.Initer#beforeInit()
-		 */
-		@Override
-		protected void beforeStart() {
-
-			// TODO Auto-generated method stub
-			
-		}
-		
 		/**
 		 * @param someNewDB
 		 */
-		public void setUseDB( B someNewDB ) {
-
+		public
+				void
+				setUseDB(
+							B someNewDB )
+		{
+			
 			RunTime.assumedNotNull( someNewDB );
 			RunTime.assumedTrue( someNewDB.isInited() );
 			db = someNewDB;
@@ -192,11 +188,16 @@ public class FactoryTest {
 		
 	}
 	
+	
 	@Test
-	public void test1() {
-
+	public
+			void
+			test1()
+	{
+		
 		Log.entry();
-		try {
+		try
+		{
 			// System.out.println( Log.getThisLineLocation() );
 			// System.exit( 0 );
 			A a = Factory.getNewInstanceAndInitWithoutMethodParams( A.class );
@@ -206,47 +207,69 @@ public class FactoryTest {
 			
 			MethodParams params = Factory.getNewInstanceAndInitWithoutMethodParams( MethodParams.class );
 			B newB = Factory.getNewInstanceAndInitWithoutMethodParams( B.class );
-			params.set( specB, newB );
-			a = Factory.getNewInstanceAndInit( A.class, params );
+			params.set(
+						specB,
+						newB );
+			a = Factory.getNewInstanceAndInit(
+												A.class,
+												params );
 			RunTime.assumedFalse( a.initedOurOwn );
 			RunTime.assumedTrue( a.b == newB );
 			Factory.deInit( a );
 			RunTime.assumedFalse( a.initedOurOwn );
 			Factory.reInit_aka_InitAgain_WithOriginalPassedParams( a );
-		} finally {
+		}
+		finally
+		{
 			Factory.deInitAll();
 		}
 	}
 	
-	
-	@Test
-	public void testOrder() {
 
+	@Test
+	public
+			void
+			testOrder()
+	{
+		
 		Log.entry();
-		try {
+		try
+		{
 			// A a = Factory.getNewInstanceAndInit( A.class );
 			
 			MethodParams params = MethodParams.getNew();// Factory.getNewInstanceAndInitWithoutParams(
 														// MethodParams.class );
 			B newB = Factory.getNewInstanceAndInitWithoutMethodParams( B.class );
-			params.set( specB, newB );
-			A aa = Factory.getNewInstanceAndInit( A.class, params );
+			params.set(
+						specB,
+						newB );
+			A aa = Factory.getNewInstanceAndInit(
+													A.class,
+													params );
 			RunTime.assumedFalse( aa.initedOurOwn );
 			Factory.deInit( aa );
-			Factory.init( aa, null );
+			Factory.init(
+							aa,
+							null );
 			RunTime.assumedTrue( aa.initedOurOwn );
 			
 			// Factory.deInit( aa );
 			// so init A, init B
-		} finally {
+		}
+		finally
+		{
 			Factory.deInitAll();
 			// deinit A (which also deInits B)
 		}
 		Log.exit();
 	}
 	
+
 	// @Test
-	public void testOrder2() {// this is a known-bugs thingy; this is supposed to fail
+	public
+			void
+			testOrder2()
+	{// this is a known-bugs thingy; this is supposed to fail
 	
 		// this will test what happens if an class uses an inited param(which was inited by some other class)
 		// on its deinit or done method
@@ -256,19 +279,25 @@ public class FactoryTest {
 		// long after A was inited; and so then after a while when A is deinited by same deInitAll() it will fail
 		// because the db is deInited
 		
-		try {
+		try
+		{
 			A a = Factory.getNewInstanceAndInitWithoutMethodParams( A.class );
 			// A aa = Factory.getNewInstanceAndInit( A.class );
 			B db = Factory.getNewInstanceAndInitWithoutMethodParams( B.class );// doesn't matter where from
 			a.setUseDB( db );
 			// and assume somehow something throws and a.deInit is never called
-			RunTime.thro( new Exception( "unfortunate" ) );// this jumps to deInitAll() below
+			RunTime.thro( new Exception(
+											"unfortunate" ) );// this jumps to deInitAll() below
 			Factory.deInit( a );
 			Factory.deInit( db );
 			// on deInitAll() below, the db will get deInit-ed first, but 'a' is still going to use it on its own deInit
 			// so fail
-		} finally {
+		}
+		finally
+		{
 			Factory.deInitAll();
 		}
 	}
+	
+
 }

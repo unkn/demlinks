@@ -25,40 +25,47 @@ package org.javapart.logger;
 
 
 
-public class Log {
+import org.dml.tools.RunTime;
+import org.dml.tracking.Factory;
+
+
+
+public class Log
+{
 	
 	
 	// static final int methodWOClassNameWidth = 30;
 	// static final int methodWithClassNameWidth = 50;
-	static final int					fileAndLineWidth						= 30 + 50;
-	static final int					spacesBeforeMsg							= 10;
+	static final int				fileAndLineWidth						= 30 + 50;
+	static final int				spacesBeforeMsg							= 10;
 	
-	private final static LogFlags		CurrentLogFlags[]						=
-																					{
-			LogFlags.Entry,
-			LogFlags.Mid,
-			LogFlags.Exit,
+	private final static LogFlags	CurrentLogFlags[]						=
+																			{
+			// LogFlags.Entry,
+			// LogFlags.Mid,
+			// LogFlags.Exit,
 			LogFlags.Bug,
 			LogFlags.Warn,
 			LogFlags.Result,
 			LogFlags.Special,
 			LogFlags.Thro,
-																					};
+																			};
 	
 	// if no elements, then all methods are shown
-	private final static String			ShowOnlyTheseMethodsAndTheirChildren[]	=
-																					{
-																					// "<init>"
-																					
-																					// "appendLinkPC"
-																					};
-	private final static boolean		alsoShowChildrenMethods					= true;
+	private final static String		ShowOnlyTheseMethodsAndTheirChildren[]	=
+																			{
+																			// "<init>"
+																			
+																			// "appendLinkPC"
+																			};
+	private final static boolean	alsoShowChildrenMethods					= true;
 	
-	private static StackTraceElement[]	stea									= null;
+	// private static StackTraceElement[] stea = null;
 	
-	private static final Integer		currentMethodLocation					= 5;		// 5
-																							
-	private final static String			nl										= "\n";
+	private static final Integer	currentMethodLocation					= 5;		// 5
+																						
+	private final static String		nl										= "\n";
+	
 	
 	/*
 	 * public Log() {
@@ -66,111 +73,300 @@ public class Log {
 	 * this.log( "Logger initialized." ); }
 	 */
 
-	public static void throwReport( Throwable t, int modifier ) {
-
-		logThrowable( modifier, LogFlags.Thro, t );
+	public static
+			void
+			throwReport(
+							Class<?> outsideOfWhichClass,
+							Throwable t )
+	{
+		logThrowable(
+						outsideOfWhichClass,
+						LogFlags.Thro,
+						t );
 	}
 	
-	public static void thro0( int modifier, String msg ) {
 
-		log( modifier, LogFlags.Thro, "Throws: " + msg );
+	public static
+			void
+			thro0(
+					Class<?> outsideThisClass,
+					String msg )
+	{
+		
+		log(
+				outsideThisClass,
+				LogFlags.Thro,
+				"Throws: " + msg );
 	}
 	
-	public static void thro( String msg ) {
 
-		thro0( 0, msg );
+	public static
+			void
+			thro(
+					String msg )
+	{
+		
+		thro0(
+				null,
+				msg );
 	}
 	
-	public static void thro1( String msg ) {
 
-		thro0( +1, msg );
+	public static
+			void
+			thro1(
+					String msg )
+	{
+		
+		thro0(
+				null,
+				msg );
 	}
 	
-	public static void thro2( String msg ) {
 
-		thro0( +2, msg );
+	public static
+			void
+			thro2(
+					String msg )
+	{
+		
+		thro0(
+				null,
+				msg );
 	}
 	
-	public static void thro() {
 
-		thro0( 0, "" );
+	public static
+			void
+			thro()
+	{
+		
+		thro0(
+				null,
+				"" );
 	}
 	
+
 	// don't merge the three methods, else line numbers will get screwed
-	private static void special0( int modifier, String msg ) {
-
-		log( modifier, LogFlags.Special, "special: " + msg );
+	private static
+			void
+			special0(
+						Class<?> outsideThisClass,
+						String msg )
+	{
+		
+		log(
+				outsideThisClass,
+				LogFlags.Special,
+				"special: " + msg );
 	}
 	
-	public static void special2( String msg ) {
 
-		special0( 2, msg );
+	public static
+			void
+			special2(
+						String msg )
+	{
+		
+		special0(
+					Factory.class,
+					msg );
 	}
 	
+
 	// FIXME: show the line outside of Factory and have a param to spec that "Factory"
-	public static void special4( String msg ) {
-
-		special0( 4, msg );
+	public static
+			void
+			special4(
+						String msg )
+	{
+		
+		special0(
+					Factory.class,
+					msg );
 	}
 	
-	public static void special( String msg ) {
 
-		special0( 0, msg );
+	public static
+			void
+			special(
+						String msg )
+	{
+		
+		special0(
+					null,
+					msg );
 	}
 	
-	public static void special() {
 
-		special0( 0, "" );
+	public static
+			void
+			special()
+	{
+		
+		special0(
+					null,
+					"" );
 	}
 	
-	
-	private static void entry0( String msg ) {
 
-		log( 0, LogFlags.Entry, "entry : " + msg );
+	private static
+			void
+			entry0(
+					Class<?> outsideOfWhichClass,
+					String msg )
+	{
+		
+		log(
+				outsideOfWhichClass,
+				LogFlags.Entry,
+				"entry : " + msg );
 	}
 	
-	public static void entry( String msg ) {
 
-		entry0( msg );
+	public static
+			void
+			entry(
+					String msg )
+	{
+		
+		entry0(
+				null,
+				msg );
 	}
 	
-	public static void entry() {
 
-		entry0( "" );
+	public static
+			void
+			entry1(
+					String msg )
+	{
+		
+		entry0(
+				Factory.class,
+				msg );
 	}
 	
-	private static void exit0( String msg ) {
 
-		log( 0, LogFlags.Exit, "exit  : " + msg );
+	public static
+			void
+			entry()
+	{
+		
+		entry0(
+				null,
+				"" );
 	}
 	
-	public static void exit( String msg ) {
 
-		exit0( msg );
+	private static
+			void
+			exit0(
+					Class<?> outsideOfWhichClass,
+					String msg )
+	{
+		
+		log(
+				outsideOfWhichClass,
+				LogFlags.Exit,
+				"exit  : " + msg );
 	}
 	
-	public static void exit() {
 
-		exit0( "" );
+	public static
+			void
+			exit(
+					String msg )
+	{
+		
+		exit0(
+				null,
+				msg );
 	}
 	
-	private static void mid0( String msg ) {
 
-		log( 0, LogFlags.Mid, "mid  : " + msg );
+	public static
+			void
+			exit1(
+					String msg )
+	{
+		
+		exit0(
+				Factory.class,
+				msg );
 	}
 	
-	public static void mid( String msg ) {
 
-		mid0( msg );
+	public static
+			void
+			exit()
+	{
+		
+		exit0(
+				null,
+				"" );
 	}
 	
-	public static void mid() {
 
-		mid0( "" );
+	public static
+			void
+			mid1(
+					String msg )
+	{
+		mid0(
+				RunTime.class,
+				msg );
 	}
 	
-	private static void logThrowable( int modifier, LogFlags logFlag, Throwable t ) {
 
+	private static
+			void
+			mid0(
+					Class<?> outsideOfThisClass,
+					String msg )
+	{
+		
+		log(
+				outsideOfThisClass,
+				LogFlags.Mid,
+				"mid  : " + msg );
+	}
+	
+
+	public static
+			void
+			mid(
+					String msg )
+	{
+		
+		mid0(
+				null,
+				msg );
+	}
+	
+
+	public static
+			void
+			mid()
+	{
+		
+		mid0(
+				null,
+				"" );
+	}
+	
+
+	private static
+			void
+			logThrowable(
+							Class<?> outsideOfWhichClass,
+							LogFlags logFlag,
+							Throwable t )
+	{
+		if ( null == outsideOfWhichClass )
+		{
+			outsideOfWhichClass = Log.class;
+		}
 		// StackTraceElement[] stea = Thread.currentThread().getStackTrace();
 		// System.out.println( " !" + stea.length + "! " );
 		// // throw new AssertionError();
@@ -178,7 +374,8 @@ public class Log {
 		//
 		// StackTraceElement ste = stea[stea.length - 3];
 		// ste = ( new Exception() ).getStackTrace()[4];
-		if ( hasFlag( logFlag ) ) {
+		if ( hasFlag( logFlag ) )
+		{
 			// if ( logFlag == LogFlags.Result ) {
 			// System.err.print( msg );
 			// } else {
@@ -189,55 +386,107 @@ public class Log {
 			// System.out.print( "T: " );
 			// t.printStackTrace();
 			StackTraceElement[] steaCur = Thread.currentThread().getStackTrace();
-			StackTraceElement findCaller = steaCur[modifier + currentMethodLocation];
+			StackTraceElement findCaller = RunTime.getTheCaller_OutsideOfClass( outsideOfWhichClass );
+			if ( null == findCaller )
+			{
+				reportErrorHere( "grr null" );
+				return;
+			}
+			// steaCur[modifier +
+			// currentMethodLocation];
 			// System.out.println( "Cur: " + findCaller );
 			// intersect on same method or keep current Caller:
-			try {
-				for ( StackTraceElement element : stea1 ) {
+			try
+			{
+				for ( StackTraceElement element : stea1 )
+				{
 					// System.out.println( element );
 					// FIXME: test for null on all 6 of the following, before using dot
-					if ( element.getMethodName().equals( findCaller.getMethodName() ) ) {
-						if ( element.getClassName().equals( findCaller.getClassName() ) ) {
-							if ( element.getFileName().equals( findCaller.getFileName() ) ) {
+					if ( element.getMethodName().equals(
+															findCaller.getMethodName() ) )
+					{
+						if ( element.getClassName().equals(
+															findCaller.getClassName() ) )
+						{
+							if ( element.getFileName().equals(
+																findCaller.getFileName() ) )
+							{
 								// ok found common ground between current and where exception was thrown
 								findCaller = element;
 								break;// very important heh
 								// System.out.println( findCaller );
-							} else {
+							}
+							else
+							{
 								// System.err.println( "almost_got_tricked3 at " + Log.getThisLineLocation() );
 								reportErrorHere( "almost_got_tricked3" );
 							}
-						} else {
+						}
+						else
+						{
 							reportErrorHere( "almost_got_tricked2" );
 							// System.err.println( "almost_got_tricked2 at " + Log.getThisLineLocation() );
 						}
 					}// else we go to next in stack trace, to check
 				}
-			} catch ( Throwable h ) {
+			}
+			catch ( Throwable h )
+			{
 				h.printStackTrace();
 				reportError( "probably null pointer exception?" );
 			}
 			// reportErrorHere( "test" );
+			// RunTime.assumedNotNull( findCaller );
 			String loc = formatLocation( findCaller );// getLine( t.getStackTrace(), modifier );
 			
 
-			System.err.print( t.getClass().getName() + ": " + t.getLocalizedMessage() + nl
-					+ String.format( "%-" + spacesBeforeMsg + "s%s", " ", loc ) + nl );
+			showMsgLoc(
+						t.getClass().getName() + ": " + t.getLocalizedMessage(),
+						loc );
+			// String.format(
+			// "%-" + spacesBeforeMsg + "s%s",
+			// " ",
+			// loc ) + nl );
 		}
 	}
 	
-	private static void reportError( String msg ) {
 
-		System.err.println( msg );
+	private static
+			String
+			reportError(
+							String msg )
+	{
+		return showMsgLoc(
+							msg,
+							getThisLineLocation( +2 ) );
+		// System.err.println( msg );
+		// System.err.println( );// + " " + msg );
 	}
 	
-	private static void reportErrorHere( String msg ) {
 
-		reportError( msg + " at " + getThisLineLocation( 1 ) );
+	private static
+			String
+			reportErrorHere(
+								String msg )
+	{
+		return showMsgLoc(
+							msg,
+							getThisLineLocation( +1 ) );
+		// reportError( msg + " at " + getThisLineLocation( 1 ) );
 	}
 	
-	private static void log( int modifier, LogFlags logFlag, String msg ) {
 
+	private static
+			void
+			log(
+					Class<?> outsideOfThisClass,
+					LogFlags logFlag,
+					String msg )
+	{
+		if ( null == outsideOfThisClass )
+		{
+			outsideOfThisClass = Log.class;
+		}
 		// StackTraceElement[] stea = Thread.currentThread().getStackTrace();
 		// System.out.println( " !" + stea.length + "! " );
 		// // throw new AssertionError();
@@ -245,78 +494,135 @@ public class Log {
 		//
 		// StackTraceElement ste = stea[stea.length - 3];
 		// ste = ( new Exception() ).getStackTrace()[4];
-		if ( hasFlag( logFlag ) ) {
+		if ( hasFlag( logFlag ) )
+		{
 			// if ( logFlag == LogFlags.Result ) {
 			// System.err.print( msg );
 			// } else {
-			String loc = getCurrentLocation( modifier );
-			if ( mustShowCurrentMethod( modifier ) ) {
-				
-				// System.err.print( loc + nl + String.format( "%-" + spacesBeforeMsg + "s%s", " ", msg ) );
-				System.err.print( msg + nl + String.format( "%-" + spacesBeforeMsg + "s%s", " ", loc ) + nl );
-				// }
+			RunTime.assumedNotNull( outsideOfThisClass );
+			// System.err.println( outsideOfThisClass.getName() );
+			StackTraceElement ste = RunTime.getTheCaller_OutsideOfClass( outsideOfThisClass );
+			if ( null == ste )
+			{
+				reportError( "this usually means you didn't use the right class when calling this method because there"
+						+ " is no trace of it in the caller's stack" );
 			}
+			String loc = formatLocation( ste );// getCurrentLocation();
+			// if ( mustShowCurrentMethod( modifier ) )
+			// {
+			
+			// System.err.print( loc + nl + String.format( "%-" + spacesBeforeMsg + "s%s", " ", msg ) );
+			showMsgLoc(
+						msg,
+						loc );
+			
+			// }
+			// }
 		}
 	}
 	
-	/**
-	 * @return true if currentMethod is a method that must show logs for, or a
-	 *         child of such method
-	 */
-	private static boolean mustShowCurrentMethod( int modifier ) {
 
-		if ( ShowOnlyTheseMethodsAndTheirChildren.length == 0 ) {
-			return true;// show all
-		}
+	private synchronized static
+			String
+			showMsgLoc(
+						String msg,
+						String loc )
+	{
+		String ret = msg + nl + String.format(
+												"%-" + spacesBeforeMsg + "s%s",
+												" ",
+												loc ) + nl;
+		System.err.print( ret );
+		return ret;
+	}
+	
+
+	// /**
+	// * @return true if currentMethod is a method that must show logs for, or a
+	// * child of such method
+	// */
+	// @Deprecated
+	// private static
+	// boolean
+	// mustShowCurrentMethod(
+	// int modifier )
+	// {
+	//
+	// if ( ShowOnlyTheseMethodsAndTheirChildren.length == 0 )
+	// {
+	// return true;// show all
+	// }
+	//
+	// int init = 0;
+	// int dest = stea.length;
+	// if ( !alsoShowChildrenMethods )
+	// {
+	// init = currentMethodLocation + modifier;
+	// dest = init + 1;
+	// }
+	// for ( int x = init; x < dest; x++ )
+	// {
+	// String comparer = stea[x].getMethodName();
+	// for ( String element : ShowOnlyTheseMethodsAndTheirChildren )
+	// {
+	// if ( comparer == element )
+	// {
+	// return true;
+	// }
+	// }
+	// }
+	// return false;
+	// }
+	
+
+	private static
+			boolean
+			hasFlag(
+						LogFlags logFlag )
+	{
 		
-		int init = 0;
-		int dest = stea.length;
-		if ( !alsoShowChildrenMethods ) {
-			init = currentMethodLocation + modifier;
-			dest = init + 1;
-		}
-		for ( int x = init; x < dest; x++ ) {
-			String comparer = stea[x].getMethodName();
-			for ( String element : ShowOnlyTheseMethodsAndTheirChildren ) {
-				if ( comparer == element ) {
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-	
-	private static boolean hasFlag( LogFlags logFlag ) {
-
-		for ( LogFlags currentLogFlag : CurrentLogFlags ) {
-			if ( logFlag == currentLogFlag ) {
+		for ( LogFlags currentLogFlag : CurrentLogFlags )
+		{
+			if ( logFlag == currentLogFlag )
+			{
 				return true;
 			}
 		}
 		return false;
 	}
 	
-	public static String getLine( StackTraceElement[] stea1, int position ) {
 
-		if ( null == stea1 ) {
+	public static
+			String
+			getLine(
+						int position )
+	{
+		StackTraceElement[] stea1 = Thread.currentThread().getStackTrace();
+		if ( null == stea1 )
+		{
 			// yeah and can't call RunTime.badCall() here, or similar because of recursion
 			reportError( "pathetic bad call, null parameter passed" );
+			return null;// not reached, used to suppress null warning below
 		}
 		
 		StackTraceElement ste = null;
 		
-		try {
+		try
+		{
 			ste = stea1[position];
 			// } catch ( ArrayIndexOutOfBoundsException ae ) {
 			// ae.printStackTrace();
 			// return "";
-		} catch ( Throwable t ) {
+		}
+		catch ( Throwable t )
+		{
 			String bc = "bad call wrong position number";
 			reportError( bc );
 			t.printStackTrace();
 			return bc;
 		}
-		if ( null == ste ) {
+		if ( null == ste )
+		{
 			String bc = "weird bug in getLine";
 			reportError( bc );
 			return bc;
@@ -324,104 +630,201 @@ public class Log {
 		return formatLocation( ste );
 	}
 	
-	public static String formatLocation( StackTraceElement ste ) {
 
-		if ( null == ste ) {
+	public static
+			String
+			formatLocation(
+							StackTraceElement ste )
+	{
+		
+		if ( null == ste )
+		{
 			String bc = "bad call: null parameter";
-			reportError( bc );
+			return reportError( bc );
 			// can't throw in here, 'cause it will get overwritten anyway; and to avoid recursion not calling own throw
 			// methods
-			return bc;
-		} else {
+			// return bc;
+		}
+		else
+		{
 			return ste.getClassName() + "." + ste.getMethodName() + "(" + ste.getFileName() + ":" + ste.getLineNumber()
 					+ ")";
 		}
 	}
 	
-	public static String getThisLineLocation() {
 
+	public static
+			String
+			getThisLineLocation()
+	{
+		
 		return getThisLineLocation( 0 );// getLine( Thread.currentThread().getStackTrace(), 2 );
 	}
 	
-	public static String getThisLineLocation( int modifier ) {
 
-		return getLine( Thread.currentThread().getStackTrace(), 2 + modifier );
+	/**
+	 * @param modifier
+	 *            0 is current line; use positive values for callers
+	 * @return string
+	 */
+	public static
+			String
+			getThisLineLocation(
+									int modifier )
+	{
+		
+		return getLine( 2 + 1 + modifier );
 	}
 	
-	private static String getCurrentLocation( int modifier ) {
 
-		// try {
-		// throw new Exception();
-		// } catch ( Exception e ) {
-		// e.printStackTrace();
-		// }
-		stea = Thread.currentThread().getStackTrace();
-		return getLine( stea, currentMethodLocation + modifier );
-		// StackTraceElement ste = stea[currentMethodLocation + modifier];
-		
-		// String msg = new String();
-		// int width = methodWOClassNameWidth;// methodName size
-		
-		// if ( hasFlag( LogFlags.ShowClassName ) ) {
-		// msg = msg.concat( ste.getClassName() + "." );
-		// width = methodWithClassNameWidth;
-		// }
-		// msg = msg.concat( ste.getMethodName() );
-		
-		// this was a workaround for eclipse showing links properly when clicked to go at the right source even if other
-		// projects were open that would've make it go to their sources in rt.jar file
-		// return String.format( /* "%-" + width + "s "+ */"%-" + ( fileAndLineWidth ) + "s", /* msg, */
-		// return ste.getClassName() + "." + ste.getMethodName() + "(" + ste.getFileName() + ":" + ste.getLineNumber()
-		// + ")";// );
-	}
+	// private static
+	// String
+	// getCurrentLocation()
+	// {
+	//
+	// // try {
+	// // throw new Exception();
+	// // } catch ( Exception e ) {
+	// // e.printStackTrace();
+	// // }
+	// // stea = Thread.currentThread().getStackTrace();
+	// // RunTime.getTheCaller_OutsideOfThisClass()
+	// // return getLine(
+	// // stea,
+	// // currentMethodLocation + modifier );
+	// return formatLocation( RunTime.getTheCaller_OutsideOfThisClass() );
+	// // StackTraceElement ste = stea[currentMethodLocation + modifier];
+	//
+	// // String msg = new String();
+	// // int width = methodWOClassNameWidth;// methodName size
+	//
+	// // if ( hasFlag( LogFlags.ShowClassName ) ) {
+	// // msg = msg.concat( ste.getClassName() + "." );
+	// // width = methodWithClassNameWidth;
+	// // }
+	// // msg = msg.concat( ste.getMethodName() );
+	//
+	// // this was a workaround for eclipse showing links properly when clicked to go at the right source even if other
+	// // projects were open that would've make it go to their sources in rt.jar file
+	// // return String.format( /* "%-" + width + "s "+ */"%-" + ( fileAndLineWidth ) + "s", /* msg, */
+	// // return ste.getClassName() + "." + ste.getMethodName() + "(" + ste.getFileName() + ":" + ste.getLineNumber()
+	// // + ")";// );
+	// }
 	
-	public static void result( boolean boo ) {
 
+	public static
+			void
+			result(
+					boolean boo )
+	{
+		
 		result0( ( boo == true ? "true" : "false" ) + nl );
 	}
 	
-	private static void result0( String msg ) {
 
-		log( 0, LogFlags.Result, "result: " + msg );
+	private static
+			void
+			result0(
+						String msg )
+	{
+		
+		log(
+				null,
+				LogFlags.Result,
+				"result: " + msg );
 	}
 	
-	public static void result( String msg ) {
 
+	public static
+			void
+			result(
+					String msg )
+	{
+		
 		result0( msg );
 	}
 	
-	private static void warn0( int modifier, String msg ) {
 
-		log( modifier, LogFlags.Warn, "warn  : " + msg );
+	private static
+			void
+			warn0(
+					Class<?> outsideThisClass,
+					String msg )
+	{
+		
+		log(
+				outsideThisClass,
+				LogFlags.Warn,
+				"warn  : " + msg );
 	}
 	
-	public static void warn2( String msg ) {
 
-		warn0( 2, msg );
+	public static
+			void
+			warn2(
+					String msg )
+	{
+		
+		warn0(
+				Factory.class,
+				msg );
 	}
 	
-	public static void warn( String msg ) {
 
-		warn0( 0, msg );
+	// public static void warn3( String msg ) {
+	//
+	// warn0( 2, msg );
+	// }
+	
+	public static
+			void
+			warn(
+					String msg )
+	{
+		
+		warn0(
+				null,
+				msg );
 	}
 	
-	public static void warn() {
 
-		warn0( 0, "" );
+	public static
+			void
+			warn()
+	{
+		
+		warn0(
+				null,
+				"" );
 	}
 	
-	private static void bug0( String msg ) {
 
-		log( 0, LogFlags.Bug, "BUG   : " + msg );
+	private static
+			void
+			bug0(
+					String msg )
+	{
+		log(
+				null,
+				LogFlags.Bug,
+				"BUG   : " + msg );
 	}
 	
-	public static void bug( String msg ) {
 
+	public static
+			void
+			bug(
+					String msg )
+	{
 		bug0( msg );
 	}
 	
-	public static void bug() {
 
+	public static
+			void
+			bug()
+	{
+		
 		bug0( "" );
 	}
 }

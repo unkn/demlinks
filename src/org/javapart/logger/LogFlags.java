@@ -24,6 +24,15 @@
 package org.javapart.logger;
 
 
-public enum LogFlags {
-	Entry, Exit, Mid, Special, Result, /* ShowClassName, */Thro, Warn, Bug,
+public enum LogFlags
+{
+	Entry,
+	Exit,
+	Mid,
+	Special,
+	Result,
+	/* ShowClassName, */
+	Thro,
+	Warn,
+	Bug,
 }
