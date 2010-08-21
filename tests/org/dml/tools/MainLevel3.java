@@ -34,7 +34,7 @@ import org.references.method.PossibleParams;
  * 
  *
  */
-public class MainLevel3 extends MainLevel2 {
+public class MainLevel3 extends TestMainLevel2 {
 	
 	@SuppressWarnings( "unused" )
 	@VarLevel

@@ -34,7 +34,7 @@ import org.references.method.PossibleParams;
  * 
  *
  */
-public class MainLevel2 extends MainLevel1 {
+public class TestMainLevel2 extends TestMainLevel1 {
 	
 	@VarLevel
 	private VarLevel2	var2;
@@ -43,7 +43,7 @@ public class MainLevel2 extends MainLevel1 {
 	// private final boolean defaultVar = false;
 	
 
-	public MainLevel2() {
+	public TestMainLevel2() {
 
 		super();
 		

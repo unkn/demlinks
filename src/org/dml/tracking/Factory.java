@@ -81,6 +81,7 @@ public class Factory
 	private static TreeOfNonNullObjects<Initer>									currentParent	= root;
 	private final static NonNullHashMap<Initer, TreeOfNonNullObjects<Initer>>	QUICK_FIND		= new NonNullHashMap<Initer, TreeOfNonNullObjects<Initer>>();
 	
+	
 	/**
 	 * generic method with a type variable<br>
 	 * this will do a new and an init() with no params
@@ -102,25 +103,25 @@ public class Factory
 			<T extends Initer>
 			T
 			getNewInstanceAndInitWithoutMethodParams(
-				/*
-				 * Initer parentDeIniterInstance,
-				 * Initer[] listOfOtherMoreParents,
-				 */
-				Class<T> type,
-				Object... constructorParameters )
+														/*
+														 * Initer parentDeIniterInstance,
+														 * Initer[] listOfOtherMoreParents,
+														 */
+														Class<T> type,
+														Object... constructorParameters )
 	{
-
+		
 		return getNewInstanceAndInit(
-				/*
-				 * parentDeIniterInstance,
-				 * listOfOtherMoreParents,
-				 */
-				type,
-				null,
-				constructorParameters );
+										/*
+										 * parentDeIniterInstance,
+										 * listOfOtherMoreParents,
+										 */
+										type,
+										null,
+										constructorParameters );
 	}
 	
-	
+
 	/**
 	 * using default constructor, do a new()<br>
 	 * 
@@ -138,10 +139,10 @@ public class Factory
 			<T extends Initer>
 			T
 			getGenericNewInstance(
-				Class<T> type,
-				Object... initargsObjects )
+									Class<T> type,
+									Object... initargsObjects )
 	{
-
+		
 		T ret = null;
 		
 		Constructor<T> con = null;
@@ -162,8 +163,8 @@ public class Factory
 		catch ( SecurityException e )
 		{
 			RunTime.bug(
-					e,
-					"method not accessible ie. private init() method instead of public" );
+							e,
+							"method not accessible ie. private init() method instead of public" );
 		}
 		catch ( NoSuchMethodException e )
 		{
@@ -204,6 +205,7 @@ public class Factory
 		return ret;
 	}
 	
+
 	/**
 	 * this will do a new with the default constructor which should be public <br>
 	 * and an .init(params)<br>
@@ -236,32 +238,35 @@ public class Factory
 			<T extends Initer>
 			T
 			getNewInstanceAndInit(
-				/*
-				 * Initer parentDeIniterInstance,
-				 * Initer[] listOfOtherMoreParents,
-				 */
-				Class<T> typeOfInstanceToInit,
-				MethodParams methodParams,
-				Object... constructorParams )
+									/*
+									 * Initer parentDeIniterInstance,//TODO: this param we need
+									 * Initer[] listOfOtherMoreParents,FIXME: we can do w/o this param
+									 */
+									Class<T> typeOfInstanceToInit,
+									MethodParams methodParams,
+									Object... constructorParams )
 	{
-
+		
 		T ret = Factory.getGenericNewInstance(
-				typeOfInstanceToInit,
-				constructorParams );
+												typeOfInstanceToInit,
+												constructorParams );
 		
 		TreeOfNonNullObjects<Initer> parent = null;
 		// try to find an already inited instance from constructorParameters and use that as a parent for this init
 		// because that means this 'ret' instance uses that parent instance and we will have to deinit that first
 		for ( Object param : constructorParams )
 		{
-			if ( param instanceof Initer )
+			if ( null != param )
 			{
-				// is Initer or subclass of Initer
-				parent = QUICK_FIND.getValue( (Initer)param );
-				if ( parent != null )
+				if ( param instanceof Initer )
 				{
-					System.out.println( parent.getValue().getClass().getCanonicalName() );
-					break;// FIXME: we cannot handle more than one parent that this "ret" instance depends upon
+					// is Initer or subclass of Initer
+					parent = QUICK_FIND.getValue( (Initer)param );
+					if ( parent != null )
+					{
+						System.out.println( parent.getValue().getClass().getCanonicalName() );
+						break;// FIXME: we cannot handle more than one parent that this "ret" instance depends upon
+					}
 				}
 			}
 		}
@@ -276,24 +281,24 @@ public class Factory
 			
 			StackTraceElement caller = RunTime.getTheCaller_OutsideOfThisClass();
 			System.out.println( String.format(
-					"%-" + initDepth * 3 + "s",
-					" " ) + "i->" + initDepth + " " + parent.getValue().getClass().getSimpleName() + " caller: "
-					+ caller );
+												"%-" + initDepth * 3 + "s",
+												" " ) + "i->" + initDepth + " "
+					+ parent.getValue().getClass().getSimpleName() + " caller: " + caller );
 			initDepth++;
 		}
 		try
 		{
 			Factory.init(
-					ret,
-					methodParams );// /////////////////////////
+							ret,
+							methodParams );// /////////////////////////
 		}
 		finally
 		{
 			if ( null != parent )
 			{
 				RunTime.assumedNotNull(
-						parent.getValue(),
-						currentParent );
+										parent.getValue(),
+										currentParent );
 				RunTime.assumedTrue( currentParent.getParent() == savedParent );
 				currentParent = savedParent;
 				// set_InitWork_DoneInParent( parent.getValue() );
@@ -304,18 +309,20 @@ public class Factory
 		return ret;
 	}
 	
+
 	public static
 			<T extends Initer>
 			void
 			initWithoutParams(
-				T instance )
+								T instance )
 	{
-
+		
 		Factory.init(
-				instance,
-				null );
+						instance,
+						null );
 	}
 	
+
 	/**
 	 * @param <T>
 	 * @param instance
@@ -327,10 +334,10 @@ public class Factory
 			<T extends Initer>
 			void
 			init(
-				T instance,
-				MethodParams params )
+					T instance,
+					MethodParams params )
 	{
-
+		
 		RunTime.assumedNotNull( instance );
 		if ( instance.isInited() )
 		{
@@ -368,6 +375,7 @@ public class Factory
 		RunTime.assumedTrue( instance.isInited() );
 	}
 	
+
 	// private static <T extends Initer> void internal_init( T instance, MethodParams params ) {
 	//
 	// RunTime.assumedNotNull( instance );
@@ -385,17 +393,18 @@ public class Factory
 			<T extends Initer>
 			void
 			set_InitWork_StartsInParent(
-				T instance )
+											T instance )
 	{
-
+		
 		// go deep
 		RunTime.assumedNotNull( instance );
 		
 
 		StackTraceElement caller = RunTime.getTheCaller_OutsideOfThisClass();
 		System.out.println( String.format(
-				"%-" + initDepth * 3 + "s",
-				" " ) + "i->" + initDepth + " " + instance.getClass().getSimpleName() + " caller: " + caller );
+											"%-" + initDepth * 3 + "s",
+											" " ) + "i->" + initDepth + " " + instance.getClass().getSimpleName()
+				+ " caller: " + caller );
 		initDepth++;
 		
 		// System.out.println( "STRT:" + instance.getClass().getName() + "/" + instance );
@@ -404,15 +413,16 @@ public class Factory
 		// newChildInCurrent.setParent( currentParent );
 		// newChildInCurrent.setValue( instance );
 		currentParent = currentParent.addChildAtPos(
-				Position.FIRST,
-				instance );// hardwired to first, LIFO
+														Position.FIRST,
+														instance );// hardwired to first, LIFO
 		RunTime.assumedFalse( QUICK_FIND.put(
-				instance,
-				currentParent ) );
+												instance,
+												currentParent ) );
 		
 		RunTime.assumedNotNull( currentParent );
 	}
 	
+
 	/**
 	 * @param <T>
 	 * @param instance
@@ -422,10 +432,10 @@ public class Factory
 			<T extends Initer>
 			void
 			set_InitWork_DoneInParent(
-				T instance )
+										T instance )
 	{
-
 		
+
 		RunTime.assumedNotNull( instance );
 		initDepth--;
 		// System.out.println( "DONE:" + instance.getClass().getName() + "/" + instance );
@@ -438,6 +448,7 @@ public class Factory
 		RunTime.assumedNotNull( currentParent );// can be root, but not higher
 	}
 	
+
 	/**
 	 * throws if not inited<br>
 	 * 
@@ -450,9 +461,9 @@ public class Factory
 			<T extends Initer>
 			void
 			deInit_WithPostponedThrows(
-				T instance )
+										T instance )
 	{
-
+		
 		RunTime.assumedNotNull( instance );
 		if ( !instance.isInited() )
 		{
@@ -461,6 +472,7 @@ public class Factory
 		deInitIfInited_WithPostponedThrows( instance );
 	}
 	
+
 	/**
 	 * only throws from instance._deInit() are postponed; not others that are related to successfully processing this
 	 * method in its
@@ -477,9 +489,8 @@ public class Factory
 			<T extends Initer>
 			void
 			deInitIfInited_WithPostponedThrows(
-				T instance )
+												T instance )
 	{
-
 		RunTime.assumedNotNull( instance );
 		if ( !instance.isInited() )
 		{
@@ -511,23 +522,27 @@ public class Factory
 		// don't recall postponed here
 	}
 	
+
 	/**
 	 * after this you can call reInit
 	 * 
+	 * @param instance
+	 * @param <T>
+	 * 
 	 * @see #deInitIfAlreadyInited(Initer)
-	 * @param params
 	 */
 	public static
 			<T extends Initer>
 			void
 			deInit(
-				T instance )
+					T instance )
 	{
-
+		
 		Factory.deInit_WithPostponedThrows( instance );
 		RunTime.throwAllThatWerePosponed();
 	}
 	
+
 	/**
 	 * only deInit if it's inited, so in other words it won't throw if not inited<br>
 	 * 
@@ -538,13 +553,14 @@ public class Factory
 			<T extends Initer>
 			void
 			deInitIfAlreadyInited(
-				T instance )
+									T instance )
 	{
-
+		
 		Factory.deInitIfInited_WithPostponedThrows( instance );
 		RunTime.throwAllThatWerePosponed();
 	}
 	
+
 	/**
 	 * FIXME: if any subtrees are found in this instance they're added on the root level(no need to add them to same
 	 * level! they'll be passed back up to root anyway) , but instance will
@@ -558,9 +574,9 @@ public class Factory
 			<T extends Initer>
 			boolean
 			removeAnyInstanceFromAnywhereInOurLists(
-				T instance )
+														T instance )
 	{
-
+		
 		TreeOfNonNullObjects<Initer> subTree = QUICK_FIND.getValue( instance );
 		if ( null == subTree )
 		{// can't be null here
@@ -590,12 +606,12 @@ public class Factory
 				// RunTime.assumedTrue( QUICK_FIND.remove( inst ) == t );
 				RunTime.assumedTrue( subTree.removeChild( t ) );
 				t = root.addChildAtPos(
-						tmpPos,
-						inst );
+										tmpPos,
+										inst );
 				RunTime.assumedTrue( root.getChildAt( tmpPos ) == t );// first
 				RunTime.assumedTrue( QUICK_FIND.put(
-						inst,
-						t ) );
+														inst,
+														t ) );
 				RunTime.assumedTrue( QUICK_FIND.getValue( inst ) == t );
 			}
 		}
@@ -609,6 +625,7 @@ public class Factory
 		return true;
 	}
 	
+
 	/**
 	 * internal<br>
 	 * this will just call deInit, it will not remove the instance from list<br>
@@ -620,16 +637,17 @@ public class Factory
 			<T extends Initer>
 			void
 			internal_deInit(
-				T instance )
+								T instance )
 	{
-
+		
 		RunTime.assumedNotNull( instance );
 		Log.special4( "deInit-ing " + instance.getClass().getName() );
 		
 		StackTraceElement caller = RunTime.getTheCaller_OutsideOfThisClass();
 		System.out.println( String.format(
-				"%-" + deInitDepth * 3 + "s",
-				" " ) + "d->" + deInitDepth + " " + instance.getClass().getSimpleName() + " caller: " + caller );
+											"%-" + deInitDepth * 3 + "s",
+											" " ) + "d->" + deInitDepth + " " + instance.getClass().getSimpleName()
+				+ " caller: " + caller );
 		deInitDepth++;
 		try
 		{
@@ -643,6 +661,7 @@ public class Factory
 		}
 	}
 	
+
 	/**
 	 * this will keep the instance (ie. no new again) and just do a deInit() and init()<br>
 	 * it MUST be already inited<br>
@@ -654,9 +673,9 @@ public class Factory
 			<T extends Initer>
 			void
 			restart_aka_DeInitAndInitAgain_WithOriginalPassedParams(
-				T instance )
+																		T instance )
 	{
-
+		
 		RunTime.assumedNotNull( instance );
 		if ( !instance.isInited() )
 		{
@@ -694,6 +713,7 @@ public class Factory
 		RunTime.assumedTrue( instance.isInited() );
 	}
 	
+
 	/**
 	 * this will keep the instance (ie. no new again) and just do a init() again<br>
 	 * it MUST NOT be already inited, else this will throw<br>
@@ -705,15 +725,16 @@ public class Factory
 			<T extends Initer>
 			void
 			reInit_aka_InitAgain_WithOriginalPassedParams(
-				T instance )
+															T instance )
 	{
-
+		
 		RunTime.assumedNotNull( instance );
 		RunTime.assumedFalse( instance.isInited() );
 		// must NOT be already in our list
 		reInitIfNotInited( instance );
 	}
 	
+
 	/**
 	 * whether this was or not inited already, after this call it will be reInited()<br>
 	 * NOTE: that an init() should've been called on this instance at least once before, else the parameters passed to
@@ -726,9 +747,9 @@ public class Factory
 			<T extends Initer>
 			void
 			reInitIfNotInited(
-				T instance )
+								T instance )
 	{
-
+		
 		RunTime.assumedNotNull( instance );
 		if ( !instance.isInited() )
 		{
@@ -764,6 +785,7 @@ public class Factory
 		RunTime.assumedTrue( instance.isInited() );
 	}
 	
+
 	// /**
 	// * basically, the last one added is first and the order to deInit is from first to last<br>
 	// * NOTE that if variables are going to be inited in the new instance's init, then they are not first, and
@@ -813,7 +835,7 @@ public class Factory
 			void
 			deInitAll()
 	{
-
+		
 		try
 		{
 			Log.entry();

@@ -46,28 +46,38 @@ import org.references.method.PossibleParams;
  * application restarts<br>
  * 
  */
-public class Level010_DMLEnvironment extends MainLevel0 implements Level010_DMLStorageWrapper {
+public class Level010_DMLEnvironment
+		extends
+		MainLevel0
+		implements
+		Level010_DMLStorageWrapper
+{
 	
 	@VarLevel
 	private final Level010_DMLStorageWrapper	storage				= null;
 	
 	private boolean								usedDefaultStorage	= false;
 	
+	
 	/**
 	 * construct, don't forget to call init(with param/s)
 	 */
-	public Level010_DMLEnvironment() {
-
+	public Level010_DMLEnvironment()
+	{
 		super();
-		
 	}
 	
+
 	/**
 	 * this will be called on init, when no storage was specified or passed to us on init<br>
 	 * override but NEVER call super!<br>
 	 */
-	protected void internal_allocDefaultStorage( MethodParams params ) {
-
+	protected
+			void
+			internal_allocDefaultStorage(
+				MethodParams params )
+	{
+		
 		// MethodParams<Object> storageParams = new MethodParams<Object>();
 		// storageParams.init( null );
 		// storageParams.set( PossibleParams.homeDir, Consts.BDB_ENV_PATH );
@@ -76,22 +86,31 @@ public class Level010_DMLEnvironment extends MainLevel0 implements Level010_DMLS
 		
 		// Level010_DMLStorage_BerkeleyDB stor = new Level010_DMLStorage_BerkeleyDB();
 		// stor.init( params );
-		Level010_DMLStorage_BerkeleyDB stor = Factory.getNewInstanceAndInit( Level010_DMLStorage_BerkeleyDB.class,
+		Level010_DMLStorage_BerkeleyDB stor = Factory.getNewInstanceAndInit(
+				Level010_DMLStorage_BerkeleyDB.class,
 				params );
-		params.set( PossibleParams.varLevelAll, stor );
+		params.set(
+				PossibleParams.varLevelAll,
+				stor );
 		// but reInit() or restart() won't see this set varlevel, although it will exec start() again and it will be set
 		// again
 	}
 	
+
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see org.dml.tools.MainLevel0#start(org.references.method.MethodParams)
 	 */
 	@Override
-	protected void start( MethodParams params ) {
-
-		if ( ( null == params ) || ( null == params.get( PossibleParams.varLevelAll ) ) ) {
+	protected
+			void
+			start(
+				MethodParams params )
+	{
+		
+		if ( ( null == params ) || ( null == params.get( PossibleParams.varLevelAll ) ) )
+		{
 			// need own default storage type new-ed and init-ed
 			this.internal_allocDefaultStorage( params );
 			usedDefaultStorage = true;// must remain true, in case of restart() or reInit() I think?
@@ -99,68 +118,119 @@ public class Level010_DMLEnvironment extends MainLevel0 implements Level010_DMLS
 		super.start( params );
 	}
 	
+
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see org.dml.tools.MainLevel0#done(org.references.method.MethodParams)
 	 */
 	@Override
-	protected void done( MethodParams params ) {
-
-		if ( usedDefaultStorage ) {
+	protected
+			void
+			done(
+				MethodParams params )
+	{
+		
+		if ( usedDefaultStorage )
+		{
 			RunTime.assumedNotNull( storage );// wicked if null
 			// storage.deInit();
 			// Factory.deInit( storage );fail 'cause it's interface
-			storage.factoryDeInit();
+			storage.factoryDeInit();// because storage is not Initer type, is interface here
 			// don't set var to false here, or seems it doesn't matter, reInit() will call start() and set it it true
 			// anyway
 		}
 		super.done( params );
 	}
 	
+
 	// ---------------------------------------------
 	
 	@Override
-	public JavaID getJavaID( Symbol symbol ) throws StorageException {
-
+	public
+			JavaID
+			getJavaID(
+				Symbol symbol )
+					throws StorageException
+	{
+		
 		RunTime.assumedNotNull( symbol );
 		return storage.getJavaID( symbol );
 	}
 	
-	@Override
-	public Symbol ensureSymbol( JavaID theJavaID ) throws StorageException {
 
+	@Override
+	public
+			Symbol
+			ensureSymbol(
+				JavaID theJavaID )
+					throws StorageException
+	{
+		
 		RunTime.assumedNotNull( theJavaID );
 		return storage.ensureSymbol( theJavaID );
 	}
 	
-	@Override
-	public Symbol getSymbol( JavaID identifiedByThisJavaID ) throws StorageException {
 
+	@Override
+	public
+			Symbol
+			getSymbol(
+				JavaID identifiedByThisJavaID )
+					throws StorageException
+	{
+		
 		return storage.getSymbol( identifiedByThisJavaID );
 	}
 	
-	@Override
-	public Symbol createSymbol( JavaID fromJavaID ) throws StorageException {
 
+	@Override
+	public
+			Symbol
+			createSymbol(
+				JavaID fromJavaID )
+					throws StorageException
+	{
+		
 		return storage.createSymbol( fromJavaID );
 	}
 	
-	@Override
-	public Symbol newUniqueSymbol() throws StorageException {
 
+	@Override
+	public
+			Symbol
+			newUniqueSymbol()
+					throws StorageException
+	{
+		
 		return storage.newUniqueSymbol();
 	}
 	
-	@Override
-	public void newLink( Symbol noID, JavaID jid ) {
 
-		storage.newLink( noID, jid );
+	@Override
+	public
+			void
+			newLink(
+				Symbol noID,
+				JavaID jid )
+	{
+		
+		storage.newLink(
+				noID,
+				jid );
 	}
 	
-	@Override
-	public boolean ensureLink( Symbol symbol, JavaID jid ) {
 
-		return storage.ensureLink( symbol, jid );
+	@Override
+	public
+			boolean
+			ensureLink(
+				Symbol symbol,
+				JavaID jid )
+	{
+		
+		return storage.ensureLink(
+				symbol,
+				jid );
 	}
 }

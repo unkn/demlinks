@@ -31,27 +31,51 @@ package org.references;
  * 
  * @param <T>
  */
-public class Reference<T>
+public class Reference<T> // extends Object>
 {
+	
+	// public transient volatile static Object unset = new Object();
 	
 	private T	object	= null;
 	
+	
 	public Reference()
 	{
-
+		
 		// constructor
+		this.setUnSet();
 	}
 	
+
+	@Deprecated
+	public
+			boolean
+			isUnSet()
+	{
+		return ( null == object );// don't use this.getObject() here else recursion
+	}
 	
+
+	@Deprecated
+	public
+			void
+			setUnSet()
+	{
+		object = null;
+		// this.setObject( null );bad idea
+	}
+	
+
 	public
 			void
 			setObject(
-				T obj )
+						T obj )
 	{
-
+		
 		object = obj;
 	}
 	
+
 	/**
 	 * @return the object that this reference refers to
 	 */
@@ -59,12 +83,12 @@ public class Reference<T>
 			T
 			getObject()
 	{
-
+		
 		return object;
 	}
 	
-	
 
+	
 	/**
 	 * compares by contents that is:<br>
 	 * refa.equals(refb) if refa.object == refb.object OR refa.object.equals(refb.object)<br>
@@ -76,9 +100,9 @@ public class Reference<T>
 	public
 			boolean
 			equals(
-				Object obj1 )
+					Object obj1 )
 	{
-
+		
 		boolean ret = true;
 		if ( !super.equals( obj1 ) )
 		{
@@ -109,6 +133,7 @@ public class Reference<T>
 		return ret;
 	}
 	
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -119,7 +144,7 @@ public class Reference<T>
 			int
 			hashCode()
 	{
-
+		
 		// TODO: maybe add hashCode() to all other .equals() that are overridden
 		if ( null != this.getObject() )
 		{
@@ -131,6 +156,7 @@ public class Reference<T>
 		}
 	}
 	
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -141,7 +167,7 @@ public class Reference<T>
 			String
 			toString()
 	{
-
+		
 		if ( null != this.getObject() )
 		{
 			return this.getClass().getCanonicalName() + ":" + this.getObject().toString();

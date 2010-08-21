@@ -77,7 +77,7 @@ public class ParamID
 			String
 			toString()
 	{
-		return this.getClass().getCanonicalName() + ":" + selfName;
+		return this.getClass().getSimpleName() + ":" + selfName;
 	}
 	
 }

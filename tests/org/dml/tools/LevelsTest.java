@@ -47,8 +47,8 @@ import org.references.method.PossibleParams;
  */
 public class LevelsTest {
 	
-	MainLevel1	ml1;
-	MainLevel2	ml2;
+	TestMainLevel1	ml1;
+	TestMainLevel2	ml2;
 	MainLevel3	ml3;
 	
 	/**
@@ -59,8 +59,8 @@ public class LevelsTest {
 
 		
 		ml3 = new MainLevel3();
-		ml1 = new MainLevel1();
-		ml2 = new MainLevel2();
+		ml1 = new TestMainLevel1();
+		ml2 = new TestMainLevel2();
 	}
 	
 	/**

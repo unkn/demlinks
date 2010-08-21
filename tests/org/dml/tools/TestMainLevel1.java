@@ -41,14 +41,14 @@ import org.references.method.MethodParams;
  * 5. call to init() w/o params (not initMainLevel()) is prevented
  */
 
-public class MainLevel1 extends MainLevel0 {
+public class TestMainLevel1 extends MainLevel0 {
 	
 	@VarLevel
 	private final VarLevel1	var1	= null;
 	
 	
 
-	public MainLevel1() {
+	public TestMainLevel1() {
 
 		super();
 	}
