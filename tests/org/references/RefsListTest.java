@@ -30,20 +30,26 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.NoSuchElementException;
 
+import org.dml.tools.RunTime;
 import org.junit.Before;
 import org.junit.Test;
 
 
 
-public class RefsListTest {
+public class RefsListTest
+{
 	
 	ListOfReferences<Object>	refList;
 	Object						obj1, obj2;
 	ChainedReference<Object>	ref1, ref2;
 	
+	
 	@Before
-	public void init() {
-
+	public
+			void
+			init()
+	{
+		
 		refList = new ListOfReferences<Object>();
 		obj1 = new Object();
 		obj2 = new Object();
@@ -55,36 +61,65 @@ public class RefsListTest {
 		assertTrue( ref2.getObject() == obj2 );
 	}
 	
-	@Test
-	public void testInsert() {
 
+	@Test
+	public
+			void
+			testInsert()
+	{
+		
 		assertFalse( refList.addFirstRef( ref1 ) );
-		assertFalse( refList.insertRefAt( ref2, Position.AFTER, ref1 ) );
+		assertFalse( refList.insertRefAt(
+											ref2,
+											Position.AFTER,
+											ref1 ) );
 		ChainedReference<Object> ref3 = new ChainedReference<Object>();
-		assertFalse( refList.insertRefAt( ref3, Position.BEFORE, ref1 ) );
+		assertFalse( refList.insertRefAt(
+											ref3,
+											Position.BEFORE,
+											ref1 ) );
 		assertTrue( refList.getFirstRef() == ref3 );
 		assertTrue( refList.getLastRef() == ref2 );
-		assertTrue( refList.getRefAt( Position.BEFORE, ref2 ) == ref1 );
+		assertTrue( refList.getRefAt(
+										Position.BEFORE,
+										ref2 ) == ref1 );
 		assertTrue( refList.size() == 3 );
 		refList.removeRef( ref3 );
 		boolean excepted = false;
-		try {
+		try
+		{
 			// even though ref2 exists, while ref3 doesn't, the call is bugged
 			// so we alert:
 			// ref3 should exist
-			refList.insertRefAt( ref2, Position.BEFORE, ref3 );// 3rd
+			refList.insertRefAt(
+									ref2,
+									Position.BEFORE,
+									ref3 );// 3rd
 			// param,
 			// not
 			// exists
-		} catch ( NoSuchElementException e ) {
-			excepted = true;
+		}
+		catch ( Throwable t )
+		{
+			if ( RunTime.isThisWrappedException_of_thisType(
+																t,
+																NoSuchElementException.class ) )
+			{
+				excepted = true;
+				RunTime.clearLastThrown_andAllItsWraps();
+			}
 		}
 		assertTrue( excepted );
 	}
 	
-	@Test
-	public void testSomething() throws Exception {
 
+	@Test
+	public
+			void
+			testSomething()
+					throws Exception
+	{
+		
 		assertTrue( refList.isEmpty() );
 		assertFalse( refList.addLastRef( ref1 ) );
 		assertTrue( refList.containsRef( ref1 ) );
@@ -105,8 +140,12 @@ public class RefsListTest {
 		assertTrue( refList.getLastRef() == ref2 );
 		assertTrue( refList.getRefAt( Position.FIRST ) == refList.getFirstRef() );
 		assertTrue( refList.getRefAt( Position.LAST ) == refList.getLastRef() );
-		assertTrue( refList.getRefAt( Position.AFTER, ref1 ) == ref2 );
-		assertTrue( refList.getRefAt( Position.BEFORE, ref2 ) == ref1 );
+		assertTrue( refList.getRefAt(
+										Position.AFTER,
+										ref1 ) == ref2 );
+		assertTrue( refList.getRefAt(
+										Position.BEFORE,
+										ref2 ) == ref1 );
 		assertFalse( mod != refList.getModified() );
 		ChainedReference<Object> ref3 = new ChainedReference<Object>();
 		ref3.setObject( null );

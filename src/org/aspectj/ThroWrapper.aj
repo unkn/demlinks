@@ -22,58 +22,53 @@
  */
 package org.aspectj;
 
-import org.aspectj.lang.ProceedingJoinPoint;
-import org.designpatterns.tests.Delegation01;
 import org.dml.tools.RunTime;
 import org.dml.tools.RuntimeWrappedThrowException;
+import org.javapart.logger.Log;
 
 
 /**
- * 
+ * wrap all non-wrapped thrown exceptions within RuntimeWrappedThrowException
  *
  */
-aspect ThroWrapper {
-    pointcut publicCall(): call(void *.*(..)) && !this(ThroWrapper) ;
-//    after() returning (Object o): publicCall() {
-//	  System.out.println("Returned normally with " + o);
-//    }
-    
-    void around(): publicCall() {
-    	System.out.println("around: "+thisJoinPoint.getSignature());
-    	//try{
-    	Throwable x=null;
+public aspect ThroWrapper {
+    pointcut anyCall(): call(* *.*(..))//any calls to any methods in any package...
+    					&& !this(ThroWrapper)//except calls from this aspect
+    					&& !call(* RunTime.*(..))//except methods in RunTime.class
+    					//disabling the following you must +4 to getLine ie. 6+2, if enabled 6+2-4
+    					&& !call(* Log.*(..));//except methods in Log.class due to possible recursion
+
+    Object around() : anyCall() {
+    	//System.out.println("around: "+thisJoinPoint.getSignature());
     	try{
-    		proceed();
+    		return proceed();
     	}catch(Throwable t) {
-    		x=t;
-    		throw new RuntimeException("wth1");
-    	}
-    	if (null != x) {
-    		throw new RuntimeException("wth2");
-    	}
-//    	else 
-//    		throw new RuntimeException("xx");
-    	//}catch(Throwable t) {
+    		if (t.getClass() ==  RuntimeWrappedThrowException.class) {
+    			System.err.println("EXCEPTED: "+t);
+    			try{
+    				t.printStackTrace();
+    				RunTime.bug("this shouldn't happen");
+    			}finally{
+        			System.err.println("       "+ Log.getThisLineLocationWithinAspect( -4));
+    			}
+    		}
 //    		StackTraceElement[] stea=Thread.currentThread().getStackTrace();
 //			for ( int j = 0; j < stea.length; j++ )
 //			{
 //				System.out.println(stea[j]);
 //			}
-//    		if (t.getClass() !=  RuntimeWrappedThrowException.class) {
-//    			System.err.println("EXCEPTED: "+t);
-    			
-    			//RunTime.throWrapped( t );//this won't throw for some reason!?!!
+    			//System.err.println("WRAPPED: "+t);
+    			RunTime.throWrapped( t );//this is caught again
     			//throw new RuntimeWrappedThrowException(t);
-    			//Delegation01.foo( 4, 5, 6 );
+//    			Delegation01.foo( 4, 5, 6 );
 //    			try{
 //    			}catch(Throwable t2) {
     			//System.err.println("above not thrown");
 //    			}
     			//throw new RuntimeException("xx");
-//    		}
-//    	}
-    	//return proceed();
-    }
+    	}//catch
+    	return null;
+    }//around
     
 //    after() throwing (Exception e): publicCall() {
 //	  System.out.println("Threw an exception: " + e);

@@ -25,6 +25,9 @@ package org.dml.tools;
 
 
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+
 import org.dml.error.AssumptionError;
 import org.dml.error.BadCallError;
 import org.dml.error.BugError;
@@ -174,6 +177,8 @@ public class RunTime
 	{
 		
 		// wrapping this into RuntimeException 'cause it's unchecked aka no throws declaration needed
+		
+		// DON'T change this exception class, unless you also change the AspectJ using it
 		throw new RuntimeWrappedThrowException(
 												allExceptionsChained );
 	}

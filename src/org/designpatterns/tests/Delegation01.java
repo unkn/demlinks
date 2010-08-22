@@ -24,6 +24,11 @@
 package org.designpatterns.tests;
 
 
+
+import org.javapart.logger.Log;
+
+
+
 /**
  * 
  *
@@ -173,9 +178,12 @@ public class Delegation01
 					throws Exception
 	{
 		
+		@SuppressWarnings( "unused" )
 		Delegation01 d = new Delegation01();
 		// try
 		// {
+		System.out.println( "this line: " + Log.getThisLineLocation( -1 - 3 + 6 + 2 ) );
+		moo();
 		foo(
 				1,
 				2,
@@ -187,6 +195,22 @@ public class Delegation01
 		// "finally" );
 		// }
 		// throw new RuntimeException();
+	}
+	
+
+	/**
+	 * 
+	 */
+	private static
+			void
+			moo()
+	{
+		// TODO Auto-generated method stub
+		StackTraceElement[] stea = Thread.currentThread().getStackTrace();
+		for ( int i = 0; i < stea.length; i++ )
+		{
+			System.out.println( i + " " + stea[i] );
+		}
 	}
 	
 

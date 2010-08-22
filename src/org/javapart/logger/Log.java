@@ -672,8 +672,26 @@ public class Log
 			getThisLineLocation(
 									int modifier )
 	{
-		
+		// StackTraceElement[] stea = Thread.currentThread().getStackTrace();
+		// for ( int i = 0; i < stea.length; i++ )
+		// {
+		// System.out.println( i + " " + stea[i] );
+		// }
 		return getLine( 2 + 1 + modifier );
+	}
+	
+
+	public static
+			String
+			getThisLineLocationWithinAspect(
+												int modifier )
+	{
+		// StackTraceElement[] stea = Thread.currentThread().getStackTrace();
+		// for ( int i = 0; i < stea.length; i++ )
+		// {
+		// System.out.println( i + " " + stea[i] );
+		// }
+		return getLine( 2 + 1 + 8 + modifier );
 	}
 	
 

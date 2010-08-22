@@ -26,18 +26,25 @@ package org.dml.tools;
 
 
 /**
+ * never manually throw this! or other thrown exceptions might be overridden and lost
  * 
- *
  */
-public class RuntimeWrappedThrowException extends RuntimeException {
+public class RuntimeWrappedThrowException
+		extends
+		RuntimeException
+{
 	
 	/**
 	 * 
 	 */
 	private static final long	serialVersionUID	= -9004806056144543614L;
 	
-	public RuntimeWrappedThrowException( Throwable t ) {
-
-		super( t );
+	
+	public RuntimeWrappedThrowException(
+			Throwable t )
+	{
+		
+		super(
+				t );
 	}
 }
