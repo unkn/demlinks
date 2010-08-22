@@ -32,8 +32,15 @@ import org.junit.runners.Suite;
 
 
 @RunWith( Suite.class )
-@Suite.SuiteClasses( value = {
-		IniterTest.class, LevelsTest.class, FactoryTest.class
-} )
-public class AllTestsTools {
+@Suite.SuiteClasses(
+		value =
+		{
+				IniterTest.class,
+				LevelsTest.class,
+				FactoryTest.class,
+				RunTimeTest.class
+		} )
+public class AllTestsTools
+{
+	// empty
 }

@@ -32,7 +32,6 @@ import java.lang.reflect.InvocationTargetException;
 import org.dml.tools.Initer;
 import org.dml.tools.NonNullHashMap;
 import org.dml.tools.RunTime;
-import org.javapart.logger.Log;
 import org.references.Position;
 import org.references.TreeOfNonNullObjects;
 import org.references.method.MethodParams;

@@ -21,12 +21,11 @@
 
 
 
-package org.javapart.logger;
+package org.dml.tracking;
 
 
 
 import org.dml.tools.RunTime;
-import org.dml.tracking.Factory;
 
 
 
@@ -36,11 +35,11 @@ public class Log
 	
 	// static final int methodWOClassNameWidth = 30;
 	// static final int methodWithClassNameWidth = 50;
-	static final int				fileAndLineWidth						= 30 + 50;
-	static final int				spacesBeforeMsg							= 10;
+	static final int				fileAndLineWidth	= 30 + 50;
+	static final int				spacesBeforeMsg		= 10;
 	
-	private final static LogFlags	CurrentLogFlags[]						=
-																			{
+	private final static LogFlags	CurrentLogFlags[]	=
+														{
 			// LogFlags.Entry,
 			// LogFlags.Mid,
 			// LogFlags.Exit,
@@ -49,22 +48,22 @@ public class Log
 			LogFlags.Result,
 			// LogFlags.Special,
 			LogFlags.Thro,
-																			};
+														};
 	
 	// if no elements, then all methods are shown
-	private final static String		ShowOnlyTheseMethodsAndTheirChildren[]	=
-																			{
-																			// "<init>"
-																			
-																			// "appendLinkPC"
-																			};
-	private final static boolean	alsoShowChildrenMethods					= true;
+	// private final static String ShowOnlyTheseMethodsAndTheirChildren[] =
+	// {
+	// // "<init>"
+	//
+	// // "appendLinkPC"
+	// };
+	// private final static boolean alsoShowChildrenMethods = true;
 	
 	// private static StackTraceElement[] stea = null;
 	
-	private static final Integer	currentMethodLocation					= 5;		// 5
-																						
-	private final static String		nl										= "\n";
+	// private static final Integer currentMethodLocation = 5; // 5
+	
+	private final static String		nl					= "\n";
 	
 	
 	/*

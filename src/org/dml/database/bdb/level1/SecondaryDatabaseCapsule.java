@@ -27,7 +27,7 @@ package org.dml.database.bdb.level1;
 
 import org.dml.tools.Initer;
 import org.dml.tools.RunTime;
-import org.javapart.logger.Log;
+import org.dml.tracking.Log;
 import org.references.Reference;
 import org.references.method.MethodParams;
 import org.references.method.PossibleParams;

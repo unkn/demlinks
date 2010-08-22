@@ -29,7 +29,7 @@ import org.dml.error.BugError;
 import org.dml.level010.JavaID;
 import org.dml.level010.Symbol;
 import org.dml.tools.RunTime;
-import org.javapart.logger.Log;
+import org.dml.tracking.Log;
 import org.references.method.MethodParams;
 
 import com.sleepycat.je.DatabaseException;

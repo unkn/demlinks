@@ -18,7 +18,7 @@
  * along with DeMLinks. If not, see <http://www.gnu.org/licenses/>.
  * 
  * 
- * File creation: Jul 1, 2010 11:06:04 PM
+ * File creation: Aug 23, 2010 12:02:59 AM
  */
 
 
@@ -27,10 +27,8 @@ package org.dml.tools;
 
 
 import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
-import java.io.IOException;
-
-import org.dml.error.BadCallError;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,12 +36,12 @@ import org.junit.Test;
 
 
 /**
- * tests here are supposed to fail, it's supposed to show how exceptions are thrown and shown in eclipse<br>
- * these tests can only be manually tested, ie. by a human<br>
  * 
+ *
  */
 public class RunTimeTest
 {
+	
 	
 	@Before
 	public
@@ -65,581 +63,6 @@ public class RunTimeTest
 	}
 	
 
-	@Test
-	public
-			void
-			testChainedException1()
-	{
-		
-		// this will successfully chain all 3 throwables and eclipse will show them on the exact lines they happen
-		try
-		{
-			RunTime.thro( new Error(
-										"err" ) );
-		}
-		catch ( Throwable e )
-		{
-			try
-			{
-				throw new IOException(
-										"rogue java method that we cannot control throws this" );
-			}
-			catch ( Throwable f )
-			{
-				RunTime.thro( f ); // mustn't chain these like: new Exception( f ) );
-			}
-		}
-		finally
-		{
-			RunTime.thro( new Exception(
-											"final" ) );
-		}
-	}
-	
-
-	@Test
-	public
-			void
-			testChainedException1_1()
-	{
-		
-		// this will successfully chain all the last 3 throwables and eclipse will show them on the exact lines they
-		// happen
-		// however the first thrown exception "err" will not be seen in eclipse, 'cause it got overwritten by the new
-		// thrown exception which already had in its chain a normal exception that was caught from java normal throws
-		System.err.println( "1_1" );
-		try
-		{
-			RunTime.thro( new Error(
-										"err" ) );
-		}
-		catch ( Throwable e )
-		{
-			try
-			{
-				throw new IOException(
-										"rogue java method that we cannot control throws this" );
-			}
-			catch ( Throwable f )
-			{
-				RunTime.thro( new Exception(
-												"new one that also chains f",
-												f ) );
-				// mustn't chain these like: new Exception( f ) ); because all is lost from before ie. the 'err'
-				// exception from above, is lost; and also the f exception is not pointed out in console output, only in
-				// eclipse Failure Trace window
-			}
-		}
-		finally
-		{
-			RunTime.thro( new Exception(
-											"final" ) );
-		}
-	}
-	
-
-	@Test
-	public
-			void
-			testChainedException2()
-	{
-		
-		// this will not show the Error one
-		try
-		{
-			throw new Error(
-								"err1" );// this gets overridden by IOException below, which is java normal
-		}
-		catch ( Throwable e )
-		{
-			try
-			{
-				throw new IOException(
-										"rogue java method that we cannot control throws this" );
-			}
-			catch ( Throwable f )
-			{
-				RunTime.thro( f ); // mustn't chain these like: new Exception( f ) );
-			}
-		}
-		finally
-		{
-			RunTime.thro( new Exception(
-											"final" ) );
-		}
-	}
-	
-
-	@Test
-	public
-			void
-			testChainedException3()
-	{
-		
-		// this only shows the first and last throwed ones
-		try
-		{
-			RunTime.thro( new Error(
-										"err" ) );
-		}
-		catch ( Throwable e )
-		{
-			// e.printStackTrace();
-			RunTime.thro( e );// this will not be shown
-		}
-		finally
-		{
-			RunTime.thro( new Exception(
-											"final" ) );
-		}
-	}
-	
-
-	@Test
-	public
-			void
-			testChainedException4()
-					throws Throwable
-	{
-		
-
-		// Log.thro( "x" );
-		// this will successfully chain all 3 throwables and eclipse will show them on the exact lines they happen
-		try
-		{
-			RunTime.thro( new Error(
-										"err" ) );
-		}
-		catch ( Throwable e )
-		{
-			RunTime.thro( new RuntimeException(
-												"rte",
-												e ) );// and this is chained
-		}
-		finally
-		{
-			RunTime.thro( new Exception(
-											"final" ) );
-		}
-	}
-	
-
-	@Test
-	public
-			void
-			testDefer()
-	{
-		
-		try
-		{
-			RunTime.thro( new Error(
-										"this was deferred" ) );
-		}
-		catch ( Throwable e )
-		{
-			// ignore
-		}
-		System.out
-				.println( "doing something else until the next exception occurs which will show the deferred one also" );
-		RunTime.thro( new Exception(
-										"the now" ) );
-	}
-	
-
-	@Test
-	public
-			void
-			testDeferIfChained()
-	{
-		
-		// so all 4 are chained in normal order and eclipse show show them all in Failure Trace window
-		try
-		{
-			RunTime.thro( new Error(
-										"Zthis was deferred" ) );
-		}
-		catch ( Throwable e )
-		{
-			// ignore
-		}
-		System.out
-				.println( "doing something else until the next exception occurs which will show the deferred one also" );
-		try
-		{
-			RunTime.thro( new Exception(
-											"A" ) );
-		}
-		catch ( Throwable e )
-		{
-			// ignoring A
-			try
-			{
-				throw new IOException(
-										"rogue java method that we cannot control throws this" );
-			}
-			catch ( Throwable f )
-			{
-				RunTime.thro( f ); // mustn't chain these like: new Exception( f ) );
-			}
-		}
-		finally
-		{
-			RunTime.thro( new RuntimeException(
-												"B, which is chained to A" ) );
-		}
-	}
-	
-
-	@Test
-	public
-			void
-			testDeferredNormal()
-					throws IOException
-	{
-		
-		try
-		{
-			try
-			{
-				throw new IOException(
-										"x" );
-			}
-			finally
-			{
-				System.out.println( "doing some stuff first" );
-			}
-		}
-		finally
-		{
-			System.out.println( "reachable" );
-		}
-	}
-	
-
-	@Test
-	public
-			void
-			testBadCallNoParams()
-	{
-		
-		// the link in console should point to this line
-		RunTime.badCall();
-	}
-	
-
-	@Test
-	public
-			void
-			testBadCallWithParams()
-	{
-		
-		// the link in console should point to this line
-		RunTime.badCall( "message" );
-	}
-	
-
-	@Test
-	public
-			void
-			testBadCall2()
-	{
-		
-		RunTime.thro( new BadCallError(
-										"wtw" ) );
-	}
-	
-
-	@Test
-	public
-			void
-			testBadCall3()
-	{
-		
-		BadCallError b = new BadCallError();
-		// the below throw should point to the above line;
-		RunTime.thro( b );
-	}
-	
-
-	@Test
-	public
-			void
-			testBadCall4()
-	{
-		
-		// this should have the console point to the line with 'new' and the last badCall() statement
-		try
-		{
-			BadCallError b = new BadCallError();
-			// the below throw should point to the above line;
-			RunTime.thro( b );
-		}
-		finally
-		{
-			RunTime.badCall();// autochained the above as cause
-		}
-	}
-	
-
-	private
-			void
-			throwy1()
-	{
-		
-		throw new BadCallError(
-								"throwy1" );
-	}
-	
-
-	private
-			void
-			throwy2()
-	{
-		
-		this.throwy1();
-	}
-	
-
-	@Test
-	public
-			void
-			testChainingOfBug()
-	{
-		
-		try
-		{
-			// the console will show this line and also eclipse too
-			this.throwy2();
-			// throw new BadCallError();
-		}
-		catch ( Throwable t )
-		{
-			// the console will also show this line and eclipse also
-			RunTime.bug( t );
-		}
-	}
-	
-
-	@Test
-	public
-			void
-			testChainingOfBadCall()
-	{
-		
-		try
-		{
-			// the console will show this line and also eclipse too
-			this.throwy2();
-			// throw new BadCallError();
-		}
-		catch ( Throwable t )
-		{
-			// the console will also show this line and eclipse also
-			RunTime.badCall( t );
-		}
-	}
-	
-
-	@Test
-	public
-			void
-			testThroAndAssumed()
-	{
-		
-		// all of the following should be accessible from console links and also from eclipse Failure Trace
-		// the links should point on these lines exactly, not on their sub procedures
-		try
-		{
-			RunTime.assumedTrue( 1 == 2 );
-			
-		}
-		finally
-		{
-			try
-			{
-				RunTime.thro( new AssertionError(
-													"expected true condition was false!" ) );
-				
-			}
-			finally
-			{
-				try
-				{
-					int a = 2;
-					RunTime.assumedFalse( a == 1 + 1 );
-				}
-				finally
-				{
-					try
-					{
-						Object o = null;
-						RunTime.assumedNotNull( o );
-					}
-					finally
-					{
-						RunTime.assumedNull( new Object() );
-					}
-				}
-			}
-		}
-	}
-	
-
-	@Test
-	public
-			void
-			testCaughtAlready()
-	{
-		
-		// both exceptions are shown on console, but only last one is shown in eclipse Failure Trace
-		try
-		{
-			RunTime.thro( new Exception(
-											"something" ) );
-		}
-		catch ( Exception e )
-		{
-			// caught, handled , wtw
-			RunTime.clearThrowChain();// this clears all previous ones hmm
-		}
-		// somewhere later, this throw should not be chained with above one
-		RunTime.thro( new IOException(
-										"else" ) );
-	}
-	
-
-	@Test
-	public
-			void
-			testCaughtAlreadyClearingOnlyLastOne()
-	{
-		
-		// first and third are shown in eclipse; all 3 in console
-		try
-		{
-			try
-			{
-				RunTime.thro( new Exception(
-												"something2" ) );
-			}
-			finally
-			{
-				RunTime.thro( new Exception(
-												"this gets cleared" ) );
-			}
-		}
-		catch ( Exception e )
-		{
-			// caught, handled , wtw
-			RunTime.clearLastThrown_andAllItsWraps();// this clears only the previously thrown one aka last one thrown
-		}
-		// somewhere later, this throw should not be chained with above one
-		RunTime.thro( new IOException(
-										"else2" ) );
-	}
-	
-
-	@Test
-	public
-			void
-			testCaughtAlreadyWronglyClearingOnlyLastOneInsteadOfCaughtOne()
-	{
-		
-		// first and third are shown in eclipse, all 3 are shown in console
-		try
-		{
-			try
-			{
-				RunTime.thro( new Exception(
-												"first, this is caught but it should be cleared but it's not" ) );
-			}
-			finally
-			{
-				RunTime.thro( new RuntimeException(
-													"second, not caught but gets cleared since it's last" ) );
-			}
-		}
-		catch ( Exception e )
-		{// we catch only first one
-			RunTime.clearLastThrown_andAllItsWraps();// this clears the second one, but we wanted to clear the caught
-														// one heh
-		}
-		// somewhere later, this throw should not be chained with above one
-		RunTime.thro( new IOException(
-										"else3" ) );
-	}
-	
-
-	@Test
-	public
-			void
-			testCaughtAlreadyRightlyClearingOnlyLastOneAkaCaughtOne()
-	{
-		
-		// first and third are shown in eclipse, all 3 are shown in console
-		try
-		{
-			try
-			{
-				RunTime.thro( new Exception(
-												"first, not caught" ) );
-			}
-			finally
-			{
-				RunTime.thro( new RuntimeException(
-													"second, caught and cleared" ) );
-			}
-		}
-		catch ( Throwable t )
-		{// we catch only second one which is last heh
-			RunTime.clearLastThrown_andAllItsWraps();// this clears the second one, but that's the one we caught anyway
-		}
-		// somewhere later, this throw should not be chained with above one
-		RunTime.thro( new IOException(
-										"else4" ) );
-	}
-	
-
-	@Test
-	public
-			void
-			testReThrow()
-	{
-		
-		// you will see in eclipse Failure Trace all points of throWrapped below and also the 'throw new'
-		try
-		{
-			try
-			{
-				try
-				{
-					try
-					{
-						throw new Exception(
-												"some normal throw happens" );
-					}
-					catch ( Throwable t )
-					{
-						RunTime.throWrapped( t );// wrap one
-					}
-				}
-				catch ( Throwable t )
-				{
-					RunTime.throWrapped( t );// wrap two
-				}
-			}
-			catch ( Throwable t )
-			{
-				RunTime.throWrapped( t );// wrap two
-			}
-		}
-		catch ( Throwable t )
-		{
-			RunTime.throWrapped( t );// wrap two
-		}
-	}
-	
-
 	private
 			StackTraceElement
 			tc()
@@ -648,14 +71,152 @@ public class RunTimeTest
 	}
 	
 
+	private
+			void
+			ho()
+	{
+		System.exit( 111 );
+	}
+	
+	private class F
+	{
+		
+		public F()
+		{
+			//
+		}
+		
+
+		public
+				StackTraceElement
+				getCaller()
+		{
+			return RunTime.getTheCaller_OutsideOfThisClass();
+		}
+		
+
+		public
+				StackTraceElement
+				getCaller2()
+		{
+			return RunTime.getTheCaller_OutsideOfClass( this.getClass() );
+		}
+		
+
+		public
+				StackTraceElement
+				getCaller3()
+		{
+			return RunTime.getTheCaller_OutsideOfClass( F.class );
+		}
+		
+
+		public
+				StackTraceElement
+				getCaller4(
+							Class<?> which )
+		{
+			RunTime.assumedNotNull( which );
+			return RunTime.getTheCaller_OutsideOfClass( which );
+		}
+	}
+	
+	public class G
+			extends
+			F
+	{
+		//
+	}
+	
+	
 	@Test
 	public
 			void
-			testCaller()
+			testCaller()// don't change this method's name!!!!
 	{
+		F f = new F();
+		G g = new G();
+		
+		// don't move relative to each other the following lines!! each must be on 1 line in that order else fails
+		StackTraceElement[] steaR = RunTime.getCurrentStackTraceElementsArray();
+		StackTraceElement[] stea = Thread.currentThread().getStackTrace();
+		StackTraceElement curSTE = RunTime.getCurrentStackTraceElement();
+		StackTraceElement f1 = f.getCaller();
+		StackTraceElement f2 = f.getCaller2();
+		StackTraceElement f3 = f.getCaller3();
+		StackTraceElement f41 = f.getCaller4( F.class );
+		StackTraceElement f42 = f.getCaller4( f.getClass() );
+		StackTraceElement f43 = f.getCaller4( g.getClass() );
+		StackTraceElement g1 = g.getCaller();
+		StackTraceElement g2 = g.getCaller2();
+		StackTraceElement g3 = g.getCaller3();
+		StackTraceElement g41 = g.getCaller4( G.class );
+		StackTraceElement g42 = g.getCaller4( g.getClass() );
+		StackTraceElement g43 = g.getCaller4( F.class );
+		// do not move the above calls ^^^ order matters and each should be on only 1 line! wrap=120chars
+		
+		assertNotNull( stea );
+		assertNotNull( steaR );
+		assertNotNull( curSTE );
+		// TODO: transfer eclipse settings to project specific settings ie. wrap 120chars should be in project
+		StackTraceElement actualLocation = steaR[+2];
+		StackTraceElement otherAcLoc = stea[+1];
+		assertTrue( actualLocation.getClassName() == this.getClass().getName() );
+		assertTrue( otherAcLoc.getClassName() == this.getClass().getName() );
+		assertTrue( curSTE.getClassName() == this.getClass().getName() );
+		assertTrue( actualLocation.getMethodName() == otherAcLoc.getMethodName() );
+		assertTrue( actualLocation.getMethodName() == curSTE.getMethodName() );
+		assertTrue( actualLocation.getMethodName() == "testCaller" );
+		assertTrue( actualLocation.getLineNumber() + 1 == otherAcLoc.getLineNumber() );
+		assertTrue( actualLocation.getLineNumber() + 2 == curSTE.getLineNumber() );
+		
+
+		assertTrue( f1.getClassName() == this.getClass().getName() );
+		assertTrue( f2.getClassName() == this.getClass().getName() );
+		assertTrue( f3.getClassName() == this.getClass().getName() );
+		assertTrue( f41.getClassName() == this.getClass().getName() );
+		assertTrue( f42.getClassName() == this.getClass().getName() );
+		assertTrue( f1.getMethodName() == actualLocation.getMethodName() );// aspect is enabled?
+		assertTrue( f2.getMethodName() == actualLocation.getMethodName() );
+		assertTrue( f3.getMethodName() == actualLocation.getMethodName() );
+		assertTrue( f41.getMethodName() == actualLocation.getMethodName() );
+		assertTrue( f42.getMethodName() == actualLocation.getMethodName() );
+		assertTrue( actualLocation.getLineNumber() + 3 == f1.getLineNumber() );
+		assertTrue( f1.getLineNumber() + 1 == f2.getLineNumber() );
+		assertTrue( f1.getLineNumber() + 2 == f3.getLineNumber() );
+		assertTrue( f1.getLineNumber() + 3 == f41.getLineNumber() );
+		assertTrue( f1.getLineNumber() + 4 == f42.getLineNumber() );
+		assertNull( f43 );
+		
+		assertTrue( g1.getClassName() == this.getClass().getName() );
+		assertNull( g2 );
+		assertTrue( g3.getClassName() == this.getClass().getName() );
+		assertNull( g41 );
+		assertNull( g42 );
+		assertTrue( g43.getClassName() == this.getClass().getName() );
+		assertTrue( g1.getMethodName() == actualLocation.getMethodName() );
+		assertTrue( g3.getMethodName() == actualLocation.getMethodName() );
+		assertTrue( g43.getMethodName() == actualLocation.getMethodName() );
+		assertTrue( f42.getLineNumber() + 2 == g1.getLineNumber() );
+		assertTrue( g1.getLineNumber() + 2 == g3.getLineNumber() );
+		assertTrue( g3.getLineNumber() + 3 == g43.getLineNumber() );
+		// for ( int i = 0; i < stea.length; i++ )
+		// {
+		// System.out.println( i + " " + stea[i] );
+		// }
+		// this.ho();
+		
+		// System.out.println( curSTE );
 		// StackTraceElement st = this.tc();
-		assertTrue( this.tc().getMethodName() == RunTime.getTheCaller_OutsideOfThisClass().getMethodName() );
-		assertTrue( this.tc().getMethodName() == "invoke0" );
+		
+		// System.out.println( f.getCaller() );
+		StackTraceElement ste = RunTime.getTheCaller_OutsideOfThisClass();
+		assertNull( ste );
+		assertNull( this.tc() );
+		// String callerName = ste.getMethodName();
+		// System.out.println( callerName );
+		// assertTrue( this.tc().getMethodName() == callerName );
+		// assertTrue( callerName == "invoke" );
 		// System.out.println();// st.getMethodName() );
 		// StackTraceElement[] sta = Thread.currentThread().getStackTrace();
 		// for ( StackTraceElement element : sta )

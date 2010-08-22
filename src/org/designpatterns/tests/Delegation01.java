@@ -25,7 +25,7 @@ package org.designpatterns.tests;
 
 
 
-import org.javapart.logger.Log;
+import org.dml.tracking.Log;
 
 
 

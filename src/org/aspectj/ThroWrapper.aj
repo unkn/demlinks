@@ -24,7 +24,7 @@ package org.aspectj;
 
 import org.dml.tools.RunTime;
 import org.dml.tools.RuntimeWrappedThrowException;
-import org.javapart.logger.Log;
+import org.dml.tracking.Log;
 
 
 /**
@@ -32,47 +32,31 @@ import org.javapart.logger.Log;
  *
  */
 public aspect ThroWrapper {
+	static {
+		RunTime.throWrapperAspectEnabled=true;//used to calculate getLine when this aspect is on ie. +2 to location
+		RunTime.throWrapperAspectEnabledJump=+2; 
+	}
+	
     pointcut anyCall(): call(* *.*(..))//any calls to any methods in any package...
     					&& !this(ThroWrapper)//except calls from this aspect
     					&& !call(* RunTime.*(..))//except methods in RunTime.class
     					//disabling the following you must +4 to getLine ie. 6+2, if enabled 6+2-4
-    					&& !call(* Log.*(..));//except methods in Log.class due to possible recursion
+    					&& !call(* Log.*(..))//except methods in Log.class due to possible recursion
+    					//if you comment the following then add a maybe +2 to location
+    					&& !call(public StackTraceElement[] Thread.getStackTrace());
+    
 
     Object around() : anyCall() {
     	//System.out.println("around: "+thisJoinPoint.getSignature());
     	try{
     		return proceed();
     	}catch(Throwable t) {
-//    		if (t.getClass() ==  RuntimeWrappedThrowException.class) {
-//    			System.err.println("EXCEPTED: "+t);
-//    			throw new RuntimeWrappedThrowException(t);
-////    			try{
-////    				t.printStackTrace();
-////    				RunTime.bug("this shouldn't happen");
-////    			}finally{
-////        			System.err.println("       "+ Log.getThisLineLocationWithinAspect( -4));
-////    			}
-//    		}else {
-//    		StackTraceElement[] stea=Thread.currentThread().getStackTrace();
-//			for ( int j = 0; j < stea.length; j++ )
-//			{
-//				System.out.println(stea[j]);
-//			}
-    			//System.err.println("WRAPPED: "+t);
     			RunTime.throWrapped( t );//this is caught again
-//    		}
-    			//throw new RuntimeWrappedThrowException(t);
-//    			Delegation01.foo( 4, 5, 6 );
-//    			try{
-//    			}catch(Throwable t2) {
-    			//System.err.println("above not thrown");
-//    			}
-    			//throw new RuntimeException("xx");
     	}//catch
     	return null;
     }//around
     
-    //NOTE: after throwing won't work unless every method traced has checked exceptions declared, else they won't be caught
+    //NOTE: after() throwing() won't work unless every method traced has checked exceptions declared, else they won't be caught
 //    after() throwing (Exception e): publicCall() {
 //	  System.out.println("Threw an exception: " + e);
 //    }

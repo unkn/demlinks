@@ -28,7 +28,7 @@ package org.dml.database.bdb.level2;
 import org.dml.database.bdb.level1.Level1_Storage_BerkeleyDB;
 import org.dml.tools.Initer;
 import org.dml.tools.RunTime;
-import org.javapart.logger.Log;
+import org.dml.tracking.Log;
 import org.references.method.MethodParams;
 
 import com.sleepycat.bind.EntryBinding;

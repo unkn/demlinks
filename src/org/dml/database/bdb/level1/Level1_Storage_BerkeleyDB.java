@@ -30,7 +30,7 @@ import java.io.File;
 import org.dml.tools.Initer;
 import org.dml.tools.RunTime;
 import org.dml.tracking.Factory;
-import org.javapart.logger.Log;
+import org.dml.tracking.Log;
 import org.references.ListOfUniqueNonNullObjects;
 import org.references.Position;
 import org.references.Reference;

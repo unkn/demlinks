@@ -32,7 +32,7 @@ import org.dml.level025.SetOfTerminalSymbols;
 import org.dml.tools.RunTime;
 import org.dml.tools.TwoKeyHashMap;
 import org.dml.tracking.Factory;
-import org.javapart.logger.Log;
+import org.dml.tracking.Log;
 import org.references.Position;
 
 import com.sleepycat.je.DatabaseException;

@@ -25,25 +25,21 @@ package org.dml.tools;
 
 
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-
 import org.dml.error.AssumptionError;
 import org.dml.error.BadCallError;
 import org.dml.error.BugError;
-import org.javapart.logger.Log;
+import org.dml.tracking.Log;
 
 
 
 /**
- * these mustn't be disabled, because they're sometimes calling methods as
- * parameters<br>
- * uhm... nvm, it seems the methods in params will always get executed
  */
 public class RunTime
 {
 	
-	private static Throwable	allExceptionsChained	= null;
+	public static int			throWrapperAspectEnabledJump	= +2;
+	public static boolean		throWrapperAspectEnabled		= false;
+	private static Throwable	allExceptionsChained			= null;
 	
 	
 	/**
@@ -257,24 +253,25 @@ public class RunTime
 	}
 	
 
-	/**
-	 * for jUnit; really don't use these; if you catch an exception you're not certain that it was the last one, unless
-	 * you're catching Throwable instance<br>
-	 * this will clear the last thrown exception which may be a wrap, so maybe you want to use the other method:
-	 * 
-	 * @see #clearLastThrown_andAllItsWraps()
-	 */
-	@Deprecated
-	public static
-			void
-			clearLastThrown()
-	{
-		
-		if ( null != allExceptionsChained )
-		{
-			allExceptionsChained = allExceptionsChained.getCause();
-		}
-	}
+	// /**
+	// * for jUnit; really don't use these; if you catch an exception you're not certain that it was the last one,
+	// unless
+	// * you're catching Throwable instance<br>
+	// * this will clear the last thrown exception which may be a wrap, so maybe you want to use the other method:
+	// *
+	// * @see #clearLastThrown_andAllItsWraps()
+	// */
+	// @Deprecated
+	// public static
+	// void
+	// clearLastThrown()
+	// {
+	//
+	// if ( null != allExceptionsChained )
+	// {
+	// allExceptionsChained = allExceptionsChained.getCause();
+	// }
+	// }
 	
 
 	/**
@@ -589,13 +586,21 @@ public class RunTime
 		
 		RunTime.assumedNotNull( modifier );
 		// do not reorganize the following code into more methods, else the below number will have to change
-		StackTraceElement[] stea = Thread.currentThread().getStackTrace();
+		StackTraceElement[] stea = getCurrentStackTraceElementsArray();
 		RunTime.assumedNotNull( (Object)stea );
-		final int whereIsCaller = 2 + modifier;
+		final int whereIsCaller = 2 + 1 + modifier;
 		RunTime.assumedTrue( stea.length >= 1 + whereIsCaller );
 		StackTraceElement ste = stea[whereIsCaller];
 		RunTime.assumedNotNull( ste );
 		return ste;// never null
+	}
+	
+
+	public static
+			StackTraceElement[]
+			getCurrentStackTraceElementsArray()
+	{
+		return Thread.currentThread().getStackTrace();
 	}
 	
 
@@ -610,6 +615,9 @@ public class RunTime
 	}
 	
 
+	/**
+	 * @return StackTraceElement but can be null
+	 */
 	public static
 			StackTraceElement
 			getTheCaller_OutsideOfThisClass()
@@ -626,7 +634,7 @@ public class RunTime
 	 * this should only be called from a RunTime method that's only 1 level deep<br>
 	 * 
 	 * @param whichClassName
-	 * @return
+	 * @return can be null
 	 */
 	private static
 			StackTraceElement
@@ -648,28 +656,24 @@ public class RunTime
 		// RunTime.assumedNotNull( ourCallersName );
 		// System.out.println( whichClassName + "!" + ourCallersName );
 		
-		StackTraceElement[] stea = Thread.currentThread().getStackTrace();
+		StackTraceElement[] stea = getCurrentStackTraceElementsArray();
 		
 
-		int i = +2 + 1;
+		int i = +2 + 1 + 1;
 		boolean findThisClassFirst = true;
 		while ( i < stea.length )
 		{
 			StackTraceElement ste = stea[i];
-			i++;
-			// System.err.println( ste );
+			// System.err.print( i + "::: " + ste );
+			if ( "sun.reflect.NativeMethodAccessorImpl.invoke0".equals( ste.getClassName() + "." + ste.getMethodName() ) )
+			{
+				break;// will return null
+			}
 			if ( findThisClassFirst )
 			{
 				if ( whichClassName.equals( ste.getClassName() ) )
 				{
-					// System.out.println( ste.getMethodName() );
-					// we found this class aka Factory class
-					// if ( ourCallersName.equals( ste.getMethodName() ) )
-					// {
-					// we found exactly this method we're in aka init()
-					// System.out.println( ste );
 					findThisClassFirst = false;
-					// }
 				}
 			}
 			else
@@ -677,14 +681,27 @@ public class RunTime
 				if ( !whichClassName.equals( ste.getClassName() ) )
 				{
 					// we found the one that is outside Factory class and that called us
-					// System.out.println( ste );
-					return ste;
+					if ( RunTime.throWrapperAspectEnabled )
+					{
+						if ( i + RunTime.throWrapperAspectEnabledJump >= stea.length )
+						{
+							Log.bug( "this should not happen" );
+						}
+						return stea[i + RunTime.throWrapperAspectEnabledJump];
+					}
+					else
+					{
+						return ste;
+					}
+					// System.err.println( " <------- " );
+					// return ste;
 					// break;
 				}
 			}
-			
+			// System.err.println();
+			i++;
 		}
-		return null;
+		return null;// FIXME: simplify
 	}
 	
 

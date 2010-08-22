@@ -21,7 +21,7 @@
 
 
 
-package org.javapart.logger;
+package org.dml.tracking;
 
 
 public enum LogFlags

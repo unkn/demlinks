@@ -31,7 +31,6 @@ import static org.junit.Assert.*;
 import org.dml.tools.Initer;
 import org.dml.tools.RunTime;
 import org.dml.tracking.FactoryTest.D2;
-import org.javapart.logger.Log;
 import org.junit.Test;
 import org.references.Reference;
 import org.references.method.MethodParams;

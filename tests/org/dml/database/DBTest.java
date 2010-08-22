@@ -29,7 +29,7 @@ import org.dml.JUnits.Consts;
 import org.dml.database.bdb.level1.Level1_Storage_BerkeleyDB;
 import org.dml.tools.RunTime;
 import org.dml.tracking.Factory;
-import org.javapart.logger.Log;
+import org.dml.tracking.Log;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
