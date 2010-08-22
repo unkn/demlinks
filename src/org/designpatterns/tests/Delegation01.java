@@ -28,13 +28,18 @@ package org.designpatterns.tests;
  * 
  *
  */
-public class Delegation01 {
+public class Delegation01
+{
 	
 	private final Window	win;
 	
-	private class Window extends Geo {
+	private class Window
+			extends
+			Geo
+	{
 		
 		private Geo	shape;
+		
 		
 		/*
 		 * (non-Javadoc)
@@ -42,29 +47,44 @@ public class Delegation01 {
 		 * @see org.designpatterns.tests.Delegation01.Geo#getArea()
 		 */
 		@Override
-		public long getArea() {
-
+		public
+				long
+				getArea()
+		{
+			
 			return shape.getArea();
 		}
 		
+
 		/**
 		 * @param r
 		 */
-		public void setShape( Geo g ) {
-
+		public
+				void
+				setShape(
+							Geo g )
+		{
+			
 			assert g != null;
 			shape = g;
 		}
 	}
 	
-	private abstract class Geo {
+	private abstract class Geo
+	{
 		
-		public abstract long getArea();
+		public abstract
+				long
+				getArea();
 	}
 	
-	private class Rect extends Geo {
+	private class Rect
+			extends
+			Geo
+	{
 		
 		private final long	x, y;
+		
 		
 		/*
 		 * (non-Javadoc)
@@ -72,22 +92,33 @@ public class Delegation01 {
 		 * @see org.designpatterns.tests.Delegation01.Geo#getArea()
 		 */
 		@Override
-		public long getArea() {
-
+		public
+				long
+				getArea()
+		{
+			
 			return x * y;
 		}
 		
-		public Rect( long _x, long _y ) {
 
+		public Rect(
+				long _x,
+				long _y )
+		{
+			
 			x = _x;
 			y = _y;
 		}
 		
 	}
 	
-	private class Circle extends Geo {
+	private class Circle
+			extends
+			Geo
+	{
 		
 		private final long	r;
+		
 		
 		/*
 		 * (non-Javadoc)
@@ -95,38 +126,78 @@ public class Delegation01 {
 		 * @see org.designpatterns.tests.Delegation01.Geo#getArea()
 		 */
 		@Override
-		public long getArea() {
-
+		public
+				long
+				getArea()
+		{
+			
 			// TODO Auto-generated method stub
 			return r;
 		}
 		
-		public Circle( long ray ) {
 
+		public Circle(
+				long ray )
+		{
+			
 			r = ray;
 		}
 	}
 	
 	
-
+	
 	/**
 	 * 
 	 */
-	public Delegation01() {
-
+	public Delegation01()
+	{
+		
 		// TODO Auto-generated constructor stub
 		win = new Window();
-		Rect r = new Rect( 1, 55 );
-		Circle c = new Circle( 99 );
+		Rect r = new Rect(
+							1,
+							55 );
+		Circle c = new Circle(
+								99 );
 		win.setShape( r );
 		System.out.println( win.getArea() );
 		win.setShape( c );
 		System.out.println( win.getArea() );
 	}
 	
-	public static void main( String[] args ) {
 
-		Delegation01 d = new Delegation01();
+	public static
+			void
+			main(
+					String[] args )
+					throws Exception
+	{
 		
+		Delegation01 d = new Delegation01();
+		// try
+		// {
+		foo(
+				1,
+				2,
+				3 );
+		// }
+		// finally
+		// {
+		// throw new RuntimeException(
+		// "finally" );
+		// }
+		// throw new RuntimeException();
+	}
+	
+
+	public static
+			void
+			foo(
+					int i,
+					int j,
+					int k )
+	{
+		throw new RuntimeException(
+									"bleh " + i + " " + j + " " + k );
 	}
 }

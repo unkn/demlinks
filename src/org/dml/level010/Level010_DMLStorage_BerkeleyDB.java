@@ -93,15 +93,15 @@ public class Level010_DMLStorage_BerkeleyDB
 	{
 		
 		RunTime.assumedNotNull( identifiedByThisSymbol );
-		try
-		{
-			return bdb.getDBMap_JavaIDs_To_Symbols().getJavaID(
-																identifiedByThisSymbol );
-		}
-		catch ( Throwable t )
-		{
-			RunTime.throWrapped( t );
-		}
+		// try
+		// {
+		return bdb.getDBMap_JavaIDs_To_Symbols().getJavaID(
+															identifiedByThisSymbol );
+		// }
+		// catch ( Throwable t )
+		// {
+		// RunTime.throWrapped( t );
+		// }
 	}
 	
 
@@ -113,15 +113,15 @@ public class Level010_DMLStorage_BerkeleyDB
 	{
 		
 		RunTime.assumedNotNull( identifiedByThisJavaID );
-		try
-		{
-			return bdb.getDBMap_JavaIDs_To_Symbols().getSymbol(
-																identifiedByThisJavaID );
-		}
-		catch ( Throwable t )
-		{
-			RunTime.throWrapped( t );
-		}
+		// try
+		// {
+		return bdb.getDBMap_JavaIDs_To_Symbols().getSymbol(
+															identifiedByThisJavaID );
+		// }
+		// catch ( Throwable t )
+		// {
+		// RunTime.throWrapped( t );
+		// }
 	}
 	
 
@@ -133,15 +133,15 @@ public class Level010_DMLStorage_BerkeleyDB
 	{
 		
 		RunTime.assumedNotNull( fromJavaID );
-		try
-		{
-			return bdb.getDBMap_JavaIDs_To_Symbols().createSymbol(
-																	fromJavaID );
-		}
-		catch ( Throwable t )
-		{
-			RunTime.throWrapped( t );
-		}
+		// try
+		// {
+		return bdb.getDBMap_JavaIDs_To_Symbols().createSymbol(
+																fromJavaID );
+		// }
+		// catch ( Throwable t )
+		// {
+		// RunTime.throWrapped( t );
+		// }
 	}
 	
 
@@ -153,15 +153,15 @@ public class Level010_DMLStorage_BerkeleyDB
 	{
 		
 		RunTime.assumedNotNull( theJavaID );
-		try
-		{
-			return bdb.getDBMap_JavaIDs_To_Symbols().ensureSymbol(
-																	theJavaID );
-		}
-		catch ( Throwable t )
-		{
-			RunTime.throWrapped( t );
-		}
+		// try
+		// {
+		return bdb.getDBMap_JavaIDs_To_Symbols().ensureSymbol(
+																theJavaID );
+		// }
+		// catch ( Throwable t )
+		// {
+		// RunTime.throWrapped( t );
+		// }
 	}
 	
 
@@ -176,14 +176,14 @@ public class Level010_DMLStorage_BerkeleyDB
 			newUniqueSymbol()
 	{
 		
-		try
-		{
-			return bdb.getUniqueSymbolsGenerator().getNewUniqueSymbol();
-		}
-		catch ( Throwable t )
-		{
-			RunTime.throWrapped( t );
-		}
+		// try
+		// {
+		return bdb.getUniqueSymbolsGenerator().getNewUniqueSymbol();
+		// }
+		// catch ( Throwable t )
+		// {
+		// RunTime.throWrapped( t );
+		// }
 	}
 	
 
@@ -273,6 +273,7 @@ public class Level010_DMLStorage_BerkeleyDB
 		catch ( Throwable t )
 		{
 			RunTime.throWrapped( t );
+			return false;
 		}
 	}
 	

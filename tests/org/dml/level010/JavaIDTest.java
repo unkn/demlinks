@@ -28,7 +28,6 @@ package org.dml.level010;
 import static org.junit.Assert.assertTrue;
 
 import org.dml.error.AssumptionError;
-import org.dml.storagewrapper.StorageException;
 import org.dml.tools.RunTime;
 import org.junit.After;
 import org.junit.Before;
@@ -50,7 +49,6 @@ public class JavaIDTest
 	public
 			void
 			init()
-					throws StorageException
 	{
 		
 		// DMLEnvironment.init();
@@ -133,7 +131,6 @@ public class JavaIDTest
 	public
 			void
 			nullTest()
-					throws StorageException
 	{
 		
 		boolean aeGot = false;

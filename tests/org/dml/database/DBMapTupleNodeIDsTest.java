@@ -37,7 +37,6 @@ import org.dml.database.bdb.level2.DBMapSymbolsTuple;
 import org.dml.error.BadCallError;
 import org.dml.level010.JavaID;
 import org.dml.level010.Symbol;
-import org.dml.storagewrapper.StorageException;
 import org.dml.tools.RunTime;
 import org.dml.tracking.Factory;
 import org.junit.After;
@@ -118,8 +117,7 @@ public class DBMapTupleNodeIDsTest
 	public
 			void
 			test1()
-					throws DatabaseException,
-					StorageException
+					throws DatabaseException
 	{
 		
 		String strA = "A";

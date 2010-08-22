@@ -29,7 +29,6 @@ import org.dml.database.bdb.level2.BDBVectorIterator;
 import org.dml.level010.Symbol;
 import org.dml.level025.DomainSet;
 import org.dml.level025.SetOfTerminalSymbols;
-import org.dml.storagewrapper.StorageException;
 import org.dml.tools.RunTime;
 import org.dml.tools.TwoKeyHashMap;
 import org.dml.tracking.Factory;

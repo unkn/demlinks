@@ -31,7 +31,6 @@ import static org.junit.Assert.assertTrue;
 
 import org.dml.JUnits.Consts;
 import org.dml.database.bdb.level1.Bridge_SymbolAndBDB;
-import org.dml.storagewrapper.StorageException;
 import org.dml.tracking.Factory;
 import org.junit.After;
 import org.junit.Before;
@@ -57,7 +56,6 @@ public class Level010_DMLEnvironmentTest
 	public
 			void
 			setUp()
-					throws StorageException
 	{
 		
 		params = MethodParams.getNew();
@@ -95,7 +93,6 @@ public class Level010_DMLEnvironmentTest
 	public
 			void
 			test1()
-					throws StorageException
 	{
 		
 		try
@@ -141,7 +138,6 @@ public class Level010_DMLEnvironmentTest
 	public
 			void
 			testMultiInits()
-					throws StorageException
 	{
 		
 		try

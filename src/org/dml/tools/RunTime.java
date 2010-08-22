@@ -145,10 +145,10 @@ public class RunTime
 				// eclipse, the only way to see them is if you look at console and that could be messy because you won't
 				// know where in the console and which one of the following warnings (if in a junit with many tests
 				// failed) is the right one
-				// Log.mid1( "we got passed a chained exception(/throwable) so we discard the previous chain; "
-				// + "so this should work well apparently unless we didn't chain the previous exception "
-				// + "in this new exception that already had a chain; this is the default behavior to discard "
-				// + "prev chain" );
+				Log.mid1( "we got passed a chained exception(/throwable) so we discard the previous chain; "
+						+ "so this should work well apparently unless we didn't chain the previous exception "
+						+ "in this new exception that already had a chain; this is the default behavior to discard "
+						+ "prev chain" );
 				// Log.thro1( newOne.getLocalizedMessage() );
 				// newOne.printStackTrace();
 			}

@@ -103,6 +103,7 @@ public class Level020_DMLStorage_BerkeleyDB
 		catch ( Throwable t )
 		{
 			RunTime.throWrapped( t );
+			return false;
 		}
 	}
 	
@@ -123,6 +124,7 @@ public class Level020_DMLStorage_BerkeleyDB
 		catch ( Throwable t )
 		{
 			RunTime.throWrapped( t );
+			return null;
 		}
 	}
 	
@@ -150,6 +152,7 @@ public class Level020_DMLStorage_BerkeleyDB
 		catch ( Throwable t )
 		{
 			RunTime.throWrapped( t );
+			return null;
 		}
 	}
 	
@@ -170,6 +173,7 @@ public class Level020_DMLStorage_BerkeleyDB
 		catch ( Throwable t )
 		{
 			RunTime.throWrapped( t );
+			return -1;
 		}
 	}
 	
@@ -190,6 +194,7 @@ public class Level020_DMLStorage_BerkeleyDB
 		catch ( Throwable t )
 		{
 			RunTime.throWrapped( t );
+			return -1;
 		}
 	}
 	
@@ -219,6 +224,7 @@ public class Level020_DMLStorage_BerkeleyDB
 		catch ( Throwable t )
 		{
 			RunTime.throWrapped( t );
+			return null;
 		}
 	}
 	
@@ -243,6 +249,7 @@ public class Level020_DMLStorage_BerkeleyDB
 		catch ( Throwable t )
 		{
 			RunTime.throWrapped( t );
+			return false;
 		}
 	}
 	

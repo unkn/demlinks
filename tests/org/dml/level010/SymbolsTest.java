@@ -26,7 +26,6 @@ package org.dml.level010;
 
 
 import org.dml.JUnits.Consts;
-import org.dml.storagewrapper.StorageException;
 import org.dml.tracking.Factory;
 import org.junit.After;
 import org.junit.Before;
@@ -51,7 +50,6 @@ public class SymbolsTest
 	public
 			void
 			setUp()
-					throws StorageException
 	{
 		
 		MethodParams params = MethodParams.getNew();
@@ -89,7 +87,6 @@ public class SymbolsTest
 	public
 			void
 			test1()
-					throws StorageException
 	{
 		
 		n1 = dml.ensureSymbol( JavaID.ensureJavaIDFor( "A" ) );
