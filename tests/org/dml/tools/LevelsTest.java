@@ -194,8 +194,8 @@ public class LevelsTest
 			{
 				// if ( rte.getCause().getClass() == BadCallError.class ) {
 				threw = true;
-				RunTime.clearLastThrown();
-				RunTime.clearLastThrown();
+				RunTime.clearLastThrown_andAllItsWraps();
+				// RunTime.clearLastThrown();
 			}
 		}
 		assertTrue( threw );
@@ -218,7 +218,7 @@ public class LevelsTest
 																BadCallError.class ) )
 			{
 				threw = true;
-				RunTime.clearLastThrown();
+				RunTime.clearLastThrown_andAllItsWraps();
 			}
 		}
 		assertTrue( threw );
@@ -243,7 +243,7 @@ public class LevelsTest
 																AssumptionError.class ) )
 			{
 				threw = true;
-				RunTime.clearLastThrown();
+				RunTime.clearLastThrown_andAllItsWraps();
 			}
 		}
 		assertTrue( threw );
@@ -297,7 +297,7 @@ public class LevelsTest
 																AssumptionError.class ) )
 			{
 				threw = true;
-				RunTime.clearLastThrown();
+				RunTime.clearLastThrown_andAllItsWraps();
 			}
 		}
 		assertTrue( threw );
@@ -332,7 +332,7 @@ public class LevelsTest
 																AssumptionError.class ) )
 			{
 				threw = true;
-				RunTime.clearLastThrown();
+				RunTime.clearLastThrown_andAllItsWraps();
 			}
 		}
 		assertTrue( threw );
@@ -355,7 +355,7 @@ public class LevelsTest
 																BadCallError.class ) )
 			{
 				threw = true;
-				RunTime.clearLastThrown();
+				RunTime.clearLastThrown_andAllItsWraps();
 			}
 		}
 		assertTrue( threw );
@@ -378,7 +378,7 @@ public class LevelsTest
 																BadCallError.class ) )
 			{
 				threw = true;
-				RunTime.clearLastThrown();
+				RunTime.clearLastThrown_andAllItsWraps();
 			}
 		}
 		assertTrue( threw );

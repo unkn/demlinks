@@ -531,7 +531,7 @@ public class RunTimeTest
 		catch ( Exception e )
 		{
 			// caught, handled , wtw
-			RunTime.clearLastThrown();// this clears only the previously thrown one aka last one thrown
+			RunTime.clearLastThrown_andAllItsWraps();// this clears only the previously thrown one aka last one thrown
 		}
 		// somewhere later, this throw should not be chained with above one
 		RunTime.thro( new IOException(
@@ -561,7 +561,8 @@ public class RunTimeTest
 		}
 		catch ( Exception e )
 		{// we catch only first one
-			RunTime.clearLastThrown();// this clears the second one, but we wanted to clear the caught one heh
+			RunTime.clearLastThrown_andAllItsWraps();// this clears the second one, but we wanted to clear the caught
+														// one heh
 		}
 		// somewhere later, this throw should not be chained with above one
 		RunTime.thro( new IOException(
@@ -591,7 +592,7 @@ public class RunTimeTest
 		}
 		catch ( Throwable t )
 		{// we catch only second one which is last heh
-			RunTime.clearLastThrown();// this clears the second one, but that's the one we caught anyway
+			RunTime.clearLastThrown_andAllItsWraps();// this clears the second one, but that's the one we caught anyway
 		}
 		// somewhere later, this throw should not be chained with above one
 		RunTime.thro( new IOException(

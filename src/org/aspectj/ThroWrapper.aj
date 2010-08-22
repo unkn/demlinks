@@ -43,15 +43,16 @@ public aspect ThroWrapper {
     	try{
     		return proceed();
     	}catch(Throwable t) {
-    		if (t.getClass() ==  RuntimeWrappedThrowException.class) {
-    			System.err.println("EXCEPTED: "+t);
-    			try{
-    				t.printStackTrace();
-    				RunTime.bug("this shouldn't happen");
-    			}finally{
-        			System.err.println("       "+ Log.getThisLineLocationWithinAspect( -4));
-    			}
-    		}
+//    		if (t.getClass() ==  RuntimeWrappedThrowException.class) {
+//    			System.err.println("EXCEPTED: "+t);
+//    			throw new RuntimeWrappedThrowException(t);
+////    			try{
+////    				t.printStackTrace();
+////    				RunTime.bug("this shouldn't happen");
+////    			}finally{
+////        			System.err.println("       "+ Log.getThisLineLocationWithinAspect( -4));
+////    			}
+//    		}else {
 //    		StackTraceElement[] stea=Thread.currentThread().getStackTrace();
 //			for ( int j = 0; j < stea.length; j++ )
 //			{
@@ -59,6 +60,7 @@ public aspect ThroWrapper {
 //			}
     			//System.err.println("WRAPPED: "+t);
     			RunTime.throWrapped( t );//this is caught again
+//    		}
     			//throw new RuntimeWrappedThrowException(t);
 //    			Delegation01.foo( 4, 5, 6 );
 //    			try{
@@ -70,6 +72,7 @@ public aspect ThroWrapper {
     	return null;
     }//around
     
+    //NOTE: after throwing won't work unless every method traced has checked exceptions declared, else they won't be caught
 //    after() throwing (Exception e): publicCall() {
 //	  System.out.println("Threw an exception: " + e);
 //    }

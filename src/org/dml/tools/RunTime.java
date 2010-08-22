@@ -264,6 +264,7 @@ public class RunTime
 	 * 
 	 * @see #clearLastThrown_andAllItsWraps()
 	 */
+	@Deprecated
 	public static
 			void
 			clearLastThrown()
