@@ -25,7 +25,6 @@ package org.dml.level010;
 
 
 
-import org.dml.storagewrapper.StorageException;
 import org.dml.tools.MainLevel0;
 import org.dml.tools.RunTime;
 import org.dml.tools.VarLevel;
@@ -75,7 +74,7 @@ public class Level010_DMLEnvironment
 	protected
 			void
 			internal_allocDefaultStorage(
-				MethodParams params )
+											MethodParams params )
 	{
 		
 		// MethodParams<Object> storageParams = new MethodParams<Object>();
@@ -87,11 +86,11 @@ public class Level010_DMLEnvironment
 		// Level010_DMLStorage_BerkeleyDB stor = new Level010_DMLStorage_BerkeleyDB();
 		// stor.init( params );
 		Level010_DMLStorage_BerkeleyDB stor = Factory.getNewInstanceAndInit(
-				Level010_DMLStorage_BerkeleyDB.class,
-				params );
+																				Level010_DMLStorage_BerkeleyDB.class,
+																				params );
 		params.set(
-				PossibleParams.varLevelAll,
-				stor );
+					PossibleParams.varLevelAll,
+					stor );
 		// but reInit() or restart() won't see this set varlevel, although it will exec start() again and it will be set
 		// again
 	}
@@ -106,7 +105,7 @@ public class Level010_DMLEnvironment
 	protected
 			void
 			start(
-				MethodParams params )
+					MethodParams params )
 	{
 		
 		if ( ( null == params ) || ( null == params.get( PossibleParams.varLevelAll ) ) )
@@ -128,7 +127,7 @@ public class Level010_DMLEnvironment
 	protected
 			void
 			done(
-				MethodParams params )
+					MethodParams params )
 	{
 		
 		if ( usedDefaultStorage )
@@ -150,8 +149,7 @@ public class Level010_DMLEnvironment
 	public
 			JavaID
 			getJavaID(
-				Symbol symbol )
-					throws StorageException
+						Symbol symbol )
 	{
 		
 		RunTime.assumedNotNull( symbol );
@@ -163,8 +161,7 @@ public class Level010_DMLEnvironment
 	public
 			Symbol
 			ensureSymbol(
-				JavaID theJavaID )
-					throws StorageException
+							JavaID theJavaID )
 	{
 		
 		RunTime.assumedNotNull( theJavaID );
@@ -176,8 +173,7 @@ public class Level010_DMLEnvironment
 	public
 			Symbol
 			getSymbol(
-				JavaID identifiedByThisJavaID )
-					throws StorageException
+						JavaID identifiedByThisJavaID )
 	{
 		
 		return storage.getSymbol( identifiedByThisJavaID );
@@ -188,8 +184,7 @@ public class Level010_DMLEnvironment
 	public
 			Symbol
 			createSymbol(
-				JavaID fromJavaID )
-					throws StorageException
+							JavaID fromJavaID )
 	{
 		
 		return storage.createSymbol( fromJavaID );
@@ -200,7 +195,6 @@ public class Level010_DMLEnvironment
 	public
 			Symbol
 			newUniqueSymbol()
-					throws StorageException
 	{
 		
 		return storage.newUniqueSymbol();
@@ -211,13 +205,13 @@ public class Level010_DMLEnvironment
 	public
 			void
 			newLink(
-				Symbol noID,
-				JavaID jid )
+						Symbol noID,
+						JavaID jid )
 	{
 		
 		storage.newLink(
-				noID,
-				jid );
+							noID,
+							jid );
 	}
 	
 
@@ -225,12 +219,12 @@ public class Level010_DMLEnvironment
 	public
 			boolean
 			ensureLink(
-				Symbol symbol,
-				JavaID jid )
+						Symbol symbol,
+						JavaID jid )
 	{
 		
 		return storage.ensureLink(
-				symbol,
-				jid );
+									symbol,
+									jid );
 	}
 }

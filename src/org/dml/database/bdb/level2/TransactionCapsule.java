@@ -39,62 +39,106 @@ import com.sleepycat.je.TransactionConfig;
  * 
  *
  */
-public class TransactionCapsule {
+public class TransactionCapsule
+{
 	
-	private Transaction			tx;
-	private TransactionConfig	txConf;
+	private Transaction			tx		= null;
+	private TransactionConfig	txConf	= null;
 	
-	private TransactionCapsule() {
-
+	
+	private TransactionCapsule()
+	{
+		//
 	}
 	
+
 	/**
+	 * @param bdb
 	 * @return never null
 	 * @throws DatabaseException
 	 */
-	public final static TransactionCapsule getNewTransaction( Level1_Storage_BerkeleyDB bdb ) throws DatabaseException {
-
+	public final static
+			TransactionCapsule
+			getNewTransaction(
+								Level1_Storage_BerkeleyDB bdb )
+					throws DatabaseException
+	{
+		
+		RunTime.assumedNotNull( bdb );
 		TransactionCapsule txn = new TransactionCapsule();
-		
-		txn.txConf = new TransactionConfig();
-		// txn.txConf.setNoSync( false );
-		txn.txConf.setNoWait( true ).setDurability( Durability.COMMIT_NO_SYNC );
-		// txn.txConf.setReadCommitted( true );
-		txn.txConf.setReadUncommitted( false );
-		txn.txConf.setSerializableIsolation( true );
-		// txn.txConf.setSync( true );
-		// txn.txConf.setWriteNoSync( false );
-		RunTime.assumedFalse( txn.txConf.getReadUncommitted() );
-		txn.tx = bdb.getEnvironment().beginTransaction( null, txn.txConf );
-		
+		try
+		{
+			txn.txConf = new TransactionConfig();
+			// txn.txConf.setNoSync( false );
+			txn.txConf.setNoWait(
+									true ).setDurability(
+															Durability.COMMIT_NO_SYNC );
+			// txn.txConf.setReadCommitted( true );
+			txn.txConf.setReadUncommitted( false );
+			txn.txConf.setSerializableIsolation( true );
+			// txn.txConf.setSync( true );
+			// txn.txConf.setWriteNoSync( false );
+			RunTime.assumedFalse( txn.txConf.getReadUncommitted() );
+			txn.tx = bdb.getEnvironment().beginTransaction(
+															null,
+															txn.txConf );
+		}
+		catch ( Throwable t )
+		{
+			RunTime.throWrapped( t );
+		}
 		return txn;
 	}
 	
+
+	/**
+	 * @return null
+	 */
+	public
+			TransactionCapsule
+			abort()
+	{
+		try
+		{
+			tx.abort();
+		}
+		catch ( Throwable t )
+		{
+			RunTime.throWrapped( t );
+		}
+		return null;
+	}
+	
+
 	/**
 	 * @return null
 	 * @throws DatabaseException
 	 */
-	public TransactionCapsule abort() throws DatabaseException {
-
-		tx.abort();
+	public
+			TransactionCapsule
+			commit()
+					throws DatabaseException
+	{
+		try
+		{
+			tx.commit();
+		}
+		catch ( Throwable t )
+		{
+			RunTime.throWrapped( t );
+		}
 		return null;
 	}
 	
-	/**
-	 * @return null
-	 * @throws DatabaseException
-	 */
-	public TransactionCapsule commit() throws DatabaseException {
 
-		tx.commit();
-		return null;
-	}
-	
 	/**
 	 * @return
 	 */
-	public Transaction get() {
-
+	public
+			Transaction
+			get()
+	{
+		RunTime.assumedNotNull( tx );
 		return tx;
 	}
 }

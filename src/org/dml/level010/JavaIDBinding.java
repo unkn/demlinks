@@ -37,7 +37,10 @@ import com.sleepycat.bind.tuple.TupleOutput;
  * 
  *
  */
-public class JavaIDBinding extends TupleBinding<JavaID> {
+public class JavaIDBinding
+		extends
+		TupleBinding<JavaID>
+{
 	
 	/*
 	 * (non-Javadoc)
@@ -47,18 +50,31 @@ public class JavaIDBinding extends TupleBinding<JavaID> {
 	 * .tuple.TupleInput)
 	 */
 	@Override
-	public JavaID entryToObject( TupleInput input ) {
-
+	public
+			JavaID
+			entryToObject(
+							TupleInput input )
+	{
+		
 		RunTime.assumedNotNull( input );
 		// Data must be read in the same order that it was
 		// originally written.
-		String strJavaID = input.readString();
-		RunTime.assumedNotNull( strJavaID );
-		JavaID myJavaID = JavaID.ensureJavaIDFor( strJavaID );
-		RunTime.assumedNotNull( myJavaID );
-		return myJavaID;
+		try
+		{
+			String strJavaID = input.readString();
+			RunTime.assumedNotNull( strJavaID );
+			JavaID myJavaID = JavaID.ensureJavaIDFor( strJavaID );
+			RunTime.assumedNotNull( myJavaID );
+			return myJavaID;
+		}
+		catch ( Throwable t )
+		{
+			RunTime.throWrapped( t );
+		}
+		return null;// to avoid return warning
 	}
 	
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -67,14 +83,28 @@ public class JavaIDBinding extends TupleBinding<JavaID> {
 	 * com.sleepycat.bind.tuple.TupleOutput)
 	 */
 	@Override
-	public void objectToEntry( JavaID object, TupleOutput output ) {
-
-		RunTime.assumedNotNull( object, output );
-		String strJavaID = object.getObject();
-		RunTime.assumedNotNull( strJavaID );
-		// System.out.println( object );
-		// it will never be null before writing it to dbase, else bug somewhere
-		output.writeString( strJavaID );
+	public
+			void
+			objectToEntry(
+							JavaID object,
+							TupleOutput output )
+	{
+		
+		RunTime.assumedNotNull(
+								object,
+								output );
+		try
+		{
+			String strJavaID = object.getObject();
+			RunTime.assumedNotNull( strJavaID );
+			// System.out.println( object );
+			// it will never be null before writing it to dbase, else bug somewhere
+			output.writeString( strJavaID );
+		}
+		catch ( Throwable t )
+		{
+			RunTime.throWrapped( t );
+		}
 	}
 	
 }

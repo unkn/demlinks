@@ -28,7 +28,6 @@ package org.dml.database.bdb.level2;
 import org.dml.database.bdb.level1.AllTupleBindings;
 import org.dml.database.bdb.level1.Level1_Storage_BerkeleyDB;
 import org.dml.level010.Symbol;
-import org.dml.storagewrapper.StorageException;
 import org.dml.tools.RunTime;
 
 import com.sleepycat.je.DatabaseException;
@@ -54,7 +53,10 @@ import com.sleepycat.je.DatabaseException;
  * 
  * fixed... Symbols here don't need to have a JavaID associated with them<br>
  */
-public class DBMapSymbolsTuple extends OneToManyDBMap<Symbol, Symbol> {
+public class DBMapSymbolsTuple
+		extends
+		OneToManyDBMap<Symbol, Symbol>
+{
 	
 	/**
 	 * constructor
@@ -64,12 +66,21 @@ public class DBMapSymbolsTuple extends OneToManyDBMap<Symbol, Symbol> {
 	 * @param dbName1
 	 *            the name of the database that will hold the tuples
 	 */
-	public DBMapSymbolsTuple( Level1_Storage_BerkeleyDB bdb1, String dbName1 ) {
-
-		super( bdb1, dbName1, Symbol.class, AllTupleBindings.getBinding( Symbol.class ), Symbol.class,
+	public DBMapSymbolsTuple(
+			Level1_Storage_BerkeleyDB bdb1,
+			String dbName1 )
+	{
+		
+		super(
+				bdb1,
+				dbName1,
+				Symbol.class,
+				AllTupleBindings.getBinding( Symbol.class ),
+				Symbol.class,
 				AllTupleBindings.getBinding( Symbol.class ) );
 	}
 	
+
 	/**
 	 * obviously initial and terminal must already exist as Symbols associated
 	 * with
@@ -81,13 +92,24 @@ public class DBMapSymbolsTuple extends OneToManyDBMap<Symbol, Symbol> {
 	 * @throws DatabaseException
 	 */
 	@Override
-	public boolean ensureVector( Symbol initialNode, Symbol terminalNode ) throws DatabaseException {
-
-		RunTime.assumedNotNull( initialNode, terminalNode );
+	public
+			boolean
+			ensureVector(
+							Symbol initialNode,
+							Symbol terminalNode )
+					throws DatabaseException
+	{
 		
-		return super.ensureVector( initialNode, terminalNode );
+		RunTime.assumedNotNull(
+								initialNode,
+								terminalNode );
+		
+		return super.ensureVector(
+									initialNode,
+									terminalNode );
 	}
 	
+
 	/**
 	 * obviously first and second must already exist as NodeIDs associated with
 	 * JavaIDs<br>
@@ -99,43 +121,76 @@ public class DBMapSymbolsTuple extends OneToManyDBMap<Symbol, Symbol> {
 	 * @throws DatabaseException
 	 */
 	@Override
-	public boolean isVector( Symbol initialNode, Symbol terminalNode ) throws DatabaseException {
-
-		RunTime.assumedNotNull( initialNode, terminalNode );
+	public
+			boolean
+			isVector(
+						Symbol initialNode,
+						Symbol terminalNode )
+					throws DatabaseException
+	{
 		
-		return super.isVector( initialNode, terminalNode );
+		RunTime.assumedNotNull(
+								initialNode,
+								terminalNode );
+		
+		return super.isVector(
+								initialNode,
+								terminalNode );
 	}
 	
-	@Override
-	public BDBVectorIterator<Symbol, Symbol> getIterator_on_Initials_of( Symbol terminalObject )
-			throws DatabaseException {
 
+	@Override
+	public
+			BDBVectorIterator<Symbol, Symbol>
+			getIterator_on_Initials_of(
+										Symbol terminalObject )
+					throws DatabaseException
+	{
+		
 		RunTime.assumedNotNull( terminalObject );
 		return super.getIterator_on_Initials_of( terminalObject );
 	}
 	
-	@Override
-	public BDBVectorIterator<Symbol, Symbol> getIterator_on_Terminals_of( Symbol initialObject )
-			throws DatabaseException {
 
+	@Override
+	public
+			BDBVectorIterator<Symbol, Symbol>
+			getIterator_on_Terminals_of(
+											Symbol initialObject )
+					throws DatabaseException
+	{
+		
 		RunTime.assumedNotNull( initialObject );
 		return super.getIterator_on_Terminals_of( initialObject );
 	}
 	
-	@Override
-	public int countInitials( Symbol ofTerminalObject ) throws DatabaseException {
 
+	@Override
+	public
+			int
+			countInitials(
+							Symbol ofTerminalObject )
+					throws DatabaseException
+	{
+		
 		RunTime.assumedNotNull( ofTerminalObject );
 		return super.countInitials( ofTerminalObject );
 	}
 	
-	@Override
-	public int countTerminals( Symbol ofInitialObject ) throws DatabaseException {
 
+	@Override
+	public
+			int
+			countTerminals(
+							Symbol ofInitialObject )
+					throws DatabaseException
+	{
+		
 		RunTime.assumedNotNull( ofInitialObject );
 		return super.countTerminals( ofInitialObject );
 	}
 	
+
 	/**
 	 * @param initial1
 	 * @param initial2
@@ -143,12 +198,23 @@ public class DBMapSymbolsTuple extends OneToManyDBMap<Symbol, Symbol> {
 	 * @throws DatabaseException
 	 */
 	@Override
-	public Symbol findCommonTerminalForInitials( Symbol initial1, Symbol initial2 ) throws DatabaseException {
-
-		RunTime.assumedNotNull( initial1, initial2 );
-		return super.findCommonTerminalForInitials( initial1, initial2 );
+	public
+			Symbol
+			findCommonTerminalForInitials(
+											Symbol initial1,
+											Symbol initial2 )
+					throws DatabaseException
+	{
+		
+		RunTime.assumedNotNull(
+								initial1,
+								initial2 );
+		return super.findCommonTerminalForInitials(
+													initial1,
+													initial2 );
 	}
 	
+
 	/**
 	 * @param initial
 	 * @param terminal
@@ -156,10 +222,20 @@ public class DBMapSymbolsTuple extends OneToManyDBMap<Symbol, Symbol> {
 	 * @throws DatabaseException
 	 */
 	@Override
-	public boolean removeVector( Symbol initial, Symbol terminal ) throws DatabaseException {
-
-		RunTime.assumedNotNull( initial, terminal );
-		return super.removeVector( initial, terminal );
+	public
+			boolean
+			removeVector(
+							Symbol initial,
+							Symbol terminal )
+					throws DatabaseException
+	{
+		
+		RunTime.assumedNotNull(
+								initial,
+								terminal );
+		return super.removeVector(
+									initial,
+									terminal );
 	}
 	
 

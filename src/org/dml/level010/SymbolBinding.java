@@ -38,7 +38,10 @@ import com.sleepycat.bind.tuple.TupleOutput;
  * unfortunately enough, here we don't know from/to which DB the date is coming/going from/to<br>
  * 
  */
-public class SymbolBinding extends TupleBinding<Symbol> {
+public class SymbolBinding
+		extends
+		TupleBinding<Symbol>
+{
 	
 	/*
 	 * (non-Javadoc)
@@ -48,15 +51,28 @@ public class SymbolBinding extends TupleBinding<Symbol> {
 	 * .tuple.TupleInput)
 	 */
 	@Override
-	public Symbol entryToObject( TupleInput input ) {
-
-		long l = input.readLong();
-		RunTime.assumedNotNull( l );
-		Symbol nid = Bridge_SymbolAndBDB.newSymbolFrom( l );
-		RunTime.assumedTrue( Bridge_SymbolAndBDB.getLongFrom( nid ) == l );
+	public
+			Symbol
+			entryToObject(
+							TupleInput input )
+	{
+		
+		Symbol nid = null;
+		try
+		{
+			long l = input.readLong();
+			RunTime.assumedNotNull( l );
+			nid = Bridge_SymbolAndBDB.newSymbolFrom( l );
+			RunTime.assumedTrue( Bridge_SymbolAndBDB.getLongFrom( nid ) == l );
+		}
+		catch ( Throwable t )
+		{
+			RunTime.throWrapped( t );
+		}
 		return nid;
 	}
 	
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -65,14 +81,28 @@ public class SymbolBinding extends TupleBinding<Symbol> {
 	 * com.sleepycat.bind.tuple.TupleOutput)
 	 */
 	@Override
-	public void objectToEntry( Symbol alreadyExistingSymbol, TupleOutput output ) {
-
-		RunTime.assumedNotNull( alreadyExistingSymbol, output );
-		long myLong = Bridge_SymbolAndBDB.getLongFrom( alreadyExistingSymbol );
-		RunTime.assumedNotNull( myLong );
-		// System.out.println( object );
-		// it will never be null before writing it to dbase, else bug somewhere
-		output.writeLong( myLong );
+	public
+			void
+			objectToEntry(
+							Symbol alreadyExistingSymbol,
+							TupleOutput output )
+	{
+		
+		RunTime.assumedNotNull(
+								alreadyExistingSymbol,
+								output );
+		try
+		{
+			long myLong = Bridge_SymbolAndBDB.getLongFrom( alreadyExistingSymbol );
+			RunTime.assumedNotNull( myLong );
+			// System.out.println( object );
+			// it will never be null before writing it to dbase, else bug somewhere
+			output.writeLong( myLong );
+		}
+		catch ( Throwable t )
+		{
+			RunTime.throWrapped( t );
+		}
 	}
 	
 }

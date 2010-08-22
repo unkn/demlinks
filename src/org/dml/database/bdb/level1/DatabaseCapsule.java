@@ -42,12 +42,16 @@ import com.sleepycat.je.DatabaseException;
  * also makes sure the database isn't open unless it's needed<br>
  * once opened it stays open until silentClose() is called<br>
  */
-public class DatabaseCapsule extends Initer {
+public class DatabaseCapsule
+		extends
+		Initer
+{
 	
 	private String						dbName;
 	private Database					db		= null;
 	private DatabaseConfig				dbConf	= null;
 	private Level1_Storage_BerkeleyDB	bdbL1;
+	
 	
 	/*
 	 * (non-Javadoc)
@@ -55,32 +59,47 @@ public class DatabaseCapsule extends Initer {
 	 * @see org.dml.tools.StaticInstanceTracker#done()
 	 */
 	@Override
-	protected void done( MethodParams params ) {
-
-		if ( null != db ) {
+	protected
+			void
+			done(
+					MethodParams params )
+	{
+		
+		if ( null != db )
+		{
 			RunTime.assumedNotNull( bdbL1 );
-			try {
+			try
+			{
 				bdbL1.closeAnyPriDB( db );
-			} finally {
+			}
+			finally
+			{
 				db = null;
 			}
 			RunTime.assumedNull( db );
 		}
 	}
 	
+
 	/**
 	 */
-	public DatabaseCapsule() {
-
+	public DatabaseCapsule()
+	{
+		
 		super();
 	}
 	
+
 	/**
 	 * @param params
 	 */
 	@Override
-	protected void start( MethodParams params ) {
-
+	protected
+			void
+			start(
+					MethodParams params )
+	{
+		
 		// compulsory
 		bdbL1 = (Level1_Storage_BerkeleyDB)params.getEx( PossibleParams.level1_BDBStorage );
 		RunTime.assumedNotNull( bdbL1 );
@@ -92,26 +111,45 @@ public class DatabaseCapsule extends Initer {
 		
 		// dbConf is optional / can be null
 		Reference<Object> ref = params.get( PossibleParams.priDbConfig );
-		if ( null != ref ) {
+		if ( null != ref )
+		{
 			dbConf = (DatabaseConfig)ref.getObject();
-		} else {
+		}
+		else
+		{
 			dbConf = null;// use BDB defaults
 		}
 	}
 	
+
 	/**
 	 * @return
 	 * @throws DatabaseException
 	 */
-	public Database getDB() throws DatabaseException {
-
-		RunTime.assumedTrue( this.isInited() );
-		if ( null == db ) {
-			// first time init:
-			db = bdbL1.openAnyDatabase( dbName, dbConf );
-			RunTime.assumedNotNull( db );
+	public
+			Database
+			getDB()
+					throws DatabaseException
+	{
+		
+		try
+		{
+			RunTime.assumedTrue( this.isInited() );
+			if ( null == db )
+			{
+				// first time init:
+				db = bdbL1.openAnyDatabase(
+											dbName,
+											dbConf );
+				RunTime.assumedNotNull( db );
+			}
+			return db;// it's not null
 		}
-		return db;
+		catch ( Throwable t )
+		{
+			RunTime.throWrapped( t );
+			return null;// only to avoid warning because the above will throw
+		}
 	}
 	
 

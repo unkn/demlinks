@@ -38,11 +38,13 @@ import org.dml.tools.TwoWayHashMap;
  * FIXME: above<br>
  * Symbol is in java only, and it's just a new instance in java with no other special meaning<br>
  */
-public final class Bridge_SymbolAndBDB {
+public final class Bridge_SymbolAndBDB
+{
 	
 	// this is used to prevent new-ing too many times if there's already a
 	// new-ed one from a previous call
 	private static final TwoWayHashMap<Long, Symbol>	all_Symbols_from_BDBStorage	= new TwoWayHashMap<Long, Symbol>();
+	
 	
 	/**
 	 * the only one calling this should be the BDB subsystem<br>
@@ -53,34 +55,76 @@ public final class Bridge_SymbolAndBDB {
 	 *            given by the BDB dbase knowing that it's unique
 	 * @return
 	 */
-	public static Symbol newSymbolFrom( long longBDB ) {
-
+	public static
+			Symbol
+			newSymbolFrom(
+							long longBDB )
+	{
+		
 		RunTime.assumedNotNull( longBDB );
-		Symbol curr = all_Symbols_from_BDBStorage.getData( longBDB );
-		if ( null == curr ) {
-			// create new
-			curr = new Symbol();// longBDBSymbol );
-			if ( all_Symbols_from_BDBStorage.ensure( longBDB, curr ) ) {
-				RunTime.bug( "a value already existed?!! wicked! it means that the above .get() is bugged?!" );
+		try
+		{
+			Symbol curr = all_Symbols_from_BDBStorage.getData( longBDB );
+			if ( null == curr )
+			{
+				// create new
+				curr = new Symbol();// longBDBSymbol );
+				if ( all_Symbols_from_BDBStorage.ensure(
+															longBDB,
+															curr ) )
+				{
+					RunTime.bug( "a value already existed?!! wicked! it means that the above .get() is bugged?!" );
+				}
+			}
+			return curr;
+		}
+		catch ( Throwable t )
+		{
+			RunTime.throWrapped( t );
+		}
+		return null;
+	}
+	
+
+	protected static final
+			void
+			junitClearAll()
+	{
+		
+		RunTime.assumedNotNull( all_Symbols_from_BDBStorage );
+		try
+		{
+			if ( null != all_Symbols_from_BDBStorage )
+			{
+				all_Symbols_from_BDBStorage.clear();
 			}
 		}
-		return curr;
-	}
-	
-	protected static final void junitClearAll() {
-
-		RunTime.assumedNotNull( all_Symbols_from_BDBStorage );
-		if ( null != all_Symbols_from_BDBStorage ) {
-			all_Symbols_from_BDBStorage.clear();
+		catch ( Throwable t )
+		{
+			RunTime.throWrapped( t );
 		}
 	}
 	
+
 	/**
 	 * @return
 	 */
-	public static long getLongFrom( Symbol symbol ) {
-
+	public static
+			long
+			getLongFrom(
+							Symbol symbol )
+	{
+		
 		RunTime.assumedNotNull( symbol );
-		return all_Symbols_from_BDBStorage.getKey( symbol );
+		try
+		{
+			return all_Symbols_from_BDBStorage.getKey( symbol );
+		}
+		catch ( Throwable t )
+		{
+			RunTime.throWrapped( t );
+			return 0;// only to avoid warning because the above will throw
+		}
+		
 	}
 }

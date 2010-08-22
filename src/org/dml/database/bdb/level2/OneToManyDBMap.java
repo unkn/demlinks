@@ -95,8 +95,13 @@ public class OneToManyDBMap<InitialType, TerminalType>
 			EntryBinding<TerminalType> terminalBinding1 )
 	{
 		
-		RunTime.assumedNotNull( bdb1 );
-		RunTime.assumedNotNull( dbName1 );
+		RunTime.assumedNotNull(
+								bdb1,
+								dbName1,
+								initialClass1,
+								initialBinding1,
+								terminalClass1,
+								terminalBinding1 );
 		bdbL1 = bdb1;
 		dbName = dbName1;
 		initialClass = initialClass1;
@@ -112,7 +117,7 @@ public class OneToManyDBMap<InitialType, TerminalType>
 			Level1_Storage_BerkeleyDB
 			getBDBL1()
 	{
-		
+		RunTime.assumedNotNull( bdbL1 );
 		return bdbL1;
 	}
 	
@@ -124,7 +129,7 @@ public class OneToManyDBMap<InitialType, TerminalType>
 			String
 			getDBName()
 	{
-		
+		RunTime.assumedNotNull( dbName );
 		return dbName;
 	}
 	
@@ -138,52 +143,41 @@ public class OneToManyDBMap<InitialType, TerminalType>
 			getForwardDB()
 					throws DatabaseException
 	{
-		
-		if ( null == forwardDB )
+		try
 		{
-			
-			// forwardDB = new DatabaseCapsule();
-			MethodParams params = MethodParams.getNew();
-			// params.init( null );
-			params.set(
-						PossibleParams.level1_BDBStorage,
-						this.getBDBL1() );
-			params.set(
-						PossibleParams.dbName,
-						dbName );
-			params.set(
-						PossibleParams.priDbConfig,
-						new OneToManyDBConfig() );
-			// forwardDB.init( params );
-			// Initer x = null;
-			// Initer x[] = {
-			// this, this.getBDBL1()
-			// };
-			forwardDB = Factory.getNewInstanceAndInit(
-														/*
-														 * this,
-														 * new Initer[]
-														 * {
-														 * this,
-														 * this.getBDBL1()
-														 * },
-														 */
-														DatabaseCapsule.class,
-														params );
-			// Factory.deInit( params );
-			// params.deInit();
-			
-			RunTime.assumedNotNull( forwardDB );
-			RunTime.assumedTrue( forwardDB.isInited() );
+			if ( null == forwardDB )
+			{
+				
+				MethodParams params = MethodParams.getNew();
+				params.set(
+							PossibleParams.level1_BDBStorage,
+							this.getBDBL1() );
+				params.set(
+							PossibleParams.dbName,
+							dbName );
+				params.set(
+							PossibleParams.priDbConfig,
+							new OneToManyDBConfig() );
+				forwardDB = Factory.getNewInstanceAndInit(
+															DatabaseCapsule.class,
+															params );
+				
+				RunTime.assumedNotNull( forwardDB );
+				RunTime.assumedTrue( forwardDB.isInited() );
+			}
+			else
+			{
+				Factory.reInitIfNotInited( forwardDB );
+			}
+			Database d = forwardDB.getDB();
+			RunTime.assumedNotNull( d );
+			return d;
 		}
-		else
+		catch ( Throwable t )
 		{
-			Factory.reInitIfNotInited( forwardDB );
-			// if ( !forwardDB.isInited() ) {
-			// forwardDB.reInit();
-			// }
+			RunTime.throWrapped( t );
+			return null;// only to avoid warning because the above will throw
 		}
-		return forwardDB.getDB();
 	}
 	
 
@@ -196,36 +190,45 @@ public class OneToManyDBMap<InitialType, TerminalType>
 			getBackwardDB()
 					throws DatabaseException
 	{
-		
-		if ( null == backwardDB )
+		try
 		{
-			MethodParams params = MethodParams.getNew();
-			// backwardDB = new DatabaseCapsule();
-			params.set(
-						PossibleParams.level1_BDBStorage,
-						this.getBDBL1() );
-			params.set(
-						PossibleParams.dbName,
-						dbName + backwardSuffix );
-			params.set(
-						PossibleParams.priDbConfig,
-						new OneToManyDBConfig() );
-			// backwardDB.init( params );
-			backwardDB = Factory.getNewInstanceAndInit(
-														DatabaseCapsule.class,
-														params );
-			// params.deInit();
-			// Factory.deInit( params );
-			// RunTime.assertNotNull( backwardDB );
+			if ( null == backwardDB )
+			{
+				MethodParams params = MethodParams.getNew();
+				// backwardDB = new DatabaseCapsule();
+				params.set(
+							PossibleParams.level1_BDBStorage,
+							this.getBDBL1() );
+				params.set(
+							PossibleParams.dbName,
+							dbName + backwardSuffix );
+				params.set(
+							PossibleParams.priDbConfig,
+							new OneToManyDBConfig() );
+				// backwardDB.init( params );
+				backwardDB = Factory.getNewInstanceAndInit(
+															DatabaseCapsule.class,
+															params );
+				// params.deInit();
+				// Factory.deInit( params );
+				// RunTime.assertNotNull( backwardDB );
+			}
+			else
+			{
+				Factory.reInitIfNotInited( backwardDB );
+				// if ( !backwardDB.isInited() ) {
+				// backwardDB.reInit();
+				// }
+			}
+			Database d = backwardDB.getDB();
+			RunTime.assumedNotNull( d );
+			return d;
 		}
-		else
+		catch ( Throwable t )
 		{
-			Factory.reInitIfNotInited( backwardDB );
-			// if ( !backwardDB.isInited() ) {
-			// backwardDB.reInit();
-			// }
+			RunTime.throWrapped( t );
+			return null;// only to avoid warning because the above will throw
 		}
-		return backwardDB.getDB();
 	}
 	
 
@@ -262,7 +265,7 @@ public class OneToManyDBMap<InitialType, TerminalType>
 	/**
 	 * @param initialObject
 	 * @param terminalObject
-	 * @return
+	 * @return true if vector existed
 	 * @throws DatabaseException
 	 */
 	public
@@ -272,49 +275,60 @@ public class OneToManyDBMap<InitialType, TerminalType>
 						TerminalType terminalObject )
 					throws DatabaseException
 	{
-		
-		this.checkKey( initialObject );
-		this.checkData( terminalObject );
-		
-		// maybe a transaction here is unnecessary, however we don't want
-		// another transaction (supposedly) to interlace between the two gets
-		TransactionCapsule txc = TransactionCapsule.getNewTransaction( this.getBDBL1() );
-		
-		DatabaseEntry keyEntry = new DatabaseEntry();
-		initialBinding.objectToEntry(
-										initialObject,
-										keyEntry );
-		
-		DatabaseEntry dataEntry = new DatabaseEntry();
-		terminalBinding.objectToEntry(
-										terminalObject,
-										dataEntry );
-		
-		OperationStatus ret1, ret2;
 		try
 		{
-			ret1 = this.getForwardDB().getSearchBoth(
-														txc.get(),
-														keyEntry,
-														dataEntry,
-														null );
-			ret2 = this.getBackwardDB().getSearchBoth(
-														txc.get(),
-														dataEntry,
-														keyEntry,
-														null );
-			if ( ( ( OperationStatus.SUCCESS == ret1 ) && ( OperationStatus.SUCCESS != ret2 ) )
-					|| ( ( OperationStatus.SUCCESS != ret1 ) && ( OperationStatus.SUCCESS == ret2 ) ) )
+			this.checkKey( initialObject );
+			this.checkData( terminalObject );
+			
+			// maybe a transaction here is unnecessary, however we don't want
+			// another transaction (supposedly) to interlace between the two gets
+			TransactionCapsule txc = TransactionCapsule.getNewTransaction( this.getBDBL1() );
+			
+			DatabaseEntry keyEntry = new DatabaseEntry();
+			initialBinding.objectToEntry(
+											initialObject,
+											keyEntry );
+			
+			DatabaseEntry dataEntry = new DatabaseEntry();
+			terminalBinding.objectToEntry(
+											terminalObject,
+											dataEntry );
+			
+			OperationStatus ret1 = null, ret2 = null;
+			try
 			{
-				RunTime.bug( "one exists, the other doesn't; but should either both exist, or both not exist" );
+				ret1 = this.getForwardDB().getSearchBoth(
+															txc.get(),
+															keyEntry,
+															dataEntry,
+															null );
+				ret2 = this.getBackwardDB().getSearchBoth(
+															txc.get(),
+															dataEntry,
+															keyEntry,
+															null );
+				if ( ( ( OperationStatus.SUCCESS == ret1 ) && ( OperationStatus.SUCCESS != ret2 ) )
+						|| ( ( OperationStatus.SUCCESS != ret1 ) && ( OperationStatus.SUCCESS == ret2 ) ) )
+				{
+					RunTime.bug( "one exists, the other doesn't; but should either both exist, or both not exist" );
+				}
 			}
+			catch ( Throwable t )
+			{
+				RunTime.throPostponed( t );
+				txc = txc.abort();
+				RunTime.throwAllThatWerePosponed();
+			}
+			
+			txc = txc.commit();
+			
+			return ( OperationStatus.SUCCESS == ret1 );
 		}
-		finally
+		catch ( Throwable t )
 		{
-			txc.commit();// or abort
+			RunTime.throWrapped( t );
+			return false;// only to avoid warning because the above will throw
 		}
-		
-		return ( OperationStatus.SUCCESS == ret1 );
 	}
 	
 
@@ -333,17 +347,32 @@ public class OneToManyDBMap<InitialType, TerminalType>
 			ensureVector(
 							InitialType initialObject,
 							TerminalType terminalObject )
-					throws DatabaseException
 	{
 		
 		RunTime.assumedNotNull(
 								initialObject,
 								terminalObject );
-		boolean ret;
-		ret = ( OperationStatus.KEYEXIST == this.internal_makeVector(
-																		initialObject,
-																		terminalObject ) );
-		return ret;
+		try
+		{
+			boolean ret = false;
+			try
+			{
+				ret = ( OperationStatus.KEYEXIST == this.internal_makeVector(
+																				initialObject,
+																				terminalObject ) );
+			}
+			catch ( Throwable t )
+			{
+				RunTime.throWrapped( t );
+			}
+			// not finally
+			return ret;
+		}
+		catch ( Throwable t )
+		{
+			RunTime.throWrapped( t );
+			return false;// not reached, but it's here to avoid warning
+		}
 	}
 	
 
@@ -361,62 +390,68 @@ public class OneToManyDBMap<InitialType, TerminalType>
 			internal_makeVector(
 									InitialType initialObject,
 									TerminalType terminalObject )
-					throws DatabaseException
 	{
-		
-		this.checkKey( initialObject );
-		this.checkData( terminalObject );
-		
-		TransactionCapsule txc = TransactionCapsule.getNewTransaction( this.getBDBL1() );
-		
-		DatabaseEntry keyEntry = new DatabaseEntry();
-		initialBinding.objectToEntry(
-										initialObject,
-										keyEntry );
-		
-		DatabaseEntry dataEntry = new DatabaseEntry();
-		terminalBinding.objectToEntry(
-										terminalObject,
-										dataEntry );
-		
-		boolean commit = false;
-		OperationStatus ret1, ret2;
 		try
 		{
-			ret1 = this.getForwardDB().putNoDupData(
-														txc.get(),
-														keyEntry,
-														dataEntry );
-			ret2 = this.getBackwardDB().putNoDupData(
-														txc.get(),
-														dataEntry,
-														keyEntry );
-			if ( ( OperationStatus.SUCCESS == ret1 ) && ( OperationStatus.SUCCESS == ret2 ) )
+			this.checkKey( initialObject );
+			this.checkData( terminalObject );
+			
+			TransactionCapsule txc = TransactionCapsule.getNewTransaction( this.getBDBL1() );
+			
+			DatabaseEntry keyEntry = new DatabaseEntry();
+			initialBinding.objectToEntry(
+											initialObject,
+											keyEntry );
+			
+			DatabaseEntry dataEntry = new DatabaseEntry();
+			terminalBinding.objectToEntry(
+											terminalObject,
+											dataEntry );
+			
+			boolean commit = false;
+			OperationStatus ret1, ret2;
+			try
 			{
-				commit = true;
-			}
-			else
-			{
-				if ( ( ( OperationStatus.KEYEXIST == ret1 ) && ( OperationStatus.KEYEXIST != ret2 ) )
-						|| ( ( OperationStatus.KEYEXIST != ret1 ) && ( OperationStatus.KEYEXIST == ret2 ) ) )
+				ret1 = this.getForwardDB().putNoDupData(
+															txc.get(),
+															keyEntry,
+															dataEntry );
+				ret2 = this.getBackwardDB().putNoDupData(
+															txc.get(),
+															dataEntry,
+															keyEntry );
+				if ( ( OperationStatus.SUCCESS == ret1 ) && ( OperationStatus.SUCCESS == ret2 ) )
 				{
-					RunTime.bug( "one link exists and the other does not; should either both exist or neither" );
+					commit = true;
+				}
+				else
+				{
+					if ( ( ( OperationStatus.KEYEXIST == ret1 ) && ( OperationStatus.KEYEXIST != ret2 ) )
+							|| ( ( OperationStatus.KEYEXIST != ret1 ) && ( OperationStatus.KEYEXIST == ret2 ) ) )
+					{
+						RunTime.bug( "one link exists and the other does not; should either both exist or neither" );
+					}
+				}
+				
+			}
+			finally
+			{
+				if ( commit )
+				{
+					txc = txc.commit();
+				}
+				else
+				{
+					txc = txc.abort();
 				}
 			}
-			
+			return ret1;
 		}
-		finally
+		catch ( Throwable t )
 		{
-			if ( commit )
-			{
-				txc.commit();
-			}
-			else
-			{
-				txc.abort();
-			}
+			RunTime.throWrapped( t );
+			return null;
 		}
-		return ret1;
 	}
 	
 
@@ -429,23 +464,24 @@ public class OneToManyDBMap<InitialType, TerminalType>
 			BDBVectorIterator<InitialType, TerminalType>
 			getIterator_on_Terminals_of(
 											InitialType initialObject )
-					throws DatabaseException
 	{
 		
 		// DatabaseEntry keyEntry = new DatabaseEntry();
 		// initialBinding.objectToEntry( initialObject, keyEntry );
-		BDBVectorIterator<InitialType, TerminalType> ret = new BDBVectorIterator<InitialType, TerminalType>(
-																												this.getBDBL1(),
-																												this
-																														.getForwardDB(),
-																												initialObject,
-																												initialBinding,
-																												terminalBinding );
+		@SuppressWarnings( "unchecked" )
+		BDBVectorIterator<InitialType, TerminalType> ret = Factory
+				.getNewInstanceAndInitWithoutMethodParams(
+															BDBVectorIterator.class,
+															this.getBDBL1(),
+															this.getForwardDB(),
+															initialObject,
+															initialBinding,
+															terminalBinding );
 		// ret.init( null );
 		// Factory.getNewInstanceAndInitWithoutParams( BDBVectorIterator.class, this.getBDBL1(), this.getForwardDB(),
 		// initialObject,
 		// initialBinding, terminalBinding );
-		Factory.initWithoutParams( ret );
+		// Factory.initWithoutParams( ret );
 		return ret;
 		
 	}
@@ -458,17 +494,19 @@ public class OneToManyDBMap<InitialType, TerminalType>
 					throws DatabaseException
 	{
 		
-		BDBVectorIterator<TerminalType, InitialType> ret = new BDBVectorIterator<TerminalType, InitialType>(
-																												this.getBDBL1(),
-																												this
-																														.getBackwardDB(),
-																												terminalObject,
-																												terminalBinding,
-																												initialBinding );
+		@SuppressWarnings( "unchecked" )
+		BDBVectorIterator<TerminalType, InitialType> ret = Factory
+				.getNewInstanceAndInitWithoutMethodParams(
+															BDBVectorIterator.class,
+															this.getBDBL1(),
+															this.getBackwardDB(),
+															terminalObject,
+															terminalBinding,
+															initialBinding );
 		// ret.init( null );
 		// Factory.getNewInstanceAndInitWithoutParams( BDBVectorIterator.class, this.getBDBL1(), this.getBackwardDB(),
 		// terminalObject, terminalBinding, initialBinding );
-		Factory.initWithoutParams( ret );
+		// Factory.initWithoutParams( ret );
 		return ret;
 	}
 	

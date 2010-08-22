@@ -76,13 +76,16 @@ import org.dml.tools.RunTime;
  * - JavaID is the bridge between same data in java(ie. string) and Storage<br>
  * - JavaID represents the same something persistently; JavaIDs are not lost when app shuts down<br>
  */
-public class Symbol {
+public class Symbol
+{
 	
 	
-	public Symbol() {
-
+	public Symbol()
+	{
+		//
 	}
 	
+
 	/**
 	 * equals always compares by content BUT in this case it ONLY compares by
 	 * references, because Symbol instances are not supposed to have the same
@@ -93,8 +96,12 @@ public class Symbol {
 	 */
 	@Deprecated
 	@Override
-	public boolean equals( Object sym ) {
-
+	public
+			boolean
+			equals(
+					Object sym )
+	{
+		
 		RunTime.badCall( "do not use .equals() you should only compare by reference == " );
 		return false;
 		// RunTime.assumedNotNull( sym );

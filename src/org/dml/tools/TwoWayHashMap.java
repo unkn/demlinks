@@ -27,27 +27,36 @@ package org.dml.tools;
 
 import java.util.HashMap;
 
+import org.dml.level010.Symbol;
+
 
 
 /**
  * 
  *
  */
-public class TwoWayHashMap<KEY, DATA> {
+public class TwoWayHashMap<KEY, DATA>
+{
 	
 	private final HashMap<KEY, DATA>	keyData	= new HashMap<KEY, DATA>();
 	private final HashMap<DATA, KEY>	dataKey	= new HashMap<DATA, KEY>();
+	
 	
 	/**
 	 * @param which
 	 * @return null if not found
 	 */
-	public DATA getData( KEY key ) {
-
+	public
+			DATA
+			getData(
+						KEY key )
+	{
+		
 		RunTime.assumedNotNull( key );
 		
 		DATA data = keyData.get( key );
-		if ( null != data ) {
+		if ( null != data )
+		{
 			// consistency check
 			KEY key2 = dataKey.get( data );
 			RunTime.assumedTrue( key == key2 );
@@ -55,48 +64,90 @@ public class TwoWayHashMap<KEY, DATA> {
 		return data;// can be null
 	}
 	
+
 	/**
 	 * @param data
 	 * @return null if not found
 	 */
-	public KEY getKey( DATA data ) {
-
+	public
+			KEY
+			getKey(
+					DATA data )
+	{
+		
 		RunTime.assumedNotNull( data );
 		KEY key = dataKey.get( data );
-		if ( null != key ) {
+		if ( null != key )
+		{
 			DATA data2 = keyData.get( key );
 			RunTime.assumedTrue( data == data2 );
 		}
 		return key;
 	}
 	
+
 	/**
 	 * @param key
 	 * @param data
 	 * @return true if already existed
 	 */
-	public boolean ensure( KEY key, DATA data ) {
-
-		RunTime.assumedNotNull( key, data );
-		DATA d1 = keyData.put( key, data );
-		if ( null != d1 ) {
-			if ( d1 != data ) {
-				RunTime.badCall( "You attempted to overwrite an already existing key with a new value. Not acceptable" );
+	public
+			boolean
+			ensure(
+					KEY key,
+					DATA data )
+	{
+		
+		RunTime.assumedNotNull(
+								key,
+								data );
+		DATA d1 = null;
+		try
+		{
+			d1 = keyData.put(
+								key,
+								data );
+			
+			if ( null != d1 )
+			{
+				if ( d1 != data )
+				{
+					RunTime
+							.badCall( "You attempted to overwrite an already existing key with a new value. Not acceptable" );
+				}
+			}
+			KEY k1 = dataKey.put(
+									data,
+									key );
+			if ( null == d1 )
+			{
+				RunTime.assumedNull( k1 );
+			}
+			else
+			{
+				RunTime.assumedTrue( k1 == key );
 			}
 		}
-		KEY k1 = dataKey.put( data, key );
-		if ( null == d1 ) {
-			RunTime.assumedNull( k1 );
-		} else {
-			RunTime.assumedTrue( k1 == key );
+		catch ( Throwable t )
+		{
+			RunTime.throWrapped( t );
 		}
-		
 		return ( null != d1 );
 	}
 	
-	public void clear() {
 
-		keyData.clear();
-		dataKey.clear();
+	public
+			void
+			clear()
+	{
+		try
+		{
+			keyData.clear();
+			dataKey.clear();
+		}
+		catch ( Throwable t )
+		{
+			RunTime.throWrapped( t );
+		}
 	}
 }

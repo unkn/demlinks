@@ -374,16 +374,15 @@ public class Level1_Storage_BerkeleyDB
 									file,
 									environmentConfig );
 		}
-		catch ( DatabaseException de )
+		catch ( Throwable t )
 		{
-			Log.thro( "when creating BerkeleyDB Environment: " + de.getMessage() );
-			throw de;
+			Log.thro( "when creating BerkeleyDB Environment: " + t.getMessage() );
+			RunTime.throWrapped( t );
 		}
 		
 	}
 	
 
-	
 	/**
 	 * silently closing SecondaryDatabase
 	 * no throws
@@ -450,10 +449,11 @@ public class Level1_Storage_BerkeleyDB
 				env.close();
 				Log.exit( "BerkeleyDB env closed" );
 			}
-			catch ( DatabaseException de )
+			catch ( Throwable t )
 			{
-				Log.thro( "failed BerkeleyDB environment close:" + de.getLocalizedMessage() );
+				Log.thro( "failed BerkeleyDB environment close:" + t.getLocalizedMessage() );
 				// ignore
+				RunTime.throWrapped( t );
 			}
 			finally
 			{

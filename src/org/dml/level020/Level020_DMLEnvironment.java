@@ -41,10 +41,16 @@ import org.references.method.PossibleParams;
  * handling Vectors
  * 
  */
-public class Level020_DMLEnvironment extends Level010_DMLEnvironment implements Level020_DMLStorageWrapper {
+public class Level020_DMLEnvironment
+		extends
+		Level010_DMLEnvironment
+		implements
+		Level020_DMLStorageWrapper
+{
 	
 	@VarLevel
 	private final Level020_DMLStorageWrapper	storage	= null;
+	
 	
 	/*
 	 * (non-Javadoc)
@@ -52,23 +58,41 @@ public class Level020_DMLEnvironment extends Level010_DMLEnvironment implements 
 	 * @see org.dml.level010.Level010_DMLEnvironment#internal_allocDefaultStorage(org.references.method.MethodParams)
 	 */
 	@Override
-	protected void internal_allocDefaultStorage( MethodParams params ) {
-
+	protected
+			void
+			internal_allocDefaultStorage(
+											MethodParams params )
+	{
+		
 		// don't call super!
 		// Level020_DMLStorage_BerkeleyDB stor = new Level020_DMLStorage_BerkeleyDB();
 		// stor.init( params );
-		Level020_DMLStorage_BerkeleyDB stor = Factory.getNewInstanceAndInit( Level020_DMLStorage_BerkeleyDB.class,
-				params );
-		params.set( PossibleParams.varLevelAll, stor );
+		Level020_DMLStorage_BerkeleyDB stor = Factory.getNewInstanceAndInit(
+																				Level020_DMLStorage_BerkeleyDB.class,
+																				params );
+		params.set(
+					PossibleParams.varLevelAll,
+					stor );
 	}
 	
-	@Override
-	public boolean ensureVector( Symbol first, Symbol second ) throws StorageException {
 
-		RunTime.assumedNotNull( first, second );
-		return storage.ensureVector( first, second );
+	@Override
+	public
+			boolean
+			ensureVector(
+							Symbol first,
+							Symbol second )
+	{
+		
+		RunTime.assumedNotNull(
+								first,
+								second );
+		return storage.ensureVector(
+										first,
+										second );
 	}
 	
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -77,33 +101,63 @@ public class Level020_DMLEnvironment extends Level010_DMLEnvironment implements 
 	 * org.dml.level1.NodeID)
 	 */
 	@Override
-	public boolean isVector( Symbol first, Symbol second ) {
-
-		RunTime.assumedNotNull( first, second );
-		return storage.isVector( first, second );
+	public
+			boolean
+			isVector(
+						Symbol first,
+						Symbol second )
+	{
+		
+		RunTime.assumedNotNull(
+								first,
+								second );
+		return storage.isVector(
+									first,
+									second );
 	}
 	
-	@Override
-	public boolean removeVector( Symbol initial, Symbol terminal ) {
 
-		RunTime.assumedNotNull( initial, terminal );
-		return storage.removeVector( initial, terminal );
+	@Override
+	public
+			boolean
+			removeVector(
+							Symbol initial,
+							Symbol terminal )
+	{
+		
+		RunTime.assumedNotNull(
+								initial,
+								terminal );
+		return storage.removeVector(
+										initial,
+										terminal );
 	}
 	
-	@Override
-	public BDBVectorIterator<Symbol, Symbol> getIterator_on_Initials_of( Symbol terminalObject ) {
 
+	@Override
+	public
+			BDBVectorIterator<Symbol, Symbol>
+			getIterator_on_Initials_of(
+										Symbol terminalObject )
+	{
+		
 		RunTime.assumedNotNull( terminalObject );
 		return storage.getIterator_on_Initials_of( terminalObject );
 	}
 	
-	@Override
-	public BDBVectorIterator<Symbol, Symbol> getIterator_on_Terminals_of( Symbol initialObject ) {
 
+	@Override
+	public
+			BDBVectorIterator<Symbol, Symbol>
+			getIterator_on_Terminals_of(
+											Symbol initialObject )
+	{
+		
 		RunTime.assumedNotNull( initialObject );
 		return storage.getIterator_on_Terminals_of( initialObject );
 	}
 	
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -112,12 +166,17 @@ public class Level020_DMLEnvironment extends Level010_DMLEnvironment implements 
 	 * Symbol)
 	 */
 	@Override
-	public int countInitials( Symbol ofTerminalObject ) {
-
+	public
+			int
+			countInitials(
+							Symbol ofTerminalObject )
+	{
+		
 		RunTime.assumedNotNull( ofTerminalObject );
 		return storage.countInitials( ofTerminalObject );
 	}
 	
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -126,19 +185,33 @@ public class Level020_DMLEnvironment extends Level010_DMLEnvironment implements 
 	 * .Symbol)
 	 */
 	@Override
-	public int countTerminals( Symbol ofInitialObject ) {
-
+	public
+			int
+			countTerminals(
+							Symbol ofInitialObject )
+	{
+		
 		RunTime.assumedNotNull( ofInitialObject );
 		return storage.countTerminals( ofInitialObject );
 	}
 	
+
 	/**
 	 */
 	@Override
-	public Symbol findCommonTerminalForInitials( Symbol initial1, Symbol initial2 ) {
-
-		RunTime.assumedNotNull( initial1, initial2 );
-		return storage.findCommonTerminalForInitials( initial1, initial2 );
+	public
+			Symbol
+			findCommonTerminalForInitials(
+											Symbol initial1,
+											Symbol initial2 )
+	{
+		
+		RunTime.assumedNotNull(
+								initial1,
+								initial2 );
+		return storage.findCommonTerminalForInitials(
+														initial1,
+														initial2 );
 	}
 	
 

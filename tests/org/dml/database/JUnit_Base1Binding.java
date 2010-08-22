@@ -35,7 +35,10 @@ import com.sleepycat.bind.tuple.TupleOutput;
  * 
  *
  */
-public class JUnit_Base1Binding extends TupleBinding<JUnit_Base1> {
+public class JUnit_Base1Binding
+		extends
+		TupleBinding<JUnit_Base1>
+{
 	
 	/*
 	 * (non-Javadoc)
@@ -45,11 +48,16 @@ public class JUnit_Base1Binding extends TupleBinding<JUnit_Base1> {
 	 * .tuple.TupleInput)
 	 */
 	@Override
-	public JUnit_Base1 entryToObject( TupleInput input ) {
-
+	public
+			JUnit_Base1
+			entryToObject(
+							TupleInput input )
+	{
+		
 		return null;
 	}
 	
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -58,8 +66,13 @@ public class JUnit_Base1Binding extends TupleBinding<JUnit_Base1> {
 	 * com.sleepycat.bind.tuple.TupleOutput)
 	 */
 	@Override
-	public void objectToEntry( JUnit_Base1 object, TupleOutput output ) {
-
+	public
+			void
+			objectToEntry(
+							JUnit_Base1 object,
+							TupleOutput output )
+	{
+		//
 	}
 	
 }

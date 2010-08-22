@@ -25,21 +25,21 @@ package org.dml.level010;
 
 
 
-import org.dml.storagewrapper.StorageException;
-
-
-
 /**
  * 
  *
  */
-public interface Level010_DMLStorageWrapper {
+public interface Level010_DMLStorageWrapper
+{
 	
 	/**
 	 * calls Factory.deInit(this);
 	 */
-	public void factoryDeInit();
+	public
+			void
+			factoryDeInit();
 	
+
 	// public <T extends Initer> void deInit( T instance );
 	
 	/**
@@ -48,29 +48,38 @@ public interface Level010_DMLStorageWrapper {
 	 * 
 	 * @param symbol
 	 * @return JavaID or null if not found
-	 * @throws StorageException
 	 */
-	public JavaID getJavaID( Symbol identifiedByThisSymbol ) throws StorageException;
+	public
+			JavaID
+			getJavaID(
+						Symbol identifiedByThisSymbol );
 	
+
 	/**
 	 * returns the Symbol associated with the given JavaID<br>
 	 * it's a 1 to 1 mapping<br>
 	 * 
 	 * @param identifiedByThisJavaID
 	 * @return NodeID or null if not found;
-	 * @throws StorageException
 	 */
-	public Symbol getSymbol( JavaID identifiedByThisJavaID ) throws StorageException;
+	public
+			Symbol
+			getSymbol(
+						JavaID identifiedByThisJavaID );
 	
+
 	/**
 	 * @param fromJavaID
 	 *            must not be already associated with a NodeID (1to1 max) or
 	 *            else throws
 	 * @return the created Symbol or throws bug if fromJID already had a Symbol
-	 * @throws StorageException
 	 */
-	public Symbol createSymbol( JavaID fromJavaID ) throws StorageException;
+	public
+			Symbol
+			createSymbol(
+							JavaID fromJavaID );
 	
+
 	/**
 	 * eget=ensure get<br>
 	 * make a new one if it doesn't exist<br>
@@ -79,16 +88,21 @@ public interface Level010_DMLStorageWrapper {
 	 * @param theJavaID
 	 *            this JavaID and this Node will be mapped 1 to 1
 	 * @return never null
-	 * @throws StorageException
 	 */
-	public Symbol ensureSymbol( JavaID theJavaID ) throws StorageException;
+	public
+			Symbol
+			ensureSymbol(
+							JavaID theJavaID );
 	
+
 	/**
 	 * @return a new Symbol without an associated JavaID
-	 * @throws StorageException
 	 */
-	public Symbol newUniqueSymbol() throws StorageException;
+	public
+			Symbol
+			newUniqueSymbol();
 	
+
 	/**
 	 * between Symbol X and javaID Y can be only one link<br>
 	 * it is a one to one mapping between the two
@@ -96,8 +110,13 @@ public interface Level010_DMLStorageWrapper {
 	 * @param symbol
 	 * @param javaID
 	 */
-	public void newLink( Symbol symbol, JavaID javaID ) throws StorageException;
+	public
+			void
+			newLink(
+						Symbol symbol,
+						JavaID javaID );
 	
+
 	/**
 	 * between Symbol X and javaID Y can be only one link<br>
 	 * it is a one to one mapping between the two
@@ -107,5 +126,9 @@ public interface Level010_DMLStorageWrapper {
 	 * @return true if existed; throws if link existed with different params
 	 *         (ie. symbol and another javaID, or javaID and another symbol)
 	 */
-	public boolean ensureLink( Symbol symbol, JavaID javaID ) throws StorageException;
+	public
+			boolean
+			ensureLink(
+						Symbol symbol,
+						JavaID javaID );
 }

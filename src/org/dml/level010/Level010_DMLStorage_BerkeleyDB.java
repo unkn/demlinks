@@ -28,7 +28,6 @@ package org.dml.level010;
 import java.io.File;
 
 import org.dml.database.bdb.level1.Level1_Storage_BerkeleyDB;
-import org.dml.storagewrapper.StorageException;
 import org.dml.tools.MainLevel0;
 import org.dml.tools.RunTime;
 import org.dml.tools.VarLevel;
@@ -43,7 +42,12 @@ import com.sleepycat.je.DatabaseException;
  * should throw only StorageException.<br>
  * this is done mostly for wrapping Exceptions under StorageException<br>
  */
-public class Level010_DMLStorage_BerkeleyDB extends MainLevel0 implements Level010_DMLStorageWrapper {
+public class Level010_DMLStorage_BerkeleyDB
+		extends
+		MainLevel0
+		implements
+		Level010_DMLStorageWrapper
+{
 	
 	@VarLevel
 	private final Level1_Storage_BerkeleyDB	bdb						= null;
@@ -55,83 +59,134 @@ public class Level010_DMLStorage_BerkeleyDB extends MainLevel0 implements Level0
 	/**
 	 * constructor, don't forget to call init(...)
 	 */
-	public Level010_DMLStorage_BerkeleyDB() {
-
+	public Level010_DMLStorage_BerkeleyDB()
+	{
+		
 		super();
 	}
 	
-	@Override
-	protected MethodParams getDefaults() {
 
+	@Override
+	protected
+			MethodParams
+			getDefaults()
+	{
+		
 		MethodParams def = super.getDefaults();
 		
-		def.set( PossibleParams.homeDir, DEFAULT_BDB_ENV_PATH );
-		def.set( PossibleParams.jUnit_wipeDB, false );
+		def.set(
+					PossibleParams.homeDir,
+					DEFAULT_BDB_ENV_PATH );
+		def.set(
+					PossibleParams.jUnit_wipeDB,
+					false );
 		return def;
 	}
 	
-	
+
 	// =============================================
 	@Override
-	public final JavaID getJavaID( Symbol identifiedByThisSymbol ) {
-
+	public final
+			JavaID
+			getJavaID(
+						Symbol identifiedByThisSymbol )
+	{
+		
 		RunTime.assumedNotNull( identifiedByThisSymbol );
-		try {
-			return bdb.getDBMap_JavaIDs_To_Symbols().getJavaID( identifiedByThisSymbol );
-		} catch ( DatabaseException ex ) {
-			throw new StorageException( ex );
+		try
+		{
+			return bdb.getDBMap_JavaIDs_To_Symbols().getJavaID(
+																identifiedByThisSymbol );
+		}
+		catch ( Throwable t )
+		{
+			RunTime.throWrapped( t );
 		}
 	}
 	
-	@Override
-	public final Symbol getSymbol( JavaID identifiedByThisJavaID ) throws StorageException {
 
+	@Override
+	public final
+			Symbol
+			getSymbol(
+						JavaID identifiedByThisJavaID )
+	{
+		
 		RunTime.assumedNotNull( identifiedByThisJavaID );
-		try {
-			return bdb.getDBMap_JavaIDs_To_Symbols().getSymbol( identifiedByThisJavaID );
-		} catch ( DatabaseException dbe ) {
-			throw new StorageException( dbe );
+		try
+		{
+			return bdb.getDBMap_JavaIDs_To_Symbols().getSymbol(
+																identifiedByThisJavaID );
+		}
+		catch ( Throwable t )
+		{
+			RunTime.throWrapped( t );
 		}
 	}
 	
-	@Override
-	public final Symbol createSymbol( JavaID fromJavaID ) throws StorageException {
 
+	@Override
+	public final
+			Symbol
+			createSymbol(
+							JavaID fromJavaID )
+	{
+		
 		RunTime.assumedNotNull( fromJavaID );
-		try {
-			return bdb.getDBMap_JavaIDs_To_Symbols().createSymbol( fromJavaID );
-		} catch ( DatabaseException dbe ) {
-			throw new StorageException( dbe );
+		try
+		{
+			return bdb.getDBMap_JavaIDs_To_Symbols().createSymbol(
+																	fromJavaID );
+		}
+		catch ( Throwable t )
+		{
+			RunTime.throWrapped( t );
 		}
 	}
 	
-	
-	@Override
-	public final Symbol ensureSymbol( JavaID theJavaID ) throws StorageException {
 
+	@Override
+	public final
+			Symbol
+			ensureSymbol(
+							JavaID theJavaID )
+	{
+		
 		RunTime.assumedNotNull( theJavaID );
-		try {
-			return bdb.getDBMap_JavaIDs_To_Symbols().ensureSymbol( theJavaID );
-		} catch ( DatabaseException de ) {
-			throw new StorageException( de );
+		try
+		{
+			return bdb.getDBMap_JavaIDs_To_Symbols().ensureSymbol(
+																	theJavaID );
+		}
+		catch ( Throwable t )
+		{
+			RunTime.throWrapped( t );
 		}
 	}
 	
+
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see org.dml.level1.Level1_DMLStorageWrapper#newUniqueSymbol()
 	 */
 	@Override
-	public Symbol newUniqueSymbol() throws StorageException {
-
-		try {
+	public
+			Symbol
+			newUniqueSymbol()
+	{
+		
+		try
+		{
 			return bdb.getUniqueSymbolsGenerator().getNewUniqueSymbol();
-		} catch ( DatabaseException e ) {
-			throw new StorageException( e );
+		}
+		catch ( Throwable t )
+		{
+			RunTime.throWrapped( t );
 		}
 	}
 	
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -139,10 +194,18 @@ public class Level010_DMLStorage_BerkeleyDB extends MainLevel0 implements Level0
 	 * org.dml.level1.JavaID)
 	 */
 	@Override
-	public boolean ensureLink( Symbol symbol, JavaID javaID ) throws StorageException {
-
-		RunTime.assumedNotNull( symbol, javaID );
-		try {
+	public
+			boolean
+			ensureLink(
+						Symbol symbol,
+						JavaID javaID )
+	{
+		
+		RunTime.assumedNotNull(
+								symbol,
+								javaID );
+		try
+		{
 			JavaID oldJid = this.getJavaID( symbol );
 			Symbol oldSym = this.getSymbol( javaID );
 			// true if already associated
@@ -151,49 +214,69 @@ public class Level010_DMLStorage_BerkeleyDB extends MainLevel0 implements Level0
 			boolean sameJID = false;
 			boolean sameSym = false;
 			
-			if ( existsJID ) {
+			if ( existsJID )
+			{
 				// a jid is already associated with the symbol
 				// is it javaID though? or a diff one
-				if ( oldJid != javaID ) {
+				if ( oldJid != javaID )
+				{
 					// a diff one
 					RunTime.badCall( "another JavaID was already associated with the passed Symbol." );
-				} else {
+				}
+				else
+				{
 					sameJID = true;
 				}
 			}
 			
-			if ( existsSym ) {
-				if ( oldSym != symbol ) {
+			if ( existsSym )
+			{
+				if ( oldSym != symbol )
+				{
 					RunTime.badCall( "a different Symbol was already associated with the passed JavaID." );
-				} else {
+				}
+				else
+				{
 					sameSym = true;
 				}
 			}
 			
-			if ( sameSym && sameJID ) {
+			if ( sameSym && sameJID )
+			{
 				return true;// already exists
-			} else {
-				if ( ( sameSym ^ sameJID ) ) {
+			}
+			else
+			{
+				if ( ( sameSym ^ sameJID ) )
+				{
 					RunTime.bug();
 				}
 			}
 			// both links are either both false or both true, never one true and
 			// one false
-			if ( ( existsJID ^ existsSym ) ) {// xor 0^0=0; 1^1=0; 0^1=1
+			if ( ( existsJID ^ existsSym ) )
+			{// xor 0^0=0; 1^1=0; 0^1=1
 				// true means fail
-				RunTime.badCall( "the above two calls failed. Both should be same. This means that the JID or the Symbol was already associated with another JID/Symbol" );
+				RunTime
+						.badCall( "the above two calls failed. Both should be same. This means that the JID or the Symbol was already associated with another JID/Symbol" );
 			}
 			
-			if ( bdb.getDBMap_JavaIDs_To_Symbols().link( javaID, symbol ) ) {
+			if ( bdb.getDBMap_JavaIDs_To_Symbols().link(
+															javaID,
+															symbol ) )
+			{
 				// existed already, impossible to reach this
 				RunTime.bug( "huge discrepancy between getJavaID, getSymbol and .link here" );
 			}
 			return false;
-		} catch ( DatabaseException de ) {
-			throw new StorageException( de );
+		}
+		catch ( Throwable t )
+		{
+			RunTime.throWrapped( t );
 		}
 	}
 	
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -202,10 +285,19 @@ public class Level010_DMLStorage_BerkeleyDB extends MainLevel0 implements Level0
 	 * org.dml.level1.JavaID)
 	 */
 	@Override
-	public void newLink( Symbol symbol, JavaID javaID ) throws StorageException {
-
-		RunTime.assumedNotNull( symbol, javaID );
-		RunTime.assumedFalse( this.ensureLink( symbol, javaID ) );
+	public
+			void
+			newLink(
+						Symbol symbol,
+						JavaID javaID )
+	{
+		
+		RunTime.assumedNotNull(
+								symbol,
+								javaID );
+		RunTime.assumedFalse( this.ensureLink(
+												symbol,
+												javaID ) );
 	}
 	
 

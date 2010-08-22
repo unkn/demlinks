@@ -42,36 +42,59 @@ import com.sleepycat.je.DatabaseException;
  * self->x,y,z as terminals<br>
  * probably a bad idea to make a set of initials<br>
  */
-public class SetOfTerminalSymbols {
+public class SetOfTerminalSymbols
+{
 	
 	private static final TwoKeyHashMap<Level025_DMLEnvironment, Symbol, SetOfTerminalSymbols>	allSetOfSymbolsInstances	= new TwoKeyHashMap<Level025_DMLEnvironment, Symbol, SetOfTerminalSymbols>();
 	protected final Level025_DMLEnvironment														env;
 	protected final Symbol																		selfAsSymbol;
 	private BDBVectorIterator<Symbol, Symbol>													iter						= null;
 	
+	
 	/**
 	 * private constructor
 	 */
-	protected SetOfTerminalSymbols( Level025_DMLEnvironment passedEnv, Symbol passedSelf ) {
-
-		RunTime.assumedNotNull( passedEnv, passedSelf );
+	protected SetOfTerminalSymbols(
+			Level025_DMLEnvironment passedEnv,
+			Symbol passedSelf )
+	{
+		
+		RunTime.assumedNotNull(
+								passedEnv,
+								passedSelf );
 		RunTime.assumedTrue( passedEnv.isInited() );
 		
 		env = passedEnv;
 		selfAsSymbol = passedSelf;
 	}
 	
-	// TODO: new, existing, ensure
-	public static SetOfTerminalSymbols getAsSet( Level025_DMLEnvironment passedEnv, Symbol passedSelf ) {
 
-		RunTime.assumedNotNull( passedEnv, passedSelf );
+	// TODO: new, existing, ensure
+	public static
+			SetOfTerminalSymbols
+			getAsSet(
+						Level025_DMLEnvironment passedEnv,
+						Symbol passedSelf )
+	{
+		
+		RunTime.assumedNotNull(
+								passedEnv,
+								passedSelf );
 		RunTime.assumedTrue( passedEnv.isInited() );
 		
-		SetOfTerminalSymbols existingSOS = getSOSInstance( passedEnv, passedSelf );
-		if ( null == existingSOS ) {
-			existingSOS = new SetOfTerminalSymbols( passedEnv, passedSelf );
+		SetOfTerminalSymbols existingSOS = getSOSInstance(
+															passedEnv,
+															passedSelf );
+		if ( null == existingSOS )
+		{
+			existingSOS = new SetOfTerminalSymbols(
+													passedEnv,
+													passedSelf );
 			existingSOS.assumedValid();
-			registerSOSInstance( passedEnv, passedSelf, existingSOS );
+			registerSOSInstance(
+									passedEnv,
+									passedSelf,
+									existingSOS );
 		}
 		existingSOS.assumedValid();
 		RunTime.assumedTrue( passedEnv == existingSOS.env );
@@ -79,162 +102,255 @@ public class SetOfTerminalSymbols {
 		return existingSOS;
 	}
 	
+
 	/**
 	 * 
 	 */
-	public void assumedValid() {
-
-		RunTime.assumedNotNull( env, selfAsSymbol );
+	public
+			void
+			assumedValid()
+	{
+		
+		RunTime.assumedNotNull(
+								env,
+								selfAsSymbol );
 		RunTime.assumedTrue( env.isInited() );
 	}
 	
-	private final static void registerSOSInstance( Level025_DMLEnvironment env, Symbol passedSelf,
-			SetOfTerminalSymbols newOne ) {
 
-		RunTime.assumedNotNull( env, passedSelf, newOne );
-		RunTime.assumedFalse( allSetOfSymbolsInstances.ensure( env, passedSelf, newOne ) );
+	private final static
+			void
+			registerSOSInstance(
+									Level025_DMLEnvironment env,
+									Symbol passedSelf,
+									SetOfTerminalSymbols newOne )
+	{
+		
+		RunTime.assumedNotNull(
+								env,
+								passedSelf,
+								newOne );
+		RunTime.assumedFalse( allSetOfSymbolsInstances.ensure(
+																env,
+																passedSelf,
+																newOne ) );
 	}
 	
-	
-	private final static SetOfTerminalSymbols getSOSInstance( Level025_DMLEnvironment env, Symbol passedSelf ) {
 
-		RunTime.assumedNotNull( env, passedSelf );
-		return allSetOfSymbolsInstances.get( env, passedSelf );
+	private final static
+			SetOfTerminalSymbols
+			getSOSInstance(
+							Level025_DMLEnvironment env,
+							Symbol passedSelf )
+	{
+		
+		RunTime.assumedNotNull(
+								env,
+								passedSelf );
+		return allSetOfSymbolsInstances.get(
+												env,
+												passedSelf );
 	}
 	
-	public Symbol getAsSymbol() {
 
+	public
+			Symbol
+			getAsSymbol()
+	{
+		
 		this.assumedValid();
 		return selfAsSymbol;
 	}
 	
+
 	/**
 	 * @param element
 	 * @return false if it didn't already exist
 	 */
-	public boolean addToSet( Symbol element ) {
-
+	public
+			boolean
+			addToSet(
+						Symbol element )
+	{
+		
 		RunTime.assumedNotNull( element );
-		if ( selfAsSymbol == element ) {
+		if ( selfAsSymbol == element )
+		{
 			RunTime.badCall();
 		}
-		return env.ensureVector( selfAsSymbol, element );
+		return env.ensureVector(
+									selfAsSymbol,
+									element );
 	}
 	
+
 	/**
 	 * @param which
 	 *            should be a child of domain
 	 * @return true if self->which
 	 */
-	public boolean hasSymbol( Symbol which ) {
-
+	public
+			boolean
+			hasSymbol(
+						Symbol which )
+	{
+		
 		RunTime.assumedNotNull( which );
 		RunTime.assumedFalse( selfAsSymbol == which );
-		return env.isVector( selfAsSymbol, which );
+		return env.isVector(
+								selfAsSymbol,
+								which );
 	}
 	
-	public int size() {
 
+	public
+			int
+			size()
+	{
+		
 		RunTime.assumedNotNull( selfAsSymbol );
 		// cache won't do
 		return env.countTerminals( selfAsSymbol );
 	}
 	
+
 	/**
 	 * @param element
 	 * @return true if existed
 	 */
-	public boolean remove( Symbol element ) {
-
+	public
+			boolean
+			remove(
+					Symbol element )
+	{
+		
 		RunTime.assumedNotNull( element );
 		RunTime.assumedFalse( selfAsSymbol == element );
-		return env.removeVector( selfAsSymbol, element );
+		return env.removeVector(
+									selfAsSymbol,
+									element );
 	}
 	
+
 	/**
 	 * use iter.deInit() when done<br>
 	 * 
 	 * @return iter
 	 */
-	private void refreshIterator() {
-
-		if ( null == iter ) {
+	private
+			void
+			refreshIterator()
+	{
+		
+		if ( null == iter )
+		{
 			iter = env.getIterator_on_Terminals_of( selfAsSymbol );
-		} else {
+		}
+		else
+		{
 			Factory.reInitIfNotInited( iter );
 			// iter.reInit();
 		}
 		RunTime.assumedNotNull( iter );
 	}
 	
-	private void deInitIterator() {
 
+	private
+			void
+			deInitIterator()
+	{
+		
 		RunTime.assumedNotNull( iter );
 		Factory.deInit( iter );
 		// iter.deInit();
 	}
 	
-	
+
 	/**
 	 * @param side
 	 *            only FIRST is allowed yet
 	 * @return
 	 */
-	public Symbol getSide( Position side ) {
-
+	public
+			Symbol
+			getSide(
+						Position side )
+	{
+		
 		Symbol ret = null;
 		
 		this.refreshIterator();
-		try {
-			switch ( side ) {
-			case FIRST:
-				iter.goFirst();
-				break;
-			default:
-				RunTime.badCall( "unsupported position" );
+		try
+		{
+			switch ( side )
+			{
+				case FIRST:
+					iter.goFirst();
+					break;
+				default:
+					RunTime.badCall( "unsupported position" );
 			}
 			
 			ret = iter.now();
-		} catch ( DatabaseException e ) {
-			throw new StorageException( e );
-		} finally {
+		}
+		catch ( Throwable t )
+		{
+			RunTime.throWrapped( t );
+		}
+		finally
+		{
 			this.deInitIterator();
 		}
 		
 		return ret;
 	}
 	
+
 	/**
 	 * @param side
 	 * @param ofThis
 	 * @return null if none
 	 */
-	public Symbol getSideOf( Position side, Symbol ofThis ) {
-
-		RunTime.assumedNotNull( side, ofThis );
+	public
+			Symbol
+			getSideOf(
+						Position side,
+						Symbol ofThis )
+	{
+		
+		RunTime.assumedNotNull(
+								side,
+								ofThis );
 		Symbol ret = null;
 		
 		this.refreshIterator();
-		try {
+		try
+		{
 			iter.goTo( ofThis );
-			if ( iter.now() != null ) {
+			if ( iter.now() != null )
+			{
 				
-				switch ( side ) {
-				case BEFORE:
-					iter.goPrev();
-					break;
-				case AFTER:
-					iter.goNext();
-					break;
-				default:
-					RunTime.badCall( "unsupported position" );
+				switch ( side )
+				{
+					case BEFORE:
+						iter.goPrev();
+						break;
+					case AFTER:
+						iter.goNext();
+						break;
+					default:
+						RunTime.badCall( "unsupported position" );
 				}
 				
 				ret = iter.now();
 			}
-		} catch ( DatabaseException e ) {
-			throw new StorageException( e );
-		} finally {
+		}
+		catch ( Throwable t )
+		{
+			RunTime.throWrapped( t );
+		}
+		finally
+		{
 			this.deInitIterator();
 		}
 		

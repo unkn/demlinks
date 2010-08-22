@@ -28,7 +28,6 @@ package org.dml.level020;
 import org.dml.database.bdb.level2.BDBVectorIterator;
 import org.dml.level010.Level010_DMLStorageWrapper;
 import org.dml.level010.Symbol;
-import org.dml.storagewrapper.StorageException;
 
 
 
@@ -36,7 +35,10 @@ import org.dml.storagewrapper.StorageException;
  * 
  *
  */
-public interface Level020_DMLStorageWrapper extends Level010_DMLStorageWrapper {
+public interface Level020_DMLStorageWrapper
+		extends
+		Level010_DMLStorageWrapper
+{
 	
 	/**
 	 * @param first
@@ -44,30 +46,62 @@ public interface Level020_DMLStorageWrapper extends Level010_DMLStorageWrapper {
 	 * @return
 	 * @throws StorageException
 	 */
-	public boolean ensureVector( Symbol first, Symbol second ) throws StorageException;
+	public
+			boolean
+			ensureVector(
+							Symbol first,
+							Symbol second );
 	
+
+	public
+			boolean
+			isVector(
+						Symbol first,
+						Symbol second );
 	
-	public boolean isVector( Symbol first, Symbol second );
+
+	public
+			BDBVectorIterator<Symbol, Symbol>
+			getIterator_on_Initials_of(
+										Symbol terminalObject );
 	
-	public BDBVectorIterator<Symbol, Symbol> getIterator_on_Initials_of( Symbol terminalObject );
-	
+
 	/**
 	 * @param initialObject
 	 * @return already inited iterator, use deInit() when done
 	 */
-	public BDBVectorIterator<Symbol, Symbol> getIterator_on_Terminals_of( Symbol initialObject );
+	public
+			BDBVectorIterator<Symbol, Symbol>
+			getIterator_on_Terminals_of(
+											Symbol initialObject );
 	
-	public int countInitials( Symbol ofTerminalObject );
+
+	public
+			int
+			countInitials(
+							Symbol ofTerminalObject );
 	
-	public int countTerminals( Symbol ofInitialObject );
+
+	public
+			int
+			countTerminals(
+							Symbol ofInitialObject );
 	
-	public Symbol findCommonTerminalForInitials( Symbol initial1, Symbol initial2 );
+
+	public
+			Symbol
+			findCommonTerminalForInitials(
+											Symbol initial1,
+											Symbol initial2 );
 	
-	
+
 	/**
 	 * @param initial
 	 * @param terminal
 	 * @return true if existed
 	 */
-	boolean removeVector( Symbol initial, Symbol terminal );
+			boolean
+			removeVector(
+							Symbol initial,
+							Symbol terminal );
 }

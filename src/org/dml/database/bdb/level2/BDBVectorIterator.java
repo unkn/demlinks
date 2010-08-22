@@ -52,7 +52,10 @@ import com.sleepycat.je.OperationStatus;
  * alphabetically so to speak, but shouldn't count on this!<br>
  * //FIXME: maybe make a way to not throw DatabaseException from here, because this is being used in dml environment
  */
-public class BDBVectorIterator<InitialType, TerminalType> extends Initer {
+public class BDBVectorIterator<InitialType, TerminalType>
+		extends
+		Initer
+{
 	
 	private final Database						db;
 	private final InitialType					initialObject;								// key
@@ -70,148 +73,278 @@ public class BDBVectorIterator<InitialType, TerminalType> extends Initer {
 	// only read locks (I hope)
 	private static final LockMode				Locky					= LockMode.DEFAULT;
 	
-	public BDBVectorIterator( Level1_Storage_BerkeleyDB bdb_L1, Database whichPriDB, InitialType initialObject1,
-			EntryBinding<InitialType> initialBinding1, EntryBinding<TerminalType> terminalBinding1 ) {
-
-		RunTime.assumedNotNull( bdb_L1, whichPriDB, initialObject1, initialBinding1, terminalBinding1 );
+	
+	public BDBVectorIterator(
+			Level1_Storage_BerkeleyDB bdb_L1,
+			Database whichPriDB,
+			InitialType initialObject1,
+			EntryBinding<InitialType> initialBinding1,
+			EntryBinding<TerminalType> terminalBinding1 )
+	{
+		
+		RunTime.assumedNotNull(
+								bdb_L1,
+								whichPriDB,
+								initialObject1,
+								initialBinding1,
+								terminalBinding1 );
 		bdbL1 = bdb_L1;
 		db = whichPriDB;
 		initialObject = initialObject1;
 		initialBinding = initialBinding1;
 		terminalBinding = terminalBinding1;
 		deKey = new DatabaseEntry();
-		initialBinding.objectToEntry( initialObject, deKey );
+		initialBinding.objectToEntry(
+										initialObject,
+										deKey );
 		deData = new DatabaseEntry();
 		// TODO add transaction parameter and if null then make own tx
 		// maybe this won't work as expected; think again
 	}
 	
-	private final Cursor getCursor() throws DatabaseException {
 
-		if ( null == cursor ) {
+	private final
+			Cursor
+			getCursor()
+					throws DatabaseException
+	{
+		
+		if ( null == cursor )
+		{
 			txn = TransactionCapsule.getNewTransaction( bdbL1 );
-			cursor = db.openCursor( txn.get(), CursorConfig.READ_COMMITTED );
+			cursor = db.openCursor(
+									txn.get(),
+									CursorConfig.READ_COMMITTED );
 		}
 		RunTime.assumedNotNull( cursor );
 		return cursor;
 	}
 	
+
 	/**
 	 * @throws DatabaseException
 	 */
-	public void goFirst() throws DatabaseException {
-
+	public
+			void
+			goFirst()
+					throws DatabaseException
+	{
+		
 		deData.setSize( 0 );
 		RunTime.assumedTrue( deData.getOffset() == 0 );
-		OperationStatus ret = this.getCursor().getSearchKey( deKey, deData, Locky );
-		if ( OperationStatus.SUCCESS == ret ) {
+		OperationStatus ret = this.getCursor().getSearchKey(
+																deKey,
+																deData,
+																Locky );
+		if ( OperationStatus.SUCCESS == ret )
+		{
 			this.setNow( terminalBinding.entryToObject( deData ) );
-		} else {
+		}
+		else
+		{
 			this.setNow( null );
 		}
 	}
 	
-	public void goTo( TerminalType terminal ) throws DatabaseException {
 
-		terminalBinding.objectToEntry( terminal, deData );
+	public
+			void
+			goTo(
+					TerminalType terminal )
+					throws DatabaseException
+	{
+		
+		terminalBinding.objectToEntry(
+										terminal,
+										deData );
 		RunTime.assumedTrue( deData.getOffset() == 0 );
-		OperationStatus ret = this.getCursor().getSearchBoth( deKey, deData, Locky );
-		if ( OperationStatus.SUCCESS == ret ) {
+		OperationStatus ret = this.getCursor().getSearchBoth(
+																deKey,
+																deData,
+																Locky );
+		if ( OperationStatus.SUCCESS == ret )
+		{
 			this.setNow( terminalBinding.entryToObject( deData ) );
-		} else {
+		}
+		else
+		{
 			this.setNow( null );
 		}
 	}
 	
-	public TerminalType now() {
 
+	public
+			TerminalType
+			now()
+	{
+		
 		return currentTerminalObject;
 	}
 	
-	private void setNow( TerminalType newNow ) {
 
+	private
+			void
+			setNow(
+					TerminalType newNow )
+	{
+		
 		currentTerminalObject = newNow;// null allowed
 	}
 	
-	public void goNext() throws DatabaseException {
 
-		if ( null != this.now() ) {
+	public
+			void
+			goNext()
+					throws DatabaseException
+	{
+		
+		if ( null != this.now() )
+		{
 			RunTime.assumedTrue( deData.getOffset() == 0 );
-			OperationStatus ret = this.getCursor().getNextDup( deKey, deData, Locky );
-			if ( OperationStatus.SUCCESS == ret ) {
+			OperationStatus ret = this.getCursor().getNextDup(
+																deKey,
+																deData,
+																Locky );
+			if ( OperationStatus.SUCCESS == ret )
+			{
 				this.setNow( terminalBinding.entryToObject( deData ) );
-			} else {
+			}
+			else
+			{
 				this.setNow( null );
 			}
-		} else {
+		}
+		else
+		{
 			RunTime.badCall( "called goNext() while now() was null" );
 		}
 	}
 	
-	public void goPrev() throws DatabaseException {
 
-		if ( null != this.now() ) {
+	public
+			void
+			goPrev()
+					throws DatabaseException
+	{
+		
+		if ( null != this.now() )
+		{
 			RunTime.assumedTrue( deData.getOffset() == 0 );
-			OperationStatus ret = this.getCursor().getPrevDup( deKey, deData, Locky );
-			if ( OperationStatus.SUCCESS == ret ) {
+			OperationStatus ret = this.getCursor().getPrevDup(
+																deKey,
+																deData,
+																Locky );
+			if ( OperationStatus.SUCCESS == ret )
+			{
 				this.setNow( terminalBinding.entryToObject( deData ) );
-			} else {
+			}
+			else
+			{
 				this.setNow( null );
 			}
-		} else {
+		}
+		else
+		{
 			RunTime.badCall( "called goPrev() while now() was null" );
 		}
 	}
 	
+
 	/**
 	 * @return
-	 * @throws DatabaseException
 	 */
-	public int count() throws DatabaseException {
-
-		if ( this.now() == null ) {
-			this.goFirst();
-			if ( null == this.now() ) {
-				return 0;
+	public
+			int
+			count()
+	{
+		try
+		{
+			if ( this.now() == null )
+			{
+				this.goFirst();
+				if ( null == this.now() )
+				{
+					return 0;
+				}
+				int ret = this.getCursor().count();
+				this.setNow( null );
+				return ret;
 			}
-			int ret = this.getCursor().count();
-			this.setNow( null );
-			return ret;
-		} else {
-			return this.getCursor().count();
+			else
+			{
+				return this.getCursor().count();
+			}
+		}
+		catch ( Throwable t )
+		{
+			RunTime.throWrapped( t );
+			return 0;// dummy
 		}
 	}
 	
-	@Override
-	protected void done( MethodParams params ) {
 
-		try {
+	@Override
+	protected
+			void
+			done(
+					MethodParams params )
+	{
+		
+		try
+		{
 			this.close();
-		} catch ( DatabaseException e ) {
-			Log.thro( e.getLocalizedMessage() );
+		}
+		catch ( Throwable t )
+		{
+			Log.thro( t.getLocalizedMessage() );
+			RunTime.throWrapped( t );
 		}
 		
 	}
 	
-	private final void close() throws DatabaseException {
 
-		if ( null != cursor ) {
-			try {
+	private final
+			void
+			close()
+	{
+		
+		if ( null != cursor )
+		{
+			try
+			{
 				cursor.close();
-			} catch ( DatabaseException e ) {
+			}
+			catch ( Throwable t )
+			{
+				RunTime.throPostponed( t );
 				txn = txn.abort();
-				throw e;
-			} finally {
+				RunTime.throwAllThatWerePosponed();
+			}
+			finally
+			{
 				cursor = null;
 			}
-			txn = txn.commit();
+			try
+			{
+				txn = txn.commit();
+			}
+			catch ( Throwable t )
+			{
+				RunTime.throWrapped( t );
+			}
 		}
 	}
 	
-	@Override
-	protected void start( MethodParams params ) {
 
-		if ( null != params ) {
+	@Override
+	protected
+			void
+			start(
+					MethodParams params )
+	{
+		
+		if ( null != params )
+		{
 			RunTime.badCall( "not accepting any parameters here" );
 		}
 		// try {
@@ -219,18 +352,23 @@ public class BDBVectorIterator<InitialType, TerminalType> extends Initer {
 		// // if ( this.now() == null ) {
 		// // RunTime.bug( "cursor init failed" );
 		// // }
-		// } catch ( DatabaseException de ) {
 		// throw new StorageException( de );
 		// }
 	}
 	
+
 	/**
 	 * @throws DatabaseException
 	 * 
 	 */
-	public boolean delete() throws DatabaseException {
-
-		if ( null == this.now() ) {
+	public
+			boolean
+			delete()
+					throws DatabaseException
+	{
+		
+		if ( null == this.now() )
+		{
 			return false;
 		}
 		OperationStatus ret = this.getCursor().delete();

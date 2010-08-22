@@ -44,40 +44,80 @@ import com.sleepycat.bind.tuple.TupleBinding;
  * 
  *
  */
-public class AllTupleBindings {
+public class AllTupleBindings
+{
 	
 	@SuppressWarnings( "rawtypes" )
 	private static final Map<Class, TupleBinding>	nonPrimitives	= new HashMap<Class, TupleBinding>();
-	static {
+	static
+	{
 		// add to this list any objects that you expect to store into a BDB
 		// dbase, allows overriding existing ones from TupleBinding
-		addNonPrimitive( Symbol.class, new SymbolBinding() );
-		addNonPrimitive( JavaID.class, new JavaIDBinding() );
-		addNonPrimitive( JUnit_Base1.class, new JUnit_Base1Binding() );
+		addNonPrimitive(
+							Symbol.class,
+							new SymbolBinding() );
+		addNonPrimitive(
+							JavaID.class,
+							new JavaIDBinding() );
+		addNonPrimitive(
+							JUnit_Base1.class,
+							new JUnit_Base1Binding() );
 	}
+	
 	
 	// parametric method erm, generic method see generics-tutorial.pdf on inet
-	private static <T> void addNonPrimitive( Class<T> cls, TupleBinding<T> binding ) {
-
-		int formerSize = nonPrimitives.size();
-		nonPrimitives.put( cls, binding );
-		// making sure nothing is overwritten
-		RunTime.assumedTrue( nonPrimitives.size() == formerSize + 1 );
+	private static
+			<T>
+			void
+			addNonPrimitive(
+								Class<T> cls,
+								TupleBinding<T> binding )
+	{
+		try
+		{
+			int formerSize = nonPrimitives.size();
+			nonPrimitives.put(
+								cls,
+								binding );
+			// making sure nothing is overwritten
+			RunTime.assumedTrue( nonPrimitives.size() == formerSize + 1 );
+		}
+		catch ( Throwable t )
+		{
+			RunTime.throWrapped( t );
+		}
 	}
 	
-	@SuppressWarnings( {
-			"rawtypes", "unchecked"
-	} )
-	public static <T> TupleBinding<T> getBinding( Class<T> cls ) {
 
-		TupleBinding t = nonPrimitives.get( cls );// first
-		if ( null == t ) {
-			t = TupleBinding.getPrimitiveBinding( cls );// second
-			if ( null == t ) {
-				RunTime.bug( "TupleBinding not yet defined for class '" + cls.getSimpleName()
-						+ "' you may want to add it to the above list when defined!" );
+	@SuppressWarnings(
+	{
+			"rawtypes",
+			"unchecked"
+	} )
+	public static
+			<T>
+			TupleBinding<T>
+			getBinding(
+						Class<T> cls )
+	{
+		try
+		{
+			TupleBinding t = nonPrimitives.get( cls );// first
+			if ( null == t )
+			{
+				t = TupleBinding.getPrimitiveBinding( cls );// second
+				if ( null == t )
+				{
+					RunTime.bug( "TupleBinding not yet defined for class '" + cls.getSimpleName()
+							+ "' you may want to add it to the above list when defined!" );
+				}
 			}
+			return t;
 		}
-		return t;
+		catch ( Throwable t )
+		{
+			RunTime.throWrapped( t );
+			return null;
+		}
 	}
 }
