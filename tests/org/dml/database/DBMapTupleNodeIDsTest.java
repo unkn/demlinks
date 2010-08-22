@@ -104,11 +104,10 @@ public class DBMapTupleNodeIDsTest
 	{
 		
 
-		Factory.deInitIfInited_WithPostponedThrows( bdb );
-		bdb = null;
-		System.out.println( "tdb:" );
 		Factory.deInitIfInited_WithPostponedThrows( tdb );
 		tdb = null;
+		Factory.deInitIfInited_WithPostponedThrows( bdb );
+		bdb = null;
 		// System.out.println( "all:" );
 		// Factory.deInitAll();
 		// System.out.println( "done" );

@@ -83,7 +83,7 @@ public class Level010_DMLEnvironmentTest
 			tearDown()
 	{
 		
-		Factory.deInit( dml1 );
+		Factory.deInitIfAlreadyInited( dml1 );
 		// dml1.deInitSilently();
 		dml1 = null;
 		// Factory.deInit( params );// don't move this to setUp() because is used in tests still

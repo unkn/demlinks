@@ -155,7 +155,7 @@ public class Level020_DMLEnvironmentTest
 		}
 		finally
 		{
-			Factory.deInit( d1 );
+			Factory.deInitIfAlreadyInited( d1 );
 			// d1.deInit();
 			// d2.deInit();
 			assertFalse( d1.isInited() );

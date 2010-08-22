@@ -26,8 +26,11 @@ package org.dml.tracking;
 
 
 
+import static org.junit.Assert.*;
+
 import org.dml.tools.Initer;
 import org.dml.tools.RunTime;
+import org.dml.tracking.FactoryTest.D2;
 import org.javapart.logger.Log;
 import org.junit.Test;
 import org.references.Reference;
@@ -188,6 +191,166 @@ public class FactoryTest
 		
 	}
 	
+	public class D1
+			extends
+			Initer
+	{
+		
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see org.dml.tools.Initer#start(org.references.method.MethodParams)
+		 */
+		@Override
+		protected
+				void
+				start(
+						MethodParams params )
+		{
+			// TODO Auto-generated method stub
+			
+		}
+		
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see org.dml.tools.Initer#done(org.references.method.MethodParams)
+		 */
+		@Override
+		protected
+				void
+				done(
+						MethodParams params )
+		{
+			// TODO Auto-generated method stub
+			
+		}
+		
+	}
+	
+	public class D2
+			extends
+			D1
+	{
+		
+	}
+	
+	@SuppressWarnings( "unused" )
+	public class C
+			extends
+			Initer
+	{
+		
+		Object	passed	= null;
+		Object	passed2	= null;
+		
+		
+		public C()
+		{
+			
+		}
+		
+
+		
+		public C(
+				String dummy )
+		{
+			
+		}
+		
+
+		public C(
+				D1 one )
+		{
+			passed = one;
+		}
+		
+
+		public C(
+				D2 two )
+		{
+			passed = two;
+		}
+		
+
+		public C(
+				D1 d1,
+				D1 w )
+		{
+			System.out.println( "mkay" );
+			passed = d1;
+			passed2 = w;
+		}
+		
+
+		public C(
+				D2 d2,
+				D2 d22 )
+		{
+			passed = d2;
+			passed2 = d22;
+		}
+		
+
+		public C(
+				D2 d2,
+				D1 d1 )
+		{
+			passed = d2;
+			passed2 = d1;
+		}
+		
+
+		public C(
+				Integer nothing )
+		{
+			
+		}
+		
+
+		public C(
+				D1 d1,
+				D2 d2 )
+		{
+			passed = d1;
+			passed2 = d2;
+		}
+		
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see org.dml.tools.Initer#start(org.references.method.MethodParams)
+		 */
+		@Override
+		protected
+				void
+				start(
+						MethodParams params )
+		{
+			// TODO Auto-generated method stub
+			
+		}
+		
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see org.dml.tools.Initer#done(org.references.method.MethodParams)
+		 */
+		@Override
+		protected
+				void
+				done(
+						MethodParams params )
+		{
+			// TODO Auto-generated method stub
+			
+		}
+		
+	}
+	
 	
 	@Test
 	public
@@ -225,8 +388,14 @@ public class FactoryTest
 		finally
 		{
 			// Factory.deInitAll();
-			Factory.deInitIfAlreadyInited( a );
-			Factory.deInitIfAlreadyInited( newB );
+			if ( null != a )
+			{
+				Factory.deInitIfAlreadyInited( a );
+			}
+			if ( null != newB )
+			{
+				Factory.deInitIfAlreadyInited( newB );
+			}
 		}
 	}
 	
@@ -313,4 +482,47 @@ public class FactoryTest
 	}
 	
 
+	@Test
+	public
+			void
+			testNew()
+	{
+		D1 d1 = new D1();
+		D2 d2 = new D2();
+		C c = Factory.getNewInstanceAndInitWithoutMethodParams(
+																C.class,
+																this,
+																d2 );
+		assertTrue( d2 == c.passed );
+		assertTrue( null == c.passed2 );
+		assertTrue( d2.getClass() == c.passed.getClass() );
+		
+		c = Factory.getNewInstanceAndInitWithoutMethodParams(
+																C.class,
+																this,
+																d2,
+																d1 );
+		assertTrue( d2 == c.passed );
+		assertTrue( d1 == c.passed2 );
+		assertTrue( d2.getClass() == c.passed.getClass() );
+		assertTrue( d1.getClass() == c.passed2.getClass() );
+		
+		c = Factory.getNewInstanceAndInitWithoutMethodParams(
+																C.class,
+																this,
+																d1,
+																d2 );
+		assertTrue( d1 == c.passed );
+		assertTrue( d2 == c.passed2 );
+		assertTrue( d1.getClass() == c.passed.getClass() );
+		assertTrue( d2.getClass() == c.passed2.getClass() );
+		
+		c = Factory.getNewInstanceAndInitWithoutMethodParams(
+																C.class,
+																this,
+																d1,
+																d1 );
+		assertTrue( d1 == c.passed );
+		assertTrue( d1 == c.passed2 );
+	}
 }

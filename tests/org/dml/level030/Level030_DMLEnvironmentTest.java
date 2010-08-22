@@ -29,9 +29,11 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import org.dml.error.AssumptionError;
 import org.dml.error.BadCallError;
 import org.dml.level010.JavaID;
 import org.dml.level010.Symbol;
+import org.dml.tools.RunTime;
 import org.dml.tracking.Factory;
 import org.junit.After;
 import org.junit.Before;
@@ -130,9 +132,15 @@ public class Level030_DMLEnvironmentTest
 		{
 			p3.pointTo( null );
 		}
-		catch ( AssertionError ae )
+		catch ( Throwable t )
 		{
-			threw = true;
+			if ( RunTime.isThisWrappedException_of_thisType(
+																t,
+																AssumptionError.class ) )
+			{
+				threw = true;
+				RunTime.clearLastThrown_andAllItsWraps();
+			}
 		}
 		assertTrue( threw );
 		
@@ -146,9 +154,15 @@ public class Level030_DMLEnvironmentTest
 		{
 			p3.assumedValid();
 		}
-		catch ( AssertionError ae )
+		catch ( Throwable t )
 		{
-			threw = true;
+			if ( RunTime.isThisWrappedException_of_thisType(
+																t,
+																AssumptionError.class ) )
+			{
+				threw = true;
+				RunTime.clearLastThrown_andAllItsWraps();
+			}
 		}
 		assertFalse( threw );
 		
@@ -157,9 +171,15 @@ public class Level030_DMLEnvironmentTest
 		{
 			p3.getPointee();
 		}
-		catch ( AssertionError ae )
+		catch ( Throwable t )
 		{
-			threw = true;
+			if ( RunTime.isThisWrappedException_of_thisType(
+																t,
+																AssumptionError.class ) )
+			{
+				threw = true;
+				RunTime.clearLastThrown_andAllItsWraps();
+			}
 		}
 		assertFalse( threw );
 		
@@ -168,9 +188,15 @@ public class Level030_DMLEnvironmentTest
 		{
 			p3.pointTo( pointsTo );
 		}
-		catch ( AssertionError ae )
+		catch ( Throwable t )
 		{
-			threw = true;
+			if ( RunTime.isThisWrappedException_of_thisType(
+																t,
+																AssumptionError.class ) )
+			{
+				threw = true;
+				RunTime.clearLastThrown_andAllItsWraps();
+			}
 		}
 		assertFalse( threw );
 		
@@ -179,9 +205,15 @@ public class Level030_DMLEnvironmentTest
 		{
 			p3.getAsSymbol();
 		}
-		catch ( AssertionError ae )
+		catch ( Throwable t )
 		{
-			threw = true;
+			if ( RunTime.isThisWrappedException_of_thisType(
+																t,
+																AssumptionError.class ) )
+			{
+				threw = true;
+				RunTime.clearLastThrown_andAllItsWraps();
+			}
 		}
 		assertFalse( threw );
 	}
@@ -216,9 +248,15 @@ public class Level030_DMLEnvironmentTest
 																	pointTo,
 																	false );
 		}
-		catch ( BadCallError bce )
+		catch ( Throwable t )
 		{
-			must = true;
+			if ( RunTime.isThisWrappedException_of_thisType(
+																t,
+																BadCallError.class ) )
+			{
+				must = true;
+				RunTime.clearLastThrown_andAllItsWraps();
+			}
 		}
 		assertTrue( must );
 		
@@ -232,9 +270,15 @@ public class Level030_DMLEnvironmentTest
 																	domain,
 																	true );
 		}
-		catch ( BadCallError bce )
+		catch ( Throwable t )
 		{
-			must = true;
+			if ( RunTime.isThisWrappedException_of_thisType(
+																t,
+																BadCallError.class ) )
+			{
+				must = true;
+				RunTime.clearLastThrown_andAllItsWraps();
+			}
 		}
 		assertTrue( must );
 		
@@ -255,9 +299,15 @@ public class Level030_DMLEnvironmentTest
 		{
 			dp2.setDomain( dp2.getAsSymbol() );
 		}
-		catch ( AssertionError ae )
+		catch ( Throwable t )
 		{
-			threw = true;
+			if ( RunTime.isThisWrappedException_of_thisType(
+																t,
+																AssumptionError.class ) )
+			{
+				threw = true;
+				RunTime.clearLastThrown_andAllItsWraps();
+			}
 		}
 		assertTrue( threw );
 		// TODO more tests

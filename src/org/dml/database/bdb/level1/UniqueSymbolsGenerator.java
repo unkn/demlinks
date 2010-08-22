@@ -25,6 +25,7 @@ package org.dml.database.bdb.level1;
 
 
 
+import org.dml.database.bdb.level2.Level2_Storage_BerkeleyDB;
 import org.dml.level010.Symbol;
 import org.dml.tools.Initer;
 import org.dml.tools.RunTime;
@@ -39,7 +40,10 @@ import com.sleepycat.je.DatabaseException;
  * 
  *
  */
-public class UniqueSymbolsGenerator extends Initer {
+public class UniqueSymbolsGenerator
+		extends
+		Initer
+{
 	
 	// it's null only once even if reInit() is called later
 	private DBSequence			seq						= null;
@@ -51,26 +55,40 @@ public class UniqueSymbolsGenerator extends Initer {
 	
 	Level1_Storage_BerkeleyDB	bdbL1;
 	
-	public UniqueSymbolsGenerator( Level1_Storage_BerkeleyDB bdbLevel1 ) {
-
+	
+	public UniqueSymbolsGenerator(
+			Level1_Storage_BerkeleyDB bdbLevel1 )
+	{
+		
 		RunTime.assumedNotNull( bdbLevel1 );
 		RunTime.assumedTrue( bdbLevel1.isInited() );
 		bdbL1 = bdbLevel1;
 	}
 	
+
 	/**
 	 * @return
 	 * @throws DatabaseException
 	 */
-	private final DBSequence getDBSeq() throws DatabaseException {
-
-		if ( null == seq ) {
+	private final
+			DBSequence
+			getDBSeq()
+					throws DatabaseException
+	{
+		
+		if ( null == seq )
+		{
 			// init once:
-			seq = Factory.getNewInstanceAndInitWithoutMethodParams( DBSequence.class, bdbL1, seq_UniqueSymbolsPuller );
+			seq = Factory.getNewInstanceAndInitWithoutMethodParams(
+																	DBSequence.class,
+																	bdbL1,
+																	seq_UniqueSymbolsPuller );
 			// seq = new DBSequence( bdbL1, seq_UniqueSymbolsPuller );
 			// seq.init( null );
 			
-		} else {
+		}
+		else
+		{
 			Factory.reInitIfNotInited( seq );
 			// if ( !seq.isInited() ) {
 			// seq.reInit();
@@ -80,18 +98,30 @@ public class UniqueSymbolsGenerator extends Initer {
 		return seq;
 	}
 	
+
 	/**
 	 * @return a long that doesn't exist yet (and never will, even if
 	 *         exceptions occur)
 	 * @throws DatabaseException
 	 */
-	private long getUniqueLong() throws DatabaseException {
-
-		return this.getDBSeq().getSequence().get( null, SEQ_DELTA );
+	private
+			long
+			getUniqueLong()
+					throws DatabaseException
+	{
+		
+		return this.getDBSeq().getSequence().get(
+													null,
+													SEQ_DELTA );
 	}
 	
-	public final Symbol getNewUniqueSymbol() throws DatabaseException {
 
+	public final
+			Symbol
+			getNewUniqueSymbol()
+					throws DatabaseException
+	{
+		
 		// this new Symbol is not saved anywhere in the database, but it's
 		// ensured that it will not be created again, so it's unique even if you
 		// don't save it in the database later
@@ -102,20 +132,31 @@ public class UniqueSymbolsGenerator extends Initer {
 		return sym;
 	}
 	
-	@Override
-	protected void done( MethodParams params ) {
 
+	@Override
+	protected
+			void
+			done(
+					MethodParams params )
+	{
+		
 		// close seq
-		if ( null != seq ) {
+		if ( null != seq )
+		{
 			// seq = seq.done();
 			Factory.deInit( seq );
 			// don't null it
 		}
 	}
 	
-	@Override
-	protected void start( MethodParams params ) {
 
+	@Override
+	protected
+			void
+			start(
+					MethodParams params )
+	{
+		
 		RunTime.assumedNull( params );
 	}
 }

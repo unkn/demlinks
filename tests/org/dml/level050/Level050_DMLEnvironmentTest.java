@@ -31,6 +31,7 @@ import static org.junit.Assert.assertTrue;
 import org.dml.error.BadCallError;
 import org.dml.level010.JavaID;
 import org.dml.level010.Symbol;
+import org.dml.tools.RunTime;
 import org.dml.tracking.Factory;
 import org.junit.After;
 import org.junit.Before;
@@ -109,9 +110,15 @@ public class Level050_DMLEnvironmentTest
 									name2,
 									false );
 		}
-		catch ( BadCallError bce )
+		catch ( Throwable t )
 		{
-			threw = true;
+			if ( RunTime.isThisWrappedException_of_thisType(
+																t,
+																BadCallError.class ) )
+			{
+				threw = true;
+				RunTime.clearLastThrown_andAllItsWraps();
+			}
 		}
 		assertTrue( threw );
 		
@@ -123,9 +130,15 @@ public class Level050_DMLEnvironmentTest
 											name2,
 											true );
 		}
-		catch ( BadCallError bce )
+		catch ( Throwable t )
 		{
-			threw = true;
+			if ( RunTime.isThisWrappedException_of_thisType(
+																t,
+																BadCallError.class ) )
+			{
+				threw = true;
+				RunTime.clearLastThrown_andAllItsWraps();
+			}
 		}
 		assertTrue( threw );
 		

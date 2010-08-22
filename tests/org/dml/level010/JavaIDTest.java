@@ -27,6 +27,7 @@ package org.dml.level010;
 
 import static org.junit.Assert.assertTrue;
 
+import org.dml.error.AssumptionError;
 import org.dml.storagewrapper.StorageException;
 import org.dml.tools.RunTime;
 import org.junit.After;
@@ -39,13 +40,19 @@ import org.junit.Test;
  * 
  *
  */
-public class JavaIDTest {
+public class JavaIDTest
+{
 	
 	JavaID	a, b, c;
 	
+	
 	@Before
-	public void init() throws StorageException {
-
+	public
+			void
+			init()
+					throws StorageException
+	{
+		
 		// DMLEnvironment.init();
 		JavaID.junitClearAll();
 		assertTrue( JavaID.all_JavaIDs.size() == 0 );
@@ -54,23 +61,37 @@ public class JavaIDTest {
 		c = JavaID.ensureJavaIDFor( "C" );
 	}
 	
-	@After
-	public void tearDown() {
 
+	@After
+	public
+			void
+			tearDown()
+	{
+		
 		// DMLEnvironment.deInit();
 	}
 	
-	@Test
-	public void listOfAllTest() {
 
+	@Test
+	public
+			void
+			listOfAllTest()
+	{
+		
 		assertTrue( JavaID.all_JavaIDs.size() == 3 );
 		System.out.println( JavaID.all_JavaIDs );
 	}
 	
-	@Test
-	public void duplicatesNotAllowedTest() {
 
-		String _a = "ABCDEDFASA".substring( 0, 1 );
+	@Test
+	public
+			void
+			duplicatesNotAllowedTest()
+	{
+		
+		String _a = "ABCDEDFASA".substring(
+											0,
+											1 );
 		assertTrue( "A" != _a );
 		assertTrue( "A".equals( _a ) );// compare by contents yields true
 		assertTrue( a == JavaID.ensureJavaIDFor( _a ) );// not re-added
@@ -91,6 +112,7 @@ public class JavaIDTest {
 		assertTrue( j1.equals( j2 ) );
 	}
 	
+
 	// @Test
 	// public void badCallTest() {
 	//
@@ -108,13 +130,23 @@ public class JavaIDTest {
 	// }
 	
 	@Test
-	public void nullTest() throws StorageException {
-
+	public
+			void
+			nullTest()
+					throws StorageException
+	{
+		
 		boolean aeGot = false;
-		try {
+		try
+		{
 			JavaID.ensureJavaIDFor( null );
-		} catch ( Throwable t ) {
-			if ( RunTime.isThisWrappedException_of_thisType( t, AssertionError.class ) ) {
+		}
+		catch ( Throwable t )
+		{
+			if ( RunTime.isThisWrappedException_of_thisType(
+																t,
+																AssumptionError.class ) )
+			{
 				aeGot = true;
 				RunTime.clearLastThrown_andAllItsWraps();
 			}

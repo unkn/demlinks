@@ -29,6 +29,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import org.dml.error.AssumptionError;
 import org.dml.error.BadCallError;
 import org.dml.level010.JavaID;
 import org.dml.level010.Symbol;
@@ -189,9 +190,15 @@ public class Level040_DMLEnvironmentTest
 						e4,
 						Position.FIRST );
 		}
-		catch ( BadCallError bce )
+		catch ( Throwable t )
 		{
-			threw = true;
+			if ( RunTime.isThisWrappedException_of_thisType(
+																t,
+																BadCallError.class ) )
+			{
+				threw = true;
+				RunTime.clearLastThrown_andAllItsWraps();
+			}
 		}
 		assertTrue( threw );
 		
@@ -290,9 +297,15 @@ public class Level040_DMLEnvironmentTest
 						null,
 						Position.LAST );
 		}
-		catch ( BadCallError bce )
+		catch ( Throwable t )
 		{
-			threw = true;
+			if ( RunTime.isThisWrappedException_of_thisType(
+																t,
+																BadCallError.class ) )
+			{
+				threw = true;
+				RunTime.clearLastThrown_andAllItsWraps();
+			}
 		}
 		assertTrue( threw );
 		
@@ -309,9 +322,15 @@ public class Level040_DMLEnvironmentTest
 						null,
 						Position.LAST );
 		}
-		catch ( BadCallError bce )
+		catch ( Throwable t )
 		{
-			threw = true;
+			if ( RunTime.isThisWrappedException_of_thisType(
+																t,
+																BadCallError.class ) )
+			{
+				threw = true;
+				RunTime.clearLastThrown_andAllItsWraps();
+			}
 		}
 		assertTrue( threw );
 		RunTime.assumedTrue( list.isNullAllowed() );
@@ -327,9 +346,15 @@ public class Level040_DMLEnvironmentTest
 															false,
 															false );
 		}
-		catch ( BadCallError bce )
+		catch ( Throwable t )
 		{
-			threw = true;
+			if ( RunTime.isThisWrappedException_of_thisType(
+																t,
+																BadCallError.class ) )
+			{
+				threw = true;
+				RunTime.clearLastThrown_andAllItsWraps();
+			}
 		}
 		assertTrue( threw );
 	}
