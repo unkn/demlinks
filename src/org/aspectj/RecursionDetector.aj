@@ -34,10 +34,17 @@ import org.dml.tools.RunTime;
  */
 public aspect RecursionDetector
 {
+	
 	static {
 		RunTime.recursiveLoopDetected=false; 
+		RunTime.callTracingFromHere=false; 
 		//RunTime.recursionObject=null;
 	}
+	
+	//don't change value of these two:
+	private static boolean beforeAlready=false;
+	private static boolean afterAlready=false;
+	
 	private static final int CALL_LEVEL_INIT=-1;
 	private static int callLevel=CALL_LEVEL_INIT;
 	//private static int recursiveLoopDetectedAtLevel=0;
@@ -50,59 +57,105 @@ public aspect RecursionDetector
 	
 	pointcut anyCall(): call(* *.*(..))//any calls to any methods in any package...
 						&& !this(RecursionDetector);
+//						&& !target(RecursionDetector)
+//						&& !call(* RecursionDetector.*(..));
+//						&& !this(TwoWayHashMap)
+//						&& !this(RunTime)
+//						&& !this(Log);
 	
 	before(): anyCall() {
-		callLevel++;
-		Signature sig=thisJoinPointStaticPart.getSignature();
-		String link=sig2Link(sig,thisJoinPointStaticPart.getSourceLocation().toString());
-	//System.err.println(formLevel("\u250D "+RunTime.recursiveLoopDetected+" "+link));
-		String which=sig.toLongString();
-		if (null != perLevelStore.put( callLevel, which )) {
-			//BUG
-			err("#100 already existing call at that same level impossible");
+		if (afterAlready) {
+			return;
 		}
 		
-		boolean recursionYes=!calls.add(which);//already there? it then got overwritten with same value
-		if (null != isLoopAtThisLevel.put(callLevel, recursionYes)) {
-			err("#121 a previous value shouldn't have existed");
+		if (beforeAlready) {
+			return;
+		}else {
+			beforeAlready=true;
 		}
-		if (recursionYes) {
-			RunTime.recursiveLoopDetected=true;
-			System.err.println("recursion about to begin at: "+link);
+		try{
+			callLevel++;//first
+			
+			Signature sig=thisJoinPointStaticPart.getSignature();
+			String link=sig2Link(sig,thisJoinPointStaticPart.getSourceLocation().toString());
+			String which=sig.toLongString();
+			if (null != perLevelStore.put( callLevel, which )) {
+				//BUG
+				throwErr("#100 already existing call at that same level impossible");
+			}
+			
+			RunTime.recursiveLoopDetected=!calls.add(which);//already there? it then got overwritten with same value
+			//System.err.println("A: "+calls.size());
+			if (null != isLoopAtThisLevel.put(callLevel, RunTime.recursiveLoopDetected)) {
+				throwErr("#121 a previous value should NOT have existed");
+			}
+			if (RunTime.recursiveLoopDetected) {
+				System.err.println("recursion about to begin callee(called at): "+link);
+			}
+		
+			if (RunTime.callTracingFromHere) {
+				System.err.println(formLevel("\u250D\u2501 "+RunTime.recursiveLoopDetected+" "+link));
+			}
+		
+		}finally{
+			//last:
+			beforeAlready=false;
 		}
 	}
 
 	after() : anyCall() {//returning normally or via thrown exception
-		if (callLevel <=CALL_LEVEL_INIT) {
-			err("#000 bug somewhere");
+		if (beforeAlready) {
+			return;
 		}
 		
-		Signature sig=thisJoinPointStaticPart.getSignature();
-		String link=sig2Link(sig,thisJoinPointStaticPart.getSourceLocation().toString());
-		//System.err.println(formLevel("\u2515 "+RunTime.recursiveLoopDetected+" "+link));
-		
-		if (null == isLoopAtThisLevel.remove( callLevel )) {
-			err("#358 a previous value should have existed");
+		if (afterAlready){
+			return;
+		}else {
+			afterAlready=true;
 		}
-		
-		callLevel--;
-		
-		if (callLevel>CALL_LEVEL_INIT) {
-			//restore loopdetected status for our caller
-			RunTime.recursiveLoopDetected=isLoopAtThisLevel.get( callLevel );
-		}
-		
-		String which=sig.toLongString();
-		if (which != perLevelStore.remove( callLevel+1 )){//||(callLevel==3)) {
-			err("#890 "+link+" at the same call level we returned from a different method " +
-					"than what we called");
-		}
-		//callLevel--;
-		if (!RunTime.recursiveLoopDetected) {
-			//remove only if not loop detected on current, because it got overwritten last time
-			if (!calls.remove( which )) {
-				err("#1034 "+link+" should've existed");
+		try{
+			if (callLevel <=CALL_LEVEL_INIT) {
+				throwErr("#000 bug somewhere");
 			}
+		
+			Signature sig=thisJoinPointStaticPart.getSignature();
+			String link=sig2Link(sig,thisJoinPointStaticPart.getSourceLocation().toString());
+			String which=sig.toLongString();
+			
+			if (isLoopAtThisLevel.remove( callLevel ) == null){//RunTime.recursiveLoopDetected) {
+				throwErr("#358 "+link+" "+callLevel+" a previous value should have existed and be the same as the state");
+			}
+		
+			if (!RunTime.recursiveLoopDetected) {
+				//remove only if not loop detected on current, because it got overwritten last time
+				//System.err.println("R: "+calls.size());
+				//System.err.flush();
+				if (!calls.remove( which )) {
+					throwErr("#1034 "+link+" should've existed");
+				}
+			}
+			
+			if (callLevel-1>CALL_LEVEL_INIT) {
+				//restore loopdetected status for our caller
+				RunTime.recursiveLoopDetected=isLoopAtThisLevel.get( callLevel-1 );
+			}else {
+				RunTime.recursiveLoopDetected=false;
+			}
+		
+			if (RunTime.callTracingFromHere) {
+				System.err.println(formLevel("\u2515\u2501 "+RunTime.recursiveLoopDetected+" "+link));
+			}
+			
+			if (which != perLevelStore.remove( callLevel )){//||(callLevel==3)) {
+				throwErr("#890 "+link+" should've existed");
+			}
+			
+			
+		
+		}finally{
+			//LAST:
+			callLevel--;
+			afterAlready=false;
 		}
 	}
 	
@@ -127,8 +180,18 @@ public aspect RecursionDetector
 		return x+msg;//String.format( "%-" + callLevel + "s%s", " ",msg);
 	}
 	
-	private static void err(String msg){
+	private static void throwErr(String msg){
 		System.err.println(msg);
-		throw new RuntimeException(msg+" in aspect "+RecursionDetector.class);
+//		try{
+			throw new RuntimeException(msg+" in aspect "+RecursionDetector.class);
+//		}finally{
+//			//must reset flags
+//			if (afterAlready) {
+//				afterAlready=false;
+//			}
+//			if (beforeAlready) {
+//				beforeAlready=false;
+//			}
+//		}
 	}
 }

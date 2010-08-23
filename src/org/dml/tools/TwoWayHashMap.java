@@ -44,6 +44,31 @@ public class TwoWayHashMap<KEY, DATA>
 	
 	/**
 	 * @param key
+	 * @return true if existed
+	 */
+	public
+			boolean
+			removeByKey(
+							KEY key )
+	{
+		RunTime.assumedNotNull( key );
+		DATA data = keyData.get( key );
+		if ( null != data )
+		{
+			// consistency check
+			KEY key2 = dataKey.get( data );
+			RunTime.assumedNotNull( key2 );
+			RunTime.assumedTrue( key == key2 );
+			RunTime.assumedTrue( keyData.remove( key ) == data );
+			RunTime.assumedTrue( dataKey.remove( data ) == key2 );
+			return true;
+		}
+		return false;// can be null
+	}
+	
+
+	/**
+	 * @param key
 	 * @return null if not found
 	 */
 	public
@@ -116,7 +141,7 @@ public class TwoWayHashMap<KEY, DATA>
 								data,
 								key );
 		if ( null == d1 )
-		{
+		{// KEY didn't exist, then so must the DATA not exist
 			RunTime.assumedNull( k1 );
 		}
 		else

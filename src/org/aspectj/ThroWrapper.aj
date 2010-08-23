@@ -32,6 +32,7 @@ import org.dml.tracking.Log;
  *
  */
 public aspect ThroWrapper {
+	private static boolean alreadyCalled=false;
 	static {
 		//never set this to false, to disable aspect you have to comment all lines
 		RunTime.throWrapperAspectEnabled=true;//used to calculate getLine when this aspect is on ie. +2 to location
@@ -49,12 +50,25 @@ public aspect ThroWrapper {
     
 
     Object around() : anyCall() {
+    	if (alreadyCalled) {
+    		return proceed();
+    	}else {
+    		alreadyCalled=true;
+    	}
     	//System.out.println("around: "+thisJoinPoint.getSignature());
     	try{
-    		return proceed();
+    		alreadyCalled=false;
+    		try {
+    			return proceed();
+    		}finally{
+    			alreadyCalled=true;
+    		}
     	}catch(Throwable t) {
     			RunTime.throWrapped( t );//this is caught again
     	}//catch
+    	finally{
+    		alreadyCalled=false;
+    	}
     	return null;
     }//around
     

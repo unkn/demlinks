@@ -304,9 +304,9 @@ public class RunTimeTest
 					int i,
 					int j )
 	{
-		System.out.println( "in2 with: " + i );
 		if ( !RunTime.recursiveLoopDetected )
 		{
+			System.out.println( "in2 with: " + i );
 			return this.loop( i + 1 );
 		}
 		return i;
@@ -318,9 +318,9 @@ public class RunTimeTest
 			loop(
 					int i )
 	{
-		System.out.println( "in1 with: " + i );
 		if ( !RunTime.recursiveLoopDetected )
 		{
+			System.out.println( "in1 with: " + i );
 			return this.loop(
 								i + 1,
 								0 );

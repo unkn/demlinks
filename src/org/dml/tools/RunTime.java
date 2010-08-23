@@ -37,6 +37,7 @@ import org.dml.tracking.Log;
 public class RunTime
 {
 	
+	public static boolean		callTracingFromHere				= false;
 	public static boolean		recursiveLoopDetected			= false;
 	public static int			throWrapperAspectEnabledJump	= +2;
 	public static boolean		throWrapperAspectEnabled		= false;
