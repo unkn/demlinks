@@ -109,20 +109,32 @@ public abstract class MainLevel0
 				// + " / " + iter.get( this ) );
 				RunTime.assumedTrue( iter.get( this ) == toValue );
 			}
-			catch ( IllegalArgumentException e )
+			catch ( Throwable t )
 			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				RunTime
-						.bug( "this usually happens when the VarLevel in each subclass are of class types that are not subclasses of previous VarLevel's type" );
-				// for example: class A has Z var; and class B extends A has X
-				// var and X doesn't extend Z, that is bad it should extend Z
-			}
-			catch ( IllegalAccessException e )
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				RunTime.bug();
+				Class<? extends Throwable> unwrappedLastThrownOne = RunTime
+						.getUnwrappedExceptionNeverNull(
+															t )
+						.getClass();
+				// RunTime.clearLastThrown_andAllItsWraps();
+				// if ( RunTime.isThisWrappedException_of_thisType(
+				// t,
+				// IllegalArgumentException.class ) )
+				// TODO: isAssignableFrom test exceptions is subclass of expected exception
+				if ( IllegalArgumentException.class == unwrappedLastThrownOne )
+				{
+					// RunTime.clearLastThrown_andAllItsWraps();
+					RunTime
+							.bug( "this usually happens when the VarLevel in each subclass are of class types that are not subclasses of previous VarLevel's type" );
+					// for example: class A has Z var; and class B extends A has X
+					// var and X doesn't extend Z, that is bad it should extend Z
+				}
+				else
+					if ( IllegalAccessException.class == unwrappedLastThrownOne )
+					{
+						// RunTime.clearLastThrown_andAllItsWraps()
+						RunTime.bug();
+					}
+				RunTime.throWrapped( t );// rethrow since it's none of the above
 			}
 			finally
 			{
@@ -153,9 +165,9 @@ public abstract class MainLevel0
 														(Class<?>[])null );
 			this.setAllVarLevelX( con.newInstance( (Object[])null ) );
 		}
-		catch ( Exception e )
+		catch ( Throwable t )
 		{
-			e.printStackTrace();
+			// e.printStackTrace();
 			RunTime.bug();
 		}
 		

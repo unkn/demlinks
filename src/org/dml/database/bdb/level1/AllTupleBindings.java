@@ -73,19 +73,12 @@ public class AllTupleBindings
 								Class<T> cls,
 								TupleBinding<T> binding )
 	{
-		try
-		{
-			int formerSize = nonPrimitives.size();
-			nonPrimitives.put(
-								cls,
-								binding );
-			// making sure nothing is overwritten
-			RunTime.assumedTrue( nonPrimitives.size() == formerSize + 1 );
-		}
-		catch ( Throwable t )
-		{
-			RunTime.throWrapped( t );
-		}
+		int formerSize = nonPrimitives.size();
+		nonPrimitives.put(
+							cls,
+							binding );
+		// making sure nothing is overwritten
+		RunTime.assumedTrue( nonPrimitives.size() == formerSize + 1 );
 	}
 	
 
@@ -100,24 +93,16 @@ public class AllTupleBindings
 			getBinding(
 						Class<T> cls )
 	{
-		try
+		TupleBinding t = nonPrimitives.get( cls );// first
+		if ( null == t )
 		{
-			TupleBinding t = nonPrimitives.get( cls );// first
+			t = TupleBinding.getPrimitiveBinding( cls );// second
 			if ( null == t )
 			{
-				t = TupleBinding.getPrimitiveBinding( cls );// second
-				if ( null == t )
-				{
-					RunTime.bug( "TupleBinding not yet defined for class '" + cls.getSimpleName()
-							+ "' you may want to add it to the above list when defined!" );
-				}
+				RunTime.bug( "TupleBinding not yet defined for class '" + cls.getSimpleName()
+						+ "' you may want to add it to the above list when defined!" );
 			}
-			return t;
 		}
-		catch ( Throwable t )
-		{
-			RunTime.throWrapped( t );
-			return null;
-		}
+		return t;
 	}
 }

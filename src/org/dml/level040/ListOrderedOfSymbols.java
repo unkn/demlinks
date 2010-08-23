@@ -813,10 +813,6 @@ public class ListOrderedOfSymbols
 					iter.goNext();
 				}
 			}
-			catch ( Throwable t )
-			{
-				RunTime.throWrapped( t );
-			}
 			finally
 			{
 				Factory.deInit( iter );

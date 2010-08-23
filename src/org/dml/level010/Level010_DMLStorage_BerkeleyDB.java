@@ -93,15 +93,8 @@ public class Level010_DMLStorage_BerkeleyDB
 	{
 		
 		RunTime.assumedNotNull( identifiedByThisSymbol );
-		// try
-		// {
 		return bdb.getDBMap_JavaIDs_To_Symbols().getJavaID(
 															identifiedByThisSymbol );
-		// }
-		// catch ( Throwable t )
-		// {
-		// RunTime.throWrapped( t );
-		// }
 	}
 	
 
@@ -113,15 +106,8 @@ public class Level010_DMLStorage_BerkeleyDB
 	{
 		
 		RunTime.assumedNotNull( identifiedByThisJavaID );
-		// try
-		// {
 		return bdb.getDBMap_JavaIDs_To_Symbols().getSymbol(
 															identifiedByThisJavaID );
-		// }
-		// catch ( Throwable t )
-		// {
-		// RunTime.throWrapped( t );
-		// }
 	}
 	
 
@@ -133,15 +119,8 @@ public class Level010_DMLStorage_BerkeleyDB
 	{
 		
 		RunTime.assumedNotNull( fromJavaID );
-		// try
-		// {
 		return bdb.getDBMap_JavaIDs_To_Symbols().createSymbol(
 																fromJavaID );
-		// }
-		// catch ( Throwable t )
-		// {
-		// RunTime.throWrapped( t );
-		// }
 	}
 	
 
@@ -153,15 +132,8 @@ public class Level010_DMLStorage_BerkeleyDB
 	{
 		
 		RunTime.assumedNotNull( theJavaID );
-		// try
-		// {
 		return bdb.getDBMap_JavaIDs_To_Symbols().ensureSymbol(
 																theJavaID );
-		// }
-		// catch ( Throwable t )
-		// {
-		// RunTime.throWrapped( t );
-		// }
 	}
 	
 
@@ -176,14 +148,7 @@ public class Level010_DMLStorage_BerkeleyDB
 			newUniqueSymbol()
 	{
 		
-		// try
-		// {
 		return bdb.getUniqueSymbolsGenerator().getNewUniqueSymbol();
-		// }
-		// catch ( Throwable t )
-		// {
-		// RunTime.throWrapped( t );
-		// }
 	}
 	
 
@@ -204,77 +169,69 @@ public class Level010_DMLStorage_BerkeleyDB
 		RunTime.assumedNotNull(
 								symbol,
 								javaID );
-		try
+		JavaID oldJid = this.getJavaID( symbol );
+		Symbol oldSym = this.getSymbol( javaID );
+		// true if already associated
+		boolean existsJID = ( null != oldJid );
+		boolean existsSym = ( null != oldSym );
+		boolean sameJID = false;
+		boolean sameSym = false;
+		
+		if ( existsJID )
 		{
-			JavaID oldJid = this.getJavaID( symbol );
-			Symbol oldSym = this.getSymbol( javaID );
-			// true if already associated
-			boolean existsJID = ( null != oldJid );
-			boolean existsSym = ( null != oldSym );
-			boolean sameJID = false;
-			boolean sameSym = false;
-			
-			if ( existsJID )
+			// a jid is already associated with the symbol
+			// is it javaID though? or a diff one
+			if ( oldJid != javaID )
 			{
-				// a jid is already associated with the symbol
-				// is it javaID though? or a diff one
-				if ( oldJid != javaID )
-				{
-					// a diff one
-					RunTime.badCall( "another JavaID was already associated with the passed Symbol." );
-				}
-				else
-				{
-					sameJID = true;
-				}
-			}
-			
-			if ( existsSym )
-			{
-				if ( oldSym != symbol )
-				{
-					RunTime.badCall( "a different Symbol was already associated with the passed JavaID." );
-				}
-				else
-				{
-					sameSym = true;
-				}
-			}
-			
-			if ( sameSym && sameJID )
-			{
-				return true;// already exists
+				// a diff one
+				RunTime.badCall( "another JavaID was already associated with the passed Symbol." );
 			}
 			else
 			{
-				if ( ( sameSym ^ sameJID ) )
-				{
-					RunTime.bug();
-				}
+				sameJID = true;
 			}
-			// both links are either both false or both true, never one true and
-			// one false
-			if ( ( existsJID ^ existsSym ) )
-			{// xor 0^0=0; 1^1=0; 0^1=1
-				// true means fail
-				RunTime
-						.badCall( "the above two calls failed. Both should be same. This means that the JID or the Symbol was already associated with another JID/Symbol" );
-			}
-			
-			if ( bdb.getDBMap_JavaIDs_To_Symbols().link(
-															javaID,
-															symbol ) )
-			{
-				// existed already, impossible to reach this
-				RunTime.bug( "huge discrepancy between getJavaID, getSymbol and .link here" );
-			}
-			return false;
 		}
-		catch ( Throwable t )
+		
+		if ( existsSym )
 		{
-			RunTime.throWrapped( t );
-			return false;
+			if ( oldSym != symbol )
+			{
+				RunTime.badCall( "a different Symbol was already associated with the passed JavaID." );
+			}
+			else
+			{
+				sameSym = true;
+			}
 		}
+		
+		if ( sameSym && sameJID )
+		{
+			return true;// already exists
+		}
+		else
+		{
+			if ( ( sameSym ^ sameJID ) )
+			{
+				RunTime.bug();
+			}
+		}
+		// both links are either both false or both true, never one true and
+		// one false
+		if ( ( existsJID ^ existsSym ) )
+		{// xor 0^0=0; 1^1=0; 0^1=1
+			// true means fail
+			RunTime
+					.badCall( "the above two calls failed. Both should be same. This means that the JID or the Symbol was already associated with another JID/Symbol" );
+		}
+		
+		if ( bdb.getDBMap_JavaIDs_To_Symbols().link(
+														javaID,
+														symbol ) )
+		{
+			// existed already, impossible to reach this
+			RunTime.bug( "huge discrepancy between getJavaID, getSymbol and .link here" );
+		}
+		return false;
 	}
 	
 

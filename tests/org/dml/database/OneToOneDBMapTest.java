@@ -168,7 +168,11 @@ public class OneToOneDBMapTest
 		boolean threw = false;
 		try
 		{
+			// RunTime.thro( new RuntimeException(
+			// "evil" ) );
 			map.getKey( e );
+			// throw new BadCallError(
+			// "evil" );
 		}
 		catch ( Throwable t )
 		{
@@ -178,6 +182,10 @@ public class OneToOneDBMapTest
 			{
 				threw = true;
 				RunTime.clearLastThrown_andAllItsWraps();
+			}
+			else
+			{
+				RunTime.throWrapped( t );
 			}
 		}
 		assertTrue( threw );

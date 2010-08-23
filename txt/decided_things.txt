@@ -17,7 +17,9 @@ Things that are depreciated or obsolete won't be here.
 
 
 5. how to throw exceptions:
--a) if something throws an exception with "throw" keyword instead of RunTime.thro(); then this exception must be <caught and re-thrown>(aka wrapped) as follows:
+-a) UPDATE: the following is done automatically by AspectJ, so don't do it manually
+	---------
+    if something throws an exception with "throw" keyword instead of RunTime.thro(); then this exception must be <caught and re-thrown>(aka wrapped) as follows:
 	try {
 			throw new IOException("tesT")://something that throws with throw keyword
 	}catch(Throwable t) {//must use Throwable to make sure we don't miss some
@@ -33,6 +35,7 @@ Things that are depreciated or obsolete won't be here.
 	
 -c) to catch a specific exception, that is to test if that specific exception occurred you only have to catch(Throwable t) (so that means you catch once) for any and every test.
     The following code is for testing only for one specific exception if it was thrown or not:
+    //5 parts needed
     try {
 			try {
 				Factory.init( ml2, params1 );//assuming this throws an already wrapped BadCallError - no matter in how many layers of wraps
@@ -42,11 +45,18 @@ Things that are depreciated or obsolete won't be here.
 	} catch ( Throwable t ) { //1
 			if ( RunTime.isThisWrappedException_of_thisType( t, BadCallError.class ) ) { //2
 				//yes it is exactly BadCallError 
-			
-				//clear the just caught exception and all its wraps, previously thrown exceptions will(should) remain active, so later when seeing the list of exceptions in eclipse,
+				//first clear the just caught exception and all its wraps, previously thrown exceptions will(should) remain active, 
+				//so later when seeing the list of exceptions in eclipse,
 				//you won't see this exception we just handled here
 				RunTime.clearLastThrown_andAllItsWraps();//3
-			}//else don't clear it 'cause it's something else - unexpected
+				
+				//...process the above IF as if it were true..
+				//...code here
+				//...
+				//4
+			}else {//else don't clear it 'cause it's something else - unexpected
+				RunTime.throWrapped(t);//5 rethrow here, signaling that it wasn't any of the above in the IFs
+			}
 	} 
 	NOTE: that you cannot test for a subclass of ie. Error, you can only test specifically for the named class (though it's easy to make a method for this, will do when needed)
 	
@@ -58,22 +68,38 @@ Things that are depreciated or obsolete won't be here.
 				RunTime.throWrapped( t );//we wrap it again just for fun; doesn't need to be wrapped at all actually, can contain zero wraps
 			}
 	} catch ( Throwable t ) { //1
-			Throwable unwrappedLastThrownOne=RunTime.getUnwrappedExceptionNeverNull( t );//2
+			Class<? extends Throwable> unwrappedLastThrownOne = RunTime.getUnwrappedExceptionNeverNull( t ).getClass();//2
 			
-			RunTime.clearLastThrown_andAllItsWraps();//3 ;clear it now because the following code (when testing for what was thrown) may throw depending on what you call
+			//the following code (when testing for what was thrown) may throw depending on what you call
 			
 			if (BadCallError.class == unwrappedLastThrownOne) {
-				//yes it is exactly BadCallError 
-			}
+				//yes it is exactly BadCallError
+				RunTime.clearLastThrown_andAllItsWraps();//3
+				
+				//handle IF normally after this:
+				//...code that might throw new exceptions which we want reported
+			} else
 			if (Exception.class == unwrappedLastThrownOne) {
 				//yes it is exactly Exception
-			}
+				RunTime.clearLastThrown_andAllItsWraps();//3
+				
+				//handle IF normally after this:
+				//...code that might throw new exceptions which we want reported
+			} else
 			if (Error.class == unwrappedLastThrownOne) {
 				//yes it is exactly Error, note that although BadCallError extends Error, if you caught BadCallError above, you will NOT catch it here as just Error.class
 				//why? because this only tests for exactly that specific exception, no subclass or superclass of it!
+				RunTime.clearLastThrown_andAllItsWraps();//3
+				
+				//handle IF normally after this:
+				//...code that might throw new exceptions which we want reported
+			} else {
+					//4
+					RunTime.throWrapped(t); //4 rethrow because it wasn't any of the above IFs
 			}
 	}
 	
-6. any classes that want to have init and deInit of resources ie. db-related should inherit Initer class and use Factory class to get new instance and init it
+6. any classes that want to have init and deInit of resources ie. db-related should inherit Initer class and use Factory class to get new instance and init it and should use
+   try, catch, finally block to make sure those resources are deInited in the proper order; NOTE: deInitAll() cannot be implemented and should not be attempted again
 
 7. nothing is thread safe, unless explicitly specified.

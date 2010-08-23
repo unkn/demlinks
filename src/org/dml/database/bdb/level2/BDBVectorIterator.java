@@ -257,28 +257,20 @@ public class BDBVectorIterator<InitialType, TerminalType>
 			int
 			count()
 	{
-		try
+		if ( this.now() == null )
 		{
-			if ( this.now() == null )
+			this.goFirst();
+			if ( null == this.now() )
 			{
-				this.goFirst();
-				if ( null == this.now() )
-				{
-					return 0;
-				}
-				int ret = this.getCursor().count();
-				this.setNow( null );
-				return ret;
+				return 0;
 			}
-			else
-			{
-				return this.getCursor().count();
-			}
+			int ret = this.getCursor().count();
+			this.setNow( null );
+			return ret;
 		}
-		catch ( Throwable t )
+		else
 		{
-			RunTime.throWrapped( t );
-			return 0;// dummy
+			return this.getCursor().count();
 		}
 	}
 	
@@ -290,16 +282,7 @@ public class BDBVectorIterator<InitialType, TerminalType>
 					MethodParams params )
 	{
 		
-		try
-		{
-			this.close();
-		}
-		catch ( Throwable t )
-		{
-			Log.thro( t.getLocalizedMessage() );
-			RunTime.throWrapped( t );
-		}
-		
+		this.close();
 	}
 	
 
@@ -324,14 +307,7 @@ public class BDBVectorIterator<InitialType, TerminalType>
 			{
 				cursor = null;
 			}
-			try
-			{
-				txn = txn.commit();
-			}
-			catch ( Throwable t )
-			{
-				RunTime.throWrapped( t );
-			}
+			txn = txn.commit();
 		}
 	}
 	

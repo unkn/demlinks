@@ -59,19 +59,11 @@ public class JavaIDBinding
 		RunTime.assumedNotNull( input );
 		// Data must be read in the same order that it was
 		// originally written.
-		try
-		{
-			String strJavaID = input.readString();
-			RunTime.assumedNotNull( strJavaID );
-			JavaID myJavaID = JavaID.ensureJavaIDFor( strJavaID );
-			RunTime.assumedNotNull( myJavaID );
-			return myJavaID;
-		}
-		catch ( Throwable t )
-		{
-			RunTime.throWrapped( t );
-		}
-		return null;// to avoid return warning
+		String strJavaID = input.readString();
+		RunTime.assumedNotNull( strJavaID );
+		JavaID myJavaID = JavaID.ensureJavaIDFor( strJavaID );
+		RunTime.assumedNotNull( myJavaID );
+		return myJavaID;
 	}
 	
 
@@ -93,18 +85,11 @@ public class JavaIDBinding
 		RunTime.assumedNotNull(
 								object,
 								output );
-		try
-		{
-			String strJavaID = object.getObject();
-			RunTime.assumedNotNull( strJavaID );
-			// System.out.println( object );
-			// it will never be null before writing it to dbase, else bug somewhere
-			output.writeString( strJavaID );
-		}
-		catch ( Throwable t )
-		{
-			RunTime.throWrapped( t );
-		}
+		String strJavaID = object.getObject();
+		RunTime.assumedNotNull( strJavaID );
+		// System.out.println( object );
+		// it will never be null before writing it to dbase, else bug somewhere
+		output.writeString( strJavaID );
 	}
 	
 }

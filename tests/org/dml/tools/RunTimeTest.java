@@ -297,72 +297,119 @@ public class RunTimeTest
 	}
 	
 
-	//
-	// public
-	// int
-	// loop(
-	// int i,
-	// int j )
-	// {
-	// System.out.println( "in2 with: " + i );
-	// if ( !RunTime.recursiveLoopDetected() )
-	// {
-	// return this.loop( i + 1 );
-	// }
-	// return i;
-	// }
-	//
-	//
-	// public
-	// int
-	// loop(
-	// int i )
-	// {
-	// System.out.println( "in1 with: " + i );
-	// if ( !RunTime.recursiveLoopDetected() )
-	// {
-	// return this.loop(
-	// i + 1,
-	// 0 );
-	// }
-	// return i;
-	// // if ( i < 10 )
-	// // {
-	// // return this.loop( i + 1 );
-	// // }
-	// // else
-	// // {
-	// // return RunTime.getCurrentStackTraceElementsArray();
-	// // }
-	// }
-	//
-	//
-	// @Test
-	// public
-	// void
-	// loopingTest()
-	// {
-	// // StackTraceElement[] erm =
-	// assertTrue( 2 == this.loop( 1 ) );
-	// // for ( int i = 0; i < erm.length; i++ )
-	// // {
-	// // System.out.println( i + " " + erm[i] );
-	// // }
-	// // StackTraceElement[] stack = this.loop( 0 );// RunTime.getCurrentStackTraceElementsArray();
-	// // HashSet<StackTraceElement> m = new HashSet<StackTraceElement>();
-	// // m.clear();
-	// // for ( int i = 0; i < stack.length; i++ )
-	// // {
-	// // System.out.println( i + " " + stack[i] );
-	// // if ( !m.add( stack[i] ) )
-	// // {
-	// // // already existed
-	// // System.out.println( "Loop on: " + i + " " + stack[i] );
-	// // break;
-	// // }
-	// // }
-	// }
 	
+	public
+			int
+			loop(
+					int i,
+					int j )
+	{
+		System.out.println( "in2 with: " + i );
+		if ( !RunTime.recursiveLoopDetected )
+		{
+			return this.loop( i + 1 );
+		}
+		return i;
+	}
+	
+
+	public
+			int
+			loop(
+					int i )
+	{
+		System.out.println( "in1 with: " + i );
+		if ( !RunTime.recursiveLoopDetected )
+		{
+			return this.loop(
+								i + 1,
+								0 );
+		}
+		return i;
+		// if ( i < 10 )
+		// {
+		// return this.loop( i + 1 );
+		// }
+		// else
+		// {
+		// return RunTime.getCurrentStackTraceElementsArray();
+		// }
+	}
+	
+
+	@Test
+	public
+			void
+			loopingTest()
+	{
+		// StackTraceElement[] erm =
+		assertTrue( 3 == this.loop( 1 ) );
+		// for ( int i = 0; i < erm.length; i++ )
+		// {
+		// System.out.println( i + " " + erm[i] );
+		// }
+		// StackTraceElement[] stack = this.loop( 0 );// RunTime.getCurrentStackTraceElementsArray();
+		// HashSet<StackTraceElement> m = new HashSet<StackTraceElement>();
+		// m.clear();
+		// for ( int i = 0; i < stack.length; i++ )
+		// {
+		// System.out.println( i + " " + stack[i] );
+		// if ( !m.add( stack[i] ) )
+		// {
+		// // already existed
+		// System.out.println( "Loop on: " + i + " " + stack[i] );
+		// break;
+		// }
+		// }
+	}
+	
+
+	@Test
+	public
+			void
+			testOtherThanExpectedThrown()
+	{
+		try
+		{
+			try
+			{
+				// an exception other than the expected one(s) in catch is thrown in this try block
+				RunTime.throWrapped( new RuntimeException(
+															"xy" ) );
+				// expecting AssumptionError from the following:
+				RunTime.getTheCaller_OutsideOfClass( null );
+			}
+			catch ( Throwable t )
+			{
+				
+				if ( RunTime.isThisWrappedException_of_thisType(
+																	t,
+																	AssumptionError.class ) )
+				{
+					RunTime.clearLastThrown_andAllItsWraps();// clear it before we do our stuff
+					// ...code (that could throw new exceptions) goes here
+					throw new IllegalArgumentException(
+														"test" );
+				}
+				else
+				{
+					// wasn't what we expected, so we must re-throw it
+					RunTime.throWrapped( t );
+				}
+				// RunTime.clearLastThrown_andAllItsWraps();don't
+			}
+		}
+		catch ( Throwable t )
+		{
+			assertTrue( RunTime.isThisWrappedException_of_thisType(
+																	t,
+																	RuntimeException.class ) );
+			RunTime.clearLastThrown_andAllItsWraps();
+		}
+		// RunTime.throwAllThatWerePosponed();
+	}
+	
+
 	@Test
 	public
 			void
@@ -374,11 +421,13 @@ public class RunTimeTest
 		}
 		catch ( Throwable t )
 		{
+			
 			assertTrue( RunTime.isThisWrappedException_of_thisType(
 																	t,
 																	AssumptionError.class ) );
 			RunTime.clearLastThrown_andAllItsWraps();
 		}
+		RunTime.throwAllThatWerePosponed();// should re-throw the RTE(xy) from above so you see it in eclipse
 	}
 	
 

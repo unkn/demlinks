@@ -66,27 +66,20 @@ public class TransactionCapsule
 		
 		RunTime.assumedNotNull( bdb );
 		TransactionCapsule txn = new TransactionCapsule();
-		try
-		{
-			txn.txConf = new TransactionConfig();
-			// txn.txConf.setNoSync( false );
-			txn.txConf.setNoWait(
-									true ).setDurability(
-															Durability.COMMIT_NO_SYNC );
-			// txn.txConf.setReadCommitted( true );
-			txn.txConf.setReadUncommitted( false );
-			txn.txConf.setSerializableIsolation( true );
-			// txn.txConf.setSync( true );
-			// txn.txConf.setWriteNoSync( false );
-			RunTime.assumedFalse( txn.txConf.getReadUncommitted() );
-			txn.tx = bdb.getEnvironment().beginTransaction(
-															null,
-															txn.txConf );
-		}
-		catch ( Throwable t )
-		{
-			RunTime.throWrapped( t );
-		}
+		txn.txConf = new TransactionConfig();
+		// txn.txConf.setNoSync( false );
+		txn.txConf.setNoWait(
+								true ).setDurability(
+														Durability.COMMIT_NO_SYNC );
+		// txn.txConf.setReadCommitted( true );
+		txn.txConf.setReadUncommitted( false );
+		txn.txConf.setSerializableIsolation( true );
+		// txn.txConf.setSync( true );
+		// txn.txConf.setWriteNoSync( false );
+		RunTime.assumedFalse( txn.txConf.getReadUncommitted() );
+		txn.tx = bdb.getEnvironment().beginTransaction(
+														null,
+														txn.txConf );
 		return txn;
 	}
 	
@@ -98,14 +91,7 @@ public class TransactionCapsule
 			TransactionCapsule
 			abort()
 	{
-		try
-		{
-			tx.abort();
-		}
-		catch ( Throwable t )
-		{
-			RunTime.throWrapped( t );
-		}
+		tx.abort();
 		return null;
 	}
 	
@@ -119,14 +105,7 @@ public class TransactionCapsule
 			commit()
 					throws DatabaseException
 	{
-		try
-		{
-			tx.commit();
-		}
-		catch ( Throwable t )
-		{
-			RunTime.throWrapped( t );
-		}
+		tx.commit();
 		return null;
 	}
 	

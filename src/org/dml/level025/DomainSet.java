@@ -170,10 +170,6 @@ public class DomainSet
 				iter.goNext();
 			}
 		}
-		catch ( Throwable t )
-		{
-			RunTime.throWrapped( t );
-		}
 		finally
 		{
 			Factory.deInit( iter );

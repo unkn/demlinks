@@ -45,6 +45,7 @@ public aspect ThroWrapper {
     					&& !call(* Log.*(..))//except methods in Log.class due to possible recursion
     					//if you comment the following then add a maybe +2 to location
     					&& !call(public StackTraceElement[] Thread.getStackTrace());
+    					//&& !target(org.dml.tools.RunTime);
     
 
     Object around() : anyCall() {

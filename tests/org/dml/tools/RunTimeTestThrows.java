@@ -30,6 +30,7 @@ import static org.junit.Assert.*;
 
 import java.io.IOException;
 
+import org.dml.error.AssumptionError;
 import org.dml.error.BadCallError;
 import org.junit.After;
 import org.junit.Before;
@@ -640,5 +641,33 @@ public class RunTimeTestThrows
 	}
 	
 
-
+	@Test
+	public
+			void
+			testNull()
+	{
+		try
+		{
+			RunTime.throWrapped( new RuntimeException(
+														"xy" ) );
+			RunTime.getTheCaller_OutsideOfClass( null );
+		}
+		catch ( Throwable t )
+		{
+			
+			if ( RunTime.isThisWrappedException_of_thisType(
+																t,
+																AssumptionError.class ) )
+			{
+				RunTime.clearLastThrown_andAllItsWraps();
+			}
+			else
+			{
+				// assertTrue( false );
+			}
+			// RunTime.clearLastThrown_andAllItsWraps();
+		}
+		RunTime.throwAllThatWerePosponed();// should re-throw the RTE(xy) from above so you see it in eclipse
+	}
+	
 }

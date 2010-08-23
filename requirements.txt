@@ -87,3 +87,20 @@ http://code.google.com/p/scenemonitor/downloads/detail?name=SceneWorkerWithDepen
 use gvim (in windows) or vim in *nix to edit files like .gitignore
 ---------
 
+to see unicode chars in console in eclipse, add this line
+-Dfile.encoding=UTF-8
+after the -vmargs line, so it's passed to JVM
+and well also use a console font that has unicode ie. Deja Vu Sans Mono
+=======
+
+to install AspectJ plugin for eclipse
+get ajdt_2.1.0_for_eclipse_3.6.zip from http://www.eclipse.org/ajdt/downloads/
+
+use this as an install location
+ajdt - jar:file:/C:/downloaded/ajdt_2.1.0_for_eclipse_3.6.zip!/
+where that is the location on your HDD of that zip file
+OR slower using the update site  	http://download.eclipse.org/tools/ajdt/36/update
+
+and in both cases, install all (the sources will be installed automatically)
+
+------------

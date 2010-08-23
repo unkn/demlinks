@@ -62,17 +62,9 @@ public class Level020_DMLStorage_BerkeleyDB
 		RunTime.assumedNotNull(
 								initialNode,
 								terminalNode );
-		try
-		{
-			return bdb.getDBMapSymbolsTuple().ensureVector(
-															initialNode,
-															terminalNode );
-		}
-		catch ( Throwable t )
-		{
-			RunTime.throWrapped( t );
-			return false;
-		}
+		return bdb.getDBMapSymbolsTuple().ensureVector(
+														initialNode,
+														terminalNode );
 	}
 	
 
@@ -94,17 +86,9 @@ public class Level020_DMLStorage_BerkeleyDB
 		RunTime.assumedNotNull(
 								initialNode,
 								terminalNode );
-		try
-		{
-			return bdb.getDBMapSymbolsTuple().isVector(
-														initialNode,
-														terminalNode );
-		}
-		catch ( Throwable t )
-		{
-			RunTime.throWrapped( t );
-			return false;
-		}
+		return bdb.getDBMapSymbolsTuple().isVector(
+													initialNode,
+													terminalNode );
 	}
 	
 
@@ -116,16 +100,8 @@ public class Level020_DMLStorage_BerkeleyDB
 	{
 		
 		RunTime.assumedNotNull( terminalObject );
-		try
-		{
-			return bdb.getDBMapSymbolsTuple().getIterator_on_Initials_of(
-																			terminalObject );
-		}
-		catch ( Throwable t )
-		{
-			RunTime.throWrapped( t );
-			return null;
-		}
+		return bdb.getDBMapSymbolsTuple().getIterator_on_Initials_of(
+																		terminalObject );
 	}
 	
 
@@ -144,16 +120,8 @@ public class Level020_DMLStorage_BerkeleyDB
 	{
 		
 		RunTime.assumedNotNull( initialObject );
-		try
-		{
-			return bdb.getDBMapSymbolsTuple().getIterator_on_Terminals_of(
-																			initialObject );
-		}
-		catch ( Throwable t )
-		{
-			RunTime.throWrapped( t );
-			return null;
-		}
+		return bdb.getDBMapSymbolsTuple().getIterator_on_Terminals_of(
+																		initialObject );
 	}
 	
 
@@ -165,16 +133,8 @@ public class Level020_DMLStorage_BerkeleyDB
 	{
 		
 		RunTime.assumedNotNull( ofTerminalObject );
-		try
-		{
-			return bdb.getDBMapSymbolsTuple().countInitials(
-																ofTerminalObject );
-		}
-		catch ( Throwable t )
-		{
-			RunTime.throWrapped( t );
-			return -1;
-		}
+		return bdb.getDBMapSymbolsTuple().countInitials(
+															ofTerminalObject );
 	}
 	
 
@@ -186,16 +146,8 @@ public class Level020_DMLStorage_BerkeleyDB
 	{
 		
 		RunTime.assumedNotNull( ofInitialObject );
-		try
-		{
-			return bdb.getDBMapSymbolsTuple().countTerminals(
-																ofInitialObject );
-		}
-		catch ( Throwable t )
-		{
-			RunTime.throWrapped( t );
-			return -1;
-		}
+		return bdb.getDBMapSymbolsTuple().countTerminals(
+															ofInitialObject );
 	}
 	
 
@@ -215,17 +167,9 @@ public class Level020_DMLStorage_BerkeleyDB
 		RunTime.assumedNotNull(
 								initial1,
 								initial2 );
-		try
-		{
-			return bdb.getDBMapSymbolsTuple().findCommonTerminalForInitials(
-																				initial1,
-																				initial2 );
-		}
-		catch ( Throwable t )
-		{
-			RunTime.throWrapped( t );
-			return null;
-		}
+		return bdb.getDBMapSymbolsTuple().findCommonTerminalForInitials(
+																			initial1,
+																			initial2 );
 	}
 	
 
@@ -240,17 +184,9 @@ public class Level020_DMLStorage_BerkeleyDB
 		RunTime.assumedNotNull(
 								initial,
 								terminal );
-		try
-		{
-			return bdb.getDBMapSymbolsTuple().removeVector(
-															initial,
-															terminal );
-		}
-		catch ( Throwable t )
-		{
-			RunTime.throWrapped( t );
-			return false;
-		}
+		return bdb.getDBMapSymbolsTuple().removeVector(
+														initial,
+														terminal );
 	}
 	
 

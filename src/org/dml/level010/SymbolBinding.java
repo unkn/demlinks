@@ -58,17 +58,10 @@ public class SymbolBinding
 	{
 		
 		Symbol nid = null;
-		try
-		{
-			long l = input.readLong();
-			RunTime.assumedNotNull( l );
-			nid = Bridge_SymbolAndBDB.newSymbolFrom( l );
-			RunTime.assumedTrue( Bridge_SymbolAndBDB.getLongFrom( nid ) == l );
-		}
-		catch ( Throwable t )
-		{
-			RunTime.throWrapped( t );
-		}
+		long l = input.readLong();
+		RunTime.assumedNotNull( l );
+		nid = Bridge_SymbolAndBDB.newSymbolFrom( l );
+		RunTime.assumedTrue( Bridge_SymbolAndBDB.getLongFrom( nid ) == l );
 		return nid;
 	}
 	
@@ -91,18 +84,11 @@ public class SymbolBinding
 		RunTime.assumedNotNull(
 								alreadyExistingSymbol,
 								output );
-		try
-		{
-			long myLong = Bridge_SymbolAndBDB.getLongFrom( alreadyExistingSymbol );
-			RunTime.assumedNotNull( myLong );
-			// System.out.println( object );
-			// it will never be null before writing it to dbase, else bug somewhere
-			output.writeLong( myLong );
-		}
-		catch ( Throwable t )
-		{
-			RunTime.throWrapped( t );
-		}
+		long myLong = Bridge_SymbolAndBDB.getLongFrom( alreadyExistingSymbol );
+		RunTime.assumedNotNull( myLong );
+		// System.out.println( object );
+		// it will never be null before writing it to dbase, else bug somewhere
+		output.writeLong( myLong );
 	}
 	
 }

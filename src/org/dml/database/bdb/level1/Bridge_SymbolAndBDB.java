@@ -62,27 +62,19 @@ public final class Bridge_SymbolAndBDB
 	{
 		
 		RunTime.assumedNotNull( longBDB );
-		try
+		Symbol curr = all_Symbols_from_BDBStorage.getData( longBDB );
+		if ( null == curr )
 		{
-			Symbol curr = all_Symbols_from_BDBStorage.getData( longBDB );
-			if ( null == curr )
+			// create new
+			curr = new Symbol();// longBDBSymbol );
+			if ( all_Symbols_from_BDBStorage.ensure(
+														longBDB,
+														curr ) )
 			{
-				// create new
-				curr = new Symbol();// longBDBSymbol );
-				if ( all_Symbols_from_BDBStorage.ensure(
-															longBDB,
-															curr ) )
-				{
-					RunTime.bug( "a value already existed?!! wicked! it means that the above .get() is bugged?!" );
-				}
+				RunTime.bug( "a value already existed?!! wicked! it means that the above .get() is bugged?!" );
 			}
-			return curr;
 		}
-		catch ( Throwable t )
-		{
-			RunTime.throWrapped( t );
-		}
-		return null;
+		return curr;
 	}
 	
 
@@ -92,16 +84,9 @@ public final class Bridge_SymbolAndBDB
 	{
 		
 		RunTime.assumedNotNull( all_Symbols_from_BDBStorage );
-		try
+		if ( null != all_Symbols_from_BDBStorage )
 		{
-			if ( null != all_Symbols_from_BDBStorage )
-			{
-				all_Symbols_from_BDBStorage.clear();
-			}
-		}
-		catch ( Throwable t )
-		{
-			RunTime.throWrapped( t );
+			all_Symbols_from_BDBStorage.clear();
 		}
 	}
 	
@@ -116,15 +101,7 @@ public final class Bridge_SymbolAndBDB
 	{
 		
 		RunTime.assumedNotNull( symbol );
-		try
-		{
-			return all_Symbols_from_BDBStorage.getKey( symbol );
-		}
-		catch ( Throwable t )
-		{
-			RunTime.throWrapped( t );
-			return 0;// only to avoid warning because the above will throw
-		}
+		return all_Symbols_from_BDBStorage.getKey( symbol );
 		
 	}
 }

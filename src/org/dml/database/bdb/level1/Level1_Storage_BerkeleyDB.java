@@ -263,37 +263,30 @@ public class Level1_Storage_BerkeleyDB
 			internalWipeEnv()
 	{
 		
-		try
+		File dir = new File(
+								envHomeDir );
+		String[] allThoseInDir = dir.list();
+		if ( null != allThoseInDir )
 		{
-			File dir = new File(
-									envHomeDir );
-			String[] allThoseInDir = dir.list();
-			if ( null != allThoseInDir )
+			for ( String element : allThoseInDir )
 			{
-				for ( String element : allThoseInDir )
+				File n = new File(
+									envHomeDir + File.separator + element );
+				if ( !n.isFile() )
 				{
-					File n = new File(
-										envHomeDir + File.separator + element );
-					if ( !n.isFile() )
-					{
-						continue;
-					}
-					if ( ( !n.getPath().matches(
-													".*\\.jdb" ) ) && ( !( n.getPath().matches( ".*\\.lck" ) ) ) )
-					{
-						continue;
-					}
-					Log.special( "removing " + n.getPath() );
-					if ( !n.delete() )
-					{
-						Log.warn( "Failed removing " + n.getAbsolutePath() );
-					}
+					continue;
+				}
+				if ( ( !n.getPath().matches(
+												".*\\.jdb" ) ) && ( !( n.getPath().matches( ".*\\.lck" ) ) ) )
+				{
+					continue;
+				}
+				Log.special( "removing " + n.getPath() );
+				if ( !n.delete() )
+				{
+					Log.warn( "Failed removing " + n.getAbsolutePath() );
 				}
 			}
-		}
-		catch ( Throwable t )
-		{
-			RunTime.throWrapped( t );// wrap & re-thro
 		}
 	}
 	
@@ -532,14 +525,8 @@ public class Level1_Storage_BerkeleyDB
 			}
 			catch ( Throwable t )
 			{
-				try
-				{
-					Log.thro( "failed closing seq with specified name: '" + thisSeqName );
-				}
-				finally
-				{
-					RunTime.throWrapped( t );// wrap around and don't postpone
-				}
+				Log.thro( "failed closing seq with specified name: '" + thisSeqName );
+				RunTime.throWrapped( t );// wrap around and don't postpone
 			}
 			finally
 			{

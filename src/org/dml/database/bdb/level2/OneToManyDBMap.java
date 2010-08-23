@@ -143,41 +143,33 @@ public class OneToManyDBMap<InitialType, TerminalType>
 			getForwardDB()
 					throws DatabaseException
 	{
-		try
+		if ( null == forwardDB )
 		{
-			if ( null == forwardDB )
-			{
-				
-				MethodParams params = MethodParams.getNew();
-				params.set(
-							PossibleParams.level1_BDBStorage,
-							this.getBDBL1() );
-				params.set(
-							PossibleParams.dbName,
-							dbName );
-				params.set(
-							PossibleParams.priDbConfig,
-							new OneToManyDBConfig() );
-				forwardDB = Factory.getNewInstanceAndInit(
-															DatabaseCapsule.class,
-															params );
-				
-				RunTime.assumedNotNull( forwardDB );
-				RunTime.assumedTrue( forwardDB.isInited() );
-			}
-			else
-			{
-				Factory.reInitIfNotInited( forwardDB );
-			}
-			Database d = forwardDB.getDB();
-			RunTime.assumedNotNull( d );
-			return d;
+			
+			MethodParams params = MethodParams.getNew();
+			params.set(
+						PossibleParams.level1_BDBStorage,
+						this.getBDBL1() );
+			params.set(
+						PossibleParams.dbName,
+						dbName );
+			params.set(
+						PossibleParams.priDbConfig,
+						new OneToManyDBConfig() );
+			forwardDB = Factory.getNewInstanceAndInit(
+														DatabaseCapsule.class,
+														params );
+			
+			RunTime.assumedNotNull( forwardDB );
+			RunTime.assumedTrue( forwardDB.isInited() );
 		}
-		catch ( Throwable t )
+		else
 		{
-			RunTime.throWrapped( t );
-			return null;// only to avoid warning because the above will throw
+			Factory.reInitIfNotInited( forwardDB );
 		}
+		Database d = forwardDB.getDB();
+		RunTime.assumedNotNull( d );
+		return d;
 	}
 	
 
@@ -190,45 +182,37 @@ public class OneToManyDBMap<InitialType, TerminalType>
 			getBackwardDB()
 					throws DatabaseException
 	{
-		try
+		if ( null == backwardDB )
 		{
-			if ( null == backwardDB )
-			{
-				MethodParams params = MethodParams.getNew();
-				// backwardDB = new DatabaseCapsule();
-				params.set(
-							PossibleParams.level1_BDBStorage,
-							this.getBDBL1() );
-				params.set(
-							PossibleParams.dbName,
-							dbName + backwardSuffix );
-				params.set(
-							PossibleParams.priDbConfig,
-							new OneToManyDBConfig() );
-				// backwardDB.init( params );
-				backwardDB = Factory.getNewInstanceAndInit(
-															DatabaseCapsule.class,
-															params );
-				// params.deInit();
-				// Factory.deInit( params );
-				// RunTime.assertNotNull( backwardDB );
-			}
-			else
-			{
-				Factory.reInitIfNotInited( backwardDB );
-				// if ( !backwardDB.isInited() ) {
-				// backwardDB.reInit();
-				// }
-			}
-			Database d = backwardDB.getDB();
-			RunTime.assumedNotNull( d );
-			return d;
+			MethodParams params = MethodParams.getNew();
+			// backwardDB = new DatabaseCapsule();
+			params.set(
+						PossibleParams.level1_BDBStorage,
+						this.getBDBL1() );
+			params.set(
+						PossibleParams.dbName,
+						dbName + backwardSuffix );
+			params.set(
+						PossibleParams.priDbConfig,
+						new OneToManyDBConfig() );
+			// backwardDB.init( params );
+			backwardDB = Factory.getNewInstanceAndInit(
+														DatabaseCapsule.class,
+														params );
+			// params.deInit();
+			// Factory.deInit( params );
+			// RunTime.assertNotNull( backwardDB );
 		}
-		catch ( Throwable t )
+		else
 		{
-			RunTime.throWrapped( t );
-			return null;// only to avoid warning because the above will throw
+			Factory.reInitIfNotInited( backwardDB );
+			// if ( !backwardDB.isInited() ) {
+			// backwardDB.reInit();
+			// }
 		}
+		Database d = backwardDB.getDB();
+		RunTime.assumedNotNull( d );
+		return d;
 	}
 	
 
@@ -275,60 +259,52 @@ public class OneToManyDBMap<InitialType, TerminalType>
 						TerminalType terminalObject )
 					throws DatabaseException
 	{
+		this.checkKey( initialObject );
+		this.checkData( terminalObject );
+		
+		// maybe a transaction here is unnecessary, however we don't want
+		// another transaction (supposedly) to interlace between the two gets
+		TransactionCapsule txc = TransactionCapsule.getNewTransaction( this.getBDBL1() );
+		
+		DatabaseEntry keyEntry = new DatabaseEntry();
+		initialBinding.objectToEntry(
+										initialObject,
+										keyEntry );
+		
+		DatabaseEntry dataEntry = new DatabaseEntry();
+		terminalBinding.objectToEntry(
+										terminalObject,
+										dataEntry );
+		
+		OperationStatus ret1 = null, ret2 = null;
 		try
 		{
-			this.checkKey( initialObject );
-			this.checkData( terminalObject );
-			
-			// maybe a transaction here is unnecessary, however we don't want
-			// another transaction (supposedly) to interlace between the two gets
-			TransactionCapsule txc = TransactionCapsule.getNewTransaction( this.getBDBL1() );
-			
-			DatabaseEntry keyEntry = new DatabaseEntry();
-			initialBinding.objectToEntry(
-											initialObject,
-											keyEntry );
-			
-			DatabaseEntry dataEntry = new DatabaseEntry();
-			terminalBinding.objectToEntry(
-											terminalObject,
-											dataEntry );
-			
-			OperationStatus ret1 = null, ret2 = null;
-			try
+			ret1 = this.getForwardDB().getSearchBoth(
+														txc.get(),
+														keyEntry,
+														dataEntry,
+														null );
+			ret2 = this.getBackwardDB().getSearchBoth(
+														txc.get(),
+														dataEntry,
+														keyEntry,
+														null );
+			if ( ( ( OperationStatus.SUCCESS == ret1 ) && ( OperationStatus.SUCCESS != ret2 ) )
+					|| ( ( OperationStatus.SUCCESS != ret1 ) && ( OperationStatus.SUCCESS == ret2 ) ) )
 			{
-				ret1 = this.getForwardDB().getSearchBoth(
-															txc.get(),
-															keyEntry,
-															dataEntry,
-															null );
-				ret2 = this.getBackwardDB().getSearchBoth(
-															txc.get(),
-															dataEntry,
-															keyEntry,
-															null );
-				if ( ( ( OperationStatus.SUCCESS == ret1 ) && ( OperationStatus.SUCCESS != ret2 ) )
-						|| ( ( OperationStatus.SUCCESS != ret1 ) && ( OperationStatus.SUCCESS == ret2 ) ) )
-				{
-					RunTime.bug( "one exists, the other doesn't; but should either both exist, or both not exist" );
-				}
+				RunTime.bug( "one exists, the other doesn't; but should either both exist, or both not exist" );
 			}
-			catch ( Throwable t )
-			{
-				RunTime.throPostponed( t );
-				txc = txc.abort();
-				RunTime.throwAllThatWerePosponed();
-			}
-			
-			txc = txc.commit();
-			
-			return ( OperationStatus.SUCCESS == ret1 );
 		}
 		catch ( Throwable t )
 		{
-			RunTime.throWrapped( t );
-			return false;// only to avoid warning because the above will throw
+			RunTime.throPostponed( t );
+			txc = txc.abort();
+			RunTime.throwAllThatWerePosponed();
 		}
+		
+		txc = txc.commit();
+		
+		return ( OperationStatus.SUCCESS == ret1 );
 	}
 	
 
@@ -352,27 +328,9 @@ public class OneToManyDBMap<InitialType, TerminalType>
 		RunTime.assumedNotNull(
 								initialObject,
 								terminalObject );
-		try
-		{
-			boolean ret = false;
-			try
-			{
-				ret = ( OperationStatus.KEYEXIST == this.internal_makeVector(
-																				initialObject,
-																				terminalObject ) );
-			}
-			catch ( Throwable t )
-			{
-				RunTime.throWrapped( t );
-			}
-			// not finally
-			return ret;
-		}
-		catch ( Throwable t )
-		{
-			RunTime.throWrapped( t );
-			return false;// not reached, but it's here to avoid warning
-		}
+		return ( OperationStatus.KEYEXIST == this.internal_makeVector(
+																		initialObject,
+																		terminalObject ) );
 	}
 	
 
@@ -391,67 +349,59 @@ public class OneToManyDBMap<InitialType, TerminalType>
 									InitialType initialObject,
 									TerminalType terminalObject )
 	{
+		this.checkKey( initialObject );
+		this.checkData( terminalObject );
+		
+		TransactionCapsule txc = TransactionCapsule.getNewTransaction( this.getBDBL1() );
+		
+		DatabaseEntry keyEntry = new DatabaseEntry();
+		initialBinding.objectToEntry(
+										initialObject,
+										keyEntry );
+		
+		DatabaseEntry dataEntry = new DatabaseEntry();
+		terminalBinding.objectToEntry(
+										terminalObject,
+										dataEntry );
+		
+		boolean commit = false;
+		OperationStatus ret1, ret2;
 		try
 		{
-			this.checkKey( initialObject );
-			this.checkData( terminalObject );
-			
-			TransactionCapsule txc = TransactionCapsule.getNewTransaction( this.getBDBL1() );
-			
-			DatabaseEntry keyEntry = new DatabaseEntry();
-			initialBinding.objectToEntry(
-											initialObject,
-											keyEntry );
-			
-			DatabaseEntry dataEntry = new DatabaseEntry();
-			terminalBinding.objectToEntry(
-											terminalObject,
-											dataEntry );
-			
-			boolean commit = false;
-			OperationStatus ret1, ret2;
-			try
+			ret1 = this.getForwardDB().putNoDupData(
+														txc.get(),
+														keyEntry,
+														dataEntry );
+			ret2 = this.getBackwardDB().putNoDupData(
+														txc.get(),
+														dataEntry,
+														keyEntry );
+			if ( ( OperationStatus.SUCCESS == ret1 ) && ( OperationStatus.SUCCESS == ret2 ) )
 			{
-				ret1 = this.getForwardDB().putNoDupData(
-															txc.get(),
-															keyEntry,
-															dataEntry );
-				ret2 = this.getBackwardDB().putNoDupData(
-															txc.get(),
-															dataEntry,
-															keyEntry );
-				if ( ( OperationStatus.SUCCESS == ret1 ) && ( OperationStatus.SUCCESS == ret2 ) )
-				{
-					commit = true;
-				}
-				else
-				{
-					if ( ( ( OperationStatus.KEYEXIST == ret1 ) && ( OperationStatus.KEYEXIST != ret2 ) )
-							|| ( ( OperationStatus.KEYEXIST != ret1 ) && ( OperationStatus.KEYEXIST == ret2 ) ) )
-					{
-						RunTime.bug( "one link exists and the other does not; should either both exist or neither" );
-					}
-				}
-				
+				commit = true;
 			}
-			finally
+			else
 			{
-				if ( commit )
+				if ( ( ( OperationStatus.KEYEXIST == ret1 ) && ( OperationStatus.KEYEXIST != ret2 ) )
+						|| ( ( OperationStatus.KEYEXIST != ret1 ) && ( OperationStatus.KEYEXIST == ret2 ) ) )
 				{
-					txc = txc.commit();
-				}
-				else
-				{
-					txc = txc.abort();
+					RunTime.bug( "one link exists and the other does not; should either both exist or neither" );
 				}
 			}
-			return ret1;
+			
 		}
-		catch ( Throwable t )
+		finally
 		{
-			RunTime.throWrapped( t );
-			return null;
+			if ( commit )
+			{
+				txc = txc.commit();
+			}
+			else
+			{
+				txc = txc.abort();
+			}
 		}
+		return ret1;
 	}
 	
 

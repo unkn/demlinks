@@ -292,10 +292,6 @@ public class SetOfTerminalSymbols
 			
 			ret = iter.now();
 		}
-		catch ( Throwable t )
-		{
-			RunTime.throWrapped( t );
-		}
 		finally
 		{
 			this.deInitIterator();
@@ -343,10 +339,6 @@ public class SetOfTerminalSymbols
 				
 				ret = iter.now();
 			}
-		}
-		catch ( Throwable t )
-		{
-			RunTime.throWrapped( t );
 		}
 		finally
 		{

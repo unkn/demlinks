@@ -132,24 +132,16 @@ public class DatabaseCapsule
 					throws DatabaseException
 	{
 		
-		try
+		RunTime.assumedTrue( this.isInited() );
+		if ( null == db )
 		{
-			RunTime.assumedTrue( this.isInited() );
-			if ( null == db )
-			{
-				// first time init:
-				db = bdbL1.openAnyDatabase(
-											dbName,
-											dbConf );
-				RunTime.assumedNotNull( db );
-			}
-			return db;// it's not null
+			// first time init:
+			db = bdbL1.openAnyDatabase(
+										dbName,
+										dbConf );
+			RunTime.assumedNotNull( db );
 		}
-		catch ( Throwable t )
-		{
-			RunTime.throWrapped( t );
-			return null;// only to avoid warning because the above will throw
-		}
+		return db;// it's not null
 	}
 	
 
