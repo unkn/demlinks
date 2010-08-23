@@ -25,6 +25,9 @@ package org.designpatterns.tests;
 
 
 
+import java.util.HashSet;
+
+import org.dml.tools.RunTime;
 import org.dml.tracking.Log;
 
 
@@ -171,6 +174,28 @@ public class Delegation01
 	}
 	
 
+	// public
+	// void
+	// loop(
+	// int i )
+	// {
+	// System.out.println( "in with: " + i );
+	// if ( !RunTime.recursiveLoopDetected() )
+	// {
+	// this.loop( i + 1 );
+	// }
+	// // if ( i < 10 )
+	// // {
+	// // return this.loop( i + 1 );
+	// // }
+	// // else
+	// // {
+	// // return RunTime.getCurrentStackTraceElementsArray();
+	// // }
+	// }
+	
+
+
 	public static
 			void
 			main(
@@ -180,14 +205,16 @@ public class Delegation01
 		
 		@SuppressWarnings( "unused" )
 		Delegation01 d = new Delegation01();
+		// d.loop( 1 );
 		// try
 		// {
-		System.out.println( "this line: " + Log.getThisLineLocation( -1 - 3 + 6 + 2 ) );
-		moo();
-		foo(
-				1,
-				2,
-				3 );
+		// FIXME:
+		// System.out.println( "this line: " + Log.getThisLineLocation( -1 - 3 + 6 + 2 ) );
+		// moo();
+		// foo(
+		// 1,
+		// 2,
+		// 3 );
 		// }
 		// finally
 		// {

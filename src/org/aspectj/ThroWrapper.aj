@@ -34,7 +34,7 @@ import org.dml.tracking.Log;
 public aspect ThroWrapper {
 	static {
 		RunTime.throWrapperAspectEnabled=true;//used to calculate getLine when this aspect is on ie. +2 to location
-		RunTime.throWrapperAspectEnabledJump=+2; 
+		RunTime.throWrapperAspectEnabledJump=+2;//how many more lines ahead until exact location when aspect is on
 	}
 	
     pointcut anyCall(): call(* *.*(..))//any calls to any methods in any package...

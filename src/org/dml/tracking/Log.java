@@ -384,7 +384,7 @@ public class Log
 			StackTraceElement[] stea1 = t.getStackTrace();
 			// System.out.print( "T: " );
 			// t.printStackTrace();
-			StackTraceElement[] steaCur = Thread.currentThread().getStackTrace();
+			StackTraceElement[] steaCur = RunTime.getCurrentStackTraceElementsArray();
 			StackTraceElement findCaller = RunTime.getTheCaller_OutsideOfClass( outsideOfWhichClass );
 			if ( null == findCaller )
 			{

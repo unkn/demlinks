@@ -25,6 +25,8 @@ package org.dml.tools;
 
 
 
+import java.util.HashSet;
+
 import org.dml.error.AssumptionError;
 import org.dml.error.BadCallError;
 import org.dml.error.BugError;
@@ -490,6 +492,19 @@ public class RunTime
 							Object... obj )
 	{
 		
+		// if ( RunTime.recursiveLoopDetected() )
+		// {
+		// System.out.println( "Loop: " + RunTime.recursiveLoopDetected() );
+		// // StackTraceElement[] stea = RunTime.getCurrentStackTraceElementsArray();
+		// // for ( int i = 0; i < stea.length; i++ )
+		// // {
+		// // if ( stea[i].getClassName() == "sun.reflect.NativeMethodAccessorImpl" )
+		// // {
+		// // break;
+		// // }
+		// // System.out.println( i + " " + stea[i] );
+		// // }
+		// }
 		if ( null == obj )
 		{
 			RunTime.badCall( "must supply at least one parameter" );
@@ -596,7 +611,7 @@ public class RunTime
 	}
 	
 
-	public static
+	public synchronized static
 			StackTraceElement[]
 			getCurrentStackTraceElementsArray()
 	{
@@ -613,6 +628,33 @@ public class RunTime
 		RunTime.assumedNotNull( whichClass );
 		return private_getTheCaller_OutsideOfThisClass( whichClass.getName() );
 	}
+	
+
+	// public static
+	// boolean
+	// recursiveLoopDetected()
+	// {this can't work because methods can exist with different number of params which is not detectable
+	// StackTraceElement[] stack = RunTime.getCurrentStackTraceElementsArray();
+	// HashSet<String> m = new HashSet<String>();
+	// m.clear();
+	// for ( int i = 0; i < stack.length; i++ )
+	// {
+	// if ( "sun.reflect.NativeMethodAccessorImpl.invoke0".equals( stack[i].getClassName() + "."
+	// + stack[i].getMethodName() ) )
+	// {// this is for JUnit which has some loop; but main() doesn't hit this condition
+	// break;// because we might detect some loops on those callers which we don't care about
+	// }
+	// System.out.println( i + " " + stack[i] );
+	// if ( !m.add( stack[i].getClassName() + "." + stack[i].getMethodName() + ":" + stack[i].getLineNumber() ) )
+	// {
+	// // already existed
+	// System.out.println( "Loop on: " + i + " " + stack[i] );
+	// return true;
+	// // break;
+	// }
+	// }
+	// return false;
+	// }
 	
 
 	/**
@@ -648,13 +690,14 @@ public class RunTime
 		// Class<?> whichClass = ourCaller.getClassName()
 		// RunTime.assumedNotNull( whichClass );
 		// String whichClassName = whichClass.getName();// ourCaller.getClassName();// .getCanonicalName();
-		RunTime.assumedNotNull(
-		// ourCaller,
-				whichClassName );
-		
-		// String ourCallersName = ourCaller.getMethodName();
-		// RunTime.assumedNotNull( ourCallersName );
-		// System.out.println( whichClassName + "!" + ourCallersName );
+		RunTime.assumedNotNull( whichClassName );
+		// if ( 1 == 1 )
+		// {
+		// throw new RuntimeException();
+		// // String ourCallersName = ourCaller.getMethodName();
+		// // RunTime.assumedNotNull( ourCallersName );
+		// // System.out.println( whichClassName + "!" + ourCallersName );
+		// }
 		
 		StackTraceElement[] stea = getCurrentStackTraceElementsArray();
 		

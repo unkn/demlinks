@@ -29,6 +29,9 @@ package org.dml.tools;
 import static org.junit.Assert.*;
 import static org.junit.Assert.assertTrue;
 
+import java.util.HashMap;
+import java.util.HashSet;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -223,5 +226,73 @@ public class RunTimeTest
 		// {
 		// System.out.println( element );
 		// }
+		
 	}
+	
+	//
+	// public
+	// int
+	// loop(
+	// int i,
+	// int j )
+	// {
+	// System.out.println( "in2 with: " + i );
+	// if ( !RunTime.recursiveLoopDetected() )
+	// {
+	// return this.loop( i + 1 );
+	// }
+	// return i;
+	// }
+	//
+	//
+	// public
+	// int
+	// loop(
+	// int i )
+	// {
+	// System.out.println( "in1 with: " + i );
+	// if ( !RunTime.recursiveLoopDetected() )
+	// {
+	// return this.loop(
+	// i + 1,
+	// 0 );
+	// }
+	// return i;
+	// // if ( i < 10 )
+	// // {
+	// // return this.loop( i + 1 );
+	// // }
+	// // else
+	// // {
+	// // return RunTime.getCurrentStackTraceElementsArray();
+	// // }
+	// }
+	//
+	//
+	// @Test
+	// public
+	// void
+	// loopingTest()
+	// {
+	// // StackTraceElement[] erm =
+	// assertTrue( 2 == this.loop( 1 ) );
+	// // for ( int i = 0; i < erm.length; i++ )
+	// // {
+	// // System.out.println( i + " " + erm[i] );
+	// // }
+	// // StackTraceElement[] stack = this.loop( 0 );// RunTime.getCurrentStackTraceElementsArray();
+	// // HashSet<StackTraceElement> m = new HashSet<StackTraceElement>();
+	// // m.clear();
+	// // for ( int i = 0; i < stack.length; i++ )
+	// // {
+	// // System.out.println( i + " " + stack[i] );
+	// // if ( !m.add( stack[i] ) )
+	// // {
+	// // // already existed
+	// // System.out.println( "Loop on: " + i + " " + stack[i] );
+	// // break;
+	// // }
+	// // }
+	// }
+	
 }
