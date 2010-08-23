@@ -702,7 +702,7 @@ public class RunTime
 		StackTraceElement[] stea = getCurrentStackTraceElementsArray();
 		
 		// System.err.println( "BEGIN:" );
-		StackTraceElement last = null;
+		// StackTraceElement last = null;
 		// int i = +2 + 1 + 1;
 		boolean findThisClassFirst = true;
 		for ( int i = 4; i < stea.length; i++ )
@@ -719,28 +719,28 @@ public class RunTime
 			
 			if ( RunTime.throWrapperAspectEnabled )
 			{
-				if ( last == null )
+				// if ( last == null )
+				// {
+				// last = ste;
+				// // System.err.println( " LAST1= " + last );
+				// }
+				// else
+				// {
+				if ( ( ste.getMethodName().matches( "^[a-zA-Z0-9_]+"
+				/* last.getMethodName().substring( 0, 12 ) + */
+				+ "_aroundBody[0-9]+$" ) ) || ( ( ste.getMethodName().matches( "^[a-zA-Z0-9_]+"
+				// +last.getMethodName()
+						+ "_aroundBody[0-9]+\\$advice$" ) ) ) )
 				{
-					last = ste;
-					// System.err.println( " LAST1= " + last );
+					// System.err.println( "SKIP" );
+					continue;// skipping over aspect methods
 				}
-				else
-				{
-					if ( ( ste.getMethodName().matches( "^[a-zA-Z0-9_]+"
-					/* last.getMethodName().substring( 0, 12 ) + */
-					+ "_aroundBody[0-9]+$" ) ) || ( ( ste.getMethodName().matches( "^[a-zA-Z0-9_]+"
-					// +last.getMethodName()
-							+ "_aroundBody[0-9]+\\$advice$" ) ) ) )
-					{
-						// System.err.println( "SKIP" );
-						continue;// skipping over aspect methods
-					}
-					else
-					{
-						last = ste;
-						// System.err.println( " LAST...= " + last );
-					}
-				}
+				// else
+				// {
+				// last = ste;
+				// // System.err.println( " LAST...= " + last );
+				// }
+				// }
 			}
 			if ( findThisClassFirst )
 			{
