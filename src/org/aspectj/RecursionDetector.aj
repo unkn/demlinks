@@ -34,11 +34,15 @@ import org.dml.tools.RunTime;
  */
 public aspect RecursionDetector
 {
+
+	private static final boolean enableRecursionDetection=false;
+	private static final boolean enablePrintRDs=true;//only in effect if above is true
+	private static final boolean enableCallTracing=false;
 	
 	static {
-		RunTime.recursiveLoopDetected=false; 
-		RunTime.callTracingFromHere=false; 
-		//RunTime.recursionObject=null;
+		//these are valid only if one/more of the above are enabled
+		RunTime.recursiveLoopDetected=false; //this is set dynamically only in each method has recursion
+		RunTime.callTracingFromHere=true; 
 	}
 	
 	//don't change value of these two:
@@ -64,20 +68,23 @@ public aspect RecursionDetector
 //						&& !this(Log);
 	
 	before(): anyCall() {
-		if (afterAlready) {
-			return;
-		}
-		
+		if ((enableRecursionDetection)||(enableCallTracing)) {
 		if (beforeAlready) {
 			return;
 		}else {
+			if (afterAlready) {
+				return;
+			}
 			beforeAlready=true;
 		}
 		try{
 			callLevel++;//first
-			
+		 
+		 //common: 2lines
 			Signature sig=thisJoinPointStaticPart.getSignature();
 			String link=sig2Link(sig,thisJoinPointStaticPart.getSourceLocation().toString());
+			
+		  if (enableRecursionDetection) {
 			String which=sig.toLongString();
 			if (null != perLevelStore.put( callLevel, which )) {
 				//BUG
@@ -89,44 +96,55 @@ public aspect RecursionDetector
 			if (null != isLoopAtThisLevel.put(callLevel, RunTime.recursiveLoopDetected)) {
 				throwErr("#121 a previous value should NOT have existed");
 			}
-			if (RunTime.recursiveLoopDetected) {
-				System.err.println("recursion about to begin callee(called at): "+link);
+			if (enablePrintRDs) {
+				if (RunTime.recursiveLoopDetected) {
+					System.err.println("recursion about to begin callee(called at): "+link);
+				}
 			}
-		
+		  }
+		  if (enableCallTracing){
 			if (RunTime.callTracingFromHere) {
 				System.err.println(formLevel("\u250D\u2501 "+RunTime.recursiveLoopDetected+" "+link));
 			}
+		  }
 		
 		}finally{
 			//last:
 			beforeAlready=false;
 		}
+		}//enabled
 	}
 
 	after() : anyCall() {//returning normally or via thrown exception
-		if (beforeAlready) {
-			return;
-		}
-		
+		if ((enableRecursionDetection)||(enableCallTracing)) {
 		if (afterAlready){
 			return;
 		}else {
+			if (beforeAlready) {
+				return;
+			}
 			afterAlready=true;
 		}
 		try{
+			if (enableRecursionDetection) {
 			if (callLevel <=CALL_LEVEL_INIT) {
 				throwErr("#000 bug somewhere");
 			}
-		
+			}
+			
+			//common: 2lines
 			Signature sig=thisJoinPointStaticPart.getSignature();
 			String link=sig2Link(sig,thisJoinPointStaticPart.getSourceLocation().toString());
 			String which=sig.toLongString();
 			
-			if (isLoopAtThisLevel.remove( callLevel ) == null){//RunTime.recursiveLoopDetected) {
+			if (enableRecursionDetection) {
+			boolean prevState=RunTime.recursiveLoopDetected;//this state in before()
+			
+			if (isLoopAtThisLevel.remove( callLevel ) != prevState) {
 				throwErr("#358 "+link+" "+callLevel+" a previous value should have existed and be the same as the state");
 			}
 		
-			if (!RunTime.recursiveLoopDetected) {
+			if (!prevState) {
 				//remove only if not loop detected on current, because it got overwritten last time
 				//System.err.println("R: "+calls.size());
 				//System.err.flush();
@@ -135,28 +153,36 @@ public aspect RecursionDetector
 				}
 			}
 			
+			
+			//restore state
 			if (callLevel-1>CALL_LEVEL_INIT) {
 				//restore loopdetected status for our caller
 				RunTime.recursiveLoopDetected=isLoopAtThisLevel.get( callLevel-1 );
 			}else {
 				RunTime.recursiveLoopDetected=false;
 			}
-		
+			}
+			
+			if (enableCallTracing) {
 			if (RunTime.callTracingFromHere) {
 				System.err.println(formLevel("\u2515\u2501 "+RunTime.recursiveLoopDetected+" "+link));
 			}
+			}
+			if (enableRecursionDetection) {
 			
 			if (which != perLevelStore.remove( callLevel )){//||(callLevel==3)) {
 				throwErr("#890 "+link+" should've existed");
 			}
 			
 			
+			}
 		
 		}finally{
 			//LAST:
 			callLevel--;
 			afterAlready=false;
 		}
+		}//enabled
 	}
 	
 	/**
