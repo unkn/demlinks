@@ -29,9 +29,6 @@ package org.dml.tools;
 import static org.junit.Assert.*;
 import static org.junit.Assert.assertTrue;
 
-import java.util.HashMap;
-import java.util.HashSet;
-
 import org.dml.error.AssumptionError;
 import org.dml.tracking.Log;
 import org.junit.After;

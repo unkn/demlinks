@@ -138,12 +138,11 @@ public class Delegation01
 				long
 				getArea()
 		{
-			
-			// TODO Auto-generated method stub
 			return r;
 		}
 		
 
+		@SuppressWarnings( "synthetic-access" )
 		public Circle(
 				long ray )
 		{
@@ -160,7 +159,6 @@ public class Delegation01
 	public Delegation01()
 	{
 		
-		// TODO Auto-generated constructor stub
 		win = new Window();
 		Rect r = new Rect(
 							1,
@@ -232,7 +230,6 @@ public class Delegation01
 			void
 			moo()
 	{
-		// TODO Auto-generated method stub
 		StackTraceElement[] stea = Thread.currentThread().getStackTrace();
 		for ( int i = 0; i < stea.length; i++ )
 		{

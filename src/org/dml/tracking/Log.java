@@ -79,10 +79,10 @@ public class Log
 							Throwable t )
 	{
 		// FIXME: needs fixing line number are incorrect
-		// logThrowable(
-		// outsideOfWhichClass,
-		// LogFlags.Thro,
-		// t );
+		logThrowable(
+						outsideOfWhichClass,
+						LogFlags.Thro,
+						t );
 	}
 	
 

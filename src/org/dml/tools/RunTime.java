@@ -25,8 +25,6 @@ package org.dml.tools;
 
 
 
-import java.util.HashSet;
-
 import org.dml.error.AssumptionError;
 import org.dml.error.BadCallError;
 import org.dml.error.BugError;
@@ -41,6 +39,8 @@ public class RunTime
 	
 	public static int			throWrapperAspectEnabledJump	= +2;
 	public static boolean		throWrapperAspectEnabled		= false;
+	
+
 	private static Throwable	allExceptionsChained			= null;
 	
 	
@@ -726,9 +726,11 @@ public class RunTime
 				}
 				else
 				{
-					if ( ( ste.getMethodName().matches( "^" + last.getMethodName() + "_aroundBody[0-9]+$" ) )
-							|| ( ( ste.getMethodName().matches( "^" + last.getMethodName()
-									+ "_aroundBody[0-9]+\\$advice$" ) ) ) )
+					if ( ( ste.getMethodName().matches( "^[a-zA-Z0-9_]+"
+					/* last.getMethodName().substring( 0, 12 ) + */
+					+ "_aroundBody[0-9]+$" ) ) || ( ( ste.getMethodName().matches( "^[a-zA-Z0-9_]+"
+					// +last.getMethodName()
+							+ "_aroundBody[0-9]+\\$advice$" ) ) ) )
 					{
 						// System.err.println( "SKIP" );
 						continue;// skipping over aspect methods
