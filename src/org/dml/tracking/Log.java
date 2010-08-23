@@ -78,10 +78,11 @@ public class Log
 							Class<?> outsideOfWhichClass,
 							Throwable t )
 	{
-		logThrowable(
-						outsideOfWhichClass,
-						LogFlags.Thro,
-						t );
+		// FIXME: needs fixing line number are incorrect
+		// logThrowable(
+		// outsideOfWhichClass,
+		// LogFlags.Thro,
+		// t );
 	}
 	
 
@@ -456,7 +457,7 @@ public class Log
 							String msg )
 	{
 		return showMsgLoc(
-							msg,
+							"reportError: " + msg,
 							getThisLineLocation( +2 ) );
 		// System.err.println( msg );
 		// System.err.println( );// + " " + msg );
@@ -469,7 +470,7 @@ public class Log
 								String msg )
 	{
 		return showMsgLoc(
-							msg,
+							"reportErrorHere: " + msg,
 							getThisLineLocation( +1 ) );
 		// reportError( msg + " at " + getThisLineLocation( 1 ) );
 	}
@@ -596,7 +597,7 @@ public class Log
 			getLine(
 						int position )
 	{
-		StackTraceElement[] stea1 = Thread.currentThread().getStackTrace();
+		StackTraceElement[] stea1 = RunTime.getCurrentStackTraceElementsArray();
 		if ( null == stea1 )
 		{
 			// yeah and can't call RunTime.badCall() here, or similar because of recursion
@@ -680,18 +681,18 @@ public class Log
 	}
 	
 
-	public static
-			String
-			getThisLineLocationWithinAspect(
-												int modifier )
-	{
-		// StackTraceElement[] stea = Thread.currentThread().getStackTrace();
-		// for ( int i = 0; i < stea.length; i++ )
-		// {
-		// System.out.println( i + " " + stea[i] );
-		// }
-		return getLine( 2 + 1 + 8 + modifier );
-	}
+	// public static
+	// String
+	// getThisLineLocationWithinAspect(
+	// int modifier )
+	// {
+	// // StackTraceElement[] stea = Thread.currentThread().getStackTrace();
+	// // for ( int i = 0; i < stea.length; i++ )
+	// // {
+	// // System.out.println( i + " " + stea[i] );
+	// // }
+	// return getLine( 2 + 1 + 8 + modifier );
+	// }
 	
 
 	// private static
@@ -793,6 +794,14 @@ public class Log
 	// warn0( 2, msg );
 	// }
 	
+	public static
+			StackTraceElement
+			forJunit()
+	{
+		return RunTime.getTheCaller_OutsideOfThisClass();
+	}
+	
+
 	public static
 			void
 			warn(

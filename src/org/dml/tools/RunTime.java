@@ -491,7 +491,7 @@ public class RunTime
 			assumedNotNull(
 							Object... obj )
 	{
-		
+		// TODO: fix potential recursion with RunTime and Log classes
 		// if ( RunTime.recursiveLoopDetected() )
 		// {
 		// System.out.println( "Loop: " + RunTime.recursiveLoopDetected() );
@@ -701,50 +701,66 @@ public class RunTime
 		
 		StackTraceElement[] stea = getCurrentStackTraceElementsArray();
 		
-
-		int i = +2 + 1 + 1;
+		// System.err.println( "BEGIN:" );
+		StackTraceElement last = null;
+		// int i = +2 + 1 + 1;
 		boolean findThisClassFirst = true;
-		while ( i < stea.length )
+		for ( int i = 4; i < stea.length; i++ )
 		{
+			
 			StackTraceElement ste = stea[i];
-			// System.err.print( i + "::: " + ste );
-			if ( "sun.reflect.NativeMethodAccessorImpl.invoke0".equals( ste.getClassName() + "." + ste.getMethodName() ) )
+			// System.err.print( i + ":" + ste.getClassName() + ":" + ste.getMethodName() + ":: " );
+			if ( ste.isNativeMethod() )// ( "sun.reflect.NativeMethodAccessorImpl.invoke0".equals( ste.getClassName() +
+										// "." + ste.getMethodName() ) )
 			{
+				// System.err.println();
 				break;// will return null
+			}
+			
+			if ( RunTime.throWrapperAspectEnabled )
+			{
+				if ( last == null )
+				{
+					last = ste;
+					// System.err.println( " LAST1= " + last );
+				}
+				else
+				{
+					if ( ( ste.getMethodName().matches( "^" + last.getMethodName() + "_aroundBody[0-9]+$" ) )
+							|| ( ( ste.getMethodName().matches( "^" + last.getMethodName()
+									+ "_aroundBody[0-9]+\\$advice$" ) ) ) )
+					{
+						// System.err.println( "SKIP" );
+						continue;// skipping over aspect methods
+					}
+					else
+					{
+						last = ste;
+						// System.err.println( " LAST...= " + last );
+					}
+				}
 			}
 			if ( findThisClassFirst )
 			{
 				if ( whichClassName.equals( ste.getClassName() ) )
 				{
 					findThisClassFirst = false;
+					
 				}
 			}
 			else
-			{// found factory already, now we must find non-factory
+			{
 				if ( !whichClassName.equals( ste.getClassName() ) )
 				{
-					// we found the one that is outside Factory class and that called us
-					if ( RunTime.throWrapperAspectEnabled )
-					{
-						if ( i + RunTime.throWrapperAspectEnabledJump >= stea.length )
-						{
-							Log.bug( "this should not happen" );
-						}
-						return stea[i + RunTime.throWrapperAspectEnabledJump];
-					}
-					else
-					{
-						return ste;
-					}
-					// System.err.println( " <------- " );
-					// return ste;
+					return ste;
+					// System.err.print( " <------- " );
 					// break;
 				}
 			}
 			// System.err.println();
-			i++;
-		}
-		return null;// FIXME: simplify
+			// i++;
+		}// for
+		return null;
 	}
 	
 
@@ -779,5 +795,13 @@ public class RunTime
 			}
 		}// else ignore
 		
+	}
+	
+
+	public static
+			StackTraceElement
+			forJunit()
+	{
+		return getTheCaller_OutsideOfThisClass();
 	}
 }

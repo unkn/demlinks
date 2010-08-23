@@ -32,6 +32,8 @@ import static org.junit.Assert.assertTrue;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import org.dml.error.AssumptionError;
+import org.dml.tracking.Log;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -179,6 +181,7 @@ public class RunTimeTest
 		assertTrue( f3.getClassName() == this.getClass().getName() );
 		assertTrue( f41.getClassName() == this.getClass().getName() );
 		assertTrue( f42.getClassName() == this.getClass().getName() );
+		// System.out.println( f1 );
 		assertTrue( f1.getMethodName() == actualLocation.getMethodName() );// aspect is enabled?
 		assertTrue( f2.getMethodName() == actualLocation.getMethodName() );
 		assertTrue( f3.getMethodName() == actualLocation.getMethodName() );
@@ -216,6 +219,63 @@ public class RunTimeTest
 		StackTraceElement ste = RunTime.getTheCaller_OutsideOfThisClass();
 		assertNull( ste );
 		assertNull( this.tc() );
+		
+		StackTraceElement out = RunTimeTest2.outterCall();
+		assertNotNull( out );
+		assertTrue( out.getClassName() == this.getClass().getName() );
+		assertTrue( out.getMethodName() == actualLocation.getMethodName() );
+		
+		RunTimeTest2 rtt2 = new RunTimeTest2();
+		out = rtt2.innerCall();
+		assertNotNull( out );
+		assertTrue( out.getClassName() == this.getClass().getName() );
+		assertTrue( out.getMethodName() == actualLocation.getMethodName() );
+		
+		out = rtt2.wtw();
+		System.out.println( out );
+		assertNotNull( out );
+		assertTrue( out.getClassName() == this.getClass().getName() );
+		assertTrue( out.getMethodName() == actualLocation.getMethodName() );
+		
+		out = rtt2.wtw2();
+		assertNotNull( out );
+		assertTrue( out.getClassName() == this.getClass().getName() );
+		assertTrue( out.getMethodName() == actualLocation.getMethodName() );
+		
+		out = rtt2.wtw3();
+		assertNotNull( out );
+		assertTrue( out.getClassName() == this.getClass().getName() );
+		assertTrue( out.getMethodName() == actualLocation.getMethodName() );
+		
+		out = rtt2.wtw4();
+		assertNotNull( out );
+		assertTrue( out.getClassName() == this.getClass().getName() );
+		assertTrue( out.getMethodName() == actualLocation.getMethodName() );
+		
+		out = rtt2.wtw5();
+		assertNotNull( out );
+		assertTrue( out.getClassName() == this.getClass().getName() );
+		assertTrue( out.getMethodName() == actualLocation.getMethodName() );
+		
+		out = rtt2.wtw6();
+		assertNotNull( out );
+		assertTrue( out.getClassName() == this.getClass().getName() );
+		assertTrue( out.getMethodName() == actualLocation.getMethodName() );
+		
+		out = this.some( rtt2 );
+		assertNotNull( out );
+		assertTrue( out.getClassName() == this.getClass().getName() );
+		assertTrue( out.getMethodName() == "some" );
+		
+		out = RunTime.forJunit();
+		assertNotNull( out );
+		assertTrue( out.getClassName() == this.getClass().getName() );
+		assertTrue( out.getMethodName() == actualLocation.getMethodName() );
+		
+		out = Log.forJunit();
+		assertNotNull( out );
+		assertTrue( out.getClassName() == this.getClass().getName() );
+		assertTrue( out.getMethodName() == actualLocation.getMethodName() );
 		// String callerName = ste.getMethodName();
 		// System.out.println( callerName );
 		// assertTrue( this.tc().getMethodName() == callerName );
@@ -229,6 +289,17 @@ public class RunTimeTest
 		
 	}
 	
+
+	private
+			StackTraceElement
+			some(
+					// don't rename this!
+					RunTimeTest2 rtt2 )
+	{
+		return rtt2.wtw6();
+	}
+	
+
 	//
 	// public
 	// int
@@ -295,4 +366,33 @@ public class RunTimeTest
 	// // }
 	// }
 	
+	@Test
+	public
+			void
+			testNull()
+	{
+		try
+		{
+			RunTime.getTheCaller_OutsideOfClass( null );
+		}
+		catch ( Throwable t )
+		{
+			assertTrue( RunTime.isThisWrappedException_of_thisType(
+																	t,
+																	AssumptionError.class ) );
+			RunTime.clearLastThrown_andAllItsWraps();
+		}
+	}
+	
+
+	@Test
+	public
+			void
+			testRegex()
+	{
+		String s = "getCaller4_aroundBody34";
+		System.out.println( s.matches( "^getCaller4_aroundBody[0-9]+$" ) );
+		s = "getCaller4_aroundBody35$advice";
+		System.out.println( s.matches( "^getCaller4" + "_aroundBody[0-9]+\\$advice$" ) );
+	}
 }
