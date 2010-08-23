@@ -33,6 +33,7 @@ import org.dml.tracking.Log;
  */
 public aspect ThroWrapper {
 	static {
+		//never set this to false, to disable aspect you have to comment all lines
 		RunTime.throWrapperAspectEnabled=true;//used to calculate getLine when this aspect is on ie. +2 to location
 		RunTime.throWrapperAspectEnabledJump=+2;//how many more lines ahead until exact location when aspect is on
 	}

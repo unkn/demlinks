@@ -419,12 +419,12 @@ public class Log
 							else
 							{
 								// System.err.println( "almost_got_tricked3 at " + Log.getThisLineLocation() );
-								reportErrorHere( "almost_got_tricked3" );
+								reportErrorHere( "same method, same class, different filenames? how odd" );
 							}
 						}
 						else
 						{
-							reportErrorHere( "almost_got_tricked2" );
+							// reportErrorHere( "same method, diff classes" );
 							// System.err.println( "almost_got_tricked2 at " + Log.getThisLineLocation() );
 						}
 					}// else we go to next in stack trace, to check
@@ -677,7 +677,7 @@ public class Log
 		// {
 		// System.out.println( i + " " + stea[i] );
 		// }
-		return getLine( 2 + 1 + modifier );
+		return getLine( 2 + 1 + 1 + modifier );
 	}
 	
 
