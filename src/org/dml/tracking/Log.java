@@ -644,7 +644,7 @@ public class Log
 			t.printStackTrace();
 			return bc;
 		}
-		if ( null != ste )
+		if ( null == ste )
 		{
 			String bc = "weird bug in getLine";
 			reportError( bc );
