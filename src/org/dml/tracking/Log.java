@@ -96,7 +96,8 @@ public class Log
 		log(
 				outsideThisClass,
 				LogFlags.Thro,
-				"Throws: " + msg );
+				"Throws: "
+						+ msg );
 	}
 	
 
@@ -158,7 +159,8 @@ public class Log
 		log(
 				outsideThisClass,
 				LogFlags.Special,
-				"special: " + msg );
+				"special: "
+						+ msg );
 	}
 	
 
@@ -220,7 +222,8 @@ public class Log
 		log(
 				outsideOfWhichClass,
 				LogFlags.Entry,
-				"entry : " + msg );
+				"entry : "
+						+ msg );
 	}
 	
 
@@ -269,7 +272,8 @@ public class Log
 		log(
 				outsideOfWhichClass,
 				LogFlags.Exit,
-				"exit  : " + msg );
+				"exit  : "
+						+ msg );
 	}
 	
 
@@ -329,7 +333,8 @@ public class Log
 		log(
 				outsideOfThisClass,
 				LogFlags.Mid,
-				"mid  : " + msg );
+				"mid  : "
+						+ msg );
 	}
 	
 
@@ -385,7 +390,7 @@ public class Log
 			StackTraceElement[] stea1 = t.getStackTrace();
 			// System.out.print( "T: " );
 			// t.printStackTrace();
-			StackTraceElement[] steaCur = RunTime.getCurrentStackTraceElementsArray();
+			// StackTraceElement[] steaCur = RunTime.getCurrentStackTraceElementsArray();
 			StackTraceElement findCaller = RunTime.getTheCaller_OutsideOfClass( outsideOfWhichClass );
 			if ( null == findCaller )
 			{
@@ -441,7 +446,9 @@ public class Log
 			
 
 			showMsgLoc(
-						t.getClass().getName() + ": " + t.getLocalizedMessage(),
+						t.getClass().getName()
+								+ ": "
+								+ t.getLocalizedMessage(),
 						loc );
 			// String.format(
 			// "%-" + spacesBeforeMsg + "s%s",
@@ -451,26 +458,28 @@ public class Log
 	}
 	
 
-	private static
+	public static
 			String
 			reportError(
 							String msg )
 	{
 		return showMsgLoc(
-							"reportError: " + msg,
+							"reportError: "
+									+ msg,
 							getThisLineLocation( +2 ) );
 		// System.err.println( msg );
 		// System.err.println( );// + " " + msg );
 	}
 	
 
-	private static
+	public static
 			String
 			reportErrorHere(
 								String msg )
 	{
 		return showMsgLoc(
-							"reportErrorHere: " + msg,
+							"reportErrorHere: "
+									+ msg,
 							getThisLineLocation( +1 ) );
 		// reportError( msg + " at " + getThisLineLocation( 1 ) );
 	}
@@ -505,7 +514,7 @@ public class Log
 			if ( null == ste )
 			{
 				reportError( "this usually means you didn't use the right class when calling this method because there"
-						+ " is no trace of it in the caller's stack" );
+								+ " is no trace of it in the caller's stack" );
 			}
 			String loc = formatLocation( ste );// getCurrentLocation();
 			// if ( mustShowCurrentMethod( modifier ) )
@@ -528,10 +537,15 @@ public class Log
 						String msg,
 						String loc )
 	{
-		String ret = msg + nl + String.format(
-												"%-" + spacesBeforeMsg + "s%s",
-												" ",
-												loc ) + nl;
+		String ret = msg
+						+ nl
+						+ String.format(
+											"%-"
+													+ spacesBeforeMsg
+													+ "s%s",
+											" ",
+											loc )
+						+ nl;
 		System.err.print( ret );
 		return ret;
 	}
@@ -592,6 +606,7 @@ public class Log
 	}
 	
 
+	// FIXME: fix or remove this
 	public static
 			String
 			getLine(
@@ -609,7 +624,15 @@ public class Log
 		
 		try
 		{
-			ste = stea1[position];
+			position++;
+			do
+			{
+				ste = stea1[position];
+				position++;
+			}
+			while ( ( null != ste )
+					&& ( position < stea1.length )
+					&& ( ( ste.isNativeMethod() ) || ( RunTime.isAspectInnerMethod( ste.getMethodName() ) ) ) );
 			// } catch ( ArrayIndexOutOfBoundsException ae ) {
 			// ae.printStackTrace();
 			// return "";
@@ -621,7 +644,7 @@ public class Log
 			t.printStackTrace();
 			return bc;
 		}
-		if ( null == ste )
+		if ( null != ste )
 		{
 			String bc = "weird bug in getLine";
 			reportError( bc );
@@ -647,7 +670,13 @@ public class Log
 		}
 		else
 		{
-			return ste.getClassName() + "." + ste.getMethodName() + "(" + ste.getFileName() + ":" + ste.getLineNumber()
+			return ste.getClassName()
+					+ "."
+					+ ste.getMethodName()
+					+ "("
+					+ ste.getFileName()
+					+ ":"
+					+ ste.getLineNumber()
 					+ ")";
 		}
 	}
@@ -658,7 +687,7 @@ public class Log
 			getThisLineLocation()
 	{
 		
-		return getThisLineLocation( 0 );// getLine( Thread.currentThread().getStackTrace(), 2 );
+		return getThisLineLocation( +1 );// getLine( Thread.currentThread().getStackTrace(), 2 );
 	}
 	
 
@@ -677,7 +706,7 @@ public class Log
 		// {
 		// System.out.println( i + " " + stea[i] );
 		// }
-		return getLine( 2 + 1 + 1 + modifier );
+		return getLine( 2 + 1 + modifier );
 	}
 	
 
@@ -736,7 +765,10 @@ public class Log
 					boolean boo )
 	{
 		
-		result0( ( boo == true ? "true" : "false" ) + nl );
+		result0( ( boo == true
+								? "true"
+								: "false" )
+					+ nl );
 	}
 	
 
@@ -749,7 +781,8 @@ public class Log
 		log(
 				null,
 				LogFlags.Result,
-				"result: " + msg );
+				"result: "
+						+ msg );
 	}
 	
 
@@ -773,7 +806,8 @@ public class Log
 		log(
 				outsideThisClass,
 				LogFlags.Warn,
-				"warn  : " + msg );
+				"warn  : "
+						+ msg );
 	}
 	
 
@@ -833,7 +867,8 @@ public class Log
 		log(
 				null,
 				LogFlags.Bug,
-				"BUG   : " + msg );
+				"BUG   : "
+						+ msg );
 	}
 	
 

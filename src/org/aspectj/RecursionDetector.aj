@@ -35,14 +35,17 @@ import org.dml.tools.RunTime;
 public aspect RecursionDetector
 {
 
-	private static final boolean enableRecursionDetection=false;
+	private static final boolean enableRecursionDetection=true;
 	private static final boolean enablePrintRDs=true;//only in effect if above is true
 	private static final boolean enableCallTracing=false;
+	private static final long ifRecursionStopAtLevel=5000;//5000 stacked callers only if enableRecursionDetection true
 	
 	static {
 		//these are valid only if one/more of the above are enabled
-		RunTime.recursiveLoopDetected=false; //this is set dynamically only in each method has recursion
-		RunTime.callTracingFromHere=true; 
+		RunTime.recursiveLoopDetected=false; //this is set dynamically by this aspect in each method that has recursion
+
+		//if you set this to true anywhere in the program it will start tracing calls until set to false
+		RunTime.callTracingFromHere=false; 
 	}
 	
 	//don't change value of these two:
@@ -98,8 +101,12 @@ public aspect RecursionDetector
 			}
 			if (enablePrintRDs) {
 				if (RunTime.recursiveLoopDetected) {
-					System.err.println("recursion about to begin callee(called at): "+link);
+					System.err.println("recursion about to begin at level("+callLevel+") callee(called at line): "+link);
 				}
+			}
+			
+			if (callLevel >= ifRecursionStopAtLevel) {
+				throwErr("#5000 auto stopping due to detected recursion reaching set limit");
 			}
 		  }
 		  if (enableCallTracing){

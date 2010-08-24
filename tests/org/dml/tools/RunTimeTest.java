@@ -304,9 +304,11 @@ public class RunTimeTest
 					int i,
 					int j )
 	{
-		if ( ( !RunTime.recursiveLoopDetected ) && ( i < 5 ) )
+		if ( ( !RunTime.recursiveLoopDetected )
+				&& ( i < 5 ) )
 		{
-			System.out.println( "in2 with: " + i );
+			System.out.println( "in2 with: "
+								+ i );
 			return this.loop( i + 1 );
 		}
 		return i;
@@ -318,9 +320,11 @@ public class RunTimeTest
 			loop(
 					int i )
 	{
-		if ( ( !RunTime.recursiveLoopDetected ) && ( i < 5 ) )
+		if ( ( !RunTime.recursiveLoopDetected )
+				&& ( i < 5 ) )
 		{
-			System.out.println( "in1 with: " + i );
+			System.out.println( "in1 with: "
+								+ i );
 			return this.loop(
 								i + 1,
 								0 );
@@ -428,6 +432,20 @@ public class RunTimeTest
 			RunTime.clearLastThrown_andAllItsWraps();
 		}
 		RunTime.throwAllThatWerePosponed();// should re-throw the RTE(xy) from above so you see it in eclipse
+		Log.reportError( "test1" );
+		Log.reportErrorHere( "test2" );
+		this.c();
+		System.out.println( Log.getLine( +2 ) );
+		System.out.println( Log.getThisLineLocation() );
+		System.out.println( Log.getThisLineLocation( 0 ) );
+	}
+	
+
+	private
+			void
+			c()
+	{
+		Log.reportError( "test3" );
 	}
 	
 
@@ -439,6 +457,7 @@ public class RunTimeTest
 		String s = "getCaller4_aroundBody34";
 		System.out.println( s.matches( "^getCaller4_aroundBody[0-9]+$" ) );
 		s = "getCaller4_aroundBody35$advice";
-		System.out.println( s.matches( "^getCaller4" + "_aroundBody[0-9]+\\$advice$" ) );
+		System.out.println( s.matches( "^getCaller4"
+										+ "_aroundBody[0-9]+\\$advice$" ) );
 	}
 }

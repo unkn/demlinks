@@ -517,8 +517,17 @@ public class RunTime
 			{
 				if ( null == obj[i] )
 				{
+					// Error e =
 					RunTime.thro( new AssumptionError(
 														"expected non-null object[" + ( i + 1 ) + "] was null!" ) );
+					// if ( RunTime.recursiveLoopDetected )
+					// {
+					// throw e;
+					// }
+					// else
+					// {
+					// RunTime.thro( e );
+					// }
 				}
 			}
 		}
@@ -627,6 +636,10 @@ public class RunTime
 											Class<?> whichClass )
 	{
 		// don't change depth of this method
+		// if ( RunTime.recursiveLoopDetected )
+		// {
+		// return null;
+		// }
 		RunTime.assumedNotNull( whichClass );
 		return private_getTheCaller_OutsideOfThisClass( whichClass.getName() );
 	}
@@ -728,15 +741,19 @@ public class RunTime
 				// }
 				// else
 				// {
-				if ( ( ste.getMethodName().matches( "^[a-zA-Z0-9_]+"
-				/* last.getMethodName().substring( 0, 12 ) + */
-				+ "_aroundBody[0-9]+$" ) ) || ( ( ste.getMethodName().matches( "^[a-zA-Z0-9_]+"
-				// +last.getMethodName()
-						+ "_aroundBody[0-9]+\\$advice$" ) ) ) )
+				if ( isAspectInnerMethod( ste.getMethodName() ) )
 				{
-					// System.err.println( "SKIP" );
-					continue;// skipping over aspect methods
+					continue;
 				}
+				// if ( ( ste.getMethodName().matches( "^[a-zA-Z0-9_]+"
+				// /* last.getMethodName().substring( 0, 12 ) + */
+				// + "_aroundBody[0-9]+$" ) ) || ( ( ste.getMethodName().matches( "^[a-zA-Z0-9_]+"
+				// // +last.getMethodName()
+				// + "_aroundBody[0-9]+\\$advice$" ) ) ) )
+				// {
+				// // System.err.println( "SKIP" );
+				// continue;// skipping over aspect methods
+				// }
 				// else
 				// {
 				// last = ste;
@@ -765,6 +782,16 @@ public class RunTime
 			// i++;
 		}// for
 		return null;
+	}
+	
+
+	public synchronized static
+			boolean
+			isAspectInnerMethod(
+									String name )
+	{
+		return ( name.matches( "^[a-zA-Z0-9_]+" + "_aroundBody[0-9]+$" ) )
+				|| ( ( name.matches( "^[a-zA-Z0-9_]+" + "_aroundBody[0-9]+\\$advice$" ) ) );
 	}
 	
 
