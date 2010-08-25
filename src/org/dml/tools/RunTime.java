@@ -168,9 +168,12 @@ public class RunTime
 		// for both (1+2)paths in above if:
 		allExceptionsChained = newOne;
 		// }
-		Log.throwReport(
-							RunTime.class,
-							allExceptionsChained );
+		if ( allExceptionsChained.getClass() != RuntimeWrappedThrowException.class )
+		{
+			Log.throwReport(
+								RunTime.class,
+								allExceptionsChained );
+		}
 		// ( modifier,
 		// allExceptionsChained.getClass().getCanonicalName() + ": " + allExceptionsChained.getLocalizedMessage() );
 		// System.out.println( Log.getLine( allExceptionsChained.getStackTrace(), 2 ) );

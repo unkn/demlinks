@@ -33,7 +33,7 @@ import org.dml.tools.RunTime;
  * required to use either primitive type variables or variables in classes beginning with ThreadLocal ie. ThreadLocalBoolean
  * because otherwise, a call to a getter method there might return false in case of RunTime.recursiveLoopDetected which is 
  * method context sensitive value
- *
+ * FIXME: make it thread safe
  */
 public aspect RecursionDetector
 {
@@ -64,7 +64,7 @@ public aspect RecursionDetector
 	
 	private static HashMap<Integer,Boolean> isLoopAtThisLevel=new HashMap<Integer,Boolean>();
 	
-	pointcut anyCall(): call(* *.*(..))//any calls to any methods in any package...
+	pointcut anyCall(): call(* *..*..*(..))//any calls to any methods in any package...
 						&& !this(RecursionDetector)
 						//this is important because within a .get call the var RunTime.recursiveLoopDetected is false
 						&& !call(* *..ThreadLocal*..*(..))

@@ -61,13 +61,18 @@ public aspect ThroWrapper {
 		//RunTime.throWrapperAspectEnabledJump=+2;//how many more lines ahead until exact location when aspect is on
 	}
 	
-    pointcut anyCall(): call(* *.*(..))//any calls to any methods in any package...
+    pointcut anyCall(): call(* *..*..*(..))//any calls to any methods in any package...
     					&& !this(ThroWrapper)//except calls from this aspect
     					//&& !call(* *..RunTime.*..*(..))//except methods in RunTime.class
     					//disabling the following you must +4 to getLine ie. 6+2, if enabled 6+2-4
     					//&& !call(* *..Log.*..*(..))//except methods in Log.class due to possible recursion
     					//if you comment the following then add a maybe +2 to location
     					&& !call(public StackTraceElement[] Thread.getStackTrace())
+    					//the following three are just to avoid 1 level of unnecessary recursion but only the 1st would be really necessary
+    					&& !call(* *..RunTime.internalWrappedThrow(..))
+    					&& !call(* *..RunTime.thro(..))
+    					&& !call(* *..RunTime.throWrapped(..))
+    					//&& !call(* *..RunTime.assumed*(..))
     					//workaround for line numbering being bad but only for same name methods with obv. diff param signature
     					//&& !call(* RunTime.getCurrentStackTraceElement*(..))
     					;

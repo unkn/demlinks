@@ -387,7 +387,15 @@ public class Log
 			
 			// we attempt to find the location of the thrown exception, in the same method as caller, and caller is
 			// identified using 'modifier', that's where it's position is in stack trace
+			// t = RunTime.getUnwrappedExceptionNeverNull( t );
 			StackTraceElement[] stea1 = t.getStackTrace();
+			// for ( int i = 0; i < stea1.length; i++ )
+			// {
+			// System.err.println( "!"
+			// + i
+			// + " // "
+			// + stea1[i] );
+			// }
 			// System.out.print( "T: " );
 			// t.printStackTrace();
 			// StackTraceElement[] steaCur = RunTime.getCurrentStackTraceElementsArray();
@@ -446,7 +454,8 @@ public class Log
 			
 
 			showMsgLoc(
-						t.getClass().getName()
+						"TH: "
+								+ t.getClass().getName()
 								+ ": "
 								+ t.getLocalizedMessage(),
 						loc );
