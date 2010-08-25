@@ -613,6 +613,15 @@ public class Log
 						int position )
 	{
 		StackTraceElement[] stea1 = RunTime.getCurrentStackTraceElementsArray();
+		// for ( int i = 0; i < stea1.length; i++ )
+		// {
+		// System.err.println( "!"
+		// + i
+		// + " "
+		// + stea1[i]
+		// + " // "
+		// + position );
+		// }
 		if ( null == stea1 )
 		{
 			// yeah and can't call RunTime.badCall() here, or similar because of recursion
@@ -620,33 +629,20 @@ public class Log
 			return null;// not reached, used to suppress null warning below
 		}
 		
-		StackTraceElement ste = null;
-		
-		try
-		{
-			position++;
-			do
-			{
-				ste = stea1[position];
-				position++;
-			}
-			while ( ( null != ste )
-					&& ( position < stea1.length )
-					&& ( ( ste.isNativeMethod() ) || ( RunTime.isAspectInnerMethod( ste.getMethodName() ) ) ) );
-			// } catch ( ArrayIndexOutOfBoundsException ae ) {
-			// ae.printStackTrace();
-			// return "";
-		}
-		catch ( Throwable t )
-		{
-			String bc = "bad call wrong position number";
-			reportError( bc );
-			t.printStackTrace();
-			return bc;
-		}
+		StackTraceElement ste = stea1[RunTime.skipBackOverCallers(
+																	stea1,
+																	3,// 3+1 will get us to our caller
+																	1 + position )];
+		// catch ( Throwable t )
+		// {
+		// String bc = "bad call wrong position number";
+		// reportError( bc );
+		// t.printStackTrace();
+		// return bc;
+		// }
 		if ( null == ste )
 		{
-			String bc = "weird bug in getLine";
+			String bc = "weird bug in stack trace array contents";
 			reportError( bc );
 			return bc;
 		}
@@ -706,7 +702,7 @@ public class Log
 		// {
 		// System.out.println( i + " " + stea[i] );
 		// }
-		return getLine( 2 + 1 + modifier );
+		return getLine( 1 + modifier );
 	}
 	
 

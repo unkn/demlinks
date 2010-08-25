@@ -105,13 +105,13 @@ public class RunTimeTest2
 											int modifier )
 	{
 		StackTraceElement[] stea = RunTime.getCurrentStackTraceElementsArray();
-		for ( int i = 0; i < stea.length; i++ )
-		{
-			System.out.println( "!"
-								+ i
-								+ " "
-								+ stea[i] );
-		}
+		// for ( int i = 0; i < stea.length; i++ )
+		// {
+		// System.out.println( "!"
+		// + i
+		// + " "
+		// + stea[i] );
+		// }
 		return RunTime.getCurrentStackTraceElement( 1 + modifier );
 	}
 	

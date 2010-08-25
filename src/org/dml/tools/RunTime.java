@@ -821,7 +821,7 @@ public class RunTime
 	
 
 	/**
-	 * private<br>
+	 * private -if you make this public then add a -1 below in code<br>
 	 * this should only be called from a RunTime method that's only 1 level deep<br>
 	 * 
 	 * @param whichClassName
@@ -849,12 +849,31 @@ public class RunTime
 		// }
 		
 		StackTraceElement[] stea = getCurrentStackTraceElementsArray();
-		
+		// for ( int i = 0; i < stea.length; i++ )
+		// {
+		// System.err.println( "!"
+		// + i
+		// + " "
+		// + stea[i] );
+		// }
+		// System.err.println( "SKIP:"
+		// + skipBackOverCallers(
+		// stea,
+		// 0,
+		// 4 )
+		// + " class:"
+		// + whichClassName );
 		// System.err.println( "BEGIN:" );
 		// StackTraceElement last = null;
 		// int i = +2 + 1 + 1;
+		
+		// we also skip to the caller of the public method calling us(we're private)
+		int goToTheOneThatCalledThisMethod = skipBackOverCallers(
+																	stea,
+																	0,
+																	4 /*-1 if this method is not private*/);
 		boolean findThisClassFirst = true;
-		for ( int i = 4; i < stea.length; i++ )
+		for ( int i = goToTheOneThatCalledThisMethod; i < stea.length; i++ )
 		{
 			
 			StackTraceElement ste = stea[i];
@@ -868,32 +887,11 @@ public class RunTime
 			
 			if ( RunTime.throWrapperAspectEnabled )
 			{
-				// if ( last == null )
-				// {
-				// last = ste;
-				// // System.err.println( " LAST1= " + last );
-				// }
-				// else
-				// {
+				// ignore methods created by AspectJ
 				if ( isAspectInnerMethod( ste.getMethodName() ) )
 				{
 					continue;
 				}
-				// if ( ( ste.getMethodName().matches( "^[a-zA-Z0-9_]+"
-				// /* last.getMethodName().substring( 0, 12 ) + */
-				// + "_aroundBody[0-9]+$" ) ) || ( ( ste.getMethodName().matches( "^[a-zA-Z0-9_]+"
-				// // +last.getMethodName()
-				// + "_aroundBody[0-9]+\\$advice$" ) ) ) )
-				// {
-				// // System.err.println( "SKIP" );
-				// continue;// skipping over aspect methods
-				// }
-				// else
-				// {
-				// last = ste;
-				// // System.err.println( " LAST...= " + last );
-				// }
-				// }
 			}
 			if ( findThisClassFirst )
 			{
@@ -912,8 +910,6 @@ public class RunTime
 					// break;
 				}
 			}
-			// System.err.println();
-			// i++;
 		}// for
 		return null;
 	}

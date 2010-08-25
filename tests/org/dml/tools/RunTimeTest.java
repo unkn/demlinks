@@ -163,20 +163,20 @@ public class RunTimeTest
 		assertNotNull( steaR );
 		assertNotNull( curSTE );
 		assertNotNull( curSTE2 );
-		for ( int i = 0; i < steaR.length; i++ )
-		{
-			System.out.println( i
-								+ " "
-								+ steaR[i] );
-		}
-		for ( int i = 0; i < stea.length; i++ )
-		{
-			System.out.println( i
-								+ " "
-								+ stea[i] );
-		}
-		System.out.println( curSTE );
-		System.out.println( curSTE2 );
+		// for ( int i = 0; i < steaR.length; i++ )
+		// {
+		// System.out.println( i
+		// + " "
+		// + steaR[i] );
+		// }
+		// for ( int i = 0; i < stea.length; i++ )
+		// {
+		// System.out.println( i
+		// + " "
+		// + stea[i] );
+		// }
+		// System.out.println( curSTE );
+		// System.out.println( curSTE2 );
 		// TODO: transfer eclipse settings to project specific settings ie. wrap 120chars should be in project
 		int aLPos = RunTime.skipBackOverCallers(
 													steaR,
@@ -187,11 +187,11 @@ public class RunTimeTest
 																			stea,
 																			0,
 																			1 )];
-		System.out.println( aLPos
-							+ " "
-							+ actualLocation
-							+ " "
-							+ otherAcLoc );
+		// System.out.println( aLPos
+		// + " "
+		// + actualLocation
+		// + " "
+		// + otherAcLoc );
 		assertTrue( actualLocation.getClassName() == this.getClass().getName() );
 		assertTrue( otherAcLoc.getClassName() == this.getClass().getName() );
 		assertTrue( curSTE.getClassName() == this.getClass().getName() );
@@ -259,7 +259,7 @@ public class RunTimeTest
 		assertTrue( out.getMethodName() == actualLocation.getMethodName() );
 		
 		out = rtt2.wtw();
-		System.out.println( out );
+		// System.out.println( out );
 		assertNotNull( out );
 		assertTrue( out.getClassName() == this.getClass().getName() );
 		assertTrue( out.getMethodName() == actualLocation.getMethodName() );
@@ -465,9 +465,7 @@ public class RunTimeTest
 		Log.reportError( "test1" );
 		Log.reportErrorHere( "test2" );
 		this.c();
-		System.out.println( Log.getLine( +2 ) );
-		System.out.println( Log.getThisLineLocation() );
-		System.out.println( Log.getThisLineLocation( 0 ) );
+		
 	}
 	
 
@@ -476,6 +474,9 @@ public class RunTimeTest
 			c()
 	{
 		Log.reportError( "test3" );
+		System.out.println( Log.getLine( +1 ) );
+		System.out.println( Log.getThisLineLocation() );
+		System.out.println( Log.getThisLineLocation( +1 ) );
 	}
 	
 

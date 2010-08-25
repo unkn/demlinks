@@ -224,16 +224,6 @@ public aspect RecursionDetector
 	
 	private static void throwErr(String msg){
 		System.err.println(msg);
-//		try{
 			throw new RuntimeException(msg+" in aspect "+RecursionDetector.class);
-//		}finally{
-//			//must reset flags
-//			if (afterAlready) {
-//				afterAlready=false;
-//			}
-//			if (beforeAlready) {
-//				beforeAlready=false;
-//			}
-//		}
 	}
 }
