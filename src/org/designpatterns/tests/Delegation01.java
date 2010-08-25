@@ -182,9 +182,9 @@ public class Delegation01
 		// + RunTime.recursiveLoopDetected.initialValue
 		// + " // "
 		// + RunTime.recursiveLoopDetected.get() );
-		RunTime.callTracingFromHere = true;
+		RunTime.callTracingFromHere.set( true );
 		RunTime.recursiveLoopDetected.get();
-		RunTime.callTracingFromHere = false;
+		RunTime.callTracingFromHere.set( false );
 		if ( !RunTime.recursiveLoopDetected.get() )
 		{
 			// RunTime.recursiveLoopDetected.set( true );

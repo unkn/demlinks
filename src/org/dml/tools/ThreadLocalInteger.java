@@ -18,32 +18,32 @@
  * along with DeMLinks. If not, see <http://www.gnu.org/licenses/>.
  * 
  * 
- * File creation: Aug 24, 2010 8:55:31 PM
+ * File creation: Aug 25, 2010 11:15:21 AM
  */
 
 
-package org.temporary.tests;
+package org.dml.tools;
 
 
 /**
  * 
  *
  */
-public class ThreadLocalBoolean
+public class ThreadLocalInteger
 		extends
-		ThreadLocal<Boolean>
+		ThreadLocal<Integer>
 {
 	
-	public boolean	initialValue;	// = false;
-									
-
+	public int	initialValue;
+	
+	
 	/**
 	 * constructor
 	 * 
 	 * @param initialValue1
 	 */
-	public ThreadLocalBoolean(
-			boolean initialValue1 )
+	public ThreadLocalInteger(
+			int initialValue1 )
 	{
 		initialValue = initialValue1;
 	}
@@ -51,10 +51,10 @@ public class ThreadLocalBoolean
 
 	@Override
 	protected synchronized
-			Boolean
+			Integer
 			initialValue()
 	{
-		return new Boolean(
+		return new Integer(
 							initialValue );
 	}
 }

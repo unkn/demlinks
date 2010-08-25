@@ -23,9 +23,7 @@
 package org.aspectj;
 
 import org.dml.tools.RunTime;
-import org.dml.tools.RuntimeWrappedThrowException;
-import org.dml.tools.RunTimeTest.G;
-import org.dml.tracking.Log;
+import org.temporary.tests.ThreadLocalBoolean;
 
 
 /**
@@ -54,7 +52,8 @@ import org.dml.tracking.Log;
  * the correct report would be org.dml.tools.RunTimeTest.testCaller(RunTimeTest.java:144) so line num from aroundBody10
  */ 
 public aspect ThroWrapper {
-	private static boolean alreadyCalled=false;
+	private static final ThreadLocalBoolean alreadyCalled=new ThreadLocalBoolean(false );
+	
 	static {
 		//never set this to false, to disable aspect you have to comment all lines
 		RunTime.throWrapperAspectEnabled=true;//used to calculate getLine when this aspect is on ie. +2 to location
@@ -63,6 +62,9 @@ public aspect ThroWrapper {
 	
     pointcut anyCall(): call(* *..*..*(..))//any calls to any methods in any package...
     					&& !this(ThroWrapper)//except calls from this aspect
+    					&& !call(* *..ThreadLocal*..*(..))//exclude all class names beginning with ThreadLocal ie. includes ThreadLocalBoolean
+    					//&& !call(* *..Thread.currentThread(..))
+    					&& !call(* *..Boolean..*(..))//excluding Boolean class - or else infinite recursion
     					//&& !call(* *..RunTime.*..*(..))//except methods in RunTime.class
     					//disabling the following you must +4 to getLine ie. 6+2, if enabled 6+2-4
     					//&& !call(* *..Log.*..*(..))//except methods in Log.class due to possible recursion
@@ -81,24 +83,24 @@ public aspect ThroWrapper {
     
 
     Object around() : anyCall() {//if (RunTime.throWrapperAspectEnabled == true) && anyCall() {
-    	if (alreadyCalled) {
+    	if (alreadyCalled.get()) {
     		return proceed();
     	}else {
-    		alreadyCalled=true;
+    		alreadyCalled.set(true);
     	}
     	//System.out.println("around: "+thisJoinPoint.getSignature());
     	try{
-    		alreadyCalled=false;
+    		alreadyCalled.set(false);
     		try {
     			return proceed();
     		}finally{
-    			alreadyCalled=true;
+    			alreadyCalled.set(true);
     		}
     	}catch(Throwable t) {
     			RunTime.throWrapped( t );//this is caught again
     	}//catch
     	finally{
-    		alreadyCalled=false;
+    		alreadyCalled.set(false);
     	}
     	return null;
     }//around

@@ -27,6 +27,7 @@ import java.util.HashSet;
 
 import org.aspectj.lang.Signature;
 import org.dml.tools.RunTime;
+import org.temporary.tests.ThreadLocalBoolean;
 
 /**
  * in this aspect it's
@@ -34,25 +35,30 @@ import org.dml.tools.RunTime;
  * because otherwise, a call to a getter method there might return false in case of RunTime.recursiveLoopDetected which is 
  * method context sensitive value
  * FIXME: make it thread safe
+ * -also, can't use static initializer blocks here on in RunTime if they modify variables used by this aspect; 
+ *  or you get NoAspectBoundException
  */
 public aspect RecursionDetector
 {
-	private static final boolean enableRecursionDetection=true;//doesn't depend on enableCallTracing below
-	private static final boolean enablePrintRDs=true;//only in effect if above is true
-	private static final boolean enableCallTracing=true;//doesn't depend on enableRecursionDetection above
-	private static final long ifRecursionStopAtLevel=5000;//5000 stacked callers only if enableRecursionDetection true
-	 
-	static {
+	private static final ThreadLocalBoolean enableRecursionDetection=new ThreadLocalBoolean(true );//doesn't depend on enableCallTracing below
+	private static final ThreadLocalBoolean enablePrintRDs=new ThreadLocalBoolean(true );//only in effect if above is true
+	
+	//doesn't depend on enableRecursionDetection above
+	private static final ThreadLocalBoolean enableCallTracing=new ThreadLocalBoolean(true );
+	private static final long ifRecursionStopAtLevel=5000;//5000 stacked callers, only if enableRecursionDetection true
+	  
+	//static {
 		//these are valid only if one/more of the above are enabled
+		//depends on:
 		//RunTime.recursiveLoopDetected.set(false); //this is set dynamically by this aspect in each method that has recursion
  
 		//if you set this to true anywhere in the program it will start tracing calls until set to false
-		RunTime.callTracingFromHere=false; 
-	}
-	
+		//RunTime.callTracingFromHere=false; 
+	//}
+	 
 	//don't change value of these two:
-	private static boolean beforeAlready=false;
-	private static boolean afterAlready=false;
+	private static final ThreadLocalBoolean beforeAlready=new ThreadLocalBoolean(false );
+	private static final ThreadLocalBoolean afterAlready=new ThreadLocalBoolean(false );
 	
 	private static final int CALL_LEVEL_INIT=-1;
 	private static int callLevel=CALL_LEVEL_INIT;
@@ -68,6 +74,8 @@ public aspect RecursionDetector
 						&& !this(RecursionDetector)
 						//this is important because within a .get call the var RunTime.recursiveLoopDetected is false
 						&& !call(* *..ThreadLocal*..*(..))
+						&& !call(* *..Boolean..*(..))//not from Boolean class, excluded classes beginning with Boolean as their name ie. BooleanSome is exacluded
+						//&& !call(* *..String..*(..))
 						//&& !within(ThreadLocal*)
 						//&& !call(public boolean org.temporary.tests.ThreadLocalBoolean.get())
 //						&& !target(RecursionDetector)
@@ -78,14 +86,14 @@ public aspect RecursionDetector
 						; 
 	
 	before(): anyCall() {
-		if ((enableRecursionDetection)||(enableCallTracing)) {
-		if (beforeAlready) {
+		if ((enableRecursionDetection.get())||(enableCallTracing.get())) {
+		if (beforeAlready.get()) {
 			return;
 		}else {
-			if (afterAlready) {
+			if (afterAlready.get()) {
 				return;
 			}
-			beforeAlready=true;
+			beforeAlready.set( true);
 		}
 		try{
 			callLevel++;//first
@@ -96,7 +104,7 @@ public aspect RecursionDetector
 			Signature sig=thisJoinPointStaticPart.getSignature();
 			String link=sig2Link(sig,thisJoinPointStaticPart.getSourceLocation().toString());
 			
-		  if (enableRecursionDetection) {
+		  if (enableRecursionDetection.get()) {
 			String which=sig.toLongString();
 			if (null != perLevelStore.put( callLevel, which )) {
 				//BUG
@@ -108,7 +116,7 @@ public aspect RecursionDetector
 			if (null != isLoopAtThisLevel.put(callLevel, RunTime.recursiveLoopDetected.get())) {
 				throwErr("#121 a previous value should NOT have existed");
 			}
-			if (enablePrintRDs) {
+			if (enablePrintRDs.get()) {
 				if (RunTime.recursiveLoopDetected.get()) {
 					System.err.println("recursion about to begin at level("+callLevel+") callee(called at line): "+link);
 				}
@@ -118,31 +126,31 @@ public aspect RecursionDetector
 				throwErr("#5000 auto stopping due to detected recursion reaching set limit");
 			}
 		  }
-		  if (enableCallTracing){
-			if (RunTime.callTracingFromHere) {
+		  if (enableCallTracing.get()){
+			if (RunTime.callTracingFromHere.get()) {
 				System.err.println(formLevel("\u250D\u2501 "+RunTime.recursiveLoopDetected.get()+" "+link));
 			}
 		  }
 		
 		}finally{
 			//last:
-			beforeAlready=false;
+			beforeAlready.set(false);
 		}
 		}//enabled
 	}
 
 	after() : anyCall() {//returning normally or via thrown exception
-		if ((enableRecursionDetection)||(enableCallTracing)) {
-		if (afterAlready){
+		if ((enableRecursionDetection.get())||(enableCallTracing.get())) {
+		if (afterAlready.get()){
 			return;
 		}else {
-			if (beforeAlready) {
+			if (beforeAlready.get()) {
 				return;
 			}
-			afterAlready=true;
+			afterAlready.set(true);
 		}
 		try{
-			if (enableRecursionDetection) {
+			if (enableRecursionDetection.get()) {
 			if (callLevel <=CALL_LEVEL_INIT) {
 				throwErr("#000 bug somewhere");
 			}
@@ -153,7 +161,7 @@ public aspect RecursionDetector
 			String link=sig2Link(sig,thisJoinPointStaticPart.getSourceLocation().toString());
 			String which=sig.toLongString();
 			
-			if (enableRecursionDetection) {
+			if (enableRecursionDetection.get()) {
 			boolean prevState=RunTime.recursiveLoopDetected.get();//this state in before()
 			
 			if (isLoopAtThisLevel.remove( callLevel ) != prevState) {
@@ -179,12 +187,12 @@ public aspect RecursionDetector
 			}
 			}
 			
-			if (enableCallTracing) {
-			if (RunTime.callTracingFromHere) {
-				System.err.println(formLevel("\u2515\u2501 "+RunTime.recursiveLoopDetected.get()+" "+link));
+			if (enableCallTracing.get()) {
+				if (RunTime.callTracingFromHere.get()) {
+					System.err.println(formLevel("\u2515\u2501 "+RunTime.recursiveLoopDetected.get()+" "+link));
+				}
 			}
-			}
-			if (enableRecursionDetection) {
+			if (enableRecursionDetection.get()) {
 			
 			if (which != perLevelStore.remove( callLevel )){//||(callLevel==3)) {
 				throwErr("#890 "+link+" should've existed");
@@ -196,7 +204,7 @@ public aspect RecursionDetector
 		}finally{
 			//LAST:
 			callLevel--;
-			afterAlready=false;
+			afterAlready.set(false);
 		}
 		}//enabled
 	}

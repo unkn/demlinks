@@ -33,21 +33,23 @@ public class ThreadLocalTest
 {
 	
 	// The next serial number to be assigned
-	private static int					nextSerialNum	= 0;
+	private static int							nextSerialNum	= 0;
 	
-	private static ThreadLocal<Integer>	serialNum		= new ThreadLocal<Integer>()
-														{
-															
-															@SuppressWarnings( "synthetic-access" )
-															@Override
-															protected synchronized
-																	Integer
-																	initialValue()
-															{
-																return new Integer(
-																					nextSerialNum++ );
-															}
-														};
+	private static ThreadLocal<Integer>			serialNum		= new ThreadLocal<Integer>()
+																{
+																	
+																	@SuppressWarnings( "synthetic-access" )
+																	@Override
+																	protected synchronized
+																			Integer
+																			initialValue()
+																	{
+																		return new Integer(
+																							nextSerialNum++ );
+																	}
+																};
+	
+	private static volatile transient boolean	quit			= false;
 	
 	
 	public static
@@ -90,22 +92,24 @@ public class ThreadLocalTest
 				// TODO Auto-generated method stub
 				// super.run();
 				System.out.println( ThreadLocalTest.get() );
-				while ( true )
+				while ( !quit )
 				{
 					if ( 1 != ThreadLocalTest.get() )
 					{
 						System.err.println( "fail in thread1" );
+						quit = true;
 					}
 				}
 			}
 		};
 		// t.run();// same thread as current
 		t.start();// start this as new thread
-		while ( true )
+		while ( !quit )
 		{
 			if ( 0 != ThreadLocalTest.get() )
 			{
 				System.err.println( "fail in main" );
+				quit = true;
 			}
 		}
 	}

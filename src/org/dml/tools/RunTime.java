@@ -38,14 +38,18 @@ import org.temporary.tests.ThreadLocalBoolean;
 public class RunTime
 {
 	
-	public static boolean				callTracingFromHere			= false;
-	public static ThreadLocalBoolean	recursiveLoopDetected		= new ThreadLocalBoolean(
-																								false );
-	// public static int throWrapperAspectEnabledJump = +2;
-	public static boolean				throWrapperAspectEnabled	= false;
+	// variables used by the RecursionDetector.aj aspect
+	public static final ThreadLocalBoolean	callTracingFromHere			= new ThreadLocalBoolean(
+																									false );
+	// must be false here
+	public static final ThreadLocalBoolean	recursiveLoopDetected		= new ThreadLocalBoolean(
+																									false );
+	
+	// must be false here
+	public static boolean					throWrapperAspectEnabled	= false;
 	
 
-	private static Throwable			allExceptionsChained		= null;
+	private static Throwable				allExceptionsChained		= null;
 	
 	
 	// static
