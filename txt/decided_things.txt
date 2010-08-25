@@ -113,4 +113,4 @@ RunTime.recursiveLoopDetected might be false if that method is itself not in rec
 - in either case enableRecursionDetection must be true in the RecursionDetector.aj aspect for the recursion tracing to be enabled, but beware that this takes lots of time 
   for example 9 seconds of jUnit tests get as high as 131seconds with recursion enabled :)
   
-  
+10. do not manually name any of your methods ending with _aroundBody[0-9]+ or with that+"$advice" , those are what the aspect around adivce uses for its methods internally

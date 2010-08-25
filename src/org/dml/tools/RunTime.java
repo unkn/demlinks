@@ -686,7 +686,81 @@ public class RunTime
 			StackTraceElement[]
 			getCurrentStackTraceElementsArray()
 	{
-		return Thread.currentThread().getStackTrace();
+		StackTraceElement[] stea = Thread.currentThread().getStackTrace();
+		// boolean showStack = false;
+		if ( RunTime.throWrapperAspectEnabled )
+		{
+			// we need to fix the stack trace if an around-advice is enabled
+			// because the line numbering is wrong BUT ONLY for same name methods that can exist only if they have
+			// different number of params
+			// example of normal stack trace
+			// 0 java.lang.Thread.getStackTrace(Thread.java:1578)
+			// 1 org.dml.tools.RunTime.getCurrentStackTraceElementsArray(RunTime.java:689)
+			// 2 org.dml.tools.RunTimeTest.getCurrentStackTraceElementsArray_aroundBody10(RunTimeTest.java:144)
+			// 3 org.dml.tools.RunTimeTest.getCurrentStackTraceElementsArray_aroundBody11$advice(RunTimeTest.java:75)
+			// 4 org.dml.tools.RunTimeTest.testCaller(RunTimeTest.java:141)
+			// original lines
+			// 141 G g = new G();
+			// 142
+			// 143 // don't move relative to each other the following lines!! each must be on 1 line in that order else
+			// fails
+			// 144 StackTraceElement[] steaR = RunTime.getCurrentStackTraceElementsArray();
+			// * so you see, the line reported is the line of prev statement ignoring comments
+			// * the correct report would be org.dml.tools.RunTimeTest.testCaller(RunTimeTest.java:144) so line num from
+			// aroundBody10
+			// NOTE that getCurrentStackTraceElementsArray_aroundBody10 can be trimmed by aspect to like
+			// getCurrentStackTrac_aroundBody10 depending on the length it has until _aroundBody
+			
+			StackTraceElement last = null;
+			for ( int i = 0; i < stea.length; i++ )
+			{
+				if ( stea[i].isNativeMethod() )
+				{
+					break;
+				}
+				String name = stea[i].getMethodName();
+				if ( !isAspectAroundBodyAdviceMethod( name ) )
+				{
+					if ( isAspectAroundBodyMethod( name ) )
+					{
+						last = stea[i];
+					}
+					else
+					{// is neither of those
+						if ( null != last )
+						{
+							// yes we previously just visited the around-body methods
+							if ( last.getLineNumber() > stea[i].getLineNumber() )
+							{
+								// aroundBody line num is higer than the caller; they can be equal; or the caller can
+								// have a higher line num but this happens only in case of one statement being on
+								// multiple lines ie. Log.throwReport(
+								// RunTime.class,
+								// allExceptionsChained );
+								// where you can see each param on one line then the caller is at the line with ";" and
+								// the aroundBody is at the first line with Log.*
+								stea[i] = new StackTraceElement(
+																	stea[i].getClassName(),
+																	stea[i].getMethodName(),
+																	stea[i].getFileName(),
+																	last.getLineNumber() );
+							}
+						}
+						last = null;
+					}
+				}
+			}
+		}
+		// if ( showStack )
+		// {
+		// for ( int i = 0; i < stea.length; i++ )
+		// {
+		// System.err.println( i
+		// + " / "
+		// + stea[i] );
+		// }
+		// }
+		return stea;
 	}
 	
 
@@ -850,10 +924,32 @@ public class RunTime
 			isAspectInnerMethod(
 									String name )
 	{
+		// return ( name.matches( "^[a-zA-Z0-9_]+"
+		// + "_aroundBody[0-9]+$" ) )
+		// || ( ( name.matches( "^[a-zA-Z0-9_]+"
+		// + "_aroundBody[0-9]+\\$advice$" ) ) );
+		return ( isAspectAroundBodyMethod( name ) )
+				|| ( isAspectAroundBodyAdviceMethod( name ) );
+	}
+	
+
+	public static
+			boolean
+			isAspectAroundBodyMethod(
+										String name )
+	{
+		return name.matches( "^[a-zA-Z0-9_]+"
+								+ "_aroundBody[0-9]+$" );
+	}
+	
+
+	public static
+			boolean
+			isAspectAroundBodyAdviceMethod(
+											String name )
+	{
 		return ( name.matches( "^[a-zA-Z0-9_]+"
-								+ "_aroundBody[0-9]+$" ) )
-				|| ( ( name.matches( "^[a-zA-Z0-9_]+"
-										+ "_aroundBody[0-9]+\\$advice$" ) ) );
+								+ "_aroundBody[0-9]+\\$advice$" ) );
 	}
 	
 

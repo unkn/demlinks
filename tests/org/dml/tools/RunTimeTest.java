@@ -144,8 +144,7 @@ public class RunTimeTest
 		StackTraceElement[] steaR = RunTime.getCurrentStackTraceElementsArray();
 		StackTraceElement[] stea = Thread.currentThread().getStackTrace();
 		StackTraceElement curSTE = RunTime.getCurrentStackTraceElement();
-		StackTraceElement curSTE2 = RunTimeTest2.getCurrentStackTraceElement();// RunTime.getCurrentStackTraceElement( 0
-																				// );
+		StackTraceElement curSTE2 = RunTimeTest2.getCurrentStackTraceElement();
 		StackTraceElement f1 = f.getCaller();
 		StackTraceElement f2 = f.getCaller2();
 		StackTraceElement f3 = f.getCaller3();
@@ -196,6 +195,7 @@ public class RunTimeTest
 		assertTrue( actualLocation.getClassName() == this.getClass().getName() );
 		assertTrue( otherAcLoc.getClassName() == this.getClass().getName() );
 		assertTrue( curSTE.getClassName() == this.getClass().getName() );
+		assertTrue( curSTE2.getClassName() == this.getClass().getName() );
 		assertTrue( actualLocation.getMethodName() == otherAcLoc.getMethodName() );
 		assertTrue( actualLocation.getMethodName() == curSTE.getMethodName() );
 		assertTrue( actualLocation.getMethodName() == "testCaller" );
@@ -214,7 +214,7 @@ public class RunTimeTest
 		assertTrue( f3.getMethodName() == actualLocation.getMethodName() );
 		assertTrue( f41.getMethodName() == actualLocation.getMethodName() );
 		assertTrue( f42.getMethodName() == actualLocation.getMethodName() );
-		assertTrue( actualLocation.getLineNumber() + 3 == f1.getLineNumber() );
+		assertTrue( actualLocation.getLineNumber() + 4 == f1.getLineNumber() );
 		assertTrue( f1.getLineNumber() + 1 == f2.getLineNumber() );
 		assertTrue( f1.getLineNumber() + 2 == f3.getLineNumber() );
 		assertTrue( f1.getLineNumber() + 3 == f41.getLineNumber() );
