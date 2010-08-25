@@ -74,6 +74,15 @@ public aspect ThroWrapper {
     					&& !call(* *..RunTime.internalWrappedThrow(..))
     					&& !call(* *..RunTime.thro(..))
     					&& !call(* *..RunTime.throWrapped(..))
+    					//for extra speed
+    					&& !call(* java.lang.StringBuilder..*(..))
+						&& !call(* java.lang.String..*(..))
+						&& !call(* java.lang.StackTraceElement..*(..))
+						&& !call(* java.lang..*..*(..))
+						&& !call(* java.io.*..*(..))
+						&& !call(* org.dml.tools.RunTime.isAspect*(..))
+						&& !call(* org.dml.tools.RunTime.assumed*(..))
+						&& !call(* org.dml.tools.RunTime.getCurrentStackTraceElementsArray(..))
     					//&& !call(* *..RunTime.assumed*(..))
     					//workaround for line numbering being bad but only for same name methods with obv. diff param signature
     					//&& !call(* RunTime.getCurrentStackTraceElement*(..))

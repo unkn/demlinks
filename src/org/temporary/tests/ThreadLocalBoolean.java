@@ -34,7 +34,7 @@ public class ThreadLocalBoolean
 		ThreadLocal<Boolean>
 {
 	
-	public boolean	initialValue;	// = false;
+	private final boolean	initialValue;	// = false;
 									
 
 	/**

@@ -39,6 +39,7 @@ public class RunTime
 {
 	
 	// variables used by the RecursionDetector.aj aspect
+	// set this to true anywhere at runtime to enable showing calls on console err until this var is false
 	public static final ThreadLocalBoolean	callTracingFromHere			= new ThreadLocalBoolean(
 																									false );
 	// must be false here

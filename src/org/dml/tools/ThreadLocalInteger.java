@@ -34,7 +34,7 @@ public class ThreadLocalInteger
 		ThreadLocal<Integer>
 {
 	
-	public int	initialValue;
+	private final int	initialValue;
 	
 	
 	/**
@@ -56,5 +56,21 @@ public class ThreadLocalInteger
 	{
 		return new Integer(
 							initialValue );
+	}
+	
+
+	public
+			void
+			increment()
+	{
+		this.set( this.get() + 1 );
+	}
+	
+
+	public
+			void
+			decrement()
+	{
+		this.set( this.get() - 1 );
 	}
 }
