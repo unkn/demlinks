@@ -29,6 +29,7 @@ import org.dml.error.AssumptionError;
 import org.dml.error.BadCallError;
 import org.dml.error.BugError;
 import org.dml.tracking.Log;
+import org.temporary.tests.ThreadLocalBoolean;
 
 
 
@@ -37,15 +38,22 @@ import org.dml.tracking.Log;
 public class RunTime
 {
 	
-	public static boolean		callTracingFromHere				= false;
-	public static boolean		recursiveLoopDetected			= false;
-	public static int			throWrapperAspectEnabledJump	= +2;
-	public static boolean		throWrapperAspectEnabled		= false;
+	public static boolean				callTracingFromHere			= false;
+	public static ThreadLocalBoolean	recursiveLoopDetected		= new ThreadLocalBoolean(
+																								false );
+	// public static int throWrapperAspectEnabledJump = +2;
+	public static boolean				throWrapperAspectEnabled	= false;
 	
 
-	private static Throwable	allExceptionsChained			= null;
+	private static Throwable			allExceptionsChained		= null;
 	
 	
+	// static
+	// {
+	// RunTime.assumedTrue( recursiveLoopDetected.get() == false );
+	// }
+	
+
 	/**
 	 * - same as {@link RunTime#thro(normallyThrownOne)}<br>
 	 * - see also {@link #throPostponed(Throwable)} if you want to wrap and also postpone<br>
@@ -148,10 +156,11 @@ public class RunTime
 				// eclipse, the only way to see them is if you look at console and that could be messy because you won't
 				// know where in the console and which one of the following warnings (if in a junit with many tests
 				// failed) is the right one
-				Log.mid1( "we got passed a chained exception(/throwable) so we discard the previous chain; "
-						+ "so this should work well apparently unless we didn't chain the previous exception "
-						+ "in this new exception that already had a chain; this is the default behavior to discard "
-						+ "prev chain" );
+				Log
+						.mid1( "we got passed a chained exception(/throwable) so we discard the previous chain; "
+								+ "so this should work well apparently unless we didn't chain the previous exception "
+								+ "in this new exception that already had a chain; this is the default behavior to discard "
+								+ "prev chain" );
 				// Log.thro1( newOne.getLocalizedMessage() );
 				// newOne.printStackTrace();
 			}
@@ -368,7 +377,8 @@ public class RunTime
 		
 		bug0(
 				cause,
-				"Bug detected: " + msg );
+				"Bug detected: "
+						+ msg );
 	}
 	
 
@@ -380,7 +390,8 @@ public class RunTime
 		
 		bug0(
 				null,
-				"Bug detected: " + msg );
+				"Bug detected: "
+						+ msg );
 	}
 	
 
@@ -519,7 +530,9 @@ public class RunTime
 				{
 					// Error e =
 					RunTime.thro( new AssumptionError(
-														"expected non-null object[" + ( i + 1 ) + "] was null!" ) );
+														"expected non-null object["
+																+ ( i + 1 )
+																+ "] was null!" ) );
 					// if ( RunTime.recursiveLoopDetected )
 					// {
 					// throw e;
@@ -550,7 +563,9 @@ public class RunTime
 				if ( null != obj[i] )
 				{
 					RunTime.thro( new AssumptionError(
-														"expected null object[" + ( i + 1 ) + "] was NOT null!" ) );
+														"expected null object["
+																+ ( i + 1 )
+																+ "] was NOT null!" ) );
 				}
 			}
 		}
@@ -613,12 +628,57 @@ public class RunTime
 		RunTime.assumedNotNull( modifier );
 		// do not reorganize the following code into more methods, else the below number will have to change
 		StackTraceElement[] stea = getCurrentStackTraceElementsArray();
+		
 		RunTime.assumedNotNull( (Object)stea );
-		final int whereIsCaller = 2 + 1 + modifier;
+		int whereIsCaller = skipBackOverCallers(
+													stea,
+													0,
+													2 + 1 + modifier );// 2 + 1 + modifier + 2;
 		RunTime.assumedTrue( stea.length >= 1 + whereIsCaller );
 		StackTraceElement ste = stea[whereIsCaller];
+		
 		RunTime.assumedNotNull( ste );
 		return ste;// never null
+	}
+	
+
+	/**
+	 * this will silently ignore(not count) the aspect around methods if aspect is enabled by
+	 * RunTime.throWrapperAspectEnabled<br>
+	 * skip over byHowMany including current the one from startFrom position - that means that one is counted too<br>
+	 * 
+	 * @param inStackArray
+	 * @param startFrom
+	 * @param byHowMany
+	 * @return the new position after skipping byHowMany back
+	 */
+	public static
+			int
+			skipBackOverCallers(
+									StackTraceElement[] inStackArray,
+									int startFrom,
+									int byHowMany )
+	{
+		RunTime.assumedNotNull( (Object[])inStackArray );
+		RunTime.assumedTrue( byHowMany > 0 );
+		
+		int posNow = startFrom;
+		int until = startFrom
+					+ byHowMany;
+		while ( ( posNow <= until )
+				&& ( posNow < inStackArray.length )
+				&& ( !inStackArray[posNow].isNativeMethod() ) )
+		{
+			if ( RunTime.throWrapperAspectEnabled )
+			{
+				if ( isAspectInnerMethod( inStackArray[posNow].getMethodName() ) )
+				{
+					until++;
+				}
+			}
+			posNow++;
+		}
+		return posNow - 1;
 	}
 	
 
@@ -790,8 +850,10 @@ public class RunTime
 			isAspectInnerMethod(
 									String name )
 	{
-		return ( name.matches( "^[a-zA-Z0-9_]+" + "_aroundBody[0-9]+$" ) )
-				|| ( ( name.matches( "^[a-zA-Z0-9_]+" + "_aroundBody[0-9]+\\$advice$" ) ) );
+		return ( name.matches( "^[a-zA-Z0-9_]+"
+								+ "_aroundBody[0-9]+$" ) )
+				|| ( ( name.matches( "^[a-zA-Z0-9_]+"
+										+ "_aroundBody[0-9]+\\$advice$" ) ) );
 	}
 	
 

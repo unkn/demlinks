@@ -25,10 +25,7 @@ package org.designpatterns.tests;
 
 
 
-import java.util.HashSet;
-
 import org.dml.tools.RunTime;
-import org.dml.tracking.Log;
 
 
 
@@ -105,7 +102,8 @@ public class Delegation01
 				getArea()
 		{
 			
-			return x * y;
+			return x
+					* y;
 		}
 		
 
@@ -177,9 +175,23 @@ public class Delegation01
 			loop(
 					int i )
 	{
-		System.out.println( "in with: " + i );
-		if ( !RunTime.recursiveLoopDetected )
+		
+		// System.out.println( "MA: "
+		// + RunTime.recursiveLoopDetected
+		// + " // "
+		// + RunTime.recursiveLoopDetected.initialValue
+		// + " // "
+		// + RunTime.recursiveLoopDetected.get() );
+		RunTime.callTracingFromHere = true;
+		RunTime.recursiveLoopDetected.get();
+		RunTime.callTracingFromHere = false;
+		if ( !RunTime.recursiveLoopDetected.get() )
 		{
+			// RunTime.recursiveLoopDetected.set( true );
+			System.out.println( "in with: "
+								+ i
+								+ " "
+								+ Thread.activeCount() );
 			this.loop( i + 1 );
 		}
 		// if ( i < 10 )
@@ -193,7 +205,6 @@ public class Delegation01
 	}
 	
 
-	
 	public static
 			void
 			main(
@@ -201,9 +212,10 @@ public class Delegation01
 					throws Exception
 	{
 		
-		@SuppressWarnings( "unused" )
+		System.out.println( Thread.activeCount() );
 		Delegation01 d = new Delegation01();
 		d.loop( 1 );
+		
 		// try
 		// {
 		// FIXME:
@@ -233,7 +245,9 @@ public class Delegation01
 		StackTraceElement[] stea = Thread.currentThread().getStackTrace();
 		for ( int i = 0; i < stea.length; i++ )
 		{
-			System.out.println( i + " " + stea[i] );
+			System.out.println( i
+								+ " "
+								+ stea[i] );
 		}
 	}
 	
@@ -246,6 +260,11 @@ public class Delegation01
 					int k )
 	{
 		throw new RuntimeException(
-									"bleh " + i + " " + j + " " + k );
+									"bleh "
+											+ i
+											+ " "
+											+ j
+											+ " "
+											+ k );
 	}
 }

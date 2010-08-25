@@ -24,32 +24,58 @@ package org.aspectj;
 
 import org.dml.tools.RunTime;
 import org.dml.tools.RuntimeWrappedThrowException;
+import org.dml.tools.RunTimeTest.G;
 import org.dml.tracking.Log;
 
 
 /**
- * wrap all non-wrapped thrown exceptions within RuntimeWrappedThrowException
- *
- */
+ * wrap all non-wrapped thrown exceptions within RuntimeWrappedThrowException<br>
+ * FIXME: methods with same name but different params signatures will have bad file:line numbering although the caller 
+ * method is detected ok; the correct line is on the internal aspect method names ending like _aroundBody10 but not the
+ * $advice ending ones, for example:
+ * 
+0 java.lang.Thread.getStackTrace(Thread.java:1578)
+1 org.dml.tools.RunTime.getCurrentStackTraceElementsArray(RunTime.java:689)
+2 org.dml.tools.RunTimeTest.getCurrentStackTraceElementsArray_aroundBody10(RunTimeTest.java:144)
+3 org.dml.tools.RunTimeTest.getCurrentStackTraceElementsArray_aroundBody11$advice(RunTimeTest.java:67)
+4 org.dml.tools.RunTimeTest.testCaller(RunTimeTest.java:141)
+ * the correct line for org.dml.tools.RunTimeTest.testCaller is (RunTimeTest.java:144) from the aroundBody10 aspect method
+ * 
+0 java.lang.Thread.getStackTrace(Thread.java:1578)
+1 org.dml.tools.RunTime.getCurrentStackTraceElementsArray(RunTime.java:689)
+2 org.dml.tools.RunTimeTest.getCurrentStackTraceElementsArray_aroundBody10(RunTimeTest.java:144)
+3 org.dml.tools.RunTimeTest.getCurrentStackTraceElementsArray_aroundBody11$advice(RunTimeTest.java:75)
+4 org.dml.tools.RunTimeTest.testCaller(RunTimeTest.java:141)
+141		G g = new G();
+142		
+143		// don't move relative to each other the following lines!! each must be on 1 line in that order else fails
+144		StackTraceElement[] steaR = RunTime.getCurrentStackTraceElementsArray();
+ * so you see, the line reported is the line of prev statement ignoring comments
+ * the correct report would be org.dml.tools.RunTimeTest.testCaller(RunTimeTest.java:144) so line num from aroundBody10
+ */ 
 public aspect ThroWrapper {
 	private static boolean alreadyCalled=false;
 	static {
 		//never set this to false, to disable aspect you have to comment all lines
 		RunTime.throWrapperAspectEnabled=true;//used to calculate getLine when this aspect is on ie. +2 to location
-		RunTime.throWrapperAspectEnabledJump=+2;//how many more lines ahead until exact location when aspect is on
+		//RunTime.throWrapperAspectEnabledJump=+2;//how many more lines ahead until exact location when aspect is on
 	}
 	
     pointcut anyCall(): call(* *.*(..))//any calls to any methods in any package...
     					&& !this(ThroWrapper)//except calls from this aspect
-    					&& !call(* RunTime.*(..))//except methods in RunTime.class
+    					//&& !call(* *..RunTime.*..*(..))//except methods in RunTime.class
     					//disabling the following you must +4 to getLine ie. 6+2, if enabled 6+2-4
-    					&& !call(* Log.*(..))//except methods in Log.class due to possible recursion
+    					//&& !call(* *..Log.*..*(..))//except methods in Log.class due to possible recursion
     					//if you comment the following then add a maybe +2 to location
-    					&& !call(public StackTraceElement[] Thread.getStackTrace());
+    					&& !call(public StackTraceElement[] Thread.getStackTrace())
+    					//workaround for line numbering being bad but only for same name methods with obv. diff param signature
+    					//&& !call(* RunTime.getCurrentStackTraceElement*(..))
+    					;
     					//&& !target(org.dml.tools.RunTime);
+    					//;
     
 
-    Object around() : anyCall() {
+    Object around() : anyCall() {//if (RunTime.throWrapperAspectEnabled == true) && anyCall() {
     	if (alreadyCalled) {
     		return proceed();
     	}else {

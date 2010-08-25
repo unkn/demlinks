@@ -29,21 +29,23 @@ import org.aspectj.lang.Signature;
 import org.dml.tools.RunTime;
 
 /**
- * 
+ * in this aspect it's
+ * required to use either primitive type variables or variables in classes beginning with ThreadLocal ie. ThreadLocalBoolean
+ * because otherwise, a call to a getter method there might return false in case of RunTime.recursiveLoopDetected which is 
+ * method context sensitive value
  *
  */
 public aspect RecursionDetector
 {
-
-	private static final boolean enableRecursionDetection=true;
+	private static final boolean enableRecursionDetection=true;//doesn't depend on enableCallTracing below
 	private static final boolean enablePrintRDs=true;//only in effect if above is true
-	private static final boolean enableCallTracing=false;
+	private static final boolean enableCallTracing=true;//doesn't depend on enableRecursionDetection above
 	private static final long ifRecursionStopAtLevel=5000;//5000 stacked callers only if enableRecursionDetection true
-	
+	 
 	static {
 		//these are valid only if one/more of the above are enabled
-		RunTime.recursiveLoopDetected=false; //this is set dynamically by this aspect in each method that has recursion
-
+		//RunTime.recursiveLoopDetected.set(false); //this is set dynamically by this aspect in each method that has recursion
+ 
 		//if you set this to true anywhere in the program it will start tracing calls until set to false
 		RunTime.callTracingFromHere=false; 
 	}
@@ -63,12 +65,17 @@ public aspect RecursionDetector
 	private static HashMap<Integer,Boolean> isLoopAtThisLevel=new HashMap<Integer,Boolean>();
 	
 	pointcut anyCall(): call(* *.*(..))//any calls to any methods in any package...
-						&& !this(RecursionDetector);
+						&& !this(RecursionDetector)
+						//this is important because within a .get call the var RunTime.recursiveLoopDetected is false
+						&& !call(* *..ThreadLocal*..*(..))
+						//&& !within(ThreadLocal*)
+						//&& !call(public boolean org.temporary.tests.ThreadLocalBoolean.get())
 //						&& !target(RecursionDetector)
 //						&& !call(* RecursionDetector.*(..));
 //						&& !this(TwoWayHashMap)
 //						&& !this(RunTime)
 //						&& !this(Log);
+						; 
 	
 	before(): anyCall() {
 		if ((enableRecursionDetection)||(enableCallTracing)) {
@@ -82,7 +89,9 @@ public aspect RecursionDetector
 		}
 		try{
 			callLevel++;//first
-		 
+		 //System.out.println(Thread.currentThread()+" "+Thread.activeCount() );
+			//System.out.println( "AJ: "+RunTime.recursiveLoopDetected+" // "+ RunTime.recursiveLoopDetected.initialValue);
+			
 		 //common: 2lines
 			Signature sig=thisJoinPointStaticPart.getSignature();
 			String link=sig2Link(sig,thisJoinPointStaticPart.getSourceLocation().toString());
@@ -94,13 +103,13 @@ public aspect RecursionDetector
 				throwErr("#100 already existing call at that same level impossible");
 			}
 			
-			RunTime.recursiveLoopDetected=!calls.add(which);//already there? it then got overwritten with same value
+			RunTime.recursiveLoopDetected.set(!calls.add(which));//already there? it then got overwritten with same value
 			//System.err.println("A: "+calls.size());
-			if (null != isLoopAtThisLevel.put(callLevel, RunTime.recursiveLoopDetected)) {
+			if (null != isLoopAtThisLevel.put(callLevel, RunTime.recursiveLoopDetected.get())) {
 				throwErr("#121 a previous value should NOT have existed");
 			}
 			if (enablePrintRDs) {
-				if (RunTime.recursiveLoopDetected) {
+				if (RunTime.recursiveLoopDetected.get()) {
 					System.err.println("recursion about to begin at level("+callLevel+") callee(called at line): "+link);
 				}
 			}
@@ -111,7 +120,7 @@ public aspect RecursionDetector
 		  }
 		  if (enableCallTracing){
 			if (RunTime.callTracingFromHere) {
-				System.err.println(formLevel("\u250D\u2501 "+RunTime.recursiveLoopDetected+" "+link));
+				System.err.println(formLevel("\u250D\u2501 "+RunTime.recursiveLoopDetected.get()+" "+link));
 			}
 		  }
 		
@@ -145,7 +154,7 @@ public aspect RecursionDetector
 			String which=sig.toLongString();
 			
 			if (enableRecursionDetection) {
-			boolean prevState=RunTime.recursiveLoopDetected;//this state in before()
+			boolean prevState=RunTime.recursiveLoopDetected.get();//this state in before()
 			
 			if (isLoopAtThisLevel.remove( callLevel ) != prevState) {
 				throwErr("#358 "+link+" "+callLevel+" a previous value should have existed and be the same as the state");
@@ -164,15 +173,15 @@ public aspect RecursionDetector
 			//restore state
 			if (callLevel-1>CALL_LEVEL_INIT) {
 				//restore loopdetected status for our caller
-				RunTime.recursiveLoopDetected=isLoopAtThisLevel.get( callLevel-1 );
+				RunTime.recursiveLoopDetected.set(isLoopAtThisLevel.get( callLevel-1 ));
 			}else {
-				RunTime.recursiveLoopDetected=false;
+				RunTime.recursiveLoopDetected.set(false);
 			}
 			}
 			
 			if (enableCallTracing) {
 			if (RunTime.callTracingFromHere) {
-				System.err.println(formLevel("\u2515\u2501 "+RunTime.recursiveLoopDetected+" "+link));
+				System.err.println(formLevel("\u2515\u2501 "+RunTime.recursiveLoopDetected.get()+" "+link));
 			}
 			}
 			if (enableRecursionDetection) {

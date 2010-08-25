@@ -95,4 +95,32 @@ public class RunTimeTest2
 	{
 		return this.wtw5();
 	}
+	
+
+	
+	// do not rename method
+	public static
+			StackTraceElement
+			getCurrentStackTraceElement(
+											int modifier )
+	{
+		StackTraceElement[] stea = RunTime.getCurrentStackTraceElementsArray();
+		for ( int i = 0; i < stea.length; i++ )
+		{
+			System.out.println( "!"
+								+ i
+								+ " "
+								+ stea[i] );
+		}
+		return RunTime.getCurrentStackTraceElement( 1 + modifier );
+	}
+	
+
+	// do not rename method
+	public static
+			StackTraceElement
+			getCurrentStackTraceElement()
+	{
+		return getCurrentStackTraceElement( 1 );
+	}
 }

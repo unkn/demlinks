@@ -131,6 +131,7 @@ public class RunTimeTest
 	}
 	
 	
+	
 	@Test
 	public
 			void
@@ -143,6 +144,8 @@ public class RunTimeTest
 		StackTraceElement[] steaR = RunTime.getCurrentStackTraceElementsArray();
 		StackTraceElement[] stea = Thread.currentThread().getStackTrace();
 		StackTraceElement curSTE = RunTime.getCurrentStackTraceElement();
+		StackTraceElement curSTE2 = RunTimeTest2.getCurrentStackTraceElement();// RunTime.getCurrentStackTraceElement( 0
+																				// );
 		StackTraceElement f1 = f.getCaller();
 		StackTraceElement f2 = f.getCaller2();
 		StackTraceElement f3 = f.getCaller3();
@@ -160,9 +163,36 @@ public class RunTimeTest
 		assertNotNull( stea );
 		assertNotNull( steaR );
 		assertNotNull( curSTE );
+		assertNotNull( curSTE2 );
+		for ( int i = 0; i < steaR.length; i++ )
+		{
+			System.out.println( i
+								+ " "
+								+ steaR[i] );
+		}
+		for ( int i = 0; i < stea.length; i++ )
+		{
+			System.out.println( i
+								+ " "
+								+ stea[i] );
+		}
+		System.out.println( curSTE );
+		System.out.println( curSTE2 );
 		// TODO: transfer eclipse settings to project specific settings ie. wrap 120chars should be in project
-		StackTraceElement actualLocation = steaR[+2];
-		StackTraceElement otherAcLoc = stea[+1];
+		int aLPos = RunTime.skipBackOverCallers(
+													steaR,
+													0,
+													2 );
+		StackTraceElement actualLocation = steaR[aLPos];
+		StackTraceElement otherAcLoc = stea[RunTime.skipBackOverCallers(
+																			stea,
+																			0,
+																			1 )];
+		System.out.println( aLPos
+							+ " "
+							+ actualLocation
+							+ " "
+							+ otherAcLoc );
 		assertTrue( actualLocation.getClassName() == this.getClass().getName() );
 		assertTrue( otherAcLoc.getClassName() == this.getClass().getName() );
 		assertTrue( curSTE.getClassName() == this.getClass().getName() );
@@ -304,7 +334,7 @@ public class RunTimeTest
 					int i,
 					int j )
 	{
-		if ( ( !RunTime.recursiveLoopDetected )
+		if ( ( !RunTime.recursiveLoopDetected.get() )
 				&& ( i < 5 ) )
 		{
 			System.out.println( "in2 with: "
@@ -320,7 +350,7 @@ public class RunTimeTest
 			loop(
 					int i )
 	{
-		if ( ( !RunTime.recursiveLoopDetected )
+		if ( ( !RunTime.recursiveLoopDetected.get() )
 				&& ( i < 5 ) )
 		{
 			System.out.println( "in1 with: "
