@@ -27,15 +27,17 @@ import java.util.HashSet;
 
 import org.aspectj.lang.Signature;
 import org.dml.tools.RunTime;
+import org.dml.tools.ThreadLocalBoolean;
+import org.dml.tools.ThreadLocalHashMap;
+import org.dml.tools.ThreadLocalHashSet;
 import org.dml.tools.ThreadLocalInteger;
-import org.temporary.tests.ThreadLocalBoolean;
 
 /**
  * in this aspect it's
  * required to use either primitive type variables or variables in classes beginning with ThreadLocal ie. ThreadLocalBoolean
  * because otherwise, a call to a getter method there might return false in case of RunTime.recursiveLoopDetected which is 
  * method context sensitive value
- * FIXME: make it thread safe
+ * - it's thread safe
  * -also, can't use static initializer blocks here on in RunTime if they modify variables used by this aspect; 
  *  or you get NoAspectBoundException
  */
@@ -62,14 +64,14 @@ public aspect RecursionDetector
 	private static final ThreadLocalBoolean afterAlready=new ThreadLocalBoolean(false );
 	
 	private static final int CALL_LEVEL_INIT=-1;
-	private static ThreadLocalInteger callLevel=new ThreadLocalInteger(CALL_LEVEL_INIT);
+	private static final ThreadLocalInteger callLevel=new ThreadLocalInteger(CALL_LEVEL_INIT);
 	//private static int recursiveLoopDetectedAtLevel=0;
 	
-	private static HashSet<String> calls=new HashSet<String>();
+	private static final ThreadLocalHashSet<String> calls=new ThreadLocalHashSet<String>();
 	//the following variable is unnecessary but just for fun/consistency-checking
-	private static HashMap<Integer,String> perLevelStore=new HashMap<Integer,String>();
+	private static final ThreadLocalHashMap<Integer,String> perLevelStore=new ThreadLocalHashMap<Integer,String>();
 	
-	private static HashMap<Integer,Boolean> isLoopAtThisLevel=new HashMap<Integer,Boolean>();
+	private static final ThreadLocalHashMap<Integer,Boolean> isLoopAtThisLevel=new ThreadLocalHashMap<Integer,Boolean>();
 	
 	pointcut anyCall(): call(* *..*..*(..))//any calls to any methods in any package...
 						&& !this(RecursionDetector)
@@ -81,9 +83,9 @@ public aspect RecursionDetector
 						// enable the following for a quicker response
 						//&& !call(* java.io.PrintStream.println(..))
 						&& !call(* java.lang.StringBuilder..*(..))
-						&& !call(* java.lang.String..*(..))
+						//&& !call(* java.lang.String..*(..))
 						&& !call(* java.lang.StackTraceElement..*(..))
-						&& !call(* java.lang..*..*(..))
+						//&& !call(* java.lang..*..*(..))
 						&& !call(* java.io.*..*(..))
 						&& !call(* org.dml.tools.RunTime.isAspect*(..))
 						&& !call(* org.dml.tools.RunTime.assumed*(..))
@@ -118,19 +120,19 @@ public aspect RecursionDetector
 			
 		  if (enableRecursionDetection) {
 			String which=sig.toLongString();
-			if (null != perLevelStore.put( callLevel.get(), which )) {
+			if (null != perLevelStore.get().put( callLevel.get(), which )) {
 				//BUG
 				throwErr("#100 already existing call at that same level impossible");
 			}
 			
-			RunTime.recursiveLoopDetected.set(!calls.add(which));//already there? it then got overwritten with same value
+			RunTime.recursiveLoopDetected.set(!calls.get().add(which));//already there? it then got overwritten with same value
 			//System.err.println("A: "+calls.size());
-			if (null != isLoopAtThisLevel.put(callLevel.get(), RunTime.recursiveLoopDetected.get())) {
+			if (null != isLoopAtThisLevel.get().put(callLevel.get(), RunTime.recursiveLoopDetected.get())) {
 				throwErr("#121 a previous value should NOT have existed");
 			}
 			if (enablePrintRDs) {
 				if (RunTime.recursiveLoopDetected.get()) {
-					System.err.println("recursion about to begin at level("+callLevel.get()+") callee(called at line): "+link);
+					System.err.println("recursion about to begin in thread "+Thread.currentThread()+" at level("+callLevel.get()+") callee(called at line): "+link);
 				}
 			}
 			
@@ -176,7 +178,7 @@ public aspect RecursionDetector
 			if (enableRecursionDetection) {
 			boolean prevState=RunTime.recursiveLoopDetected.get();//this state in before()
 			
-			if (isLoopAtThisLevel.remove( callLevel.get() ) != prevState) {
+			if (isLoopAtThisLevel.get().remove( callLevel.get() ) != prevState) {
 				throwErr("#358 "+link+" "+callLevel.get()+" a previous value should have existed and be the same as the state");
 			}
 		
@@ -184,7 +186,7 @@ public aspect RecursionDetector
 				//remove only if not loop detected on current, because it got overwritten last time
 				//System.err.println("R: "+calls.size());
 				//System.err.flush();
-				if (!calls.remove( which )) {
+				if (!calls.get().remove( which )) {
 					throwErr("#1034 "+link+" should've existed");
 				}
 			}
@@ -192,8 +194,8 @@ public aspect RecursionDetector
 			
 			//restore state
 			if (callLevel.get()-1>CALL_LEVEL_INIT) {
-				//restore loopdetected status for our caller
-				RunTime.recursiveLoopDetected.set(isLoopAtThisLevel.get( callLevel.get()-1 ));
+				//restore recursion-detected status for our caller
+				RunTime.recursiveLoopDetected.set(isLoopAtThisLevel.get().get( callLevel.get()-1 ));
 			}else {
 				RunTime.recursiveLoopDetected.set(false);
 			}
@@ -206,7 +208,7 @@ public aspect RecursionDetector
 			}
 			if (enableRecursionDetection) {
 			
-			if (which != perLevelStore.remove( callLevel.get() )){//||(callLevel==3)) {
+			if (which != perLevelStore.get().remove( callLevel.get() )){//||(callLevel==3)) {
 				throwErr("#890 "+link+" should've existed");
 			}
 			
@@ -228,6 +230,7 @@ public aspect RecursionDetector
 	 *		FIXME: make this the location of "s" instead
 	 * @return
 	 */
+	@SuppressWarnings( "unused" )
 	private String sig2Link(Signature s, String loc) {
 		String _x=s.toLongString();//gotta get rid of params at end of method, to form valid eclipse console link
 		return _x.substring( 0, _x.indexOf( "(" ) )+"("+loc+")";
@@ -239,11 +242,12 @@ public aspect RecursionDetector
 		{
 			x+="\u2502  ";
 		}
-		return x+msg;//String.format( "%-" + callLevel + "s%s", " ",msg);
+		return String.format( "%-10s%s", Thread.currentThread().getName(), x+msg);
+		//String.format( "%-" + callLevel + "s%s", " ",msg);
 	}
 	
 	private static void throwErr(String msg){
 		System.err.println(msg);
-			throw new RuntimeException(msg+" in aspect "+RecursionDetector.class);
+			throw new RuntimeException(msg+" in thread"+Thread.currentThread()+" in aspect "+RecursionDetector.class);
 	}
 }

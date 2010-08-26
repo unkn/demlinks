@@ -23,7 +23,7 @@
 package org.aspectj;
 
 import org.dml.tools.RunTime;
-import org.temporary.tests.ThreadLocalBoolean;
+import org.dml.tools.ThreadLocalBoolean;
 
 
 /**

@@ -18,43 +18,43 @@
  * along with DeMLinks. If not, see <http://www.gnu.org/licenses/>.
  * 
  * 
- * File creation: Aug 24, 2010 8:55:31 PM
+ * File creation: Aug 26, 2010 4:42:20 AM
  */
 
 
-package org.temporary.tests;
+package org.dml.tools;
+
+
+
+import java.util.HashMap;
+
 
 
 /**
+ * @param <K>
+ *            key
+ * @param <V>
+ *            value
  * 
- *
+ * 
  */
-public class ThreadLocalBoolean
+public class ThreadLocalHashMap<K, V>
 		extends
-		ThreadLocal<Boolean>
+		ThreadLocal<HashMap<K, V>>
 {
 	
-	private final boolean	initialValue;	// = false;
-									
-
-	/**
-	 * constructor
-	 * 
-	 * @param initialValue1
-	 */
-	public ThreadLocalBoolean(
-			boolean initialValue1 )
+	public ThreadLocalHashMap()
 	{
-		initialValue = initialValue1;
+		super();
 	}
 	
 
 	@Override
 	protected synchronized
-			Boolean
+			HashMap<K, V>
 			initialValue()
 	{
-		return new Boolean(
-							initialValue );
+		return new HashMap<K, V>();
 	}
+	
 }

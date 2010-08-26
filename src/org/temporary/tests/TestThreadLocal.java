@@ -25,11 +25,16 @@
 package org.temporary.tests;
 
 
+
+import org.dml.tools.RunTime;
+
+
+
 /**
  * 
- *
+ * don't rename to ThreadLocal* because it will have no call tracing
  */
-public class ThreadLocalTest
+public class TestThreadLocal
 {
 	
 	// The next serial number to be assigned
@@ -70,12 +75,21 @@ public class ThreadLocalTest
 	
 
 	public static
+			int
+			some()
+	{
+		return TestThreadLocal.get();
+	}
+	
+
+	public static
 			void
 			main(
 					String[] args )
 	{
 		// ThreadLocalTest tlt = new ThreadLocalTest();
-		System.out.println( ThreadLocalTest.get() );
+		RunTime.callTracingFromHere.set( true );
+		System.out.println( TestThreadLocal.get() );
 		Thread t = new Thread()
 		{
 			
@@ -84,17 +98,18 @@ public class ThreadLocalTest
 			 * 
 			 * @see java.lang.Thread#run()
 			 */
+			@SuppressWarnings( "synthetic-access" )
 			@Override
 			public
 					void
 					run()
 			{
-				// TODO Auto-generated method stub
+				RunTime.callTracingFromHere.set( true );
 				// super.run();
-				System.out.println( ThreadLocalTest.get() );
+				System.out.println( TestThreadLocal.get() );
 				while ( !quit )
 				{
-					if ( 1 != ThreadLocalTest.get() )
+					if ( 1 != TestThreadLocal.some() )
 					{
 						System.err.println( "fail in thread1" );
 						quit = true;
@@ -106,7 +121,7 @@ public class ThreadLocalTest
 		t.start();// start this as new thread
 		while ( !quit )
 		{
-			if ( 0 != ThreadLocalTest.get() )
+			if ( 0 != TestThreadLocal.get() )
 			{
 				System.err.println( "fail in main" );
 				quit = true;
