@@ -37,7 +37,7 @@ import org.dml.tracking.Log;
 public class RunTime
 {
 	
-	// variables used by the RecursionDetector.aj aspect
+	// variables used by the thread-aware RecursionDetector.aj aspect
 	// set this to true anywhere at runtime to enable showing calls on console err until this var is false
 	public static final ThreadLocalBoolean	callTracingFromHere			= new ThreadLocalBoolean(
 																									false );
@@ -45,10 +45,11 @@ public class RunTime
 	public static final ThreadLocalBoolean	recursiveLoopDetected		= new ThreadLocalBoolean(
 																									false );
 	
-	// must be false here
+	// must be false here, if it's enabled it's true for all threads
 	public static boolean					throWrapperAspectEnabled	= false;
 	
 
+	// this is where we hold the chain of all thrown exceptions
 	private static Throwable				allExceptionsChained		= null;
 	
 	

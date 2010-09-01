@@ -37,7 +37,7 @@ import org.dml.tools.ThreadLocalInteger;
  * required to use either primitive type variables or variables in classes beginning with ThreadLocal ie. ThreadLocalBoolean
  * because otherwise, a call to a getter method there might return false in case of RunTime.recursiveLoopDetected which is 
  * method context sensitive value
- * - it's thread safe
+ * - it's thread aware
  * -also, can't use static initializer blocks here on in RunTime if they modify variables used by this aspect; 
  *  or you get NoAspectBoundException
  */
@@ -47,7 +47,7 @@ public aspect RecursionDetector
 	private static final boolean enablePrintRDs=true;//only in effect if above is true
 	
 	//doesn't depend on enableRecursionDetection above
-	private static final boolean enableCallTracing=true;//see RunTime.callTracingFromHere
+	private static final boolean enableCallTracing=false;//see RunTime.callTracingFromHere
 	private static final long ifRecursionStopAtLevel=5000;//5000 stacked callers, only if enableRecursionDetection true
 	  
 	//static {
@@ -67,6 +67,7 @@ public aspect RecursionDetector
 	private static final ThreadLocalInteger callLevel=new ThreadLocalInteger(CALL_LEVEL_INIT);
 	//private static int recursiveLoopDetectedAtLevel=0;
 	
+	//TODO: keep depth of recursion for each called method and have var if reached only then show msg
 	private static final ThreadLocalHashSet<String> calls=new ThreadLocalHashSet<String>();
 	//the following variable is unnecessary but just for fun/consistency-checking
 	private static final ThreadLocalHashMap<Integer,String> perLevelStore=new ThreadLocalHashMap<Integer,String>();
@@ -83,9 +84,9 @@ public aspect RecursionDetector
 						// enable the following for a quicker response
 						//&& !call(* java.io.PrintStream.println(..))
 						&& !call(* java.lang.StringBuilder..*(..))
-						//&& !call(* java.lang.String..*(..))
+//						&& !call(* java.lang.String..*(..))
 						&& !call(* java.lang.StackTraceElement..*(..))
-						//&& !call(* java.lang..*..*(..))
+						&& !call(* java.lang..*..*(..))
 						&& !call(* java.io.*..*(..))
 						&& !call(* org.dml.tools.RunTime.isAspect*(..))
 						&& !call(* org.dml.tools.RunTime.assumed*(..))
@@ -126,7 +127,6 @@ public aspect RecursionDetector
 			}
 			
 			RunTime.recursiveLoopDetected.set(!calls.get().add(which));//already there? it then got overwritten with same value
-			//System.err.println("A: "+calls.size());
 			if (null != isLoopAtThisLevel.get().put(callLevel.get(), RunTime.recursiveLoopDetected.get())) {
 				throwErr("#121 a previous value should NOT have existed");
 			}
@@ -184,7 +184,6 @@ public aspect RecursionDetector
 		
 			if (!prevState) {
 				//remove only if not loop detected on current, because it got overwritten last time
-				//System.err.println("R: "+calls.size());
 				//System.err.flush();
 				if (!calls.get().remove( which )) {
 					throwErr("#1034 "+link+" should've existed");

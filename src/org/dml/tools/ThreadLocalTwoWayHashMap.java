@@ -18,60 +18,39 @@
  * along with DeMLinks. If not, see <http://www.gnu.org/licenses/>.
  * 
  * 
- * File creation: Aug 25, 2010 11:15:21 AM
+ * File creation: Aug 26, 2010 5:22:44 AM
  */
 
 
 package org.dml.tools;
 
 
+
 /**
+ * @param <K>
+ *            key
+ * @param <V>
+ *            val
  * 
- *
+ * 
  */
-public class ThreadLocalInteger
+public class ThreadLocalTwoWayHashMap<K, V>
 		extends
-		ThreadLocal<Integer>
+		ThreadLocal<TwoWayHashMap<K, V>>
 {
 	
-	private final int	initialValue;
-	
-	
-	/**
-	 * constructor
-	 * 
-	 * @param initialValue1
-	 */
-	public ThreadLocalInteger(
-			int initialValue1 )
+	public ThreadLocalTwoWayHashMap()
 	{
-		initialValue = initialValue1;
+		super();
 	}
 	
 
 	@Override
 	protected synchronized
-			Integer
+			TwoWayHashMap<K, V>
 			initialValue()
 	{
-		return new Integer(
-							initialValue );
-	}
-	
-
-	public
-			void
-			increment()
-	{
-		this.set( this.get() + 1 );
-	}
-	
-
-	public
-			void
-			decrement()
-	{
-		this.set( this.get() - 1 );
+		return new TwoWayHashMap<K, V>();
 	}
 	
 }

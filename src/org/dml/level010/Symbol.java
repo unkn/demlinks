@@ -113,4 +113,18 @@ public class Symbol
 		// return this == sym;
 	}
 	
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public
+			int
+			hashCode()
+	{
+		return super.hashCode();
+	}
+	
 }

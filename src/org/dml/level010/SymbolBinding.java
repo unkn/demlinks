@@ -56,10 +56,9 @@ public class SymbolBinding
 			entryToObject(
 							TupleInput input )
 	{
-		
 		Symbol nid = null;
 		long l = input.readLong();
-		RunTime.assumedNotNull( l );
+		// RunTime.assumedNotNull( l );useless check unless it were Long class
 		nid = Bridge_SymbolAndBDB.newSymbolFrom( l );
 		RunTime.assumedTrue( Bridge_SymbolAndBDB.getLongFrom( nid ) == l );
 		return nid;
@@ -84,7 +83,7 @@ public class SymbolBinding
 		RunTime.assumedNotNull(
 								alreadyExistingSymbol,
 								output );
-		long myLong = Bridge_SymbolAndBDB.getLongFrom( alreadyExistingSymbol );
+		Long myLong = Bridge_SymbolAndBDB.getLongFrom( alreadyExistingSymbol );
 		RunTime.assumedNotNull( myLong );
 		// System.out.println( object );
 		// it will never be null before writing it to dbase, else bug somewhere

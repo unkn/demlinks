@@ -37,6 +37,9 @@ import org.dml.tools.RunTime;
 public class TestThreadLocal
 {
 	
+	private static final int					LOOP_MAX1		= 3150;
+	private static final int					LOOP_MAX2		= 1000;
+	
 	// The next serial number to be assigned
 	private static int							nextSerialNum	= 0;
 	
@@ -107,6 +110,7 @@ public class TestThreadLocal
 				RunTime.callTracingFromHere.set( true );
 				// super.run();
 				System.out.println( TestThreadLocal.get() );
+				int count = 0;
 				while ( !quit )
 				{
 					if ( 1 != TestThreadLocal.some() )
@@ -114,11 +118,17 @@ public class TestThreadLocal
 						System.err.println( "fail in thread1" );
 						quit = true;
 					}
+					if ( ++count > LOOP_MAX2 )
+					{
+						break;
+					}
 				}
+				reportQuitStatus();
 			}
 		};
 		// t.run();// same thread as current
 		t.start();// start this as new thread
+		int count = 0;
 		while ( !quit )
 		{
 			if ( 0 != TestThreadLocal.get() )
@@ -126,6 +136,28 @@ public class TestThreadLocal
 				System.err.println( "fail in main" );
 				quit = true;
 			}
+			if ( ++count > LOOP_MAX1 )
+			{
+				break;
+			}
+		}
+		
+		reportQuitStatus();
+	}
+	
+
+	public static
+			void
+			reportQuitStatus()
+	{
+		if ( quit )
+		{
+			System.err.println( "BUG" );
+		}
+		else
+		{
+			System.out.println( "safe exit from "
+								+ Thread.currentThread().getName() );
 		}
 	}
 }

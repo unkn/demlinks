@@ -51,6 +51,10 @@ import com.sleepycat.je.OperationStatus;
  * Set, not as in an ordered list; however in practice they're sorted
  * alphabetically so to speak, but shouldn't count on this!<br>
  * //FIXME: maybe make a way to not throw DatabaseException from here, because this is being used in dml environment
+ * TODO: make it thread safe
+ * 
+ * @param <InitialType>
+ * @param <TerminalType>
  */
 public class BDBVectorIterator<InitialType, TerminalType>
 		extends

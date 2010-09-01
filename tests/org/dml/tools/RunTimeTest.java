@@ -377,6 +377,7 @@ public class RunTimeTest
 			loopingTest()
 	{
 		// StackTraceElement[] erm =
+		// if this fails you don't have AspectJ installed or/and RecursionDetector.enableRecursionDetection is false
 		assertTrue( 3 == this.loop( 1 ) );
 		// for ( int i = 0; i < erm.length; i++ )
 		// {

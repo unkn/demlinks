@@ -27,6 +27,7 @@ package org.dml.database.bdb.level1;
 
 import org.dml.level010.Symbol;
 import org.dml.tools.RunTime;
+import org.dml.tools.ThreadLocalTwoWayHashMap;
 import org.dml.tools.TwoWayHashMap;
 
 
@@ -46,6 +47,8 @@ public final class Bridge_SymbolAndBDB
 	private static final TwoWayHashMap<Long, Symbol>	all_Symbols_from_BDBStorage	= new TwoWayHashMap<Long, Symbol>();
 	
 	
+	// FIXME: should be BDBLocal variable aka relative to which environment is opened
+	
 	/**
 	 * the only one calling this should be the BDB subsystem<br>
 	 * not the user<br>
@@ -53,12 +56,12 @@ public final class Bridge_SymbolAndBDB
 	 * 
 	 * @param longBDB
 	 *            given by the BDB dbase knowing that it's unique
-	 * @return
+	 * @return new Symbol instance which will be unique for this long in the current thread
 	 */
 	public static
 			Symbol
 			newSymbolFrom(
-							long longBDB )
+							Long longBDB )
 	{
 		
 		RunTime.assumedNotNull( longBDB );
@@ -95,13 +98,18 @@ public final class Bridge_SymbolAndBDB
 	 * @return
 	 */
 	public static
-			long
+			Long
 			getLongFrom(
 							Symbol symbol )
 	{
 		
 		RunTime.assumedNotNull( symbol );
-		return all_Symbols_from_BDBStorage.getKey( symbol );
+		RunTime.assumedNotNull( all_Symbols_from_BDBStorage );
+		// System.err.println( all_Symbols_from_BDBStorage.get().getKey(
+		// symbol ) );
+		Long ret = all_Symbols_from_BDBStorage.getKey( symbol );
+		// RunTime.assumedNotNull( ret );
+		return ret;// ret.longValue();
 		
 	}
 }

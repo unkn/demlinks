@@ -29,6 +29,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.HashSet;
+
 import org.dml.JUnits.Consts;
 import org.dml.database.bdb.level1.Bridge_SymbolAndBDB;
 import org.dml.tracking.Factory;
@@ -50,6 +52,7 @@ public class Level010_DMLEnvironmentTest
 	Level010_DMLEnvironment	dml1;
 	Symbol					a, b, c;
 	MethodParams			params;
+	Symbol					anewFromDiffThread	= null;
 	
 	
 	@Before
@@ -93,6 +96,7 @@ public class Level010_DMLEnvironmentTest
 	public
 			void
 			test1()
+					throws InterruptedException
 	{
 		
 		try
@@ -120,15 +124,38 @@ public class Level010_DMLEnvironmentTest
 			
 
 			// same contents in java
-			long la = Bridge_SymbolAndBDB.getLongFrom( a );
+			final Long la = Bridge_SymbolAndBDB.getLongFrom( a );
 			Symbol anew = Bridge_SymbolAndBDB.newSymbolFrom( la );
+			
+			Thread th0 = new Thread()
+			{
+				
+				@Override
+				public
+						void
+						run()
+				{
+					anewFromDiffThread = Bridge_SymbolAndBDB.newSymbolFrom( la );
+				}
+			};
+			th0.start();
 			assertTrue( a == anew );// indeed
-			assertTrue( dml1.getJavaID( anew ) == dml1.getJavaID( a ) );
+			JavaID aJID = dml1.getJavaID( a );
+			assertTrue( dml1.getJavaID( anew ) == aJID );
+			th0.join();
+			assertNotNull( anewFromDiffThread );
+			assertTrue( anew == anewFromDiffThread );
+			assertTrue( dml1.getJavaID( anewFromDiffThread ) == aJID );
+			HashSet<Symbol> hs = new HashSet<Symbol>();
+			hs.add( a );// calls Symbol.hashCode() first then if ever needed .equals
+			hs.add( a );
+			Symbol b = new Symbol();
+			hs.add( b );
 		}
 		finally
 		{
 			Factory.deInit( dml1 );
-			// dml1.deInit();
+			// // dml1.deInit();
 		}
 	}
 	

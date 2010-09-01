@@ -50,12 +50,14 @@ public class Factory
 	// MAX_POSSIBLE_DEFINED_PARAMS_A_METHOD_WILL_EVER_HAVE
 	private static final int	MAX_DEFINED_PARAMS	= 50;
 	private static final int	SUBCLASS			= 1;
-	private static final int	SAMECLASS			= MAX_DEFINED_PARAMS * ( 1 + SUBCLASS );
+	private static final int	SAMECLASS			= MAX_DEFINED_PARAMS
+														* ( 1 + SUBCLASS );
 	
 	static
 	{
 		RunTime.assumedTrue( SAMECLASS > SUBCLASS );
-		RunTime.assumedTrue( SAMECLASS > SUBCLASS * MAX_DEFINED_PARAMS );
+		RunTime.assumedTrue( SAMECLASS > SUBCLASS
+											* MAX_DEFINED_PARAMS );
 	}
 	
 	
@@ -173,7 +175,8 @@ public class Factory
 		try
 		{
 			int until = initargsObjects.length;
-			if ( ( null == initargsObjects ) || ( until <= 0 ) )
+			if ( ( null == initargsObjects )
+					|| ( until <= 0 ) )
 			{
 				con = type.getConstructor();// get the default public constructor - the one with no params
 			}
@@ -230,13 +233,20 @@ public class Factory
 							}
 						}// for params
 						
-						if ( ( cur > SAMECLASS * until ) || ( cur <= 0 ) || ( cur < SUBCLASS * until ) )
+						if ( ( cur > SAMECLASS
+										* until )
+								|| ( cur <= 0 )
+								|| ( cur < SUBCLASS
+											* until ) )
 						{
 							RunTime.bug();
 						}
 						else
 						{
-							if ( ( cur >= until * SUBCLASS ) && ( cur < until * SAMECLASS ) )
+							if ( ( cur >= until
+											* SUBCLASS )
+									&& ( cur < until
+												* SAMECLASS ) )
 							{
 								// the passed parameters are 1) all subclasses compared to the ones defined
 								// on the constructor, so it's a valid contructor so far, but we might find
@@ -251,19 +261,21 @@ public class Factory
 								{
 									if ( max == cur )
 									{
-										RunTime.bug( "ambigous constructors present in class: " + type );
+										RunTime.bug( "ambigous constructors present in class: "
+														+ type );
 									}// else found lesser version
 								}
 								continue;// try next constructor maybe we find better version
 							}
 							else
 							{
-								if ( until * SAMECLASS == cur )
+								if ( until
+										* SAMECLASS == cur )
 								{
 									// perfect match, all parameters match type perfectly so there can't be
 									// another constructor like this
 									con = (Constructor<T>)curConstr;
-									System.out.println( "Perfection: " + con + " for type: " + type );
+									// System.out.println( "Perfection: " + con + " for type: " + type );
 									break findTheRightConstructor;
 								}
 								else
@@ -300,9 +312,9 @@ public class Factory
 		{
 			RunTime
 					.badCall( "either the class("
-							+ type
-							+ ") doesn't have the required constuctor OR "
-							+ "you're trying to init an inner class which means you must prepend a 'this' to constructor params" );
+								+ type
+								+ ") doesn't have the required constuctor OR "
+								+ "you're trying to init an inner class which means you must prepend a 'this' to constructor params" );
 		}
 		else
 		{
@@ -486,7 +498,8 @@ public class Factory
 		// try
 		// {
 		instance._init( params );// params may be null
-		Log.exit1( "init-ed: " + instance.getClass().getCanonicalName() );
+		Log.exit1( "init-ed: "
+					+ instance.getClass().getCanonicalName() );
 		// }
 		// finally
 		// {
@@ -769,7 +782,8 @@ public class Factory
 	{
 		
 		RunTime.assumedNotNull( instance );
-		Log.entry1( "deInit-ing " + instance.getClass().getName() );
+		Log.entry1( "deInit-ing "
+					+ instance.getClass().getName() );
 		
 		// StackTraceElement caller = RunTime.getTheCaller_OutsideOfThisClass();
 		// System.out.println( String.format(
@@ -904,9 +918,10 @@ public class Factory
 			if ( !instance.isInited() )
 			{
 				// removeExistingInitedInstance( instance );
-				RunTime.bug( "so, reinit failed but it's still not inited, bug somewhere since a call to reInit "
-						+ "should always set the isInited() flag regardless of thrown exceptions, to pave the road "
-						+ "for a latter deInit()" );
+				RunTime
+						.bug( "so, reinit failed but it's still not inited, bug somewhere since a call to reInit "
+								+ "should always set the isInited() flag regardless of thrown exceptions, to pave the road "
+								+ "for a latter deInit()" );
 			}
 		}
 		
