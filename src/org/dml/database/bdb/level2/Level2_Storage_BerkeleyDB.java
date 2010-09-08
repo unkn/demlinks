@@ -29,6 +29,7 @@ import org.dml.database.bdb.level1.Level1_Storage_BerkeleyDB;
 import org.dml.tools.RunTime;
 import org.dml.tracking.Factory;
 import org.references.method.MethodParams;
+import org.references.method.PossibleParams;
 
 
 
@@ -52,24 +53,9 @@ public class Level2_Storage_BerkeleyDB
 			DBMapSymbolsTuple
 			getDBMapSymbolsTuple()
 	{
-		
-		if ( null == dbSymbolsTuple )
-		{
-			// dbSymbolsTuple = new DBMapSymbolsTuple( this, dbSymbolsTuple_NAME );
-			// dbSymbolsTuple.init( null );
-			dbSymbolsTuple = Factory.getNewInstanceAndInitWithoutMethodParams(
-																				DBMapSymbolsTuple.class,
-																				this,
-																				dbSymbolsTuple_NAME );
-			RunTime.assumedNotNull( dbSymbolsTuple );
-		}
-		else
-		{
-			Factory.reInitIfNotInited( dbSymbolsTuple );
-			// if ( !dbSymbolsTuple.isInited() ) {
-			// dbSymbolsTuple.reInit();
-			// }
-		}
+		RunTime.assumedTrue( this.isInitedSuccessfully() );
+		RunTime.assumedNotNull( dbSymbolsTuple );
+		RunTime.assumedTrue( dbSymbolsTuple.isInitedSuccessfully() );
 		return dbSymbolsTuple;
 	}
 	
@@ -85,13 +71,56 @@ public class Level2_Storage_BerkeleyDB
 			done(
 					MethodParams params )
 	{
+		if ( this.isInitedSuccessfully() )
+		{
+			RunTime.assumedNotNull( dbSymbolsTuple );
+		}
 		
 		if ( null != dbSymbolsTuple )
 		{
 			// dbSymbolsTuple.deInit();
-			Factory.deInit( dbSymbolsTuple );
+			try
+			{
+				Factory.deInit_WithPostponedThrows( dbSymbolsTuple );
+			}
+			finally
+			{
+				dbSymbolsTuple = null;
+			}
 		}
 		// the above must be deInit-ed first
 		super.done( params );// last
+	}
+	
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.dml.database.bdb.level1.Level1_Storage_BerkeleyDB#start(org.references.method.MethodParams)
+	 */
+	@Override
+	protected
+			void
+			start(
+					MethodParams params )
+	{
+		RunTime.assumedNull( params );
+		
+		super.start( params );// first
+		
+		MethodParams iParams = MethodParams.getNew();// params.getClone();
+		RunTime.assumedNull( iParams.set(
+											PossibleParams.level1_BDBStorage,
+											this ) );
+		RunTime.assumedNull( iParams.set(
+											PossibleParams.dbName,
+											dbSymbolsTuple_NAME ) );
+		
+		dbSymbolsTuple = Factory.getNewInstanceAndInit(
+														DBMapSymbolsTuple.class,
+														iParams );
+		RunTime.assumedNotNull( dbSymbolsTuple );
+		RunTime.assumedTrue( dbSymbolsTuple.isInitedSuccessfully() );
+		
 	}
 }// class

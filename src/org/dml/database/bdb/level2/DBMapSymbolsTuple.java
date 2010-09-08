@@ -60,22 +60,10 @@ public class DBMapSymbolsTuple
 		OneToManyDBMap<TheStoredSymbol, TheStoredSymbol>
 {
 	
-	// composition = null;
-	
-
-	// new OneToManyDBMap<TheStoredSymbol, TheStoredSymbol>();
 	/**
 	 * constructor
-	 * 
-	 * @param bdb1
-	 * 
-	 * @param dbName1
-	 *            the name of the database that will hold the tuples
 	 */
-	public DBMapSymbolsTuple(
-	// Level1_Storage_BerkeleyDB bdb1,
-	// String dbName1
-	)
+	public DBMapSymbolsTuple()
 	{
 		
 		super(
@@ -241,53 +229,6 @@ public class DBMapSymbolsTuple
 		return super.removeVector(
 									initial,
 									terminal );
-	}
-	
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.dml.tools.Initer#start(org.references.method.MethodParams)
-	 */
-	@Override
-	protected
-			void
-			start(
-					MethodParams params )
-	{
-		RunTime.assumedNotNull( params );// for now
-		params.getEx( paramName )
-		//FIXME: make throws report all callers ie. all wraps ; again
-		Level1_Storage_BerkeleyDB bdb1;
-		String dbName1;
-		if ( null == composition )
-		{
-			composition = new OneToManyDBMap<TheStoredSymbol, TheStoredSymbol>(
-																				bdb1,
-																				dbName1,
-																				TheStoredSymbol.class,
-																				AllTupleBindings
-																						.getBinding( TheStoredSymbol.class ),
-																				TheStoredSymbol.class,
-																				AllTupleBindings
-																						.getBinding( TheStoredSymbol.class ) );
-		}
-	}
-	
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.dml.tools.Initer#done(org.references.method.MethodParams)
-	 */
-	@Override
-	protected
-			void
-			done(
-					MethodParams params )
-	{
-		// TODO Auto-generated method stub
-		
 	}
 	
 

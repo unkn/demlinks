@@ -140,7 +140,7 @@ public class DatabaseCapsule
 			Database
 			getDB()
 	{
-		RunTime.assumedTrue( this.isInited() );
+		RunTime.assumedTrue( this.isInitedSuccessfully() );
 		RunTime.assumedNotNull(
 								db,
 								bdbL1 );

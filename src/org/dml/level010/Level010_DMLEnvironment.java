@@ -107,14 +107,15 @@ public class Level010_DMLEnvironment
 			start(
 					MethodParams params )
 	{
-		
-		if ( ( null == params ) || ( null == params.get( PossibleParams.varLevelAll ) ) )
+		if ( ( null == params )
+				|| ( null == params.get( PossibleParams.varLevelAll ) ) )
 		{
 			// need own default storage type new-ed and init-ed
 			this.internal_allocDefaultStorage( params );
-			usedDefaultStorage = true;// must remain true, in case of restart() or reInit() I think?
+			usedDefaultStorage = true;// must remain true, in case of restart() or reInit() !!!
 		}
-		super.start( params );
+		
+		super.start( params );// last; varLevelAll is always set here
 	}
 	
 
@@ -136,10 +137,13 @@ public class Level010_DMLEnvironment
 			// storage.deInit();
 			// Factory.deInit( storage );fail 'cause it's interface
 			storage.factoryDeInit();// because storage is not Initer type, is interface here
-			// don't set var to false here, or seems it doesn't matter, reInit() will call start() and set it it true
-			// anyway
+			// don't set var to false here, because start won't set it to true again since params are modified to
+			// contain the default storage we used and it looks like it was passed by called to start again, while
+			// initially (first time) it was nothing passed
+			
+			// no need to set storage to null here, because MainLevel0.done will do it for us
 		}
-		super.done( params );
+		super.done( params );// will set storage to null in all classes(in this and all super-classes)
 	}
 	
 

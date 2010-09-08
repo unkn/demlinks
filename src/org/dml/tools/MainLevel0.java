@@ -204,7 +204,8 @@ public abstract class MainLevel0
 			// !true if lastField's class is a superclass(ie. base class) of the
 			// obj's class, or the same class; OR obj is a subclass or same
 			// class of the lastField's class
-			RunTime.badCall( "wrong type passed, must be a subclass of " + lastField.getType().getSimpleName() );
+			RunTime.badCall( "wrong type passed, must be a subclass of "
+								+ lastField.getType().getSimpleName() );
 		}
 	}
 	
@@ -280,8 +281,8 @@ public abstract class MainLevel0
 			{
 				RunTime
 						.badCall( "caller must either have all VarLevels subclass of "
-								+ Initer.class.getSimpleName()
-								+ " so that we can new and init the var, or the caller must pass us that var already new-ed and init-ed!" );
+									+ Initer.class.getSimpleName()
+									+ " so that we can new and init the var, or the caller must pass us that var already new-ed and init-ed!" );
 			}
 			// not specified own VarLevel by user, then we make one which we
 			// will deInit later
@@ -317,7 +318,7 @@ public abstract class MainLevel0
 		// // mixedParams.deInit();
 		// Factory.deInit( mixedParams );
 		// }
-		RunTime.assumedTrue( this.getVarLevelX().isInited() );
+		RunTime.assumedTrue( this.getVarLevelX().isInitedSuccessfully() );
 	}
 	
 

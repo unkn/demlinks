@@ -108,25 +108,26 @@ public class OneToOneDBMap<KeyType, DataType>
 	protected
 			void
 			start(
-					MethodParams params )
+					MethodParams params1 )
 	{
 		
-		RunTime.assumedNotNull( params );
+		RunTime.assumedNotNull( params1 );
 		
-		bdbL1 = (Level1_Storage_BerkeleyDB)params.getEx( PossibleParams.level1_BDBStorage );
+		bdbL1 = (Level1_Storage_BerkeleyDB)params1.getEx( PossibleParams.level1_BDBStorage );
 		if ( null == bdbL1 )
 		{
 			RunTime.badCall( "missing parameter" );
 		}
 		RunTime.assumedNotNull( bdbL1 );
 		
-		dbName = params.getExString( PossibleParams.dbName );// used for forwardDB and backwardDB also
+		dbName = params1.getExString( PossibleParams.dbName );// used for forwardDB and backwardDB also
 		RunTime.assumedNotNull( dbName );
 		RunTime.assumedFalse( dbName.isEmpty() );
 		
 		// open both DBs
-		MethodParams iParams = params.getClone();
+		MethodParams iParams = params1.getClone();
 		// must not already be set/passed to us, so null return if no prev value was set for priDbConfig param
+		// FIXME: investigate if only one new OneToOneSecondaryDBConfig() is needed for all "OneToOneDBMap"s
 		RunTime.assumedNull( iParams.set(
 											PossibleParams.priDbConfig,
 											new OneToOneDBConfig() ) );
@@ -178,7 +179,7 @@ public class OneToOneDBMap<KeyType, DataType>
 																backwardDB ) );
 	}// done
 	
-	
+
 	protected
 			Level1_Storage_BerkeleyDB
 			getBDBL1()

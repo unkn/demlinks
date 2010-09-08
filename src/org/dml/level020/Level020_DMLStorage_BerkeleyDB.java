@@ -98,7 +98,7 @@ public class Level020_DMLStorage_BerkeleyDB
 			getIterator_on_Initials_of(
 										Symbol terminalObject )
 	{
-		
+		// TODO: return a new type of iterator for DML environment only
 		RunTime.assumedNotNull( terminalObject );
 		return bdb.getDBMapSymbolsTuple().getIterator_on_Initials_of(
 																		terminalObject );

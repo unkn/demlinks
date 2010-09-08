@@ -84,8 +84,6 @@ public class OneToManyDBMap<InitialType, TerminalType>
 	/**
 	 * constructor
 	 * 
-	 * @param bdb1
-	 * @param dbName1
 	 * @param initialClass1
 	 * @param initialBinding1
 	 * @param terminalClass1
@@ -122,12 +120,49 @@ public class OneToManyDBMap<InitialType, TerminalType>
 	protected
 			void
 			start(
-					MethodParams params )
+					MethodParams params2 )
 	{
 		
-		RunTime.assumedNotNull( params );
+		RunTime.assumedNotNull( params2 );
 		
-
+		bdbL1 = (Level1_Storage_BerkeleyDB)params2.getEx( PossibleParams.level1_BDBStorage );
+		if ( null == bdbL1 )
+		{
+			RunTime.badCall( "missing parameter" );
+		}
+		RunTime.assumedNotNull( bdbL1 );
+		
+		dbName = params2.getExString( PossibleParams.dbName );// used for forwardDB and backwardDB also
+		RunTime.assumedNotNull( dbName );
+		RunTime.assumedFalse( dbName.isEmpty() );
+		
+		MethodParams iParams = params2.getClone();
+		// FIXME: investigate if only one new OneToManyDBConfig() is needed for all "OneToManyDBMap"s
+		RunTime.assumedNull( iParams.set(
+											PossibleParams.priDbConfig,
+											new OneToManyDBConfig() ) );
+		forwardDB = Factory.getNewInstanceAndInit(
+													DatabaseCapsule.class,
+													iParams );
+		
+		RunTime.assumedNotNull( forwardDB );
+		RunTime.assumedTrue( forwardDB.isInitedSuccessfully() );
+		
+		RunTime.assumedNotNull( iParams.set(
+												PossibleParams.dbName,
+												dbName
+														+ backwardSuffix ) );
+		// FIXME: investigate if only one new OneToManyDBConfig() is needed for all "OneToManyDBMap"s same for
+		// above
+		RunTime.assumedNotNull( iParams.set(
+												PossibleParams.priDbConfig,
+												new OneToManyDBConfig() ) );
+		// backwardDB.init( params );
+		backwardDB = Factory.getNewInstanceAndInit(
+													DatabaseCapsule.class,
+													iParams );
+		RunTime.assumedNotNull( backwardDB );
+		RunTime.assumedTrue( backwardDB.isInitedSuccessfully() );
 	}
 	
 
@@ -173,37 +208,12 @@ public class OneToManyDBMap<InitialType, TerminalType>
 
 	/**
 	 * @return
-	 * @throws DatabaseException
 	 */
 	private
 			Database
 			getForwardDB()
-					throws DatabaseException
 	{
-		if ( null == forwardDB )
-		{
-			
-			MethodParams params = MethodParams.getNew();
-			params.set(
-						PossibleParams.level1_BDBStorage,
-						this.getBDBL1() );
-			params.set(
-						PossibleParams.dbName,
-						dbName );
-			params.set(
-						PossibleParams.priDbConfig,
-						new OneToManyDBConfig() );
-			forwardDB = Factory.getNewInstanceAndInit(
-														DatabaseCapsule.class,
-														params );
-			
-			RunTime.assumedNotNull( forwardDB );
-		}
-		else
-		{
-			Factory.reInitIfNotInited( forwardDB );
-		}
-		
+		RunTime.assumedNotNull( forwardDB );
 		RunTime.assumedTrue( forwardDB.isInitedSuccessfully() );
 		Database d = forwardDB.getDB();
 		RunTime.assumedNotNull( d );
@@ -213,42 +223,12 @@ public class OneToManyDBMap<InitialType, TerminalType>
 
 	/**
 	 * @return
-	 * @throws DatabaseException
 	 */
 	private
 			Database
 			getBackwardDB()
-					throws DatabaseException
 	{
-		if ( null == backwardDB )
-		{
-			MethodParams params = MethodParams.getNew();
-			// backwardDB = new DatabaseCapsule();
-			params.set(
-						PossibleParams.level1_BDBStorage,
-						this.getBDBL1() );
-			params.set(
-						PossibleParams.dbName,
-						dbName
-								+ backwardSuffix );
-			params.set(
-						PossibleParams.priDbConfig,
-						new OneToManyDBConfig() );
-			// backwardDB.init( params );
-			backwardDB = Factory.getNewInstanceAndInit(
-														DatabaseCapsule.class,
-														params );
-			// params.deInit();
-			// Factory.deInit( params );
-			// RunTime.assertNotNull( backwardDB );
-		}
-		else
-		{
-			Factory.reInitIfNotInited( backwardDB );
-			// if ( !backwardDB.isInited() ) {
-			// backwardDB.reInit();
-			// }
-		}
+		RunTime.assumedNotNull( backwardDB );
 		RunTime.assumedTrue( backwardDB.isInitedSuccessfully() );
 		Database d = backwardDB.getDB();
 		RunTime.assumedNotNull( d );

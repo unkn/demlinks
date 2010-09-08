@@ -89,6 +89,11 @@ public abstract class Initer
 	}
 	
 
+	/**
+	 * @return true if it's done initing hence it means it didn't throw exceptions while init-ing (or they were caught
+	 *         inside start() and handled) and so it's successfully inited<br>
+	 *         false only after calling done() aka Factory.deInit()<br>
+	 */
 	public final
 			boolean
 			isInitedSuccessfully()
@@ -241,6 +246,7 @@ public abstract class Initer
 					finally
 					{
 						this.setInitedSuccessfully( false );
+						RunTime.throwAllThatWerePosponed();
 					}
 				}
 			}
