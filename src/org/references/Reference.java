@@ -39,6 +39,13 @@ public class Reference<T> // extends Object>
 	private T	object	= null;
 	
 	
+	public Reference(
+			T obj )
+	{
+		object = obj;
+	}
+	
+
 	public Reference()
 	{
 		
@@ -170,11 +177,14 @@ public class Reference<T> // extends Object>
 		
 		if ( null != this.getObject() )
 		{
-			return this.getClass().getCanonicalName() + ":" + this.getObject().toString();
+			return this.getClass().getCanonicalName()
+					+ ":"
+					+ this.getObject().toString();
 		}
 		else
 		{
-			return this.getClass().getCanonicalName() + ":null";
+			return this.getClass().getCanonicalName()
+					+ ":null";
 		}
 	}
 }

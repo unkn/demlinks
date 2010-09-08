@@ -33,6 +33,7 @@ import org.references.Reference;
 
 
 /**
+ * a 1to1 mapping between a String and a JavaID instance
  * Java-Identifier a.k.a. JavaID = node name on the java level which is
  * basically
  * a string<br>
@@ -55,22 +56,32 @@ import org.references.Reference;
  * the same symbol is retrieved when referring to that javaID<br>
  * - one to one mapping between JavaID in java(instance) and JavaID in storage(the stored JavaID)<br>
  */
-public class JavaID extends Reference<String> {
+public class JavaID
+		extends
+		Reference<String>
+{
 	
 	// this will keep track of all JavaIDs of all environments
-	// there's no point of having same JavaID twice for diff environments at least not when using same storage (bdb)
+	// there's no point of having same JavaID twice for diff environments at least not when using same storage type ie.
+	// BerkeleyDB
 	protected static final HashMap<String, JavaID>	all_JavaIDs	= new HashMap<String, JavaID>();
+	
 	
 	// protected because used in JUnit
 	
-	protected static final void junitClearAll() {
-
+	protected static final
+			void
+			junitClearAll()
+	{
+		
 		RunTime.assumedNotNull( all_JavaIDs );
-		if ( null != all_JavaIDs ) {
+		if ( null != all_JavaIDs )
+		{
 			all_JavaIDs.clear();
 		}
 	}
 	
+
 	/**
 	 * get the JavaID for this string<br>
 	 * make a new one if it doesn't exist<br>
@@ -81,43 +92,60 @@ public class JavaID extends Reference<String> {
 	 * @return JavaID (java ID) - the encapsulated string strID<br>
 	 *         should never return null
 	 */
-	public static JavaID ensureJavaIDFor( String strID ) {
-
+	public static
+			JavaID
+			ensureJavaIDFor(
+								String strID )
+	{
+		
 		RunTime.assumedNotNull( strID );
 		JavaID curr = all_JavaIDs.get( strID );
-		if ( null == curr ) {
+		if ( null == curr )
+		{
 			// create new
-			curr = new JavaID( strID );
-			if ( all_JavaIDs.put( strID, curr ) != null ) {
+			curr = new JavaID(
+								strID );
+			if ( all_JavaIDs.put(
+									strID,
+									curr ) != null )
+			{
 				RunTime.bug( "a value already existed?!! wicked! it means that the above .get() is bugged?!" );
 			}
 		}
 		return curr;
 	}
 	
-	
+
 	/**
 	 * private constructor to prevent usage via new
 	 * 
 	 * @param strID
 	 */
-	private JavaID( String strID ) {
-
+	private JavaID(
+			String strID )
+	{
+		super();
 		RunTime.assumedNotNull( strID );
 		
 		this.setObject( strID );
 		
 	}
 	
-	@Override
-	public String toString() {
 
-		return this.getClass().getSimpleName() + ":" + this.getObject();
+	@Override
+	public
+			String
+			toString()
+	{
+		
+		return this.getClass().getSimpleName()
+				+ ":"
+				+ this.getObject();
 	}
 	
-	
+
 	/**
-	 * equals always compares by content BUT in this case it ONLY compares by
+	 * equals compares by content when refs are different BUT in this case it ONLY compares by
 	 * references, because JavaID instances are not supposed to have the same
 	 * contents, ever<br>
 	 * 
@@ -125,10 +153,18 @@ public class JavaID extends Reference<String> {
 	 * @return
 	 */
 	@Override
-	public boolean equals( Object jid ) {
-
+	public
+			boolean
+			equals(
+					Object jid )
+	{
+		
 		RunTime.assumedNotNull( jid );
-		if ( ( !this.getClass().isAssignableFrom( jid.getClass() ) ) || ( this.getClass() != jid.getClass() ) ) {
+		// if ( ( !this.getClass().isAssignableFrom(
+		// jid.getClass() ) )
+		// ||
+		if ( this.getClass() != jid.getClass() )
+		{
 			RunTime.bug( "you passed a different type parameter; must be a bug somewhere" );
 		}
 		return this == jid;

@@ -44,7 +44,10 @@ import com.sleepycat.je.SecondaryDatabase;
  * also makes sure the database isn't open unless it's needed<br>
  * once opened it stays open until silentClose() is called<br>
  */
-public class SecondaryDatabaseCapsule extends Initer {
+public class SecondaryDatabaseCapsule
+		extends
+		Initer
+{
 	
 	private String						secDbName;
 	private SecondaryDatabase			secDb	= null;
@@ -52,20 +55,26 @@ public class SecondaryDatabaseCapsule extends Initer {
 	private Database					primaryDb;
 	private Level1_Storage_BerkeleyDB	bdbL1;
 	
+	
 	/**
-	 * @param string
 	 */
-	public SecondaryDatabaseCapsule() {
-
+	public SecondaryDatabaseCapsule()
+	{
+		
 		super();
 	}
 	
+
 	/**
 	 * @param params
 	 */
 	@Override
-	protected void start( MethodParams params ) {
-
+	protected
+			void
+			start(
+					MethodParams params )
+	{
+		
 		// compulsory
 		bdbL1 = (Level1_Storage_BerkeleyDB)params.getEx( PossibleParams.level1_BDBStorage );
 		RunTime.assumedNotNull( bdbL1 );
@@ -81,41 +90,60 @@ public class SecondaryDatabaseCapsule extends Initer {
 		
 		// dbConf is optional / can be null
 		Reference<Object> ref = params.get( PossibleParams.secDbConfig );
-		if ( null != ref ) {
-			secDbConf = (SecondaryConfig)ref.getObject();
-		} else {
-			secDbConf = null;// use BDB defaults
+		if ( null == ref )
+		{
+			RunTime.badCall( "unspecified parameter, defaults not assumed" );
 		}
+		else
+		{
+			secDbConf = (SecondaryConfig)ref.getObject();
+		}
+		
+		// that's right, open db on init
+		secDb = bdbL1.openAnySecDatabase(
+											secDbName,
+											primaryDb,
+											secDbConf );
+		RunTime.assumedNotNull( secDb );
 	}
 	
+
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see org.dml.tools.StaticInstanceTracker#done()
 	 */
 	@Override
-	protected void done( MethodParams params ) {
-
+	protected
+			void
+			done(
+					MethodParams params )
+	{
+		
 		Log.entry();
-		if ( null != secDb ) {
+		RunTime.assumedNotNull(
+								bdbL1,
+								secDb );
+		try
+		{
 			bdbL1.closeAnySecDB( secDb );
+		}
+		finally
+		{
 			secDb = null;
+			bdbL1 = null;
 		}
 	}
 	
-	/**
-	 * @return
-	 * @throws DatabaseException
-	 */
-	public SecondaryDatabase getSecDB() throws DatabaseException {
 
-		if ( null == secDb ) {
-			// first time init:
-			secDb = bdbL1.openAnySecDatabase( secDbName, primaryDb, secDbConf );
-			RunTime.assumedNotNull( secDb );
-			// Runtime.getRuntime().addShutdownHook(null); bad idea:
-			// concurrently called
-		}
+	/**
+	 * @return never null
+	 */
+	public
+			SecondaryDatabase
+			getSecDB()
+	{
+		RunTime.assumedNotNull( secDb );
 		return secDb;
 	}
 	

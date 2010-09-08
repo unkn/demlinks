@@ -43,10 +43,16 @@ public abstract class Initer
 {
 	
 	// true on calling .start(); and true on calling .done()
-	private boolean			inited			= false;
+	// true if in the process of initing, or done initing it; false only after exiting .done()
+	private boolean			initingOrInited		= false;
+	
+	// true only after successful _init() until a successful _done(); so false on calling start() but true afterwards
+	private boolean			initedSuccessfully	= false;
+	
+	private boolean			wasInitedAtLeastOne	= false;
 	
 	// saved params to be used on reInit(); they are always clone of passed params
-	private MethodParams	formerParams	= null;
+	private MethodParams	formerParamsCloned	= null;
 	
 	
 	/**
@@ -60,28 +66,56 @@ public abstract class Initer
 	
 
 	/**
-	 * @param inited1
-	 *            the inited to set
 	 */
 	private final
 			void
-			setInited(
-						boolean inited1 )
+			setInitingOrInited(
+								boolean inited1 )
 	{
 		
-		inited = inited1;
+		initingOrInited = inited1;
 	}
 	
 
 	/**
-	 * @return the inited
+	 * @return true if it's inside init() aka start()
 	 */
 	public final
 			boolean
-			isInited()
+			isInitingOrInited()
 	{
 		
-		return inited;
+		return initingOrInited;
+	}
+	
+
+	public final
+			boolean
+			isInitedSuccessfully()
+	{
+		
+		return initedSuccessfully;
+	}
+	
+
+	private final
+			void
+			setInitedSuccessfully(
+									boolean inited1 )
+	{
+		
+		initedSuccessfully = inited1;
+	}
+	
+
+	/**
+	 * @return true if it was inited at least once (even if it's deInited now or not) since it was allocated ie. via new
+	 */
+	public final
+			boolean
+			wasInitedEver()
+	{
+		return wasInitedAtLeastOne;
 	}
 	
 
@@ -105,7 +139,7 @@ public abstract class Initer
 			_restart_aka_deInit_and_initAgain_WithOriginalPassedParams()
 	{
 		
-		if ( !this.isInited() )
+		if ( !this.isInitingOrInited() )
 		{
 			RunTime.badCall( "not already inited. Just use reInit" );
 		}
@@ -123,13 +157,20 @@ public abstract class Initer
 			void
 			_reInit_aka_initAgain_WithOriginalPassedParams()
 	{
-		
-		if ( this.isInited() )
+		// TODO: a bool that states if it was ever inited once, if wasn't throw here
+		// FIXME: disable reinit and restart due to their ability to change the instance's contents while it is still
+		// referred to by other instances which possibly have cached stuff from it when it had previous contents
+		// FIXME: we should not allow reinit with different params than the first(last) time they were specified
+		if ( this.isInitingOrInited() )
 		{
 			RunTime.badCall( "already inited. Maybe you wanted to use restart()" );
 		}
+		if ( !this.wasInitedEver() )
+		{
+			RunTime.badCall( "it was never inited, not even once, ergo the parameters passed to init would be null" );
+		}
 		// so wasn't inited then:
-		this._init( formerParams );
+		this._init( formerParamsCloned );
 		// Factory.reInit( formerParams );
 	}
 	
@@ -166,34 +207,45 @@ public abstract class Initer
 	
 
 	/**
+	 * you're allowed to call deInit even if init() failed ie. due to exceptions
 	 */
 	public final
 			void
 			_deInit()
 	{
 		
-		if ( !this.isInited() )
+		if ( !this.isInitingOrInited() )
 		{
-			RunTime.badCall( this.toString() + " was not already init()-ed" );
+			RunTime.badCall( this.toString()
+								+ " was not already init()-ed" );
 		}
 		else
 		{
 			try
 			{
-				try
-				{
-					this.beforeDone();
-				}
-				finally
-				{
-					this.done( formerParams );
-				}
-				// formerParams are not managed here, only on init() ie. they're discarded in init()
+				this.beforeDone();
 			}
 			finally
 			{
-				this.setInited( false ); // ignore this:don't move this below .done() because .done() may throw
+				try
+				{
+					this.done( formerParamsCloned );
+				}
+				finally
+				{
+					try
+					{
+						this.setInitingOrInited( false ); // ignore this:don't move this below .done() because .done()
+															// may throw
+					}
+					finally
+					{
+						this.setInitedSuccessfully( false );
+					}
+				}
 			}
+			// formerParams are not managed here, only on init() ie. they're discarded in init()
+			
 		}
 	}
 	
@@ -239,6 +291,8 @@ public abstract class Initer
 	/**
 	 * should only be called by one method: Factory.getNewInstance(...)<br>
 	 * the params will be cloned (or copied) to be used by reInit()<br>
+	 * should not call _init() again if the previous call to _init() failed due to exceptions, call _deInit() prior to
+	 * another call to _init()<br>
 	 * 
 	 * @param params
 	 *            null or the params
@@ -249,7 +303,7 @@ public abstract class Initer
 					MethodParams params )
 	{
 		
-		if ( this.isInited() )
+		if ( this.isInitingOrInited() )
 		{
 			RunTime.badCall( "already inited, you must deInit() before calling init(...) again" );
 		}
@@ -262,13 +316,14 @@ public abstract class Initer
 			}
 			finally
 			{
-				this.setInited( true );
+				wasInitedAtLeastOne = true;
+				this.setInitingOrInited( true );
 			}
 			
-			if ( params != formerParams )
+			if ( params != formerParamsCloned )
 			{
 				// means: NOT called by reInit() or restart()
-				if ( null != formerParams )
+				if ( null != formerParamsCloned )
 				{
 					// means: was used before, we discard the one before
 					// formerParams.deInit();
@@ -278,21 +333,22 @@ public abstract class Initer
 					// }
 					// finally
 					// {
-					formerParams = null;
+					formerParamsCloned = null;
 					// }
 				}
 				
-				RunTime.assumedNull( formerParams );
+				RunTime.assumedNull( formerParamsCloned );
 				
 				if ( null != params )
 				{// we get a copy of passed params
 					// this does init(null) inside
-					formerParams = params.getClone();// this won't deInit because reInit might need it
-					RunTime.assumedNotNull( formerParams );
+					formerParamsCloned = params.getClone();// this won't deInit because reInit might need it
+					RunTime.assumedNotNull( formerParamsCloned );
 				} // else is null
 			} // else called by reInit() we don't mod them
 			
-			this.start( formerParams );// can be null params
+			this.start( formerParamsCloned );// can be null params
+			this.setInitedSuccessfully( true );
 		}// wasn't inited
 	}
 	

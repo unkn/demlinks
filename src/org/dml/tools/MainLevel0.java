@@ -340,7 +340,7 @@ public abstract class MainLevel0
 		
 		if ( null == defaults )
 		{
-			defaults = MethodParams.getNew();// FIXME: when's this deInit-ed?
+			defaults = MethodParams.getNew();
 			// defaults.init( null );
 		}
 		

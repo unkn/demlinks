@@ -445,7 +445,7 @@ public class Factory
 		// // initDepth--;
 		// }
 		// }
-		RunTime.assumedTrue( ret.isInited() );
+		RunTime.assumedTrue( ret.isInitedSuccessfully() );
 		return ret;
 	}
 	
@@ -479,9 +479,9 @@ public class Factory
 	{
 		
 		RunTime.assumedNotNull( instance );
-		if ( instance.isInited() )
+		if ( instance.isInitingOrInited() )
 		{
-			RunTime.badCall( "must not be already init-ed" );
+			RunTime.badCall( "must not be already init-ed or in the process of initing(but failed due to exceptions)" );
 		}
 		
 
@@ -513,7 +513,7 @@ public class Factory
 		// addNewInitedInstance_asAfterInit( instance );
 		// goShallowToThisParentInstanceAsChild( instance );
 		
-		RunTime.assumedTrue( instance.isInited() );
+		RunTime.assumedTrue( instance.isInitedSuccessfully() );
 	}
 	
 
@@ -591,7 +591,7 @@ public class Factory
 	
 
 	/**
-	 * throws if not inited<br>
+	 * throws if not inited or was in the process of initing but failed due to thrown exceptions<br>
 	 * 
 	 * @see #deInitIfInited_WithPostponedThrows(Initer)
 	 * 
@@ -606,7 +606,7 @@ public class Factory
 	{
 		
 		RunTime.assumedNotNull( instance );
-		if ( !instance.isInited() )
+		if ( !instance.isInitingOrInited() )
 		{
 			RunTime.badCall( "not already inited" );
 		}
@@ -633,7 +633,7 @@ public class Factory
 												T instance )
 	{
 		RunTime.assumedNotNull( instance );
-		if ( !instance.isInited() )
+		if ( !instance.isInitingOrInited() )
 		{
 			return;// silently
 		}
@@ -659,7 +659,7 @@ public class Factory
 		// }
 		// }
 		
-		RunTime.assumedFalse( instance.isInited() );
+		RunTime.assumedFalse( instance.isInitingOrInited() );
 		// don't recall postponed here
 	}
 	
@@ -819,7 +819,7 @@ public class Factory
 	{
 		
 		RunTime.assumedNotNull( instance );
-		if ( !instance.isInited() )
+		if ( !instance.isInitingOrInited() )
 		{
 			RunTime.badCall( "must be inited" );
 		}
@@ -834,7 +834,7 @@ public class Factory
 		}
 		finally
 		{
-			if ( !instance.isInited() )
+			if ( !instance.isInitingOrInited() )
 			{
 				// so it was inited before this call, but now it's not inited anymore which means a deInit happened and
 				// remained and thus we need to remove this instance from our lists
@@ -851,7 +851,7 @@ public class Factory
 				// }
 			}
 		}
-		RunTime.assumedTrue( instance.isInited() );
+		RunTime.assumedTrue( instance.isInitedSuccessfully() );
 	}
 	
 
@@ -870,7 +870,7 @@ public class Factory
 	{
 		
 		RunTime.assumedNotNull( instance );
-		RunTime.assumedFalse( instance.isInited() );
+		RunTime.assumedFalse( instance.isInitingOrInited() );
 		// must NOT be already in our list
 		reInitIfNotInited( instance );
 	}
@@ -892,7 +892,11 @@ public class Factory
 	{
 		
 		RunTime.assumedNotNull( instance );
-		if ( !instance.isInited() )
+		if ( !instance.wasInitedEver() )
+		{
+			RunTime.badCall( "was never inited not even once, you shouldn't use this method then" );
+		}
+		if ( !instance.isInitingOrInited() )
 		{
 			// not inited then we reInit it as follows:
 			
@@ -915,7 +919,7 @@ public class Factory
 			// //set_InitWork_DoneInParent( instance );
 			// }
 			
-			if ( !instance.isInited() )
+			if ( !instance.isInitedSuccessfully() )
 			{
 				// removeExistingInitedInstance( instance );
 				RunTime
@@ -925,7 +929,7 @@ public class Factory
 			}
 		}
 		
-		RunTime.assumedTrue( instance.isInited() );
+		RunTime.assumedTrue( instance.isInitedSuccessfully() );
 	}
 	
 

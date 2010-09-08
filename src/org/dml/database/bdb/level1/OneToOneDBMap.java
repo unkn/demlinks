@@ -29,6 +29,7 @@ import org.dml.tools.Initer;
 import org.dml.tools.RunTime;
 import org.dml.tracking.Factory;
 import org.dml.tracking.Log;
+import org.references.Reference;
 import org.references.method.MethodParams;
 import org.references.method.PossibleParams;
 
@@ -51,43 +52,50 @@ import com.sleepycat.je.SecondaryDatabase;
  * lookup by either key or data
  * they're internally stored as primary and secondary databases:
  * key->data and data->key
+ * 
+ * @param <KeyType>
+ * @param <DataType>
  */
 public class OneToOneDBMap<KeyType, DataType>
 		extends
 		Initer
 {
 	
-	private final Class<KeyType>				keyClass;
-	private final Class<DataType>				dataClass;
+	private final Class<KeyType>			keyClass;
+	private final Class<DataType>			dataClass;
 	
-	private final EntryBinding<KeyType>			keyBinding;
-	private final EntryBinding<DataType>		dataBinding;
+	private final EntryBinding<KeyType>		keyBinding;
+	private final EntryBinding<DataType>	dataBinding;
 	
-	private static final String					secPrefix	= "secondary";
-	private DatabaseCapsule						forwardDB	= null;
-	private SecondaryDatabaseCapsule			backwardDB	= null;
-	protected String							dbName;
-	protected final Level1_Storage_BerkeleyDB	bdb;
+	private static final String				secPrefix	= "secondary";
+	private DatabaseCapsule					forwardDB	= null;
+	private SecondaryDatabaseCapsule		backwardDB	= null;
+	protected String						dbName;
+	private Level1_Storage_BerkeleyDB		bdbL1;
 	
 	
 	/**
 	 * constructor
 	 * 
-	 * @param dbName1
+	 * 
+	 * @param keyClass1
+	 * @param keyBinding1
+	 * @param dataClass1
+	 * @param dataBinding1
 	 */
 	public OneToOneDBMap(
-			Level1_Storage_BerkeleyDB bdb1,
-			String dbName1,
+			// Level1_Storage_BerkeleyDB bdb1,
+			// String dbName1,
 			Class<KeyType> keyClass1,
 			EntryBinding<KeyType> keyBinding1,
 			Class<DataType> dataClass1,
 			EntryBinding<DataType> dataBinding1 )
 	{
 		
-		RunTime.assumedNotNull( bdb1 );
-		RunTime.assumedNotNull( dbName1 );
-		bdb = bdb1;
-		dbName = dbName1;
+		// RunTime.assumedNotNull( bdb1 );
+		// RunTime.assumedNotNull( dbName1 );
+		// bdbL1 = bdb1;
+		// dbName = dbName1;
 		keyClass = keyClass1;
 		dataClass = dataClass1;
 		keyBinding = keyBinding1;// AllTupleBindings.getBinding( keyClass );
@@ -95,59 +103,88 @@ public class OneToOneDBMap<KeyType, DataType>
 	}
 	
 
-	/**
-	 * this init doesn't need to be called from an external caller, it's called
-	 * internally when needed
-	 * 
-	 * @throws DatabaseException
-	 */
-	private
+	
+	@Override
+	protected
 			void
-			internal_initBoth()
-					throws DatabaseException
+			start(
+					MethodParams params )
 	{
 		
-		// forwardDB = new DatabaseCapsule();
-		MethodParams params = MethodParams.getNew();
-		// params.init( null );
-		params.set(
-					PossibleParams.level1_BDBStorage,
-					bdb );
-		params.set(
-					PossibleParams.dbName,
-					dbName );
-		params.set(
-					PossibleParams.priDbConfig,
-					new OneToOneDBConfig() );
+		RunTime.assumedNotNull( params );
+		
+		bdbL1 = (Level1_Storage_BerkeleyDB)params.getEx( PossibleParams.level1_BDBStorage );
+		if ( null == bdbL1 )
+		{
+			RunTime.badCall( "missing parameter" );
+		}
+		RunTime.assumedNotNull( bdbL1 );
+		
+		dbName = params.getExString( PossibleParams.dbName );// used for forwardDB and backwardDB also
+		RunTime.assumedNotNull( dbName );
+		RunTime.assumedFalse( dbName.isEmpty() );
+		
+		// open both DBs
+		MethodParams iParams = params.getClone();
+		// must not already be set/passed to us, so null return if no prev value was set for priDbConfig param
+		RunTime.assumedNull( iParams.set(
+											PossibleParams.priDbConfig,
+											new OneToOneDBConfig() ) );
+		
 		forwardDB = Factory.getNewInstanceAndInit(
 													DatabaseCapsule.class,
-													params );
-		// forwardDB.init( params );
+													iParams );
+		RunTime.assumedNotNull( forwardDB );
+		RunTime.assumedTrue( forwardDB.isInitedSuccessfully() );
 		
-
-
-		// backwardDB = new SecondaryDatabaseCapsule();
-		params.set(
-					PossibleParams.dbName,
-					secPrefix + dbName );
-		params.set(
-					PossibleParams.secDbConfig,
-					new OneToOneSecondaryDBConfig() );
-		params.set(
-					PossibleParams.priDb,
-					forwardDB.getDB() );
-		params.remove( PossibleParams.priDbConfig );// not needed
+		// secondary db
+		RunTime.assumedNotNull( iParams.set(
+												PossibleParams.dbName,
+												secPrefix
+														+ dbName ) );
+		// FIXME: investigate if only one new OneToOneSecondaryDBConfig() is needed for all "OneToOneDBMap"s same for
+		// above
+		RunTime.assumedNull( iParams.set(
+											PossibleParams.secDbConfig,
+											new OneToOneSecondaryDBConfig() ) );
+		RunTime.assumedNull( iParams.set(
+											PossibleParams.priDb,
+											forwardDB.getDB() ) );
+		RunTime.assumedTrue( iParams.remove( PossibleParams.priDbConfig ) );// not needed can leave it on though
+		
 		backwardDB = Factory.getNewInstanceAndInit(
 													SecondaryDatabaseCapsule.class,
-													params );
-		// backwardDB.init( params );
-		// params.deInit();
-		// Factory.deInit( params );
-		// must make sure second BerkeleyDB is also open!! because all inserts
-		// are done
-		// via first BerkeleyDB
-		backwardDB.getSecDB();
+													iParams );
+		RunTime.assumedNotNull( backwardDB );
+		RunTime.assumedTrue( backwardDB.isInitedSuccessfully() );
+	}
+	
+
+	@Override
+	protected
+			void
+			done(
+					MethodParams params )
+	{
 		
+		Log.entry( "deinit OneToOneDBMap: "
+					+ dbName );
+		
+		OneToXDBMapCommonCode.theDone(
+										this.isInitedSuccessfully(),
+										new Reference<Initer>(
+																forwardDB ),
+										new Reference<Initer>(
+																backwardDB ) );
+	}// done
+	
+	
+	protected
+			Level1_Storage_BerkeleyDB
+			getBDBL1()
+	{
+		RunTime.assumedNotNull( bdbL1 );
+		return bdbL1;
 	}
 	
 
@@ -160,20 +197,7 @@ public class OneToOneDBMap<KeyType, DataType>
 			getForwardDB()
 					throws DatabaseException
 	{
-		
-		if ( null == forwardDB )
-		{
-			this.internal_initBoth();
-			RunTime.assumedNotNull( forwardDB );
-		}
-		else
-		{
-			Factory.reInitIfNotInited( forwardDB );
-			// if ( !forwardDB.isInited() ) {
-			// // forwardDB.reInit();
-			// Factory.reInit_aka_InitAgain_WithOriginalPassedParams( forwardDB );
-			// }
-		}
+		RunTime.assumedNotNull( forwardDB );
 		return forwardDB.getDB();
 	}
 	
@@ -187,19 +211,7 @@ public class OneToOneDBMap<KeyType, DataType>
 			getBackwardDB()
 					throws DatabaseException
 	{
-		
-		if ( null == backwardDB )
-		{
-			this.internal_initBoth();
-			RunTime.assumedNotNull( backwardDB );
-		}
-		else
-		{
-			Factory.reInitIfNotInited( backwardDB );
-			// if ( !backwardDB.isInited() ) {
-			// backwardDB.reInit();
-			// }
-		}
+		RunTime.assumedNotNull( backwardDB );
 		return backwardDB.getSecDB();
 	}
 	
@@ -208,14 +220,12 @@ public class OneToOneDBMap<KeyType, DataType>
 	 * @param key
 	 * @param data
 	 * @return true if already existed
-	 * @throws DatabaseException
 	 */
 	public
 			boolean
 			link(
 					KeyType key,
 					DataType data )
-					throws DatabaseException
 	{
 		
 		this.checkKey( key );
@@ -285,7 +295,6 @@ public class OneToOneDBMap<KeyType, DataType>
 			KeyType
 			getKey(
 					DataType data )
-					throws DatabaseException
 	{
 		
 		this.checkData( data );
@@ -312,6 +321,7 @@ public class OneToOneDBMap<KeyType, DataType>
 		}
 		RunTime.assumedTrue( deData.equals( deKey ) );
 		
+		// RunTime.assumedNotNull(pKey);
 		// 3of3
 		KeyType key = keyBinding.entryToObject( pKey );
 		// should not be null here
@@ -322,7 +332,7 @@ public class OneToOneDBMap<KeyType, DataType>
 	
 
 	/**
-	 * @param string
+	 * @param key
 	 * @return null if not found
 	 * @throws DatabaseException
 	 */
@@ -330,7 +340,6 @@ public class OneToOneDBMap<KeyType, DataType>
 			DataType
 			getData(
 						KeyType key )
-					throws DatabaseException
 	{
 		
 		this.checkKey( key );
@@ -364,56 +373,5 @@ public class OneToOneDBMap<KeyType, DataType>
 	}
 	
 
-	@Override
-	protected
-			void
-			done(
-					MethodParams params )
-	{
-		
-		Log.entry( "deinit OneToOneDBMap: " + dbName );
-		boolean one = false;
-		boolean two = false;
-		
-		// we don't have to set these to null, because they can be getDB() again
-		if ( null != backwardDB )
-		{
-			// backwardDB.deInit();
-			Factory.deInit( backwardDB );// first close this
-			one = true;
-		}
-		if ( null != forwardDB )
-		{
-			// forwardDB.deInit();
-			Factory.deInit( forwardDB );// then this
-			two = true;
-		}
-		
-		if ( one != two )
-		{
-			RunTime.bug( "they should both be the same value, otherwise one of "
-					+ "backwardDB and forwardDB was open and the other closed "
-					+ "and we should've had both open always" );
-		}
-		else
-		{
-			if ( one )
-			{
-				Log.warn( "close called on a not yet inited/open database" );
-			}
-		}
-	}
-	
-
-	@Override
-	protected
-			void
-			start(
-					MethodParams params )
-	{
-		
-		RunTime.assumedNull( params );
-	}
-	
 
 }

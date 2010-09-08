@@ -27,6 +27,7 @@ package org.dml.database.bdb.level1;
 
 import org.dml.database.bdb.level2.Level2_Storage_BerkeleyDB;
 import org.dml.level010.Symbol;
+import org.dml.level010.TheStoredSymbol;
 import org.dml.tools.Initer;
 import org.dml.tools.RunTime;
 import org.dml.tracking.Factory;
@@ -127,7 +128,9 @@ public class UniqueSymbolsGenerator
 		// don't save it in the database later
 		long l = this.getUniqueLong();
 		RunTime.assumedTrue( l < 4123123123l );// just one silly limit, it can go way much higher (forgot how much tho)
-		Symbol sym = Bridge_SymbolAndBDB.newSymbolFrom( l );
+		Symbol sym = Symbol.getNew(
+									bdbL1,
+									TheStoredSymbol.getNew( l ) );
 		RunTime.assumedNotNull( sym );
 		return sym;
 	}

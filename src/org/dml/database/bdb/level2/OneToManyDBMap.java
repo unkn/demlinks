@@ -27,11 +27,13 @@ package org.dml.database.bdb.level2;
 
 import org.dml.database.bdb.level1.DatabaseCapsule;
 import org.dml.database.bdb.level1.Level1_Storage_BerkeleyDB;
+import org.dml.database.bdb.level1.OneToXDBMapCommonCode;
 import org.dml.error.BugError;
 import org.dml.tools.Initer;
 import org.dml.tools.RunTime;
 import org.dml.tracking.Factory;
 import org.dml.tracking.Log;
+import org.references.Reference;
 import org.references.method.MethodParams;
 import org.references.method.PossibleParams;
 
@@ -72,9 +74,12 @@ public class OneToManyDBMap<InitialType, TerminalType>
 	private static final String					backwardSuffix	= "_backward";
 	private DatabaseCapsule						forwardDB		= null;
 	private DatabaseCapsule						backwardDB		= null;
-	private final String						dbName;
-	private final Level1_Storage_BerkeleyDB		bdbL1;
+	private String								dbName;
+	private Level1_Storage_BerkeleyDB			bdbL1;
 	
+	
+	// FIXME: everywhere make sure that on start() each fields are inited to their default values which is likely null
+	// instead of leftovers from a previous start()
 	
 	/**
 	 * constructor
@@ -87,8 +92,8 @@ public class OneToManyDBMap<InitialType, TerminalType>
 	 * @param terminalBinding1
 	 */
 	public OneToManyDBMap(
-			Level1_Storage_BerkeleyDB bdb1,
-			String dbName1,
+			// Level1_Storage_BerkeleyDB bdb1,
+			// String dbName1,
 			Class<InitialType> initialClass1,
 			EntryBinding<InitialType> initialBinding1,
 			Class<TerminalType> terminalClass1,
@@ -96,20 +101,52 @@ public class OneToManyDBMap<InitialType, TerminalType>
 	{
 		
 		RunTime.assumedNotNull(
-								bdb1,
-								dbName1,
+								// bdb1,
+								// dbName1,
 								initialClass1,
 								initialBinding1,
 								terminalClass1,
 								terminalBinding1 );
-		bdbL1 = bdb1;
-		dbName = dbName1;
+		// bdbL1 = bdb1;
+		// dbName = dbName1;
 		initialClass = initialClass1;
 		terminalClass = terminalClass1;
 		initialBinding = initialBinding1;// AllTupleBindings.getBinding(
 		// initialClass );
 		terminalBinding = terminalBinding1;// AllTupleBindings.getBinding(
 		// terminalClass );
+	}
+	
+
+	@Override
+	protected
+			void
+			start(
+					MethodParams params )
+	{
+		
+		RunTime.assumedNotNull( params );
+		
+
+	}
+	
+
+	@Override
+	protected
+			void
+			done(
+					MethodParams params )
+	{
+		
+		Log.entry( "done OneToManyDBMap: "
+					+ dbName );
+		
+		OneToXDBMapCommonCode.theDone(
+										this.isInitedSuccessfully(),
+										new Reference<Initer>(
+																forwardDB ),
+										new Reference<Initer>(
+																backwardDB ) );
 	}
 	
 
@@ -161,12 +198,13 @@ public class OneToManyDBMap<InitialType, TerminalType>
 														params );
 			
 			RunTime.assumedNotNull( forwardDB );
-			RunTime.assumedTrue( forwardDB.isInited() );
 		}
 		else
 		{
 			Factory.reInitIfNotInited( forwardDB );
 		}
+		
+		RunTime.assumedTrue( forwardDB.isInitedSuccessfully() );
 		Database d = forwardDB.getDB();
 		RunTime.assumedNotNull( d );
 		return d;
@@ -191,7 +229,8 @@ public class OneToManyDBMap<InitialType, TerminalType>
 						this.getBDBL1() );
 			params.set(
 						PossibleParams.dbName,
-						dbName + backwardSuffix );
+						dbName
+								+ backwardSuffix );
 			params.set(
 						PossibleParams.priDbConfig,
 						new OneToManyDBConfig() );
@@ -210,6 +249,7 @@ public class OneToManyDBMap<InitialType, TerminalType>
 			// backwardDB.reInit();
 			// }
 		}
+		RunTime.assumedTrue( backwardDB.isInitedSuccessfully() );
 		Database d = backwardDB.getDB();
 		RunTime.assumedNotNull( d );
 		return d;
@@ -289,8 +329,10 @@ public class OneToManyDBMap<InitialType, TerminalType>
 														dataEntry,
 														keyEntry,
 														null );
-			if ( ( ( OperationStatus.SUCCESS == ret1 ) && ( OperationStatus.SUCCESS != ret2 ) )
-					|| ( ( OperationStatus.SUCCESS != ret1 ) && ( OperationStatus.SUCCESS == ret2 ) ) )
+			// if ( ( ( OperationStatus.SUCCESS == ret1 ) && ( OperationStatus.SUCCESS != ret2 ) )
+			// || ( ( OperationStatus.SUCCESS != ret1 ) && ( OperationStatus.SUCCESS == ret2 ) ) )
+			if ( ( OperationStatus.SUCCESS == ret1 )
+					^ ( OperationStatus.SUCCESS == ret2 ) )
 			{
 				RunTime.bug( "one exists, the other doesn't; but should either both exist, or both not exist" );
 			}
@@ -298,13 +340,26 @@ public class OneToManyDBMap<InitialType, TerminalType>
 		catch ( Throwable t )
 		{
 			RunTime.throPostponed( t );
-			txc = txc.abort();
+			try
+			{
+				txc.abort();// this may throw
+			}
+			finally
+			{
+				txc = null;
+			}
 			RunTime.throwAllThatWerePosponed();
 		}
 		
-		txc = txc.commit();
-		
-		return ( OperationStatus.SUCCESS == ret1 );
+		try
+		{
+			txc.commit();
+		}
+		finally
+		{
+			txc = null;
+		}
+		return ( OperationStatus.SUCCESS == ret1 );// ret2 is same
 	}
 	
 
@@ -365,7 +420,7 @@ public class OneToManyDBMap<InitialType, TerminalType>
 										dataEntry );
 		
 		boolean commit = false;
-		OperationStatus ret1, ret2;
+		OperationStatus ret1 = null, ret2 = null;
 		try
 		{
 			ret1 = this.getForwardDB().putNoDupData(
@@ -376,14 +431,17 @@ public class OneToManyDBMap<InitialType, TerminalType>
 														txc.get(),
 														dataEntry,
 														keyEntry );
-			if ( ( OperationStatus.SUCCESS == ret1 ) && ( OperationStatus.SUCCESS == ret2 ) )
+			if ( ( OperationStatus.SUCCESS == ret1 )
+					&& ( OperationStatus.SUCCESS == ret2 ) )
 			{
 				commit = true;
 			}
 			else
 			{
-				if ( ( ( OperationStatus.KEYEXIST == ret1 ) && ( OperationStatus.KEYEXIST != ret2 ) )
-						|| ( ( OperationStatus.KEYEXIST != ret1 ) && ( OperationStatus.KEYEXIST == ret2 ) ) )
+				// if ( ( ( OperationStatus.KEYEXIST == ret1 ) && ( OperationStatus.KEYEXIST != ret2 ) )
+				// || ( ( OperationStatus.KEYEXIST != ret1 ) && ( OperationStatus.KEYEXIST == ret2 ) ) )
+				if ( ( OperationStatus.KEYEXIST == ret1 )
+						^ ( OperationStatus.KEYEXIST == ret2 ) )
 				{
 					RunTime.bug( "one link exists and the other does not; should either both exist or neither" );
 				}
@@ -392,16 +450,24 @@ public class OneToManyDBMap<InitialType, TerminalType>
 		}
 		finally
 		{
-			if ( commit )
+			try
 			{
-				txc = txc.commit();
+				if ( commit )
+				{
+					txc.commit();
+				}
+				else
+				{
+					txc.abort();
+				}
 			}
-			else
+			finally
 			{
-				txc = txc.abort();
+				txc = null;
 			}
 		}
-		return ret1;
+		
+		return ret1;// which is same as ret2
 	}
 	
 
@@ -583,15 +649,15 @@ public class OneToManyDBMap<InitialType, TerminalType>
 			Factory.deInit( iterator );
 			// iterator.deInit();
 		}
-		RunTime.assumedFalse( iter1.isInited() );
-		RunTime.assumedFalse( iter2.isInited() );
+		RunTime.assumedFalse( iter1.isInitingOrInited() );
+		RunTime.assumedFalse( iter2.isInitingOrInited() );
 		return found;
 	}
 	
 
 	/**
-	 * @param initial
-	 * @param terminal
+	 * @param initialObject
+	 * @param terminalObject
 	 * @return true if existed
 	 * @throws DatabaseException
 	 */
@@ -674,50 +740,5 @@ public class OneToManyDBMap<InitialType, TerminalType>
 	}
 	
 
-	@Override
-	protected
-			void
-			done(
-					MethodParams params )
-	{
-		
-		Log.entry( "done OneToManyDBMap: " + dbName );
-		// System.out.println( RunTime.getCurrentStackTraceElement( +4 ) );
-		// System.out.println( forwardDB.isInited() );
-		boolean one = false;
-		boolean two = false;
-		
-		if ( null != forwardDB )
-		{
-			// forwardDB.deInit();
-			Factory.deInit( forwardDB );
-			// do not make it null, we need it for reinit and we dno't want to waste space
-			one = true;
-		}
-		
-		if ( null != backwardDB )
-		{
-			Factory.deInit( backwardDB );
-			// backwardDB.deInit();\
-			// don't null it
-			two = true;
-		}
-		if ( one != two )
-		{
-			RunTime.bug( "only one of the databases was open, which is bad" );
-		}
-		
-	}
-	
 
-	@Override
-	protected
-			void
-			start(
-					MethodParams params )
-	{
-		
-		RunTime.assumedNull( params );
-		
-	}
 }

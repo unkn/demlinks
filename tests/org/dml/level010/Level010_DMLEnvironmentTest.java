@@ -25,14 +25,18 @@ package org.dml.level010;
 
 
 
+import static org.junit.Assert.*;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
 import java.util.HashSet;
 
 import org.dml.JUnits.Consts;
-import org.dml.database.bdb.level1.Bridge_SymbolAndBDB;
+import org.dml.database.bdb.level1.Level1_Storage_BerkeleyDB;
+import org.dml.error.BadCallError;
+import org.dml.tools.RunTime;
 import org.dml.tracking.Factory;
 import org.junit.After;
 import org.junit.Before;
@@ -124,8 +128,29 @@ public class Level010_DMLEnvironmentTest
 			
 
 			// same contents in java
-			final Long la = Bridge_SymbolAndBDB.getLongFrom( a );
-			Symbol anew = Bridge_SymbolAndBDB.newSymbolFrom( la );
+			MethodParams params = MethodParams.getNew();
+			// params = Factory.getNewInstanceAndInitWithoutParams( MethodParams.class );
+			
+			params.set(
+						PossibleParams.homeDir,
+						Consts.BDB_ENV_PATH
+								+ File.separator
+								+ "second" );
+			params.set(
+						PossibleParams.jUnit_wipeDB,
+						true );
+			params.set(
+						PossibleParams.jUnit_wipeDBWhenDone,
+						true );
+			// RunTime.thro( new Exception( "testy" ) );
+			final Level1_Storage_BerkeleyDB bdbL1 = Factory.getNewInstanceAndInit(
+																					Level1_Storage_BerkeleyDB.class,
+																					params );
+			// Level1_Storage_BerkeleyDB bdbL1=
+			final Long la = a.getTheStoredSymbol().getLong();
+			Symbol anew = Symbol.getNew(
+											bdbL1,
+											TheStoredSymbol.getNew( la ) );
 			
 			Thread th0 = new Thread()
 			{
@@ -135,11 +160,29 @@ public class Level010_DMLEnvironmentTest
 						void
 						run()
 				{
-					anewFromDiffThread = Bridge_SymbolAndBDB.newSymbolFrom( la );
+					anewFromDiffThread = Symbol.getNew(
+														bdbL1,
+														TheStoredSymbol.getNew( la ) );
 				}
 			};
 			th0.start();
-			assertTrue( a == anew );// indeed
+			boolean threw = false;
+			try
+			{
+				assertFalse( a.equals( anew ) );// not equal, from different storages!
+			}
+			catch ( Throwable t1 )
+			{
+				if ( RunTime.isThisWrappedException_of_thisType(
+																	t1,
+																	BadCallError.class ) )
+				{
+					threw = true;
+					RunTime.clearLastThrown_andAllItsWraps();
+				}
+			}
+			assertTrue( threw );
+			
 			JavaID aJID = dml1.getJavaID( a );
 			assertTrue( dml1.getJavaID( anew ) == aJID );
 			th0.join();
@@ -149,8 +192,9 @@ public class Level010_DMLEnvironmentTest
 			HashSet<Symbol> hs = new HashSet<Symbol>();
 			hs.add( a );// calls Symbol.hashCode() first then if ever needed .equals
 			hs.add( a );
-			Symbol b = new Symbol();
+			Symbol b = dml1.newUniqueSymbol();
 			hs.add( b );
+			assertTrue( hs.size() == 2 );
 		}
 		finally
 		{

@@ -80,7 +80,7 @@ public class Level1_Storage_BerkeleyDB
 	private final ListOfUniqueNonNullObjects<SecondaryDatabase>	allOpenSecondaryDatabases	= new ListOfUniqueNonNullObjects<SecondaryDatabase>();
 	private UniqueSymbolsGenerator								symGen						= null;
 	
-	private static final String									dbNAME_JavaID_To_NodeID		= "map(JavaID<->NodeID)";
+	private final static String									dbNAME_JavaID_To_NodeID		= "map(JavaID<->NodeID)";
 	private final static String									UNINITIALIZED_STRING		= "uninitializedString";
 	
 	
@@ -271,20 +271,25 @@ public class Level1_Storage_BerkeleyDB
 			for ( String element : allThoseInDir )
 			{
 				File n = new File(
-									envHomeDir + File.separator + element );
+									envHomeDir
+											+ File.separator
+											+ element );
 				if ( !n.isFile() )
 				{
 					continue;
 				}
 				if ( ( !n.getPath().matches(
-												".*\\.jdb" ) ) && ( !( n.getPath().matches( ".*\\.lck" ) ) ) )
+												".*\\.jdb" ) )
+						&& ( !( n.getPath().matches( ".*\\.lck" ) ) ) )
 				{
 					continue;
 				}
-				Log.special( "removing " + n.getPath() );
+				Log.special( "removing "
+								+ n.getPath() );
 				if ( !n.delete() )
 				{
-					Log.warn( "Failed removing " + n.getAbsolutePath() );
+					Log.warn( "Failed removing "
+								+ n.getAbsolutePath() );
 				}
 			}
 		}
@@ -298,7 +303,6 @@ public class Level1_Storage_BerkeleyDB
 	public final
 			Environment
 			getEnvironment()
-					throws DatabaseException
 	{
 		
 		if ( null == env )
@@ -342,7 +346,6 @@ public class Level1_Storage_BerkeleyDB
 	private final
 			void
 			firstTimeCreateEnvironment()
-					throws DatabaseException
 	{
 		
 		environmentConfig.setAllowCreate( true );
@@ -369,7 +372,8 @@ public class Level1_Storage_BerkeleyDB
 		}
 		catch ( Throwable t )
 		{
-			Log.thro( "when creating BerkeleyDB Environment: " + t.getMessage() );
+			Log.thro( "when creating BerkeleyDB Environment: "
+						+ t.getMessage() );
 			RunTime.throWrapped( t );
 		}
 		
@@ -403,12 +407,14 @@ public class Level1_Storage_BerkeleyDB
 				finally
 				{
 					secDb.close();
-					Log.mid( "closed SecDB with name: " + secDbName );
+					Log.mid( "closed SecDB with name: "
+								+ secDbName );
 				}
 			}
 			catch ( Throwable t )
 			{
-				Log.thro( "failed closing SecDB with specified name: '" + secDbName );
+				Log.thro( "failed closing SecDB with specified name: '"
+							+ secDbName );
 				RunTime.throWrapped( t );// wrap and re-throw now
 			}
 			finally
@@ -444,7 +450,8 @@ public class Level1_Storage_BerkeleyDB
 			}
 			catch ( Throwable t )
 			{
-				Log.thro( "failed BerkeleyDB environment close:" + t.getLocalizedMessage() );
+				Log.thro( "failed BerkeleyDB environment close:"
+							+ t.getLocalizedMessage() );
 				// ignore
 				RunTime.throWrapped( t );
 			}
@@ -515,17 +522,20 @@ public class Level1_Storage_BerkeleyDB
 							String thisSeqName )
 	{
 		
-		Log.entry( "attempting to close sequence: " + thisSeqName );
+		Log.entry( "attempting to close sequence: "
+					+ thisSeqName );
 		if ( null != thisSeq )
 		{
 			try
 			{
 				thisSeq.close();
-				Log.exit( "closed seq with name: " + thisSeqName );
+				Log.exit( "closed seq with name: "
+							+ thisSeqName );
 			}
 			catch ( Throwable t )
 			{
-				Log.thro( "failed closing seq with specified name: '" + thisSeqName );
+				Log.thro( "failed closing seq with specified name: '"
+							+ thisSeqName );
 				RunTime.throWrapped( t );// wrap around and don't postpone
 			}
 			finally
@@ -539,7 +549,8 @@ public class Level1_Storage_BerkeleyDB
 		}
 		else
 		{
-			Log.mid( "seq was already closed with name: " + thisSeqName );
+			Log.mid( "seq was already closed with name: "
+						+ thisSeqName );
 		}
 		
 		return null;
@@ -785,15 +796,18 @@ public class Level1_Storage_BerkeleyDB
 			openAnyDatabase(
 								String dbName,
 								DatabaseConfig dbConf )
-					throws DatabaseException
 	{
 		
 		Log.entry( dbName );
+		RunTime.assumedNotNull(
+								dbName,
+								dbConf );
 		// should not use this openDatabase() method anywhere else
 		Database db = this.getEnvironment().openDatabase(
 															null,
 															dbName,
-															dbConf );
+															dbConf/* could be null to use defaults, but no */
+		);
 		if ( allOpenPrimaryDatabases.addObjectAtPosition(
 															Position.FIRST,
 															db ) )
@@ -862,19 +876,23 @@ public class Level1_Storage_BerkeleyDB
 				try
 				{
 					dbname = db.getDatabaseName();
-					Log.mid( "closing dbname: " + dbname );
+					Log.mid( "closing dbname: "
+								+ dbname );
 				}
 				finally
 				{
 					db.close();// the only place this should be used is this line
 					RunTime.assumedNotNull( db );
-					Log.mid( "closed BerkeleyDB with name: " + dbname );
+					Log.mid( "closed BerkeleyDB with name: "
+								+ dbname );
 				}
 			}
 			catch ( Throwable t )
 			{
-				Log.thro( "failed closing BerkeleyDB with specified name: '" + dbname + "; reason: "
-						+ t.getLocalizedMessage() );
+				Log.thro( "failed closing BerkeleyDB with specified name: '"
+							+ dbname
+							+ "; reason: "
+							+ t.getLocalizedMessage() );
 				RunTime.throWrapped( t );// wrap around and throw now
 			}
 			finally

@@ -85,33 +85,27 @@ public class TransactionCapsule
 	
 
 	/**
-	 * @return null
 	 */
 	public
-			TransactionCapsule
+			void
 			abort()
 	{
 		tx.abort();
-		return null;
 	}
 	
 
 	/**
-	 * @return null
-	 * @throws DatabaseException
 	 */
 	public
-			TransactionCapsule
+			void
 			commit()
-					throws DatabaseException
 	{
-		tx.commit();
-		return null;
+		tx.commit();// this may throw
 	}
 	
 
 	/**
-	 * @return
+	 * @return Transaction
 	 */
 	public
 			Transaction

@@ -63,8 +63,8 @@ public class Level020_DMLStorage_BerkeleyDB
 								initialNode,
 								terminalNode );
 		return bdb.getDBMapSymbolsTuple().ensureVector(
-														initialNode,
-														terminalNode );
+														initialNode.getTheStoredSymbol(),
+														terminalNode.getTheStoredSymbol() );
 	}
 	
 
@@ -87,8 +87,8 @@ public class Level020_DMLStorage_BerkeleyDB
 								initialNode,
 								terminalNode );
 		return bdb.getDBMapSymbolsTuple().isVector(
-													initialNode,
-													terminalNode );
+													initialNode.getTheStoredSymbol(),
+													terminalNode.getTheStoredSymbol() );
 	}
 	
 

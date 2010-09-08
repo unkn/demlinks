@@ -27,8 +27,10 @@ package org.dml.database.bdb.level2;
 
 import org.dml.database.bdb.level1.AllTupleBindings;
 import org.dml.database.bdb.level1.Level1_Storage_BerkeleyDB;
-import org.dml.level010.Symbol;
+import org.dml.level010.TheStoredSymbol;
+import org.dml.tools.Initer;
 import org.dml.tools.RunTime;
+import org.references.method.MethodParams;
 
 import com.sleepycat.je.DatabaseException;
 
@@ -55,9 +57,13 @@ import com.sleepycat.je.DatabaseException;
  */
 public class DBMapSymbolsTuple
 		extends
-		OneToManyDBMap<Symbol, Symbol>
+		OneToManyDBMap<TheStoredSymbol, TheStoredSymbol>
 {
 	
+	// composition = null;
+	
+
+	// new OneToManyDBMap<TheStoredSymbol, TheStoredSymbol>();
 	/**
 	 * constructor
 	 * 
@@ -67,17 +73,16 @@ public class DBMapSymbolsTuple
 	 *            the name of the database that will hold the tuples
 	 */
 	public DBMapSymbolsTuple(
-			Level1_Storage_BerkeleyDB bdb1,
-			String dbName1 )
+	// Level1_Storage_BerkeleyDB bdb1,
+	// String dbName1
+	)
 	{
 		
 		super(
-				bdb1,
-				dbName1,
-				Symbol.class,
-				AllTupleBindings.getBinding( Symbol.class ),
-				Symbol.class,
-				AllTupleBindings.getBinding( Symbol.class ) );
+				TheStoredSymbol.class,
+				AllTupleBindings.getBinding( TheStoredSymbol.class ),
+				TheStoredSymbol.class,
+				AllTupleBindings.getBinding( TheStoredSymbol.class ) );
 	}
 	
 
@@ -95,8 +100,8 @@ public class DBMapSymbolsTuple
 	public
 			boolean
 			ensureVector(
-							Symbol initialNode,
-							Symbol terminalNode )
+							TheStoredSymbol initialNode,
+							TheStoredSymbol terminalNode )
 					throws DatabaseException
 	{
 		
@@ -124,8 +129,8 @@ public class DBMapSymbolsTuple
 	public
 			boolean
 			isVector(
-						Symbol initialNode,
-						Symbol terminalNode )
+						TheStoredSymbol initialNode,
+						TheStoredSymbol terminalNode )
 					throws DatabaseException
 	{
 		
@@ -141,9 +146,9 @@ public class DBMapSymbolsTuple
 
 	@Override
 	public
-			BDBVectorIterator<Symbol, Symbol>
+			BDBVectorIterator<TheStoredSymbol, TheStoredSymbol>
 			getIterator_on_Initials_of(
-										Symbol terminalObject )
+										TheStoredSymbol terminalObject )
 					throws DatabaseException
 	{
 		
@@ -154,9 +159,9 @@ public class DBMapSymbolsTuple
 
 	@Override
 	public
-			BDBVectorIterator<Symbol, Symbol>
+			BDBVectorIterator<TheStoredSymbol, TheStoredSymbol>
 			getIterator_on_Terminals_of(
-											Symbol initialObject )
+											TheStoredSymbol initialObject )
 					throws DatabaseException
 	{
 		
@@ -169,7 +174,7 @@ public class DBMapSymbolsTuple
 	public
 			int
 			countInitials(
-							Symbol ofTerminalObject )
+							TheStoredSymbol ofTerminalObject )
 					throws DatabaseException
 	{
 		
@@ -182,7 +187,7 @@ public class DBMapSymbolsTuple
 	public
 			int
 			countTerminals(
-							Symbol ofInitialObject )
+							TheStoredSymbol ofInitialObject )
 					throws DatabaseException
 	{
 		
@@ -199,10 +204,10 @@ public class DBMapSymbolsTuple
 	 */
 	@Override
 	public
-			Symbol
+			TheStoredSymbol
 			findCommonTerminalForInitials(
-											Symbol initial1,
-											Symbol initial2 )
+											TheStoredSymbol initial1,
+											TheStoredSymbol initial2 )
 					throws DatabaseException
 	{
 		
@@ -225,8 +230,8 @@ public class DBMapSymbolsTuple
 	public
 			boolean
 			removeVector(
-							Symbol initial,
-							Symbol terminal )
+							TheStoredSymbol initial,
+							TheStoredSymbol terminal )
 					throws DatabaseException
 	{
 		
@@ -236,6 +241,53 @@ public class DBMapSymbolsTuple
 		return super.removeVector(
 									initial,
 									terminal );
+	}
+	
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.dml.tools.Initer#start(org.references.method.MethodParams)
+	 */
+	@Override
+	protected
+			void
+			start(
+					MethodParams params )
+	{
+		RunTime.assumedNotNull( params );// for now
+		params.getEx( paramName )
+		//FIXME: make throws report all callers ie. all wraps ; again
+		Level1_Storage_BerkeleyDB bdb1;
+		String dbName1;
+		if ( null == composition )
+		{
+			composition = new OneToManyDBMap<TheStoredSymbol, TheStoredSymbol>(
+																				bdb1,
+																				dbName1,
+																				TheStoredSymbol.class,
+																				AllTupleBindings
+																						.getBinding( TheStoredSymbol.class ),
+																				TheStoredSymbol.class,
+																				AllTupleBindings
+																						.getBinding( TheStoredSymbol.class ) );
+		}
+	}
+	
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.dml.tools.Initer#done(org.references.method.MethodParams)
+	 */
+	@Override
+	protected
+			void
+			done(
+					MethodParams params )
+	{
+		// TODO Auto-generated method stub
+		
 	}
 	
 

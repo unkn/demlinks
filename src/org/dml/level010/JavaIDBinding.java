@@ -34,8 +34,8 @@ import com.sleepycat.bind.tuple.TupleOutput;
 
 
 /**
+ * stores strings in UTF-8 encoding
  * 
- *
  */
 public class JavaIDBinding
 		extends

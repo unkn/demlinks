@@ -25,7 +25,6 @@ package org.dml.level010;
 
 
 
-import org.dml.database.bdb.level1.Bridge_SymbolAndBDB;
 import org.dml.tools.RunTime;
 
 import com.sleepycat.bind.tuple.TupleBinding;
@@ -38,9 +37,9 @@ import com.sleepycat.bind.tuple.TupleOutput;
  * unfortunately enough, here we don't know from/to which DB the date is coming/going from/to<br>
  * 
  */
-public class SymbolBinding
+public class TheStoredSymbolBinding
 		extends
-		TupleBinding<Symbol>
+		TupleBinding<TheStoredSymbol>
 {
 	
 	/*
@@ -52,15 +51,15 @@ public class SymbolBinding
 	 */
 	@Override
 	public
-			Symbol
+			TheStoredSymbol
 			entryToObject(
 							TupleInput input )
 	{
-		Symbol nid = null;
+		TheStoredSymbol nid = null;
 		long l = input.readLong();
 		// RunTime.assumedNotNull( l );useless check unless it were Long class
-		nid = Bridge_SymbolAndBDB.newSymbolFrom( l );
-		RunTime.assumedTrue( Bridge_SymbolAndBDB.getLongFrom( nid ) == l );
+		nid = TheStoredSymbol.getNew( l );
+		RunTime.assumedTrue( nid.getLong() == l );
 		return nid;
 	}
 	
@@ -76,14 +75,14 @@ public class SymbolBinding
 	public
 			void
 			objectToEntry(
-							Symbol alreadyExistingSymbol,
+							TheStoredSymbol alreadyExistingSymbol,
 							TupleOutput output )
 	{
 		
 		RunTime.assumedNotNull(
 								alreadyExistingSymbol,
 								output );
-		Long myLong = Bridge_SymbolAndBDB.getLongFrom( alreadyExistingSymbol );
+		Long myLong = alreadyExistingSymbol.getLong();
 		RunTime.assumedNotNull( myLong );
 		// System.out.println( object );
 		// it will never be null before writing it to dbase, else bug somewhere

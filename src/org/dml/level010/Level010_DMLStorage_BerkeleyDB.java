@@ -52,8 +52,12 @@ public class Level010_DMLStorage_BerkeleyDB
 	@VarLevel
 	private final Level1_Storage_BerkeleyDB	bdb						= null;
 	
-	private final static String				DEFAULT_BDB_ENV_PATH	= "." + File.separator + "bin" + File.separator
-																			+ "mainEnv" + File.separator;
+	private final static String				DEFAULT_BDB_ENV_PATH	= "."
+																		+ File.separator
+																		+ "bin"
+																		+ File.separator
+																		+ "mainEnv"
+																		+ File.separator;
 	
 	
 	/**
@@ -204,7 +208,8 @@ public class Level010_DMLStorage_BerkeleyDB
 			}
 		}
 		
-		if ( sameSym && sameJID )
+		if ( sameSym
+				&& sameJID )
 		{
 			return true;// already exists
 		}
@@ -224,12 +229,12 @@ public class Level010_DMLStorage_BerkeleyDB
 					.badCall( "the above two calls failed. Both should be same. This means that the JID or the Symbol was already associated with another JID/Symbol" );
 		}
 		
-		if ( bdb.getDBMap_JavaIDs_To_Symbols().link(
-														javaID,
-														symbol ) )
+		if ( bdb.getDBMap_JavaIDs_To_Symbols().ensureVector(
+																javaID,
+																symbol ) )
 		{
 			// existed already, impossible to reach this
-			RunTime.bug( "huge discrepancy between getJavaID, getSymbol and .link here" );
+			RunTime.bug( "huge discrepancy between getJavaID, getSymbol and ensureVector here" );
 		}
 		return false;
 	}

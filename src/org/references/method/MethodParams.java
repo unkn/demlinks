@@ -126,12 +126,13 @@ public class MethodParams
 	
 
 	/**
-	 * explicitly get value<br>
+	 * explicitly get value instead of ref to value<br>
 	 * 
 	 * @param paramName
 	 * @return get the value object not the reference to it
 	 * @throws NoSuchElementException
-	 *             if there is no mapping between paramName and a value
+	 *             if there is no mapping between paramName and a value<br>
+	 *             the exception is wrapped! use {@link RunTime#isThisWrappedException_of_thisType(Throwable, Class)}
 	 */
 	public
 			Object
@@ -143,13 +144,11 @@ public class MethodParams
 		Reference<Object> ref = this.get( paramName );
 		if ( null == ref )
 		{
-			throw new NoSuchElementException(
-												"a certain parameter was expected but was not specified by caller" );
+			RunTime
+					.thro( new NoSuchElementException(
+														"a certain parameter was expected but was not specified by caller" ) );
 		}
-		else
-		{
-			return ref.getObject();
-		}
+		return ref.getObject();
 	}
 	
 
@@ -215,9 +214,10 @@ public class MethodParams
 	 * @param value
 	 *            can be null or an object that was already used as a parameter
 	 *            one or more times
+	 * @return reference to previous value(aka object) or null if none
 	 */
 	public
-			void
+			Reference<Object>
 			set(
 					ParamID paramName,
 					Object value )
@@ -227,6 +227,7 @@ public class MethodParams
 		RunTime.assumedNotNull( paramName );
 		
 		Reference<Object> ref = this.get( paramName );
+		Reference<Object> prevValue = ref;
 		if ( null == ref )
 		{
 			ref = new Reference<Object>();// FIXME: maybe cleanup if needed on .clear()
@@ -239,6 +240,7 @@ public class MethodParams
 		}
 		
 		ref.setObject( value );
+		return prevValue;
 	}
 	
 
@@ -330,7 +332,8 @@ public class MethodParams
 			ParamID paramName = current.getKey();
 			Reference<Object> refToValue = current.getValue();
 			boolean alreadyExists = this.get( paramName ) != null;
-			if ( ( alreadyExists && overwrite ) || ( !alreadyExists ) )
+			if ( ( alreadyExists && overwrite )
+					|| ( !alreadyExists ) )
 			{
 				// doesn't reuse refs from the other MethodParams!
 				this.set(
@@ -468,7 +471,8 @@ public class MethodParams
 	{
 		
 		// RunTime.assumedTrue( this.isInited() );
-		return super.toString() + listOfParamsWithValues.toString();
+		return super.toString()
+				+ listOfParamsWithValues.toString();
 	}
 	
 
@@ -495,7 +499,9 @@ public class MethodParams
 			if ( null == ref2RVar )
 			{
 				// RunTime.assumedNotNull( ref2RVar );
-				RunTime.badCall( "the expected param(" + param + ") was not in the outputs list" );
+				RunTime.badCall( "the expected param("
+									+ param
+									+ ") was not in the outputs list" );
 			}
 			else
 			{
@@ -505,7 +511,8 @@ public class MethodParams
 				// if ( rVar.getClass() != Reference.class )
 				if ( !( rVar instanceof Reference ) )
 				{
-					RunTime.badCall( "you passed a non Reference variable(rVar) for param " + param );
+					RunTime.badCall( "you passed a non Reference variable(rVar) for param "
+										+ param );
 				}
 				RunTime.assumedNotNull( rVar );
 				// TODO: expectedInputs additional check for rVar.getObject() != null
@@ -531,8 +538,8 @@ public class MethodParams
 		{
 			RunTime
 					.badCall( "the param("
-							+ paramID
-							+ ") must already exist before setting it's value. why? because it's a reference to the value; so that ref must exist" );
+								+ paramID
+								+ ") must already exist before setting it's value. why? because it's a reference to the value; so that ref must exist" );
 		}
 		else
 		{
@@ -570,7 +577,9 @@ public class MethodParams
 								rVar );
 		if ( null != this.get( paramID ) )
 		{
-			RunTime.badCall( "the param(" + paramID + ") must not already be set" );
+			RunTime.badCall( "the param("
+								+ paramID
+								+ ") must not already be set" );
 		}
 		else
 		{

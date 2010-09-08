@@ -338,6 +338,7 @@ public class BDBVectorIterator<InitialType, TerminalType>
 	
 
 	/**
+	 * @return
 	 * @throws DatabaseException
 	 * 
 	 */

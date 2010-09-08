@@ -263,7 +263,8 @@ public class RunTime
 	
 
 	/**
-	 * not just for jUnit
+	 * clears all thrown exceptions, starting from a clean slate<br>
+	 * not just for jUnit<br>
 	 */
 	public static
 			void

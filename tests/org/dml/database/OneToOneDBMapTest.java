@@ -88,17 +88,28 @@ public class OneToOneDBMapTest
 		// params.deInit();
 		// Factory.deInit( params );
 		// bdb = new Level1_Storage_BerkeleyDB( Consts.BDB_ENV_PATH, true );
-		x = new OneToOneDBMap<String, String>(
-												bdb,
-												"someMap",
-												String.class,
-												AllTupleBindings.getBinding( String.class ),
-												String.class,
-												AllTupleBindings.getBinding( String.class ) );
+		// x = new OneToOneDBMap<String, String>(
+		// bdb,
+		// "someMap",
+		// );
+		params.clear();
+		params.set(
+					PossibleParams.level1_BDBStorage,
+					bdb );
+		params.set(
+					PossibleParams.dbName,
+					"someMap" );
+		x = Factory.getNewInstanceAndInit(
+											OneToOneDBMap.class,
+											params,
+											String.class,
+											AllTupleBindings.getBinding( String.class ),
+											String.class,
+											AllTupleBindings.getBinding( String.class ) );
 		// x.init( null );
 		// x = Factory.getNewInstanceAndInitWithoutParams( OneToOneDBMap.class, bdb, "someMap", String.class,
 		// AllTupleBindings.getBinding( String.class ), String.class, AllTupleBindings.getBinding( String.class ) );
-		Factory.initWithoutParams( x );
+		// Factory.initWithoutParams( x );
 	}
 	
 
@@ -155,15 +166,31 @@ public class OneToOneDBMapTest
 		// this makes sure those 2 methods are protected to having a parameter
 		// that extends the given base class, as the extended class needs to
 		// have a new TupleBinding class defined for it, or so
-		OneToOneDBMap<JUnit_Base1, JUnit_Base1> map = new OneToOneDBMap<JUnit_Base1, JUnit_Base1>(
-																									bdb,
-																									"extendsMap",
-																									JUnit_Base1.class,
-																									AllTupleBindings
-																											.getBinding( JUnit_Base1.class ),
-																									JUnit_Base1.class,
-																									AllTupleBindings
-																											.getBinding( JUnit_Base1.class ) );
+		MethodParams params = MethodParams.getNew();
+		params.set(
+					PossibleParams.level1_BDBStorage,
+					bdb );
+		params.set(
+					PossibleParams.dbName,
+					"extendsMap" );
+		@SuppressWarnings( "unchecked" )
+		OneToOneDBMap<JUnit_Base1, JUnit_Base1> map = Factory
+				.getNewInstanceAndInit(
+										OneToOneDBMap.class,
+										params,
+										JUnit_Base1.class,
+										AllTupleBindings.getBinding( JUnit_Base1.class ),
+										JUnit_Base1.class,
+										AllTupleBindings.getBinding( JUnit_Base1.class ) );
+		// = new OneToOneDBMap<JUnit_Base1, JUnit_Base1>(
+		// bdb,
+		// "extendsMap",
+		// JUnit_Base1.class,
+		// AllTupleBindings
+		// .getBinding( JUnit_Base1.class ),
+		// JUnit_Base1.class,
+		// AllTupleBindings
+		// .getBinding( JUnit_Base1.class ) );
 		JUnit_Ex2 e = new JUnit_Ex2();
 		boolean threw = false;
 		try
@@ -215,16 +242,32 @@ public class OneToOneDBMapTest
 			integrityTest()
 					throws DatabaseException
 	{
+		MethodParams params = MethodParams.getNew();
+		params.set(
+					PossibleParams.level1_BDBStorage,
+					bdb );
+		params.set(
+					PossibleParams.dbName,
+					"irrelevant" );
 		
-		OneToOneDBMap<JUnit_Base1, String> map = new OneToOneDBMap<JUnit_Base1, String>(
-																							bdb,
-																							"irrelevant",
-																							JUnit_Base1.class,
-																							AllTupleBindings
-																									.getBinding( JUnit_Base1.class ),
-																							String.class,
-																							AllTupleBindings
-																									.getBinding( String.class ) );
+		@SuppressWarnings( "unchecked" )
+		OneToOneDBMap<JUnit_Base1, String> map = Factory
+				.getNewInstanceAndInit(
+										OneToOneDBMap.class,
+										params,
+										JUnit_Base1.class,
+										AllTupleBindings.getBinding( JUnit_Base1.class ),
+										String.class,
+										AllTupleBindings.getBinding( String.class ) );
+		// new OneToOneDBMap<JUnit_Base1, String>(
+		// bdb,
+		// "irrelevant",
+		// JUnit_Base1.class,
+		// AllTupleBindings
+		// .getBinding( JUnit_Base1.class ),
+		// String.class,
+		// AllTupleBindings
+		// .getBinding( String.class ) );
 		JUnit_Base1 key1 = null;
 		JUnit_Ex2 key2 = null;
 		String data = null;
