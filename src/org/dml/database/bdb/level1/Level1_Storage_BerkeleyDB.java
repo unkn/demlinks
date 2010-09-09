@@ -99,10 +99,19 @@ public class Level1_Storage_BerkeleyDB
 		
 		if ( null == db_JavaID_To_Symbol )
 		{
-			db_JavaID_To_Symbol = new DBMap_JavaIDs_To_Symbols(
-																this,
-																dbNAME_JavaID_To_NodeID );
-			Factory.initWithoutParams( db_JavaID_To_Symbol );
+			MethodParams params = MethodParams.getNew();
+			params.set(
+						PossibleParams.level1_BDBStorage,
+						this );
+			params.set(
+						PossibleParams.dbName,
+						dbNAME_JavaID_To_NodeID );
+			db_JavaID_To_Symbol = Factory.getNewInstanceAndInit(
+																	DBMap_JavaIDs_To_Symbols.class,
+																	params );
+			// new DBMap_JavaIDs_To_Symbols(
+			// );
+			// Factory.initWithoutParams( db_JavaID_To_Symbol );
 			// db_JavaID_To_Symbol = new DBMap_JavaIDs_To_Symbols( this, dbNAME_JavaID_To_NodeID );
 			// db_JavaID_To_Symbol.init( null );
 			RunTime.assumedNotNull( db_JavaID_To_Symbol );
@@ -110,18 +119,20 @@ public class Level1_Storage_BerkeleyDB
 		else
 		{
 			Factory.reInitIfNotInited( db_JavaID_To_Symbol );
+			// FIXME: init once on start()
+			
 			// if ( !db_JavaID_To_Symbol.isInited() ) {
 			// Factory.reInit( db_JavaID_To_Symbol );
 			// // db_JavaID_To_Symbol.reInit();
 			// }
 		}
-		RunTime.assumedTrue( db_JavaID_To_Symbol.isInited() );
+		RunTime.assumedTrue( db_JavaID_To_Symbol.isInitedSuccessfully() );
 		return db_JavaID_To_Symbol;
 	}
 	
 
 	/**
-	 * constructor, don't forget to call init(..);
+	 * constructor, don't forget to call Factory.init(..);
 	 */
 	public Level1_Storage_BerkeleyDB()
 	{
@@ -165,12 +176,14 @@ public class Level1_Storage_BerkeleyDB
 		else
 		{
 			Factory.reInitIfNotInited( symGen );
+			// FIXME: init all on start
+			
 			// if ( !symGen.isInited() ) {
 			// Factory.reInitIfNotInited( symGen );
 			// //symGen.reInit();
 			// }
 		}
-		RunTime.assumedTrue( symGen.isInited() );
+		RunTime.assumedTrue( symGen.isInitedSuccessfully() );
 		return symGen;
 	}
 	

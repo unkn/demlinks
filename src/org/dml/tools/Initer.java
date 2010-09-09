@@ -212,7 +212,9 @@ public abstract class Initer
 	
 
 	/**
-	 * you're allowed to call deInit even if init() failed ie. due to exceptions
+	 * DON'T call this directly, use {@link Factory#deInit(Initer)}<br>
+	 * you're allowed to call deInit even if init() failed
+	 * ie. due to exceptions<br>
 	 */
 	public final
 			void

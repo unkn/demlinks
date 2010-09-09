@@ -488,6 +488,7 @@ public class OneToManyDBMap<InitialType, TerminalType>
 			getIterator_on_Initials_of(
 										TerminalType terminalObject )
 					throws DatabaseException
+	// FIXME: see where DatabaseException doesn't need to be declared as thrown
 	{
 		
 		@SuppressWarnings( "unchecked" )
@@ -508,14 +509,14 @@ public class OneToManyDBMap<InitialType, TerminalType>
 	
 
 	public
-			int
+			long
 			countInitials(
 							TerminalType ofTerminalObject )
 					throws DatabaseException
 	{
 		
 		BDBVectorIterator<TerminalType, InitialType> vi = this.getIterator_on_Initials_of( ofTerminalObject );
-		int count = -1;
+		long count = -1;
 		try
 		{
 			count = vi.count();
@@ -530,14 +531,14 @@ public class OneToManyDBMap<InitialType, TerminalType>
 	
 
 	public
-			int
+			long
 			countTerminals(
 							InitialType ofInitialObject )
 					throws DatabaseException
 	{
 		
 		BDBVectorIterator<InitialType, TerminalType> vi = this.getIterator_on_Terminals_of( ofInitialObject );
-		int count = -1;
+		long count = -1;
 		try
 		{
 			count = vi.count();
@@ -691,8 +692,8 @@ public class OneToManyDBMap<InitialType, TerminalType>
 					RunTime.assumedTrue( found2 );// must have!
 					// TODO encompass in a transaction
 					RunTime.assumedNotNull( reverseIter.now() );
-					int size1 = iter.count();
-					int size2 = reverseIter.count();
+					long size1 = iter.count();
+					long size2 = reverseIter.count();
 					RunTime.assumedNotNull( reverseIter.now() );
 					RunTime.assumedTrue( iter.delete() );
 					RunTime.assumedNotNull( reverseIter.now() );

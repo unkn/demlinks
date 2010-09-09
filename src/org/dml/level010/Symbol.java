@@ -87,7 +87,7 @@ public class Symbol
 		RunTime.assumedNotNull(
 								storage,
 								theStoredSymbol );
-		RunTime.assumedTrue( storage.isInited() );
+		RunTime.assumedTrue( storage.isInitedSuccessfully() );
 		bdbL1 = storage;
 		tsSym = theStoredSymbol;
 	}
@@ -197,7 +197,15 @@ public class Symbol
 			int
 			hashCode()
 	{
-		return super.hashCode();
+		/*
+		 * It is not required that if two objects are unequal according to the java.lang.Object.equals(java.lang.Object)
+		 * method, then calling the hashCode method on each of the two objects must produce distinct integer results.
+		 * However, the programmer should be aware that producing distinct integer results for unequal objects may
+		 * improve the performance of hash tables.
+		 */
+		return this.getStorage().hashCode()
+				* 31
+				+ this.getTheStoredSymbol().hashCode();
 	}
 	
 
@@ -206,7 +214,7 @@ public class Symbol
 	 * 
 	 * @param bdbL1
 	 * @param tsSym
-	 * @return never null
+	 * @return never null; same Symbol instance for the same tsSym
 	 */
 	public static
 			Symbol
@@ -217,7 +225,7 @@ public class Symbol
 		RunTime.assumedNotNull(
 								bdbL1,
 								tsSym );
-		RunTime.assumedTrue( bdbL1.isInited() );
+		RunTime.assumedTrue( bdbL1.isInitedSuccessfully() );
 		TwoWayHashMap<Symbol, TheStoredSymbol> temp2WayHashMap = null;
 		int count = 0;
 		do
@@ -240,6 +248,7 @@ public class Symbol
 		}
 		while ( null == temp2WayHashMap );
 		
+		// even if tsSym is a different instance, as long as has same contents it will be found with getKey()
 		Symbol existingOne = temp2WayHashMap.getKey( tsSym );
 		if ( null == existingOne )
 		{

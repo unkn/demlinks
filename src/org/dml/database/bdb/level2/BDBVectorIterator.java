@@ -28,7 +28,6 @@ package org.dml.database.bdb.level2;
 import org.dml.database.bdb.level1.Level1_Storage_BerkeleyDB;
 import org.dml.tools.Initer;
 import org.dml.tools.RunTime;
-import org.dml.tracking.Log;
 import org.references.method.MethodParams;
 
 import com.sleepycat.bind.EntryBinding;
@@ -43,7 +42,7 @@ import com.sleepycat.je.OperationStatus;
 
 
 /**
- * parses data of a key->data primary dbase<br>
+ * iterates on 'data' of a key->data in a BDB-primary-dbase ie. not secondaryDB<br>
  * key=initial<br>
  * data=terminal<br>
  * we iterate only on terminals<br>
@@ -54,11 +53,15 @@ import com.sleepycat.je.OperationStatus;
  * TODO: make it thread safe
  * 
  * @param <InitialType>
+ *            this is the "parent"
  * @param <TerminalType>
+ *            iterates on these
  */
 public class BDBVectorIterator<InitialType, TerminalType>
 		extends
 		Initer
+		implements
+		VectorIterator<TerminalType>
 {
 	
 	private final Database						db;
@@ -128,6 +131,7 @@ public class BDBVectorIterator<InitialType, TerminalType>
 	/**
 	 * @throws DatabaseException
 	 */
+	@Override
 	public
 			void
 			goFirst()
@@ -151,6 +155,7 @@ public class BDBVectorIterator<InitialType, TerminalType>
 	}
 	
 
+	@Override
 	public
 			void
 			goTo(
@@ -177,6 +182,7 @@ public class BDBVectorIterator<InitialType, TerminalType>
 	}
 	
 
+	@Override
 	public
 			TerminalType
 			now()
@@ -196,6 +202,7 @@ public class BDBVectorIterator<InitialType, TerminalType>
 	}
 	
 
+	@Override
 	public
 			void
 			goNext()
@@ -225,6 +232,7 @@ public class BDBVectorIterator<InitialType, TerminalType>
 	}
 	
 
+	@Override
 	public
 			void
 			goPrev()
@@ -254,11 +262,9 @@ public class BDBVectorIterator<InitialType, TerminalType>
 	}
 	
 
-	/**
-	 * @return
-	 */
+	@Override
 	public
-			int
+			long
 			count()
 	{
 		if ( this.now() == null )
@@ -304,14 +310,28 @@ public class BDBVectorIterator<InitialType, TerminalType>
 			catch ( Throwable t )
 			{
 				RunTime.throPostponed( t );
-				txn = txn.abort();
+				try
+				{
+					txn.abort();
+				}
+				finally
+				{
+					txn = null;
+				}
 				RunTime.throwAllThatWerePosponed();
 			}
 			finally
 			{
 				cursor = null;
 			}
-			txn = txn.commit();
+			try
+			{
+				txn.commit();
+			}
+			finally
+			{
+				txn = null;
+			}
 		}
 	}
 	
@@ -337,11 +357,7 @@ public class BDBVectorIterator<InitialType, TerminalType>
 	}
 	
 
-	/**
-	 * @return
-	 * @throws DatabaseException
-	 * 
-	 */
+	@Override
 	public
 			boolean
 			delete()
@@ -358,6 +374,5 @@ public class BDBVectorIterator<InitialType, TerminalType>
 		return OperationStatus.SUCCESS == ret;
 	}
 	
-	// goLast() is too expensive to implement, due to BDB not giving support for
-	// it
+	// TODO: goLast() is too expensive to implement, due to BDB not giving support for it
 }

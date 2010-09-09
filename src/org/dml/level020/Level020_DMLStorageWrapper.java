@@ -60,8 +60,8 @@ public interface Level020_DMLStorageWrapper
 						Symbol second );
 	
 
-	public
-			BDBVectorIterator<Symbol, Symbol>
+	public// BDBVectorIterator<Symbol, Symbol>
+			SymbolIterator
 			getIterator_on_Initials_of(
 										Symbol terminalObject );
 	
@@ -70,8 +70,8 @@ public interface Level020_DMLStorageWrapper
 	 * @param initialObject
 	 * @return already inited iterator, use deInit() when done
 	 */
-	public
-			BDBVectorIterator<Symbol, Symbol>
+	public// BDBVectorIterator<Symbol, Symbol>
+			SymbolIterator
 			getIterator_on_Terminals_of(
 											Symbol initialObject );
 	

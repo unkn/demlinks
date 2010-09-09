@@ -31,8 +31,15 @@ import org.junit.runners.Suite;
 
 
 @RunWith( Suite.class )
-@Suite.SuiteClasses( value = {
-		JavaIDTest.class, Level010_DMLEnvironmentTest.class, SymbolsTest.class
-} )
-public class AllTestsL010 {
+@Suite.SuiteClasses(
+		value =
+		{
+				JavaIDTest.class,
+				Level010_DMLEnvironmentTest.class,
+				SymbolsTest.class,
+				TheStoredSymbolTest.class,
+				SymbolTest.class
+		} )
+public class AllTestsL010
+{
 }

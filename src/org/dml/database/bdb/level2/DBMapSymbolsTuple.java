@@ -27,9 +27,12 @@ package org.dml.database.bdb.level2;
 
 import org.dml.database.bdb.level1.AllTupleBindings;
 import org.dml.database.bdb.level1.Level1_Storage_BerkeleyDB;
+import org.dml.level010.Symbol;
 import org.dml.level010.TheStoredSymbol;
+import org.dml.level020.SymbolIterator;
 import org.dml.tools.Initer;
 import org.dml.tools.RunTime;
+import org.dml.tracking.Factory;
 import org.references.method.MethodParams;
 
 import com.sleepycat.je.DatabaseException;
@@ -57,20 +60,78 @@ import com.sleepycat.je.DatabaseException;
  */
 public class DBMapSymbolsTuple
 		extends
-		OneToManyDBMap<TheStoredSymbol, TheStoredSymbol>
+		Initer
 {
+	
+	OneToManyDBMap<TheStoredSymbol, TheStoredSymbol>	composition	= null;
+	
 	
 	/**
 	 * constructor
 	 */
 	public DBMapSymbolsTuple()
 	{
+		// super(
+		// TheStoredSymbol.class,
+		// AllTupleBindings.getBinding( TheStoredSymbol.class ),
+		// TheStoredSymbol.class,
+		// AllTupleBindings.getBinding( TheStoredSymbol.class ) );
+	}
+	
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.dml.tools.Initer#start(org.references.method.MethodParams)
+	 */
+	@SuppressWarnings( "unchecked" )
+	@Override
+	protected
+			void
+			start(
+					MethodParams params )
+	{
+		RunTime.assumedNotNull( params );
+		composition = Factory.getNewInstanceAndInit(
+														OneToManyDBMap.class,
+														params,
+														TheStoredSymbol.class,
+														AllTupleBindings.getBinding( TheStoredSymbol.class ),
+														TheStoredSymbol.class,
+														AllTupleBindings.getBinding( TheStoredSymbol.class ) );
+		RunTime.assumedNotNull( composition );
+		RunTime.assumedTrue( composition.isInitedSuccessfully() );
+	}
+	
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.dml.tools.Initer#done(org.references.method.MethodParams)
+	 */
+	@Override
+	protected
+			void
+			done(
+					MethodParams params )
+	{
+		if ( this.isInitedSuccessfully() )
+		{
+			RunTime.assumedNotNull( composition );
+			RunTime.assumedTrue( composition.isInitedSuccessfully() );
+		}
 		
-		super(
-				TheStoredSymbol.class,
-				AllTupleBindings.getBinding( TheStoredSymbol.class ),
-				TheStoredSymbol.class,
-				AllTupleBindings.getBinding( TheStoredSymbol.class ) );
+		if ( null != composition )
+		{
+			try
+			{
+				Factory.deInit( composition );
+			}
+			finally
+			{
+				composition = null;
+			}
+		}
 	}
 	
 
@@ -84,22 +145,21 @@ public class DBMapSymbolsTuple
 	 * @return true if existed already; false if it didn't exist before call
 	 * @throws DatabaseException
 	 */
-	@Override
 	public
 			boolean
 			ensureVector(
-							TheStoredSymbol initialNode,
-							TheStoredSymbol terminalNode )
-					throws DatabaseException
+							Symbol initialNode,
+							Symbol terminalNode )
 	{
 		
 		RunTime.assumedNotNull(
 								initialNode,
 								terminalNode );
+		RunTime.assumedTrue( this.isInitedSuccessfully() );
 		
-		return super.ensureVector(
-									initialNode,
-									terminalNode );
+		return composition.ensureVector(
+											initialNode.getTheStoredSymbol(),
+											terminalNode.getTheStoredSymbol() );
 	}
 	
 
@@ -111,100 +171,94 @@ public class DBMapSymbolsTuple
 	 * @param terminalNode
 	 * @return
 	 * @throws StorageException
-	 * @throws DatabaseException
 	 */
-	@Override
 	public
 			boolean
 			isVector(
-						TheStoredSymbol initialNode,
-						TheStoredSymbol terminalNode )
-					throws DatabaseException
+						Symbol initialNode,
+						Symbol terminalNode )
 	{
 		
 		RunTime.assumedNotNull(
 								initialNode,
 								terminalNode );
-		
-		return super.isVector(
-								initialNode,
-								terminalNode );
+		RunTime.assumedTrue( this.isInitedSuccessfully() );
+		return composition.isVector(
+										initialNode.getTheStoredSymbol(),
+										terminalNode.getTheStoredSymbol() );
 	}
 	
 
-	@Override
-	public
-			BDBVectorIterator<TheStoredSymbol, TheStoredSymbol>
+	public// BDBVectorIterator<Symbol, Symbol>
+			SymbolIterator
 			getIterator_on_Initials_of(
-										TheStoredSymbol terminalObject )
-					throws DatabaseException
+										Symbol terminalObject )
 	{
 		
 		RunTime.assumedNotNull( terminalObject );
-		return super.getIterator_on_Initials_of( terminalObject );
+		RunTime.assumedTrue( this.isInitedSuccessfully() );
+		SymbolIterator si = new SymbolIterator(
+												composition.getIterator_on_Initials_of( terminalObject
+														.getTheStoredSymbol() ) );
+		return si;
 	}
 	
 
-	@Override
-	public
-			BDBVectorIterator<TheStoredSymbol, TheStoredSymbol>
+	public// BDBVectorIterator<TheStoredSymbol, TheStoredSymbol>
+			SymbolIterator
 			getIterator_on_Terminals_of(
-											TheStoredSymbol initialObject )
-					throws DatabaseException
+											Symbol initialObject )
 	{
 		
 		RunTime.assumedNotNull( initialObject );
-		return super.getIterator_on_Terminals_of( initialObject );
+		return new SymbolIterator(
+									composition.getIterator_on_Terminals_of( initialObject.getTheStoredSymbol() ) );
 	}
 	
 
-	@Override
 	public
-			int
+			long
 			countInitials(
-							TheStoredSymbol ofTerminalObject )
-					throws DatabaseException
+							Symbol ofTerminalObject )
 	{
 		
 		RunTime.assumedNotNull( ofTerminalObject );
-		return super.countInitials( ofTerminalObject );
+		return composition.countInitials( ofTerminalObject.getTheStoredSymbol() );
 	}
 	
 
-	@Override
 	public
-			int
+			long
 			countTerminals(
-							TheStoredSymbol ofInitialObject )
-					throws DatabaseException
+							Symbol ofInitialObject )
 	{
 		
 		RunTime.assumedNotNull( ofInitialObject );
-		return super.countTerminals( ofInitialObject );
+		return composition.countTerminals( ofInitialObject.getTheStoredSymbol() );
 	}
 	
 
 	/**
 	 * @param initial1
 	 * @param initial2
-	 * @return
 	 * @throws DatabaseException
 	 */
-	@Override
 	public
-			TheStoredSymbol
+			Symbol
 			findCommonTerminalForInitials(
-											TheStoredSymbol initial1,
-											TheStoredSymbol initial2 )
-					throws DatabaseException
+											Symbol initial1,
+											Symbol initial2 )
 	{
 		
 		RunTime.assumedNotNull(
 								initial1,
 								initial2 );
-		return super.findCommonTerminalForInitials(
-													initial1,
-													initial2 );
+		TheStoredSymbol tss = composition.findCommonTerminalForInitials(
+																			initial1.getTheStoredSymbol(),
+																			initial2.getTheStoredSymbol() );
+		return Symbol.getNew(
+								composition.getBDBL1(),
+								tss );
 	}
 	
 
@@ -231,5 +285,6 @@ public class DBMapSymbolsTuple
 									terminal );
 	}
 	
+
 
 }

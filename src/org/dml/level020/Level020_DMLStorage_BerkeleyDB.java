@@ -93,15 +93,18 @@ public class Level020_DMLStorage_BerkeleyDB
 	
 
 	@Override
-	public
-			BDBVectorIterator<Symbol, Symbol>
+	public// BDBVectorIterator<Symbol, Symbol>
+			SymbolIterator
 			getIterator_on_Initials_of(
 										Symbol terminalObject )
 	{
 		// TODO: return a new type of iterator for DML environment only
 		RunTime.assumedNotNull( terminalObject );
-		return bdb.getDBMapSymbolsTuple().getIterator_on_Initials_of(
-																		terminalObject );
+		SymbolIterator si = null;
+		1
+		bdb.getDBMapSymbolsTuple().getIterator_on_Initials_of(
+																terminalObject.getTheStoredSymbol() );
+		return si;
 	}
 	
 

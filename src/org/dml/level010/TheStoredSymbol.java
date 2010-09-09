@@ -42,6 +42,10 @@ import org.dml.tools.TwoWayHashMap;
 public class TheStoredSymbol
 {
 	
+	// TODO maybe do equals and hashCode for Maps when checking in Symbol because we can compare two different
+	// TheStoredSymbol instances with same contents aka long value due to below clearing of some cached
+	// TheStoredSymbol-s when cache is over X
+	
 	// we cache them here to avoid doing many 'new's but FIXME: we shouldn't cache too many for memory reasons
 	private static final TwoWayHashMap<TheStoredSymbol, Long>	allStoredSymbolsFromAllEnvironments	= new TwoWayHashMap<TheStoredSymbol, Long>();
 	
@@ -94,4 +98,63 @@ public class TheStoredSymbol
 		RunTime.assumedNotNull( l );
 		return l;
 	}
+	
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public
+			boolean
+			equals(
+					Object obj )
+	{
+		if ( null != obj )
+		{
+			if ( super.equals( obj ) )
+			{
+				return true;
+			}
+			else
+			{
+				if ( obj.getClass() == this.getClass() )
+				{
+					if ( l == ( (TheStoredSymbol)obj ).l )
+					{
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
+	
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public
+			int
+			hashCode()
+	{
+		return l.hashCode();
+		// return super.hashCode();
+	}
+	
+
+	/**
+	 * for use in junit only!
+	 */
+	public static
+			void
+			junitClearCache()
+	{
+		allStoredSymbolsFromAllEnvironments.clear();
+	}
+	
 }
