@@ -34,9 +34,15 @@ import org.references.method.PossibleParams;
  * 
  *
  */
-public class VarLevel2 extends VarLevel1 implements VarLevel2Interface {
+public class VarLevel2
+		extends
+		VarLevel1
+		implements
+		VarLevel2Interface
+{
 	
 	String	homeDir;
+	
 	
 	// public void init( String homeDir1 ) {
 	//
@@ -46,19 +52,28 @@ public class VarLevel2 extends VarLevel1 implements VarLevel2Interface {
 	// }
 	
 	@Override
-	public void showHome() {
-
-		RunTime.assumedTrue( this.isInited() );
-		System.out.println( this.getName() + "'s home is: " + homeDir );
+	public
+			void
+			showHome()
+	{
+		
+		RunTime.assumedTrue( this.isInitedSuccessfully() );
+		System.out.println( this.getName()
+							+ "'s home is: "
+							+ homeDir );
 	}
 	
-	
+
 	/**
 	 * @param params
 	 */
 	@Override
-	protected void start( MethodParams params ) {
-
+	protected
+			void
+			start(
+					MethodParams params )
+	{
+		
 		RunTime.assumedNotNull( params );
 		super.start( params );
 		homeDir = params.getExString( PossibleParams.homeDir );

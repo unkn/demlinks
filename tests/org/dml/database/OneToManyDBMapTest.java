@@ -55,9 +55,12 @@ public class OneToManyDBMapTest
 	OneToManyDBMap<String, String>	o2m;
 	// the following two should be random unique names not already in the dbase
 	// or else the tests may fail
-	final String					_a	= "A" + new Object();
-	final String					_b	= "B" + new Object();
-	final String					_c	= "C" + new Object();
+	final String					_a	= "A"
+											+ new Object();
+	final String					_b	= "B"
+											+ new Object();
+	final String					_c	= "C"
+											+ new Object();
 	Level1_Storage_BerkeleyDB		bdb;
 	
 	
@@ -199,7 +202,8 @@ public class OneToManyDBMapTest
 			iter.goFirst();
 			do
 			{
-				System.out.println( iter.now() + " -> _c" );
+				System.out.println( iter.now()
+									+ " -> _c" );
 				assertTrue( iter.now().equals(
 												_a ) );
 				assertTrue( iter.now() != _a );
@@ -209,8 +213,14 @@ public class OneToManyDBMapTest
 		}
 		finally
 		{
-			Factory.deInit( iter );
-			// iter.deInit();
+			try
+			{
+				iter.close();
+			}
+			finally
+			{
+				iter = null;
+			}
 		}
 		
 		iter = o2m.getIterator_on_Terminals_of( _c );
@@ -221,7 +231,8 @@ public class OneToManyDBMapTest
 			{
 				if ( null != iter )
 				{
-					System.out.println( "_c -> " + iter.now() );
+					System.out.println( "_c -> "
+										+ iter.now() );
 					assertTrue( iter.now().equals(
 													_b ) );
 					assertTrue( iter.now() != _b );
@@ -232,8 +243,14 @@ public class OneToManyDBMapTest
 		}
 		finally
 		{
-			Factory.deInit( iter );
-			// iter.deInit();
+			try
+			{
+				iter.close();
+			}
+			finally
+			{
+				iter = null;
+			}
 		}
 	}
 	

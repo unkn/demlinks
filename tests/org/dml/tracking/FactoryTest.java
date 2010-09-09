@@ -164,7 +164,7 @@ public class FactoryTest
 			if ( null != db )
 			{
 				// save something to db
-				RunTime.assumedTrue( db.isInited() );// yeah it was deInit-ed by Factory.deInitAll()
+				RunTime.assumedTrue( db.isInitedSuccessfully() );// yeah it was deInit-ed by Factory.deInitAll()
 			}
 			if ( initedOurOwn )
 			{
@@ -184,7 +184,7 @@ public class FactoryTest
 		{
 			
 			RunTime.assumedNotNull( someNewDB );
-			RunTime.assumedTrue( someNewDB.isInited() );
+			RunTime.assumedTrue( someNewDB.isInitedSuccessfully() );
 			db = someNewDB;
 		}
 		

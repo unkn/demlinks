@@ -26,10 +26,14 @@ package org.dml.level020;
 
 
 
+import org.dml.database.bdb.level1.Level1_Storage_BerkeleyDB;
 import org.dml.database.bdb.level2.VectorIterator;
 import org.dml.level010.Symbol;
 import org.dml.level010.TheStoredSymbol;
+import org.dml.tools.Initer;
 import org.dml.tools.RunTime;
+import org.dml.tracking.Factory;
+import org.references.method.MethodParams;
 
 
 
@@ -42,14 +46,28 @@ public class SymbolIterator
 		VectorIterator<Symbol>
 {
 	
-	private final VectorIterator<TheStoredSymbol>	seed;
+	private VectorIterator<TheStoredSymbol>	seed;
 	
 	
+	/**
+	 * @param seed1
+	 *            an preInited iterator, which we will deInit on our own
+	 */
 	public SymbolIterator(
 			VectorIterator<TheStoredSymbol> seed1 )
 	{
 		RunTime.assumedNotNull( seed1 );
+		// RunTime.assumedTrue( seed1.isInitedSuccessfully() );
 		seed = seed1;
+	}
+	
+
+	private
+			VectorIterator<TheStoredSymbol>
+			getSeed()
+	{
+		RunTime.assumedNotNull( seed );
+		return seed;
 	}
 	
 
@@ -63,7 +81,7 @@ public class SymbolIterator
 			void
 			goFirst()
 	{
-		seed.goFirst();
+		this.getSeed().goFirst();
 	}
 	
 
@@ -78,7 +96,8 @@ public class SymbolIterator
 			goTo(
 					Symbol element )
 	{
-		seed.goTo( element.getTheStoredSymbol() );
+		this.getSeed().goTo(
+						element.getTheStoredSymbol() );
 	}
 	
 
@@ -92,7 +111,9 @@ public class SymbolIterator
 			Symbol
 			now()
 	{
-		return seed.now();
+		return Symbol.getNew(
+								this.getSeed().getBDBL1(),
+								this.getSeed().now() );
 	}
 	
 
@@ -106,7 +127,7 @@ public class SymbolIterator
 			void
 			goNext()
 	{
-		seed.goNext();
+		this.getSeed().goNext();
 	}
 	
 
@@ -120,7 +141,7 @@ public class SymbolIterator
 			void
 			goPrev()
 	{
-		seed.goPrev();
+		this.getSeed().goPrev();
 	}
 	
 
@@ -134,7 +155,7 @@ public class SymbolIterator
 			long
 			count()
 	{
-		return seed.count();
+		return this.getSeed().count();
 	}
 	
 
@@ -148,7 +169,42 @@ public class SymbolIterator
 			boolean
 			delete()
 	{
-		return seed.delete();
+		return this.getSeed().delete();
+	}
+	
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.dml.database.bdb.level2.VectorIterator#getBDBL1()
+	 */
+	@Override
+	public
+			Level1_Storage_BerkeleyDB
+			getBDBL1()
+	{
+		return this.getSeed().getBDBL1();
+	}
+	
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.dml.database.bdb.level2.VectorIterator#close()
+	 */
+	@Override
+	public
+			void
+			close()
+	{
+		try
+		{
+			this.getSeed().close();
+		}
+		finally
+		{
+			seed = null;// for safety when calling other methods after close we will catch them
+		}
 	}
 	
 }

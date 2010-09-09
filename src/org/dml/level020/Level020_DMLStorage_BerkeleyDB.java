@@ -25,14 +25,11 @@ package org.dml.level020;
 
 
 
-import org.dml.database.bdb.level2.BDBVectorIterator;
 import org.dml.database.bdb.level2.Level2_Storage_BerkeleyDB;
 import org.dml.level010.Level010_DMLStorage_BerkeleyDB;
 import org.dml.level010.Symbol;
 import org.dml.tools.RunTime;
 import org.dml.tools.VarLevel;
-
-import com.sleepycat.je.DatabaseException;
 
 
 
@@ -63,8 +60,8 @@ public class Level020_DMLStorage_BerkeleyDB
 								initialNode,
 								terminalNode );
 		return bdb.getDBMapSymbolsTuple().ensureVector(
-														initialNode.getTheStoredSymbol(),
-														terminalNode.getTheStoredSymbol() );
+														initialNode,
+														terminalNode );
 	}
 	
 
@@ -87,24 +84,20 @@ public class Level020_DMLStorage_BerkeleyDB
 								initialNode,
 								terminalNode );
 		return bdb.getDBMapSymbolsTuple().isVector(
-													initialNode.getTheStoredSymbol(),
-													terminalNode.getTheStoredSymbol() );
+													initialNode,
+													terminalNode );
 	}
 	
 
 	@Override
-	public// BDBVectorIterator<Symbol, Symbol>
+	public
 			SymbolIterator
 			getIterator_on_Initials_of(
 										Symbol terminalObject )
 	{
-		// TODO: return a new type of iterator for DML environment only
 		RunTime.assumedNotNull( terminalObject );
-		SymbolIterator si = null;
-		1
-		bdb.getDBMapSymbolsTuple().getIterator_on_Initials_of(
-																terminalObject.getTheStoredSymbol() );
-		return si;
+		return bdb.getDBMapSymbolsTuple().getIterator_on_Initials_of(
+																		terminalObject );
 	}
 	
 
@@ -117,7 +110,7 @@ public class Level020_DMLStorage_BerkeleyDB
 	 */
 	@Override
 	public
-			BDBVectorIterator<Symbol, Symbol>
+			SymbolIterator
 			getIterator_on_Terminals_of(
 											Symbol initialObject )
 	{
@@ -130,7 +123,7 @@ public class Level020_DMLStorage_BerkeleyDB
 
 	@Override
 	public
-			int
+			long
 			countInitials(
 							Symbol ofTerminalObject )
 	{
@@ -143,7 +136,7 @@ public class Level020_DMLStorage_BerkeleyDB
 
 	@Override
 	public
-			int
+			long
 			countTerminals(
 							Symbol ofInitialObject )
 	{
@@ -154,11 +147,6 @@ public class Level020_DMLStorage_BerkeleyDB
 	}
 	
 
-	/**
-	 * @param initial1
-	 * @param initial2
-	 * @return
-	 */
 	@Override
 	public
 			Symbol

@@ -18,69 +18,49 @@
  * along with DeMLinks. If not, see <http://www.gnu.org/licenses/>.
  * 
  * 
- * File creation: Sep 9, 2010 12:47:49 PM
+ * File creation: Sep 9, 2010 4:56:47 PM
  */
 
 
-package org.dml.database.bdb.level2;
+package org.dml.tools;
 
 
 
-import org.dml.database.bdb.level1.Level1_Storage_BerkeleyDB;
-import org.dml.tools.IniterInterface;
+import org.references.method.MethodParams;
 
 
 
 /**
- * @param <ELEMENT>
  * 
- * 
+ *
  */
-public interface VectorIterator<ELEMENT>
+public interface IniterInterface
 {
 	
+	// FIXME: move javadoc descriptions from Initer to here
 	public
-			void
-			goFirst();
-	
-
-	public
-			void
-			goTo(
-					ELEMENT element );
-	
-
-	public
-			ELEMENT
-			now();
-	
-
-	public
-			void
-			goNext();
-	
-
-	public
-			void
-			goPrev();
-	
-
-	public
-			long
-			count();
+			boolean
+			isInitingOrInited();
 	
 
 	public
 			boolean
-			delete();
+			isInitedSuccessfully();
 	
 
 	public
-			Level1_Storage_BerkeleyDB
-			getBDBL1();
+			boolean
+			wasInitedEver();
 	
 
-	public
-			void
-			close();
+	// public abstract
+	// void
+	// start(
+	// MethodParams params );
+	//
+	//
+	// public abstract
+	// void
+	// done(
+	// MethodParams params );
 }

@@ -48,7 +48,9 @@ public class Testy
 			show()
 	{
 		
-		System.out.println( this.getName() + " shows home=" + home );
+		System.out.println( this.getName()
+							+ " shows home="
+							+ home );
 	}
 	
 
@@ -72,7 +74,8 @@ public class Testy
 		// params.init( null );
 		params.set(
 					PossibleParams.homeDir,
-					"one/" + new Object() );
+					"one/"
+							+ new Object() );
 		// t.init( params );
 		Testy t = Factory.getNewInstanceAndInit(
 													Testy.class,
@@ -96,9 +99,10 @@ public class Testy
 					MethodParams params )
 	{
 		
-		System.out.println( this.getName() + " is done." );
+		System.out.println( this.getName()
+							+ " is done." );
 		home = null;
-		RunTime.assumedTrue( this.isInited() );
+		RunTime.assumedTrue( this.isInitedSuccessfully() );
 	}
 	
 
@@ -121,7 +125,8 @@ public class Testy
 					MethodParams params )
 	{
 		
-		System.out.println( this.getName() + " start()" );
+		System.out.println( this.getName()
+							+ " start()" );
 		RunTime.assumedNotNull( params );
 		RunTime.assumedTrue( params.size() > 0 );
 		home = params.getExString( PossibleParams.homeDir );

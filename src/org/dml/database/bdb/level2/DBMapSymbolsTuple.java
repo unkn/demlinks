@@ -241,6 +241,7 @@ public class DBMapSymbolsTuple
 	/**
 	 * @param initial1
 	 * @param initial2
+	 * @return
 	 * @throws DatabaseException
 	 */
 	public
@@ -268,21 +269,19 @@ public class DBMapSymbolsTuple
 	 * @return true if existed
 	 * @throws DatabaseException
 	 */
-	@Override
 	public
 			boolean
 			removeVector(
-							TheStoredSymbol initial,
-							TheStoredSymbol terminal )
-					throws DatabaseException
+							Symbol initial,
+							Symbol terminal )
 	{
 		
 		RunTime.assumedNotNull(
 								initial,
 								terminal );
-		return super.removeVector(
-									initial,
-									terminal );
+		return composition.removeVector(
+											initial.getTheStoredSymbol(),
+											terminal.getTheStoredSymbol() );
 	}
 	
 

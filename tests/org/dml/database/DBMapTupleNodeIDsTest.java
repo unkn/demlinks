@@ -37,6 +37,7 @@ import org.dml.database.bdb.level2.DBMapSymbolsTuple;
 import org.dml.error.BadCallError;
 import org.dml.level010.JavaID;
 import org.dml.level010.Symbol;
+import org.dml.level020.SymbolIterator;
 import org.dml.tools.RunTime;
 import org.dml.tracking.Factory;
 import org.junit.After;
@@ -182,7 +183,7 @@ public class DBMapTupleNodeIDsTest
 									_c,
 									_b ) );
 		
-		BDBVectorIterator<Symbol, Symbol> iter = tdb.getIterator_on_Terminals_of( _a );
+		SymbolIterator iter = tdb.getIterator_on_Terminals_of( _a );
 		try
 		{
 			iter.goFirst();
@@ -215,8 +216,14 @@ public class DBMapTupleNodeIDsTest
 		}
 		finally
 		{
-			Factory.deInit( iter );
-			// iter.deInit();
+			try
+			{
+				iter.close();
+			}
+			finally
+			{
+				iter = null;
+			}
 		}
 		
 
@@ -228,8 +235,9 @@ public class DBMapTupleNodeIDsTest
 			{
 				if ( null != iter.now() )
 				{
-					System.out.println( "/2/" + bdb.getDBMap_JavaIDs_To_Symbols().getJavaID(
-																								iter.now() ) );
+					System.out.println( "/2/"
+										+ bdb.getDBMap_JavaIDs_To_Symbols().getJavaID(
+																						iter.now() ) );
 				}
 				iter.goNext();
 			}
@@ -237,8 +245,9 @@ public class DBMapTupleNodeIDsTest
 			
 
 			iter.goFirst();
-			System.out.println( "//" + bdb.getDBMap_JavaIDs_To_Symbols().getJavaID(
-																					iter.now() ) );
+			System.out.println( "//"
+								+ bdb.getDBMap_JavaIDs_To_Symbols().getJavaID(
+																				iter.now() ) );
 			// assertTrue( _a.equals( iter.now() ) );
 			assertTrue( _a == iter.now() );// also as refs
 			
@@ -272,8 +281,14 @@ public class DBMapTupleNodeIDsTest
 		}
 		finally
 		{
-			Factory.deInit( iter );
-			// iter.deInit();
+			try
+			{
+				iter.close();
+			}
+			finally
+			{
+				iter = null;
+			}
 		}
 		
 		iter = tdb.getIterator_on_Initials_of( _b );
@@ -294,8 +309,14 @@ public class DBMapTupleNodeIDsTest
 		}
 		finally
 		{
-			Factory.deInit( iter );
-			// iter.deInit();
+			try
+			{
+				iter.close();
+			}
+			finally
+			{
+				iter = null;
+			}
 		}
 		assertTrue( threw );
 		
@@ -317,8 +338,14 @@ public class DBMapTupleNodeIDsTest
 		}
 		finally
 		{
-			Factory.deInit( iter );
-			// iter.deInit();
+			try
+			{
+				iter.close();
+			}
+			finally
+			{
+				iter = null;
+			}
 		}
 		assertTrue( threw );
 		

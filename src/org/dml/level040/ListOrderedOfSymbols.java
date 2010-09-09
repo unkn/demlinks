@@ -27,6 +27,7 @@ package org.dml.level040;
 
 import org.dml.database.bdb.level2.BDBVectorIterator;
 import org.dml.level010.Symbol;
+import org.dml.level020.SymbolIterator;
 import org.dml.level025.DomainSet;
 import org.dml.level025.SetOfTerminalSymbols;
 import org.dml.tools.RunTime;
@@ -135,7 +136,7 @@ public class ListOrderedOfSymbols
 		RunTime.assumedNotNull(
 								passedEnv,
 								passedSelf );
-		RunTime.assumedTrue( passedEnv.isInited() );
+		RunTime.assumedTrue( passedEnv.isInitedSuccessfully() );
 		return passedEnv.allListsOOS_Set.hasSymbol( passedSelf );
 	}
 	
@@ -150,7 +151,7 @@ public class ListOrderedOfSymbols
 		RunTime.assumedNotNull(
 								passedSelf,
 								passedEnv );
-		RunTime.assumedTrue( passedEnv.isInited() );
+		RunTime.assumedTrue( passedEnv.isInitedSuccessfully() );
 		// was not set before
 		RunTime.assumedFalse( passedEnv.allListsOOS_Set.addToSet( passedSelf ) );
 	}
@@ -270,7 +271,7 @@ public class ListOrderedOfSymbols
 		RunTime.assumedNotNull(
 								passedEnv,
 								passedSelf );
-		RunTime.assumedTrue( passedEnv.isInited() );
+		RunTime.assumedTrue( passedEnv.isInitedSuccessfully() );
 		return passedEnv.allowNull_Set.hasSymbol( passedSelf );
 	}
 	
@@ -285,7 +286,7 @@ public class ListOrderedOfSymbols
 		RunTime.assumedNotNull(
 								passedEnv,
 								passedSelf );
-		RunTime.assumedTrue( passedEnv.isInited() );
+		RunTime.assumedTrue( passedEnv.isInitedSuccessfully() );
 		return passedEnv.allowDUPs_Set.hasSymbol( passedSelf );
 	}
 	
@@ -347,7 +348,7 @@ public class ListOrderedOfSymbols
 								existingSymbol,
 								allowNulls,
 								allowDUPs );
-		RunTime.assumedTrue( passedEnv.isInited() );
+		RunTime.assumedTrue( passedEnv.isInitedSuccessfully() );
 		
 		if ( ListOrderedOfSymbols.isListOrderedOfSymbols(
 															passedEnv,
@@ -421,7 +422,7 @@ public class ListOrderedOfSymbols
 		RunTime.assumedNotNull(
 								passedEnv,
 								existingSymbol );
-		RunTime.assumedTrue( passedEnv.isInited() );
+		RunTime.assumedTrue( passedEnv.isInitedSuccessfully() );
 		
 		if ( !ListOrderedOfSymbols.isListOrderedOfSymbols(
 															passedEnv,
@@ -524,7 +525,7 @@ public class ListOrderedOfSymbols
 								existingSymbol,
 								allowDUPs,
 								allowNulls );
-		RunTime.assumedTrue( passedEnv.isInited() );
+		RunTime.assumedTrue( passedEnv.isInitedSuccessfully() );
 		
 		if ( isListOrderedOfSymbols(
 										passedEnv,
@@ -592,7 +593,7 @@ public class ListOrderedOfSymbols
 		RunTime.assumedNotNull(
 								self,
 								env );
-		RunTime.assumedTrue( env.isInited() );
+		RunTime.assumedTrue( env.isInitedSuccessfully() );
 		return isListOrderedOfSymbols(
 										env,
 										self.getAsSymbol() );
@@ -729,7 +730,8 @@ public class ListOrderedOfSymbols
 		// could be part of another list too, so two of those unique parents may
 		// be already, and it may have other explicit parents
 		ElementCapsule found = null;
-		if ( ( this.isNullAllowed() ) || ( this.size() <= env.countInitials( posSymbol ) ) )
+		if ( ( this.isNullAllowed() )
+				|| ( this.size() <= env.countInitials( posSymbol ) ) )
 		{
 			// parse entire list looking for 'posSymbol'
 			ElementCapsule iter = this.get_ElementCapsule( Position.FIRST );
@@ -763,7 +765,7 @@ public class ListOrderedOfSymbols
 			// this->EC->Ref2Elem->posSymbol
 			// AllEC->EC
 			// AllRef2Elems->Ref2Elem
-			BDBVectorIterator<Symbol, Symbol> iter = env.getIterator_on_Initials_of( posSymbol );
+			SymbolIterator iter = env.getIterator_on_Initials_of( posSymbol );
 			try
 			{
 				iter.goFirst();
@@ -775,7 +777,7 @@ public class ListOrderedOfSymbols
 						// AllRef2Elems->Ref2Elem aka iter.now()->posSymbol
 						// now we check all parents of iter.now() and we must
 						// find two which are this list and AllEC
-						BDBVectorIterator<Symbol, Symbol> secIter = env.getIterator_on_Initials_of( iter.now() );
+						SymbolIterator secIter = env.getIterator_on_Initials_of( iter.now() );
 						try
 						{
 							secIter.goFirst();
@@ -805,8 +807,14 @@ public class ListOrderedOfSymbols
 						}
 						finally
 						{
-							Factory.deInit( secIter );
-							// secIter.deInit();
+							try
+							{
+								secIter.close();
+							}
+							finally
+							{
+								secIter = null;
+							}
 						}
 						
 					}
@@ -815,8 +823,14 @@ public class ListOrderedOfSymbols
 			}
 			finally
 			{
-				Factory.deInit( iter );
-				// iter.deInit();
+				try
+				{
+					iter.close();
+				}
+				finally
+				{
+					iter = null;
+				}
 			}
 			if ( foundECAsSymbol != null )
 			{

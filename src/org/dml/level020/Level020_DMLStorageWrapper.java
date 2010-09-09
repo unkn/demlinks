@@ -40,12 +40,6 @@ public interface Level020_DMLStorageWrapper
 		Level010_DMLStorageWrapper
 {
 	
-	/**
-	 * @param first
-	 * @param second
-	 * @return
-	 * @throws StorageException
-	 */
 	public
 			boolean
 			ensureVector(
@@ -60,7 +54,7 @@ public interface Level020_DMLStorageWrapper
 						Symbol second );
 	
 
-	public// BDBVectorIterator<Symbol, Symbol>
+	public
 			SymbolIterator
 			getIterator_on_Initials_of(
 										Symbol terminalObject );
@@ -70,20 +64,20 @@ public interface Level020_DMLStorageWrapper
 	 * @param initialObject
 	 * @return already inited iterator, use deInit() when done
 	 */
-	public// BDBVectorIterator<Symbol, Symbol>
+	public
 			SymbolIterator
 			getIterator_on_Terminals_of(
 											Symbol initialObject );
 	
 
 	public
-			int
+			long
 			countInitials(
 							Symbol ofTerminalObject );
 	
 
 	public
-			int
+			long
 			countTerminals(
 							Symbol ofInitialObject );
 	
@@ -100,6 +94,7 @@ public interface Level020_DMLStorageWrapper
 	 * @param terminal
 	 * @return true if existed
 	 */
+	public
 			boolean
 			removeVector(
 							Symbol initial,

@@ -29,6 +29,7 @@ package org.dml.level010;
 import static org.junit.Assert.*;
 
 import java.io.File;
+import java.util.HashSet;
 
 import org.dml.JUnits.Consts;
 import org.dml.database.bdb.level1.Level1_Storage_BerkeleyDB;
@@ -120,7 +121,9 @@ public class SymbolTest
 		Symbol b = Symbol.getNew(
 									b1,
 									tsSym );
-		assertTrue( a == b );
+		assertNotNull( a );
+		assertNotNull( b );
+		assertTrue( a == b );// same instance
 		assertNotNull( params.set(
 									PossibleParams.homeDir,
 									Consts.BDB_ENV_PATH
@@ -132,6 +135,49 @@ public class SymbolTest
 		Symbol c = Symbol.getNew(
 									b2,
 									tsSym );
-		assertTrue( b != c );
+		assertTrue( b != c );// different instances due to different bdb-s
+		
+		Symbol.junitClearCache();// ie. due to too many cached Symbols some were deleted from cache
+		Symbol aa = Symbol.getNew(
+									b1,
+									tsSym );
+		assertNotNull( aa );
+		assertTrue( a != aa );// different instances
+		assertTrue( a.equals( aa ) );// but same contents
+		assertTrue( aa.equals( a ) );
+		
+		Symbol bb = Symbol.getNew(
+									b1,
+									tsSym );
+		assertNotNull( bb );
+		assertTrue( b != bb );// diff instances due to not being previously cached
+		assertTrue( b.equals( bb ) );// same contents
+		assertTrue( bb.equals( b ) );
+		
+		Symbol cc = Symbol.getNew(
+									b2,
+									tsSym );
+		assertNotNull( cc );
+		assertTrue( c != cc );
+		assertTrue( c.equals( cc ) );
+		assertTrue( cc.equals( c ) );
+		
+		HashSet<Symbol> hs = new HashSet<Symbol>();
+		assertTrue( hs.size() == 0 );
+		assertTrue( hs.add( a ) );
+		assertTrue( hs.size() == 1 );
+		assertFalse( hs.add( aa ) );
+		assertTrue( hs.size() == 1 );
+		assertFalse( hs.add( b ) );
+		assertTrue( hs.size() == 1 );
+		assertFalse( hs.add( bb ) );
+		assertTrue( hs.size() == 1 );
+		
+		assertTrue( hs.add( c ) );
+		assertTrue( hs.size() == 2 );
+		assertFalse( hs.add( cc ) );
+		assertTrue( hs.size() == 2 );
+		Factory.deInit( b2 );
+		Factory.deInit( b1 );
 	}
 }

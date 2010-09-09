@@ -65,7 +65,8 @@ public class Level020_DMLEnvironmentTest
 		// Level020_DMLEnvironment d1 = new Level020_DMLEnvironment();
 		params.set(
 					PossibleParams.homeDir,
-					Consts.BDB_ENV_PATH + "1&2" );
+					Consts.BDB_ENV_PATH
+							+ "1&2" );
 		// d1.init( params );
 		Level020_DMLEnvironment d1 = Factory.getNewInstanceAndInit(
 																	Level020_DMLEnvironment.class,
@@ -79,7 +80,8 @@ public class Level020_DMLEnvironmentTest
 		
 		params.set(
 					PossibleParams.homeDir,
-					Consts.BDB_ENV_PATH + "3" );
+					Consts.BDB_ENV_PATH
+							+ "3" );
 		Level020_DMLEnvironment d3 = Factory.getNewInstanceAndInit(
 																	Level020_DMLEnvironment.class,
 																	params );
@@ -158,15 +160,15 @@ public class Level020_DMLEnvironmentTest
 			Factory.deInitIfAlreadyInited( d1 );
 			// d1.deInit();
 			// d2.deInit();
-			assertFalse( d1.isInited() );
-			assertTrue( d2.isInited() );
-			assertTrue( d3.isInited() );
+			assertFalse( d1.isInitingOrInited() );
+			assertTrue( d2.isInitedSuccessfully() );
+			assertTrue( d3.isInitedSuccessfully() );
 			Factory.deInit( d2 );
 			Factory.deInit( d3 );
 			// d1.deInitAllLikeMe();
-			assertFalse( d1.isInited() );
-			assertFalse( d2.isInited() );
-			assertFalse( d3.isInited() );
+			assertFalse( d1.isInitingOrInited() );
+			assertFalse( d2.isInitingOrInited() );
+			assertFalse( d3.isInitingOrInited() );
 			// params.deInit();
 		}
 	}

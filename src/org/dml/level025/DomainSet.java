@@ -27,6 +27,7 @@ package org.dml.level025;
 
 import org.dml.database.bdb.level2.BDBVectorIterator;
 import org.dml.level010.Symbol;
+import org.dml.level020.SymbolIterator;
 import org.dml.tools.RunTime;
 import org.dml.tools.TwoKeyHashMap;
 import org.dml.tracking.Factory;
@@ -64,7 +65,7 @@ public class DomainSet
 								passedEnv,
 								passedSelf,
 								passedDomain );
-		RunTime.assumedTrue( passedEnv.isInited() );
+		RunTime.assumedTrue( passedEnv.isInitedSuccessfully() );
 		
 		domain = passedDomain;
 	}
@@ -156,7 +157,7 @@ public class DomainSet
 		RunTime.assumedNotNull( domain );
 		RunTime.assumedFalse( selfAsSymbol == domain );
 		
-		BDBVectorIterator<Symbol, Symbol> iter = env.getIterator_on_Terminals_of( selfAsSymbol );
+		SymbolIterator iter = env.getIterator_on_Terminals_of( selfAsSymbol );
 		try
 		{
 			iter.goFirst();
@@ -172,7 +173,8 @@ public class DomainSet
 		}
 		finally
 		{
-			Factory.deInit( iter );
+			iter.close();
+			iter = null;
 		}
 	}
 	

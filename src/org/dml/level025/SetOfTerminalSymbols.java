@@ -27,6 +27,7 @@ package org.dml.level025;
 
 import org.dml.database.bdb.level2.BDBVectorIterator;
 import org.dml.level010.Symbol;
+import org.dml.level020.SymbolIterator;
 import org.dml.tools.RunTime;
 import org.dml.tools.TwoKeyHashMap;
 import org.dml.tracking.Factory;
@@ -47,7 +48,6 @@ public class SetOfTerminalSymbols
 	private static final TwoKeyHashMap<Level025_DMLEnvironment, Symbol, SetOfTerminalSymbols>	allSetOfSymbolsInstances	= new TwoKeyHashMap<Level025_DMLEnvironment, Symbol, SetOfTerminalSymbols>();
 	protected final Level025_DMLEnvironment														env;
 	protected final Symbol																		selfAsSymbol;
-	private BDBVectorIterator<Symbol, Symbol>													iter						= null;
 	
 	
 	/**
@@ -61,7 +61,7 @@ public class SetOfTerminalSymbols
 		RunTime.assumedNotNull(
 								passedEnv,
 								passedSelf );
-		RunTime.assumedTrue( passedEnv.isInited() );
+		RunTime.assumedTrue( passedEnv.isInitedSuccessfully() );
 		
 		env = passedEnv;
 		selfAsSymbol = passedSelf;
@@ -79,7 +79,7 @@ public class SetOfTerminalSymbols
 		RunTime.assumedNotNull(
 								passedEnv,
 								passedSelf );
-		RunTime.assumedTrue( passedEnv.isInited() );
+		RunTime.assumedTrue( passedEnv.isInitedSuccessfully() );
 		
 		SetOfTerminalSymbols existingSOS = getSOSInstance(
 															passedEnv,
@@ -113,7 +113,7 @@ public class SetOfTerminalSymbols
 		RunTime.assumedNotNull(
 								env,
 								selfAsSymbol );
-		RunTime.assumedTrue( env.isInited() );
+		RunTime.assumedTrue( env.isInitedSuccessfully() );
 	}
 	
 
@@ -203,7 +203,7 @@ public class SetOfTerminalSymbols
 	
 
 	public
-			int
+			long
 			size()
 	{
 		
@@ -232,40 +232,6 @@ public class SetOfTerminalSymbols
 	
 
 	/**
-	 * use iter.deInit() when done<br>
-	 * 
-	 * @return iter
-	 */
-	private
-			void
-			refreshIterator()
-	{
-		
-		if ( null == iter )
-		{
-			iter = env.getIterator_on_Terminals_of( selfAsSymbol );
-		}
-		else
-		{
-			Factory.reInitIfNotInited( iter );
-			// iter.reInit();
-		}
-		RunTime.assumedNotNull( iter );
-	}
-	
-
-	private
-			void
-			deInitIterator()
-	{
-		
-		RunTime.assumedNotNull( iter );
-		Factory.deInit( iter );
-		// iter.deInit();
-	}
-	
-
-	/**
 	 * @param side
 	 *            only FIRST is allowed yet
 	 * @return
@@ -278,7 +244,9 @@ public class SetOfTerminalSymbols
 		
 		Symbol ret = null;
 		
-		this.refreshIterator();
+		// is needed to get new fresh iterator due to possible changes in the database, those won't be reflected if we
+		// keep an iterator open all the time, right?
+		SymbolIterator iter = env.getIterator_on_Terminals_of( selfAsSymbol );
 		try
 		{
 			switch ( side )
@@ -294,7 +262,14 @@ public class SetOfTerminalSymbols
 		}
 		finally
 		{
-			this.deInitIterator();
+			try
+			{
+				iter.close();
+			}
+			finally
+			{
+				iter = null;
+			}
 		}
 		
 		return ret;
@@ -318,7 +293,7 @@ public class SetOfTerminalSymbols
 								ofThis );
 		Symbol ret = null;
 		
-		this.refreshIterator();
+		SymbolIterator iter = env.getIterator_on_Terminals_of( selfAsSymbol );
 		try
 		{
 			iter.goTo( ofThis );
@@ -342,7 +317,14 @@ public class SetOfTerminalSymbols
 		}
 		finally
 		{
-			this.deInitIterator();
+			try
+			{
+				iter.close();
+			}
+			finally
+			{
+				iter = null;
+			}
 		}
 		
 		return ret;

@@ -62,7 +62,7 @@ public class UniqueSymbolsGenerator
 	{
 		
 		RunTime.assumedNotNull( bdbLevel1 );
-		RunTime.assumedTrue( bdbLevel1.isInited() );
+		RunTime.assumedTrue( bdbLevel1.isInitedSuccessfully() );
 		bdbL1 = bdbLevel1;
 	}
 	

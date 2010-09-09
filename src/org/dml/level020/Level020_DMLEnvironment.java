@@ -135,7 +135,7 @@ public class Level020_DMLEnvironment
 
 	@Override
 	public
-			BDBVectorIterator<Symbol, Symbol>
+			SymbolIterator
 			getIterator_on_Initials_of(
 										Symbol terminalObject )
 	{
@@ -147,7 +147,7 @@ public class Level020_DMLEnvironment
 
 	@Override
 	public
-			BDBVectorIterator<Symbol, Symbol>
+			SymbolIterator
 			getIterator_on_Terminals_of(
 											Symbol initialObject )
 	{
@@ -166,7 +166,7 @@ public class Level020_DMLEnvironment
 	 */
 	@Override
 	public
-			int
+			long
 			countInitials(
 							Symbol ofTerminalObject )
 	{
@@ -185,7 +185,7 @@ public class Level020_DMLEnvironment
 	 */
 	@Override
 	public
-			int
+			long
 			countTerminals(
 							Symbol ofInitialObject )
 	{

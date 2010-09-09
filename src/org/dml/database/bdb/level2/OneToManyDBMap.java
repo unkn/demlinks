@@ -464,15 +464,13 @@ public class OneToManyDBMap<InitialType, TerminalType>
 		
 		// DatabaseEntry keyEntry = new DatabaseEntry();
 		// initialBinding.objectToEntry( initialObject, keyEntry );
-		@SuppressWarnings( "unchecked" )
-		BDBVectorIterator<InitialType, TerminalType> ret = Factory
-				.getNewInstanceAndInitWithoutMethodParams(
-															BDBVectorIterator.class,
-															this.getBDBL1(),
-															this.getForwardDB(),
-															initialObject,
-															initialBinding,
-															terminalBinding );
+		BDBVectorIterator<InitialType, TerminalType> ret;
+		ret = new BDBVectorIterator<InitialType, TerminalType>(
+																this.getBDBL1(),
+																this.getForwardDB(),
+																initialObject,
+																initialBinding,
+																terminalBinding );
 		// ret.init( null );
 		// Factory.getNewInstanceAndInitWithoutParams( BDBVectorIterator.class, this.getBDBL1(), this.getForwardDB(),
 		// initialObject,
@@ -492,14 +490,13 @@ public class OneToManyDBMap<InitialType, TerminalType>
 	{
 		
 		@SuppressWarnings( "unchecked" )
-		BDBVectorIterator<TerminalType, InitialType> ret = Factory
-				.getNewInstanceAndInitWithoutMethodParams(
-															BDBVectorIterator.class,
-															this.getBDBL1(),
-															this.getBackwardDB(),
-															terminalObject,
-															terminalBinding,
-															initialBinding );
+		BDBVectorIterator<TerminalType, InitialType> ret;
+		ret = new BDBVectorIterator<TerminalType, InitialType>(
+																this.getBDBL1(),
+																this.getBackwardDB(),
+																terminalObject,
+																terminalBinding,
+																initialBinding );
 		// ret.init( null );
 		// Factory.getNewInstanceAndInitWithoutParams( BDBVectorIterator.class, this.getBDBL1(), this.getBackwardDB(),
 		// terminalObject, terminalBinding, initialBinding );
@@ -523,8 +520,7 @@ public class OneToManyDBMap<InitialType, TerminalType>
 		}
 		finally
 		{
-			Factory.deInit( vi );
-			// vi.deInit();
+			vi.close();
 		}
 		return count;
 	}
@@ -545,8 +541,7 @@ public class OneToManyDBMap<InitialType, TerminalType>
 		}
 		finally
 		{
-			// vi.deInit();
-			Factory.deInit( vi );
+			vi.close();
 		}
 		return count;
 	}
@@ -591,13 +586,26 @@ public class OneToManyDBMap<InitialType, TerminalType>
 				// deInit the unused one
 				if ( iterator == iter2 )
 				{
-					Factory.deInit( iter1 );
-					// iter1.deInit();
+					try
+					{
+						iter1.close();
+					}
+					finally
+					{
+						iter1 = null;
+					}
 				}
 				else
 				{
-					// iter2.deInit();
-					Factory.deInit( iter2 );
+					try
+					{
+						iter2.close();
+						
+					}
+					finally
+					{
+						iter2 = null;
+					}
 				}
 			}
 			
@@ -627,11 +635,17 @@ public class OneToManyDBMap<InitialType, TerminalType>
 		}
 		finally
 		{
-			Factory.deInit( iterator );
-			// iterator.deInit();
+			try
+			{
+				iterator.close();
+			}
+			finally
+			{
+				iterator = null;
+			}
 		}
-		RunTime.assumedFalse( iter1.isInitingOrInited() );
-		RunTime.assumedFalse( iter2.isInitingOrInited() );
+		// RunTime.assumedFalse( iter1.isInitingOrInited() );
+		// RunTime.assumedFalse( iter2.isInitingOrInited() );
 		return found;
 	}
 	
@@ -703,16 +717,28 @@ public class OneToManyDBMap<InitialType, TerminalType>
 				}
 				finally
 				{
-					Factory.deInit( reverseIter );
-					// reverseIter.deInit();
+					try
+					{
+						reverseIter.close();
+					}
+					finally
+					{
+						reverseIter = null;
+					}
 				}
 			}
 			
 		}
 		finally
 		{
-			Factory.deInit( iter );
-			// iter.deInit();
+			try
+			{
+				iter.close();
+			}
+			finally
+			{
+				iter = null;
+			}
 		}
 		RunTime.assumedFalse( this.isVector(
 												initialObject,
@@ -720,6 +746,5 @@ public class OneToManyDBMap<InitialType, TerminalType>
 		return found1;
 	}
 	
-
 
 }

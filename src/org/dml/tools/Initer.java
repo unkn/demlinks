@@ -40,6 +40,8 @@ import org.references.method.MethodParams;
  *
  */
 public abstract class Initer
+		implements
+		IniterInterface
 {
 	
 	// true on calling .start(); and true on calling .done()
@@ -80,6 +82,7 @@ public abstract class Initer
 	/**
 	 * @return true if it's inside init() aka start()
 	 */
+	@Override
 	public final
 			boolean
 			isInitingOrInited()

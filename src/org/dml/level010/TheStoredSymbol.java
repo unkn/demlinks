@@ -59,6 +59,7 @@ public class TheStoredSymbol
 			Long l1 )
 	{
 		l = l1;
+		RunTime.assumedNotNull( l );
 	}
 	
 
@@ -119,9 +120,10 @@ public class TheStoredSymbol
 			}
 			else
 			{
-				if ( obj.getClass() == this.getClass() )
+				if ( obj.getClass().equals(
+											this.getClass() ) )
 				{
-					if ( l == ( (TheStoredSymbol)obj ).l )
+					if ( l.equals( ( (TheStoredSymbol)obj ).l ) )
 					{
 						return true;
 					}

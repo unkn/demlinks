@@ -30,7 +30,7 @@ import org.dml.tools.TwoWayHashMap;
 
 
 /**
- * Always use .equals() although this will compare by refs<br>
+ * Always use .equals() because you may encounter diff instances with same contens which means it's same Symbol<br>
  * use equals when sure 'this' is not null ie. this.equals(that)<br>
  * is stored in Storage<br>
  * so basically, Symbol is a long, in Storage and it's one2one associated with a SymbolJavaID (which is basically a
@@ -74,6 +74,9 @@ public class Symbol
 	// the stored symbol from bdb
 	private final TheStoredSymbol																	tsSym;
 	
+
+	// FIXME: limit cache size here (which means we may encounter two diff Symbol instances with same contents so you
+	// must always use .equals()):
 	private static final HashMap<Level1_Storage_BerkeleyDB, TwoWayHashMap<Symbol, TheStoredSymbol>>	all_Symbols_from_BDBStorage	= new HashMap<Level1_Storage_BerkeleyDB, TwoWayHashMap<Symbol, TheStoredSymbol>>();
 	
 	
@@ -130,7 +133,8 @@ public class Symbol
 					// but we do want to get warned when comparing Symbols from two different storages as this indicates
 					// bad programming
 					Symbol casted = (Symbol)sym;
-					if ( this.getStorage() != casted.getStorage() )
+					if ( !this.getStorage().equals(
+													casted.getStorage() ) )
 					{
 						RunTime
 								.badCall( "you tried to compare two Symbols from different Storages, they may have the "
@@ -142,10 +146,12 @@ public class Symbol
 					else
 					{
 						// same storage then,
-						if ( this.getTheStoredSymbol() == casted.getTheStoredSymbol() )
+						if ( this.getTheStoredSymbol().equals(
+																casted.getTheStoredSymbol() ) )
 						{
-							RunTime.bug( "same storage, and same tsSym? but different references? we're supposed"
-											+ " to have only one instance for same contents Symbols" );
+							// same storage, and same tsSym? but different references? we're supposed to have only one
+							// instance for same contents Symbols BUT this is only true if the cache is never cleared!
+							return true;
 						}
 						else
 						{
@@ -197,6 +203,8 @@ public class Symbol
 			int
 			hashCode()
 	{
+		// NOTE: this may return same int for two different instances with diff contents but that's ok, u use equals for
+		// that check
 		/*
 		 * It is not required that if two objects are unequal according to the java.lang.Object.equals(java.lang.Object)
 		 * method, then calling the hashCode method on each of the two objects must produce distinct integer results.
@@ -211,10 +219,12 @@ public class Symbol
 
 	/**
 	 * a new Symbol tightly connected to the storage from where it was taken from<br>
+	 * For the same Symbol contents it may or may not be a new instance, depending on cache size, if it's cached it's
+	 * returned - so same instance, else new instance is created<br>
 	 * 
 	 * @param bdbL1
 	 * @param tsSym
-	 * @return never null; same Symbol instance for the same tsSym
+	 * @return never null;
 	 */
 	public static
 			Symbol
@@ -265,5 +275,16 @@ public class Symbol
 		}
 		
 		return existingOne;
+	}
+	
+
+	/**
+	 * for JUnit use only!
+	 */
+	public static
+			void
+			junitClearCache()
+	{
+		all_Symbols_from_BDBStorage.clear();
 	}
 }

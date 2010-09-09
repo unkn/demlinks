@@ -34,32 +34,49 @@ import org.references.Position;
  * 
  *
  */
-public interface OrderedList {
+public interface OrderedList
+{
 	
-	public boolean ensure( Symbol whichSymbol );
+	public
+			boolean
+			ensure(
+					Symbol whichSymbol );
 	
+
 	/**
 	 * @param whichSymbol
 	 * @return
 	 */
-	public boolean hasSymbol( Symbol whichSymbol );
+	public
+			boolean
+			hasSymbol(
+						Symbol whichSymbol );
 	
+
 	/**
 	 * 
 	 */
-	void assumedValid();
+			void
+			assumedValid();
 	
+
 	/**
 	 * @return
 	 */
-	int size();
+			long
+			size();
 	
+
 	/**
 	 * @param last
 	 * @param e1
 	 */
-	void add( Symbol which, Position pos );
+			void
+			add(
+					Symbol which,
+					Position pos );
 	
+
 	/**
 	 * cannot be used when DUPs are allowed
 	 * 
@@ -67,33 +84,51 @@ public interface OrderedList {
 	 * @param before
 	 * @param e1
 	 */
-	void add( Symbol which, Position pos, Symbol posSym );
+			void
+			add(
+					Symbol which,
+					Position pos,
+					Symbol posSym );
 	
+
 	/**
 	 * @param pos
 	 * @param posSymbol
 	 * @return null if didn't exist, else the Symbol which was removed
 	 */
-	Symbol remove( Position pos, Symbol posSymbol );
+			Symbol
+			remove(
+					Position pos,
+					Symbol posSymbol );
 	
+
 	/**
 	 * @param pos
 	 * @return null if didn't exist, else the Symbol which was removed
 	 */
-	Symbol remove( Position pos );
+			Symbol
+			remove(
+					Position pos );
 	
+
 	/**
 	 * @param whichSymbol
 	 * @return true if existed
 	 */
-	boolean remove( Symbol whichSymbol );
+			boolean
+			remove(
+					Symbol whichSymbol );
 	
+
 	/**
 	 * @param first
 	 * @return
 	 */
-	Symbol get( Position first );
+			Symbol
+			get(
+					Position first );
 	
+
 	/**
 	 * can't use this when DUPs are allowed ie. posSym may exist twice, so which one r u referring to?
 	 * 
@@ -101,10 +136,15 @@ public interface OrderedList {
 	 * @param e2
 	 * @return
 	 */
-	Symbol get( Position pos, Symbol posSym );
+			Symbol
+			get(
+					Position pos,
+					Symbol posSym );
 	
+
 	/**
 	 * @return
 	 */
-	Symbol getAsSymbol();
+			Symbol
+			getAsSymbol();
 }

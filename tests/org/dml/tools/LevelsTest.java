@@ -444,10 +444,10 @@ public class LevelsTest
 			}
 			
 			assertNotNull( vl3 );
-			assertTrue( vl3.isInited() );
+			assertTrue( vl3.isInitedSuccessfully() );
 			// ml3.deInit();// will deInit it
 			Factory.deInit( ml3 ); // will deInit it
-			assertFalse( vl3.isInited() );
+			assertFalse( vl3.isInitingOrInited() );
 			assertNotNull( ml3.junitGetVar() );// not null if it's own
 			assertTrue( ml3.junitGetVar() == vl3 );
 			assertTrue( ml3.junitGetVar() == old );
@@ -466,7 +466,7 @@ public class LevelsTest
 		VarLevel3 notOwn = Factory.getNewInstanceAndInit(
 															VarLevel3.class,
 															params );
-		assertTrue( notOwn.isInited() );
+		assertTrue( notOwn.isInitedSuccessfully() );
 		// params.deInit();
 		// Factory.deInit( params );
 		
@@ -484,10 +484,10 @@ public class LevelsTest
 			// ml3.init( mlParams );
 			VarLevel3 newVL3 = (VarLevel3)ml3.junitGetVar();
 			assertNotNull( newVL3 );
-			assertTrue( newVL3.isInited() );
+			assertTrue( newVL3.isInitedSuccessfully() );
 			// ml3.deInit();
 			Factory.deInit( ml3 );
-			assertTrue( newVL3.isInited() );
+			assertTrue( newVL3.isInitedSuccessfully() );
 			assertNull( ml3.junitGetVar() );// null if it's now own
 			assertTrue( newVL3 == notOwn );
 			count--;
@@ -497,14 +497,14 @@ public class LevelsTest
 		Factory.initWithoutParams( ml3 );
 		VarLevel3 own = (VarLevel3)ml3.junitGetVar();
 		assertNotNull( own );
-		assertTrue( own.isInited() );
+		assertTrue( own.isInitedSuccessfully() );
 		assertFalse( own == notOwn );
 		ml3.showHome();
 		// ml3.deInit();
 		Factory.deInit( ml3 );
 		assertNotNull( ml3.junitGetVar() );
 		assertTrue( ml3.junitGetVar() == own );
-		assertFalse( own.isInited() );
+		assertFalse( own.isInitingOrInited() );
 		
 		// mlParams.deInit();
 		// Factory.deInit( mlParams );
@@ -666,32 +666,32 @@ public class LevelsTest
 		mp.set(
 				PossibleParams.varLevelAll,
 				vl3 );
-		assertTrue( vl3.isInited() );
+		assertTrue( vl3.isInitedSuccessfully() );
 		// ml3.init( mp );
 		Factory.init(
 						ml3,
 						mp );
 		// Factory.deInit( mp );
 		// mp.deInit();
-		assertTrue( vl3.isInited() );
+		assertTrue( vl3.isInitedSuccessfully() );
 		assertTrue( ml3.junitGetVar() == vl3 );
 		ml3.showHome();
 		// ml3.deInit();
 		Factory.deInit( ml3 );
-		assertTrue( vl3.isInited() );
+		assertTrue( vl3.isInitedSuccessfully() );
 		// vl3.deInit();
 		Factory.deInit( vl3 );
-		assertFalse( vl3.isInited() );
+		assertFalse( vl3.isInitingOrInited() );
 		vl3 = null;
 		
 		// ml3.init( null );
 		Factory.initWithoutParams( ml3 );
 		VarLevel3 intern = (VarLevel3)ml3.junitGetVar();
 		assertNotNull( intern );
-		assertTrue( intern.isInited() );
+		assertTrue( intern.isInitedSuccessfully() );
 		// ml3.deInit();
 		Factory.deInit( ml3 );
-		assertFalse( intern.isInited() );
+		assertFalse( intern.isInitingOrInited() );
 		assertNotNull( ml3.junitGetVar() );// not null when using own var
 	}
 	

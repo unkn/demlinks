@@ -58,8 +58,6 @@ import com.sleepycat.je.OperationStatus;
  *            iterates on these
  */
 public class BDBVectorIterator<InitialType, TerminalType>
-		extends
-		Initer
 		implements
 		VectorIterator<TerminalType>
 {
@@ -81,6 +79,15 @@ public class BDBVectorIterator<InitialType, TerminalType>
 	private static final LockMode				Locky					= LockMode.DEFAULT;
 	
 	
+	/**
+	 * DON'T forget to call {@link #close()} when done using this iterator!
+	 * 
+	 * @param bdb_L1
+	 * @param whichPriDB
+	 * @param initialObject1
+	 * @param initialBinding1
+	 * @param terminalBinding1
+	 */
 	public BDBVectorIterator(
 			Level1_Storage_BerkeleyDB bdb_L1,
 			Database whichPriDB,
@@ -110,6 +117,16 @@ public class BDBVectorIterator<InitialType, TerminalType>
 	}
 	
 
+	@Override
+	public
+			Level1_Storage_BerkeleyDB
+			getBDBL1()
+	{
+		RunTime.assumedNotNull( bdbL1 );
+		return bdbL1;
+	}
+	
+
 	private final
 			Cursor
 			getCursor()
@@ -118,7 +135,7 @@ public class BDBVectorIterator<InitialType, TerminalType>
 		
 		if ( null == cursor )
 		{
-			txn = TransactionCapsule.getNewTransaction( bdbL1 );
+			txn = TransactionCapsule.getNewTransaction( this.getBDBL1() );
 			cursor = db.openCursor(
 									txn.get(),
 									CursorConfig.READ_COMMITTED );
@@ -286,17 +303,7 @@ public class BDBVectorIterator<InitialType, TerminalType>
 	
 
 	@Override
-	protected
-			void
-			done(
-					MethodParams params )
-	{
-		
-		this.close();
-	}
-	
-
-	private final
+	public final
 			void
 			close()
 	{
@@ -333,27 +340,6 @@ public class BDBVectorIterator<InitialType, TerminalType>
 				txn = null;
 			}
 		}
-	}
-	
-
-	@Override
-	protected
-			void
-			start(
-					MethodParams params )
-	{
-		
-		if ( null != params )
-		{
-			RunTime.badCall( "not accepting any parameters here" );
-		}
-		// try {
-		// this.goFirst();// init cursor
-		// // if ( this.now() == null ) {
-		// // RunTime.bug( "cursor init failed" );
-		// // }
-		// throw new StorageException( de );
-		// }
 	}
 	
 
