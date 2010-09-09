@@ -83,16 +83,23 @@ public class DBMapTupleNodeIDsTest
 		bdb = Factory.getNewInstanceAndInit(
 												Level1_Storage_BerkeleyDB.class,
 												params );
+		params.clear();
 		// bdb = new Level1_Storage_BerkeleyDB();
 		// bdb.init( params );
 		// params.deInit();
 		// Factory.deInit( params );
 		// tdb = new DBMapSymbolsTuple( bdb, "tupleIDs" );
 		// tdb.init( null );
-		tdb = Factory.getNewInstanceAndInitWithoutMethodParams(
-																DBMapSymbolsTuple.class,
-																bdb,
-																"tupleIDs" );
+		RunTime.assumedNull( params.set(
+											PossibleParams.level1_BDBStorage,
+											bdb ) );
+		RunTime.assumedNull( params.set(
+											PossibleParams.dbName,
+											"tupleIDs" ) );
+		
+		tdb = Factory.getNewInstanceAndInit(
+												DBMapSymbolsTuple.class,
+												params );
 		
 	}
 	
@@ -108,6 +115,7 @@ public class DBMapTupleNodeIDsTest
 		tdb = null;
 		Factory.deInitIfInited_WithPostponedThrows( bdb );
 		bdb = null;
+		RunTime.throwAllThatWerePosponed();
 		// System.out.println( "all:" );
 		// Factory.deInitAll();
 		// System.out.println( "done" );

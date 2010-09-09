@@ -61,7 +61,7 @@ public class SetOfTerminalSymbols
 		RunTime.assumedNotNull(
 								passedEnv,
 								passedSelf );
-		RunTime.assumedTrue( passedEnv.isInitedSuccessfully() );
+		RunTime.assumedTrue( passedEnv.isInitingOrInited() );
 		
 		env = passedEnv;
 		selfAsSymbol = passedSelf;
@@ -79,7 +79,7 @@ public class SetOfTerminalSymbols
 		RunTime.assumedNotNull(
 								passedEnv,
 								passedSelf );
-		RunTime.assumedTrue( passedEnv.isInitedSuccessfully() );
+		RunTime.assumedTrue( passedEnv.isInitingOrInited() );
 		
 		SetOfTerminalSymbols existingSOS = getSOSInstance(
 															passedEnv,
@@ -113,7 +113,7 @@ public class SetOfTerminalSymbols
 		RunTime.assumedNotNull(
 								env,
 								selfAsSymbol );
-		RunTime.assumedTrue( env.isInitedSuccessfully() );
+		RunTime.assumedTrue( env.isInitingOrInited() );// ye we get here while still in start()
 	}
 	
 

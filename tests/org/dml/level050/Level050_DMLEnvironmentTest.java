@@ -82,7 +82,10 @@ public class Level050_DMLEnvironmentTest
 			tearDown()
 	{
 		
-		Factory.deInit( env );
+		if ( null != env )
+		{
+			Factory.deInit( env );
+		}
 		// env.deInitSilently();
 	}
 	

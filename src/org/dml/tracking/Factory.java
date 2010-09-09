@@ -632,7 +632,15 @@ public class Factory
 			deInitIfInited_WithPostponedThrows(
 												T instance )
 	{
-		RunTime.assumedNotNull( instance );
+		try
+		{
+			RunTime.assumedNotNull( instance );
+		}
+		catch ( Throwable t )
+		{
+			RunTime.throPostponed( t );
+			return;
+		}
 		if ( !instance.isInitingOrInited() )
 		{
 			return;// silently

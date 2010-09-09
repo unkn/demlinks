@@ -692,14 +692,16 @@ public class RunTime
 	}
 	
 
-	public synchronized static
+	public static
 			StackTraceElement[]
-			getCurrentStackTraceElementsArray()
+			getProcessedStackTraceElementsArray(
+													StackTraceElement[] unprocessedOne )
 	{
-		StackTraceElement[] stea = Thread.currentThread().getStackTrace();
-		// boolean showStack = false;
+		RunTime.assumedNotNull( (Object)unprocessedOne );
+		
 		if ( RunTime.throWrapperAspectEnabled )
 		{
+			StackTraceElement[] stea = unprocessedOne.clone();
 			// we need to fix the stack trace if an around-advice is enabled
 			// because the line numbering is wrong BUT ONLY for same name methods that can exist only if they have
 			// different number of params
@@ -760,7 +762,20 @@ public class RunTime
 					}
 				}
 			}
-		}
+			return stea;
+		}// if aspect
+		return unprocessedOne;
+	}
+	
+
+	public synchronized static
+			StackTraceElement[]
+			getCurrentStackTraceElementsArray()
+	{
+		StackTraceElement[] stea = Thread.currentThread().getStackTrace();
+		return getProcessedStackTraceElementsArray( stea );
+		// boolean showStack = false;
+		
 		// if ( showStack )
 		// {
 		// for ( int i = 0; i < stea.length; i++ )
@@ -770,7 +785,7 @@ public class RunTime
 		// + stea[i] );
 		// }
 		// }
-		return stea;
+		// return stea;
 	}
 	
 

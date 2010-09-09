@@ -102,7 +102,7 @@ public class Testy
 		System.out.println( this.getName()
 							+ " is done." );
 		home = null;
-		RunTime.assumedTrue( this.isInitedSuccessfully() );
+		RunTime.assumedTrue( this.isInitingOrInited() );
 	}
 	
 

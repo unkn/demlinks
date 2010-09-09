@@ -50,6 +50,8 @@ public class SymbolIterator
 	
 	
 	/**
+	 * constructor<br>
+	 * 
 	 * @param seed1
 	 *            an preInited iterator, which we will deInit on our own
 	 */
@@ -96,8 +98,9 @@ public class SymbolIterator
 			goTo(
 					Symbol element )
 	{
+		RunTime.assumedNotNull( element );
 		this.getSeed().goTo(
-						element.getTheStoredSymbol() );
+								element.getTheStoredSymbol() );
 	}
 	
 
@@ -111,9 +114,17 @@ public class SymbolIterator
 			Symbol
 			now()
 	{
-		return Symbol.getNew(
-								this.getSeed().getBDBL1(),
-								this.getSeed().now() );
+		TheStoredSymbol tss = this.getSeed().now();
+		if ( null == tss )
+		{
+			return null;
+		}
+		else
+		{
+			return Symbol.getNew(
+									this.getSeed().getBDBL1(),
+									tss );
+		}
 	}
 	
 

@@ -34,6 +34,7 @@ import org.dml.database.bdb.level1.AllTupleBindings;
 import org.dml.database.bdb.level1.Level1_Storage_BerkeleyDB;
 import org.dml.database.bdb.level2.BDBVectorIterator;
 import org.dml.database.bdb.level2.OneToManyDBMap;
+import org.dml.tools.RunTime;
 import org.dml.tracking.Factory;
 import org.junit.After;
 import org.junit.Before;
@@ -111,9 +112,15 @@ public class OneToManyDBMapTest
 			void
 			tearDown()
 	{
-		
-		Factory.deInitIfAlreadyInited( o2m );
-		Factory.deInitIfAlreadyInited( bdb );
+		if ( null != o2m )
+		{
+			Factory.deInitIfInited_WithPostponedThrows( o2m );
+		}
+		if ( null != bdb )
+		{
+			Factory.deInitIfInited_WithPostponedThrows( bdb );
+		}
+		RunTime.throwAllThatWerePosponed();
 		// o2m.deInit();
 		// bdb.deInit();
 	}
