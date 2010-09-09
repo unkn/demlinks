@@ -104,7 +104,7 @@ public class Level2_Storage_BerkeleyDB
 			start(
 					MethodParams params )
 	{
-		RunTime.assumedNull( params );
+		RunTime.assumedNotNull( params );
 		
 		super.start( params );// first
 		
