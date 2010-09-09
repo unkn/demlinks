@@ -95,14 +95,20 @@ public class OneToManyDBMapTest
 		// o2m = new OneToManyDBMap<String, String>( bdb, "one to many", String.class,
 		// AllTupleBindings.getBinding( String.class ), String.class, AllTupleBindings.getBinding( String.class ) );
 		// o2m.init( null );
-		o2m = Factory.getNewInstanceAndInitWithoutMethodParams(
-																OneToManyDBMap.class,
-																bdb,
-																"one to many",
-																String.class,
-																AllTupleBindings.getBinding( String.class ),
-																String.class,
-																AllTupleBindings.getBinding( String.class ) );
+		params.clear();
+		RunTime.assumedNull( params.set(
+											PossibleParams.level1_BDBStorage,
+											bdb ) );
+		RunTime.assumedNull( params.set(
+											PossibleParams.dbName,
+											"one to many" ) );
+		o2m = Factory.getNewInstanceAndInit(
+												OneToManyDBMap.class,
+												params,
+												String.class,
+												AllTupleBindings.getBinding( String.class ),
+												String.class,
+												AllTupleBindings.getBinding( String.class ) );
 		// Factory.initWithoutParams( o2m );
 	}
 	

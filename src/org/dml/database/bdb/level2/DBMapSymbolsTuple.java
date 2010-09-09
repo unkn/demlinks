@@ -241,7 +241,7 @@ public class DBMapSymbolsTuple
 	/**
 	 * @param initial1
 	 * @param initial2
-	 * @return
+	 * @return null or the Symbol
 	 * @throws DatabaseException
 	 */
 	public
@@ -257,9 +257,16 @@ public class DBMapSymbolsTuple
 		TheStoredSymbol tss = composition.findCommonTerminalForInitials(
 																			initial1.getTheStoredSymbol(),
 																			initial2.getTheStoredSymbol() );
-		return Symbol.getNew(
-								composition.getBDBL1(),
-								tss );
+		if ( null == tss )
+		{
+			return null;
+		}
+		else
+		{
+			return Symbol.getNew(
+									composition.getBDBL1(),
+									tss );
+		}
 	}
 	
 

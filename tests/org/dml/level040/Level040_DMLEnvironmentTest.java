@@ -83,8 +83,10 @@ public class Level040_DMLEnvironmentTest
 			void
 			tearDown()
 	{
-		
-		Factory.deInit( l4 );
+		if ( null != l4 )
+		{
+			Factory.deInit( l4 );
+		}
 		// l4.deInitSilently();
 	}
 	
@@ -204,16 +206,20 @@ public class Level040_DMLEnvironmentTest
 		
 		l4.newLink(
 					e1,
-					JavaID.ensureJavaIDFor( "e1 " + list ) );
+					JavaID.ensureJavaIDFor( "e1 "
+											+ list ) );
 		l4.newLink(
 					e2,
-					JavaID.ensureJavaIDFor( "e2 " + list ) );
+					JavaID.ensureJavaIDFor( "e2 "
+											+ list ) );
 		l4.newLink(
 					e3,
-					JavaID.ensureJavaIDFor( "e3 " + list ) );
+					JavaID.ensureJavaIDFor( "e3 "
+											+ list ) );
 		l4.newLink(
 					e4,
-					JavaID.ensureJavaIDFor( "e4 " + list ) );
+					JavaID.ensureJavaIDFor( "e4 "
+											+ list ) );
 		Symbol iter = list.get( Position.FIRST );
 		while ( null != iter )
 		{

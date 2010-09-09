@@ -199,6 +199,7 @@ public class RunTime
 		// DON'T change this exception class, unless you also change the AspectJ using it
 		throw new RuntimeWrappedThrowException(
 												allExceptionsChained );
+		// FIXME: maybe we can get rid of showing RuntimeWrappedThrowException multiple times in "TH: " console msgs
 	}
 	
 

@@ -84,6 +84,37 @@ public class Level1_Storage_BerkeleyDB
 	private final static String									UNINITIALIZED_STRING		= "uninitializedString";
 	
 	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public
+			boolean
+			equals(
+					Object obj )
+	{
+		if ( null != obj )
+		{
+			if ( super.equals( obj ) )
+			{
+				return true;
+			}
+			else
+			{
+				if ( this.getClass() == obj.getClass() )
+				{
+					// FIXME: TODO: find a way to give true if two different env instances are open on same directory
+					// basically we can have two bdb environments on same dir accessing same Symbols and these must be
+					// detected as equal environments
+				}
+			}
+		}
+		return false;
+	}
+	
+
 	/**
 	 * singleton
 	 * 
