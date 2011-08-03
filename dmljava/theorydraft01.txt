@@ -1,0 +1,83 @@
+So what we have so far:
+
+There is such a thing called node which is identified by both a string called ID and by a Node object.
+For the same node, there can be only one Node object that identifies it. There is a one to one relationship between the node and its identifiers.
+For example: a node identified with the String ID "test" will have a Node object associated with that ID such that, if you know the ID you can get
+the Node object, and if you know the Node object you can get the String ID.
+	ID <-> Node
+
+So it's like a map between the string ID and the Node object.
+
+Now, this Node object can point to other Node objects.
+Also this Node object can be pointed by other Node objects.
+
+--------------Disregard:
+Due to limitations in some databases the following may or may not be applied:
+The Node can only exist if it is either pointed or points to at least one other Node.
+In other words, Nodes can only exist in tuples. There are no disconnected nodes.
+(A node can exist if it points to no other nodes but it is pointed to by at least one other node.)
+
+Basicly a Node should not be isolated. But if a Node can point to itself then it's isolated anyway.
+Also two nodes that only point to eachother (basicly it's enought that one points to the other) are isolated from the rest.
+So a lonely disconnected Node shouldn't be a problem. 
+--------------end disregard.
+
+ok so forget the above, we will allow Nodes with no children and no parents. 
+-------mutual links
+To be consistent, a Node A that has a node B in its children list ( A.children.has(B) ) 
+will imply that node B has node A in its parents list ( B.parents.has(A) )
+We can say that node A points to node B, if the above are true.
+The above is noted: A->B.
+However note that if B points to A that's an entirely different new link, whereas B.children.has(A) and A.parents.has(B)
+Noted: B->A
+
+also a note like A<-B is saying that B.parents.has(A) but also implies the obvious that A.children.has(B)
+
+X.children.has(Y) means that Y is a child of X. Or that X has a list of children that it points to and Y is in that list.
+
+---------
+the lists cannot contain duplicate Nodes.
+A->B
+A->C
+A->B (again) is not allowed (for the simple reason that just by identifying nodes via a String ID, it's impossible 
+to tell which B from A's children are we talking about: the first B or the last B; ie. we cannot pinpoint that specific B from A by using only 
+Node IDs)
+
+-------
+the order of the Nodes in the lists matters
+ie. 
+A->B
+A->C
+A->D
+
+the order is B,C,D and that order matters.
+
+When linking two nodes typically they are appended to the lists. ie. link(A,E) will add A->E after A->D and same for E , A will be appended A<-E
+
+------------
+To handle DUPs at a higher level we would insert Nodes with random but unique IDs between the parent and the Nodes in the list like this:
+if we want:
+A->B
+A->C
+A->B
+we do:
+A->RND1->B
+A->RND2->C
+A->RND3->B
+and RND1 thru 3 they don't point to anything else, but they can be pointed by more than just A
+Now if you want to pinpoint last B you just use RND3 as a node ID and you're there...
+----------------
+
+In java the expectations were like:
+if you get the Node object you can link to new nodes using only that object such as
+Node a = env.getNode("a");//uses the environment instance to get the Node mapped to the ID "a" (assuming it exists, else returns null)
+a.linkTo("newNode"); // now node "a" -> "newNode"
+print( a.getID() ); //will show the ID of the Node object a
+
+also: a.linkTo(b); //where b is another Node
+
+also, using a listIterator on the ie. children list of "a"
+ListIterator litr = a.get(List.CHILDREN).listIterator();
+litr.insert("new2", Location.BEFORE, "newNode"); //or stuff like that
+
+AtKaaZ, 13 Dec 2008.

@@ -1,0 +1,62 @@
+implemented in org.demlinks.javathree
+
+update:
+we still need the RND as  in:
+A->RND1->B
+A->RND2->C
+A->RND3->B (again)
+A->RND4->B
+because we need a node Ptr->RND3
+ofc the node Ptr would be defined on the domain of A but it's really not necessary since RND3 knows it's 
+child of A, nevertheless Ptr would be somehow defined on domain A. 
+Above, Ptr is supposedly pointing to the second B
+Should be easy to go to 3rd B from there.
+Also RNDs would be limited to 1 child and 1 parent.
+
+(We used this variant in the cpp version module named 'imagine')
+
+AtKaaZ, 26December 2008.
+
+--------old stuff follows:
+
+We have a Node identified by a string "A". Case sensitive.
+This string will always point to that same node, unless node is recreated. Then it's another node object.
+This Node has two lists. A list of parents and a list of children.
+Parents are those nodes that point to this node.
+Children are those nodes that this node points to.
+
+These lists contain NodeReference elements.
+A NR is a reference that points to a Node.
+A NR may point to only one node. A NR cannot point to another NR.
+NRs exist only in lists. Any NR is unique.
+Two different NRs may point to the same Node and be in the same list.
+That's how duplicate of nodes are supported.
+A NR should know in which list it is, and the list must know what 
+type of list it is(child/parent) and who's the Node that contains this list.
+In effect this means the NR would know what Node contains it and if it's 
+in a parent or child list within that node.
+
+A NR has a prev and a next within itself, to know which NR is next and 
+which is prev within the list that it exists.
+A NR exists only in one list. It cannot exist in two or more. That's for nodes.
+
+A Node can point to another Node via a NR, how? A Node will add a new NR into it's
+children list, and this NR will point to this other Node.
+
+The point for NR is that they need to be identified in order to insert/delete certain 
+nodes from the list.
+
+NR can exist within thinkdraft001 as:
+A->RND1->B
+A->RND2->C
+A->RND3->B
+NodeRefs->RND1
+NodeRefs->RND2
+NodeRefs->RND3
+that's in case dups exist, if dups don't exist there's no need for RND elements(which act as NRs)
+
+I'm not exactly sure which version is better, the NR or the RND version, although I was counting on the RND version until now,
+but as you can see the RND version has the NRs in an indirect and subtle way, but the NRs are still there. It seems that for the sake of
+clarity and accessibility the NR version should exist. Instead the RND version seems like a speed optimization from NR.
+
+AtKaaZ, 24&25 December 2008.

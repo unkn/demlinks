@@ -1,0 +1,95 @@
+The problem of parallel serials =)
+Basically executing many serial modifications in parallel, while keeping state consistency.
+I guess consistent from the point of view of the running programs, like logically consistent?
+or semantically consitent or wtw 
+
+Threads supposedly execute commands serially(even if they do goto/call)
+
+Assuming only word "theatre" already exists in dictionary held by 'words' class
+
+Attempting to craftfully run the following two threads 'at the same time' 
+
+thread1:
+cmd1411: someclass.somemethod(someparams);
+cmd1412: words.remove("theatre");
+cmd1413: word.add("something");
+
+
+thread2:
+cmd130:system.out.println("something");
+cmd131:words.add("themes");
+cmd132:otherclass.do(something);
+
+
+Here's what the 'only' CPU will see/execute (that is one executor executing one cmd at a time, 
+serially):
+Continuing from thread1 being next and cmd1412, then thread2 and cmd131....
+* signals cmds seen by the CPU
+
+timeline:
+* thread1: words.remove("theatre"); <- one cmd
+CPU will add/append to class 'words' execution queue the following cmd: 
+	cmd0: remove("theatre");
+at this time since class 'words' has more than 0 commands in queue, it will be added to thread 
+queue, that is, it's considered like being a thread (will be executed last, ie. append to 
+thread exec queue)
+and CPU will move on to next thread (or will go deep at this time, inside remove cmd)
+
+* thread2: words.add("themes");
+CPU will append to class 'words' exec queue the following command: 
+	cmd1: add("themes");
+and since it was already added to thread queue it won't do it again
+
+* 'words' class: cmd0: remove("theatre");
+this command would unlink each char from the word and delete it (supposedly)
+ie. "theatre"->{t,h,e,a,t,r,e} (initially)
+			cmd0: del "t"
+			cmd1: del "h"
+			cmd2: del "e"
+			cmd3: del "a"
+			cmd4: del "t"
+			cmd5: del "r"
+			cmd6: del "e"
+			cmd7: delparent "theatre" 
+			cmd8: implied return/end parent command (such that this will unlink this thread from 
+					thread exec queue and eventually empty the queue; well actually not empty it
+					but move the Instruction Pointer at the end so the queue will seem to be empty) 
+
+But of this thread, only cmd0 will/should be added to wtw new thread such that CPU will execute only 
+ie. cmd0 before moving on to next thread
+	
+	
+	SO basicly, operations on a class will be queued on that class's own exec queue. So they will be
+	executed sequentially by the class. Ie. no two class methods will be called at the same time
+	such that any two or more threads can find themselves inside the same class' methods at the same
+	time. Like: if thread 1 is executing str.append("something") for 10 minutes and thread2 wanted
+	str.append("nothing") 3 minutes ago, this means thread2 will wait for thread1 to finish executing.
+	Notice that str is an instance of a class of ie. String. So since it's the same variable(or instance)
+	that's why the threads will serialize their operations on this instance. Yeah above where I said
+	class, I ment instance. Like if there were str1 and str2 , two different instances of class String
+	each accessed by different threads, they can go concurently in same methods but will probably use
+	same method of queueing the operations on them even if in this case it will be only one queued 
+	operation at any given time whilst for str variable above there were two queue operations and the
+	second operation from thread2 was waiting to execute.
+	
+Of course another variant would be to act like cvs/svn/git on that instance. Ie. on str instance
+above thread1 would execute the append method thus having a new revision on str while at the same
+time thread2 (without waiting for thread2) would execute its append method on another new revision
+of str and finally assuming thread1 finishes first , will commit new str revision and when thread2
+finishes and wants to commit, it may do so with or without conflicts, but if no conflicts then all
+is well and move on. But if conflicts then thread2 may just drop the append changes to str that it
+just did and reexecute the same append again but not before getting the new str revision that thread1
+commited. However here may be a situation, since getting new str from server(so to speak) would mean
+any use of str in thread2 before the append method call would have to be reexecuted using the str
+revision we just got from the server(the thread1 revision that is) hence maybe if a time in thread2
+is available where we know when thread2 accessed str for the first time, we would undo all commands
+until then, and pull new str from server and redo all commands in thread2 again until and including
+the append. Or even better would be such that thread2 executions on str would be connected in a way
+such that if str would somehow change(ie. on commit from thread1) then the dependencies in thread2
+code that just ran on the old str will update considering the new str, somehow like reexecuting 
+everything that thread2 did on old str, but on new str, except doing only the necessary commands(like
+some commands may do changes to other vars which don't directly/indirectly change with the new str
+so they remain the same as when str was old str).
+So consistency in thread commands/vars would be wanted. That means many On events (ie. OnChange)
+  
+AtKaaZ, 6 & 11 Dec 2008.
