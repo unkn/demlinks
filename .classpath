@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="src" path="test"/>
-	<classpathentry kind="src" path="dmljava/src"/>
+	<classpathentry kind="src" path="src2"/>
+	<classpathentry kind="src" path="test2"/>
 	<classpathentry kind="src" path="dmljava/test"/>
+	<classpathentry kind="src" path="dmljava/src"/>
+	<classpathentry kind="src" path="test"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="lib" path="lib/je-4.1.10/lib/je-4.1.10.jar" sourcepath="lib/je-4.1.10/src"/>
+	<classpathentry kind="lib" path="lib/junit/junit-4.9b2.jar" sourcepath="lib/junit/junit-4.9b2-src.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
