@@ -16,13 +16,18 @@
     along with DeMLinks.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+
 package org.demlinks.references;
+
+
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
+
+
 
 public class ReferenceTest {
 	
@@ -31,6 +36,7 @@ public class ReferenceTest {
 	
 	@Before
 	public void init() {
+	
 		this.n1 = new Reference<Object>();
 		this.n2 = new Reference<Object>();
 		this.n3 = new Reference<Object>();
@@ -39,6 +45,7 @@ public class ReferenceTest {
 	
 	@Test
 	public void testSetObject() {
+	
 		assertTrue( this.n1.getObject() == null );
 		this.n1.setObject( this.obj1 );
 		assertTrue( this.obj1 == this.n1.getObject() );
@@ -48,6 +55,7 @@ public class ReferenceTest {
 	
 	@Test
 	public void testSetNext() {
+	
 		assertTrue( this.n1.getPrev() == null );
 		assertTrue( this.n1.getNext() == null );
 		assertTrue( this.n1.isAlone() );

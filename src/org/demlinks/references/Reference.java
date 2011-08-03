@@ -16,9 +16,14 @@
     along with DeMLinks.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+
 package org.demlinks.references;
 
+
+
 import org.demlinks.debug.Debug;
+
+
 
 public class Reference<Obj> {
 	
@@ -28,11 +33,13 @@ public class Reference<Obj> {
 	
 	// constructor
 	public Reference() {
+	
 		this.initAsDead();
 	}
 	
 	// clone constructor
 	public Reference( Reference<Obj> cloneThis ) {
+	
 		this.initAsDead();
 		Debug.nullException( cloneThis );
 		this.prev = cloneThis.prev;
@@ -41,6 +48,7 @@ public class Reference<Obj> {
 	}
 	
 	public boolean equals( Reference<Obj> compareObj ) {
+	
 		if ( ( this.prev == compareObj.prev )
 				&& ( this.next == compareObj.next )
 				&& ( this.object == compareObj.object ) ) {
@@ -52,26 +60,32 @@ public class Reference<Obj> {
 	}
 	
 	public void setObject( Obj toObject ) {// even if null
+	
 		this.object = toObject;
 	}
 	
 	public boolean isAlone() {
+	
 		return ( ( this.prev == null ) && ( this.next == null ) );
 	}
 	
 	public Reference<Obj> getPrev() {
+	
 		return this.prev;
 	}
 	
 	public void setPrev( Reference<Obj> prevRef ) {
+	
 		this.prev = prevRef;
 	}
 	
 	public Reference<Obj> getNext() {
+	
 		return this.next;
 	}
 	
 	public void setNext( Reference<Obj> nextRef ) {
+	
 		this.next = nextRef;
 	}
 	
@@ -79,6 +93,7 @@ public class Reference<Obj> {
 	 * @return the object that this reference refers to
 	 */
 	public Obj getObject() {
+	
 		return this.object;
 	}
 	
@@ -86,6 +101,7 @@ public class Reference<Obj> {
 	 * signal that the reference has been removed/destroyed from the list
 	 */
 	public void destroy() {
+	
 		this.initAsDead();
 	}
 	
@@ -93,6 +109,7 @@ public class Reference<Obj> {
 	 * after this call, isDead() would return true
 	 */
 	private void initAsDead() {
+	
 		this.next = this.prev = null;
 		this.object = null;
 	}
@@ -101,6 +118,7 @@ public class Reference<Obj> {
 	 * @return true if this reference is nolonger used in the list
 	 */
 	public boolean isDead() {
+	
 		return ( this.isAlone() && ( null == this.object ) );
 	}
 }
