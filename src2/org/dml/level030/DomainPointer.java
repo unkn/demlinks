@@ -25,10 +25,9 @@ package org.dml.level030;
 
 
 
-import org.dml.level010.Symbol;
-import org.dml.level025.SetOfTerminalSymbols;
-import org.dml.tools.RunTime;
-import org.dml.tools.TwoKeyHashMap;
+import org.dml.level010.*;
+import org.dml.level025.*;
+import org.dml.tools.*;
 
 
 
@@ -40,31 +39,35 @@ import org.dml.tools.TwoKeyHashMap;
  */
 public class DomainPointer extends Pointer {
 	
-	private static final TwoKeyHashMap<Level030_DMLEnvironment, SetOfTerminalSymbols, DomainPointer>	allDomainPointerInstances	= new TwoKeyHashMap<Level030_DMLEnvironment, SetOfTerminalSymbols, DomainPointer>();
+	private static final TwoKeyHashMap<Level030_DMLEnvironment, SetOfTerminalSymbols, DomainPointer>	allDomainPointerInstances	=
+																																		new TwoKeyHashMap<Level030_DMLEnvironment, SetOfTerminalSymbols, DomainPointer>();
 	// allowed to point only to terminals of domain
-	Symbol																								domain						= null;
+	Symbol																								domain						=
+																																		null;
+	
 	
 	/**
 	 * @param passedEnv
 	 * @param passedSelf
 	 */
-	protected DomainPointer( Level030_DMLEnvironment passedEnv, SetOfTerminalSymbols passedSelf ) {
-
+	protected DomainPointer( final Level030_DMLEnvironment passedEnv, final SetOfTerminalSymbols passedSelf ) {
+		
 		super( passedEnv, passedSelf );
 	}
+	
 	
 	/**
 	 * @param passedDomain
 	 * @param pointTo
 	 * @return
 	 */
-	public static DomainPointer getNewNonNullDomainPointer( Level030_DMLEnvironment passedEnv, Symbol passedDomain,
-			Symbol pointTo ) {
-
+	public static DomainPointer getNewNonNullDomainPointer( final Level030_DMLEnvironment passedEnv, final Symbol passedDomain,
+															final Symbol pointTo ) {
+		
 		RunTime.assumedNotNull( passedEnv, passedDomain, pointTo );
-		Symbol newSymbol = passedEnv.newUniqueSymbol();
-		SetOfTerminalSymbols newSet = passedEnv.getAsSet( newSymbol );
-		DomainPointer ret = new DomainPointer( passedEnv, newSet );
+		final Symbol newSymbol = passedEnv.newUniqueSymbol();
+		final SetOfTerminalSymbols newSet = passedEnv.getAsSet( newSymbol );
+		final DomainPointer ret = new DomainPointer( passedEnv, newSet );
 		ret.setDomain( passedDomain );
 		ret.pointTo( pointTo );
 		ret.setAllowNull( false );
@@ -74,26 +77,28 @@ public class DomainPointer extends Pointer {
 		return ret;
 	}
 	
-	private final static void registerDPInstance( Level030_DMLEnvironment env, SetOfTerminalSymbols name,
-			DomainPointer newOne ) {
-
+	
+	private final static void registerDPInstance( final Level030_DMLEnvironment env, final SetOfTerminalSymbols name,
+													final DomainPointer newOne ) {
+		
 		RunTime.assumedNotNull( env, name, newOne );
 		RunTime.assumedFalse( allDomainPointerInstances.ensure( env, name, newOne ) );
 	}
 	
-	private final static DomainPointer getDPInstance( Level030_DMLEnvironment env, SetOfTerminalSymbols name ) {
-
+	
+	private final static DomainPointer getDPInstance( final Level030_DMLEnvironment env, final SetOfTerminalSymbols name ) {
+		
 		RunTime.assumedNotNull( env, name );
 		return allDomainPointerInstances.get( env, name );
 	}
 	
 	
-	public static DomainPointer getNewNullDomainPointer( Level030_DMLEnvironment passedEnv, Symbol passedDomain ) {
-
+	public static DomainPointer getNewNullDomainPointer( final Level030_DMLEnvironment passedEnv, final Symbol passedDomain ) {
+		
 		RunTime.assumedNotNull( passedEnv, passedDomain );
-		Symbol name = passedEnv.newUniqueSymbol();
-		SetOfTerminalSymbols newSet = passedEnv.getAsSet( name );
-		DomainPointer ret = new DomainPointer( passedEnv, newSet );
+		final Symbol name = passedEnv.newUniqueSymbol();
+		final SetOfTerminalSymbols newSet = passedEnv.getAsSet( name );
+		final DomainPointer ret = new DomainPointer( passedEnv, newSet );
 		ret.setDomain( passedDomain );
 		ret.setAllowNull( true );
 		ret.assumedValid();
@@ -109,13 +114,13 @@ public class DomainPointer extends Pointer {
 	 * @param passedDomain
 	 * @return
 	 */
-	public static DomainPointer getExistingDomainPointer( Level030_DMLEnvironment passedEnv, Symbol passedSelf,
-			Symbol passedDomain, boolean passedAllowNull ) {
-
-		RunTime.assumedNotNull( passedEnv, passedSelf, passedDomain, passedAllowNull );
+	public static DomainPointer getExistingDomainPointer( final Level030_DMLEnvironment passedEnv, final Symbol passedSelf,
+															final Symbol passedDomain, final boolean passedAllowNull ) {
 		
-		SetOfTerminalSymbols existingSet = passedEnv.getAsSet( passedSelf );
-		DomainPointer existingOne = getDPInstance( passedEnv, existingSet );
+		RunTime.assumedNotNull( passedEnv, passedSelf, passedDomain );
+		
+		final SetOfTerminalSymbols existingSet = passedEnv.getAsSet( passedSelf );
+		final DomainPointer existingOne = getDPInstance( passedEnv, existingSet );
 		if ( null != existingOne ) {
 			if ( existingOne.allowNull != passedAllowNull ) {
 				RunTime.badCall( "already existing DP had different AllowNull setting" );
@@ -126,7 +131,7 @@ public class DomainPointer extends Pointer {
 			existingOne.assumedValid();
 			return existingOne;
 		}
-		DomainPointer ret = new DomainPointer( passedEnv, existingSet );
+		final DomainPointer ret = new DomainPointer( passedEnv, existingSet );
 		ret.setDomain( passedDomain );
 		ret.setAllowNull( passedAllowNull );
 		ret.assumedValid();
@@ -134,35 +139,37 @@ public class DomainPointer extends Pointer {
 		return ret;
 	}
 	
+	
 	/**
 	 * @param newDomain
 	 * @return the old Domain, if any, or null
 	 */
-	public Symbol setDomain( Symbol newDomain ) {
-
+	public Symbol setDomain( final Symbol newDomain ) {
+		
 		RunTime.assumedNotNull( newDomain );
 		RunTime.assumedFalse( selfAsSet.getAsSymbol() == newDomain );
-		Symbol old = this.getDomain();// or null
+		final Symbol old = getDomain();// or null
 		if ( null != old ) {
 			// first time set domain
-			Symbol pointee = this.getPointee();
+			final Symbol pointee = getPointee();
 			if ( null != pointee ) {
 				// well we already have a pointee, we need to make sure it's
 				// from
 				// the NEW domain
-				if ( !this.isValidDomainPointeeTuple( newDomain, pointee ) ) {
+				if ( !isValidDomainPointeeTuple( newDomain, pointee ) ) {
 					RunTime.badCall( "the new domain is incompatible with the already existing pointee. "
-							+ "Maybe remove the pointee before you set the domain." );
+						+ "Maybe remove the pointee before you set the domain." );
 				}
 			}
 		}
 		domain = newDomain;
-		this.assumedValid();
+		assumedValid();
 		return old;
 	}
 	
-	public boolean isValidDomainPointeeTuple( Symbol domain1, Symbol pointee ) {
-
+	
+	public boolean isValidDomainPointeeTuple( final Symbol domain1, final Symbol pointee ) {
+		
 		RunTime.assumedNotNull( domain1 );
 		if ( !allowNull ) {
 			RunTime.assumedNotNull( pointee );
@@ -171,6 +178,7 @@ public class DomainPointer extends Pointer {
 		return envL2.isVector( domain1, pointee );
 	}
 	
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -178,22 +186,24 @@ public class DomainPointer extends Pointer {
 	 */
 	@Override
 	public void assumedValid() {
-
+		
 		super.assumedValid();
 		RunTime.assumedFalse( selfAsSet.getAsSymbol() == domain );
-		Symbol pointee = this.internal_getPointee();
+		final Symbol pointee = internal_getPointee();
 		if ( null != pointee ) {
-			RunTime.assumedTrue( this.isValidDomainPointeeTuple( domain, pointee ) );
+			RunTime.assumedTrue( isValidDomainPointeeTuple( domain, pointee ) );
 		}
 	}
+	
 	
 	/**
 	 * @return
 	 */
 	public Symbol getDomain() {
-
+		
 		return domain;
 	}
+	
 	
 	/*
 	 * (non-Javadoc)
@@ -201,12 +211,12 @@ public class DomainPointer extends Pointer {
 	 * @see org.dml.level3.Pointer#pointTo(org.dml.level1.Symbol)
 	 */
 	@Override
-	public Symbol pointTo( Symbol toWhat ) {
-
-		this.assumedValid();
+	public Symbol pointTo( final Symbol toWhat ) {
+		
+		assumedValid();
 		if ( !allowNull ) {
 			RunTime.assumedNotNull( toWhat );
-			if ( !this.isValidDomainPointeeTuple( domain, toWhat ) ) {
+			if ( !isValidDomainPointeeTuple( domain, toWhat ) ) {
 				RunTime.badCall( "new pointee not from domain, you insipid bugger! :D" );
 			}
 		}
@@ -214,5 +224,5 @@ public class DomainPointer extends Pointer {
 		return super.pointTo( toWhat );
 	}
 	
-
+	
 }

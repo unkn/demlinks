@@ -25,27 +25,27 @@ package org.dml.database.bdb.level2;
 
 
 
-import org.dml.tools.RunTime;
+import org.dml.tools.*;
 
-import com.sleepycat.je.DatabaseConfig;
+import com.sleepycat.db.*;
 
 
 
 /**
- * 
+ *  
  *
  */
 public class OneToManyDBConfig extends DatabaseConfig {
 	
 	public OneToManyDBConfig() {
-
-		super();
-		this.setAllowCreate( true );
-		this.setDeferredWrite( false );
-		this.setKeyPrefixing( false );
-		this.setSortedDuplicates( true );// must be true
-		this.setTransactional( true );
 		
-		RunTime.assumedTrue( this.getSortedDuplicates() == true );
+		super();
+		setAllowCreate( true );
+		// this.setDeferredWrite( false );
+		// this.setKeyPrefixing( false );
+		setSortedDuplicates( true );// must be true
+		setTransactional( true );
+		
+		RunTime.assumedTrue( getSortedDuplicates() == true );
 	}
 }

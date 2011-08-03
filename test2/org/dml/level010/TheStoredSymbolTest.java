@@ -28,9 +28,9 @@ package org.dml.level010;
 
 import static org.junit.Assert.*;
 
-import java.util.HashSet;
+import java.util.*;
 
-import org.junit.Test;
+import org.junit.*;
 
 
 
@@ -38,25 +38,21 @@ import org.junit.Test;
  * 
  *
  */
-public class TheStoredSymbolTest
-{
+public class TheStoredSymbolTest {
 	
 	@Test
-	public
-			void
-			testEqualityBetweenDifferentInstancesWithSameContents_akaLong()
-	{
-		Long l = 123012l;
-		TheStoredSymbol tss = TheStoredSymbol.getNew( l );// instance1
+	public void testEqualityBetweenDifferentInstancesWithSameContents_akaLong() {
+		final Long l = new Long( 123012l );
+		final TheStoredSymbol tss = TheStoredSymbol.getNew( l );// instance1
 		TheStoredSymbol.junitClearCache();
-		TheStoredSymbol tss2 = TheStoredSymbol.getNew( l );// instance2 different than instance1
-		TheStoredSymbol tss3 = TheStoredSymbol.getNew( l );// instance2 yes same as instance2
+		final TheStoredSymbol tss2 = TheStoredSymbol.getNew( l );// instance2 different than instance1
+		final TheStoredSymbol tss3 = TheStoredSymbol.getNew( l );// instance2 yes same as instance2
 		// all instances have same contents ergo .equals and hashCode should report same values in this session
 		assertTrue( tss != tss2 );
 		assertTrue( tss.equals( tss2 ) );
 		assertTrue( tss2.equals( tss ) );
 		assertTrue( tss.hashCode() == tss2.hashCode() );
-		HashSet<TheStoredSymbol> hm = new HashSet<TheStoredSymbol>();
+		final HashSet<TheStoredSymbol> hm = new HashSet<TheStoredSymbol>();
 		assertTrue( hm.size() == 0 );
 		assertTrue( hm.add( tss ) );
 		assertTrue( hm.size() == 1 );

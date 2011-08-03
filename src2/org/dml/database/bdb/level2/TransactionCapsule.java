@@ -25,13 +25,11 @@ package org.dml.database.bdb.level2;
 
 
 
-import org.dml.database.bdb.level1.Level1_Storage_BerkeleyDB;
-import org.dml.tools.RunTime;
+import org.dml.database.bdb.level1.*;
+import org.dml.tools.*;
+import org.q.*;
 
-import com.sleepycat.je.DatabaseException;
-import com.sleepycat.je.Durability;
-import com.sleepycat.je.Transaction;
-import com.sleepycat.je.TransactionConfig;
+import com.sleepycat.db.*;
 
 
 
@@ -39,78 +37,67 @@ import com.sleepycat.je.TransactionConfig;
  * 
  *
  */
-public class TransactionCapsule
-{
+public class TransactionCapsule {
 	
 	private Transaction			tx		= null;
 	private TransactionConfig	txConf	= null;
 	
 	
-	private TransactionCapsule()
-	{
+	private TransactionCapsule() {
 		//
 	}
 	
-
+	
 	/**
 	 * @param bdb
 	 * @return never null
 	 * @throws DatabaseException
 	 */
-	public final static
-			TransactionCapsule
-			getNewTransaction(
-								Level1_Storage_BerkeleyDB bdb )
-					throws DatabaseException
-	{
+	public final static TransactionCapsule getNewTransaction( final Level1_Storage_BerkeleyDB bdb ) throws DatabaseException {
 		
 		RunTime.assumedNotNull( bdb );
-		TransactionCapsule txn = new TransactionCapsule();
+		final TransactionCapsule txn = new TransactionCapsule();
 		txn.txConf = new TransactionConfig();
 		// txn.txConf.setNoSync( false );
-		txn.txConf.setNoWait(
-								true ).setDurability(
-														Durability.COMMIT_NO_SYNC );
+		txn.txConf.setNoWait( true );
+		// .setDurability( Durability.COMMIT_NO_SYNC );
 		// txn.txConf.setReadCommitted( true );
 		txn.txConf.setReadUncommitted( false );
-		txn.txConf.setSerializableIsolation( true );
+		// txn.txConf.setSerializableIsolation( true );//actually, inherited from environment!
 		// txn.txConf.setSync( true );
 		// txn.txConf.setWriteNoSync( false );
 		RunTime.assumedFalse( txn.txConf.getReadUncommitted() );
-		txn.tx = bdb.getEnvironment().beginTransaction(
-														null,
-														txn.txConf );
+		txn.tx = bdb.getEnvironment().beginTransaction( null, txn.txConf );
 		return txn;
 	}
 	
-
+	
 	/**
 	 */
-	public
-			void
-			abort()
-	{
-		tx.abort();
+	public void abort() {
+		try {
+			tx.abort();
+		} catch ( final DatabaseException e ) {
+			throw Q.rethrow( e );
+		}
 	}
 	
-
+	
 	/**
 	 */
-	public
-			void
-			commit()
-	{
-		tx.commit();// this may throw
+	public void commit() {
+		try {
+			tx.commit();
+		} catch ( final DatabaseException e ) {
+			throw Q.rethrow( e );
+		}// this may throw
 	}
 	
-
+	
 	/**
 	 * @return Transaction
 	 */
-	public
-			Transaction
-			get()
-	{
+	public Transaction get() {
 		RunTime.assumedNotNull( tx );
 		return tx;
 	}

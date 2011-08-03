@@ -27,16 +27,12 @@ package org.dml.database;
 
 import static org.junit.Assert.*;
 
-import org.dml.JUnits.Consts;
-import org.dml.database.bdb.level1.Level1_Storage_BerkeleyDB;
-import org.dml.tools.RunTime;
-import org.dml.tracking.Factory;
-import org.dml.tracking.Log;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.references.method.MethodParams;
-import org.references.method.PossibleParams;
+import org.dml.JUnits.*;
+import org.dml.database.bdb.level1.*;
+import org.dml.tools.*;
+import org.dml.tracking.*;
+import org.junit.*;
+import org.references.method.*;
 
 
 
@@ -44,18 +40,15 @@ import org.references.method.PossibleParams;
  * 
  *
  */
-public class DBTest
-{
+public class DBTest {
 	
 	Level1_Storage_BerkeleyDB	bdb, bdb2;
 	MethodParams				params	= null;
 	
 	
+	@SuppressWarnings( "boxing" )
 	@Before
-	public
-			void
-			setUp()
-	{
+	public void setUp() {
 		
 		Log.entry();
 		// System.out.println( "setUp:" );
@@ -63,19 +56,11 @@ public class DBTest
 		params = MethodParams.getNew();
 		// params = Factory.getNewInstanceAndInitWithoutParams( MethodParams.class );
 		
-		params.set(
-					PossibleParams.homeDir,
-					Consts.BDB_ENV_PATH );
-		params.set(
-					PossibleParams.jUnit_wipeDB,
-					false );
-		params.set(
-					PossibleParams.jUnit_wipeDBWhenDone,
-					true );
+		params.set( PossibleParams.homeDir, Consts.BDB_ENV_PATH );
+		params.set( PossibleParams.jUnit_wipeDB, false );
+		params.set( PossibleParams.jUnit_wipeDBWhenDone, true );
 		// RunTime.thro( new Exception( "testy" ) );
-		bdb = Factory.getNewInstanceAndInit(
-												Level1_Storage_BerkeleyDB.class,
-												params );
+		bdb = Factory.getNewInstanceAndInit( Level1_Storage_BerkeleyDB.class, params );
 		// bdb._deInit();
 		// Factory.deInit( params );
 		//
@@ -92,19 +77,15 @@ public class DBTest
 		Log.exit();
 	}
 	
-
+	
 	@After
-	public
-			void
-			tearDown()
-	{
+	public void tearDown() {
 		
 		// System.out.println( "tearDown:" );
 		// RunTime.clearThrowChain();
 		Log.entry();
 		// bdb.deInit();
-		if ( null != bdb )
-		{
+		if ( null != bdb ) {
 			Factory.deInitIfInited_WithPostponedThrows( bdb );
 			bdb = null;
 		}
@@ -127,57 +108,39 @@ public class DBTest
 		Log.exit();
 	}
 	
-
+	
 	@Test
-	public
-			void
-			testInitDeInit()
-	{
+	public void testInitDeInit() {
 		
 		// @Before and @After kicking in;
 	}
 	
-
+	
 	@Test
-	public
-			void
-			testReInit()
-	{
+	public void testReInit() {
 		
 		Factory.deInit( bdb );
 		Factory.reInit_aka_InitAgain_WithOriginalPassedParams( bdb );
 		RunTime.throwAllThatWerePostponed();
 	}
 	
-
+	
 	@Test
-	public
-			void
-			testRestart()
-	{
+	public void testRestart() {
 		
 		Factory.restart_aka_DeInitAndInitAgain_WithOriginalPassedParams( bdb );
 	}
 	
-
+	
 	@Test
-	public
-			void
-			testDualFolder()
-	{
-		try
-		{
-			bdb2 = Factory.getNewInstanceAndInit(
-													Level1_Storage_BerkeleyDB.class,
-													params );
+	public void testDualFolder() {
+		try {
+			bdb2 = Factory.getNewInstanceAndInit( Level1_Storage_BerkeleyDB.class, params );
 			assertTrue( bdb != bdb2 );
 			assertTrue( bdb.hashCode() == bdb2.hashCode() );
 			assertTrue( bdb.equals( bdb2 ) );
-		}
-		finally
-		{
-			if ( null != bdb2 )
-			{
+		} finally {
+			if ( null != bdb2 ) {
 				Factory.deInitIfAlreadyInited( bdb2 );
 			}
 		}

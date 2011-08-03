@@ -26,10 +26,9 @@ package org.dml.database.bdb.level1;
 
 
 
-import org.dml.tools.Initer;
-import org.dml.tools.RunTime;
-import org.dml.tracking.Factory;
-import org.references.Reference;
+import org.dml.tools.*;
+import org.dml.tracking.*;
+import org.references.*;
 
 
 
@@ -37,55 +36,34 @@ import org.references.Reference;
  * 
  *
  */
-public class OneToXDBMapCommonCode
-{
+public class OneToXDBMapCommonCode {
 	
-	public final static
-			void
-			theDone(
-						boolean initedSuccess,
-						Reference<Initer> ref2ForwardDB,
-						Reference<Initer> ref2BackwardDB )
-	{
+	public final static void theDone( final boolean initedSuccess, final Reference<Initer> ref2ForwardDB,
+										final Reference<Initer> ref2BackwardDB ) {
 		RunTime.assumedNotNull(
-								initedSuccess,
-								ref2ForwardDB,
-								ref2BackwardDB );
+		
+		ref2ForwardDB, ref2BackwardDB );
 		Initer forwardDB = ref2ForwardDB.getObject();
 		Initer backwardDB = ref2BackwardDB.getObject();
 		
-		if ( initedSuccess )
-		{
-			RunTime.assumedNotNull(
-									forwardDB,
-									backwardDB );
+		if ( initedSuccess ) {
+			RunTime.assumedNotNull( forwardDB, backwardDB );
 		}// else they they may be in 4 states, 1) both null, 2)3)only one of them null and 4) both non-null due to
 			// failed init()
 		
-		try
-		{
-			if ( null != backwardDB )
-			{
-				try
-				{
+		try {
+			if ( null != backwardDB ) {
+				try {
 					Factory.deInit( backwardDB );// first close this
-				}
-				finally
-				{
+				} finally {
 					backwardDB = null;
 				}
 			}
-		}
-		finally
-		{
-			if ( null != forwardDB )
-			{
-				try
-				{
+		} finally {
+			if ( null != forwardDB ) {
+				try {
 					Factory.deInit( forwardDB );
-				}
-				finally
-				{
+				} finally {
 					forwardDB = null;
 				}
 			}

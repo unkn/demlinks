@@ -25,14 +25,9 @@ package org.dml.level025;
 
 
 
-import org.dml.database.bdb.level2.BDBVectorIterator;
-import org.dml.level010.Symbol;
-import org.dml.level020.SymbolIterator;
-import org.dml.tools.RunTime;
-import org.dml.tools.TwoKeyHashMap;
-import org.dml.tracking.Factory;
-
-import com.sleepycat.je.DatabaseException;
+import org.dml.level010.*;
+import org.dml.level020.*;
+import org.dml.tools.*;
 
 
 
@@ -43,183 +38,110 @@ import com.sleepycat.je.DatabaseException;
  * the domain and the fact that this is a DomainSet is only known in Java, not in the db<br>
  * TODO JUnit test
  */
-public class DomainSet
-		extends
-		SetOfTerminalSymbols
-{
+public class DomainSet extends SetOfTerminalSymbols {
 	
-	private static final TwoKeyHashMap<Level025_DMLEnvironment, Symbol, DomainSet>	allDomainSetInstances	= new TwoKeyHashMap<Level025_DMLEnvironment, Symbol, DomainSet>();
+	private static final TwoKeyHashMap<Level025_DMLEnvironment, Symbol, DomainSet>	allDomainSetInstances	=
+																												new TwoKeyHashMap<Level025_DMLEnvironment, Symbol, DomainSet>();
 	private final Symbol															domain;
 	
 	
-	private DomainSet(
-			Level025_DMLEnvironment passedEnv,
-			Symbol passedSelf,
-			Symbol passedDomain )
-	{
+	private DomainSet( final Level025_DMLEnvironment passedEnv, final Symbol passedSelf, final Symbol passedDomain ) {
 		
-		super(
-				passedEnv,
-				passedSelf );
-		RunTime.assumedNotNull(
-								passedEnv,
-								passedSelf,
-								passedDomain );
+		super( passedEnv, passedSelf );
+		RunTime.assumedNotNull( passedEnv, passedSelf, passedDomain );
 		RunTime.assumedTrue( passedEnv.isInitedSuccessfully() );
 		
 		domain = passedDomain;
 	}
 	
-
-	private final static
-			void
-			registerDSInstance(
-								Level025_DMLEnvironment env,
-								Symbol self,
-								DomainSet newOne )
-	{
+	
+	private final static void registerDSInstance( final Level025_DMLEnvironment env, final Symbol self, final DomainSet newOne ) {
 		
-		RunTime.assumedNotNull(
-								env,
-								self,
-								newOne );
-		RunTime.assumedFalse( allDomainSetInstances.ensure(
-															env,
-															self,
-															newOne ) );
+		RunTime.assumedNotNull( env, self, newOne );
+		RunTime.assumedFalse( allDomainSetInstances.ensure( env, self, newOne ) );
 	}
 	
-
-	private final static
-			DomainSet
-			getDSInstance(
-							Level025_DMLEnvironment env,
-							Symbol self )
-	{
+	
+	private final static DomainSet getDSInstance( final Level025_DMLEnvironment env, final Symbol self ) {
 		
-		RunTime.assumedNotNull(
-								env,
-								self );
-		return allDomainSetInstances.get(
-											env,
-											self );
+		RunTime.assumedNotNull( env, self );
+		return allDomainSetInstances.get( env, self );
 	}
 	
-
-	public static
-			DomainSet
-			getAsDomainSet(
-							Level025_DMLEnvironment passedEnv,
-							Symbol passedSelf,
-							Symbol passedDomain )
-	{
+	
+	public static DomainSet getAsDomainSet( final Level025_DMLEnvironment passedEnv, final Symbol passedSelf,
+											final Symbol passedDomain ) {
 		
-		RunTime.assumedNotNull(
-								passedEnv,
-								passedSelf,
-								passedDomain );
+		RunTime.assumedNotNull( passedEnv, passedSelf, passedDomain );
 		
 		// SetOfTerminalSymbols asSet = passedEnv.getAsSet( passedSelf );
 		
-		DomainSet existingOne = getDSInstance(
-												passedEnv,
-												passedSelf );
-		if ( null != existingOne )
-		{
-			if ( existingOne.domain != passedDomain )
-			{
+		final DomainSet existingOne = getDSInstance( passedEnv, passedSelf );
+		if ( null != existingOne ) {
+			if ( existingOne.domain != passedDomain ) {
 				RunTime.badCall( "already existing DomainSet had different Domain setting" );
 			}
 			existingOne.assumedValid();
 			return existingOne;
 		}
-		DomainSet ret = new DomainSet(
-										passedEnv,
-										passedSelf,
-										passedDomain );
+		final DomainSet ret = new DomainSet( passedEnv, passedSelf, passedDomain );
 		ret.assumedValid();
 		RunTime.assumedTrue( ret.getAsSymbol() == passedSelf );
-		registerDSInstance(
-							passedEnv,
-							passedSelf,
-							ret );
+		registerDSInstance( passedEnv, passedSelf, ret );
 		return ret;
 	}
 	
-
+	
 	@Override
-	public
-			void
-			assumedValid()
-	{
+	public void assumedValid() {
 		
 		super.assumedValid();
 		RunTime.assumedNotNull( domain );
 		RunTime.assumedFalse( selfAsSymbol == domain );
 		
 		SymbolIterator iter = env.getIterator_on_Terminals_of( selfAsSymbol );
-		try
-		{
+		try {
 			iter.goFirst();
-			while ( null != iter.now() )
-			{
+			while ( null != iter.now() ) {
 				// each child of 'asSymbol' aka this DomainSet, must be a child
 				// of domain too
-				RunTime.assumedTrue( env.isVector(
-													domain,
-													iter.now() ) );
+				RunTime.assumedTrue( env.isVector( domain, iter.now() ) );
 				iter.goNext();
 			}
-		}
-		finally
-		{
+		} finally {
 			iter.close();
 			iter = null;
 		}
 	}
 	
-
+	
 	/**
 	 * @param element
 	 * @return false if it didn't already exist
 	 */
 	@Override
-	public
-			boolean
-			addToSet(
-						Symbol element )
-	{
+	public boolean addToSet( final Symbol element ) {
 		
 		RunTime.assumedNotNull( element );
 		RunTime.assumedFalse( selfAsSymbol == element );
-		if ( !env.isVector(
-							domain,
-							element ) )
-		{
+		if ( !env.isVector( domain, element ) ) {
 			RunTime.badCall( "passed element is not from domain" );
 		}
 		return super.addToSet( element );
 	}
 	
-
+	
 	/**
 	 * @param which
 	 *            should be a child of domain
 	 * @return true if self->which
 	 */
 	@Override
-	public
-			boolean
-			hasSymbol(
-						Symbol which )
-	{
+	public boolean hasSymbol( final Symbol which ) {
 		
 		RunTime.assumedNotNull( which );
 		RunTime.assumedFalse( selfAsSymbol == which );
-		if ( !env.isVector(
-							domain,
-							which ) )
-		{
+		if ( !env.isVector( domain, which ) ) {
 			RunTime.badCall( "passed element is not from domain" );
 		}
 		return super.hasSymbol( which );

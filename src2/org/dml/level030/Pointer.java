@@ -25,22 +25,21 @@ package org.dml.level030;
 
 
 
-import org.dml.level010.Symbol;
-import org.dml.level020.Level020_DMLEnvironment;
-import org.dml.level025.SetOfTerminalSymbols;
-import org.dml.tools.RunTime;
-import org.dml.tools.TwoKeyHashMap;
-import org.references.Position;
+import org.dml.level010.*;
+import org.dml.level020.*;
+import org.dml.level025.*;
+import org.dml.tools.*;
+import org.references.*;
 
 
 
 /**
  * seen as such only in Java<br>
  */
-public class Pointer
-{
+public class Pointer {
 	
-	private static final TwoKeyHashMap<Level030_DMLEnvironment, SetOfTerminalSymbols, Pointer>	allPointerInstances	= new TwoKeyHashMap<Level030_DMLEnvironment, SetOfTerminalSymbols, Pointer>();
+	private static final TwoKeyHashMap<Level030_DMLEnvironment, SetOfTerminalSymbols, Pointer>	allPointerInstances	=
+																														new TwoKeyHashMap<Level030_DMLEnvironment, SetOfTerminalSymbols, Pointer>();
 	protected final Level020_DMLEnvironment														envL2;
 	protected final SetOfTerminalSymbols														selfAsSet;
 	protected boolean																			allowNull			= true;
@@ -52,212 +51,132 @@ public class Pointer
 	 * @param l2DML
 	 * @param passedSelf
 	 */
-	protected Pointer(
-			Level030_DMLEnvironment l2DML,
-			SetOfTerminalSymbols passedSelf )
-	{
+	protected Pointer( final Level030_DMLEnvironment l2DML, final SetOfTerminalSymbols passedSelf ) {
 		
-		RunTime.assumedNotNull(
-								l2DML,
-								passedSelf );
+		RunTime.assumedNotNull( l2DML, passedSelf );
 		RunTime.assumedTrue( l2DML.isInitedSuccessfully() );
 		envL2 = l2DML;
 		selfAsSet = passedSelf;
 	}
 	
-
-	public static
-			Pointer
-			getNewNullPointer(
-								Level030_DMLEnvironment passedEnv )
-	{
+	
+	public static Pointer getNewNullPointer( final Level030_DMLEnvironment passedEnv ) {
 		
 		RunTime.assumedNotNull( passedEnv );
-		Symbol newSymbol = passedEnv.newUniqueSymbol();
-		SetOfTerminalSymbols nameSet = passedEnv.getAsSet( newSymbol );
-		Pointer ret = new Pointer(
-									passedEnv,
-									nameSet );
+		final Symbol newSymbol = passedEnv.newUniqueSymbol();
+		final SetOfTerminalSymbols nameSet = passedEnv.getAsSet( newSymbol );
+		final Pointer ret = new Pointer( passedEnv, nameSet );
 		ret.setAllowNull( true );
 		ret.assumedValid();
-		registerPointerInstance(
-									passedEnv,
-									nameSet,
-									ret );
+		registerPointerInstance( passedEnv, nameSet, ret );
 		return ret;
 	}
 	
-
-	public static
-			Pointer
-			getNewNonNullPointer(
-									Level030_DMLEnvironment passedEnv,
-									Symbol pointTo )
-	{
+	
+	public static Pointer getNewNonNullPointer( final Level030_DMLEnvironment passedEnv, final Symbol pointTo ) {
 		
-		RunTime.assumedNotNull(
-								passedEnv,
-								pointTo );
-		Symbol newSymbol = passedEnv.newUniqueSymbol();
-		SetOfTerminalSymbols nameSet = passedEnv.getAsSet( newSymbol );
-		Pointer ret = new Pointer(
-									passedEnv,
-									nameSet );
+		RunTime.assumedNotNull( passedEnv, pointTo );
+		final Symbol newSymbol = passedEnv.newUniqueSymbol();
+		final SetOfTerminalSymbols nameSet = passedEnv.getAsSet( newSymbol );
+		final Pointer ret = new Pointer( passedEnv, nameSet );
 		ret.pointTo( pointTo );
 		ret.setAllowNull( false );
 		ret.assumedValid();
-		registerPointerInstance(
-									passedEnv,
-									nameSet,
-									ret );
+		registerPointerInstance( passedEnv, nameSet, ret );
 		return ret;
 	}
 	
-
-	public static
-			Pointer
-			getExistingPointer(
-								Level030_DMLEnvironment passedEnv,
-								Symbol passedSelf,
-								boolean passedAllowNull )
-	{
+	
+	public static Pointer getExistingPointer( final Level030_DMLEnvironment passedEnv, final Symbol passedSelf,
+												final boolean passedAllowNull ) {
 		
-		RunTime.assumedNotNull(
-								passedEnv,
-								passedSelf,
-								passedAllowNull );
+		RunTime.assumedNotNull( passedEnv, passedSelf );
 		
-		SetOfTerminalSymbols nameSet = passedEnv.getAsSet( passedSelf );
-		Pointer existingOne = getPointerInstance(
-													passedEnv,
-													nameSet );
-		if ( null != existingOne )
-		{
-			if ( existingOne.allowNull != passedAllowNull )
-			{
+		final SetOfTerminalSymbols nameSet = passedEnv.getAsSet( passedSelf );
+		final Pointer existingOne = getPointerInstance( passedEnv, nameSet );
+		if ( null != existingOne ) {
+			if ( existingOne.allowNull != passedAllowNull ) {
 				RunTime.badCall( "already existing DP had different AllowNull setting" );
 			}
 			existingOne.assumedValid();
 			return existingOne;
 		}
 		// else make it
-		Pointer ret = new Pointer(
-									passedEnv,
-									nameSet );
+		final Pointer ret = new Pointer( passedEnv, nameSet );
 		// if false, it must already point to something
 		ret.setAllowNull( passedAllowNull );
 		ret.assumedValid();
 		// RunTime.assumedFalse( allPointerInstances.ensure( l2DML, name, ret )
 		// );
-		registerPointerInstance(
-									passedEnv,
-									nameSet,
-									ret );
+		registerPointerInstance( passedEnv, nameSet, ret );
 		return ret;
 	}
 	
-
-	private final static
-			void
-			registerPointerInstance(
-										Level030_DMLEnvironment env,
-										SetOfTerminalSymbols name,
-										Pointer newOne )
-	{
+	
+	private final static void registerPointerInstance( final Level030_DMLEnvironment env, final SetOfTerminalSymbols name,
+														final Pointer newOne ) {
 		
-		RunTime.assumedNotNull(
-								env,
-								name,
-								newOne );
-		RunTime.assumedFalse( allPointerInstances.ensure(
-															env,
-															name,
-															newOne ) );
+		RunTime.assumedNotNull( env, name, newOne );
+		RunTime.assumedFalse( allPointerInstances.ensure( env, name, newOne ) );
 	}
 	
-
-	private final static
-			Pointer
-			getPointerInstance(
-								Level030_DMLEnvironment env,
-								SetOfTerminalSymbols name )
-	{
+	
+	private final static Pointer getPointerInstance( final Level030_DMLEnvironment env, final SetOfTerminalSymbols name ) {
 		
-		RunTime.assumedNotNull(
-								env,
-								name );
-		return allPointerInstances.get(
-										env,
-										name );
+		RunTime.assumedNotNull( env, name );
+		return allPointerInstances.get( env, name );
 	}
 	
-
-	public
-			boolean
-			setAllowNull(
-							boolean newValue )
-	{
+	
+	public boolean setAllowNull( final boolean newValue ) {
 		
-		RunTime.assumedNotNull( newValue );
-		boolean old = allowNull;
+		// RunTime.assumedNotNull( newValue );
+		final boolean old = allowNull;
 		allowNull = newValue;
-		this.assumedValid();
+		assumedValid();
 		return old;
 	}
 	
-
+	
 	/**
 	 * @param toWhat
 	 *            new pointee
 	 * @return the old pointee; even if toWhat is the same as old one;<br>
 	 *         null only if there was no prev pointee
 	 */
-	public
-			Symbol
-			pointTo(
-						Symbol toWhat )
-	{
+	public Symbol pointTo( final Symbol toWhat ) {
 		
-		if ( !allowNull )
-		{
+		if ( !allowNull ) {
 			RunTime.assumedNotNull( toWhat );
 		}
-		this.assumedValid();
-		Symbol oldSym = this.getPointee();// null or it
-		if ( null != oldSym )
-		{
+		assumedValid();
+		final Symbol oldSym = getPointee();// null or it
+		if ( null != oldSym ) {
 			RunTime.assumedTrue( selfAsSet.remove( oldSym ) );
 			RunTime.assumedFalse( selfAsSet.hasSymbol( oldSym ) );
 			// RunTime.assumedTrue( envL2.removeVector( selfAsSet, oldSym ) );
 			// RunTime.assumedFalse( envL2.isVector( selfAsSet, oldSym ) );
 		}
 		
-		if ( null != toWhat )
-		{
+		if ( null != toWhat ) {
 			// the new one is not the same as the old one
 			// a diff pointee then we set new pointer to it, after removing old
 			RunTime.assumedFalse( selfAsSet.addToSet( toWhat ) );
 			RunTime.assumedTrue( selfAsSet.hasSymbol( toWhat ) );
 		}
-		this.assumedValid();
+		assumedValid();
 		return oldSym;
 	}
 	
-
-	public
-			Symbol
-			getPointee()
-	{
+	
+	public Symbol getPointee() {
 		
-		this.assumedValid();
-		return this.internal_getPointee();
+		assumedValid();
+		return internal_getPointee();
 	}
 	
-
-	protected
-			Symbol
-			internal_getPointee()
-	{
+	
+	protected Symbol internal_getPointee() {
 		
 		// Symbol ret = null;
 		RunTime.assumedTrue( selfAsSet.size() <= 1 );
@@ -280,56 +199,44 @@ public class Pointer
 		// return ret;
 	}
 	
-
+	
 	/**
 	 * 
 	 */
-	public
-			void
-			assumedValid()
-	{
+	public void assumedValid() {
 		
 		// watch out for recursion
 		RunTime.assumedNotNull( selfAsSet );
 		selfAsSet.assumedValid();
 		
 		// TODO: maybe use only Long aka classes instead of primitives; everywhere
-		long size = envL2.countTerminals( selfAsSet.getAsSymbol() );
+		final long size = envL2.countTerminals( selfAsSet.getAsSymbol() );
 		RunTime.assumedTrue( selfAsSet.size() == size );
 		
-		if ( !allowNull )
-		{
+		if ( !allowNull ) {
 			// must have 1 terminal
 			RunTime.assumedTrue( 1 == size );
-		}
-		else
-		{
+		} else {
 			// has 0 or 1 terminals
 			RunTime.assumedTrue( size <= 1 );
 			RunTime.assumedTrue( size >= 0 );
 		}
 		
 		// getPointee works
-		if ( 1 == size )
-		{
-			RunTime.assumedNotNull( this.internal_getPointee() );
-		}
-		else
-		{ // is 0
-			RunTime.assumedNull( this.internal_getPointee() );
+		if ( 1 == size ) {
+			RunTime.assumedNotNull( internal_getPointee() );
+		} else { // is 0
+			RunTime.assumedNull( internal_getPointee() );
 		}
 	}
 	
-
+	
 	/**
 	 * @return
 	 */
-	public
-			Symbol
-			getAsSymbol()
-	{
+	public Symbol getAsSymbol() {
 		
-		this.assumedValid();
+		assumedValid();
 		return selfAsSet.getAsSymbol();
 	}
 }

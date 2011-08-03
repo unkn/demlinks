@@ -25,30 +25,25 @@ package org.dml.tools;
 
 
 
-import org.dml.error.AssumptionError;
-import org.dml.error.BadCallError;
-import org.dml.error.BugError;
-import org.dml.tracking.Log;
+import org.dml.error.*;
+import org.dml.tracking.*;
 
 
 
 /**
  */
-public class RunTime
-{
+public class RunTime {
 	
 	// variables used by the thread-aware RecursionDetector.aj aspect
 	// set this to true anywhere at runtime to enable showing calls on console err until this var is false
-	public static final ThreadLocalBoolean	callTracingFromHere			= new ThreadLocalBoolean(
-																									false );
+	public static final ThreadLocalBoolean	callTracingFromHere			= new ThreadLocalBoolean( false );
 	// must be false here
-	public static final ThreadLocalBoolean	recursiveLoopDetected		= new ThreadLocalBoolean(
-																									false );
+	public static final ThreadLocalBoolean	recursiveLoopDetected		= new ThreadLocalBoolean( false );
 	
 	// must be false here, if it's enabled it's true for all threads
 	public static boolean					throWrapperAspectEnabled	= false;
 	
-
+	
 	// this is where we hold the chain of all thrown exceptions
 	private static Throwable				allExceptionsChained		= null;
 	
@@ -58,7 +53,7 @@ public class RunTime
 	// RunTime.assumedTrue( recursiveLoopDetected.get() == false );
 	// }
 	
-
+	
 	/**
 	 * - same as {@link RunTime#thro(normallyThrownOne)}<br>
 	 * - see also {@link #throPostponed(Throwable)} if you want to wrap and also postpone<br>
@@ -68,7 +63,8 @@ public class RunTime
 	 * - so use this method to wrap exceptions thrown by keyword 'throw' ie:<br>
 	 * try {<br>
 	 * throw new Exception();<br>
-	 * } catch (Throwable t) {<br> {@link RunTime#throWrapped(t)};//wrap<br>
+	 * } catch (Throwable t) {<br>
+	 * {@link RunTime#throWrapped(t)};//wrap<br>
 	 * }<br>
 	 * 
 	 * 
@@ -77,16 +73,12 @@ public class RunTime
 	 *            chain it<br>
 	 * 
 	 */
-	public static
-			void
-			throWrapped(
-							Throwable normallyThrownOne )
-	{
+	public static void throWrapped( final Throwable normallyThrownOne ) {
 		
 		RunTime.thro( normallyThrownOne );
 	}
 	
-
+	
 	/**
 	 * use this to mute (and wrap) an exception<br>
 	 * same as {@link RunTime#thro(normallyThrownOne)}<br>
@@ -95,23 +87,16 @@ public class RunTime
 	 * 
 	 * @param postponedOne
 	 */
-	public static
-			void
-			throPostponed(
-							Throwable postponedOne )
-	{
+	public static void throPostponed( final Throwable postponedOne ) {
 		
-		try
-		{
+		try {
 			RunTime.thro( postponedOne );
-		}
-		catch ( Throwable t )
-		{
+		} catch ( final Throwable t ) {
 			// postponed but shown on .err console
 		}
 	}
 	
-
+	
 	/**
 	 * -this method will attempt to chain all exceptions thrown by it and it also throws them as it's called<br>
 	 * -if you're trying to re-throw a caught exception do not chain it with new Exception(e) as a param to this method<br>
@@ -132,40 +117,29 @@ public class RunTime
 	 * @param newOne
 	 * @throws Throwable
 	 */
-	public static
-			void
-			thro(
-					Throwable newOne )
-	{
+	public static void thro( final Throwable newOne ) {
 		
-		if ( null != allExceptionsChained )
-		{
+		if ( null != allExceptionsChained ) {
 			// allExceptionsChained = newOne;
 			// } else {
-			if ( null == newOne.getCause() )
-			{
-				try
-				{
+			if ( null == newOne.getCause() ) {
+				try {
 					newOne.initCause( allExceptionsChained );
-				}
-				catch ( Throwable t )
-				{
+				} catch ( final Throwable t ) {
 					// ignoring thrown irrelevant ones from initCause
 					Log
-							.bug( "this shouldn't happen and btw exception here is unable to be thrown, even if no catch block exists" );
+						.bug( "this shouldn't happen and btw exception here is unable to be thrown, even if no catch block exists" );
 				}
-			}
-			else
-			{
+			} else {
 				// ok so at this point, whatever chain of exceptions we had, is going to be lost and unreported within
 				// eclipse, the only way to see them is if you look at console and that could be messy because you won't
 				// know where in the console and which one of the following warnings (if in a junit with many tests
 				// failed) is the right one
 				Log
-						.mid1( "we got passed a chained exception(/throwable) so we discard the previous chain; "
-								+ "so this should work well apparently unless we didn't chain the previous exception "
-								+ "in this new exception that already had a chain; this is the default behavior to discard "
-								+ "prev chain" );
+					.mid1( "we got passed a chained exception(/throwable) so we discard the previous chain; "
+						+ "so this should work well apparently unless we didn't chain the previous exception "
+						+ "in this new exception that already had a chain; this is the default behavior to discard "
+						+ "prev chain" );
 				// Log.thro1( newOne.getLocalizedMessage() );
 				// newOne.printStackTrace();
 			}
@@ -176,9 +150,7 @@ public class RunTime
 		
 		// if ( allExceptionsChained.getClass() != RuntimeWrappedThrowException.class )
 		// {
-		Log.throwReport(
-							RunTime.class,
-							allExceptionsChained );
+		Log.throwReport( RunTime.class, allExceptionsChained );
 		// }
 		// ( modifier,
 		// allExceptionsChained.getClass().getCanonicalName() + ": " + allExceptionsChained.getLocalizedMessage() );
@@ -188,30 +160,23 @@ public class RunTime
 		// throw new RuntimeException( allExceptionsChained );
 	}
 	
-
-	private static
-			void
-			internalWrappedThrow()
-	{
+	
+	private static void internalWrappedThrow() {
 		
 		// wrapping this into RuntimeException 'cause it's unchecked aka no throws declaration needed
 		
 		// DON'T change this exception class, unless you also change the AspectJ using it
-		throw new RuntimeWrappedThrowException(
-												allExceptionsChained );
+		throw new RuntimeWrappedThrowException( allExceptionsChained );
 		// FIXME: maybe we can get rid of showing RuntimeWrappedThrowException multiple times in "TH: " console msgs
 		// FIXME: cannot nullify the chain due to aspectJ catch/rethrow
 	}
 	
-
-	public static
-			boolean
-			isNullChain()
-	{
+	
+	public static boolean isNullChain() {
 		return null == allExceptionsChained;
 	}
 	
-
+	
 	/**
 	 * since RunTime.throWrapped(exception) we need to unwrap all of those RuntimeWrappedThrowException to get to the
 	 * initial cause exception<br>
@@ -220,19 +185,13 @@ public class RunTime
 	 *            caught exception ie. from a catch block
 	 * @return never null; the unwrapped exception (which won't be of RuntimeWrappedThrowException type)
 	 */
-	public static
-			Throwable
-			getUnwrappedExceptionNeverNull(
-											Throwable fromWhat )
-	{
+	public static Throwable getUnwrappedExceptionNeverNull( final Throwable fromWhat ) {
 		
 		RunTime.assumedNotNull( fromWhat );
 		Throwable tmpParser = fromWhat;
-		while ( tmpParser.getClass() == RuntimeWrappedThrowException.class )
-		{
+		while ( tmpParser.getClass() == RuntimeWrappedThrowException.class ) {
 			tmpParser = tmpParser.getCause();
-			if ( null == tmpParser )
-			{
+			if ( null == tmpParser ) {
 				RunTime.bug( "should not be null! else what did the wraps wrap? heh bug somewhere" );
 				// break;// return null;//and break from while
 			}
@@ -241,7 +200,7 @@ public class RunTime
 		return tmpParser;// can NOT be null
 	}
 	
-
+	
 	/**
 	 * this is used to compare if the just caught exception <tt>wrappedException</tt> is of the type of
 	 * <tt>ofThisExceptionType</tt><br>
@@ -253,40 +212,30 @@ public class RunTime
 	 *            ie. BadCallError.class
 	 * @return
 	 */
-	public static
-			boolean
-			isThisWrappedException_of_thisType(
-												Throwable wrappedException,
-												Class<? extends Throwable> ofThisExceptionType )
-	{
+	public static boolean isThisWrappedException_of_thisType( final Throwable wrappedException,
+																final Class<? extends Throwable> ofThisExceptionType ) {
 		
-		RunTime.assumedNotNull(
-								wrappedException,
-								ofThisExceptionType );
-		Throwable unwrappedException = RunTime.getUnwrappedExceptionNeverNull( wrappedException );
-		if ( null == unwrappedException )
-		{
+		RunTime.assumedNotNull( wrappedException, ofThisExceptionType );
+		final Throwable unwrappedException = RunTime.getUnwrappedExceptionNeverNull( wrappedException );
+		if ( null == unwrappedException ) {
 			RunTime
-					.bug( "that exception contained only wraps ie. the RuntimeWrappedThrowException was peeled off and yet there was no Cause detected; must be bug somewhere" );
+				.bug( "that exception contained only wraps ie. the RuntimeWrappedThrowException was peeled off and yet there was no Cause detected; must be bug somewhere" );
 		}
 		return ( unwrappedException.getClass() == ofThisExceptionType );
 	}
 	
-
+	
 	/**
 	 * clears all thrown exceptions, starting from a clean slate<br>
 	 * not just for jUnit<br>
 	 */
-	public static
-			void
-			clearThrowChain()
-	{
+	public static void clearThrowChain() {
 		// FIXME: cannot nullify the chain due to aspectJ catch/rethrow, it will catch the last thrown one(since it's
 		// the entire chain) and rethrow it effectively putting back the chain
 		allExceptionsChained = null;
 	}
 	
-
+	
 	// /**
 	// * for jUnit; really don't use these; if you catch an exception you're not certain that it was the last one,
 	// unless
@@ -307,187 +256,112 @@ public class RunTime
 	// }
 	// }
 	
-
+	
 	/**
 	 * this will unwrap to the real thrown exception and then it will clear it, but it's cause won't be cleared<br>
 	 * so all wraps and the last real exception are cleared<br>
 	 */
-	public static
-			void
-			clearLastThrown_andAllItsWraps()
-	{
+	public static void clearLastThrown_andAllItsWraps() {
 		
-		if ( null != allExceptionsChained )
-		{
+		if ( null != allExceptionsChained ) {
 			allExceptionsChained = RunTime.getUnwrappedExceptionNeverNull( allExceptionsChained );
-			if ( null == allExceptionsChained )
-			{
+			if ( null == allExceptionsChained ) {
 				RunTime.bug( "what? it was all only wraps? bug somewhere" );
 			}
 			allExceptionsChained = allExceptionsChained.getCause();
 		}
 	}
 	
-
+	
 	/**
 	 * @param t
 	 *            the previous (normally thrown) java exception to chain as cause of this bug<br>
 	 */
-	public static
-			void
-			bug(
-					Throwable t )
-	{
+	public static void bug( final Throwable t ) {
 		
-		bug0(
-				t,
-				"Bug detected." );
+		bug0( t, "Bug detected." );
 	}
 	
-
-	public static
-			void
-			bug()
-	{
+	
+	public static void bug() {
 		
-		bug0(
-				null,
-				"Bug detected." );
+		bug0( null, "Bug detected." );
 	}
 	
-
+	
 	/**
 	 * @param cause
 	 *            the previous (normally thrown) java exception to chain as cause of this bug<br>
 	 * @msg
 	 */
-	private static
-			void
-			bug0(
-					Throwable cause,
-					String msg )
-	{
+	private static void bug0( final Throwable cause, final String msg ) {
 		
-		try
-		{
-			if ( null != cause )
-			{
+		try {
+			if ( null != cause ) {
 				RunTime.thro( cause );// chain it
 			}
-		}
-		finally
-		{
-			RunTime.thro( new BugError(
-										msg ) );
+		} finally {
+			RunTime.thro( new BugError( msg ) );
 		}
 	}
 	
-
+	
 	/**
 	 * @param cause
 	 *            a normally thrown java exception (ie. not thrown with RunTime.thro()) that will be chained as cause of
 	 *            this bug<br>
 	 * @param msg
 	 */
-	public static
-			void
-			bug(
-					Throwable cause,
-					String msg )
-	{
+	public static void bug( final Throwable cause, final String msg ) {
 		
-		bug0(
-				cause,
-				"Bug detected: "
-						+ msg );
+		bug0( cause, "Bug detected: " + msg );
 	}
 	
-
-	public static
-			void
-			bug(
-					String msg )
-	{
+	
+	public static void bug( final String msg ) {
 		
-		bug0(
-				null,
-				"Bug detected: "
-						+ msg );
+		bug0( null, "Bug detected: " + msg );
 	}
 	
-
-	public static
-			void
-			badCall()
-	{
+	
+	public static void badCall() {
 		
-		badCall0(
-					null,
-					"" );
+		badCall0( null, "" );
 	}
 	
-
-	public static
-			void
-			badCall(
-						String msg )
-	{
+	
+	public static void badCall( final String msg ) {
 		
-		badCall0(
-					null,
-					msg );
+		badCall0( null, msg );
 	}
 	
-
-	public static
-			void
-			badCall(
-						Throwable cause )
-	{
+	
+	public static void badCall( final Throwable cause ) {
 		
-		badCall0(
-					cause,
-					"" );
+		badCall0( cause, "" );
 	}
 	
-
-	public static
-			void
-			badCall(
-						Throwable cause,
-						String msg )
-	{
+	
+	public static void badCall( final Throwable cause, final String msg ) {
 		
-		badCall0(
-					cause,
-					msg );
+		badCall0( cause, msg );
 	}
 	
-
-	private static
-			void
-			badCall0(
-						Throwable cause,
-						String msg )
-	{
+	
+	private static void badCall0( final Throwable cause, final String msg ) {
 		
 		// String msg2 = "BADCALL: " + msg;
 		// Log.thro2( msg2 );
-		try
-		{
-			if ( null != cause )
-			{
+		try {
+			if ( null != cause ) {
 				RunTime.thro( cause );// chain it
 			}
-		}
-		finally
-		{
-			RunTime.thro( new BadCallError(
-											msg ) );
+		} finally {
+			RunTime.thro( new BadCallError( msg ) );
 		}
 	}
 	
-
+	
 	// public static void thro( Exception ex ) throws Exception {
 	//
 	// Log.thro( ex.getLocalizedMessage() );
@@ -502,29 +376,19 @@ public class RunTime
 	// throw new RuntimeException( rtex );
 	// }
 	
-
+	
 	/**
 	 * @param b
 	 */
-	public static
-			void
-			assumedTrue(
-							boolean b )
-	{
+	public static void assumedTrue( final boolean b ) {
 		
-		if ( !b )
-		{
-			RunTime.thro( new AssumptionError(
-												"expected true condition was false!" ) );
+		if ( !b ) {
+			RunTime.thro( new AssumptionError( "expected true condition was false!" ) );
 		}
 	}
 	
-
-	public static
-			void
-			assumedNotNull(
-							Object... obj )
-	{
+	
+	public static void assumedNotNull( final Object... obj ) {
 		// TODO: fix potential recursion with RunTime and Log classes
 		// if ( RunTime.recursiveLoopDetected() )
 		// {
@@ -539,21 +403,13 @@ public class RunTime
 		// // System.out.println( i + " " + stea[i] );
 		// // }
 		// }
-		if ( null == obj )
-		{
+		if ( null == obj ) {
 			RunTime.badCall( "must supply at least one parameter" );
-		}
-		else
-		{
-			for ( int i = 0; i < obj.length; i++ )
-			{
-				if ( null == obj[i] )
-				{
+		} else {
+			for ( int i = 0; i < obj.length; i++ ) {
+				if ( null == obj[i] ) {
 					// Error e =
-					RunTime.thro( new AssumptionError(
-														"expected non-null object["
-																+ ( i + 1 )
-																+ "] was null!" ) );
+					RunTime.thro( new AssumptionError( "expected non-null object[" + ( i + 1 ) + "] was null!" ) );
 					// if ( RunTime.recursiveLoopDetected )
 					// {
 					// throw e;
@@ -567,47 +423,29 @@ public class RunTime
 		}
 	}
 	
-
-	public static
-			void
-			assumedNull(
-							Object... obj )
-	{
-		if ( null == obj )
-		{
+	
+	public static void assumedNull( final Object... obj ) {
+		if ( null == obj ) {
 			RunTime.badCall( "must supply at least one parameter" );
-		}
-		else
-		{
-			for ( int i = 0; i < obj.length; i++ )
-			{
-				if ( null != obj[i] )
-				{
-					RunTime.thro( new AssumptionError(
-														"expected null object["
-																+ ( i + 1 )
-																+ "] was NOT null!" ) );
+		} else {
+			for ( int i = 0; i < obj.length; i++ ) {
+				if ( null != obj[i] ) {
+					RunTime.thro( new AssumptionError( "expected null object[" + ( i + 1 ) + "] was NOT null!" ) );
 				}
 			}
 		}
 	}
 	
-
-	public static
-			void
-			assumedFalse(
-							boolean b )
-	{
+	
+	public static void assumedFalse( final boolean b ) {
 		
-		if ( b )
-		{
-			RunTime.thro( new AssumptionError(
-												"expected false condition was true!" ) );
+		if ( b ) {
+			RunTime.thro( new AssumptionError( "expected false condition was true!" ) );
 		}
 		
 	}
 	
-
+	
 	/**
 	 * @return non-null StackTraceElement of the caller, that is the method that has us as statement<br>
 	 *         ie. return unqualified method name of the caller<br>
@@ -618,16 +456,13 @@ public class RunTime
 	 *         }<br>
 	 *         //the above prints "something"<br>
 	 */
-	public static
-			StackTraceElement
-			getCurrentStackTraceElement()
-	{
+	public static StackTraceElement getCurrentStackTraceElement() {
 		
 		// be careful moving stuff here, the number depends on the location of statement before call
 		return RunTime.getCurrentStackTraceElement( +1 );
 	}
 	
-
+	
 	/**
 	 * @param modifier
 	 *            use positive values(ie. +1) to get caller of caller's STE<br>
@@ -640,29 +475,22 @@ public class RunTime
 	 *         }<br>
 	 *         //the above prints "something" - the unqualified method name<br>
 	 */
-	public static
-			StackTraceElement
-			getCurrentStackTraceElement(
-											int modifier )
-	{
+	public static StackTraceElement getCurrentStackTraceElement( final int modifier ) {
 		
-		RunTime.assumedNotNull( modifier );
+		// RunTime.assumedNotNull( modifier );
 		// do not reorganize the following code into more methods, else the below number will have to change
-		StackTraceElement[] stea = getCurrentStackTraceElementsArray();
+		final StackTraceElement[] stea = getCurrentStackTraceElementsArray();
 		
 		RunTime.assumedNotNull( (Object)stea );
-		int whereIsCaller = skipBackOverCallers(
-													stea,
-													0,
-													2 + 1 + modifier );// 2 + 1 + modifier + 2;
-		RunTime.assumedTrue( stea.length >= 1 + whereIsCaller );
-		StackTraceElement ste = stea[whereIsCaller];
+		final int whereIsCaller = skipBackOverCallers( stea, 0, 2 + 1 + modifier );// 2 + 1 + modifier + 2;
+		RunTime.assumedTrue( stea.length >= ( 1 + whereIsCaller ) );
+		final StackTraceElement ste = stea[whereIsCaller];
 		
 		RunTime.assumedNotNull( ste );
 		return ste;// never null
 	}
 	
-
+	
 	/**
 	 * this will silently ignore(not count) the aspect around methods if aspect is enabled by
 	 * RunTime.throWrapperAspectEnabled<br>
@@ -673,27 +501,15 @@ public class RunTime
 	 * @param byHowMany
 	 * @return the new position after skipping byHowMany back
 	 */
-	public static
-			int
-			skipBackOverCallers(
-									StackTraceElement[] inStackArray,
-									int startFrom,
-									int byHowMany )
-	{
+	public static int skipBackOverCallers( final StackTraceElement[] inStackArray, final int startFrom, final int byHowMany ) {
 		RunTime.assumedNotNull( (Object[])inStackArray );
 		RunTime.assumedTrue( byHowMany > 0 );
 		
 		int posNow = startFrom;
-		int until = startFrom
-					+ byHowMany;
-		while ( ( posNow <= until )
-				&& ( posNow < inStackArray.length )
-				&& ( !inStackArray[posNow].isNativeMethod() ) )
-		{
-			if ( RunTime.throWrapperAspectEnabled )
-			{
-				if ( isAspectInnerMethod( inStackArray[posNow].getMethodName() ) )
-				{
+		int until = startFrom + byHowMany;
+		while ( ( posNow <= until ) && ( posNow < inStackArray.length ) && ( !inStackArray[posNow].isNativeMethod() ) ) {
+			if ( RunTime.throWrapperAspectEnabled ) {
+				if ( isAspectInnerMethod( inStackArray[posNow].getMethodName() ) ) {
 					until++;
 				}
 			}
@@ -702,17 +518,12 @@ public class RunTime
 		return posNow - 1;
 	}
 	
-
-	public static
-			StackTraceElement[]
-			getProcessedStackTraceElementsArray(
-													StackTraceElement[] unprocessedOne )
-	{
+	
+	public static StackTraceElement[] getProcessedStackTraceElementsArray( final StackTraceElement[] unprocessedOne ) {
 		RunTime.assumedNotNull( (Object)unprocessedOne );
 		
-		if ( RunTime.throWrapperAspectEnabled )
-		{
-			StackTraceElement[] stea = unprocessedOne.clone();
+		if ( RunTime.throWrapperAspectEnabled ) {
+			final StackTraceElement[] stea = unprocessedOne.clone();
 			// we need to fix the stack trace if an around-advice is enabled
 			// because the line numbering is wrong BUT ONLY for same name methods that can exist only if they have
 			// different number of params
@@ -735,26 +546,18 @@ public class RunTime
 			// getCurrentStackTrac_aroundBody10 depending on the length it has until _aroundBody
 			
 			StackTraceElement last = null;
-			for ( int i = 0; i < stea.length; i++ )
-			{
-				if ( stea[i].isNativeMethod() )
-				{
+			for ( int i = 0; i < stea.length; i++ ) {
+				if ( stea[i].isNativeMethod() ) {
 					break;
 				}
-				String name = stea[i].getMethodName();
-				if ( !isAspectAroundBodyAdviceMethod( name ) )
-				{
-					if ( isAspectAroundBodyMethod( name ) )
-					{
+				final String name = stea[i].getMethodName();
+				if ( !isAspectAroundBodyAdviceMethod( name ) ) {
+					if ( isAspectAroundBodyMethod( name ) ) {
 						last = stea[i];
-					}
-					else
-					{// is neither of those
-						if ( null != last )
-						{
+					} else {// is neither of those
+						if ( null != last ) {
 							// yes we previously just visited the around-body methods
-							if ( last.getLineNumber() > stea[i].getLineNumber() )
-							{
+							if ( last.getLineNumber() > stea[i].getLineNumber() ) {
 								// aroundBody line num is higer than the caller; they can be equal; or the caller can
 								// have a higher line num but this happens only in case of one statement being on
 								// multiple lines ie. Log.throwReport(
@@ -762,11 +565,12 @@ public class RunTime
 								// allExceptionsChained );
 								// where you can see each param on one line then the caller is at the line with ";" and
 								// the aroundBody is at the first line with Log.*
-								stea[i] = new StackTraceElement(
-																	stea[i].getClassName(),
-																	stea[i].getMethodName(),
-																	stea[i].getFileName(),
-																	last.getLineNumber() );
+								stea[i] =
+									new StackTraceElement(
+										stea[i].getClassName(),
+										stea[i].getMethodName(),
+										stea[i].getFileName(),
+										last.getLineNumber() );
 							}
 						}
 						last = null;
@@ -778,12 +582,9 @@ public class RunTime
 		return unprocessedOne;
 	}
 	
-
-	public synchronized static
-			StackTraceElement[]
-			getCurrentStackTraceElementsArray()
-	{
-		StackTraceElement[] stea = Thread.currentThread().getStackTrace();
+	
+	public synchronized static StackTraceElement[] getCurrentStackTraceElementsArray() {
+		final StackTraceElement[] stea = Thread.currentThread().getStackTrace();
 		return getProcessedStackTraceElementsArray( stea );
 		// boolean showStack = false;
 		
@@ -799,12 +600,8 @@ public class RunTime
 		// return stea;
 	}
 	
-
-	public static
-			StackTraceElement
-			getTheCaller_OutsideOfClass(
-											Class<?> whichClass )
-	{
+	
+	public static StackTraceElement getTheCaller_OutsideOfClass( final Class<?> whichClass ) {
 		// don't change depth of this method
 		// if ( RunTime.recursiveLoopDetected )
 		// {
@@ -814,7 +611,7 @@ public class RunTime
 		return private_getTheCaller_OutsideOfThisClass( whichClass.getName() );
 	}
 	
-
+	
 	// public static
 	// boolean
 	// recursiveLoopDetected()
@@ -841,21 +638,18 @@ public class RunTime
 	// return false;
 	// }
 	
-
+	
 	/**
 	 * @return StackTraceElement but can be null
 	 */
-	public static
-			StackTraceElement
-			getTheCaller_OutsideOfThisClass()
-	{
+	public static StackTraceElement getTheCaller_OutsideOfThisClass() {
 		// don't change depth of this method
-		StackTraceElement ourCaller = RunTime.getCurrentStackTraceElement( +1 );
+		final StackTraceElement ourCaller = RunTime.getCurrentStackTraceElement( +1 );
 		RunTime.assumedNotNull( ourCaller );
 		return private_getTheCaller_OutsideOfThisClass( ourCaller.getClassName() );
 	}
 	
-
+	
 	/**
 	 * private -if you make this public then add a -1 below in code<br>
 	 * this should only be called from a RunTime method that's only 1 level deep<br>
@@ -863,12 +657,9 @@ public class RunTime
 	 * @param whichClassName
 	 * @return can be null
 	 */
-	private static
-			StackTraceElement
-			// StackTraceElement ourCaller,
-			private_getTheCaller_OutsideOfThisClass(
-														String whichClassName )
-	{// Class<?> whichClass ) {
+	private static StackTraceElement
+	// StackTraceElement ourCaller,
+			private_getTheCaller_OutsideOfThisClass( final String whichClassName ) {// Class<?> whichClass ) {
 	
 		// StackTraceElement ourCaller = RunTime.getCurrentStackTraceElement( +1 + 1 );
 		
@@ -884,7 +675,7 @@ public class RunTime
 		// // System.out.println( whichClassName + "!" + ourCallersName );
 		// }
 		
-		StackTraceElement[] stea = getCurrentStackTraceElementsArray();
+		final StackTraceElement[] stea = getCurrentStackTraceElementsArray();
 		// for ( int i = 0; i < stea.length; i++ )
 		// {
 		// System.err.println( "!"
@@ -904,15 +695,11 @@ public class RunTime
 		// int i = +2 + 1 + 1;
 		
 		// we also skip to the caller of the public method calling us(we're private)
-		int goToTheOneThatCalledThisMethod = skipBackOverCallers(
-																	stea,
-																	0,
-																	4 /*-1 if this method is not private*/);
+		final int goToTheOneThatCalledThisMethod = skipBackOverCallers( stea, 0, 4 /*-1 if this method is not private*/);
 		boolean findThisClassFirst = true;
-		for ( int i = goToTheOneThatCalledThisMethod; i < stea.length; i++ )
-		{
+		for ( int i = goToTheOneThatCalledThisMethod; i < stea.length; i++ ) {
 			
-			StackTraceElement ste = stea[i];
+			final StackTraceElement ste = stea[i];
 			// System.err.print( i + ":" + ste.getClassName() + ":" + ste.getMethodName() + ":: " );
 			if ( ste.isNativeMethod() )// ( "sun.reflect.NativeMethodAccessorImpl.invoke0".equals( ste.getClassName() +
 										// "." + ste.getMethodName() ) )
@@ -921,26 +708,19 @@ public class RunTime
 				break;// will return null
 			}
 			
-			if ( RunTime.throWrapperAspectEnabled )
-			{
+			if ( RunTime.throWrapperAspectEnabled ) {
 				// ignore methods created by AspectJ
-				if ( isAspectInnerMethod( ste.getMethodName() ) )
-				{
+				if ( isAspectInnerMethod( ste.getMethodName() ) ) {
 					continue;
 				}
 			}
-			if ( findThisClassFirst )
-			{
-				if ( whichClassName.equals( ste.getClassName() ) )
-				{
+			if ( findThisClassFirst ) {
+				if ( whichClassName.equals( ste.getClassName() ) ) {
 					findThisClassFirst = false;
 					
 				}
-			}
-			else
-			{
-				if ( !whichClassName.equals( ste.getClassName() ) )
-				{
+			} else {
+				if ( !whichClassName.equals( ste.getClassName() ) ) {
 					return ste;
 					// System.err.print( " <------- " );
 					// break;
@@ -950,41 +730,26 @@ public class RunTime
 		return null;
 	}
 	
-
-	public synchronized static
-			boolean
-			isAspectInnerMethod(
-									String name )
-	{
+	
+	public synchronized static boolean isAspectInnerMethod( final String name ) {
 		// return ( name.matches( "^[a-zA-Z0-9_]+"
 		// + "_aroundBody[0-9]+$" ) )
 		// || ( ( name.matches( "^[a-zA-Z0-9_]+"
 		// + "_aroundBody[0-9]+\\$advice$" ) ) );
-		return ( isAspectAroundBodyMethod( name ) )
-				|| ( isAspectAroundBodyAdviceMethod( name ) );
+		return ( isAspectAroundBodyMethod( name ) ) || ( isAspectAroundBodyAdviceMethod( name ) );
 	}
 	
-
-	public static
-			boolean
-			isAspectAroundBodyMethod(
-										String name )
-	{
-		return name.matches( "^[a-zA-Z0-9_]+"
-								+ "_aroundBody[0-9]+$" );
+	
+	public static boolean isAspectAroundBodyMethod( final String name ) {
+		return name.matches( "^[a-zA-Z0-9_]+" + "_aroundBody[0-9]+$" );
 	}
 	
-
-	public static
-			boolean
-			isAspectAroundBodyAdviceMethod(
-											String name )
-	{
-		return ( name.matches( "^[a-zA-Z0-9_]+"
-								+ "_aroundBody[0-9]+\\$advice$" ) );
+	
+	public static boolean isAspectAroundBodyAdviceMethod( final String name ) {
+		return ( name.matches( "^[a-zA-Z0-9_]+" + "_aroundBody[0-9]+\\$advice$" ) );
 	}
 	
-
+	
 	/**
 	 * The purpose of this is to give time to do the deinitializing code<br>
 	 * you can postpone all exceptions thrown with RunTime.thro() as follows:<br>
@@ -998,19 +763,12 @@ public class RunTime
 	 * <br>
 	 * all normally thrown exceptions (ie. with keyword 'throw') will just overwrite anything thrown before<br>
 	 */
-	public static
-			void
-			throwAllThatWerePostponed()
-	{
+	public static void throwAllThatWerePostponed() {
 		
-		if ( null != allExceptionsChained )
-		{
-			try
-			{
+		if ( null != allExceptionsChained ) {
+			try {
 				internalWrappedThrow();
-			}
-			finally
-			{
+			} finally {
 				clearThrowChain();
 				RunTime.assumedNull( allExceptionsChained );
 			}
@@ -1018,11 +776,8 @@ public class RunTime
 		
 	}
 	
-
-	public static
-			StackTraceElement
-			forJunit()
-	{
+	
+	public static StackTraceElement forJunit() {
 		return getTheCaller_OutsideOfThisClass();
 	}
 }

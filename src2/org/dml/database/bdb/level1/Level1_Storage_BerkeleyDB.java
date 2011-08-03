@@ -25,30 +25,16 @@ package org.dml.database.bdb.level1;
 
 
 
-import java.io.File;
+import java.io.*;
 
-import org.dml.tools.Initer;
-import org.dml.tools.RunTime;
-import org.dml.tracking.Factory;
-import org.dml.tracking.Log;
-import org.references.ListOfUniqueNonNullObjects;
-import org.references.Position;
-import org.references.Reference;
-import org.references.method.MethodParams;
-import org.references.method.PossibleParams;
+import org.dml.tools.*;
+import org.dml.tracking.*;
+import org.q.*;
+import org.references.*;
+import org.references.method.*;
 
-import com.sleepycat.bind.tuple.StringBinding;
-import com.sleepycat.je.Database;
-import com.sleepycat.je.DatabaseConfig;
-import com.sleepycat.je.DatabaseEntry;
-import com.sleepycat.je.DatabaseException;
-import com.sleepycat.je.Durability;
-import com.sleepycat.je.Environment;
-import com.sleepycat.je.EnvironmentConfig;
-import com.sleepycat.je.SecondaryConfig;
-import com.sleepycat.je.SecondaryDatabase;
-import com.sleepycat.je.Sequence;
-import com.sleepycat.je.SequenceConfig;
+import com.sleepycat.bind.tuple.*;
+import com.sleepycat.db.*;
 
 
 
@@ -56,10 +42,7 @@ import com.sleepycat.je.SequenceConfig;
  * 
  *
  */
-public class Level1_Storage_BerkeleyDB
-		extends
-		Initer
-{
+public class Level1_Storage_BerkeleyDB extends Initer {
 	
 	private String												envHomeDir;
 	
@@ -77,10 +60,13 @@ public class Level1_Storage_BerkeleyDB
 	
 	// we keep track of open stuffs just in case we need to emergency shutdown
 	// ie. on Exception
-	private final ListOfUniqueNonNullObjects<Sequence>			allSequenceInstances		= new ListOfUniqueNonNullObjects<Sequence>();
+	private final ListOfUniqueNonNullObjects<Sequence>			allSequenceInstances		=
+																								new ListOfUniqueNonNullObjects<Sequence>();
 	// LIFO: allOpenPrimaryDatabases
-	private final ListOfUniqueNonNullObjects<Database>			allOpenPrimaryDatabases		= new ListOfUniqueNonNullObjects<Database>();
-	private final ListOfUniqueNonNullObjects<SecondaryDatabase>	allOpenSecondaryDatabases	= new ListOfUniqueNonNullObjects<SecondaryDatabase>();
+	private final ListOfUniqueNonNullObjects<Database>			allOpenPrimaryDatabases		=
+																								new ListOfUniqueNonNullObjects<Database>();
+	private final ListOfUniqueNonNullObjects<SecondaryDatabase>	allOpenSecondaryDatabases	=
+																								new ListOfUniqueNonNullObjects<SecondaryDatabase>();
 	private UniqueSymbolsGenerator								symGen						= null;
 	
 	private final static String									dbNAME_JavaID_To_NodeID		= "map(JavaID<->NodeID)";
@@ -93,27 +79,18 @@ public class Level1_Storage_BerkeleyDB
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	@Override
-	public
-			boolean
-			equals(
-					Object obj )
-	{
-		if ( null != obj )
-		{
-			if ( super.equals( obj ) )
-			{
+	public boolean equals( final Object obj ) {
+		if ( null != obj ) {
+			if ( super.equals( obj ) ) {
 				return true;
-			}
-			else
-			{
-				if ( this.getClass() == obj.getClass() )
-				{
+			} else {
+				if ( this.getClass() == obj.getClass() ) {
 					Log.warn( "reached the problematic issue of same environment in different instances" );
 					// FIXME: TODO: find a way to give true if two different env instances are open on same directory
 					// basically we can have two bdb environments on same dir thus accessing same Symbols and these must
 					// be detected as equal environments
-					Level1_Storage_BerkeleyDB l1obj = (Level1_Storage_BerkeleyDB)obj;
-					RunTime.assumedTrue( this.isInitedSuccessfully() );
+					final Level1_Storage_BerkeleyDB l1obj = (Level1_Storage_BerkeleyDB)obj;
+					RunTime.assumedTrue( isInitedSuccessfully() );
 					RunTime.assumedTrue( l1obj.isInitingOrInited() );
 					RunTime.assumedTrue( l1obj.isInitedSuccessfully() );
 					RunTime.assumedNotNull( l1obj.env );
@@ -138,35 +115,21 @@ public class Level1_Storage_BerkeleyDB
 	 * 
 	 * @return the database handling the one to one mapping between JavaIDs and
 	 *         Symbols
-	 * @throws DatabaseException
 	 */
-	public
-			DBMap_JavaIDs_To_Symbols
-			getDBMap_JavaIDs_To_Symbols()
-					throws DatabaseException
-	{
+	public DBMap_JavaIDs_To_Symbols getDBMap_JavaIDs_To_Symbols() {
 		
-		if ( null == db_JavaID_To_Symbol )
-		{
-			MethodParams params = MethodParams.getNew();
-			params.set(
-						PossibleParams.level1_BDBStorage,
-						this );
-			params.set(
-						PossibleParams.dbName,
-						dbNAME_JavaID_To_NodeID );
-			db_JavaID_To_Symbol = Factory.getNewInstanceAndInit(
-																	DBMap_JavaIDs_To_Symbols.class,
-																	params );
+		if ( null == db_JavaID_To_Symbol ) {
+			final MethodParams params = MethodParams.getNew();
+			params.set( PossibleParams.level1_BDBStorage, this );
+			params.set( PossibleParams.dbName, dbNAME_JavaID_To_NodeID );
+			db_JavaID_To_Symbol = Factory.getNewInstanceAndInit( DBMap_JavaIDs_To_Symbols.class, params );
 			// new DBMap_JavaIDs_To_Symbols(
 			// );
 			// Factory.initWithoutParams( db_JavaID_To_Symbol );
 			// db_JavaID_To_Symbol = new DBMap_JavaIDs_To_Symbols( this, dbNAME_JavaID_To_NodeID );
 			// db_JavaID_To_Symbol.init( null );
 			RunTime.assumedNotNull( db_JavaID_To_Symbol );
-		}
-		else
-		{
+		} else {
 			Factory.reInitIfNotInited( db_JavaID_To_Symbol );
 			// FIXME: init once on start()
 			
@@ -183,47 +146,33 @@ public class Level1_Storage_BerkeleyDB
 	/**
 	 * constructor, don't forget to call Factory.init(..);
 	 */
-	public Level1_Storage_BerkeleyDB()
-	{
+	public Level1_Storage_BerkeleyDB() {
 		
 		super();
 	}
 	
 	
 	@Override
-	protected
-			void
-			start(
-					MethodParams params )
-	{
+	protected void start( final MethodParams params ) {
 		
 		envHomeDir = params.getExString( PossibleParams.homeDir );
 		Log.entry( envHomeDir );
-		if ( (Boolean)params.getEx( PossibleParams.jUnit_wipeDB ) )
-		{
+		if ( ( (Boolean)params.getEx( PossibleParams.jUnit_wipeDB ) ).booleanValue() ) {
 			Log.special( "destroying previous environment, before we begin..." );
-			this.internalWipeEnv();
+			internalWipeEnv();
 		}
-		this.getEnvironment();
+		getEnvironment();
 		
 	}
 	
 	
-	public
-			UniqueSymbolsGenerator
-			getUniqueSymbolsGenerator()
-	{
+	public UniqueSymbolsGenerator getUniqueSymbolsGenerator() {
 		
-		if ( null == symGen )
-		{
-			symGen = Factory.getNewInstanceAndInitWithoutMethodParams(
-																		UniqueSymbolsGenerator.class,
-																		this );
+		if ( null == symGen ) {
+			symGen = Factory.getNewInstanceAndInitWithoutMethodParams( UniqueSymbolsGenerator.class, this );
 			// symGen = new UniqueSymbolsGenerator( this );
 			// symGen.init( null );
-		}
-		else
-		{
+		} else {
 			Factory.reInitIfNotInited( symGen );
 			// FIXME: init all on start
 			
@@ -243,62 +192,42 @@ public class Level1_Storage_BerkeleyDB
 	 * @see org.dml.tools.StaticInstanceTracker#done()
 	 */
 	@Override
-	protected
-			void
-			done(
-					MethodParams params )
-	{
+	protected void done( final MethodParams params ) {
 		
-		if ( null != db_JavaID_To_Symbol )
-		{
+		if ( null != db_JavaID_To_Symbol ) {
 			Factory.deInit_WithPostponedThrows( db_JavaID_To_Symbol );
 		}
-		if ( null != symGen )
-		{
+		if ( null != symGen ) {
 			Factory.deInit_WithPostponedThrows( symGen );
 		}
-		try
-		{
-			this.deInitSeqSystem_silent();// first
-		}
-		catch ( Throwable t )
-		{
+		try {
+			deInitSeqSystem_silent();// first
+		} catch ( final Throwable t ) {
 			// postpone
 			RunTime.throPostponed( t );
 		}
-		try
-		{
-			this.closeAllOpenDatabases();// second
-		}
-		catch ( Throwable t )
-		{
+		try {
+			closeAllOpenDatabases();// second
+		} catch ( final Throwable t ) {
 			// postpone
 			RunTime.throPostponed( t );
 		}
 		
-		try
-		{
-			this.closeDBEnvironment();// last
-		}
-		catch ( Throwable t )
-		{
+		try {
+			closeDBEnvironment();// last
+		} catch ( final Throwable t ) {
 			// postpone
 			RunTime.throPostponed( t );
 		}
 		
 		
-		Reference<Object> killWhenDoneRef = params.get( PossibleParams.jUnit_wipeDBWhenDone );
-		if ( null != killWhenDoneRef )
-		{// param existed
-			if ( (Boolean)killWhenDoneRef.getObject() )
-			{
+		final Reference<Object> killWhenDoneRef = params.get( PossibleParams.jUnit_wipeDBWhenDone );
+		if ( null != killWhenDoneRef ) {// param existed
+			if ( ( (Boolean)killWhenDoneRef.getObject() ).booleanValue() ) {
 				Log.special( "destroying environment from storage, we're probably inside JUnit..." );
-				try
-				{
-					this.internalWipeEnv();
-				}
-				catch ( Throwable t )
-				{
+				try {
+					internalWipeEnv();
+				} catch ( final Throwable t ) {
 					// postpone
 					RunTime.throPostponed( t );
 				}
@@ -320,38 +249,22 @@ public class Level1_Storage_BerkeleyDB
 	 * <br>
 	 * <code>envHomeDir</code> must be set before calling this
 	 */
-	private
-			void
-			internalWipeEnv()
-	{
+	private void internalWipeEnv() {
 		
-		File dir = new File(
-								envHomeDir );
-		String[] allThoseInDir = dir.list();
-		if ( null != allThoseInDir )
-		{
-			for ( String element : allThoseInDir )
-			{
-				File n = new File(
-									envHomeDir
-											+ File.separator
-											+ element );
-				if ( !n.isFile() )
-				{
+		final File dir = new File( envHomeDir );
+		final String[] allThoseInDir = dir.list();
+		if ( null != allThoseInDir ) {
+			for ( final String element : allThoseInDir ) {
+				final File n = new File( envHomeDir + File.separator + element );
+				if ( !n.isFile() ) {
 					continue;
 				}
-				if ( ( !n.getPath().matches(
-												".*\\.jdb" ) )
-						&& ( !( n.getPath().matches( ".*\\.lck" ) ) ) )
-				{
+				if ( ( !n.getPath().matches( ".*\\.jdb" ) ) && ( !( n.getPath().matches( ".*\\.lck" ) ) ) ) {
 					continue;
 				}
-				Log.special( "removing "
-								+ n.getPath() );
-				if ( !n.delete() )
-				{
-					Log.warn( "Failed removing "
-								+ n.getAbsolutePath() );
+				Log.special( "removing " + n.getPath() );
+				if ( !n.delete() ) {
+					Log.warn( "Failed removing " + n.getAbsolutePath() );
 				}
 			}
 		}
@@ -362,15 +275,11 @@ public class Level1_Storage_BerkeleyDB
 	 * @return singleton of the BDB Environment
 	 * @throws DatabaseException
 	 */
-	public final
-			Environment
-			getEnvironment()
-	{
+	public final Environment getEnvironment() {
 		
-		if ( null == env )
-		{
+		if ( null == env ) {
 			// make new now:
-			this.firstTimeCreateEnvironment();
+			firstTimeCreateEnvironment();
 			RunTime.assumedNotNull( env );
 		}
 		
@@ -405,40 +314,30 @@ public class Level1_Storage_BerkeleyDB
 	 * @throws DatabaseException
 	 * 
 	 */
-	private final
-			void
-			firstTimeCreateEnvironment()
-	{
-		if ( null == environmentConfig )
-		{
+	private final void firstTimeCreateEnvironment() {
+		if ( null == environmentConfig ) {
 			environmentConfig = new EnvironmentConfig();
 			
 			environmentConfig.setAllowCreate( true );
-			environmentConfig.setLocking( true );
-			environmentConfig.setTransactional(
-												true ).setDurability(
-																		Durability.COMMIT_NO_SYNC );
-			environmentConfig.setTxnSerializableIsolation( true );
-			environmentConfig.setSharedCache( false );
+			environmentConfig.setInitializeLocking( true );
+			environmentConfig.setTransactional( true );
+			// .setDurability( Durability.COMMIT_NO_SYNC );//FIXME:
+			environmentConfig.setTxnNoSync( true );
+			environmentConfig.setTxnWriteNoSync( false );
+			// environmentConfig.setTxnSerializableIsolation( true );// FIXME: what's the equivalent of this?
+			environmentConfig.setInitializeCache( false );// SharedCache( false );
 			// environmentConfig.setConfigParam( EnvironmentConfig.TRACE_LEVEL, "OFF" );
 			// environmentConfig.setConfigParam( EnvironmentConfig.TRACE_CONSOLE, "false" );
 			// environmentConfig.setConfigParam( EnvironmentConfig.TRACE_FILE, "false" );
 			// environmentConfig.setConfigParam( EnvironmentConfig.TRACE_DB, "false" );
 		}
 		// perform other environment configurations
-		File file = new File(
-								envHomeDir );
-		try
-		{
+		final File file = new File( envHomeDir );
+		try {
 			file.mkdirs();
-			env = new Environment(
-									file,
-									environmentConfig );
-		}
-		catch ( Throwable t )
-		{
-			Log.thro( "when creating BerkeleyDB Environment: "
-						+ t.getMessage() );
+			env = new Environment( file, environmentConfig );
+		} catch ( final Throwable t ) {
+			Log.thro( "when creating BerkeleyDB Environment: " + t.getMessage() );
 			RunTime.throWrapped( t );
 		}
 		
@@ -451,48 +350,30 @@ public class Level1_Storage_BerkeleyDB
 	 * 
 	 * @param secDb
 	 */
-	public final
-			void
-			closeAnySecDB(
-							SecondaryDatabase secDb )
-	{
+	public final void closeAnySecDB( final SecondaryDatabase secDb ) {
 		
 		Log.entry();
-		if ( null != secDb )
-		{
+		if ( null != secDb ) {
 			
 			String secDbName = UNINITIALIZED_STRING;
-			try
-			{
-				try
-				{
+			try {
+				try {
 					secDbName = secDb.getDatabaseName();
 					
-				}
-				finally
-				{
+				} finally {
 					secDb.close();
-					Log.mid( "closed SecDB with name: "
-								+ secDbName );
+					Log.mid( "closed SecDB with name: " + secDbName );
 				}
-			}
-			catch ( Throwable t )
-			{
-				Log.thro( "failed closing SecDB with specified name: '"
-							+ secDbName );
+			} catch ( final Throwable t ) {
+				Log.thro( "failed closing SecDB with specified name: '" + secDbName );
 				RunTime.throWrapped( t );// wrap and re-throw now
-			}
-			finally
-			{
+			} finally {
 				RunTime.assumedFalse( allOpenSecondaryDatabases.isEmpty() );
-				if ( !allOpenSecondaryDatabases.removeObject( secDb ) )
-				{
+				if ( !allOpenSecondaryDatabases.removeObject( secDb ) ) {
 					RunTime.bug( "should've existed" );
 				}
 			}
-		}
-		else
-		{
+		} else {
 			Log.mid( "wasn't open SecDB" );
 		}
 	}
@@ -501,32 +382,20 @@ public class Level1_Storage_BerkeleyDB
 	/**
 	 * 
 	 */
-	private final
-			void
-			closeDBEnvironment()
-	{
+	private final void closeDBEnvironment() {
 		
-		if ( null != env )
-		{
-			try
-			{
+		if ( null != env ) {
+			try {
 				env.close();
 				Log.exit( "BerkeleyDB env closed" );
-			}
-			catch ( Throwable t )
-			{
-				Log.thro( "failed BerkeleyDB environment close:"
-							+ t.getLocalizedMessage() );
+			} catch ( final Throwable t ) {
+				Log.thro( "failed BerkeleyDB environment close:" + t.getLocalizedMessage() );
 				// ignore
 				RunTime.throWrapped( t );
-			}
-			finally
-			{
+			} finally {
 				env = null;
 			}
-		}
-		else
-		{
+		} else {
 			Log.mid( "BerkeleyDB env wasn't open" );
 		}
 	}
@@ -542,32 +411,17 @@ public class Level1_Storage_BerkeleyDB
 	 * @return never null
 	 * @throws DatabaseException
 	 */
-	public
-			Sequence
-			getNewSequence(
-							String thisSeqName,
-							SequenceConfig allSequencesConfig )
-					throws DatabaseException
-	{
+	public Sequence getNewSequence( final String thisSeqName, final SequenceConfig allSequencesConfig )
+			throws DatabaseException {
 		
-		RunTime.assumedNotNull(
-								thisSeqName,
-								allSequencesConfig );
+		RunTime.assumedNotNull( thisSeqName, allSequencesConfig );
 		// allSequencesConfig can be null though, to use BDB defaults
 		
 		// init once:
-		DatabaseEntry deKey = new DatabaseEntry();
-		StringBinding.stringToEntry(
-										thisSeqName,
-										deKey );
-		Sequence seq = this.getSeqsDB().openSequence(
-														null,
-														deKey,
-														allSequencesConfig );
-		if ( allSequenceInstances.addObjectAtPosition(
-														Position.FIRST,
-														seq ) )
-		{
+		final DatabaseEntry deKey = new DatabaseEntry();
+		StringBinding.stringToEntry( thisSeqName, deKey );
+		final Sequence seq = getSeqsDB().openSequence( null, deKey, allSequencesConfig );
+		if ( allSequenceInstances.addObjectAtPosition( Position.FIRST, seq ) ) {
 			RunTime.bug( "couldn't have already existed!" );
 		}
 		RunTime.assumedNotNull( seq );
@@ -580,42 +434,24 @@ public class Level1_Storage_BerkeleyDB
 	 * @param thisSeqName
 	 * @return null
 	 */
-	public
-			Sequence
-			closeAnySeq(
-							Sequence thisSeq,
-							String thisSeqName )
-	{
+	public Sequence closeAnySeq( final Sequence thisSeq, final String thisSeqName ) {
 		
-		Log.entry( "attempting to close sequence: "
-					+ thisSeqName );
-		if ( null != thisSeq )
-		{
-			try
-			{
+		Log.entry( "attempting to close sequence: " + thisSeqName );
+		if ( null != thisSeq ) {
+			try {
 				thisSeq.close();
-				Log.exit( "closed seq with name: "
-							+ thisSeqName );
-			}
-			catch ( Throwable t )
-			{
-				Log.thro( "failed closing seq with specified name: '"
-							+ thisSeqName );
+				Log.exit( "closed seq with name: " + thisSeqName );
+			} catch ( final Throwable t ) {
+				Log.thro( "failed closing seq with specified name: '" + thisSeqName );
 				RunTime.throWrapped( t );// wrap around and don't postpone
-			}
-			finally
-			{
+			} finally {
 				RunTime.assumedFalse( allSequenceInstances.isEmpty() );
-				if ( !allSequenceInstances.removeObject( thisSeq ) )
-				{
+				if ( !allSequenceInstances.removeObject( thisSeq ) ) {
 					RunTime.bug( "should've existed" );// this will not be postponed
 				}
 			}
-		}
-		else
-		{
-			Log.mid( "seq was already closed with name: "
-						+ thisSeqName );
+		} else {
+			Log.mid( "seq was already closed with name: " + thisSeqName );
 		}
 		
 		return null;
@@ -625,38 +461,26 @@ public class Level1_Storage_BerkeleyDB
 	/**
 	 * @throws anything
 	 */
-	private final
-			void
-			closeAllSequences()
-	{
+	private final void closeAllSequences() {
 		
 		Log.entry();
 		Sequence iter;
 		// int count = 0;
-		while ( null != ( iter = allSequenceInstances.getObjectAt( Position.FIRST ) ) )
-		{
+		while ( null != ( iter = allSequenceInstances.getObjectAt( Position.FIRST ) ) ) {
 			// FIXME: (maybe this comment is outdated?)the bad part is that whoever owns iter cannot set it to
 			// NULL ie. inside a DBSequence instance, but I'm guessing that
 			// there won't be any calls to DBSequence.done() before
 			// closeEnvironment() finishes anyway; same goes for DatabaseCapsule
 			// and SecondaryDatabaseCapsule
-			try
-			{
-				this.closeAnySeq(
-									iter,
-									"autoclosing..." );// we don't know the name here
-			}
-			catch ( Throwable t )
-			{
+			try {
+				closeAnySeq( iter, "autoclosing..." );// we don't know the name here
+			} catch ( final Throwable t ) {
 				RunTime.throPostponed( t );
 				// postpone all, until all sequence instances are closed
-			}
-			finally
-			{
+			} finally {
 				// but we won't postpone these since these signal bugs in the 'shutdown engine'
 				RunTime.assumedFalse( allSequenceInstances.isEmpty() );
-				if ( !allSequenceInstances.removeObject( iter ) )
-				{
+				if ( !allSequenceInstances.removeObject( iter ) ) {
 					RunTime.bug( "should've existed before" );
 				}
 			}
@@ -672,43 +496,29 @@ public class Level1_Storage_BerkeleyDB
 	/**
 	 * closing all sequences first, then the BerkeleyDB holding them
 	 */
-	private
-			void
-			closeAllSequencesAndTheirDB()
-	{
+	private void closeAllSequencesAndTheirDB() {
 		
 		Log.entry();
-		try
-		{
-			if ( !allSequenceInstances.isEmpty() )
-			{
-				this.closeAllSequences();
+		try {
+			if ( !allSequenceInstances.isEmpty() ) {
+				closeAllSequences();
 			}
-		}
-		catch ( Throwable t )
-		{
+		} catch ( final Throwable t ) {
 			// postpone
 			RunTime.throPostponed( t );
-		}
-		finally
-		{
+		} finally {
 			// don't postpone these, since this signal that something's wrong with 'shutdown/cleanup engine'
-			if ( !allSequenceInstances.isEmpty() )
-			{
+			if ( !allSequenceInstances.isEmpty() ) {
 				RunTime.bug( "should be empty now" );
 			}
 		}
 		
-		try
-		{
-			if ( null != seqDb )
-			{
-				this.closeAnyPriDB( seqDb );
+		try {
+			if ( null != seqDb ) {
+				closeAnyPriDB( seqDb );
 				seqDb = null;
 			}
-		}
-		catch ( Throwable t )
-		{
+		} catch ( final Throwable t ) {
 			// postpone
 			RunTime.throPostponed( t );
 		}
@@ -722,13 +532,10 @@ public class Level1_Storage_BerkeleyDB
 	 * safely closes all active sequences and the database holding them<br>
 	 * for the current environment only
 	 */
-	public final
-			void
-			deInitSeqSystem_silent()
-	{
+	public final void deInitSeqSystem_silent() {
 		
 		Log.entry();
-		this.closeAllSequencesAndTheirDB();
+		closeAllSequencesAndTheirDB();
 		
 	}
 	
@@ -736,29 +543,19 @@ public class Level1_Storage_BerkeleyDB
 	/**
 	 * closing secondary then primary databases
 	 */
-	private
-			void
-			closeAllOpenDatabases()
-	{
+	private void closeAllOpenDatabases() {
 		
 		Log.entry();
 		// close secondaries first!
 		SecondaryDatabase iterSec;
-		while ( null != ( iterSec = allOpenSecondaryDatabases.getObjectAt( Position.FIRST ) ) )
-		{
-			try
-			{
-				this.closeAnySecDB( iterSec );
-			}
-			catch ( Throwable t )
-			{
+		while ( null != ( iterSec = allOpenSecondaryDatabases.getObjectAt( Position.FIRST ) ) ) {
+			try {
+				closeAnySecDB( iterSec );
+			} catch ( final Throwable t ) {
 				// postpone
 				RunTime.throPostponed( t );
-			}
-			finally
-			{
-				if ( allOpenSecondaryDatabases.removeObject( iterSec ) )
-				{
+			} finally {
+				if ( allOpenSecondaryDatabases.removeObject( iterSec ) ) {
 					RunTime.bug( "should've already been removed by above cmd" );
 				}
 			}
@@ -768,22 +565,15 @@ public class Level1_Storage_BerkeleyDB
 		
 		// closing primaries: LIFO manner
 		Database iter;
-		while ( null != ( iter = allOpenPrimaryDatabases.getObjectAt( Position.FIRST ) ) )
-		{
-			try
-			{
-				this.closeAnyPriDB( iter );
-			}
-			catch ( Throwable t )
-			{
+		while ( null != ( iter = allOpenPrimaryDatabases.getObjectAt( Position.FIRST ) ) ) {
+			try {
+				closeAnyPriDB( iter );
+			} catch ( final Throwable t ) {
 				// postpone only these
 				RunTime.throPostponed( t );
-			}
-			finally
-			{
+			} finally {
 				// don't postpone the following:
-				if ( allOpenPrimaryDatabases.removeObject( iter ) )
-				{
+				if ( allOpenPrimaryDatabases.removeObject( iter ) ) {
 					RunTime.bug( "should've already been removed by above cmd" );
 				}
 			}
@@ -798,18 +588,12 @@ public class Level1_Storage_BerkeleyDB
 	
 	/**
 	 * @return
-	 * @throws DatabaseException
 	 */
-	protected
-			Database
-			getSeqsDB()
-					throws DatabaseException
-	{
+	protected Database getSeqsDB() {
 		
-		if ( null == seqDb )
-		{
+		if ( null == seqDb ) {
 			// init first time:
-			seqDb = this.openSeqDB();
+			seqDb = openSeqDB();
 			RunTime.assumedNotNull( seqDb );
 		}
 		return seqDb;
@@ -822,31 +606,23 @@ public class Level1_Storage_BerkeleyDB
 	 * 
 	 * @param dbName
 	 * @return
-	 * @throws DatabaseException
 	 */
-	private final
-			Database
-			openSeqDB()
-					throws DatabaseException
-	{
+	private final Database openSeqDB() {
 		
 		RunTime.assumedNotNull( seqDb_NAME );
 		RunTime.assumedFalse( seqDb_NAME.isEmpty() );
 		
-		if ( null == seqDbConf )
-		{
+		if ( null == seqDbConf ) {
 			// init once:
 			seqDbConf = new DatabaseConfig();
 			seqDbConf.setAllowCreate( true );
-			seqDbConf.setDeferredWrite( false );
-			seqDbConf.setKeyPrefixing( true );
+			// seqDbConf.setDeferredWrite( false );
+			// seqDbConf.setKeyPrefixing( true );
 			seqDbConf.setSortedDuplicates( false );//
 			seqDbConf.setTransactional( true );
 		}
 		
-		return this.openAnyDatabase(
-										seqDb_NAME,
-										seqDbConf );
+		return openAnyDatabase( seqDb_NAME, seqDbConf );
 	}
 	
 	
@@ -856,27 +632,21 @@ public class Level1_Storage_BerkeleyDB
 	 * @return the db
 	 * @throws DatabaseException
 	 */
-	public
-			Database
-			openAnyDatabase(
-								String dbName,
-								DatabaseConfig dbConf )
-	{
+	public Database openAnyDatabase( final String dbName, final DatabaseConfig dbConf ) {
 		
 		Log.entry( dbName );
-		RunTime.assumedNotNull(
-								dbName,
-								dbConf );
+		RunTime.assumedNotNull( dbName, dbConf );
 		// should not use this openDatabase() method anywhere else
-		Database db = this.getEnvironment().openDatabase(
-															null,
-															dbName,
-															dbConf/* could be null to use defaults, but no */
-		);
-		if ( allOpenPrimaryDatabases.addObjectAtPosition(
-															Position.FIRST,
-															db ) )
-		{
+		Database db;
+		try {
+			db = getEnvironment().openDatabase( null, dbName, null, dbConf/* could be null to use defaults, but no */
+			);
+		} catch ( final FileNotFoundException e ) {
+			throw Q.rethrow( e );
+		} catch ( final DatabaseException e ) {
+			throw Q.rethrow( e );
+		}
+		if ( allOpenPrimaryDatabases.addObjectAtPosition( Position.FIRST, db ) ) {
 			RunTime.bug( "couldn't have already existed!" );
 		}
 		RunTime.assumedNotNull( allOpenPrimaryDatabases.getRef( db ) );
@@ -893,25 +663,17 @@ public class Level1_Storage_BerkeleyDB
 	 * @return the secondary db
 	 * @throws DatabaseException
 	 */
-	public
-			SecondaryDatabase
-			openAnySecDatabase(
-								String secDbName,
-								Database primaryDb,
-								SecondaryConfig secDbConf )
-					throws DatabaseException
-	{
+	public SecondaryDatabase openAnySecDatabase( final String secDbName, final Database primaryDb,
+													final SecondaryConfig secDbConf ) throws DatabaseException {
 		
 		Log.entry( secDbName );
-		SecondaryDatabase secDb = this.getEnvironment().openSecondaryDatabase(
-																				null,
-																				secDbName,
-																				primaryDb,
-																				secDbConf );
-		if ( allOpenSecondaryDatabases.addObjectAtPosition(
-															Position.FIRST,
-															secDb ) )
-		{
+		SecondaryDatabase secDb;
+		try {
+			secDb = getEnvironment().openSecondaryDatabase( null, secDbName, null, primaryDb, secDbConf );
+		} catch ( final FileNotFoundException e ) {
+			throw Q.rethrow( e );
+		}
+		if ( allOpenSecondaryDatabases.addObjectAtPosition( Position.FIRST, secDb ) ) {
 			RunTime.bug( "couldn't have already existed" );
 		}
 		return secDb;
@@ -925,53 +687,32 @@ public class Level1_Storage_BerkeleyDB
 	 * @param db
 	 *            just for information
 	 */
-	public final
-			void
-			closeAnyPriDB(
-							Database db )
-	{
+	public final void closeAnyPriDB( final Database db ) {
 		
 		Log.entry();
-		if ( null != db )
-		{
+		if ( null != db ) {
 			
 			String dbname = UNINITIALIZED_STRING;
-			try
-			{
-				try
-				{
+			try {
+				try {
 					dbname = db.getDatabaseName();
-					Log.mid( "closing dbname: "
-								+ dbname );
-				}
-				finally
-				{
+					Log.mid( "closing dbname: " + dbname );
+				} finally {
 					db.close();// the only place this should be used is this line
 					RunTime.assumedNotNull( db );
-					Log.mid( "closed BerkeleyDB with name: "
-								+ dbname );
+					Log.mid( "closed BerkeleyDB with name: " + dbname );
 				}
-			}
-			catch ( Throwable t )
-			{
-				Log.thro( "failed closing BerkeleyDB with specified name: '"
-							+ dbname
-							+ "; reason: "
-							+ t.getLocalizedMessage() );
+			} catch ( final Throwable t ) {
+				Log.thro( "failed closing BerkeleyDB with specified name: '" + dbname + "; reason: " + t.getLocalizedMessage() );
 				RunTime.throWrapped( t );// wrap around and throw now
-			}
-			finally
-			{
+			} finally {
 				RunTime.assumedNotNull( db );
 				RunTime.assumedFalse( allOpenPrimaryDatabases.isEmpty() );
-				if ( !allOpenPrimaryDatabases.removeObject( db ) )
-				{
+				if ( !allOpenPrimaryDatabases.removeObject( db ) ) {
 					RunTime.bug( "should've succeeded" );
 				}
 			}
-		}
-		else
-		{
+		} else {
 			Log.mid( "close db was called on null db object" );
 		}
 		
@@ -984,10 +725,7 @@ public class Level1_Storage_BerkeleyDB
 	 * @see java.lang.Object#hashCode()
 	 */
 	@Override
-	public
-			int
-			hashCode()
-	{
+	public int hashCode() {
 		RunTime.assumedNotNull( envHomeDir );
 		return envHomeDir.hashCode();
 	}

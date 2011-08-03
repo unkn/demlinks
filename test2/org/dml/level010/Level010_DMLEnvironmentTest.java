@@ -26,23 +26,17 @@ package org.dml.level010;
 
 
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
-import java.io.File;
-import java.util.HashSet;
+import java.io.*;
+import java.util.*;
 
-import org.dml.JUnits.Consts;
-import org.dml.database.bdb.level1.Level1_Storage_BerkeleyDB;
-import org.dml.error.BadCallError;
-import org.dml.tools.RunTime;
-import org.dml.tracking.Factory;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.references.method.MethodParams;
-import org.references.method.PossibleParams;
+import org.dml.JUnits.*;
+import org.dml.database.bdb.level1.*;
+import org.dml.error.*;
+import org.dml.tools.*;
+import org.dml.tracking.*;
+import org.junit.*;
+import org.references.method.*;
 
 
 
@@ -50,8 +44,7 @@ import org.references.method.PossibleParams;
  * 
  *
  */
-public class Level010_DMLEnvironmentTest
-{
+public class Level010_DMLEnvironmentTest {
 	
 	Level010_DMLEnvironment	dml1;
 	Symbol					a, b, c;
@@ -59,37 +52,25 @@ public class Level010_DMLEnvironmentTest
 	Symbol					anewFromDiffThread	= null;
 	
 	
+	@SuppressWarnings( "boxing" )
 	@Before
-	public
-			void
-			setUp()
-	{
+	public void setUp() {
 		
 		params = MethodParams.getNew();
 		// params.init( null );
 		
 		// dml1 = new Level010_DMLEnvironment();
-		params.set(
-					PossibleParams.homeDir,
-					Consts.BDB_ENV_PATH );
-		params.set(
-					PossibleParams.jUnit_wipeDBWhenDone,
-					true );
+		params.set( PossibleParams.homeDir, Consts.BDB_ENV_PATH );
+		params.set( PossibleParams.jUnit_wipeDBWhenDone, true );
 		// dml1.init( params );
-		dml1 = Factory.getNewInstanceAndInit(
-												Level010_DMLEnvironment.class,
-												params );
+		dml1 = Factory.getNewInstanceAndInit( Level010_DMLEnvironment.class, params );
 	}
 	
-
+	
 	@After
-	public
-			void
-			tearDown()
-	{
+	public void tearDown() {
 		
-		if ( null != dml1 )
-		{
+		if ( null != dml1 ) {
 			Factory.deInitIfAlreadyInited( dml1 );
 			// dml1.deInitSilently();
 			dml1 = null;
@@ -98,16 +79,12 @@ public class Level010_DMLEnvironmentTest
 		params = null;
 	}
 	
-
+	
+	@SuppressWarnings( "boxing" )
 	@Test
-	public
-			void
-			test1()
-					throws InterruptedException
-	{
+	public void test1() throws InterruptedException {
 		
-		try
-		{
+		try {
 			a = dml1.ensureSymbol( JavaID.ensureJavaIDFor( "A" ) );
 			b = dml1.ensureSymbol( JavaID.ensureJavaIDFor( "B" ) );
 			c = dml1.ensureSymbol( JavaID.ensureJavaIDFor( "C" ) );
@@ -117,7 +94,7 @@ public class Level010_DMLEnvironmentTest
 			assertTrue( a == dml1.getSymbol( JavaID.ensureJavaIDFor( "A" ) ) );
 			assertTrue( b == dml1.getSymbol( JavaID.ensureJavaIDFor( "B" ) ) );
 			assertTrue( c == dml1.getSymbol( JavaID.ensureJavaIDFor( "C" ) ) );
-			Object t = dml1.getSymbol( JavaID.ensureJavaIDFor( "A" ) );
+			final Object t = dml1.getSymbol( JavaID.ensureJavaIDFor( "A" ) );
 			assertTrue( a == t );
 			// Object t2 = new Object();
 			// boolean threw = false;
@@ -129,127 +106,86 @@ public class Level010_DMLEnvironmentTest
 			// assertTrue( threw );
 			// }
 			
-
+			
 			// same contents in java
-			MethodParams params1 = MethodParams.getNew();
+			final MethodParams params1 = MethodParams.getNew();
 			// params = Factory.getNewInstanceAndInitWithoutParams( MethodParams.class );
 			
-			params1.set(
-							PossibleParams.homeDir,
-							Consts.BDB_ENV_PATH
-									+ File.separator
-									+ "second" );
-			params1.set(
-							PossibleParams.jUnit_wipeDB,
-							true );
-			params1.set(
-							PossibleParams.jUnit_wipeDBWhenDone,
-							true );
+			params1.set( PossibleParams.homeDir, Consts.BDB_ENV_PATH + File.separator + "second" );
+			params1.set( PossibleParams.jUnit_wipeDB, true );
+			params1.set( PossibleParams.jUnit_wipeDBWhenDone, true );
 			// RunTime.thro( new Exception( "testy" ) );
-			final Level1_Storage_BerkeleyDB bdbL1 = Factory.getNewInstanceAndInit(
-																					Level1_Storage_BerkeleyDB.class,
-																					params1 );
+			final Level1_Storage_BerkeleyDB bdbL1 = Factory.getNewInstanceAndInit( Level1_Storage_BerkeleyDB.class, params1 );
 			// Level1_Storage_BerkeleyDB bdbL1=
 			final Long la = a.getTheStoredSymbol().getLong();
-			Symbol anew = Symbol.getNew(
-											bdbL1,
-											TheStoredSymbol.getNew( la ) );
+			final Symbol anew = Symbol.getNew( bdbL1, TheStoredSymbol.getNew( la ) );
 			
-			Thread th0 = new Thread()
-			{
+			final Thread th0 = new Thread() {
 				
 				@Override
-				public
-						void
-						run()
-				{
-					anewFromDiffThread = Symbol.getNew(
-														bdbL1,
-														TheStoredSymbol.getNew( la ) );
+				public void run() {
+					anewFromDiffThread = Symbol.getNew( bdbL1, TheStoredSymbol.getNew( la ) );
 				}
 			};
 			th0.start();
 			boolean threw = false;
-			try
-			{
+			try {
 				assertFalse( a.equals( anew ) );// not equal, from different storages!
-			}
-			catch ( Throwable t1 )
-			{
-				if ( RunTime.isThisWrappedException_of_thisType(
-																	t1,
-																	BadCallError.class ) )
-				{
+			} catch ( final Throwable t1 ) {
+				if ( RunTime.isThisWrappedException_of_thisType( t1, BadCallError.class ) ) {
 					threw = true;
 					RunTime.clearLastThrown_andAllItsWraps();
 				}
 			}
 			assertTrue( threw );
 			
-			JavaID aJID = dml1.getJavaID( a );
+			final JavaID aJID = dml1.getJavaID( a );
 			assertTrue( dml1.getJavaID( anew ) == aJID );
 			th0.join();
 			assertNotNull( anewFromDiffThread );
 			assertTrue( anew == anewFromDiffThread );
 			assertTrue( dml1.getJavaID( anewFromDiffThread ) == aJID );
-			HashSet<Symbol> hs = new HashSet<Symbol>();
+			final HashSet<Symbol> hs = new HashSet<Symbol>();
 			hs.add( a );// calls Symbol.hashCode() first then if ever needed .equals
 			hs.add( a );
-			Symbol b1 = dml1.newUniqueSymbol();
+			final Symbol b1 = dml1.newUniqueSymbol();
 			hs.add( b1 );
 			assertTrue( hs.size() == 2 );
-		}
-		finally
-		{
+		} finally {
 			Factory.deInit( dml1 );
 			// // dml1.deInit();
 		}
 	}
 	
-
+	
 	@Test
-	public
-			void
-			testMultiInits()
-	{
+	public void testMultiInits() {
 		
-		try
-		{
+		try {
 			Factory.deInit( dml1 );
 			// dml1.deInit();
-			Factory.init(
-							dml1,
-							params );
+			Factory.init( dml1, params );
 			// dml1.init( params );
 			// dml2.deInit();
 			// dml2.init( Consts.DEFAULT_BDB_ENV_PATH );
-		}
-		finally
-		{
+		} finally {
 			Factory.deInit( dml1 );
 			// dml1.deInitAllLikeMe();
 		}
 	}
 	
-
+	
 	@Test
-	public
-			void
-			testUniqueAndAssociation()
-	{
+	public void testUniqueAndAssociation() {
 		
-		Symbol noID = dml1.newUniqueSymbol();
+		final Symbol noID = dml1.newUniqueSymbol();
 		assertNotNull( noID );
-		JavaID jid = JavaID.ensureJavaIDFor( "UniqueSymbol" );
+		final JavaID jid = JavaID.ensureJavaIDFor( "UniqueSymbol" );
 		assertNull( dml1.getJavaID( noID ) );
 		assertNull( dml1.getSymbol( jid ) );
-		dml1.newLink(
-						noID,
-						jid );// no throws
+		dml1.newLink( noID, jid );// no throws
 		assertTrue( dml1.getJavaID( noID ) == jid );
 		assertTrue( dml1.getSymbol( jid ) == noID );
-		assertTrue( dml1.ensureLink(
-										noID,
-										jid ) );
+		assertTrue( dml1.ensureLink( noID, jid ) );
 	}
 }

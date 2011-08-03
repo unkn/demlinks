@@ -25,20 +25,14 @@ package org.dml.database.bdb.level1;
 
 
 
-import org.dml.tools.Initer;
-import org.dml.tools.RunTime;
-import org.dml.tracking.Factory;
-import org.dml.tracking.Log;
-import org.references.Reference;
-import org.references.method.MethodParams;
-import org.references.method.PossibleParams;
+import org.dml.tools.*;
+import org.dml.tracking.*;
+import org.q.*;
+import org.references.*;
+import org.references.method.*;
 
-import com.sleepycat.bind.EntryBinding;
-import com.sleepycat.je.Database;
-import com.sleepycat.je.DatabaseEntry;
-import com.sleepycat.je.DatabaseException;
-import com.sleepycat.je.OperationStatus;
-import com.sleepycat.je.SecondaryDatabase;
+import com.sleepycat.bind.*;
+import com.sleepycat.db.*;
 
 
 
@@ -56,10 +50,7 @@ import com.sleepycat.je.SecondaryDatabase;
  * @param <KeyType>
  * @param <DataType>
  */
-public class OneToOneDBMap<KeyType, DataType>
-		extends
-		Initer
-{
+public class OneToOneDBMap<KeyType, DataType> extends Initer {
 	
 	private final Class<KeyType>			keyClass;
 	private final Class<DataType>			dataClass;
@@ -86,11 +77,8 @@ public class OneToOneDBMap<KeyType, DataType>
 	public OneToOneDBMap(
 			// Level1_Storage_BerkeleyDB bdb1,
 			// String dbName1,
-			Class<KeyType> keyClass1,
-			EntryBinding<KeyType> keyBinding1,
-			Class<DataType> dataClass1,
-			EntryBinding<DataType> dataBinding1 )
-	{
+			final Class<KeyType> keyClass1, final EntryBinding<KeyType> keyBinding1, final Class<DataType> dataClass1,
+			final EntryBinding<DataType> dataBinding1 ) {
 		
 		// RunTime.assumedNotNull( bdb1 );
 		// RunTime.assumedNotNull( dbName1 );
@@ -102,20 +90,15 @@ public class OneToOneDBMap<KeyType, DataType>
 		dataBinding = dataBinding1;// AllTupleBindings.getBinding( dataClass );
 	}
 	
-
+	
 	
 	@Override
-	protected
-			void
-			start(
-					MethodParams params1 )
-	{
+	protected void start( final MethodParams params1 ) {
 		
 		RunTime.assumedNotNull( params1 );
 		
 		bdbL1 = (Level1_Storage_BerkeleyDB)params1.getEx( PossibleParams.level1_BDBStorage );
-		if ( null == bdbL1 )
-		{
+		if ( null == bdbL1 ) {
 			RunTime.badCall( "missing parameter" );
 		}
 		RunTime.assumedNotNull( bdbL1 );
@@ -125,126 +108,84 @@ public class OneToOneDBMap<KeyType, DataType>
 		RunTime.assumedFalse( dbName.isEmpty() );
 		
 		// open both DBs
-		MethodParams iParams = params1.getClone();
+		final MethodParams iParams = params1.getClone();
 		// must not already be set/passed to us, so null return if no prev value was set for priDbConfig param
 		// FIXME: investigate if only one new OneToOneSecondaryDBConfig() is needed for all "OneToOneDBMap"s
-		RunTime.assumedNull( iParams.set(
-											PossibleParams.priDbConfig,
-											new OneToOneDBConfig() ) );
+		RunTime.assumedNull( iParams.set( PossibleParams.priDbConfig, new OneToOneDBConfig() ) );
 		
-		forwardDB = Factory.getNewInstanceAndInit(
-													DatabaseCapsule.class,
-													iParams );
+		forwardDB = Factory.getNewInstanceAndInit( DatabaseCapsule.class, iParams );
 		RunTime.assumedNotNull( forwardDB );
 		RunTime.assumedTrue( forwardDB.isInitedSuccessfully() );
 		
 		// secondary db
-		RunTime.assumedNotNull( iParams.set(
-												PossibleParams.dbName,
-												secPrefix
-														+ dbName ) );
+		RunTime.assumedNotNull( iParams.set( PossibleParams.dbName, secPrefix + dbName ) );
 		// FIXME: investigate if only one new OneToOneSecondaryDBConfig() is needed for all "OneToOneDBMap"s same for
 		// above
-		RunTime.assumedNull( iParams.set(
-											PossibleParams.secDbConfig,
-											new OneToOneSecondaryDBConfig() ) );
-		RunTime.assumedNull( iParams.set(
-											PossibleParams.priDb,
-											forwardDB.getDB() ) );
+		RunTime.assumedNull( iParams.set( PossibleParams.secDbConfig, new OneToOneSecondaryDBConfig() ) );
+		RunTime.assumedNull( iParams.set( PossibleParams.priDb, forwardDB.getDB() ) );
 		RunTime.assumedTrue( iParams.remove( PossibleParams.priDbConfig ) );// not needed can leave it on though
 		
-		backwardDB = Factory.getNewInstanceAndInit(
-													SecondaryDatabaseCapsule.class,
-													iParams );
+		backwardDB = Factory.getNewInstanceAndInit( SecondaryDatabaseCapsule.class, iParams );
 		RunTime.assumedNotNull( backwardDB );
 		RunTime.assumedTrue( backwardDB.isInitedSuccessfully() );
 	}
 	
-
+	
 	@Override
-	protected
-			void
-			done(
-					MethodParams params )
-	{
+	protected void done( final MethodParams params ) {
 		
-		Log.entry( "deinit OneToOneDBMap: "
-					+ dbName );
+		Log.entry( "deinit OneToOneDBMap: " + dbName );
 		
-		OneToXDBMapCommonCode.theDone(
-										this.isInitedSuccessfully(),
-										new Reference<Initer>(
-																forwardDB ),
-										new Reference<Initer>(
-																backwardDB ) );
+		OneToXDBMapCommonCode.theDone( isInitedSuccessfully(), new Reference<Initer>( forwardDB ), new Reference<Initer>(
+			backwardDB ) );
 	}// done
 	
-
-	protected
-			Level1_Storage_BerkeleyDB
-			getBDBL1()
-	{
+	
+	protected Level1_Storage_BerkeleyDB getBDBL1() {
 		RunTime.assumedNotNull( bdbL1 );
 		return bdbL1;
 	}
 	
-
+	
 	/**
 	 * @return
-	 * @throws DatabaseException
 	 */
-	private
-			Database
-			getForwardDB()
-					throws DatabaseException
-	{
+	private Database getForwardDB() {
 		RunTime.assumedNotNull( forwardDB );
 		return forwardDB.getDB();
 	}
 	
-
+	
 	/**
 	 * @return
-	 * @throws DatabaseException
 	 */
-	private
-			SecondaryDatabase
-			getBackwardDB()
-					throws DatabaseException
-	{
+	private SecondaryDatabase getBackwardDB() {
 		RunTime.assumedNotNull( backwardDB );
 		return backwardDB.getSecDB();
 	}
 	
-
+	
 	/**
 	 * @param key
 	 * @param data
 	 * @return true if already existed
 	 */
-	public
-			boolean
-			link(
-					KeyType key,
-					DataType data )
-	{
+	public boolean link( final KeyType key, final DataType data ) {
 		
 		this.checkKey( key );
 		this.checkData( data );
 		
-		DatabaseEntry deKey = new DatabaseEntry();
-		keyBinding.objectToEntry(
-									key,
-									deKey );
-		DatabaseEntry deData = new DatabaseEntry();
-		dataBinding.objectToEntry(
-									data,
-									deData );
-		OperationStatus ret = this.getForwardDB().putNoOverwrite(
-																	null,
-																	deKey,
-																	deData );// this will auto put in
-																				// secondary also
+		final DatabaseEntry deKey = new DatabaseEntry();
+		keyBinding.objectToEntry( key, deKey );
+		final DatabaseEntry deData = new DatabaseEntry();
+		dataBinding.objectToEntry( data, deData );
+		OperationStatus ret;
+		try {
+			ret = this.getForwardDB().putNoOverwrite( null, deKey, deData );
+		} catch ( final DatabaseException e ) {
+			throw Q.rethrow( e );
+		}// this will auto put in
+			// secondary also
 		// if ( OperationStatus.KEYEXIST == ret ) {
 		// RunTime.bug(
 		// "this is supposed to make a new unexisting key->data pair, apparently it failed!"
@@ -253,126 +194,101 @@ public class OneToOneDBMap<KeyType, DataType>
 		return OperationStatus.KEYEXIST == ret;
 	}
 	
-
-	private
-			void
-			checkData(
-						DataType data )
-	{
+	
+	private void checkData( final DataType data ) {
 		
 		RunTime.assumedNotNull( data );
 		// 1of3
-		if ( data.getClass() != dataClass )
-		{
+		if ( data.getClass() != dataClass ) {
 			RunTime.badCall( "shouldn't allow subclass of dataClass!! or else havoc" );
 		}
 	}
 	
-
-	private
-			void
-			checkKey(
-						KeyType key )
-	{
+	
+	private void checkKey( final KeyType key ) {
 		
 		RunTime.assumedNotNull( key );
 		// shouldn't allow subclass of keyClass!! or else havoc, well data loss
 		// since TupleBinding treats it as Base class, so assuming the subclass
 		// has new fields they won't be stored/retreived from DB
 		// 1of3
-		if ( key.getClass() != keyClass )
-		{
+		if ( key.getClass() != keyClass ) {
 			RunTime.badCall( "shouldn't allow subclass of keyClass!! or else havoc" );
 		}
 	}
 	
-
+	
 	/**
 	 * @param data
 	 * @return null if not found
 	 * @throws DatabaseException
 	 */
-	public
-			KeyType
-			getKey(
-					DataType data )
-	{
+	public KeyType getKey( final DataType data ) {
 		
 		this.checkData( data );
 		
 		// 2of3
-		DatabaseEntry deData = new DatabaseEntry();
-		dataBinding.objectToEntry(
-									data,
-									deData );
+		final DatabaseEntry deData = new DatabaseEntry();
+		dataBinding.objectToEntry( data, deData );
 		
-		DatabaseEntry deKey = new DatabaseEntry();
-		DatabaseEntry pKey = new DatabaseEntry();
+		final DatabaseEntry deKey = new DatabaseEntry();
+		final DatabaseEntry pKey = new DatabaseEntry();
 		// deData=new DatabaseEntry(data.getBytes(BerkeleyDB.ENCODING));
 		OperationStatus ret;
-		ret = this.getBackwardDB().get(
-										null,
-										deData,
-										pKey,
-										deKey,
-										null );
-		if ( OperationStatus.SUCCESS != ret )
-		{
+		try {
+			ret = this.getBackwardDB().get( null, deData, pKey, deKey, null );
+		} catch ( final DatabaseException e ) {
+			throw Q.rethrow( e );
+		}
+		if ( OperationStatus.SUCCESS != ret ) {
 			return null;
 		}
 		RunTime.assumedTrue( deData.equals( deKey ) );
 		
 		// RunTime.assumedNotNull(pKey);
 		// 3of3
-		KeyType key = keyBinding.entryToObject( pKey );
+		final KeyType key = keyBinding.entryToObject( pKey );
 		// should not be null here
 		RunTime.assumedNotNull( key );
 		this.checkKey( key );
 		return key;// Level1_Storage_BerkeleyDB.entryToString( pKey );
 	}
 	
-
+	
 	/**
 	 * @param key
 	 * @return null if not found
 	 * @throws DatabaseException
 	 */
-	public
-			DataType
-			getData(
-						KeyType key )
-	{
+	public DataType getData( final KeyType key ) {
 		
 		this.checkKey( key );
 		
 		// 2of3
-		DatabaseEntry deKey = new DatabaseEntry();
-		keyBinding.objectToEntry(
-									key,
-									deKey );
+		final DatabaseEntry deKey = new DatabaseEntry();
+		keyBinding.objectToEntry( key, deKey );
 		// Level1_Storage_BerkeleyDB.stringToEntry( key, deKey );
 		
-
-		DatabaseEntry deData = new DatabaseEntry();
+		
+		final DatabaseEntry deData = new DatabaseEntry();
 		OperationStatus ret;
-		ret = this.getForwardDB().get(
-										null,
-										deKey,
-										deData,
-										null );
-		if ( OperationStatus.SUCCESS != ret )
-		{
+		try {
+			ret = this.getForwardDB().get( null, deKey, deData, null );
+		} catch ( final DatabaseException e ) {
+			throw Q.rethrow( e );
+		}
+		if ( OperationStatus.SUCCESS != ret ) {
 			return null;
 		}
 		
 		// 3of3
-		DataType data = dataBinding.entryToObject( deData );
+		final DataType data = dataBinding.entryToObject( deData );
 		// should not be null here
 		RunTime.assumedNotNull( data );
 		this.checkData( data );
 		return data;// Level1_Storage_BerkeleyDB.entryToString( deData );
 	}
 	
-
-
+	
+	
 }

@@ -25,11 +25,10 @@ package org.dml.level040;
 
 
 
-import org.dml.level010.Symbol;
-import org.dml.level025.SetOfTerminalSymbols;
-import org.dml.tools.RunTime;
-import org.dml.tools.TwoKeyHashMap;
-import org.references.Position;
+import org.dml.level010.*;
+import org.dml.level025.*;
+import org.dml.tools.*;
+import org.references.*;
 
 
 
@@ -39,12 +38,10 @@ import org.references.Position;
  * TODO: JUnit test
  * TODO: getNew, ensure, getExisting1&2
  */
-public class ListOrderedOfSymbolsWithFastFind
-		implements
-		OrderedList
-{
+public class ListOrderedOfSymbolsWithFastFind implements OrderedList {
 	
-	private static final TwoKeyHashMap<Level040_DMLEnvironment, SetOfTerminalSymbols, ListOrderedOfSymbolsWithFastFind>	allListOOSWFFInstances	= new TwoKeyHashMap<Level040_DMLEnvironment, SetOfTerminalSymbols, ListOrderedOfSymbolsWithFastFind>();
+	private static final TwoKeyHashMap<Level040_DMLEnvironment, SetOfTerminalSymbols, ListOrderedOfSymbolsWithFastFind>	allListOOSWFFInstances	=
+																																					new TwoKeyHashMap<Level040_DMLEnvironment, SetOfTerminalSymbols, ListOrderedOfSymbolsWithFastFind>();
 	
 	private final Level040_DMLEnvironment																				env;
 	private final SetOfTerminalSymbols																					selfAsSet;
@@ -64,60 +61,39 @@ public class ListOrderedOfSymbolsWithFastFind
 	 * @param existingFastFindSet
 	 *            -//-
 	 */
-	private ListOrderedOfSymbolsWithFastFind(
-			Level040_DMLEnvironment existingEnv,
-			SetOfTerminalSymbols existingSelf,
-			ListOrderedOfSymbols existingOrderedList,
-			SetOfTerminalSymbols existingFastFindSet )
-	{
+	private ListOrderedOfSymbolsWithFastFind( final Level040_DMLEnvironment existingEnv,
+			final SetOfTerminalSymbols existingSelf, final ListOrderedOfSymbols existingOrderedList,
+			final SetOfTerminalSymbols existingFastFindSet ) {
 		
-		RunTime.assumedNotNull(
-								existingEnv,
-								existingSelf,
-								existingOrderedList,
-								existingFastFindSet );
+		RunTime.assumedNotNull( existingEnv, existingSelf, existingOrderedList, existingFastFindSet );
 		env = existingEnv;
 		selfAsSet = existingSelf;
 		cachedOrderedList = existingOrderedList;
 		cachedFastFindSet = existingFastFindSet;
 		// this.internal_setName();
-		RunTime.assumedTrue( this.isItself() );
+		RunTime.assumedTrue( isItself() );
 	}
 	
-
+	
 	/**
 	 * override this and don't call super()
 	 */
-	protected
-			boolean
-			isItself()
-	{
+	protected boolean isItself() {
 		
-		RunTime.assumedNotNull(
-								selfAsSet,
-								env );
+		RunTime.assumedNotNull( selfAsSet, env );
 		RunTime.assumedTrue( env.isInitedSuccessfully() );
-		return isListOrderedOfSymbolsWFF(
-											env,
-											selfAsSet.getAsSymbol() );
+		return isListOrderedOfSymbolsWFF( env, selfAsSet.getAsSymbol() );
 	}
 	
-
-	public static
-			boolean
-			isListOrderedOfSymbolsWFF(
-										Level040_DMLEnvironment passedEnv,
-										Symbol passedSelf )
-	{
+	
+	public static boolean isListOrderedOfSymbolsWFF( final Level040_DMLEnvironment passedEnv, final Symbol passedSelf ) {
 		
-		RunTime.assumedNotNull(
-								passedEnv,
-								passedSelf );
+		RunTime.assumedNotNull( passedEnv, passedSelf );
 		RunTime.assumedTrue( passedEnv.isInitedSuccessfully() );
 		return passedEnv.allListsOOSWFF_Set.hasSymbol( passedSelf );
 	}
 	
-
+	
 	// /**
 	// * override this and don't call super()
 	// */
@@ -127,131 +103,83 @@ public class ListOrderedOfSymbolsWithFastFind
 	// RunTime.assumedFalse( env.allListsOOSWFF_Set.addToSet( selfAsSet.getAsSymbol() ) );
 	// }
 	
-	private static
-			void
-			internal_setAsListOrderedOfSymbolsWFF(
-													Level040_DMLEnvironment passedEnv,
-													Symbol passedSelf )
-	{
+	private static void
+			internal_setAsListOrderedOfSymbolsWFF( final Level040_DMLEnvironment passedEnv, final Symbol passedSelf ) {
 		
-		RunTime.assumedNotNull(
-								passedSelf,
-								passedEnv );
+		RunTime.assumedNotNull( passedSelf, passedEnv );
 		RunTime.assumedTrue( passedEnv.isInitedSuccessfully() );
 		// was not set before
 		RunTime.assumedFalse( passedEnv.allListsOOSWFF_Set.addToSet( passedSelf ) );
-		RunTime.assumedTrue( isListOrderedOfSymbolsWFF(
-														passedEnv,
-														passedSelf ) );
+		RunTime.assumedTrue( isListOrderedOfSymbolsWFF( passedEnv, passedSelf ) );
 	}
 	
-
+	
 	@Override
-	public
-			Symbol
-			getAsSymbol()
-	{
+	public Symbol getAsSymbol() {
 		
-		this.assumedValid();
+		assumedValid();
 		return selfAsSet.getAsSymbol();
 	}
 	
-
-	private final static
-			void
-			registerInstance(
-								Level040_DMLEnvironment env,
-								SetOfTerminalSymbols passedSelf,
-								ListOrderedOfSymbolsWithFastFind newOne )
-	{
+	
+	private final static void registerInstance( final Level040_DMLEnvironment env, final SetOfTerminalSymbols passedSelf,
+												final ListOrderedOfSymbolsWithFastFind newOne ) {
 		
-		RunTime.assumedNotNull(
-								env,
-								passedSelf,
-								newOne );
-		RunTime.assumedFalse( allListOOSWFFInstances.ensure(
-																env,
-																passedSelf,
-																newOne ) );
+		RunTime.assumedNotNull( env, passedSelf, newOne );
+		RunTime.assumedFalse( allListOOSWFFInstances.ensure( env, passedSelf, newOne ) );
 	}
 	
-
-	private final static
-			ListOrderedOfSymbolsWithFastFind
-			getInstance(
-							Level040_DMLEnvironment env,
-							SetOfTerminalSymbols passedSelfSet )
-	{
+	
+	private final static ListOrderedOfSymbolsWithFastFind getInstance( final Level040_DMLEnvironment env,
+																		final SetOfTerminalSymbols passedSelfSet ) {
 		
-		RunTime.assumedNotNull(
-								env,
-								passedSelfSet );
-		return allListOOSWFFInstances.get(
-											env,
-											passedSelfSet );
+		RunTime.assumedNotNull( env, passedSelfSet );
+		return allListOOSWFFInstances.get( env, passedSelfSet );
 	}
 	
-
-	public static
-			ListOrderedOfSymbolsWithFastFind
-			getExistingListOOSWFF(
-									Level040_DMLEnvironment passedEnv,
-									Symbol existingSelfSymbol )
-	{
+	
+	public static ListOrderedOfSymbolsWithFastFind getExistingListOOSWFF( final Level040_DMLEnvironment passedEnv,
+																			final Symbol existingSelfSymbol ) {
 		
-		RunTime.assumedNotNull(
-								passedEnv,
-								existingSelfSymbol );
+		RunTime.assumedNotNull( passedEnv, existingSelfSymbol );
 		RunTime.assumedTrue( passedEnv.isInitedSuccessfully() );
 		
-		if ( !isListOrderedOfSymbolsWFF(
-											passedEnv,
-											existingSelfSymbol ) )
-		{
+		if ( !isListOrderedOfSymbolsWFF( passedEnv, existingSelfSymbol ) ) {
 			RunTime.badCall( "existingSelfSymbol is not already a List" );
 		}
 		
-		SetOfTerminalSymbols selfSet = passedEnv.getAsSet( existingSelfSymbol );
+		final SetOfTerminalSymbols selfSet = passedEnv.getAsSet( existingSelfSymbol );
 		RunTime.assumedTrue( selfSet.getAsSymbol() == existingSelfSymbol );
 		
 		// int tmpSize = selfSet.size();
 		// if ( ( tmpSize != 0 ) && ( tmpSize != 2 ) ) {
-		if ( selfSet.size() != 2 )
-		{
+		if ( selfSet.size() != 2 ) {
 			RunTime.bug( "bad existing listWFF. It should have exactly 2 kids" );
 		}
 		
 		// let's see if we already had it in java, it can be in db but not in java yet though
-		ListOrderedOfSymbolsWithFastFind ret = getInstance(
-															passedEnv,
-															selfSet );
-		if ( null == ret )
-		{
+		ListOrderedOfSymbolsWithFastFind ret = getInstance( passedEnv, selfSet );
+		if ( null == ret ) {
 			// is not in java yet, but it is in storage
-			Symbol existingOrderedListAsSymbol = passedEnv.findCommonTerminalForInitials(
-																							existingSelfSymbol,
-																							passedEnv.allListsOOS_Set
-																									.getAsSymbol() );
+			final Symbol existingOrderedListAsSymbol =
+				passedEnv.findCommonTerminalForInitials( existingSelfSymbol, passedEnv.allListsOOS_Set.getAsSymbol() );
 			RunTime.assumedNotNull( existingOrderedListAsSymbol );
 			
 			// it has been established that there are only 2
 			Symbol existingFFAsSymbol = selfSet.getSide( Position.FIRST );
 			RunTime.assumedNotNull( existingFFAsSymbol );
-			if ( existingFFAsSymbol == existingOrderedListAsSymbol )
-			{
+			if ( existingFFAsSymbol == existingOrderedListAsSymbol ) {
 				// get next
-				existingFFAsSymbol = selfSet.getSideOf(
-														Position.AFTER,
-														existingFFAsSymbol );
+				existingFFAsSymbol = selfSet.getSideOf( Position.AFTER, existingFFAsSymbol );
 			}
 			RunTime.assumedNotNull( existingFFAsSymbol );
 			
-			SetOfTerminalSymbols existingFFSet = passedEnv.getAsSet( existingFFAsSymbol );
+			final SetOfTerminalSymbols existingFFSet = passedEnv.getAsSet( existingFFAsSymbol );
 			RunTime.assumedNotNull( existingFFSet );
 			existingFFSet.assumedValid();
 			
 			// ensure:
-			ListOrderedOfSymbols existingOrderedList = passedEnv.getExistingListOOS( existingOrderedListAsSymbol );
+			final ListOrderedOfSymbols existingOrderedList = passedEnv.getExistingListOOS( existingOrderedListAsSymbol );
 			RunTime.assumedNotNull( existingOrderedList );
 			existingOrderedList.assumedValid();
 			// consistency check:
@@ -259,92 +187,61 @@ public class ListOrderedOfSymbolsWithFastFind
 			RunTime.assumedTrue( selfSet.hasSymbol( existingFFSet.getAsSymbol() ) );
 			RunTime.assumedTrue( selfSet.hasSymbol( existingOrderedList.getAsSymbol() ) );
 			
-			ret = new ListOrderedOfSymbolsWithFastFind(
-														passedEnv,
-														selfSet,
-														existingOrderedList,
-														existingFFSet );
+			ret = new ListOrderedOfSymbolsWithFastFind( passedEnv, selfSet, existingOrderedList, existingFFSet );
 			ret.assumedValid();
-			registerInstance(
-								passedEnv,
-								selfSet,
-								ret );
-		}
-		else
-		{
+			registerInstance( passedEnv, selfSet, ret );
+		} else {
 			ret.assumedValid();
 		}
 		
 		return ret;
 	}
 	
-
-	public static
-			ListOrderedOfSymbolsWithFastFind
-			getExistingListOOSWFF(
-									Level040_DMLEnvironment passedEnv,
-									Symbol existingSelfSymbol,
-									boolean passedAllowDUPs )
-	{
+	
+	public static ListOrderedOfSymbolsWithFastFind getExistingListOOSWFF( final Level040_DMLEnvironment passedEnv,
+																			final Symbol existingSelfSymbol,
+																			final boolean passedAllowDUPs ) {
 		
-		RunTime.assumedNotNull(
-								passedEnv,
-								existingSelfSymbol,
-								passedAllowDUPs );
+		RunTime.assumedNotNull( passedEnv, existingSelfSymbol );
 		RunTime.assumedTrue( passedEnv.isInitedSuccessfully() );
 		
-		ListOrderedOfSymbolsWithFastFind ret = getExistingListOOSWFF(
-																		passedEnv,
-																		existingSelfSymbol );
+		final ListOrderedOfSymbolsWithFastFind ret = getExistingListOOSWFF( passedEnv, existingSelfSymbol );
 		RunTime.assumedNotNull( ret );
 		// this is why this method exists:
 		RunTime.assumedTrue( ret.isDUPAllowed() == passedAllowDUPs );
 		return ret;
 	}
 	
-
+	
 	/**
 	 * @param passedEnv
 	 * @param existingSelfSymbol
 	 * @param passedAllowDUPs
 	 * @return
 	 */
-	public static
-			ListOrderedOfSymbolsWithFastFind
-			getNewListOOSWFF(
-								Level040_DMLEnvironment passedEnv,
-								Symbol existingSelfSymbol,
-								boolean passedAllowDUPs )
-	{
+	public static ListOrderedOfSymbolsWithFastFind getNewListOOSWFF( final Level040_DMLEnvironment passedEnv,
+																		final Symbol existingSelfSymbol,
+																		final boolean passedAllowDUPs ) {
 		
-		RunTime.assumedNotNull(
-								passedEnv,
-								existingSelfSymbol,
-								passedAllowDUPs );
+		RunTime.assumedNotNull( passedEnv, existingSelfSymbol );
 		RunTime.assumedTrue( passedEnv.isInitedSuccessfully() );
 		
-		if ( isListOrderedOfSymbolsWFF(
-										passedEnv,
-										existingSelfSymbol ) )
-		{
+		if ( isListOrderedOfSymbolsWFF( passedEnv, existingSelfSymbol ) ) {
 			RunTime.badCall( "existingSelfSymbol exists already as a List, use getExisting or ensure instead." );
 		}
 		
-		SetOfTerminalSymbols selfSet = passedEnv.getAsSet( existingSelfSymbol );
+		final SetOfTerminalSymbols selfSet = passedEnv.getAsSet( existingSelfSymbol );
 		RunTime.assumedTrue( selfSet.getAsSymbol() == existingSelfSymbol );
 		
-		if ( selfSet.size() != 0 )
-		{
+		if ( selfSet.size() != 0 ) {
 			RunTime.bug( "should be empty" );
 		}
 		
-		RunTime.assumedNull( getInstance(
-											passedEnv,
-											selfSet ) );
+		RunTime.assumedNull( getInstance( passedEnv, selfSet ) );
 		
 		// make new one
-		Symbol newOrderedListAsSymbol = passedEnv.newUniqueSymbol();
-		Symbol newFFAsSymbol = passedEnv.newUniqueSymbol();
+		final Symbol newOrderedListAsSymbol = passedEnv.newUniqueSymbol();
+		final Symbol newFFAsSymbol = passedEnv.newUniqueSymbol();
 		RunTime.assumedNotNull( newFFAsSymbol );
 		
 		// make new:
@@ -352,73 +249,45 @@ public class ListOrderedOfSymbolsWithFastFind
 		RunTime.assumedFalse( selfSet.addToSet( newOrderedListAsSymbol ) );
 		RunTime.assumedFalse( selfSet.addToSet( newFFAsSymbol ) );
 		
-		SetOfTerminalSymbols newFFSet = passedEnv.getAsSet( newFFAsSymbol );
+		final SetOfTerminalSymbols newFFSet = passedEnv.getAsSet( newFFAsSymbol );
 		RunTime.assumedNotNull( newFFSet );
 		newFFSet.assumedValid();
 		
-		ListOrderedOfSymbols newOrderedList = passedEnv.getNewListOOS(
-																		newOrderedListAsSymbol,
-																		false/* no nulls */,
-																		passedAllowDUPs );
+		final ListOrderedOfSymbols newOrderedList =
+			passedEnv.getNewListOOS( newOrderedListAsSymbol, false/* no nulls */, passedAllowDUPs );
 		RunTime.assumedNotNull( newOrderedList );
 		newOrderedList.assumedValid();
 		
-		internal_setAsListOrderedOfSymbolsWFF(
-												passedEnv,
-												existingSelfSymbol );
-		ListOrderedOfSymbolsWithFastFind ret = new ListOrderedOfSymbolsWithFastFind(
-																						passedEnv,
-																						selfSet,
-																						newOrderedList,
-																						newFFSet );
+		internal_setAsListOrderedOfSymbolsWFF( passedEnv, existingSelfSymbol );
+		final ListOrderedOfSymbolsWithFastFind ret =
+			new ListOrderedOfSymbolsWithFastFind( passedEnv, selfSet, newOrderedList, newFFSet );
 		ret.assumedValid();
-		registerInstance(
-							passedEnv,
-							selfSet,
-							ret );
+		registerInstance( passedEnv, selfSet, ret );
 		return ret;
 	}
 	
-
+	
 	/**
 	 * @param passedEnv
 	 * @param existingSelfSymbol
 	 * @param passedAllowDUPs
 	 * @return the new or existing list
 	 */
-	public static
-			ListOrderedOfSymbolsWithFastFind
-			ensureListOOSWFF(
-								Level040_DMLEnvironment passedEnv,
-								Symbol existingSelfSymbol,
-								boolean passedAllowDUPs )
-	{
+	public static ListOrderedOfSymbolsWithFastFind ensureListOOSWFF( final Level040_DMLEnvironment passedEnv,
+																		final Symbol existingSelfSymbol,
+																		final boolean passedAllowDUPs ) {
 		
-		RunTime.assumedNotNull(
-								passedEnv,
-								existingSelfSymbol,
-								passedAllowDUPs );
+		RunTime.assumedNotNull( passedEnv, existingSelfSymbol );
 		RunTime.assumedTrue( passedEnv.isInitedSuccessfully() );
 		
-		if ( isListOrderedOfSymbolsWFF(
-										passedEnv,
-										existingSelfSymbol ) )
-		{
-			return getExistingListOOSWFF(
-											passedEnv,
-											existingSelfSymbol,
-											passedAllowDUPs );
-		}
-		else
-		{
-			return getNewListOOSWFF(
-										passedEnv,
-										existingSelfSymbol,
-										passedAllowDUPs );
+		if ( isListOrderedOfSymbolsWFF( passedEnv, existingSelfSymbol ) ) {
+			return getExistingListOOSWFF( passedEnv, existingSelfSymbol, passedAllowDUPs );
+		} else {
+			return getNewListOOSWFF( passedEnv, existingSelfSymbol, passedAllowDUPs );
 		}
 	}
 	
-
+	
 	/**
 	 * makes sure the Symbol exists, if it doesn't then append it<br>
 	 * 
@@ -426,99 +295,58 @@ public class ListOrderedOfSymbolsWithFastFind
 	 * @return
 	 */
 	@Override
-	public
-			boolean
-			ensure(
-					Symbol whichSymbol )
-	{
+	public boolean ensure( final Symbol whichSymbol ) {
 		
-		boolean ret = this.hasSymbol( whichSymbol );
-		if ( !ret )
-		{
-			this.add(
-						whichSymbol,
-						Position.LAST );
+		final boolean ret = hasSymbol( whichSymbol );
+		if ( !ret ) {
+			this.add( whichSymbol, Position.LAST );
 		}
-		RunTime.assumedTrue( this.hasSymbol( whichSymbol ) );
+		RunTime.assumedTrue( hasSymbol( whichSymbol ) );
 		return ret;
 	}
 	
-
+	
 	@Override
-	public
-			void
-			add(
-					Symbol whichSymbol,
-					Position where )
-	{
+	public void add( final Symbol whichSymbol, final Position where ) {
 		
-		RunTime.assumedNotNull(
-								where,
-								whichSymbol );
+		RunTime.assumedNotNull( where, whichSymbol );
 		
-		this.internal_addToSet( whichSymbol );
+		internal_addToSet( whichSymbol );
 		
-		cachedOrderedList.add(
-								whichSymbol,
-								where );
+		cachedOrderedList.add( whichSymbol, where );
 	}
 	
-
-	private
-			void
-			internal_addToSet(
-								Symbol whichSymbol )
-	{
+	
+	private void internal_addToSet( final Symbol whichSymbol ) {
 		
 		RunTime.assumedNotNull( whichSymbol );
-		if ( cachedFastFindSet.addToSet( whichSymbol ) )
-		{
-			if ( !this.isDUPAllowed() )
-			{
+		if ( cachedFastFindSet.addToSet( whichSymbol ) ) {
+			if ( !isDUPAllowed() ) {
 				RunTime.badCall( "Symbol already existed and DUPs aren't allowed" );
 			}
 		}
 	}
 	
-
+	
 	@Override
-	public
-			void
-			add(
-					Symbol whichSymbol,
-					Position pos,
-					Symbol posSymbol )
-	{
+	public void add( final Symbol whichSymbol, final Position pos, final Symbol posSymbol ) {
 		
-		RunTime.assumedNotNull(
-								whichSymbol,
-								pos,
-								posSymbol );
-		RunTime.assumedFalse( this.isDUPAllowed() );// don't allow dups with pos finding
-		this.internal_addToSet( whichSymbol );
-		cachedOrderedList.add(
-								whichSymbol,
-								pos,
-								posSymbol );
+		RunTime.assumedNotNull( whichSymbol, pos, posSymbol );
+		RunTime.assumedFalse( isDUPAllowed() );// don't allow dups with pos finding
+		internal_addToSet( whichSymbol );
+		cachedOrderedList.add( whichSymbol, pos, posSymbol );
 	}
 	
-
+	
 	@Override
-	public
-			void
-			assumedValid()
-	{
+	public void assumedValid() {
 		
-		RunTime.assumedNotNull(
-								cachedFastFindSet,
-								cachedOrderedList,
-								selfAsSet );
+		RunTime.assumedNotNull( cachedFastFindSet, cachedOrderedList, selfAsSet );
 		
-		RunTime.assumedTrue( this.isItself() );
+		RunTime.assumedTrue( isItself() );
 		cachedFastFindSet.assumedValid();
 		
-		if ( !this.isDUPAllowed() )
-		{
+		if ( !isDUPAllowed() ) {
 			RunTime.assumedTrue( cachedFastFindSet.size() == cachedOrderedList.size() );
 		}
 		
@@ -531,41 +359,27 @@ public class ListOrderedOfSymbolsWithFastFind
 		RunTime.assumedTrue( selfAsSet.hasSymbol( cachedOrderedList.getAsSymbol() ) );
 	}
 	
-
+	
 	@Override
-	synchronized public
-			Symbol
-			get(
-					Position pos )
-	{
+	synchronized public Symbol get( final Position pos ) {
 		
 		RunTime.assumedNotNull( pos );
 		return cachedOrderedList.get( pos );
 	}
 	
-
+	
 	@Override
-	public
-			Symbol
-			get(
-					Position pos,
-					Symbol posSymbol )
-	{
+	public Symbol get( final Position pos, final Symbol posSymbol ) {
 		
-		RunTime.assumedNotNull(
-								pos,
-								posSymbol );
-		RunTime.assumedFalse( this.isDUPAllowed() );
-		if ( !cachedFastFindSet.hasSymbol( posSymbol ) )
-		{
+		RunTime.assumedNotNull( pos, posSymbol );
+		RunTime.assumedFalse( isDUPAllowed() );
+		if ( !cachedFastFindSet.hasSymbol( posSymbol ) ) {
 			RunTime.badCall( "posSymbol doesn't exist" );
 		}
-		return cachedOrderedList.get(
-										pos,
-										posSymbol );
+		return cachedOrderedList.get( pos, posSymbol );
 	}
 	
-
+	
 	/**
 	 * this is the main method of this class
 	 * 
@@ -573,142 +387,101 @@ public class ListOrderedOfSymbolsWithFastFind
 	 * @return
 	 */
 	@Override
-	public
-			boolean
-			hasSymbol(
-						Symbol whichSymbol )
-	{
+	public boolean hasSymbol( final Symbol whichSymbol ) {
 		
 		RunTime.assumedNotNull( whichSymbol );
 		return cachedFastFindSet.hasSymbol( whichSymbol );
 	}
 	
-
+	
 	// TODO remove
 	
-
-	public
-			boolean
-			isDUPAllowed()
-	{
+	
+	public boolean isDUPAllowed() {
 		
 		return cachedOrderedList.isDUPAllowed();
 	}
 	
-
-	public
-			boolean
-			isNullAllowed()
-	{
+	
+	public boolean isNullAllowed() {
 		
 		RunTime.assumedFalse( cachedOrderedList.isNullAllowed() );
 		return false;
 	}
 	
-
+	
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see org.dml.level040.OrderedList#size()
 	 */
 	@Override
-	public
-			long
-			size()
-	{
+	public long size() {
 		
-		RunTime.assumedNotNull(
-								selfAsSet,
-								cachedFastFindSet,
-								cachedOrderedList );
-		long size1 = cachedFastFindSet.size();
-		long size2 = cachedOrderedList.size();
+		RunTime.assumedNotNull( selfAsSet, cachedFastFindSet, cachedOrderedList );
+		final long size1 = cachedFastFindSet.size();
+		final long size2 = cachedOrderedList.size();
 		RunTime.assumedTrue( size1 == size2 );
 		return size1;
 	}
 	
-
+	
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see org.dml.level040.OrderedList#remove(org.references.Position, org.dml.level010.Symbol)
 	 */
 	@Override
-	public
-			Symbol
-			remove(
-					Position pos,
-					Symbol posSymbol )
-	{
+	public Symbol remove( final Position pos, final Symbol posSymbol ) {
 		
-		RunTime.assumedNotNull(
-								pos,
-								posSymbol );
-		if ( this.isDUPAllowed() )
-		{
+		RunTime.assumedNotNull( pos, posSymbol );
+		if ( isDUPAllowed() ) {
 			RunTime.badCall( "can't use this method while DUPs are on" );
 		}
 		
-		long consistencyCheck = cachedOrderedList.size();
-		Symbol removedSymbol = cachedOrderedList.remove(
-															pos,
-															posSymbol );
-		if ( null != removedSymbol )
-		{
+		final long consistencyCheck = cachedOrderedList.size();
+		final Symbol removedSymbol = cachedOrderedList.remove( pos, posSymbol );
+		if ( null != removedSymbol ) {
 			RunTime.assumedTrue( cachedFastFindSet.remove( removedSymbol ) );
-		}
-		else
-		{
+		} else {
 			// nothing was removed? making sure that remove() worked properly then
 			RunTime.assumedTrue( consistencyCheck == cachedOrderedList.size() );
 		}
 		return removedSymbol;// can be null
 	}
 	
-
+	
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see org.dml.level040.OrderedList#remove(org.references.Position)
 	 */
 	@Override
-	public
-			Symbol
-			remove(
-					Position pos )
-	{
+	public Symbol remove( final Position pos ) {
 		
 		RunTime.assumedNotNull( pos );
-		long consistencyCheck = cachedOrderedList.size();
-		Symbol removedSymbol = cachedOrderedList.remove( pos );
-		if ( null != removedSymbol )
-		{
+		final long consistencyCheck = cachedOrderedList.size();
+		final Symbol removedSymbol = cachedOrderedList.remove( pos );
+		if ( null != removedSymbol ) {
 			RunTime.assumedTrue( cachedFastFindSet.remove( removedSymbol ) );
-		}
-		else
-		{
+		} else {
 			// nothing was removed? making sure that remove() worked properly then
 			RunTime.assumedTrue( consistencyCheck == cachedOrderedList.size() );
 		}
 		return removedSymbol;// can be null
 	}
 	
-
+	
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see org.dml.level040.OrderedList#remove(org.dml.level010.Symbol)
 	 */
 	@Override
-	public
-			boolean
-			remove(
-					Symbol whichSymbol )
-	{
+	public boolean remove( final Symbol whichSymbol ) {
 		
 		RunTime.assumedNotNull( whichSymbol );
-		if ( !cachedFastFindSet.hasSymbol( whichSymbol ) )
-		{
+		if ( !cachedFastFindSet.hasSymbol( whichSymbol ) ) {
 			return false;
 		}
 		

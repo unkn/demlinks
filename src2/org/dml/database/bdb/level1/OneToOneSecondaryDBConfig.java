@@ -25,13 +25,9 @@ package org.dml.database.bdb.level1;
 
 
 
-import org.dml.tools.RunTime;
+import org.dml.tools.*;
 
-import com.sleepycat.je.DatabaseEntry;
-import com.sleepycat.je.DatabaseException;
-import com.sleepycat.je.SecondaryConfig;
-import com.sleepycat.je.SecondaryDatabase;
-import com.sleepycat.je.SecondaryKeyCreator;
+import com.sleepycat.db.*;
 
 
 
@@ -42,26 +38,26 @@ import com.sleepycat.je.SecondaryKeyCreator;
 public class OneToOneSecondaryDBConfig extends SecondaryConfig {
 	
 	public OneToOneSecondaryDBConfig() {
-
-		super();
-		this.setAllowCreate( true );
-		this.setAllowPopulate( true );
-		this.setDeferredWrite( false );
-		this.setForeignKeyDatabase( null );
-		this.setExclusiveCreate( false );
-		this.setImmutableSecondaryKey( false );
-		this.setReadOnly( false );
-		this.setSortedDuplicates( false );// must be false
-		this.setTemporary( false );
-		this.setTransactional( true );
 		
-		RunTime.assumedTrue( this.getSortedDuplicates() == false );
-		SecondaryKeyCreator keyCreator = new SecondaryKeyCreator() {
+		super();
+		setAllowCreate( true );
+		setAllowPopulate( true );
+		// this.setDeferredWrite( false );
+		setForeignKeyDatabase( null );
+		setExclusiveCreate( false );
+		setImmutableSecondaryKey( false );
+		setReadOnly( false );
+		setSortedDuplicates( false );// must be false
+		// this.setTemporary( false );
+		setTransactional( true );
+		
+		RunTime.assumedTrue( getSortedDuplicates() == false );
+		final SecondaryKeyCreator keyCreator = new SecondaryKeyCreator() {
 			
 			@Override
-			public boolean createSecondaryKey( SecondaryDatabase secondary, DatabaseEntry key, DatabaseEntry data,
-					DatabaseEntry result ) throws DatabaseException {
-
+			public boolean createSecondaryKey( final SecondaryDatabase secondary, final DatabaseEntry key,
+												final DatabaseEntry data, final DatabaseEntry result ) throws DatabaseException {
+				
 				// if this differs, then we need perhaps to set it to result
 				// also
 				RunTime.assumedTrue( data.getOffset() == 0 );
@@ -73,6 +69,6 @@ public class OneToOneSecondaryDBConfig extends SecondaryConfig {
 				return true;
 			}
 		};
-		this.setKeyCreator( keyCreator );
+		setKeyCreator( keyCreator );
 	}
 }

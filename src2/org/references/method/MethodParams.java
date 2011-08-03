@@ -52,8 +52,7 @@ import org.references.Reference;
  * TODO: maybe somehow do type checking or something when get/write and store the type in ParamID ? but also allow like
  * subclass of , or superclass of , to be specified as type
  */
-public class MethodParams
-{
+public class MethodParams {
 	
 	// DO NOT MAKE THIS to extend Initer because there's no point, we can't really deInit it when Initer.deInit() anyway
 	
@@ -77,12 +76,9 @@ public class MethodParams
 	 * 
 	 * @return new instance of MethodParams
 	 */
-	public static
-			MethodParams
-			getNew()
-	{
+	public static MethodParams getNew() {
 		
-		MethodParams one = new MethodParams();
+		final MethodParams one = new MethodParams();
 		// Factory.getNewInstanceAndInitWithoutMethodParams( MethodParams.class );
 		// new MethodParams();
 		// one.init( null );
@@ -90,7 +86,7 @@ public class MethodParams
 		return one;
 	}
 	
-
+	
 	// @Deprecated
 	// public static
 	// void
@@ -104,27 +100,23 @@ public class MethodParams
 	// // thisOne.deInit();
 	// }
 	
-
+	
 	/**
 	 * private constructor
 	 */
-	private MethodParams()
-	{
+	private MethodParams() {
 		
 		super();
 	}
 	
-
-	public
-			int
-			size()
-	{
+	
+	public int size() {
 		
 		// RunTime.assumedTrue( this.isInited() );
 		return listOfParamsWithValues.size();
 	}
 	
-
+	
 	/**
 	 * explicitly get value instead of ref to value<br>
 	 * 
@@ -134,24 +126,17 @@ public class MethodParams
 	 *             if there is no mapping between paramName and a value<br>
 	 *             the exception is wrapped! use {@link RunTime#isThisWrappedException_of_thisType(Throwable, Class)}
 	 */
-	public
-			Object
-			getEx(
-					ParamID paramName )
-	{
+	public Object getEx( final ParamID paramName ) {
 		
 		// RunTime.assumedTrue( this.isInited() );
-		Reference<Object> ref = this.get( paramName );
-		if ( null == ref )
-		{
-			RunTime
-					.thro( new NoSuchElementException(
-														"a certain parameter was expected but was not specified by caller" ) );
+		final Reference<Object> ref = get( paramName );
+		if ( null == ref ) {
+			RunTime.thro( new NoSuchElementException( "a certain parameter was expected but was not specified by caller" ) );
 		}
 		return ref.getObject();
 	}
 	
-
+	
 	// private ChainedReference<T> internalGetFirst() {
 	//
 	// return listOfParams.getRefAt( Position.FIRST );
@@ -173,11 +158,7 @@ public class MethodParams
 	 *         such ref indicated by returning null<br>
 	 *         return null if not found; use .getObject() to get the value
 	 */
-	public
-			Reference<Object>
-			get(
-					ParamID paramName )
-	{
+	public Reference<Object> get( final ParamID paramName ) {
 		
 		// RunTime.assumedTrue( this.isInited() );
 		RunTime.assumedNotNull( paramName );
@@ -208,7 +189,7 @@ public class MethodParams
 		// return found;
 	}
 	
-
+	
 	/**
 	 * @param paramName
 	 * @param value
@@ -216,67 +197,50 @@ public class MethodParams
 	 *            one or more times
 	 * @return reference to previous value(aka object) or null if none
 	 */
-	public
-			Reference<Object>
-			set(
-					ParamID paramName,
-					Object value )
-	{
+	public Reference<Object> set( final ParamID paramName, final Object value ) {
 		
 		// RunTime.assumedTrue( this.isInited() );
 		RunTime.assumedNotNull( paramName );
 		
-		Reference<Object> ref = this.get( paramName );
-		Reference<Object> prevValue = ref;
-		if ( null == ref )
-		{
+		Reference<Object> ref = get( paramName );
+		final Reference<Object> prevValue = ref;
+		if ( null == ref ) {
 			ref = new Reference<Object>();// FIXME: maybe cleanup if needed on .clear()
-			int bug = listOfParamsWithValues.size();// FIXME: remove
-			Object oldValue = listOfParamsWithValues.put(
-															paramName,
-															ref );
+			final int bug = listOfParamsWithValues.size();// FIXME: remove
+			final Object oldValue = listOfParamsWithValues.put( paramName, ref );
 			RunTime.assumedNull( oldValue );
-			RunTime.assumedTrue( listOfParamsWithValues.size() == 1 + bug );
+			RunTime.assumedTrue( listOfParamsWithValues.size() == ( 1 + bug ) );
 		}
 		
 		ref.setObject( value );
 		return prevValue;
 	}
 	
-
+	
 	/**
 	 * easy cast wrapper
 	 * 
 	 * @param paramName
 	 * @return get the value object as a String object
 	 */
-	public
-			String
-			getExString(
-							ParamID paramName )
-	{
+	public String getExString( final ParamID paramName ) {
 		// RunTime.assumedTrue( this.isInited() );
 		RunTime.assumedNotNull( paramName );
 		// TODO: check if can be cast and wrap throws
-		Object o = this.getEx( paramName );
-		if ( !( o instanceof String ) )
-		{
+		final Object o = getEx( paramName );
+		if ( !( o instanceof String ) ) {
 			RunTime.badCall( "that parameter didn't have a String in it - cast fail" );
 		}
 		return (String)o;
 	}
 	
-
+	
 	/**
 	 * @param paramName
 	 * @return false if didn't exist; true if it did exist, but it doesn't now
 	 *         after call
 	 */
-	public
-			boolean
-			remove(
-					ParamID paramName )
-	{
+	public boolean remove( final ParamID paramName ) {
 		
 		// RunTime.assumedTrue( this.isInited() );
 		RunTime.assumedNotNull( paramName );
@@ -294,7 +258,7 @@ public class MethodParams
 		// }
 	}
 	
-
+	
 	/**
 	 * this will merge the two, such as <code>this</code> will have both<br>
 	 * 
@@ -307,75 +271,56 @@ public class MethodParams
 	 *            withThisNewOnes, but those that do
 	 *            exist in <code>this</code> will be lost
 	 */
-	public
-			void
-			mergeWith(
-						MethodParams withThisNewOnes,
-						boolean overwrite )
-	{
+	public void mergeWith( final MethodParams withThisNewOnes, final boolean overwrite ) {
 		
 		// RunTime.assumedTrue( this.isInited() );
-		RunTime.assumedNotNull(
-								withThisNewOnes,
-								overwrite );
-		if ( this == withThisNewOnes )
-		{
+		RunTime.assumedNotNull( withThisNewOnes );
+		if ( this == withThisNewOnes ) {
 			RunTime.badCall( "attempted to merge with self" );
 		}
 		
-		Iterator<Entry<ParamID, Reference<Object>>> iter = withThisNewOnes.getIter();
+		final Iterator<Entry<ParamID, Reference<Object>>> iter = withThisNewOnes.getIter();
 		
-
-		while ( iter.hasNext() )
-		{
-			Entry<ParamID, Reference<Object>> current = iter.next();
-			ParamID paramName = current.getKey();
-			Reference<Object> refToValue = current.getValue();
-			boolean alreadyExists = this.get( paramName ) != null;
-			if ( ( alreadyExists && overwrite )
-					|| ( !alreadyExists ) )
-			{
+		
+		while ( iter.hasNext() ) {
+			final Entry<ParamID, Reference<Object>> current = iter.next();
+			final ParamID paramName = current.getKey();
+			final Reference<Object> refToValue = current.getValue();
+			final boolean alreadyExists = get( paramName ) != null;
+			if ( ( alreadyExists && overwrite ) || ( !alreadyExists ) ) {
 				// doesn't reuse refs from the other MethodParams!
-				this.set(
-							paramName,
-							refToValue.getObject() );
+				set( paramName, refToValue.getObject() );
 				// the values are the same:
-				RunTime.assumedTrue( this.getEx( paramName ) == withThisNewOnes.getEx( paramName ) );
+				RunTime.assumedTrue( getEx( paramName ) == withThisNewOnes.getEx( paramName ) );
 				// the refs are not the same:
-				RunTime.assumedTrue( this.get( paramName ) != withThisNewOnes.get( paramName ) );
+				RunTime.assumedTrue( get( paramName ) != withThisNewOnes.get( paramName ) );
 			}
 		}
 		
 	}
 	
-
+	
 	/**
 	 * @return
 	 * 
 	 */
-	private
-			Iterator<Entry<ParamID, Reference<Object>>>
-			getIter()
-	{
+	private Iterator<Entry<ParamID, Reference<Object>>> getIter() {
 		
 		// RunTime.assumedTrue( this.isInited() );
 		return listOfParamsWithValues.entrySet().iterator();
 		
 	}
 	
-
-	public
-			void
-			clear()
-	{
+	
+	public void clear() {
 		
 		// RunTime.assumedTrue( this.isInited() );
 		listOfParamsWithValues.clear();
-		RunTime.assumedTrue( this.size() == 0 );
+		RunTime.assumedTrue( size() == 0 );
 		
 	}
 	
-
+	
 	// private ParamName<T> internalGetParamName( ChainedReference<T> thatPointsToThisRef ) {
 	//
 	// RunTime.assumedNotNull( thatPointsToThisRef );
@@ -408,21 +353,16 @@ public class MethodParams
 	 * 
 	 * @return clone of this
 	 */
-	public
-			MethodParams
-			getClone()
-	{
+	public MethodParams getClone() {
 		
 		// RunTime.assumedTrue( this.isInited() );
-		MethodParams clone = getNew();// Factory.getNewInstanceAndInitWithoutMethodParams( MethodParams.class );
+		final MethodParams clone = getNew();// Factory.getNewInstanceAndInitWithoutMethodParams( MethodParams.class );
 		// MethodParams clone = new MethodParams();
 		// clone.init( null );// must be null or recursion
 		RunTime.assumedTrue( clone.size() == 0 );
-		clone.mergeWith(
-							this,
-							false// there's nothing to overwrite
-				);
-		RunTime.assumedTrue( clone.size() == this.size() );
+		clone.mergeWith( this, false// there's nothing to overwrite
+			);
+		RunTime.assumedTrue( clone.size() == size() );
 		RunTime.assumedTrue( clone.listOfParamsWithValues.size() == listOfParamsWithValues.size() );
 		RunTime.assumedTrue( clone.listOfParamsWithValues != listOfParamsWithValues );
 		RunTime.assumedTrue( clone != this );
@@ -430,7 +370,7 @@ public class MethodParams
 		return clone;
 	}
 	
-
+	
 	// @Override
 	// protected
 	// void
@@ -443,7 +383,7 @@ public class MethodParams
 	// RunTime.assumedTrue( listOfParamsWithValues.size() == 0 );
 	// }
 	
-
+	
 	// @Override
 	// protected
 	// void
@@ -458,61 +398,42 @@ public class MethodParams
 	// RunTime.assumedTrue( this.size() == 0 );
 	// }
 	
-
+	
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
-	public
-			String
-			toString()
-	{
+	public String toString() {
 		
 		// RunTime.assumedTrue( this.isInited() );
-		return super.toString()
-				+ listOfParamsWithValues.toString();
+		return super.toString() + listOfParamsWithValues.toString();
 	}
 	
-
+	
 	/**
 	 * @param outputs
 	 * @param params
 	 */
 	@Deprecated
-	public static
-			void
-			expectedOutputs(
-								MethodParams outputs,
-								ParamID... params )
-	{
-		RunTime.assumedNotNull(
-								outputs,
-								params );
+	public static void expectedOutputs( final MethodParams outputs, final ParamID... params ) {
+		RunTime.assumedNotNull( outputs, params );
 		RunTime.assumedTrue( params.length > 0 );
 		RunTime.assumedTrue( outputs.size() > 0 );
-		for ( ParamID param : params )
-		{
+		for ( final ParamID param : params ) {
 			RunTime.assumedNotNull( param );
-			Reference<Object> ref2RVar = outputs.get( param );
-			if ( null == ref2RVar )
-			{
+			final Reference<Object> ref2RVar = outputs.get( param );
+			if ( null == ref2RVar ) {
 				// RunTime.assumedNotNull( ref2RVar );
-				RunTime.badCall( "the expected param("
-									+ param
-									+ ") was not in the outputs list" );
-			}
-			else
-			{
+				RunTime.badCall( "the expected param(" + param + ") was not in the outputs list" );
+			} else {
 				// @SuppressWarnings( "unchecked" )
 				// Reference<Object> rVar = (Reference<Object>)ref2RVar.getObject();
-				Object rVar = ref2RVar.getObject();
+				final Object rVar = ref2RVar.getObject();
 				// if ( rVar.getClass() != Reference.class )
-				if ( !( rVar instanceof Reference ) )
-				{
-					RunTime.badCall( "you passed a non Reference variable(rVar) for param "
-										+ param );
+				if ( !( rVar instanceof Reference ) ) {
+					RunTime.badCall( "you passed a non Reference variable(rVar) for param " + param );
 				}
 				RunTime.assumedNotNull( rVar );
 				// TODO: expectedInputs additional check for rVar.getObject() != null
@@ -520,74 +441,49 @@ public class MethodParams
 		}
 	}
 	
-
+	
 	/**
 	 * @param paramID
 	 * @param value
 	 */
 	@Deprecated
-	public
-			void
-			setRVarValue(
-							ParamID paramID,
-							Object value )
-	{
+	public void setRVarValue( final ParamID paramID, final Object value ) {
 		RunTime.assumedNotNull( paramID );
-		Reference<Object> ref2RVar = this.get( paramID );
-		if ( null == ref2RVar )
-		{
+		final Reference<Object> ref2RVar = get( paramID );
+		if ( null == ref2RVar ) {
 			RunTime
-					.badCall( "the param("
-								+ paramID
-								+ ") must already exist before setting it's value. why? because it's a reference to the value; so that ref must exist" );
-		}
-		else
-		{
+				.badCall( "the param("
+					+ paramID
+					+ ") must already exist before setting it's value. why? because it's a reference to the value; so that ref must exist" );
+		} else {
 			// this.set( paramName, value )
 			// @SuppressWarnings( "unchecked" )
-			Object rVar = ref2RVar.getObject();
-			if ( !( rVar instanceof Reference ) )
-			{
+			final Object rVar = ref2RVar.getObject();
+			if ( !( rVar instanceof Reference ) ) {
 				RunTime.bug( "should not be that the already existing paramID has a non reference associated with it" );
-			}
-			else
-			{
+			} else {
 				RunTime.assumedNotNull( rVar );
 				@SuppressWarnings( "unchecked" )
-				Reference<Object> rVarCast = (Reference<Object>)rVar;
+				final Reference<Object> rVarCast = (Reference<Object>)rVar;
 				rVarCast.setObject( value );// can be null
 			}
 		}
 	}
 	
-
+	
 	/**
 	 * @param paramID
 	 * @param rVar
 	 */
 	@Deprecated
-	public
-			void
-			associate(
-						ParamID paramID,
-						Reference<?> rVar )
-	{
-		RunTime.assumedNotNull(
-								paramID,
-								rVar );
-		if ( null != this.get( paramID ) )
-		{
-			RunTime.badCall( "the param("
-								+ paramID
-								+ ") must not already be set" );
-		}
-		else
-		{
-			this.set(
-						paramID,
-						rVar );
+	public void associate( final ParamID paramID, final Reference<?> rVar ) {
+		RunTime.assumedNotNull( paramID, rVar );
+		if ( null != get( paramID ) ) {
+			RunTime.badCall( "the param(" + paramID + ") must not already be set" );
+		} else {
+			set( paramID, rVar );
 		}
 	}
 	
-
+	
 }

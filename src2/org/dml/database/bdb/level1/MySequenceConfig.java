@@ -25,7 +25,7 @@ package org.dml.database.bdb.level1;
 
 
 
-import com.sleepycat.je.SequenceConfig;
+import com.sleepycat.db.*;
 
 
 
@@ -36,7 +36,7 @@ import com.sleepycat.je.SequenceConfig;
 public class MySequenceConfig extends SequenceConfig {
 	
 	public MySequenceConfig() {
-
+		
 		super();
 		this.setAllowCreate( true );
 		this.setAutoCommitNoSync( false );

@@ -28,18 +28,16 @@ package org.dml.level010;
 
 import static org.junit.Assert.*;
 
-import java.io.File;
-import java.util.HashSet;
+import java.io.*;
+import java.util.*;
 
-import org.dml.JUnits.Consts;
-import org.dml.database.bdb.level1.Level1_Storage_BerkeleyDB;
-import org.dml.error.AssumptionError;
-import org.dml.tools.RunTime;
-import org.dml.tracking.Factory;
-import org.junit.After;
-import org.junit.Test;
-import org.references.method.MethodParams;
-import org.references.method.PossibleParams;
+import org.dml.JUnits.*;
+import org.dml.database.bdb.level1.*;
+import org.dml.error.*;
+import org.dml.tools.*;
+import org.dml.tracking.*;
+import org.junit.*;
+import org.references.method.*;
 
 
 
@@ -47,122 +45,80 @@ import org.references.method.PossibleParams;
  * 
  *
  */
-public class SymbolTest
-{
+public class SymbolTest {
 	
 	Level1_Storage_BerkeleyDB	b1	= null, b2 = null;
 	
 	
 	@After
-	public
-			void
-			tearDown()
-	{
+	public void tearDown() {
 		// RunTime.clearThrowChain(); maybe this will clear all prev throws if any, and eclipse won't get them
-		if ( null != b2 )
-		{
+		if ( null != b2 ) {
 			Factory.deInitIfInited_WithPostponedThrows( b2 );
 		}
-		if ( null != b1 )
-		{
+		if ( null != b1 ) {
 			Factory.deInitIfInited_WithPostponedThrows( b1 );
 		}
 		RunTime.throwAllThatWerePostponed();
 	}
 	
-
+	
+	@SuppressWarnings( "boxing" )
 	@Test
-	public
-			void
-			test()
-	{
+	public void test() {
 		b1 = new Level1_Storage_BerkeleyDB();
-		long l1 = 1290312l;
-		TheStoredSymbol tsSym = TheStoredSymbol.getNew( l1 );
+		final long l1 = 1290312l;
+		final TheStoredSymbol tsSym = TheStoredSymbol.getNew( new Long( l1 ) );
 		Symbol a = null;
 		boolean threw = false;
-		try
-		{
-			a = Symbol.getNew(
-								b1,
-								tsSym );
-		}
-		catch ( Throwable t )
-		{
-			if ( RunTime.isThisWrappedException_of_thisType(
-																t,
-																AssumptionError.class ) )
-			{
+		try {
+			a = Symbol.getNew( b1, tsSym );
+		} catch ( final Throwable t ) {
+			if ( RunTime.isThisWrappedException_of_thisType( t, AssumptionError.class ) ) {
 				threw = true;
 				RunTime.clearLastThrown_andAllItsWraps();
 			}
 		}
 		assertTrue( threw );
 		
-		MethodParams params = MethodParams.getNew();
-		params.set(
-					PossibleParams.homeDir,
-					Consts.BDB_ENV_PATH );
-		params.set(
-					PossibleParams.jUnit_wipeDB,
-					true );
-		params.set(
-					PossibleParams.jUnit_wipeDBWhenDone,
-					true );
-		Factory.init(
-						b1,
-						params );
+		final MethodParams params = MethodParams.getNew();
+		params.set( PossibleParams.homeDir, Consts.BDB_ENV_PATH );
+		params.set( PossibleParams.jUnit_wipeDB, true );
+		params.set( PossibleParams.jUnit_wipeDBWhenDone, true );
+		Factory.init( b1, params );
 		
 		assertTrue( b1.isInitedSuccessfully() );
 		
-		a = Symbol.getNew(
-							b1,
-							tsSym );
-		Symbol b = Symbol.getNew(
-									b1,
-									tsSym );
+		a = Symbol.getNew( b1, tsSym );
+		final Symbol b = Symbol.getNew( b1, tsSym );
 		assertNotNull( a );
 		assertNotNull( b );
 		assertTrue( a == b );// same instance
-		assertNotNull( params.set(
-									PossibleParams.homeDir,
-									Consts.BDB_ENV_PATH
-											+ File.separator
-											+ "second" ) );
-		b2 = Factory.getNewInstanceAndInit(
-											Level1_Storage_BerkeleyDB.class,
-											params );
-		Symbol c = Symbol.getNew(
-									b2,
-									tsSym );
+		assertNotNull( params.set( PossibleParams.homeDir, Consts.BDB_ENV_PATH + File.separator + "second" ) );
+		b2 = Factory.getNewInstanceAndInit( Level1_Storage_BerkeleyDB.class, params );
+		final Symbol c = Symbol.getNew( b2, tsSym );
 		assertTrue( b != c );// different instances due to different bdb-s
 		
 		Symbol.junitClearCache();// ie. due to too many cached Symbols some were deleted from cache
-		Symbol aa = Symbol.getNew(
-									b1,
-									tsSym );
+		final Symbol aa = Symbol.getNew( b1, tsSym );
 		assertNotNull( aa );
 		assertTrue( a != aa );// different instances
 		assertTrue( a.equals( aa ) );// but same contents
 		assertTrue( aa.equals( a ) );
 		
-		Symbol bb = Symbol.getNew(
-									b1,
-									tsSym );
+		final Symbol bb = Symbol.getNew( b1, tsSym );
 		assertNotNull( bb );
 		assertTrue( b != bb );// diff instances due to not being previously cached
 		assertTrue( b.equals( bb ) );// same contents
 		assertTrue( bb.equals( b ) );
 		
-		Symbol cc = Symbol.getNew(
-									b2,
-									tsSym );
+		final Symbol cc = Symbol.getNew( b2, tsSym );
 		assertNotNull( cc );
 		assertTrue( c != cc );
 		assertTrue( c.equals( cc ) );
 		assertTrue( cc.equals( c ) );
 		
-		HashSet<Symbol> hs = new HashSet<Symbol>();
+		final HashSet<Symbol> hs = new HashSet<Symbol>();
 		assertTrue( hs.size() == 0 );
 		assertTrue( hs.add( a ) );
 		assertTrue( hs.size() == 1 );

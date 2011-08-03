@@ -26,7 +26,7 @@ package org.temporary.tests;
 
 
 
-import org.dml.tools.RunTime;
+import org.dml.tools.*;
 
 
 
@@ -34,8 +34,7 @@ import org.dml.tools.RunTime;
  * 
  * don't rename to ThreadLocal* because it will have no call tracing
  */
-public class TestThreadLocal
-{
+public class TestThreadLocal {
 	
 	private static final int			LOOP_MAX1		= 3150;
 	private static final int			LOOP_MAX2		= 1000;
@@ -43,57 +42,38 @@ public class TestThreadLocal
 	// The next serial number to be assigned
 	static int							nextSerialNum	= 0;
 	
-	private static ThreadLocal<Integer>	serialNum		= new ThreadLocal<Integer>()
-														{
+	private static ThreadLocal<Integer>	serialNum		= new ThreadLocal<Integer>() {
 															
 															@Override
-															protected synchronized
-																	Integer
-																	initialValue()
-															{
-																return new Integer(
-																					nextSerialNum++ );
+															protected synchronized Integer initialValue() {
+																return new Integer( nextSerialNum++ );
 															}
 														};
 	
 	static volatile transient boolean	quit			= false;
 	
 	
-	public static
-			int
-			get()
-	{
+	public static int get() {
 		return ( ( serialNum.get() ) ).intValue();
 	}
 	
-
-	public static
-			void
-			set(
-					Integer val )
-	{
+	
+	public static void set( final Integer val ) {
 		serialNum.set( val );
 	}
 	
-
-	public static
-			int
-			some()
-	{
+	
+	public static int some() {
 		return TestThreadLocal.get();
 	}
 	
-
-	public static
-			void
-			main(
-					String[] args )
-	{
+	
+	@SuppressWarnings( "boxing" )
+	public static void main( final String[] args ) {
 		// ThreadLocalTest tlt = new ThreadLocalTest();
 		RunTime.callTracingFromHere.set( true );
 		System.out.println( TestThreadLocal.get() );
-		Thread t = new Thread()
-		{
+		final Thread t = new Thread() {
 			
 			/*
 			 * (non-Javadoc)
@@ -101,23 +81,17 @@ public class TestThreadLocal
 			 * @see java.lang.Thread#run()
 			 */
 			@Override
-			public
-					void
-					run()
-			{
+			public void run() {
 				RunTime.callTracingFromHere.set( true );
 				// super.run();
 				System.out.println( TestThreadLocal.get() );
 				int count = 0;
-				while ( !quit )
-				{
-					if ( 1 != TestThreadLocal.some() )
-					{
+				while ( !quit ) {
+					if ( 1 != TestThreadLocal.some() ) {
 						System.err.println( "fail in thread1" );
 						quit = true;
 					}
-					if ( ++count > LOOP_MAX2 )
-					{
+					if ( ++count > LOOP_MAX2 ) {
 						break;
 					}
 				}
@@ -127,15 +101,12 @@ public class TestThreadLocal
 		// t.run();// same thread as current
 		t.start();// start this as new thread
 		int count = 0;
-		while ( !quit )
-		{
-			if ( 0 != TestThreadLocal.get() )
-			{
+		while ( !quit ) {
+			if ( 0 != TestThreadLocal.get() ) {
 				System.err.println( "fail in main" );
 				quit = true;
 			}
-			if ( ++count > LOOP_MAX1 )
-			{
+			if ( ++count > LOOP_MAX1 ) {
 				break;
 			}
 		}
@@ -144,31 +115,20 @@ public class TestThreadLocal
 		chec();
 	}
 	
-
+	
 	/**
 	 * 
 	 */
-	private static
-			void
-			chec()
-	{
-		throw new RuntimeException(
-									"x" );
+	private static void chec() {
+		throw new RuntimeException( "x" );
 	}
 	
-
-	public static
-			void
-			reportQuitStatus()
-	{
-		if ( quit )
-		{
+	
+	public static void reportQuitStatus() {
+		if ( quit ) {
 			System.err.println( "BUG" );
-		}
-		else
-		{
-			System.out.println( "safe exit from "
-								+ Thread.currentThread().getName() );
+		} else {
+			System.out.println( "safe exit from " + Thread.currentThread().getName() );
 		}
 	}
 }

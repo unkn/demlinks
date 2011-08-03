@@ -25,18 +25,12 @@ package org.dml.level040;
 
 
 
-import org.dml.database.bdb.level2.BDBVectorIterator;
-import org.dml.level010.Symbol;
-import org.dml.level020.SymbolIterator;
-import org.dml.level025.DomainSet;
-import org.dml.level025.SetOfTerminalSymbols;
-import org.dml.tools.RunTime;
-import org.dml.tools.TwoKeyHashMap;
-import org.dml.tracking.Factory;
-import org.dml.tracking.Log;
-import org.references.Position;
-
-import com.sleepycat.je.DatabaseException;
+import org.dml.level010.*;
+import org.dml.level020.*;
+import org.dml.level025.*;
+import org.dml.tools.*;
+import org.dml.tracking.*;
+import org.references.*;
 
 
 
@@ -51,14 +45,10 @@ import com.sleepycat.je.DatabaseException;
  * DUPS are allowed also, settable in constructor<br>
  * once set at construction, you cannot change them for current instance<br>
  */
-public class ListOrderedOfSymbols
-		extends
-		ListOrderedOfElementCapsules
-		implements
-		OrderedList
-{
+public class ListOrderedOfSymbols extends ListOrderedOfElementCapsules implements OrderedList {
 	
-	private static final TwoKeyHashMap<Level040_DMLEnvironment, DomainSet, ListOrderedOfSymbols>	allListOOSInstances	= new TwoKeyHashMap<Level040_DMLEnvironment, DomainSet, ListOrderedOfSymbols>();
+	private static final TwoKeyHashMap<Level040_DMLEnvironment, DomainSet, ListOrderedOfSymbols>	allListOOSInstances	=
+																															new TwoKeyHashMap<Level040_DMLEnvironment, DomainSet, ListOrderedOfSymbols>();
 	
 	// we keep these also so we can check if the db ones were modified since this was instanced in java
 	private final boolean																			cachedAllowNull;
@@ -77,19 +67,11 @@ public class ListOrderedOfSymbols
 	 * @param expectedAllowDUPs1
 	 *            must already exist for self
 	 */
-	private ListOrderedOfSymbols(
-			Level040_DMLEnvironment passedEnv,
-			DomainSet passedSelf,
-			boolean expectedAllowNull1,
-			boolean expectedAllowDUPs1 )
-	{
+	private ListOrderedOfSymbols( final Level040_DMLEnvironment passedEnv, final DomainSet passedSelf,
+			final boolean expectedAllowNull1, final boolean expectedAllowDUPs1 ) {
 		
-		super(
-				passedEnv,
-				passedSelf );
-		RunTime.assumedNotNull(
-								expectedAllowNull1,
-								expectedAllowDUPs1 );
+		super( passedEnv, passedSelf );
+		// RunTime.assumedNotNull( expectedAllowNull1, expectedAllowDUPs1 );
 		
 		// those 2 cannot already exist
 		// RunTime.assumedFalse( this.internal_getRealAllowDUPs() );
@@ -104,7 +86,7 @@ public class ListOrderedOfSymbols
 		// RunTime.assumedTrue( ListOrderedOfSymbols.isListOrderedOfSymbols( env, self.getAsSymbol() ) );
 	}
 	
-
+	
 	// /**
 	// * to be used for existing list
 	// *
@@ -126,81 +108,49 @@ public class ListOrderedOfSymbols
 	 * @param passedSelf
 	 * @return
 	 */
-	public static
-			boolean
-			isListOrderedOfSymbols(
-									Level040_DMLEnvironment passedEnv,
-									Symbol passedSelf )
-	{
+	public static boolean isListOrderedOfSymbols( final Level040_DMLEnvironment passedEnv, final Symbol passedSelf ) {
 		
-		RunTime.assumedNotNull(
-								passedEnv,
-								passedSelf );
+		RunTime.assumedNotNull( passedEnv, passedSelf );
 		RunTime.assumedTrue( passedEnv.isInitedSuccessfully() );
 		return passedEnv.allListsOOS_Set.hasSymbol( passedSelf );
 	}
 	
-
-	private static
-			void
-			internal_setAsListOrderedOfSymbols(
-												Level040_DMLEnvironment passedEnv,
-												Symbol passedSelf )
-	{
+	
+	private static void internal_setAsListOrderedOfSymbols( final Level040_DMLEnvironment passedEnv, final Symbol passedSelf ) {
 		
-		RunTime.assumedNotNull(
-								passedSelf,
-								passedEnv );
+		RunTime.assumedNotNull( passedSelf, passedEnv );
 		RunTime.assumedTrue( passedEnv.isInitedSuccessfully() );
 		// was not set before
 		RunTime.assumedFalse( passedEnv.allListsOOS_Set.addToSet( passedSelf ) );
 	}
 	
-
+	
 	/**
 	 * @param allowDUPs
 	 *            new value
 	 * @return the previous value
 	 */
-	private static
-			boolean
-			internal_setRealAllowDUPs(
-										Level040_DMLEnvironment passedEnv,
-										DomainSet passedSelf,
-										boolean allowDUPs )
-	{
+	private static boolean internal_setRealAllowDUPs( final Level040_DMLEnvironment passedEnv, final DomainSet passedSelf,
+														final boolean allowDUPs ) {
 		
 		RunTime.assumedNotNull( passedEnv );
-		return ListOrderedOfSymbols.internal_setRealAllow(
-															passedEnv,
-															passedSelf,
-															passedEnv.allowDUPs_Set,
-															allowDUPs );
+		return ListOrderedOfSymbols.internal_setRealAllow( passedEnv, passedSelf, passedEnv.allowDUPs_Set, allowDUPs );
 	}
 	
-
+	
 	/**
 	 * @param allowNull
 	 *            new value
 	 * @return the previous value
 	 */
-	private static
-			boolean
-			internal_setRealAllowNull(
-										Level040_DMLEnvironment passedEnv,
-										DomainSet passedSelf,
-										boolean allowNull )
-	{
+	private static boolean internal_setRealAllowNull( final Level040_DMLEnvironment passedEnv, final DomainSet passedSelf,
+														final boolean allowNull ) {
 		
 		RunTime.assumedNotNull( passedEnv );
-		return ListOrderedOfSymbols.internal_setRealAllow(
-															passedEnv,
-															passedSelf,
-															passedEnv.allowNull_Set,
-															allowNull );
+		return ListOrderedOfSymbols.internal_setRealAllow( passedEnv, passedSelf, passedEnv.allowNull_Set, allowNull );
 	}
 	
-
+	
 	/**
 	 * @param set
 	 *            one of env.allowNull_Set or env.allowDUPs_Set
@@ -208,124 +158,64 @@ public class ListOrderedOfSymbols
 	 *            new value
 	 * @return the previous value
 	 */
-	private static
-			boolean
-			internal_setRealAllow(
-									Level040_DMLEnvironment passedEnv,
-									DomainSet passedSelf,
-									SetOfTerminalSymbols set,
-									boolean allow )
-	{
+	private static boolean internal_setRealAllow( final Level040_DMLEnvironment passedEnv, final DomainSet passedSelf,
+													final SetOfTerminalSymbols set, final boolean allow ) {
 		
-		RunTime.assumedNotNull(
-								passedEnv,
-								set,
-								allow );
-		if ( allow )
-		{
+		RunTime.assumedNotNull( passedEnv, set );
+		if ( allow ) {
 			return set.addToSet( passedSelf.getAsSymbol() );
-		}
-		else
-		{
+		} else {
 			// RunTime.assumedFalse( set.hasSymbol( self.getAsSymbol() ) );
 			return set.remove( passedSelf.getAsSymbol() );
 		}
 	}
 	
-
-	private
-			boolean
-			internal_getRealAllowDUPs()
-	{
+	
+	private boolean internal_getRealAllowDUPs() {
 		
-		RunTime.assumedNotNull(
-								env,
-								self );
-		return ListOrderedOfSymbols.getRealAllowDUPsFor(
-															env,
-															self.getAsSymbol() );
+		RunTime.assumedNotNull( env, self );
+		return ListOrderedOfSymbols.getRealAllowDUPsFor( env, self.getAsSymbol() );
 	}
 	
-
-	private
-			boolean
-			internal_getRealAllowNull()
-	{
+	
+	private boolean internal_getRealAllowNull() {
 		
-		RunTime.assumedNotNull(
-								env,
-								self );
-		return ListOrderedOfSymbols.getRealAllowNullFor(
-															env,
-															self.getAsSymbol() );
+		RunTime.assumedNotNull( env, self );
+		return ListOrderedOfSymbols.getRealAllowNullFor( env, self.getAsSymbol() );
 	}
 	
-
-	public static
-			boolean
-			getRealAllowNullFor(
-									Level040_DMLEnvironment passedEnv,
-									Symbol passedSelf )
-	{
+	
+	public static boolean getRealAllowNullFor( final Level040_DMLEnvironment passedEnv, final Symbol passedSelf ) {
 		
-		RunTime.assumedNotNull(
-								passedEnv,
-								passedSelf );
+		RunTime.assumedNotNull( passedEnv, passedSelf );
 		RunTime.assumedTrue( passedEnv.isInitedSuccessfully() );
 		return passedEnv.allowNull_Set.hasSymbol( passedSelf );
 	}
 	
-
-	public static
-			boolean
-			getRealAllowDUPsFor(
-									Level040_DMLEnvironment passedEnv,
-									Symbol passedSelf )
-	{
+	
+	public static boolean getRealAllowDUPsFor( final Level040_DMLEnvironment passedEnv, final Symbol passedSelf ) {
 		
-		RunTime.assumedNotNull(
-								passedEnv,
-								passedSelf );
+		RunTime.assumedNotNull( passedEnv, passedSelf );
 		RunTime.assumedTrue( passedEnv.isInitedSuccessfully() );
 		return passedEnv.allowDUPs_Set.hasSymbol( passedSelf );
 	}
 	
-
-	private final static
-			void
-			registerInstance(
-								Level040_DMLEnvironment env,
-								DomainSet name,
-								ListOrderedOfSymbols newOne )
-	{
+	
+	private final static void registerInstance( final Level040_DMLEnvironment env, final DomainSet name,
+												final ListOrderedOfSymbols newOne ) {
 		
-		RunTime.assumedNotNull(
-								env,
-								name,
-								newOne );
-		RunTime.assumedFalse( allListOOSInstances.ensure(
-															env,
-															name,
-															newOne ) );
+		RunTime.assumedNotNull( env, name, newOne );
+		RunTime.assumedFalse( allListOOSInstances.ensure( env, name, newOne ) );
 	}
 	
-
-	private final static
-			ListOrderedOfSymbols
-			getInstance(
-							Level040_DMLEnvironment env,
-							DomainSet name )
-	{
+	
+	private final static ListOrderedOfSymbols getInstance( final Level040_DMLEnvironment env, final DomainSet name ) {
 		
-		RunTime.assumedNotNull(
-								env,
-								name );
-		return allListOOSInstances.get(
-										env,
-										name );
+		RunTime.assumedNotNull( env, name );
+		return allListOOSInstances.get( env, name );
 	}
 	
-
+	
 	/**
 	 * @param passedEnv
 	 * @param existingSymbol
@@ -334,76 +224,42 @@ public class ListOrderedOfSymbols
 	 * @param allowDUPs
 	 * @return
 	 */
-	public static
-			ListOrderedOfSymbols
-			getNewListOOSymbols(
-									Level040_DMLEnvironment passedEnv,
-									Symbol existingSymbol,
-									boolean allowNulls,
-									boolean allowDUPs )
-	{
+	public static ListOrderedOfSymbols getNewListOOSymbols( final Level040_DMLEnvironment passedEnv,
+															final Symbol existingSymbol, final boolean allowNulls,
+															final boolean allowDUPs ) {
 		
-		RunTime.assumedNotNull(
-								passedEnv,
-								existingSymbol,
-								allowNulls,
-								allowDUPs );
+		RunTime.assumedNotNull( passedEnv, existingSymbol );
 		RunTime.assumedTrue( passedEnv.isInitedSuccessfully() );
 		
-		if ( ListOrderedOfSymbols.isListOrderedOfSymbols(
-															passedEnv,
-															existingSymbol ) )
-		{
+		if ( ListOrderedOfSymbols.isListOrderedOfSymbols( passedEnv, existingSymbol ) ) {
 			RunTime.badCall( "existingSymbol is already a List, use getExisting or ensure instead!" );
 		}
 		
-		DomainSet existingDS = passedEnv.getAsDomainSet(
-															existingSymbol,
-															passedEnv.allElementCapsules_Set.getAsSymbol() );
+		final DomainSet existingDS = passedEnv.getAsDomainSet( existingSymbol, passedEnv.allElementCapsules_Set.getAsSymbol() );
 		existingDS.assumedValid();
 		RunTime.assumedTrue( existingDS.getAsSymbol() == existingSymbol );
 		
 		// ensure it's empty/new Symbol
-		if ( existingDS.size() != 0 )
-		{
+		if ( existingDS.size() != 0 ) {
 			// since it's new
 			RunTime.badCall( "passed symbol must've been non-empty" );
 		}
-		RunTime.assumedNull( getInstance(
-											passedEnv,
-											existingDS ) );// couldn't have been already instantiated
-		if ( ( passedEnv.allowDUPs_Set.hasSymbol( existingSymbol ) )
-				|| ( passedEnv.allowNull_Set.hasSymbol( existingSymbol ) ) )
-		{
+		RunTime.assumedNull( getInstance( passedEnv, existingDS ) );// couldn't have been already instantiated
+		if ( ( passedEnv.allowDUPs_Set.hasSymbol( existingSymbol ) ) || ( passedEnv.allowNull_Set.hasSymbol( existingSymbol ) ) ) {
 			RunTime.bug( "inconsistent, not supposed to be in such a state" );
 		}
 		
 		// make new list
-		RunTime.assumedFalse( ListOrderedOfSymbols.internal_setRealAllowNull(
-																				passedEnv,
-																				existingDS,
-																				allowNulls ) );
-		RunTime.assumedFalse( ListOrderedOfSymbols.internal_setRealAllowDUPs(
-																				passedEnv,
-																				existingDS,
-																				allowDUPs ) );
-		internal_setAsListOrderedOfSymbols(
-											passedEnv,
-											existingSymbol );
-		ListOrderedOfSymbols newOne = new ListOrderedOfSymbols(
-																passedEnv,
-																existingDS,
-																allowNulls,
-																allowDUPs );
+		RunTime.assumedFalse( ListOrderedOfSymbols.internal_setRealAllowNull( passedEnv, existingDS, allowNulls ) );
+		RunTime.assumedFalse( ListOrderedOfSymbols.internal_setRealAllowDUPs( passedEnv, existingDS, allowDUPs ) );
+		internal_setAsListOrderedOfSymbols( passedEnv, existingSymbol );
+		final ListOrderedOfSymbols newOne = new ListOrderedOfSymbols( passedEnv, existingDS, allowNulls, allowDUPs );
 		newOne.assumedValid();
-		registerInstance(
-							passedEnv,
-							existingDS,
-							newOne );
+		registerInstance( passedEnv, existingDS, newOne );
 		return newOne;
 	}
 	
-
+	
 	/**
 	 * this will not check for given allowNull and allowDUPs, it will just retrieve their existing values and use those.
 	 * 
@@ -412,56 +268,29 @@ public class ListOrderedOfSymbols
 	 *            must have been already a list
 	 * @return
 	 */
-	public static
-			ListOrderedOfSymbols
-			getExistingListOOSymbols(
-										Level040_DMLEnvironment passedEnv,
-										Symbol existingSymbol )
-	{
+	public static ListOrderedOfSymbols getExistingListOOSymbols( final Level040_DMLEnvironment passedEnv,
+																	final Symbol existingSymbol ) {
 		
-		RunTime.assumedNotNull(
-								passedEnv,
-								existingSymbol );
+		RunTime.assumedNotNull( passedEnv, existingSymbol );
 		RunTime.assumedTrue( passedEnv.isInitedSuccessfully() );
 		
-		if ( !ListOrderedOfSymbols.isListOrderedOfSymbols(
-															passedEnv,
-															existingSymbol ) )
-		{
+		if ( !ListOrderedOfSymbols.isListOrderedOfSymbols( passedEnv, existingSymbol ) ) {
 			RunTime.badCall( "existingSymbol did not already exist a a List" );
 		}
 		
-		DomainSet existingDS = passedEnv.getAsDomainSet(
-															existingSymbol,
-															passedEnv.allElementCapsules_Set.getAsSymbol() );
+		final DomainSet existingDS = passedEnv.getAsDomainSet( existingSymbol, passedEnv.allElementCapsules_Set.getAsSymbol() );
 		existingDS.assumedValid();
 		RunTime.assumedTrue( existingDS.getAsSymbol() == existingSymbol );
 		
-		ListOrderedOfSymbols existingListOOS = getInstance(
-															passedEnv,
-															existingDS );
-		if ( null == existingListOOS )
-		{
+		ListOrderedOfSymbols existingListOOS = getInstance( passedEnv, existingDS );
+		if ( null == existingListOOS ) {
 			// yes it may exist as list but it was never instantiated in Java
-			boolean existingAllowNull = getRealAllowNullFor(
-																passedEnv,
-																existingSymbol );
-			boolean existingAllowDUPs = getRealAllowDUPsFor(
-																passedEnv,
-																existingSymbol );
-			existingListOOS = new ListOrderedOfSymbols(
-														passedEnv,
-														existingDS,
-														existingAllowNull,
-														existingAllowDUPs );
+			final boolean existingAllowNull = getRealAllowNullFor( passedEnv, existingSymbol );
+			final boolean existingAllowDUPs = getRealAllowDUPsFor( passedEnv, existingSymbol );
+			existingListOOS = new ListOrderedOfSymbols( passedEnv, existingDS, existingAllowNull, existingAllowDUPs );
 			existingListOOS.assumedValid();
-			registerInstance(
-								passedEnv,
-								existingDS,
-								existingListOOS );
-		}
-		else
-		{
+			registerInstance( passedEnv, existingDS, existingListOOS );
+		} else {
 			existingListOOS.assumedValid();
 		}
 		
@@ -469,7 +298,7 @@ public class ListOrderedOfSymbols
 		return existingListOOS;
 	}
 	
-
+	
 	/**
 	 * expected values must match or BadCallError exception<br>
 	 * use this when you do know the values for allowNull and allowDUPs, so they can be checked against the existing
@@ -483,100 +312,61 @@ public class ListOrderedOfSymbols
 	 *            expected value for allowDUPs
 	 * @return
 	 */
-	public static
-			ListOrderedOfSymbols
-			getExistingListOOSymbols(
-										Level040_DMLEnvironment passedEnv,
-										Symbol existingSymbol,
-										boolean allowNulls,
-										boolean allowDUPs )
-	{
+	public static ListOrderedOfSymbols getExistingListOOSymbols( final Level040_DMLEnvironment passedEnv,
+																	final Symbol existingSymbol, final boolean allowNulls,
+																	final boolean allowDUPs ) {
 		
-		RunTime.assumedNotNull(
-								allowDUPs,
-								allowNulls );
-		ListOrderedOfSymbols ret = getExistingListOOSymbols(
-																passedEnv,
-																existingSymbol );
+		// RunTime.assumedNotNull( allowDUPs, allowNulls );
+		final ListOrderedOfSymbols ret = getExistingListOOSymbols( passedEnv, existingSymbol );
 		RunTime.assumedNotNull( ret );
-		if ( ret.isNullAllowed() != allowNulls )
-		{
+		if ( ret.isNullAllowed() != allowNulls ) {
 			RunTime.badCall( "inconsistency detected. Existing list's allowNull was different than expected one." );
 		}
-		if ( ret.isDUPAllowed() != allowDUPs )
-		{
+		if ( ret.isDUPAllowed() != allowDUPs ) {
 			RunTime.badCall( "inconsistency detected. Existing list's allowDUPs was different than expected one." );
 		}
 		return ret;
 	}
 	
-
-	public static
-			ListOrderedOfSymbols
-			ensureListOOSymbols(
-									Level040_DMLEnvironment passedEnv,
-									Symbol existingSymbol,
-									boolean allowNulls,
-									boolean allowDUPs )
-	{
+	
+	public static ListOrderedOfSymbols ensureListOOSymbols( final Level040_DMLEnvironment passedEnv,
+															final Symbol existingSymbol, final boolean allowNulls,
+															final boolean allowDUPs ) {
 		
-		RunTime.assumedNotNull(
-								passedEnv,
-								existingSymbol,
-								allowDUPs,
-								allowNulls );
+		RunTime.assumedNotNull( passedEnv, existingSymbol );
 		RunTime.assumedTrue( passedEnv.isInitedSuccessfully() );
 		
-		if ( isListOrderedOfSymbols(
-										passedEnv,
-										existingSymbol ) )
-		{
+		if ( isListOrderedOfSymbols( passedEnv, existingSymbol ) ) {
 			// already is List, we use getExisting then
-			return getExistingListOOSymbols(
-												passedEnv,
-												existingSymbol,
-												allowNulls,
-												allowDUPs );
-		}
-		else
-		{
+			return getExistingListOOSymbols( passedEnv, existingSymbol, allowNulls, allowDUPs );
+		} else {
 			// not existing, must use new then
-			return getNewListOOSymbols(
-										passedEnv,
-										existingSymbol,
-										allowNulls,
-										allowDUPs );
+			return getNewListOOSymbols( passedEnv, existingSymbol, allowNulls, allowDUPs );
 		}
 	}
 	
-
-	public
-			boolean
-			isDUPAllowed()
-	{
+	
+	public boolean isDUPAllowed() {
 		
 		// the real and the cached must not change (at least) while the instance is active
 		// imagine if the list has nulls and you change this to false w/o removing those nulls from list, you get
 		// inconsistent list
-		RunTime.assumedTrue( this.internal_getRealAllowDUPs() == cachedAllowDUPs );
+		RunTime.assumedTrue( internal_getRealAllowDUPs() == cachedAllowDUPs );
 		return cachedAllowDUPs;
 	}
 	
-
+	
 	/**
 	 * @return
 	 */
-	public
-			boolean
-			isNullAllowed()
-	{
+	public boolean isNullAllowed() {
 		
 		// the cached and the real must not change (at least) while the instance is active
-		RunTime.assumedTrue( this.internal_getRealAllowNull() == cachedAllowNull );
+		RunTime.assumedTrue( internal_getRealAllowNull() == cachedAllowNull );
 		return cachedAllowNull;
 	}
 	
-
+	
 	// @Override
 	// protected void internal_setName() {
 	//
@@ -585,81 +375,52 @@ public class ListOrderedOfSymbols
 	// }
 	//
 	@Override
-	protected
-			boolean
-			isItself()
-	{
+	protected boolean isItself() {
 		
-		RunTime.assumedNotNull(
-								self,
-								env );
+		RunTime.assumedNotNull( self, env );
 		RunTime.assumedTrue( env.isInitedSuccessfully() );
-		return isListOrderedOfSymbols(
-										env,
-										self.getAsSymbol() );
+		return isListOrderedOfSymbols( env, self.getAsSymbol() );
 	}
 	
-
+	
 	
 	@Override
-	public
-			void
-			add(
-					Symbol whichSymbol,
-					Position where )
-	{
+	public void add( final Symbol whichSymbol, final Position where ) {
 		
 		RunTime.assumedNotNull( where );
-		if ( !this.isNullAllowed() )
-		{
+		if ( !isNullAllowed() ) {
 			RunTime.assumedNotNull( whichSymbol );
 		}
-		switch ( where )
-		{
-			case FIRST:
-			case LAST:
-				break;
-			default:
-				RunTime.badCall( "unsupported position" );
+		switch ( where ) {
+		case FIRST:
+		case LAST:
+			break;
+		default:
+			RunTime.badCall( "unsupported position" );
 		}
-		if ( !this.isDUPAllowed() )
-		{
+		if ( !isDUPAllowed() ) {
 			// must not already exist
-			if ( this.hasSymbol( whichSymbol ) )
-			{
+			if ( hasSymbol( whichSymbol ) ) {
 				// exists already
 				RunTime
-						.badCall( "you tried to add an already existing Symbol to the list, whilst the list didn't support DUPs" );
+					.badCall( "you tried to add an already existing Symbol to the list, whilst the list didn't support DUPs" );
 			}
 		}
-		ElementCapsule ec = ElementCapsule.getNewEmptyElementCapsule(
-																		env,
-																		env.newUniqueSymbol() );
+		final ElementCapsule ec = ElementCapsule.getNewEmptyElementCapsule( env, env.newUniqueSymbol() );
 		RunTime.assumedNull( ec.setElement( whichSymbol ) );
-		this.add_ElementCapsule(
-									where,
-									ec );
-		this.assumedValid();
+		this.add_ElementCapsule( where, ec );
+		assumedValid();
 	}
 	
-
+	
 	@Override
-	public
-			void
-			add(
-					Symbol whichSymbol,
-					Position pos,
-					Symbol posSymbol )
-	{
+	public void add( final Symbol whichSymbol, final Position pos, final Symbol posSymbol ) {
 		
 		RunTime.assumedNotNull( pos );
-		RunTime.assumedFalse( this.isDUPAllowed() );// if posSymbol exists twice...
+		RunTime.assumedFalse( isDUPAllowed() );// if posSymbol exists twice...
 		
-		if ( !this.isNullAllowed() )
-		{
-			RunTime.assumedNotNull(
-									whichSymbol,
-									posSymbol );
+		if ( !isNullAllowed() ) {
+			RunTime.assumedNotNull( whichSymbol, posSymbol );
 		}
 		
 		// if ( !this.isDUPAllowed() ) {
@@ -667,41 +428,30 @@ public class ListOrderedOfSymbols
 		// RunTime.badCall( "the Symbol already exists and the list doesn't do DUPs" );
 		// }
 		// }
-		ElementCapsule posEC = this.get_ElementCapsule( posSymbol );
-		if ( null == posEC )
-		{
+		final ElementCapsule posEC = this.get_ElementCapsule( posSymbol );
+		if ( null == posEC ) {
 			RunTime.badCall( "cannot find your posSymbol" );
 		}
 		
-		ElementCapsule newEC = ElementCapsule.getNewEmptyElementCapsule(
-																			env,
-																			env.newUniqueSymbol() );
+		final ElementCapsule newEC = ElementCapsule.getNewEmptyElementCapsule( env, env.newUniqueSymbol() );
 		RunTime.assumedNull( newEC.setElement( whichSymbol ) );
-		this.add_ElementCapsule(
-									newEC,
-									pos,
-									posEC );
-		this.assumedValid();
+		this.add_ElementCapsule( newEC, pos, posEC );
+		assumedValid();
 	}
 	
-
+	
 	@Override
-	public
-			boolean
-			hasSymbol(
-						Symbol whichSymbol )
-	{
+	public boolean hasSymbol( final Symbol whichSymbol ) {
 		
-		if ( !this.isNullAllowed() )
-		{
+		if ( !isNullAllowed() ) {
 			RunTime.assumedNotNull( whichSymbol );
 		}
-		RunTime.assumedFalse( this.isDUPAllowed() );
+		RunTime.assumedFalse( isDUPAllowed() );
 		// TODO we can make this easier, w/o parsing entire list
 		return ( null != this.get_ElementCapsule( whichSymbol ) );
 	}
 	
-
+	
 	/**
 	 * parses entire list, one by one <br>
 	 * 
@@ -709,20 +459,15 @@ public class ListOrderedOfSymbols
 	 * @return the already existing EC for the passed symbol; or null if not
 	 *         found in list
 	 */
-	private
-			ElementCapsule
-			get_ElementCapsule(
-								Symbol posSymbol )
-	{
+	private ElementCapsule get_ElementCapsule( final Symbol posSymbol ) {
 		
-		if ( !this.isNullAllowed() )
-		{
+		if ( !isNullAllowed() ) {
 			RunTime.assumedNotNull( posSymbol );
 		}
 		// this method is not to be used while DUPs are allowed, because it will
 		// only find first occurrence and this is not explicitly stated in
 		// calling it
-		RunTime.assumedFalse( this.isDUPAllowed() );
+		RunTime.assumedFalse( isDUPAllowed() );
 		
 		self.assumedValid();
 		// assuming posSymbol is already part of list, then it must have a
@@ -730,18 +475,13 @@ public class ListOrderedOfSymbols
 		// could be part of another list too, so two of those unique parents may
 		// be already, and it may have other explicit parents
 		ElementCapsule found = null;
-		if ( ( this.isNullAllowed() )
-				|| ( this.size() <= env.countInitials( posSymbol ) ) )
-		{
+		if ( ( isNullAllowed() ) || ( size() <= env.countInitials( posSymbol ) ) ) {
 			// parse entire list looking for 'posSymbol'
 			ElementCapsule iter = this.get_ElementCapsule( Position.FIRST );
 			
-			while ( null != iter )
-			{
-				if ( iter.getElement() == posSymbol )
-				{
-					if ( null != found )
-					{
+			while ( null != iter ) {
+				if ( iter.getElement() == posSymbol ) {
+					if ( null != found ) {
 						// found it again? since this is a no DUPs list => bug
 						RunTime.bug( "a noDUPs list was detected to have dups" );
 						// but then again, if dups are allowed this method
@@ -751,68 +491,49 @@ public class ListOrderedOfSymbols
 					found = iter;
 					// doesn't break because we want to check consistency
 				}
-				iter = this.get_ElementCapsule(
-												Position.AFTER,
-												iter );
+				iter = this.get_ElementCapsule( Position.AFTER, iter );
 			}
-		}
-		else
-		{
+		} else {
 			Log.warn( "parsing from posSymbol upwards (ie. method 2)" );
-			RunTime.assumedFalse( this.isNullAllowed() );
+			RunTime.assumedFalse( isNullAllowed() );
 			RunTime.assumedNotNull( posSymbol );
 			Symbol foundECAsSymbol = null;
 			// this->EC->Ref2Elem->posSymbol
 			// AllEC->EC
 			// AllRef2Elems->Ref2Elem
 			SymbolIterator iter = env.getIterator_on_Initials_of( posSymbol );
-			try
-			{
+			try {
 				iter.goFirst();
-				while ( iter.now() != null )
-				{
-					if ( env.allRef2ElementsInEC_Set.hasSymbol( iter.now() ) )
-					{
+				while ( iter.now() != null ) {
+					if ( env.allRef2ElementsInEC_Set.hasSymbol( iter.now() ) ) {
 						// so far:
 						// AllRef2Elems->Ref2Elem aka iter.now()->posSymbol
 						// now we check all parents of iter.now() and we must
 						// find two which are this list and AllEC
 						SymbolIterator secIter = env.getIterator_on_Initials_of( iter.now() );
-						try
-						{
+						try {
 							secIter.goFirst();
-							while ( secIter.now() != null )
-							{
-								if ( env.isVector(
-													self.getAsSymbol(),
-													secIter.now() ) )
-								{
-									if ( !env.allElementCapsules_Set.hasSymbol( secIter.now() ) )
-									{
+							while ( secIter.now() != null ) {
+								if ( env.isVector( self.getAsSymbol(), secIter.now() ) ) {
+									if ( !env.allElementCapsules_Set.hasSymbol( secIter.now() ) ) {
 										RunTime
-												.bug( "a list may not contain anything other than EC children, yet we found a non EC -> inconsistency somewhere" );
+											.bug( "a list may not contain anything other than EC children, yet we found a non EC -> inconsistency somewhere" );
 									}
 									// so far we have:
 									// thisList->secIter.now()
 									// AllEC->secIter.now()
 									// secIter.now() ->iter.now()->posSymbol
-									if ( foundECAsSymbol != null )
-									{
+									if ( foundECAsSymbol != null ) {
 										RunTime.bug( "found 2 ! should be only 1" );
 									}
 									foundECAsSymbol = secIter.now();
 								}
 								secIter.goNext();
 							}
-						}
-						finally
-						{
-							try
-							{
+						} finally {
+							try {
 								secIter.close();
-							}
-							finally
-							{
+							} finally {
 								secIter = null;
 							}
 						}
@@ -820,23 +541,15 @@ public class ListOrderedOfSymbols
 					}
 					iter.goNext();
 				}
-			}
-			finally
-			{
-				try
-				{
+			} finally {
+				try {
 					iter.close();
-				}
-				finally
-				{
+				} finally {
 					iter = null;
 				}
 			}
-			if ( foundECAsSymbol != null )
-			{
-				found = ElementCapsule.getExistingElementCapsule(
-																	env,
-																	foundECAsSymbol );
+			if ( foundECAsSymbol != null ) {
+				found = ElementCapsule.getExistingElementCapsule( env, foundECAsSymbol );
 				found.assumedIsValidCapsule();
 			}
 		}
@@ -844,20 +557,16 @@ public class ListOrderedOfSymbols
 		return found;// null or it
 	}
 	
-
+	
 	@Override
-	synchronized public
-			Symbol
-			get(
-					Position pos )
-	{
+	synchronized public Symbol get( final Position pos ) {
 		
-		Symbol ret = this.internalGet( pos );
-		this.assumedValid();
+		final Symbol ret = internalGet( pos );
+		assumedValid();
 		return ret;
 	}
 	
-
+	
 	/**
 	 * usable only when noDUPs are allowed, else throws
 	 * 
@@ -866,81 +575,62 @@ public class ListOrderedOfSymbols
 	 * @return
 	 */
 	@Override
-	public
-			Symbol
-			get(
-					Position pos,
-					Symbol posSymbol )
-	{
+	public Symbol get( final Position pos, final Symbol posSymbol ) {
 		
 		RunTime.assumedNotNull( pos );
-		switch ( pos )
-		{// redundant checks
-			case BEFORE:
-			case AFTER:
-				break;
-			default:
-				RunTime.badCall( "bad position" );
+		switch ( pos ) {// redundant checks
+		case BEFORE:
+		case AFTER:
+			break;
+		default:
+			RunTime.badCall( "bad position" );
 		}
 		
-		if ( !this.isNullAllowed() )
-		{
+		if ( !isNullAllowed() ) {
 			RunTime.assumedNotNull( posSymbol );
 		}
 		
-		RunTime.assumedFalse( this.isDUPAllowed() );// don't call it when DUPS
+		RunTime.assumedFalse( isDUPAllowed() );// don't call it when DUPS
 		// allowed!
 		
 		// acquire posElementCapsule
-		ElementCapsule posEC = this.get_ElementCapsule( posSymbol );
-		if ( null == posEC )
-		{
+		final ElementCapsule posEC = this.get_ElementCapsule( posSymbol );
+		if ( null == posEC ) {
 			RunTime.badCall( "cannot find the posSymbol" );
 		}
 		
-		ElementCapsule foundEC = this.get_ElementCapsule(
-															pos,
-															posEC );
+		final ElementCapsule foundEC = this.get_ElementCapsule( pos, posEC );
 		Symbol fe = null;
-		if ( null != foundEC )
-		{
+		if ( null != foundEC ) {
 			fe = foundEC.getElement();
-			if ( !this.isNullAllowed() )
-			{
+			if ( !isNullAllowed() ) {
 				RunTime.assumedNotNull( fe );// consistency check,redundant
 			}
 		}
 		return fe;// can be null;
 	}
 	
-
+	
 	/**
 	 * @param pos
 	 * @return the Symbol or null if Symbol is null in an allow null list; or
 	 *         null if not found in an non-null allowing list
 	 */
-	private
-			Symbol
-			internalGet(
-							Position pos )
-	{
+	private Symbol internalGet( final Position pos ) {
 		
 		RunTime.assumedNotNull( pos );
-		switch ( pos )
-		{
-			case FIRST:
-			case LAST:
-				break;
-			default:
-				RunTime.badCall( "unsupported position" );
+		switch ( pos ) {
+		case FIRST:
+		case LAST:
+			break;
+		default:
+			RunTime.badCall( "unsupported position" );
 		}
-		ElementCapsule ec = this.get_ElementCapsule( pos );
+		final ElementCapsule ec = this.get_ElementCapsule( pos );
 		Symbol ret = null;
-		if ( null != ec )
-		{
+		if ( null != ec ) {
 			ret = ec.getElement();
-			if ( !this.isNullAllowed() )
-			{
+			if ( !isNullAllowed() ) {
 				RunTime.assumedNotNull( ret );
 				RunTime.assumedTrue( self.hasSymbol( ec.getAsSymbol() ) );
 			}
@@ -948,117 +638,83 @@ public class ListOrderedOfSymbols
 		return ret;
 	}
 	
-
+	
 	@Override
-	public
-			void
-			assumedValid()
-	{
+	public void assumedValid() {
 		
 		super.assumedValid();
-		if ( this.size() > 0 )
-		{
-			if ( !this.isNullAllowed() )
-			{
-				RunTime.assumedNotNull( this.internalGet( Position.FIRST ) );
-				RunTime.assumedNotNull( this.internalGet( Position.LAST ) );
+		if ( size() > 0 ) {
+			if ( !isNullAllowed() ) {
+				RunTime.assumedNotNull( internalGet( Position.FIRST ) );
+				RunTime.assumedNotNull( internalGet( Position.LAST ) );
 			}
 		}
 		
-		RunTime.assumedTrue( this.internal_getRealAllowDUPs() == cachedAllowDUPs );
-		RunTime.assumedTrue( this.internal_getRealAllowNull() == cachedAllowNull );
+		RunTime.assumedTrue( internal_getRealAllowDUPs() == cachedAllowDUPs );
+		RunTime.assumedTrue( internal_getRealAllowNull() == cachedAllowNull );
 	}
 	
-
+	
 	@Override
-	protected
-			void
-			perItemCheck(
-							ElementCapsule item )
-	{
+	protected void perItemCheck( final ElementCapsule item ) {
 		
 		super.perItemCheck( item );
-		Symbol elem = item.getElement();
-		if ( !this.isNullAllowed() )
-		{
+		final Symbol elem = item.getElement();
+		if ( !isNullAllowed() ) {
 			RunTime.assumedNotNull( elem );
 		}
 		// TODO: can't really check for dups I guess, unless I make a new no
 		// dups list and add all items to it
 	}
 	
-
+	
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see org.dml.level040.OrderedList#ensure(org.dml.level010.Symbol)
 	 */
 	@Override
-	public
-			boolean
-			ensure(
-					Symbol whichSymbol )
-	{
+	public boolean ensure( final Symbol whichSymbol ) {
 		
-		boolean ret = this.hasSymbol( whichSymbol );
-		if ( !ret )
-		{
-			this.add(
-						whichSymbol,
-						Position.LAST );
+		final boolean ret = hasSymbol( whichSymbol );
+		if ( !ret ) {
+			this.add( whichSymbol, Position.LAST );
 		}
-		RunTime.assumedTrue( this.hasSymbol( whichSymbol ) );
+		RunTime.assumedTrue( hasSymbol( whichSymbol ) );
 		return ret;
 	}
 	
-
+	
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see org.dml.level040.OrderedList#remove(org.references.Position, org.dml.level010.Symbol)
 	 */
 	@Override
-	public
-			Symbol
-			remove(
-					Position pos,
-					Symbol posSymbol )
-	{
+	public Symbol remove( final Position pos, final Symbol posSymbol ) {
 		
-		RunTime.assumedNotNull(
-								pos,
-								posSymbol );
-		ElementCapsule posEC = this.get_ElementCapsule( posSymbol );
-		if ( null == posEC )
-		{
+		RunTime.assumedNotNull( pos, posSymbol );
+		final ElementCapsule posEC = this.get_ElementCapsule( posSymbol );
+		if ( null == posEC ) {
 			RunTime.badCall( "posSymbol not found" );
 		}
 		// ElementCapsule ec = this.get_ElementCapsule( pos, posEC );
-		ElementCapsule ret = super.removeEC(
-												pos,
-												posEC );
-		if ( null != ret )
-		{
+		final ElementCapsule ret = super.removeEC( pos, posEC );
+		if ( null != ret ) {
 			return ret.getElement();
-		}
-		else
-		{
+		} else {
 			return null;
 		}
 	}
 	
-
+	
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see org.dml.level040.OrderedList#remove(org.references.Position)
 	 */
 	@Override
-	public
-			Symbol
-			remove(
-					Position pos )
-	{
+	public Symbol remove( final Position pos ) {
 		
 		RunTime.assumedNotNull( pos );
 		// switch ( pos ) {
@@ -1069,56 +725,45 @@ public class ListOrderedOfSymbols
 		// RunTime.badCall( "unsupported position" );
 		// }
 		// ElementCapsule ec = this.get_ElementCapsule( pos );
-		ElementCapsule ret = super.removeEC( pos );
-		if ( null != ret )
-		{
+		final ElementCapsule ret = super.removeEC( pos );
+		if ( null != ret ) {
 			RunTime.assumedFalse( self.hasSymbol( ret.getElement() ) );
 			return ret.getElement();
-		}
-		else
-		{
+		} else {
 			return null;
 		}
 	}
 	
-
+	
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see org.dml.level040.OrderedList#remove(org.dml.level010.Symbol)
 	 */
 	@Override
-	public
-			boolean
-			remove(
-					Symbol whichSymbol )
-	{
+	public boolean remove( final Symbol whichSymbol ) {
 		
 		RunTime.assumedNotNull( whichSymbol );
-		ElementCapsule ec = this.get_ElementCapsule( whichSymbol );
-		RunTime.assumedTrue( this.hasElementCapsule( ec ) );
+		final ElementCapsule ec = this.get_ElementCapsule( whichSymbol );
+		RunTime.assumedTrue( hasElementCapsule( ec ) );
 		RunTime.assumedTrue( ec.getElement() == whichSymbol );
-		boolean ret = super.remove( ec );
-		RunTime.assumedFalse( this.hasElementCapsule( ec ) );
+		final boolean ret = super.remove( ec );
+		RunTime.assumedFalse( hasElementCapsule( ec ) );
 		return ret;
 	}
 	
-
+	
 	/**
 	 * don't use this
 	 */
 	@Deprecated
 	@Override
-	public
-			boolean
-			remove(
-					ElementCapsule whichEC )
-	{
+	public boolean remove( final ElementCapsule whichEC ) {
 		
 		return super.remove( whichEC );
 	}
 	
-
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -1126,16 +771,12 @@ public class ListOrderedOfSymbols
 	 */
 	@Deprecated
 	@Override
-	public
-			ElementCapsule
-			removeEC(
-						Position pos )
-	{
+	public ElementCapsule removeEC( final Position pos ) {
 		
 		return super.removeEC( pos );
 	}
 	
-
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -1144,16 +785,9 @@ public class ListOrderedOfSymbols
 	 */
 	@Deprecated
 	@Override
-	public
-			ElementCapsule
-			removeEC(
-						Position pos,
-						ElementCapsule posEC )
-	{
+	public ElementCapsule removeEC( final Position pos, final ElementCapsule posEC ) {
 		
-		return super.removeEC(
-								pos,
-								posEC );
+		return super.removeEC( pos, posEC );
 	}
 	
 	// TODO JUnit for remove

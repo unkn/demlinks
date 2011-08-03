@@ -56,6 +56,6 @@ import org.references.method.AllTestsReferencesMethod;
 				AllTestsL040.class,
 				AllTestsL050.class
 		} )
-public class AllTests
+public class AllTests2
 {
 }

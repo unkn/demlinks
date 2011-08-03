@@ -25,13 +25,10 @@ package org.dml.level010;
 
 
 
-import org.dml.JUnits.Consts;
-import org.dml.tracking.Factory;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.references.method.MethodParams;
-import org.references.method.PossibleParams;
+import org.dml.JUnits.*;
+import org.dml.tracking.*;
+import org.junit.*;
+import org.references.method.*;
 
 
 
@@ -39,65 +36,45 @@ import org.references.method.PossibleParams;
  * 
  *
  */
-public class SymbolsTest
-{
+public class SymbolsTest {
 	
 	Symbol					n1, n2, n3;
 	Level010_DMLEnvironment	dml;
 	
 	
+	@SuppressWarnings( "boxing" )
 	@Before
-	public
-			void
-			setUp()
-	{
+	public void setUp() {
 		
-		MethodParams params = MethodParams.getNew();
-		params.set(
-					PossibleParams.homeDir,
-					Consts.BDB_ENV_PATH );
-		params.set(
-					PossibleParams.jUnit_wipeDB,
-					true );
-		params.set(
-					PossibleParams.jUnit_wipeDBWhenDone,
-					true );
+		final MethodParams params = MethodParams.getNew();
+		params.set( PossibleParams.homeDir, Consts.BDB_ENV_PATH );
+		params.set( PossibleParams.jUnit_wipeDB, true );
+		params.set( PossibleParams.jUnit_wipeDBWhenDone, true );
 		// dml = new Level010_DMLEnvironment();
 		// dml.init( params );
-		dml = Factory.getNewInstanceAndInit(
-												Level010_DMLEnvironment.class,
-												params );
+		dml = Factory.getNewInstanceAndInit( Level010_DMLEnvironment.class, params );
 		// params.deInit();
 		// Factory.deInit( params );
 	}
 	
-
+	
 	@After
-	public
-			void
-			tearDown()
-	{
+	public void tearDown() {
 		
-		if ( null != dml )
-		{
+		if ( null != dml ) {
 			Factory.deInitIfAlreadyInited( dml );
 		}
 		// dml.deInit();
 	}
 	
-
+	
 	@Test
-	public
-			void
-			test1()
-	{
+	public void test1() {
 		
 		n1 = dml.ensureSymbol( JavaID.ensureJavaIDFor( "A" ) );
 		n2 = dml.ensureSymbol( JavaID.ensureJavaIDFor( "B" ) );
 		
-		System.out.println( n1
-							+ "!"
-							+ n2 );
+		System.out.println( n1 + "!" + n2 );
 		
 	}
 }

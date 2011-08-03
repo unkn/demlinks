@@ -25,15 +25,11 @@ package org.dml.database.bdb.level1;
 
 
 
-import org.dml.tools.Initer;
-import org.dml.tools.RunTime;
-import org.references.Reference;
-import org.references.method.MethodParams;
-import org.references.method.PossibleParams;
+import org.dml.tools.*;
+import org.references.*;
+import org.references.method.*;
 
-import com.sleepycat.je.Database;
-import com.sleepycat.je.DatabaseConfig;
-import com.sleepycat.je.DatabaseException;
+import com.sleepycat.db.*;
 
 
 
@@ -42,10 +38,7 @@ import com.sleepycat.je.DatabaseException;
  * also makes sure the database isn't open unless it's needed<br>
  * once opened it stays open until done() aka Factory.deInit() is called<br>
  */
-public class DatabaseCapsule
-		extends
-		Initer
-{
+public class DatabaseCapsule extends Initer {
 	
 	private String						dbName;
 	private Database					db	= null;
@@ -56,55 +49,40 @@ public class DatabaseCapsule
 	/**
 	 * constructor
 	 */
-	public DatabaseCapsule()
-	{
+	public DatabaseCapsule() {
 		super();
 	}
 	
-
+	
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see org.dml.tools.StaticInstanceTracker#done()
 	 */
 	@Override
-	protected
-			void
-			done(
-					MethodParams params )
-	{
-		RunTime.assumedNotNull(
-								bdbL1,
-								db );
-		try
-		{
+	protected void done( final MethodParams params ) {
+		RunTime.assumedNotNull( bdbL1, db );
+		try {
 			bdbL1.closeAnyPriDB( db );
-		}
-		finally
-		{
+		} finally {
 			db = null;
 			bdbL1 = null;
 		}
 	}
 	
-
+	
 	
 	/**
 	 * @param params
 	 */
 	@Override
-	protected
-			void
-			start(
-					MethodParams params )
-	{
+	protected void start( final MethodParams params ) {
 		// TODO: MethodParams.compulsoryParams(PossibleParams.level1_BDBStorage, PossibleParams.dbName,
 		// PossibleParams.priDbConfig_ which means it will throw if those params are not existing
 		
 		// compulsory
 		bdbL1 = (Level1_Storage_BerkeleyDB)params.getEx( PossibleParams.level1_BDBStorage );
-		if ( null == bdbL1 )
-		{
+		if ( null == bdbL1 ) {
 			RunTime.badCall( "missing parameter" );
 		}
 		RunTime.assumedNotNull( bdbL1 );
@@ -115,37 +93,27 @@ public class DatabaseCapsule
 		RunTime.assumedFalse( dbName.isEmpty() );
 		
 		// dbConf is optional / can be null
-		Reference<Object> ref = params.get( PossibleParams.priDbConfig );
-		if ( null == ref )
-		{
+		final Reference<Object> ref = params.get( PossibleParams.priDbConfig );
+		if ( null == ref ) {
 			RunTime.badCall( "unspecified parameter" );
-		}
-		else
-		{
+		} else {
 			dbConf = (DatabaseConfig)ref.getObject();
 		}
 		
 		// open db
-		db = bdbL1.openAnyDatabase(
-									dbName,
-									dbConf );
+		db = bdbL1.openAnyDatabase( dbName, dbConf );
 		RunTime.assumedNotNull( db );
 	}
 	
-
+	
 	/**
 	 * @return never null
 	 */
-	public
-			Database
-			getDB()
-	{
-		RunTime.assumedTrue( this.isInitedSuccessfully() );
-		RunTime.assumedNotNull(
-								db,
-								bdbL1 );
+	public Database getDB() {
+		RunTime.assumedTrue( isInitedSuccessfully() );
+		RunTime.assumedNotNull( db, bdbL1 );
 		return db;// it's never null
 	}
 	
-
+	
 }

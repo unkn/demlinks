@@ -25,20 +25,15 @@ package org.dml.level025;
 
 
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
-import org.dml.error.BadCallError;
-import org.dml.level010.Symbol;
-import org.dml.tools.RunTime;
-import org.dml.tracking.Factory;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.references.Position;
-import org.references.method.MethodParams;
-import org.references.method.PossibleParams;
+import org.dml.error.*;
+import org.dml.level010.*;
+import org.dml.tools.*;
+import org.dml.tracking.*;
+import org.junit.*;
+import org.references.*;
+import org.references.method.*;
 
 
 
@@ -46,51 +41,36 @@ import org.references.method.PossibleParams;
  * 
  *
  */
-public class SetOfTerminalSymbolsTest
-{
+public class SetOfTerminalSymbolsTest {
 	
 	SetOfTerminalSymbols	set1;
 	Symbol					sym;
 	Level025_DMLEnvironment	env;
 	
 	
+	@SuppressWarnings( "boxing" )
 	@Before
-	public
-			void
-			setUp()
-	{
+	public void setUp() {
 		
-		MethodParams params = MethodParams.getNew();
+		final MethodParams params = MethodParams.getNew();
 		// params.init( null );
-		params.set(
-					PossibleParams.jUnit_wipeDB,
-					true );
-		params.set(
-					PossibleParams.jUnit_wipeDBWhenDone,
-					true );
+		params.set( PossibleParams.jUnit_wipeDB, true );
+		params.set( PossibleParams.jUnit_wipeDBWhenDone, true );
 		// env = new Level025_DMLEnvironment();
 		// env.init( params );
-		env = Factory.getNewInstanceAndInit(
-												Level025_DMLEnvironment.class,
-												params );
+		env = Factory.getNewInstanceAndInit( Level025_DMLEnvironment.class, params );
 		// params.deInit();
 		// Factory.deInit( params );
 		
 		sym = env.newUniqueSymbol();
-		set1 = SetOfTerminalSymbols.getAsSet(
-												env,
-												sym );
+		set1 = SetOfTerminalSymbols.getAsSet( env, sym );
 	}
 	
 	
 	@After
-	public
-			void
-			tearDown()
-	{
+	public void tearDown() {
 		
-		if ( null != env )
-		{
+		if ( null != env ) {
 			Factory.deInitIfAlreadyInited( env );
 		}
 		// env.deInit();
@@ -98,84 +78,51 @@ public class SetOfTerminalSymbolsTest
 	
 	
 	@Test
-	public
-			void
-			test1()
-	{
+	public void test1() {
 		
 		assertTrue( set1.size() == 0 );
 		
-		Symbol one = env.newUniqueSymbol();
+		final Symbol one = env.newUniqueSymbol();
 		assertFalse( set1.addToSet( one ) );
 		assertTrue( set1.size() == 1 );
 		assertTrue( set1.addToSet( one ) );
 		
 		boolean threw = false;
-		try
-		{
+		try {
 			set1.addToSet( sym );
-		}
-		catch ( Throwable t )
-		{
-			if ( RunTime.isThisWrappedException_of_thisType(
-																t,
-																BadCallError.class ) )
-			{
+		} catch ( final Throwable t ) {
+			if ( RunTime.isThisWrappedException_of_thisType( t, BadCallError.class ) ) {
 				threw = true;
 				RunTime.clearLastThrown_andAllItsWraps();
 			}
 		}
 		assertTrue( threw );
 		
-		Symbol two = env.newUniqueSymbol();
+		final Symbol two = env.newUniqueSymbol();
 		assertTrue( two != one );
 		assertFalse( set1.addToSet( two ) );
 		assertTrue( set1.size() == 2 );
 		
-		Symbol three = env.newUniqueSymbol();
+		final Symbol three = env.newUniqueSymbol();
 		assertFalse( set1.addToSet( three ) );
 		assertTrue( set1.size() == 3 );
 		
 		assertTrue( set1.getSide( Position.FIRST ) == one );
 		
-		assertNull( set1.getSideOf(
-									Position.BEFORE,
-									one ) );
-		assertTrue( two == set1.getSideOf(
-											Position.AFTER,
-											one ) );
-		assertTrue( three == set1.getSideOf(
-												Position.AFTER,
-												two ) );
-		assertNull( set1.getSideOf(
-									Position.AFTER,
-									three ) );
-		assertTrue( one == set1.getSideOf(
-											Position.BEFORE,
-											two ) );
-		assertTrue( two == set1.getSideOf(
-											Position.BEFORE,
-											three ) );
+		assertNull( set1.getSideOf( Position.BEFORE, one ) );
+		assertTrue( two == set1.getSideOf( Position.AFTER, one ) );
+		assertTrue( three == set1.getSideOf( Position.AFTER, two ) );
+		assertNull( set1.getSideOf( Position.AFTER, three ) );
+		assertTrue( one == set1.getSideOf( Position.BEFORE, two ) );
+		assertTrue( two == set1.getSideOf( Position.BEFORE, three ) );
 		
 		assertTrue( set1.remove( two ) );
 		assertFalse( set1.hasSymbol( two ) );
-		assertNull( set1.getSideOf(
-									Position.BEFORE,
-									two ) );
-		assertNull( set1.getSideOf(
-									Position.AFTER,
-									two ) );
-		assertNull( set1.getSideOf(
-									Position.BEFORE,
-									one ) );
-		assertNull( set1.getSideOf(
-									Position.AFTER,
-									three ) );
-		assertTrue( set1.getSideOf(
-									Position.AFTER,
-									one ) == three );
-		assertTrue( set1.getSideOf(
-									Position.BEFORE,
-									three ) == one );
+		assertNull( set1.getSideOf( Position.BEFORE, two ) );
+		assertNull( set1.getSideOf( Position.AFTER, two ) );
+		assertNull( set1.getSideOf( Position.BEFORE, one ) );
+		assertNull( set1.getSideOf( Position.AFTER, three ) );
+		assertTrue( set1.getSideOf( Position.AFTER, one ) == three );
+		assertTrue( set1.getSideOf( Position.BEFORE, three ) == one );
 	}
 }

@@ -25,9 +25,9 @@ package org.dml.level030;
 
 
 
-import org.dml.level010.Symbol;
-import org.dml.level025.Level025_DMLEnvironment;
-import org.dml.tools.RunTime;
+import org.dml.level010.*;
+import org.dml.level025.*;
+import org.dml.tools.*;
 
 
 
@@ -37,53 +37,58 @@ import org.dml.tools.RunTime;
  */
 public class Level030_DMLEnvironment extends Level025_DMLEnvironment {
 	
-	public Pointer getExistingPointer( Symbol name2, boolean allowNull ) {
-
-		RunTime.assumedNotNull( name2, allowNull );
+	public Pointer getExistingPointer( final Symbol name2, final boolean allowNull ) {
+		
+		RunTime.assumedNotNull( name2 );
 		return Pointer.getExistingPointer( this, name2, allowNull );
 	}
+	
 	
 	/**
 	 * @return
 	 */
-	public Pointer getNewNonNullPointer( Symbol pointTo ) {
-
+	public Pointer getNewNonNullPointer( final Symbol pointTo ) {
+		
 		RunTime.assumedNotNull( pointTo );
 		return Pointer.getNewNonNullPointer( this, pointTo );
 	}
+	
 	
 	/**
 	 * @return
 	 */
 	public Pointer getNewNullPointer() {
-
+		
 		return Pointer.getNewNullPointer( this );
 	}
+	
 	
 	/**
 	 * @param domain
 	 * @param pointTo
 	 * @return
 	 */
-	public DomainPointer getNewNonNullDomainPointer( Symbol domain, Symbol pointTo ) {
-
+	public DomainPointer getNewNonNullDomainPointer( final Symbol domain, final Symbol pointTo ) {
+		
 		RunTime.assumedNotNull( domain, pointTo );
 		return DomainPointer.getNewNonNullDomainPointer( this, domain, pointTo );
 	}
+	
 	
 	/**
 	 * @param domain
 	 * @return
 	 */
-	public DomainPointer getNewNullDomainPointer( Symbol domain ) {
-
+	public DomainPointer getNewNullDomainPointer( final Symbol domain ) {
+		
 		RunTime.assumedNotNull( domain );
 		return DomainPointer.getNewNullDomainPointer( this, domain );
 	}
 	
-	public DomainPointer getExistingDomainPointer( Symbol self, Symbol domain, boolean allowNull ) {
-
-		RunTime.assumedNotNull( self, domain, allowNull );
+	
+	public DomainPointer getExistingDomainPointer( final Symbol self, final Symbol domain, final boolean allowNull ) {
+		
+		RunTime.assumedNotNull( self, domain );
 		return DomainPointer.getExistingDomainPointer( this, self, domain, allowNull );
 	}
 	

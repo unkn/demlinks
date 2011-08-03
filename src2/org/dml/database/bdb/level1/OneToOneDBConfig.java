@@ -25,9 +25,9 @@ package org.dml.database.bdb.level1;
 
 
 
-import org.dml.tools.RunTime;
+import org.dml.tools.*;
 
-import com.sleepycat.je.DatabaseConfig;
+import com.sleepycat.db.*;
 
 
 
@@ -38,14 +38,14 @@ import com.sleepycat.je.DatabaseConfig;
 public class OneToOneDBConfig extends DatabaseConfig {
 	
 	public OneToOneDBConfig() {
-
-		super();
-		this.setAllowCreate( true );
-		this.setDeferredWrite( false );
-		this.setKeyPrefixing( false );
-		this.setSortedDuplicates( false );// must be false
-		this.setTransactional( true );
 		
-		RunTime.assumedTrue( this.getSortedDuplicates() == false );
+		super();
+		setAllowCreate( true );
+		// this.setDeferredWrite( false );
+		// this.setKeyPrefixing( false );
+		setSortedDuplicates( false );// must be false
+		setTransactional( true );
+		
+		RunTime.assumedTrue( getSortedDuplicates() == false );
 	}
 }

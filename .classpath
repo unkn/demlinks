@@ -1,14 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="src1"/>
-	<classpathentry kind="src" path="src2"/>
-	<classpathentry kind="src" path="test2"/>
+	<classpathentry kind="src" path="src/main/java"/>
+	<classpathentry kind="src" path="src/test/java"/>
 	<classpathentry kind="src" path="dmljava/test0"/>
 	<classpathentry kind="src" path="dmljava/src0"/>
+	<classpathentry kind="src" path="src2"/>
+	<classpathentry kind="src" path="src1"/>
 	<classpathentry kind="src" path="test1"/>
+	<classpathentry kind="src" path="test2"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
-	<classpathentry kind="lib" path="lib/je-4.1.10/lib/je-4.1.10.jar" sourcepath="lib/je-4.1.10/src"/>
+	<classpathentry kind="lib" path="lib/berkeleydb/db.jar" sourcepath="lib/berkeleydb/db-5.2.28/lang/java/src">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="demlinks/lib/berkeleydb"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="lib" path="lib/junit/junit-4.9b2.jar" sourcepath="lib/junit/junit-4.9b2-src.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

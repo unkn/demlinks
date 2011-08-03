@@ -1,19 +1,20 @@
-/*  Copyright (C) 2005-2008 AtKaaZ <atkaaz@users.sourceforge.net>
- 	
- 	This file and its contents are part of DeMLinks.
-
-    DeMLinks is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    DeMLinks is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with DeMLinks.  If not, see <http://www.gnu.org/licenses/>.
+/*
+ * Copyright (C) 2005-2008 AtKaaZ <atkaaz@users.sourceforge.net>
+ * 
+ * This file and its contents are part of DeMLinks.
+ * 
+ * DeMLinks is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * DeMLinks is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with DeMLinks. If not, see <http://www.gnu.org/licenses/>.
  */
 
 
@@ -21,8 +22,8 @@ package org.demlinks.node;
 
 
 
-import org.demlinks.debug.Debug;
-import org.demlinks.references.ObjRefsList;
+import org.demlinks.debug.*;
+import org.demlinks.references.*;
 
 
 
@@ -33,9 +34,10 @@ import org.demlinks.references.ObjRefsList;
 public class NodeList extends ObjRefsList<Node> {
 	
 	public NodeList() {
-
+		
 		super();
 	}
+	
 	
 	/**
 	 * @param nodeToAppend
@@ -43,8 +45,8 @@ public class NodeList extends ObjRefsList<Node> {
 	 *         hence it could be anywhere in the list not really at the end of
 	 *         it, as the function name implies; it won't be moved to end either
 	 */
-	public boolean appendNode( Node nodeToAppend ) {
-
+	public boolean appendNode( final Node nodeToAppend ) {
+		
 		Debug.nullException( nodeToAppend );// why not assert? because param(ie.
 		// nodeToAppend) could be
 		// dynamically set on runtime
@@ -53,47 +55,54 @@ public class NodeList extends ObjRefsList<Node> {
 		// list
 	}
 	
+	
 	/**
 	 * @return null or the first Node in list
 	 */
 	public Node getFirstNode() {
-
+		
 		return this.getObjectAt( Position.FIRST );
 	}
 	
+	
 	public Node getLastNode() {
-
+		
 		return this.getObjectAt( Position.LAST );
 	}
 	
-	public Node getNodeAfter( Node node ) {
-
+	
+	public Node getNodeAfter( final Node node ) {
+		
 		Debug.nullException( node );
 		return this.getObjectAt( Position.AFTER, node );
 	}
+	
 	
 	/**
 	 * @param index
 	 *            0 based index
 	 * @return null or the node at index
 	 */
-	public Node getNodeAt( int index ) {
-
-		Debug.nullException( index );
+	public Node getNodeAt( final int index ) {
+		
+		// Debug.nullException( index );
 		return this.getObjectAt( index );
 	}
 	
-	public Node getNodeBefore( Node node ) {
-
+	
+	public Node getNodeBefore( final Node node ) {
+		
 		Debug.nullException( node );
 		return this.getObjectAt( Position.BEFORE, node );
 	}
 	
-	public boolean hasNode( Node node ) {
-
+	
+	public boolean hasNode( final Node node ) {
+		
 		Debug.nullException( node );
-		return this.containsObject( node );
+		return containsObject( node );
 	}
+	
 	
 	/**
 	 * @param node
@@ -101,11 +110,12 @@ public class NodeList extends ObjRefsList<Node> {
 	 *            0 based index
 	 * @return true if node is at index
 	 */
-	public boolean hasNodeAtPos( Node node, int index ) {
-
-		Debug.nullException( node, index );
-		return this.containsObjectAtPos( node, index );
+	public boolean hasNodeAtPos( final Node node, final int index ) {
+		
+		// Debug.nullException( node, index );
+		return containsObjectAtPos( node, index );
 	}
+	
 	
 	/**
 	 * @param whichNode
@@ -116,11 +126,12 @@ public class NodeList extends ObjRefsList<Node> {
 	 *         false if, whichNode didn't exist and it's now exactly where
 	 *         specified by call
 	 */
-	public boolean insertNode( Node whichNode, Position whatPos ) {
-
+	public boolean insertNode( final Node whichNode, final Position whatPos ) {
+		
 		Debug.nullException( whichNode, whatPos );
 		return this.insert( whichNode, whatPos );
 	}
+	
 	
 	/**
 	 * @param newNode
@@ -129,11 +140,12 @@ public class NodeList extends ObjRefsList<Node> {
 	 *         false if everything went well
 	 * @see #insertBeforeNode(Node, Node)
 	 */
-	public boolean insertAfterNode( Node newNode, Node afterNode ) {
-
+	public boolean insertAfterNode( final Node newNode, final Node afterNode ) {
+		
 		Debug.nullException( newNode, afterNode );
 		return this.insert( newNode, Position.AFTER, afterNode );
 	}
+	
 	
 	/**
 	 * @param newNode
@@ -145,11 +157,12 @@ public class NodeList extends ObjRefsList<Node> {
 	 *         false is newNode didn't exist, but it does now and it's right
 	 *         before beforeNode
 	 */
-	public boolean insertBeforeNode( Node newNode, Node beforeNode ) {
-
+	public boolean insertBeforeNode( final Node newNode, final Node beforeNode ) {
+		
 		Debug.nullException( newNode, beforeNode );
 		return this.insert( newNode, Position.BEFORE, beforeNode );
 	}
+	
 	
 	/**
 	 * @param node
@@ -157,18 +170,19 @@ public class NodeList extends ObjRefsList<Node> {
 	 * @return true if node existed before call, not anymore after the call
 	 *         false if failed to delete because it didn't exist
 	 */
-	public boolean removeNode( Node node ) {
-
+	public boolean removeNode( final Node node ) {
+		
 		Debug.nullException( node );
-		boolean ret = this.removeObject( node );
+		final boolean ret = removeObject( node );
 		return ret;
 	}
 	
+	
 	public void removeAll() {
-
+		
 		Node n;
-		while ( ( n = this.getFirstNode() ) != null ) {
-			this.removeObject( n );
+		while ( ( n = getFirstNode() ) != null ) {
+			removeObject( n );
 		}
 	}
 }

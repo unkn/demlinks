@@ -25,11 +25,9 @@ package org.dml.level010;
 
 
 
-import org.dml.tools.RunTime;
+import org.dml.tools.*;
 
-import com.sleepycat.bind.tuple.TupleBinding;
-import com.sleepycat.bind.tuple.TupleInput;
-import com.sleepycat.bind.tuple.TupleOutput;
+import com.sleepycat.bind.tuple.*;
 
 
 
@@ -37,10 +35,7 @@ import com.sleepycat.bind.tuple.TupleOutput;
  * unfortunately enough, here we don't know from/to which DB the date is coming/going from/to<br>
  * 
  */
-public class TheStoredSymbolBinding
-		extends
-		TupleBinding<TheStoredSymbol>
-{
+public class TheStoredSymbolBinding extends TupleBinding<TheStoredSymbol> {
 	
 	/*
 	 * (non-Javadoc)
@@ -50,20 +45,16 @@ public class TheStoredSymbolBinding
 	 * .tuple.TupleInput)
 	 */
 	@Override
-	public
-			TheStoredSymbol
-			entryToObject(
-							TupleInput input )
-	{
+	public TheStoredSymbol entryToObject( final TupleInput input ) {
 		TheStoredSymbol nid = null;
-		long l = input.readLong();
+		final long l = input.readLong();
 		// RunTime.assumedNotNull( l );useless check unless it were Long class
-		nid = TheStoredSymbol.getNew( l );
-		RunTime.assumedTrue( nid.getLong() == l );
+		nid = TheStoredSymbol.getNew( new Long( l ) );
+		RunTime.assumedTrue( nid.getLong().longValue() == l );
 		return nid;
 	}
 	
-
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -72,21 +63,14 @@ public class TheStoredSymbolBinding
 	 * com.sleepycat.bind.tuple.TupleOutput)
 	 */
 	@Override
-	public
-			void
-			objectToEntry(
-							TheStoredSymbol alreadyExistingSymbol,
-							TupleOutput output )
-	{
+	public void objectToEntry( final TheStoredSymbol alreadyExistingSymbol, final TupleOutput output ) {
 		
-		RunTime.assumedNotNull(
-								alreadyExistingSymbol,
-								output );
-		Long myLong = alreadyExistingSymbol.getLong();
+		RunTime.assumedNotNull( alreadyExistingSymbol, output );
+		final Long myLong = alreadyExistingSymbol.getLong();
 		RunTime.assumedNotNull( myLong );
 		// System.out.println( object );
 		// it will never be null before writing it to dbase, else bug somewhere
-		output.writeLong( myLong );
+		output.writeLong( myLong.longValue() );
 	}
 	
 }

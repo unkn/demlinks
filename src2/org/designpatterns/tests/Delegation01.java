@@ -25,7 +25,7 @@ package org.designpatterns.tests;
 
 
 
-import org.dml.tools.RunTime;
+import org.dml.tools.*;
 
 
 
@@ -33,15 +33,11 @@ import org.dml.tools.RunTime;
  * 
  *
  */
-public class Delegation01
-{
+public class Delegation01 {
 	
 	private final Window	win;
 	
-	private class Window
-			extends
-			Geo
-	{
+	private class Window extends Geo {
 		
 		private Geo	shape;
 		
@@ -50,35 +46,27 @@ public class Delegation01
 		/**
 		 * 
 		 */
-		public Window()
-		{
+		public Window() {
 			// TODO Auto-generated constructor stub
 		}
 		
-
+		
 		/*
 		 * (non-Javadoc)
 		 * 
 		 * @see org.designpatterns.tests.Delegation01.Geo#getArea()
 		 */
 		@Override
-		public
-				long
-				getArea()
-		{
+		public long getArea() {
 			
 			return shape.getArea();
 		}
 		
-
+		
 		/**
 		 * @param r
 		 */
-		public
-				void
-				setShape(
-							Geo g )
-		{
+		public void setShape( final Geo g ) {
 			
 			assert g != null;
 			shape = g;
@@ -89,15 +77,10 @@ public class Delegation01
 	// eclipse bug when this is private the fix is on Window instead; must also delete Window constructor to see bug
 	{
 		
-		public abstract
-				long
-				getArea();
+		public abstract long getArea();
 	}
 	
-	private class Rect
-			extends
-			Geo
-	{
+	private class Rect extends Geo {
 		
 		private final long	x, y;
 		
@@ -108,20 +91,13 @@ public class Delegation01
 		 * @see org.designpatterns.tests.Delegation01.Geo#getArea()
 		 */
 		@Override
-		public
-				long
-				getArea()
-		{
+		public long getArea() {
 			
-			return x
-					* y;
+			return x * y;
 		}
 		
-
-		public Rect(
-				long _x,
-				long _y )
-		{
+		
+		public Rect( final long _x, final long _y ) {
 			
 			x = _x;
 			y = _y;
@@ -129,10 +105,7 @@ public class Delegation01
 		
 	}
 	
-	private class Circle
-			extends
-			Geo
-	{
+	private class Circle extends Geo {
 		
 		private final long	r;
 		
@@ -143,17 +116,12 @@ public class Delegation01
 		 * @see org.designpatterns.tests.Delegation01.Geo#getArea()
 		 */
 		@Override
-		public
-				long
-				getArea()
-		{
+		public long getArea() {
 			return r;
 		}
 		
-
-		public Circle(
-				long ray )
-		{
+		
+		public Circle( final long ray ) {
 			
 			r = ray;
 		}
@@ -164,27 +132,19 @@ public class Delegation01
 	/**
 	 * 
 	 */
-	public Delegation01()
-	{
+	public Delegation01() {
 		
 		win = new Window();
-		Rect r = new Rect(
-							1,
-							55 );
-		Circle c = new Circle(
-								99 );
+		final Rect r = new Rect( 1, 55 );
+		final Circle c = new Circle( 99 );
 		win.setShape( r );
 		System.out.println( win.getArea() );
 		win.setShape( c );
 		System.out.println( win.getArea() );
 	}
 	
-
-	public
-			void
-			loop(
-					int i )
-	{
+	
+	public void loop( final int i ) {
 		
 		// System.out.println( "MA: "
 		// + RunTime.recursiveLoopDetected
@@ -192,17 +152,13 @@ public class Delegation01
 		// + RunTime.recursiveLoopDetected.initialValue
 		// + " // "
 		// + RunTime.recursiveLoopDetected.get() );
-		RunTime.callTracingFromHere.set( true );
+		RunTime.callTracingFromHere.set( Boolean.TRUE );
 		RunTime.recursiveLoopDetected.get();
-		RunTime.callTracingFromHere.set( false );
-		if ( !RunTime.recursiveLoopDetected.get() )
-		{
+		RunTime.callTracingFromHere.set( Boolean.FALSE );
+		if ( !RunTime.recursiveLoopDetected.get().booleanValue() ) {
 			// RunTime.recursiveLoopDetected.set( true );
-			System.out.println( "in with: "
-								+ i
-								+ " "
-								+ Thread.activeCount() );
-			this.loop( i + 1 );
+			System.out.println( "in with: " + i + " " + Thread.activeCount() );
+			loop( i + 1 );
 		}
 		// if ( i < 10 )
 		// {
@@ -214,15 +170,11 @@ public class Delegation01
 		// }
 	}
 	
-
-	public static
-			void
-			main(
-					String[] args )
-	{
+	
+	public static void main( final String[] args ) {
 		
 		System.out.println( Thread.activeCount() );
-		Delegation01 d = new Delegation01();
+		final Delegation01 d = new Delegation01();
 		d.loop( 1 );
 		
 		// try
@@ -243,37 +195,19 @@ public class Delegation01
 		// throw new RuntimeException();
 	}
 	
-
+	
 	/**
 	 * 
 	 */
-	private static
-			void
-			moo()
-	{
-		StackTraceElement[] stea = Thread.currentThread().getStackTrace();
-		for ( int i = 0; i < stea.length; i++ )
-		{
-			System.out.println( i
-								+ " "
-								+ stea[i] );
+	private static void moo() {
+		final StackTraceElement[] stea = Thread.currentThread().getStackTrace();
+		for ( int i = 0; i < stea.length; i++ ) {
+			System.out.println( i + " " + stea[i] );
 		}
 	}
 	
-
-	public static
-			void
-			foo(
-					int i,
-					int j,
-					int k )
-	{
-		throw new RuntimeException(
-									"bleh "
-											+ i
-											+ " "
-											+ j
-											+ " "
-											+ k );
+	
+	public static void foo( final int i, final int j, final int k ) {
+		throw new RuntimeException( "bleh " + i + " " + j + " " + k );
 	}
 }

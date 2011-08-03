@@ -29,10 +29,7 @@ package org.dml.tools;
  * 
  *
  */
-public class ThreadLocalInteger
-		extends
-		ThreadLocal<Integer>
-{
+public class ThreadLocalInteger extends ThreadLocal<Integer> {
 	
 	private final int	initialValue;
 	
@@ -42,36 +39,24 @@ public class ThreadLocalInteger
 	 * 
 	 * @param initialValue1
 	 */
-	public ThreadLocalInteger(
-			int initialValue1 )
-	{
+	public ThreadLocalInteger( final int initialValue1 ) {
 		initialValue = initialValue1;
 	}
 	
-
+	
 	@Override
-	protected synchronized
-			Integer
-			initialValue()
-	{
-		return new Integer(
-							initialValue );
+	protected synchronized Integer initialValue() {
+		return new Integer( initialValue );
 	}
 	
-
-	public
-			void
-			increment()
-	{
-		this.set( this.get() + 1 );
+	
+	public void increment() {
+		set( new Integer( get().intValue() + 1 ) );
 	}
 	
-
-	public
-			void
-			decrement()
-	{
-		this.set( this.get() - 1 );
+	
+	public void decrement() {
+		set( new Integer( get().intValue() - 1 ) );
 	}
 	
 }

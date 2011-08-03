@@ -1,12 +1,6 @@
 /bin
-/properties.cfg
-/scenemonitor.cfg
-*~
-*.jdb
-*.lck
-/*.log
-*.swp
-/*.png
-/test.dat
-
 /lib
+/target
+*~
+*.swp
+

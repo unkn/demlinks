@@ -25,26 +25,15 @@ package org.dml.database;
 
 
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
-import java.io.UnsupportedEncodingException;
-
-import org.dml.JUnits.Consts;
-import org.dml.database.bdb.level1.AllTupleBindings;
-import org.dml.database.bdb.level1.Level1_Storage_BerkeleyDB;
-import org.dml.database.bdb.level1.OneToOneDBMap;
-import org.dml.error.AssumptionError;
-import org.dml.error.BadCallError;
-import org.dml.tools.RunTime;
-import org.dml.tracking.Factory;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.references.method.MethodParams;
-import org.references.method.PossibleParams;
-
-import com.sleepycat.je.DatabaseException;
+import org.dml.JUnits.*;
+import org.dml.database.bdb.level1.*;
+import org.dml.error.*;
+import org.dml.tools.*;
+import org.dml.tracking.*;
+import org.junit.*;
+import org.references.method.*;
 
 
 
@@ -52,8 +41,7 @@ import com.sleepycat.je.DatabaseException;
  * 
  *
  */
-public class OneToOneDBMapTest
-{
+public class OneToOneDBMapTest {
 	
 	OneToOneDBMap<String, String>	x;
 	final String					_a	= "AAAAAAAAAAAAAAAAAAA";
@@ -61,30 +49,20 @@ public class OneToOneDBMapTest
 	Level1_Storage_BerkeleyDB		bdb;
 	
 	
-	@SuppressWarnings( "unchecked" )
+	@SuppressWarnings( {
+		"unchecked", "boxing"
+	} )
 	@Before
-	public
-			void
-			setUp()
-					throws DatabaseException
-	{
+	public void setUp() {
 		
-		MethodParams params = MethodParams.getNew();
+		final MethodParams params = MethodParams.getNew();
 		// params.init( null );
-		params.set(
-					PossibleParams.homeDir,
-					Consts.BDB_ENV_PATH );
-		params.set(
-					PossibleParams.jUnit_wipeDB,
-					true );
-		params.set(
-					PossibleParams.jUnit_wipeDBWhenDone,
-					true );
+		params.set( PossibleParams.homeDir, Consts.BDB_ENV_PATH );
+		params.set( PossibleParams.jUnit_wipeDB, true );
+		params.set( PossibleParams.jUnit_wipeDBWhenDone, true );
 		// bdb = new Level1_Storage_BerkeleyDB();
 		// bdb.init( params );
-		bdb = Factory.getNewInstanceAndInit(
-												Level1_Storage_BerkeleyDB.class,
-												params );
+		bdb = Factory.getNewInstanceAndInit( Level1_Storage_BerkeleyDB.class, params );
 		// params.deInit();
 		// Factory.deInit( params );
 		// bdb = new Level1_Storage_BerkeleyDB( Consts.BDB_ENV_PATH, true );
@@ -93,38 +71,30 @@ public class OneToOneDBMapTest
 		// "someMap",
 		// );
 		params.clear();
-		params.set(
-					PossibleParams.level1_BDBStorage,
-					bdb );
-		params.set(
-					PossibleParams.dbName,
-					"someMap" );
-		x = Factory.getNewInstanceAndInit(
-											OneToOneDBMap.class,
-											params,
-											String.class,
-											AllTupleBindings.getBinding( String.class ),
-											String.class,
-											AllTupleBindings.getBinding( String.class ) );
+		params.set( PossibleParams.level1_BDBStorage, bdb );
+		params.set( PossibleParams.dbName, "someMap" );
+		x =
+			Factory.getNewInstanceAndInit(
+				OneToOneDBMap.class,
+				params,
+				String.class,
+				AllTupleBindings.getBinding( String.class ),
+				String.class,
+				AllTupleBindings.getBinding( String.class ) );
 		// x.init( null );
 		// x = Factory.getNewInstanceAndInitWithoutParams( OneToOneDBMap.class, bdb, "someMap", String.class,
 		// AllTupleBindings.getBinding( String.class ), String.class, AllTupleBindings.getBinding( String.class ) );
 		// Factory.initWithoutParams( x );
 	}
 	
-
+	
 	@After
-	public
-			void
-			tearDown()
-	{
+	public void tearDown() {
 		
-		if ( null != x )
-		{
+		if ( null != x ) {
 			Factory.deInitIfInited_WithPostponedThrows( x );
 		}
-		if ( null != bdb )
-		{
+		if ( null != bdb ) {
 			Factory.deInitIfInited_WithPostponedThrows( bdb );
 		}
 		RunTime.throwAllThatWerePostponed();
@@ -135,60 +105,40 @@ public class OneToOneDBMapTest
 		// bdb.deInit();
 	}
 	
-
+	
 	@Test
-	public
-			void
-			linkTest()
-					throws DatabaseException
-	{
+	public void linkTest() {
 		
-
-		assertFalse( x.link(
-								_a,
-								_b ) );
-		assertTrue( x.getKey(
-								_b ).equals(
-												_a ) );
-		assertTrue( x.getData(
-								_a ).equals(
-												_b ) );
+		
+		assertFalse( x.link( _a, _b ) );
+		assertTrue( x.getKey( _b ).equals( _a ) );
+		assertTrue( x.getData( _a ).equals( _b ) );
 		// different objects, same content
 		assertTrue( _a != x.getKey( _b ) );
 		assertTrue( _b != x.getData( _a ) );
 		assertTrue( _b.equals( x.getData( x.getKey( _b ) ) ) );
-		assertTrue( x.link(
-							_a,
-							_b ) );
+		assertTrue( x.link( _a, _b ) );
 	}
 	
-
+	
 	@Test
-	public
-			void
-			extendedTest()
-					throws DatabaseException
-	{
+	public void extendedTest() {
 		
 		// this makes sure those 2 methods are protected to having a parameter
 		// that extends the given base class, as the extended class needs to
 		// have a new TupleBinding class defined for it, or so
-		MethodParams params = MethodParams.getNew();
-		params.set(
-					PossibleParams.level1_BDBStorage,
-					bdb );
-		params.set(
-					PossibleParams.dbName,
-					"extendsMap" );
+		final MethodParams params = MethodParams.getNew();
+		params.set( PossibleParams.level1_BDBStorage, bdb );
+		params.set( PossibleParams.dbName, "extendsMap" );
 		@SuppressWarnings( "unchecked" )
-		OneToOneDBMap<JUnit_Base1, JUnit_Base1> map = Factory
-				.getNewInstanceAndInit(
-										OneToOneDBMap.class,
-										params,
-										JUnit_Base1.class,
-										AllTupleBindings.getBinding( JUnit_Base1.class ),
-										JUnit_Base1.class,
-										AllTupleBindings.getBinding( JUnit_Base1.class ) );
+		final OneToOneDBMap<JUnit_Base1, JUnit_Base1> map =
+			Factory.getNewInstanceAndInit(
+				OneToOneDBMap.class,
+				params,
+				JUnit_Base1.class,
+				AllTupleBindings.getBinding( JUnit_Base1.class ),
+				JUnit_Base1.class,
+				AllTupleBindings.getBinding( JUnit_Base1.class ) );
 		// = new OneToOneDBMap<JUnit_Base1, JUnit_Base1>(
 		// bdb,
 		// "extendsMap",
@@ -198,43 +148,29 @@ public class OneToOneDBMapTest
 		// JUnit_Base1.class,
 		// AllTupleBindings
 		// .getBinding( JUnit_Base1.class ) );
-		JUnit_Ex2 e = new JUnit_Ex2();
+		final JUnit_Ex2 e = new JUnit_Ex2();
 		boolean threw = false;
-		try
-		{
+		try {
 			// RunTime.thro( new RuntimeException(
 			// "evil" ) );
 			map.getKey( e );
 			// throw new BadCallError(
 			// "evil" );
-		}
-		catch ( Throwable t )
-		{
-			if ( RunTime.isThisWrappedException_of_thisType(
-																t,
-																BadCallError.class ) )
-			{
+		} catch ( final Throwable t ) {
+			if ( RunTime.isThisWrappedException_of_thisType( t, BadCallError.class ) ) {
 				threw = true;
 				RunTime.clearLastThrown_andAllItsWraps();
-			}
-			else
-			{
+			} else {
 				RunTime.throWrapped( t );
 			}
 		}
 		assertTrue( threw );
 		
 		threw = false;
-		try
-		{
+		try {
 			map.getData( e );
-		}
-		catch ( Throwable t )
-		{
-			if ( RunTime.isThisWrappedException_of_thisType(
-																t,
-																BadCallError.class ) )
-			{
+		} catch ( final Throwable t ) {
+			if ( RunTime.isThisWrappedException_of_thisType( t, BadCallError.class ) ) {
 				threw = true;
 				RunTime.clearLastThrown_andAllItsWraps();
 			}
@@ -242,30 +178,22 @@ public class OneToOneDBMapTest
 		assertTrue( threw );
 	}
 	
-
+	
 	@Test
-	public
-			void
-			integrityTest()
-					throws DatabaseException
-	{
-		MethodParams params = MethodParams.getNew();
-		params.set(
-					PossibleParams.level1_BDBStorage,
-					bdb );
-		params.set(
-					PossibleParams.dbName,
-					"irrelevant" );
+	public void integrityTest() {
+		final MethodParams params = MethodParams.getNew();
+		params.set( PossibleParams.level1_BDBStorage, bdb );
+		params.set( PossibleParams.dbName, "irrelevant" );
 		
 		@SuppressWarnings( "unchecked" )
-		OneToOneDBMap<JUnit_Base1, String> map = Factory
-				.getNewInstanceAndInit(
-										OneToOneDBMap.class,
-										params,
-										JUnit_Base1.class,
-										AllTupleBindings.getBinding( JUnit_Base1.class ),
-										String.class,
-										AllTupleBindings.getBinding( String.class ) );
+		final OneToOneDBMap<JUnit_Base1, String> map =
+			Factory.getNewInstanceAndInit(
+				OneToOneDBMap.class,
+				params,
+				JUnit_Base1.class,
+				AllTupleBindings.getBinding( JUnit_Base1.class ),
+				String.class,
+				AllTupleBindings.getBinding( String.class ) );
 		// new OneToOneDBMap<JUnit_Base1, String>(
 		// bdb,
 		// "irrelevant",
@@ -279,16 +207,10 @@ public class OneToOneDBMapTest
 		JUnit_Ex2 key2 = null;
 		String data = null;
 		boolean threw = false;
-		try
-		{
+		try {
 			map.getData( key1 );
-		}
-		catch ( Throwable t )
-		{
-			if ( RunTime.isThisWrappedException_of_thisType(
-																t,
-																AssumptionError.class ) )
-			{
+		} catch ( final Throwable t ) {
+			if ( RunTime.isThisWrappedException_of_thisType( t, AssumptionError.class ) ) {
 				threw = true;
 				RunTime.clearLastThrown_andAllItsWraps();
 			}
@@ -296,16 +218,10 @@ public class OneToOneDBMapTest
 		assertTrue( threw );
 		
 		threw = false;
-		try
-		{
+		try {
 			map.getData( key2 );
-		}
-		catch ( Throwable t )
-		{
-			if ( RunTime.isThisWrappedException_of_thisType(
-																t,
-																AssumptionError.class ) )
-			{
+		} catch ( final Throwable t ) {
+			if ( RunTime.isThisWrappedException_of_thisType( t, AssumptionError.class ) ) {
 				threw = true;
 				RunTime.clearLastThrown_andAllItsWraps();
 			}
@@ -313,16 +229,10 @@ public class OneToOneDBMapTest
 		assertTrue( threw );
 		
 		threw = false;
-		try
-		{
+		try {
 			map.getKey( data );
-		}
-		catch ( Throwable t )
-		{
-			if ( RunTime.isThisWrappedException_of_thisType(
-																t,
-																AssumptionError.class ) )
-			{
+		} catch ( final Throwable t ) {
+			if ( RunTime.isThisWrappedException_of_thisType( t, AssumptionError.class ) ) {
 				threw = true;
 				RunTime.clearLastThrown_andAllItsWraps();
 			}
@@ -336,38 +246,24 @@ public class OneToOneDBMapTest
 		key2 = new JUnit_Ex2();
 		
 		threw = false;
-		try
-		{
+		try {
 			map.getData( key2 );
-		}
-		catch ( Throwable t )
-		{
-			if ( RunTime.isThisWrappedException_of_thisType(
-																t,
-																BadCallError.class ) )
-			{
+		} catch ( final Throwable t ) {
+			if ( RunTime.isThisWrappedException_of_thisType( t, BadCallError.class ) ) {
 				threw = true;
 				RunTime.clearLastThrown_andAllItsWraps();
 			}
 		}
 		assertTrue( threw );
 		
-		map.link(
-					key1,
-					data );// shouldn't throw!
+		map.link( key1, data );// shouldn't throw!
 		
 		key1 = new JUnit_Ex2();
 		threw = false;
-		try
-		{
+		try {
 			map.getData( key1 );
-		}
-		catch ( Throwable t )
-		{
-			if ( RunTime.isThisWrappedException_of_thisType(
-																t,
-																BadCallError.class ) )
-			{
+		} catch ( final Throwable t ) {
+			if ( RunTime.isThisWrappedException_of_thisType( t, BadCallError.class ) ) {
 				threw = true;
 				RunTime.clearLastThrown_andAllItsWraps();
 			}
@@ -375,38 +271,22 @@ public class OneToOneDBMapTest
 		assertTrue( threw );
 		
 		threw = false;
-		try
-		{
-			map.link(
-						key1,
-						data );
-		}
-		catch ( Throwable t )
-		{
-			if ( RunTime.isThisWrappedException_of_thisType(
-																t,
-																BadCallError.class ) )
-			{
+		try {
+			map.link( key1, data );
+		} catch ( final Throwable t ) {
+			if ( RunTime.isThisWrappedException_of_thisType( t, BadCallError.class ) ) {
 				threw = true;
 				RunTime.clearLastThrown_andAllItsWraps();
 			}
 		}
 		assertTrue( threw );
 		
-
+		
 		threw = false;
-		try
-		{
-			map.link(
-						key2,
-						data );
-		}
-		catch ( Throwable t )
-		{
-			if ( RunTime.isThisWrappedException_of_thisType(
-																t,
-																BadCallError.class ) )
-			{
+		try {
+			map.link( key2, data );
+		} catch ( final Throwable t ) {
+			if ( RunTime.isThisWrappedException_of_thisType( t, BadCallError.class ) ) {
 				threw = true;
 				RunTime.clearLastThrown_andAllItsWraps();
 			}

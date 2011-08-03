@@ -25,17 +25,15 @@ package org.dml.database.bdb.level2;
 
 
 
-import org.dml.database.bdb.level1.AllTupleBindings;
-import org.dml.database.bdb.level1.Level1_Storage_BerkeleyDB;
-import org.dml.level010.Symbol;
-import org.dml.level010.TheStoredSymbol;
-import org.dml.level020.SymbolIterator;
-import org.dml.tools.Initer;
-import org.dml.tools.RunTime;
-import org.dml.tracking.Factory;
-import org.references.method.MethodParams;
+import org.dml.database.bdb.level1.*;
+import org.dml.level010.*;
+import org.dml.level020.*;
+import org.dml.tools.*;
+import org.dml.tracking.*;
+import org.q.*;
+import org.references.method.*;
 
-import com.sleepycat.je.DatabaseException;
+import com.sleepycat.db.*;
 
 
 
@@ -58,10 +56,7 @@ import com.sleepycat.je.DatabaseException;
  * 
  * fixed... Symbols here don't need to have a JavaID associated with them<br>
  */
-public class DBMapSymbolsTuple
-		extends
-		Initer
-{
+public class DBMapSymbolsTuple extends Initer {
 	
 	OneToManyDBMap<TheStoredSymbol, TheStoredSymbol>	composition	= null;
 	
@@ -69,8 +64,7 @@ public class DBMapSymbolsTuple
 	/**
 	 * constructor
 	 */
-	public DBMapSymbolsTuple()
-	{
+	public DBMapSymbolsTuple() {
 		// super(
 		// TheStoredSymbol.class,
 		// AllTupleBindings.getBinding( TheStoredSymbol.class ),
@@ -78,7 +72,7 @@ public class DBMapSymbolsTuple
 		// AllTupleBindings.getBinding( TheStoredSymbol.class ) );
 	}
 	
-
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -86,55 +80,43 @@ public class DBMapSymbolsTuple
 	 */
 	@SuppressWarnings( "unchecked" )
 	@Override
-	protected
-			void
-			start(
-					MethodParams params )
-	{
+	protected void start( final MethodParams params ) {
 		RunTime.assumedNotNull( params );
-		composition = Factory.getNewInstanceAndInit(
-														OneToManyDBMap.class,
-														params,
-														TheStoredSymbol.class,
-														AllTupleBindings.getBinding( TheStoredSymbol.class ),
-														TheStoredSymbol.class,
-														AllTupleBindings.getBinding( TheStoredSymbol.class ) );
+		composition =
+			Factory.getNewInstanceAndInit(
+				OneToManyDBMap.class,
+				params,
+				TheStoredSymbol.class,
+				AllTupleBindings.getBinding( TheStoredSymbol.class ),
+				TheStoredSymbol.class,
+				AllTupleBindings.getBinding( TheStoredSymbol.class ) );
 		RunTime.assumedNotNull( composition );
 		RunTime.assumedTrue( composition.isInitedSuccessfully() );
 	}
 	
-
+	
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see org.dml.tools.Initer#done(org.references.method.MethodParams)
 	 */
 	@Override
-	protected
-			void
-			done(
-					MethodParams params )
-	{
-		if ( this.isInitedSuccessfully() )
-		{
+	protected void done( final MethodParams params ) {
+		if ( isInitedSuccessfully() ) {
 			RunTime.assumedNotNull( composition );
 			RunTime.assumedTrue( composition.isInitedSuccessfully() );
 		}
 		
-		if ( null != composition )
-		{
-			try
-			{
+		if ( null != composition ) {
+			try {
 				Factory.deInit( composition );
-			}
-			finally
-			{
+			} finally {
 				composition = null;
 			}
 		}
 	}
 	
-
+	
 	/**
 	 * obviously initial and terminal must already exist as Symbols associated
 	 * with
@@ -145,24 +127,15 @@ public class DBMapSymbolsTuple
 	 * @return true if existed already; false if it didn't exist before call
 	 * @throws DatabaseException
 	 */
-	public
-			boolean
-			ensureVector(
-							Symbol initialNode,
-							Symbol terminalNode )
-	{
+	public boolean ensureVector( final Symbol initialNode, final Symbol terminalNode ) {
 		
-		RunTime.assumedNotNull(
-								initialNode,
-								terminalNode );
-		RunTime.assumedTrue( this.isInitedSuccessfully() );
+		RunTime.assumedNotNull( initialNode, terminalNode );
+		RunTime.assumedTrue( isInitedSuccessfully() );
 		
-		return composition.ensureVector(
-											initialNode.getTheStoredSymbol(),
-											terminalNode.getTheStoredSymbol() );
+		return composition.ensureVector( initialNode.getTheStoredSymbol(), terminalNode.getTheStoredSymbol() );
 	}
 	
-
+	
 	/**
 	 * obviously first and second must already exist as NodeIDs associated with
 	 * JavaIDs<br>
@@ -172,125 +145,90 @@ public class DBMapSymbolsTuple
 	 * @return
 	 * @throws StorageException
 	 */
-	public
-			boolean
-			isVector(
-						Symbol initialNode,
-						Symbol terminalNode )
-	{
+	public boolean isVector( final Symbol initialNode, final Symbol terminalNode ) {
 		
-		RunTime.assumedNotNull(
-								initialNode,
-								terminalNode );
-		RunTime.assumedTrue( this.isInitedSuccessfully() );
-		return composition.isVector(
-										initialNode.getTheStoredSymbol(),
-										terminalNode.getTheStoredSymbol() );
+		RunTime.assumedNotNull( initialNode, terminalNode );
+		RunTime.assumedTrue( isInitedSuccessfully() );
+		try {
+			return composition.isVector( initialNode.getTheStoredSymbol(), terminalNode.getTheStoredSymbol() );
+		} catch ( final DatabaseException e ) {
+			throw Q.rethrow( e );
+		}
 	}
 	
-
+	
 	public// BDBVectorIterator<Symbol, Symbol>
-			SymbolIterator
-			getIterator_on_Initials_of(
-										Symbol terminalObject )
-	{
+			SymbolIterator getIterator_on_Initials_of( final Symbol terminalObject ) {
 		
 		RunTime.assumedNotNull( terminalObject );
-		RunTime.assumedTrue( this.isInitedSuccessfully() );
-		SymbolIterator si = new SymbolIterator(
-												composition.getIterator_on_Initials_of( terminalObject
-														.getTheStoredSymbol() ) );
+		RunTime.assumedTrue( isInitedSuccessfully() );
+		SymbolIterator si;
+		si = new SymbolIterator( composition.getIterator_on_Initials_of( terminalObject.getTheStoredSymbol() ) );
 		return si;
 	}
 	
-
+	
 	public// BDBVectorIterator<TheStoredSymbol, TheStoredSymbol>
-			SymbolIterator
-			getIterator_on_Terminals_of(
-											Symbol initialObject )
-	{
+			SymbolIterator getIterator_on_Terminals_of( final Symbol initialObject ) {
 		
 		RunTime.assumedNotNull( initialObject );
-		return new SymbolIterator(
-									composition.getIterator_on_Terminals_of( initialObject.getTheStoredSymbol() ) );
+		return new SymbolIterator( composition.getIterator_on_Terminals_of( initialObject.getTheStoredSymbol() ) );
 	}
 	
-
-	public
-			long
-			countInitials(
-							Symbol ofTerminalObject )
-	{
+	
+	public long countInitials( final Symbol ofTerminalObject ) {
 		
 		RunTime.assumedNotNull( ofTerminalObject );
 		return composition.countInitials( ofTerminalObject.getTheStoredSymbol() );
 	}
 	
-
-	public
-			long
-			countTerminals(
-							Symbol ofInitialObject )
-	{
+	
+	public long countTerminals( final Symbol ofInitialObject ) {
 		
 		RunTime.assumedNotNull( ofInitialObject );
 		return composition.countTerminals( ofInitialObject.getTheStoredSymbol() );
 	}
 	
-
+	
 	/**
 	 * @param initial1
 	 * @param initial2
 	 * @return null or the Symbol
 	 * @throws DatabaseException
 	 */
-	public
-			Symbol
-			findCommonTerminalForInitials(
-											Symbol initial1,
-											Symbol initial2 )
-	{
+	public Symbol findCommonTerminalForInitials( final Symbol initial1, final Symbol initial2 ) {
 		
-		RunTime.assumedNotNull(
-								initial1,
-								initial2 );
-		TheStoredSymbol tss = composition.findCommonTerminalForInitials(
-																			initial1.getTheStoredSymbol(),
-																			initial2.getTheStoredSymbol() );
-		if ( null == tss )
-		{
-			return null;
+		RunTime.assumedNotNull( initial1, initial2 );
+		TheStoredSymbol tss;
+		try {
+			tss = composition.findCommonTerminalForInitials( initial1.getTheStoredSymbol(), initial2.getTheStoredSymbol() );
+		} catch ( final DatabaseException e ) {
+			throw Q.rethrow( e );
 		}
-		else
-		{
-			return Symbol.getNew(
-									composition.getBDBL1(),
-									tss );
+		if ( null == tss ) {
+			return null;
+		} else {
+			return Symbol.getNew( composition.getBDBL1(), tss );
 		}
 	}
 	
-
+	
 	/**
 	 * @param initial
 	 * @param terminal
 	 * @return true if existed
 	 * @throws DatabaseException
 	 */
-	public
-			boolean
-			removeVector(
-							Symbol initial,
-							Symbol terminal )
-	{
+	public boolean removeVector( final Symbol initial, final Symbol terminal ) {
 		
-		RunTime.assumedNotNull(
-								initial,
-								terminal );
-		return composition.removeVector(
-											initial.getTheStoredSymbol(),
-											terminal.getTheStoredSymbol() );
+		RunTime.assumedNotNull( initial, terminal );
+		try {
+			return composition.removeVector( initial.getTheStoredSymbol(), terminal.getTheStoredSymbol() );
+		} catch ( final DatabaseException e ) {
+			throw Q.rethrow( e );
+		}
 	}
 	
-
-
+	
+	
 }

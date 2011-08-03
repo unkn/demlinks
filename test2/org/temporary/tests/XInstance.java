@@ -25,9 +25,8 @@ package org.temporary.tests;
 
 
 
-import org.junit.Test;
-import org.references.ListOfUniqueNonNullObjects;
-import org.references.Position;
+import org.junit.*;
+import org.references.*;
 
 
 
@@ -37,19 +36,20 @@ import org.references.Position;
  */
 public class XInstance {
 	
+	@SuppressWarnings( "unused" )
 	@Test
 	public void test1() {
-
+		
 		new S1();
 		new S2();
 		
 		try {
-			S1_1 s1_1 = new S1_1();
+			final S1_1 s1_1 = new S1_1();
 			
 			s1_1.deinitAllLikeMe();
 			throw new Exception();
 			// s2.deinit();
-		} catch ( Exception e ) {
+		} catch ( final Exception e ) {
 			System.out.println( "All of em" );
 			Base.deinitAll();
 		}
@@ -62,24 +62,28 @@ abstract class Base {
 	
 	abstract protected void _deinit();
 	
+	
 	public final void deinit() {
-
-		this._deinit();
+		
+		_deinit();
 		b.remove( this );
 	}
 	
+	
 	public Base() {
-
+		
 		b.add( this );
 	}
 	
+	
 	public static final void deinitAll() {
-
+		
 		b.deinitAll();
 	}
 	
+	
 	public void deinitAllLikeMe() {
-
+		
 		b.deinitAllLike( this );
 	}
 	
@@ -92,7 +96,7 @@ class S1 extends Base {
 	
 	@Override
 	protected void _deinit() {
-
+		
 		System.out.println( "I am deinit " + this.getClass().getCanonicalName() );
 	}
 }
@@ -103,7 +107,7 @@ class S1_1 extends S1 {
 	
 	@Override
 	protected void _deinit() {
-
+		
 		System.out.println( "I am deinit S1_1" );
 		super._deinit();
 	}
@@ -115,7 +119,7 @@ class S2 extends Base {
 	
 	@Override
 	protected void _deinit() {
-
+		
 		System.out.println( "I am deinit S2" );
 	}
 }
@@ -124,13 +128,14 @@ class S2 extends Base {
 
 class BaseList {
 	
-	public void add( Base b ) {
-
+	public void add( final Base b ) {
+		
 		_list.addLast( b );
 	}
 	
+	
 	public void deinitAll() {
-
+		
 		Base b;
 		while ( null != ( b = _list.getObjectAt( Position.FIRST ) ) ) {
 			b.deinit();
@@ -138,13 +143,15 @@ class BaseList {
 		}
 	}
 	
-	public void remove( Base b ) {
-
+	
+	public void remove( final Base b ) {
+		
 		_list.removeObject( b );
 	}
 	
-	public void deinitAllLike( Base e ) {
-
+	
+	public void deinitAllLike( final Base e ) {
+		
 		Base b;
 		for ( int i = 0; i < _list.size(); ) {
 			b = _list.getObjectAt( i );

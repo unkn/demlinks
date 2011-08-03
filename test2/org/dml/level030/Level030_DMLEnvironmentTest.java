@@ -25,21 +25,14 @@ package org.dml.level030;
 
 
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
-import org.dml.error.AssumptionError;
-import org.dml.error.BadCallError;
-import org.dml.level010.JavaID;
-import org.dml.level010.Symbol;
-import org.dml.tools.RunTime;
-import org.dml.tracking.Factory;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.references.method.MethodParams;
-import org.references.method.PossibleParams;
+import org.dml.error.*;
+import org.dml.level010.*;
+import org.dml.tools.*;
+import org.dml.tracking.*;
+import org.junit.*;
+import org.references.method.*;
 
 
 
@@ -47,100 +40,72 @@ import org.references.method.PossibleParams;
  * 
  *
  */
-public class Level030_DMLEnvironmentTest
-{
+public class Level030_DMLEnvironmentTest {
 	
 	Level030_DMLEnvironment	l3;
 	
 	
+	@SuppressWarnings( "boxing" )
 	@Before
-	public
-			void
-			setUp()
-	{
+	public void setUp() {
 		
-		MethodParams params = MethodParams.getNew();
+		final MethodParams params = MethodParams.getNew();
 		// params.init( null );
-		params.set(
-					PossibleParams.jUnit_wipeDB,
-					true );
-		params.set(
-					PossibleParams.jUnit_wipeDBWhenDone,
-					true );
+		params.set( PossibleParams.jUnit_wipeDB, true );
+		params.set( PossibleParams.jUnit_wipeDBWhenDone, true );
 		// l3 = new Level030_DMLEnvironment();
 		// l3.init( params );
-		l3 = Factory.getNewInstanceAndInit(
-											Level030_DMLEnvironment.class,
-											params );
+		l3 = Factory.getNewInstanceAndInit( Level030_DMLEnvironment.class, params );
 		// params.deInit();
 		// Factory.deInit( params );
 	}
 	
-
+	
 	@After
-	public
-			void
-			tearDown()
-	{
+	public void tearDown() {
 		
-		if ( null != l3 )
-		{
+		if ( null != l3 ) {
 			Factory.deInitIfAlreadyInited( l3 );
 		}
 		// l3.deInitSilently();
 	}
 	
-
+	
 	@Test
-	public
-			void
-			testPointer()
-	{
+	public void testPointer() {
 		
-		JavaID name = JavaID.ensureJavaIDFor( "Ptr1" );
-		Symbol name2 = l3.createSymbol( name );
+		final JavaID name = JavaID.ensureJavaIDFor( "Ptr1" );
+		final Symbol name2 = l3.createSymbol( name );
 		
-		Pointer p1 = l3.getExistingPointer(
-											name2,
-											true );
+		final Pointer p1 = l3.getExistingPointer( name2, true );
 		// l3.associateJavaIDWithSymbol( name, p1.getAsSymbol() );
 		p1.assumedValid();
 		assertNull( p1.getPointee() );
 		
-		Pointer p2 = l3.getNewNullPointer();// allowed to point to nothing
+		final Pointer p2 = l3.getNewNullPointer();// allowed to point to nothing
 		assertNull( p2.getPointee() );
 		
 		// can point to nothing
-		Pointer p1_1 = l3.getExistingPointer(
-												name2,
-												true );
+		final Pointer p1_1 = l3.getExistingPointer( name2, true );
 		assertNull( p1_1.getPointee() );
-		Symbol uni1 = l3.newUniqueSymbol();
+		final Symbol uni1 = l3.newUniqueSymbol();
 		assertNull( p1.pointTo( uni1 ) );
 		assertTrue( p1_1.getPointee() == uni1 );
 		assertTrue( p1.getPointee() == uni1 );
 		assertTrue( p1_1.pointTo( null ) == uni1 );
 		
-		Symbol pointsTo = l3.newUniqueSymbol();
-		Pointer p3 = l3.getNewNonNullPointer( pointsTo );
+		final Symbol pointsTo = l3.newUniqueSymbol();
+		final Pointer p3 = l3.getNewNonNullPointer( pointsTo );
 		// must already point to something, which it does
-		Pointer p3_3 = l3.getExistingPointer(
-												p3.getAsSymbol(),
-												false );
+		final Pointer p3_3 = l3.getExistingPointer( p3.getAsSymbol(), false );
 		assertTrue( p3 == p3_3 );
 		assertTrue( p3_3.getPointee() == pointsTo );
 		assertTrue( p3.getPointee() == pointsTo );
 		boolean threw = false;
-		try
-		{
+		try {
 			p3.pointTo( null );
-		}
-		catch ( Throwable t )
-		{
-			if ( RunTime.isThisWrappedException_of_thisType(
-																t,
-																AssumptionError.class ) )
-			{
+		} catch ( final Throwable t ) {
+			if ( RunTime.isThisWrappedException_of_thisType( t, AssumptionError.class ) ) {
 				threw = true;
 				RunTime.clearLastThrown_andAllItsWraps();
 			}
@@ -148,21 +113,15 @@ public class Level030_DMLEnvironmentTest
 		assertTrue( threw );
 		
 		// allow null
-		Pointer p4 = l3.getNewNullPointer();
+		final Pointer p4 = l3.getNewNullPointer();
 		assertTrue( p4 != p3 );
 		assertTrue( p4.getPointee() == null );
 		assertTrue( p4.pointTo( null ) == null );
 		threw = false;
-		try
-		{
+		try {
 			p3.assumedValid();
-		}
-		catch ( Throwable t )
-		{
-			if ( RunTime.isThisWrappedException_of_thisType(
-																t,
-																AssumptionError.class ) )
-			{
+		} catch ( final Throwable t ) {
+			if ( RunTime.isThisWrappedException_of_thisType( t, AssumptionError.class ) ) {
 				threw = true;
 				RunTime.clearLastThrown_andAllItsWraps();
 			}
@@ -170,16 +129,10 @@ public class Level030_DMLEnvironmentTest
 		assertFalse( threw );
 		
 		threw = false;
-		try
-		{
+		try {
 			p3.getPointee();
-		}
-		catch ( Throwable t )
-		{
-			if ( RunTime.isThisWrappedException_of_thisType(
-																t,
-																AssumptionError.class ) )
-			{
+		} catch ( final Throwable t ) {
+			if ( RunTime.isThisWrappedException_of_thisType( t, AssumptionError.class ) ) {
 				threw = true;
 				RunTime.clearLastThrown_andAllItsWraps();
 			}
@@ -187,16 +140,10 @@ public class Level030_DMLEnvironmentTest
 		assertFalse( threw );
 		
 		threw = false;
-		try
-		{
+		try {
 			p3.pointTo( pointsTo );
-		}
-		catch ( Throwable t )
-		{
-			if ( RunTime.isThisWrappedException_of_thisType(
-																t,
-																AssumptionError.class ) )
-			{
+		} catch ( final Throwable t ) {
+			if ( RunTime.isThisWrappedException_of_thisType( t, AssumptionError.class ) ) {
 				threw = true;
 				RunTime.clearLastThrown_andAllItsWraps();
 			}
@@ -204,16 +151,10 @@ public class Level030_DMLEnvironmentTest
 		assertFalse( threw );
 		
 		threw = false;
-		try
-		{
+		try {
 			p3.getAsSymbol();
-		}
-		catch ( Throwable t )
-		{
-			if ( RunTime.isThisWrappedException_of_thisType(
-																t,
-																AssumptionError.class ) )
-			{
+		} catch ( final Throwable t ) {
+			if ( RunTime.isThisWrappedException_of_thisType( t, AssumptionError.class ) ) {
 				threw = true;
 				RunTime.clearLastThrown_andAllItsWraps();
 			}
@@ -221,42 +162,23 @@ public class Level030_DMLEnvironmentTest
 		assertFalse( threw );
 	}
 	
-
+	
 	@Test
-	public
-			void
-			testDomainPointer()
-	{
+	public void testDomainPointer() {
 		
-		Symbol domain = l3.ensureSymbol( JavaID.ensureJavaIDFor( "domain" ) );
-		Symbol pointTo = l3.newUniqueSymbol();
-		assertFalse( l3.ensureVector(
-										domain,
-										pointTo ) );
-		DomainPointer dp1 = l3.getNewNonNullDomainPointer(
-															domain,
-															pointTo );
-		DomainPointer dp1_1 = l3.getExistingDomainPointer(
-															dp1.getAsSymbol(),
-															domain,
-															false );
+		final Symbol domain = l3.ensureSymbol( JavaID.ensureJavaIDFor( "domain" ) );
+		final Symbol pointTo = l3.newUniqueSymbol();
+		assertFalse( l3.ensureVector( domain, pointTo ) );
+		final DomainPointer dp1 = l3.getNewNonNullDomainPointer( domain, pointTo );
+		final DomainPointer dp1_1 = l3.getExistingDomainPointer( dp1.getAsSymbol(), domain, false );
 		
 		boolean must = false;
-		try
-		{
+		try {
 			// existing with different domain this time
 			@SuppressWarnings( "unused" )
-			DomainPointer diffDom = l3.getExistingDomainPointer(
-																	dp1.getAsSymbol(),
-																	pointTo,
-																	false );
-		}
-		catch ( Throwable t )
-		{
-			if ( RunTime.isThisWrappedException_of_thisType(
-																t,
-																BadCallError.class ) )
-			{
+			final DomainPointer diffDom = l3.getExistingDomainPointer( dp1.getAsSymbol(), pointTo, false );
+		} catch ( final Throwable t ) {
+			if ( RunTime.isThisWrappedException_of_thisType( t, BadCallError.class ) ) {
 				must = true;
 				RunTime.clearLastThrown_andAllItsWraps();
 			}
@@ -264,21 +186,12 @@ public class Level030_DMLEnvironmentTest
 		assertTrue( must );
 		
 		must = false;
-		try
-		{
+		try {
 			// existing with different domain this time
 			@SuppressWarnings( "unused" )
-			DomainPointer diffDom = l3.getExistingDomainPointer(
-																	dp1.getAsSymbol(),
-																	domain,
-																	true );
-		}
-		catch ( Throwable t )
-		{
-			if ( RunTime.isThisWrappedException_of_thisType(
-																t,
-																BadCallError.class ) )
-			{
+			final DomainPointer diffDom = l3.getExistingDomainPointer( dp1.getAsSymbol(), domain, true );
+		} catch ( final Throwable t ) {
+			if ( RunTime.isThisWrappedException_of_thisType( t, BadCallError.class ) ) {
 				must = true;
 				RunTime.clearLastThrown_andAllItsWraps();
 			}
@@ -289,25 +202,16 @@ public class Level030_DMLEnvironmentTest
 		assertTrue( dp1_1.getDomain() == domain );
 		assertTrue( dp1 == dp1_1 );
 		
-		DomainPointer dp2 = l3.getNewNullDomainPointer( domain );
-		DomainPointer dp2_2 = l3.getExistingDomainPointer(
-															dp2.getAsSymbol(),
-															domain,
-															true );
+		final DomainPointer dp2 = l3.getNewNullDomainPointer( domain );
+		final DomainPointer dp2_2 = l3.getExistingDomainPointer( dp2.getAsSymbol(), domain, true );
 		assertTrue( dp2.getDomain() == domain );
 		assertTrue( dp2_2.getDomain() == dp2.getDomain() );
 		assertTrue( dp2 == dp2_2 );
 		boolean threw = false;
-		try
-		{
+		try {
 			dp2.setDomain( dp2.getAsSymbol() );
-		}
-		catch ( Throwable t )
-		{
-			if ( RunTime.isThisWrappedException_of_thisType(
-																t,
-																AssumptionError.class ) )
-			{
+		} catch ( final Throwable t ) {
+			if ( RunTime.isThisWrappedException_of_thisType( t, AssumptionError.class ) ) {
 				threw = true;
 				RunTime.clearLastThrown_andAllItsWraps();
 			}

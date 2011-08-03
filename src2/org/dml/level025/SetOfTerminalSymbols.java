@@ -25,15 +25,10 @@ package org.dml.level025;
 
 
 
-import org.dml.database.bdb.level2.BDBVectorIterator;
-import org.dml.level010.Symbol;
-import org.dml.level020.SymbolIterator;
-import org.dml.tools.RunTime;
-import org.dml.tools.TwoKeyHashMap;
-import org.dml.tracking.Factory;
-import org.references.Position;
-
-import com.sleepycat.je.DatabaseException;
+import org.dml.level010.*;
+import org.dml.level020.*;
+import org.dml.tools.*;
+import org.references.*;
 
 
 
@@ -42,10 +37,10 @@ import com.sleepycat.je.DatabaseException;
  * self->x,y,z as terminals<br>
  * probably a bad idea to make a set of initials<br>
  */
-public class SetOfTerminalSymbols
-{
+public class SetOfTerminalSymbols {
 	
-	private static final TwoKeyHashMap<Level025_DMLEnvironment, Symbol, SetOfTerminalSymbols>	allSetOfSymbolsInstances	= new TwoKeyHashMap<Level025_DMLEnvironment, Symbol, SetOfTerminalSymbols>();
+	private static final TwoKeyHashMap<Level025_DMLEnvironment, Symbol, SetOfTerminalSymbols>	allSetOfSymbolsInstances	=
+																																new TwoKeyHashMap<Level025_DMLEnvironment, Symbol, SetOfTerminalSymbols>();
 	protected final Level025_DMLEnvironment														env;
 	protected final Symbol																		selfAsSymbol;
 	
@@ -53,47 +48,27 @@ public class SetOfTerminalSymbols
 	/**
 	 * private constructor
 	 */
-	protected SetOfTerminalSymbols(
-			Level025_DMLEnvironment passedEnv,
-			Symbol passedSelf )
-	{
+	protected SetOfTerminalSymbols( final Level025_DMLEnvironment passedEnv, final Symbol passedSelf ) {
 		
-		RunTime.assumedNotNull(
-								passedEnv,
-								passedSelf );
+		RunTime.assumedNotNull( passedEnv, passedSelf );
 		RunTime.assumedTrue( passedEnv.isInitingOrInited() );
 		
 		env = passedEnv;
 		selfAsSymbol = passedSelf;
 	}
 	
-
+	
 	// TODO: new, existing, ensure
-	public static
-			SetOfTerminalSymbols
-			getAsSet(
-						Level025_DMLEnvironment passedEnv,
-						Symbol passedSelf )
-	{
+	public static SetOfTerminalSymbols getAsSet( final Level025_DMLEnvironment passedEnv, final Symbol passedSelf ) {
 		
-		RunTime.assumedNotNull(
-								passedEnv,
-								passedSelf );
+		RunTime.assumedNotNull( passedEnv, passedSelf );
 		RunTime.assumedTrue( passedEnv.isInitingOrInited() );
 		
-		SetOfTerminalSymbols existingSOS = getSOSInstance(
-															passedEnv,
-															passedSelf );
-		if ( null == existingSOS )
-		{
-			existingSOS = new SetOfTerminalSymbols(
-													passedEnv,
-													passedSelf );
+		SetOfTerminalSymbols existingSOS = getSOSInstance( passedEnv, passedSelf );
+		if ( null == existingSOS ) {
+			existingSOS = new SetOfTerminalSymbols( passedEnv, passedSelf );
 			existingSOS.assumedValid();
-			registerSOSInstance(
-									passedEnv,
-									passedSelf,
-									existingSOS );
+			registerSOSInstance( passedEnv, passedSelf, existingSOS );
 		}
 		existingSOS.assumedValid();
 		RunTime.assumedTrue( passedEnv == existingSOS.env );
@@ -101,173 +76,112 @@ public class SetOfTerminalSymbols
 		return existingSOS;
 	}
 	
-
+	
 	/**
 	 * 
 	 */
-	public
-			void
-			assumedValid()
-	{
+	public void assumedValid() {
 		
-		RunTime.assumedNotNull(
-								env,
-								selfAsSymbol );
+		RunTime.assumedNotNull( env, selfAsSymbol );
 		RunTime.assumedTrue( env.isInitingOrInited() );// ye we get here while still in start()
 	}
 	
-
-	private final static
-			void
-			registerSOSInstance(
-									Level025_DMLEnvironment env,
-									Symbol passedSelf,
-									SetOfTerminalSymbols newOne )
-	{
+	
+	private final static void registerSOSInstance( final Level025_DMLEnvironment env, final Symbol passedSelf,
+													final SetOfTerminalSymbols newOne ) {
 		
-		RunTime.assumedNotNull(
-								env,
-								passedSelf,
-								newOne );
-		RunTime.assumedFalse( allSetOfSymbolsInstances.ensure(
-																env,
-																passedSelf,
-																newOne ) );
+		RunTime.assumedNotNull( env, passedSelf, newOne );
+		RunTime.assumedFalse( allSetOfSymbolsInstances.ensure( env, passedSelf, newOne ) );
 	}
 	
-
-	private final static
-			SetOfTerminalSymbols
-			getSOSInstance(
-							Level025_DMLEnvironment env,
-							Symbol passedSelf )
-	{
+	
+	private final static SetOfTerminalSymbols getSOSInstance( final Level025_DMLEnvironment env, final Symbol passedSelf ) {
 		
-		RunTime.assumedNotNull(
-								env,
-								passedSelf );
-		return allSetOfSymbolsInstances.get(
-												env,
-												passedSelf );
+		RunTime.assumedNotNull( env, passedSelf );
+		return allSetOfSymbolsInstances.get( env, passedSelf );
 	}
 	
-
-	public
-			Symbol
-			getAsSymbol()
-	{
+	
+	public Symbol getAsSymbol() {
 		
-		this.assumedValid();
+		assumedValid();
 		return selfAsSymbol;
 	}
 	
-
+	
 	/**
 	 * @param element
 	 * @return false if it didn't already exist
 	 */
-	public
-			boolean
-			addToSet(
-						Symbol element )
-	{
+	public boolean addToSet( final Symbol element ) {
 		
 		RunTime.assumedNotNull( element );
-		if ( selfAsSymbol == element )
-		{
+		if ( selfAsSymbol == element ) {
 			RunTime.badCall();
 		}
-		return env.ensureVector(
-									selfAsSymbol,
-									element );
+		return env.ensureVector( selfAsSymbol, element );
 	}
 	
-
+	
 	/**
 	 * @param which
 	 *            should be a child of domain
 	 * @return true if self->which
 	 */
-	public
-			boolean
-			hasSymbol(
-						Symbol which )
-	{
+	public boolean hasSymbol( final Symbol which ) {
 		
 		RunTime.assumedNotNull( which );
 		RunTime.assumedFalse( selfAsSymbol == which );
-		return env.isVector(
-								selfAsSymbol,
-								which );
+		return env.isVector( selfAsSymbol, which );
 	}
 	
-
-	public
-			long
-			size()
-	{
+	
+	public long size() {
 		
 		RunTime.assumedNotNull( selfAsSymbol );
 		// cache won't do
 		return env.countTerminals( selfAsSymbol );
 	}
 	
-
+	
 	/**
 	 * @param element
 	 * @return true if existed
 	 */
-	public
-			boolean
-			remove(
-					Symbol element )
-	{
+	public boolean remove( final Symbol element ) {
 		
 		RunTime.assumedNotNull( element );
 		RunTime.assumedFalse( selfAsSymbol == element );
-		return env.removeVector(
-									selfAsSymbol,
-									element );
+		return env.removeVector( selfAsSymbol, element );
 	}
 	
-
+	
 	/**
 	 * @param side
 	 *            only FIRST is allowed yet
 	 * @return
 	 */
-	public
-			Symbol
-			getSide(
-						Position side )
-	{
+	public Symbol getSide( final Position side ) {
 		
 		Symbol ret = null;
 		
 		// is needed to get new fresh iterator due to possible changes in the database, those won't be reflected if we
 		// keep an iterator open all the time, right?
 		SymbolIterator iter = env.getIterator_on_Terminals_of( selfAsSymbol );
-		try
-		{
-			switch ( side )
-			{
-				case FIRST:
-					iter.goFirst();
-					break;
-				default:
-					RunTime.badCall( "unsupported position" );
+		try {
+			switch ( side ) {
+			case FIRST:
+				iter.goFirst();
+				break;
+			default:
+				RunTime.badCall( "unsupported position" );
 			}
 			
 			ret = iter.now();
-		}
-		finally
-		{
-			try
-			{
+		} finally {
+			try {
 				iter.close();
-			}
-			finally
-			{
+			} finally {
 				iter = null;
 			}
 		}
@@ -275,54 +189,39 @@ public class SetOfTerminalSymbols
 		return ret;
 	}
 	
-
+	
 	/**
 	 * @param side
 	 * @param ofThis
 	 * @return null if none
 	 */
-	public
-			Symbol
-			getSideOf(
-						Position side,
-						Symbol ofThis )
-	{
+	public Symbol getSideOf( final Position side, final Symbol ofThis ) {
 		
-		RunTime.assumedNotNull(
-								side,
-								ofThis );
+		RunTime.assumedNotNull( side, ofThis );
 		Symbol ret = null;
 		
 		SymbolIterator iter = env.getIterator_on_Terminals_of( selfAsSymbol );
-		try
-		{
+		try {
 			iter.goTo( ofThis );
-			if ( iter.now() != null )
-			{
+			if ( iter.now() != null ) {
 				
-				switch ( side )
-				{
-					case BEFORE:
-						iter.goPrev();
-						break;
-					case AFTER:
-						iter.goNext();
-						break;
-					default:
-						RunTime.badCall( "unsupported position" );
+				switch ( side ) {
+				case BEFORE:
+					iter.goPrev();
+					break;
+				case AFTER:
+					iter.goNext();
+					break;
+				default:
+					RunTime.badCall( "unsupported position" );
 				}
 				
 				ret = iter.now();
 			}
-		}
-		finally
-		{
-			try
-			{
+		} finally {
+			try {
 				iter.close();
-			}
-			finally
-			{
+			} finally {
 				iter = null;
 			}
 		}

@@ -25,12 +25,11 @@ package org.dml.level050;
 
 
 
-import org.dml.level010.Symbol;
-import org.dml.level025.DomainSet;
-import org.dml.level040.ListOrderedOfSymbolsWithFastFind;
-import org.dml.tools.RunTime;
-import org.dml.tools.TwoKeyHashMap;
-import org.references.Position;
+import org.dml.level010.*;
+import org.dml.level025.*;
+import org.dml.level040.*;
+import org.dml.tools.*;
+import org.references.*;
 
 
 
@@ -48,10 +47,10 @@ import org.references.Position;
  * Replace methods and/or the ability to remove a Symbol only if it's not pointed by any parents, which in our case
  * would be a child from another node also parents of current node which wouldn't be an issue(this latter)
  */
-public class Node
-{
+public class Node {
 	
-	private static final TwoKeyHashMap<Level050_DMLEnvironment, DomainSet, Node>	allNodeInstances	= new TwoKeyHashMap<Level050_DMLEnvironment, DomainSet, Node>();
+	private static final TwoKeyHashMap<Level050_DMLEnvironment, DomainSet, Node>	allNodeInstances	=
+																											new TwoKeyHashMap<Level050_DMLEnvironment, DomainSet, Node>();
 	
 	private final Level050_DMLEnvironment											env;
 	private final DomainSet															selfAsDSet;
@@ -66,211 +65,139 @@ public class Node
 	 * private constructor<br>
 	 * all passed ones must already exist as if this Node already existed<br>
 	 */
-	private Node(
-			Level050_DMLEnvironment existingEnv,
-			DomainSet existingSelf,
-			ListOrderedOfSymbolsWithFastFind existingParentsList,
-			ListOrderedOfSymbolsWithFastFind existingChildrenList )
-	{
+	private Node( final Level050_DMLEnvironment existingEnv, final DomainSet existingSelf,
+			final ListOrderedOfSymbolsWithFastFind existingParentsList,
+			final ListOrderedOfSymbolsWithFastFind existingChildrenList ) {
 		
-		RunTime.assumedNotNull(
-								existingEnv,
-								existingSelf,
-								existingParentsList,
-								existingChildrenList );
+		RunTime.assumedNotNull( existingEnv, existingSelf, existingParentsList, existingChildrenList );
 		RunTime.assumedTrue( existingEnv.isInitedSuccessfully() );
 		env = existingEnv;
 		selfAsDSet = existingSelf;
 		cachedParentsList = existingParentsList;
 		cachedChildrenList = existingChildrenList;
 		
-		RunTime.assumedTrue( this.isItself() );
+		RunTime.assumedTrue( isItself() );
 	}
 	
-
+	
 	/**
 	 * @param passedEnv
 	 * @param existingSelfSymbol
 	 * @return
 	 */
-	public static
-			Node
-			getExistingNode(
-								Level050_DMLEnvironment passedEnv,
-								Symbol existingSelfSymbol )
-	{
+	public static Node getExistingNode( final Level050_DMLEnvironment passedEnv, final Symbol existingSelfSymbol ) {
 		
-		RunTime.assumedNotNull(
-								passedEnv,
-								existingSelfSymbol );
+		RunTime.assumedNotNull( passedEnv, existingSelfSymbol );
 		RunTime.assumedTrue( passedEnv.isInitedSuccessfully() );
 		
-		if ( !isNode(
-						passedEnv,
-						existingSelfSymbol ) )
-		{
+		if ( !isNode( passedEnv, existingSelfSymbol ) ) {
 			RunTime.badCall( "existingSelfSymbol is not already a Node" );
 		}
 		
-		DomainSet selfSet = passedEnv.getAsDomainSet(
-														existingSelfSymbol,
-														passedEnv.allListsOOSWFF_Set.getAsSymbol() );
+		final DomainSet selfSet = passedEnv.getAsDomainSet( existingSelfSymbol, passedEnv.allListsOOSWFF_Set.getAsSymbol() );
 		RunTime.assumedTrue( selfSet.getAsSymbol() == existingSelfSymbol );
 		
-		if ( selfSet.size() != 2 )
-		{
+		if ( selfSet.size() != 2 ) {
 			RunTime.bug( "bad existing Node. It should have exactly 2 kids" );
 		}
 		
-		Node ret = getInstance(
-								passedEnv,
-								selfSet );// existing instance?
-		if ( null == ret )
-		{
+		Node ret = getInstance( passedEnv, selfSet );// existing instance?
+		if ( null == ret ) {
 			// new instance(in java) of an existing Node(in storage)
 			Symbol childrenSymbol = null;
 			// it's 2 so the stuff exists, we retrieve them
-			Symbol parentsSymbol = passedEnv.findCommonTerminalForInitials(
-																			existingSelfSymbol,
-																			passedEnv.allNodeParents_Set.getAsSymbol() );
-			if ( null == parentsSymbol )
-			{
+			final Symbol parentsSymbol =
+				passedEnv.findCommonTerminalForInitials( existingSelfSymbol, passedEnv.allNodeParents_Set.getAsSymbol() );
+			if ( null == parentsSymbol ) {
 				RunTime.bug( "inconsistent Node detected" );
-			}
-			else
-			{
+			} else {
 				childrenSymbol = selfSet.getSide( Position.FIRST );
 				RunTime.assumedNotNull( childrenSymbol );
-				if ( childrenSymbol == parentsSymbol )
-				{
+				if ( childrenSymbol == parentsSymbol ) {
 					// get the next one
-					childrenSymbol = selfSet.getSideOf(
-														Position.AFTER,
-														childrenSymbol );
+					childrenSymbol = selfSet.getSideOf( Position.AFTER, childrenSymbol );
 				}
 				RunTime.assumedNotNull( childrenSymbol );
 				RunTime.assumedTrue( passedEnv.allNodeChildren_Set.hasSymbol( childrenSymbol ) );
 			}
 			
-
+			
 			RunTime.assumedNotNull( parentsSymbol );
 			RunTime.assumedNotNull( childrenSymbol );
-			ListOrderedOfSymbolsWithFastFind parents = passedEnv.getExistingListOOSWFF(
-																						parentsSymbol,
-																						false );
+			final ListOrderedOfSymbolsWithFastFind parents = passedEnv.getExistingListOOSWFF( parentsSymbol, false );
 			parents.assumedValid();
 			RunTime.assumedFalse( parents.isDUPAllowed() );
 			
 			// allow dup here can be true/false
-			ListOrderedOfSymbolsWithFastFind children = passedEnv.getExistingListOOSWFF( childrenSymbol );
+			final ListOrderedOfSymbolsWithFastFind children = passedEnv.getExistingListOOSWFF( childrenSymbol );
 			children.assumedValid();
 			
-
+			
 			RunTime.assumedTrue( parents.getAsSymbol() == parentsSymbol );
 			RunTime.assumedTrue( children.getAsSymbol() == childrenSymbol );
 			
-
+			
 			// internal_setAsListOrderedOfSymbolsWFF( passedEnv, existingSelfSymbol );
-			ret = new Node(
-							passedEnv,
-							selfSet,
-							parents,
-							children );
+			ret = new Node( passedEnv, selfSet, parents, children );
 			ret.assumedValid();
-			registerInstance(
-								passedEnv,
-								selfSet,
-								ret );
-		}
-		else
-		{
+			registerInstance( passedEnv, selfSet, ret );
+		} else {
 			ret.assumedValid();
 		}
 		
 		return ret;
 	}
 	
-
-	public static
-			Node
-			getExistingNode(
-								Level050_DMLEnvironment passedEnv,
-								Symbol existingSelfSymbol,
-								boolean passedAllowChildrenDUPs )
-	{
+	
+	public static Node getExistingNode( final Level050_DMLEnvironment passedEnv, final Symbol existingSelfSymbol,
+										final boolean passedAllowChildrenDUPs ) {
 		
-		RunTime.assumedNotNull(
-								passedEnv,
-								existingSelfSymbol,
-								passedAllowChildrenDUPs );
+		RunTime.assumedNotNull( passedEnv, existingSelfSymbol );
 		RunTime.assumedTrue( passedEnv.isInitedSuccessfully() );
 		
-		Node ret = getExistingNode(
-									passedEnv,
-									existingSelfSymbol );
+		final Node ret = getExistingNode( passedEnv, existingSelfSymbol );
 		
 		// must match existing instance's allowDUPs else bad call
-		if ( ret.isDUPAllowedForChildren() != passedAllowChildrenDUPs )
-		{
+		if ( ret.isDUPAllowedForChildren() != passedAllowChildrenDUPs ) {
 			RunTime.badCall( "A Node already existed with a different setting for allowDUPs!" );
 		}
 		return ret;
 	}
 	
-
+	
 	/**
 	 * @param passedEnv
 	 * @param existingSelfSymbol
 	 * @param passedAllowChildrenDUPs
 	 * @return
 	 */
-	public static
-			Node
-			getNewNode(
-						Level050_DMLEnvironment passedEnv,
-						Symbol existingSelfSymbol,
-						boolean passedAllowChildrenDUPs )
-	{
+	public static Node getNewNode( final Level050_DMLEnvironment passedEnv, final Symbol existingSelfSymbol,
+									final boolean passedAllowChildrenDUPs ) {
 		
-		RunTime.assumedNotNull(
-								passedEnv,
-								existingSelfSymbol,
-								passedAllowChildrenDUPs );
+		RunTime.assumedNotNull( passedEnv, existingSelfSymbol );
 		RunTime.assumedTrue( passedEnv.isInitedSuccessfully() );
 		
-		if ( isNode(
-						passedEnv,
-						existingSelfSymbol ) )
-		{
+		if ( isNode( passedEnv, existingSelfSymbol ) ) {
 			RunTime.badCall( "existingSelfSymbol is already a Node" );
 		}
 		
-		DomainSet selfSet = passedEnv.getAsDomainSet(
-														existingSelfSymbol,
-														passedEnv.allListsOOSWFF_Set.getAsSymbol() );
+		final DomainSet selfSet = passedEnv.getAsDomainSet( existingSelfSymbol, passedEnv.allListsOOSWFF_Set.getAsSymbol() );
 		RunTime.assumedTrue( selfSet.getAsSymbol() == existingSelfSymbol );
 		
-		if ( selfSet.size() != 0 )
-		{
+		if ( selfSet.size() != 0 ) {
 			RunTime.bug( "bad existingSelfSymbol. It should have 0 kids" );
 		}
 		
-		RunTime.assumedNull( getInstance(
-											passedEnv,
-											selfSet ) );
+		RunTime.assumedNull( getInstance( passedEnv, selfSet ) );
 		
-		Symbol parentsSymbol = passedEnv.newUniqueSymbol();
-		Symbol childrenSymbol = passedEnv.newUniqueSymbol();
+		final Symbol parentsSymbol = passedEnv.newUniqueSymbol();
+		final Symbol childrenSymbol = passedEnv.newUniqueSymbol();
 		
 		RunTime.assumedNotNull( parentsSymbol );
 		RunTime.assumedNotNull( childrenSymbol );
-		ListOrderedOfSymbolsWithFastFind parents = passedEnv.getNewListOOSWFF(
-																				parentsSymbol,
-																				false );
+		final ListOrderedOfSymbolsWithFastFind parents = passedEnv.getNewListOOSWFF( parentsSymbol, false );
 		parents.assumedValid();
-		ListOrderedOfSymbolsWithFastFind children = passedEnv.getNewListOOSWFF(
-																				childrenSymbol,
-																				passedAllowChildrenDUPs );
+		final ListOrderedOfSymbolsWithFastFind children = passedEnv.getNewListOOSWFF( childrenSymbol, passedAllowChildrenDUPs );
 		children.assumedValid();
 		RunTime.assumedTrue( parents.getAsSymbol() == parentsSymbol );
 		RunTime.assumedTrue( children.getAsSymbol() == childrenSymbol );
@@ -281,141 +208,83 @@ public class Node
 		RunTime.assumedFalse( passedEnv.allNodeParents_Set.addToSet( parentsSymbol ) );
 		RunTime.assumedFalse( passedEnv.allNodeChildren_Set.addToSet( childrenSymbol ) );
 		
-		internal_setAsListOrderedOfSymbolsWFF(
-												passedEnv,
-												existingSelfSymbol );
-		Node ret = new Node(
-								passedEnv,
-								selfSet,
-								parents,
-								children );
+		internal_setAsListOrderedOfSymbolsWFF( passedEnv, existingSelfSymbol );
+		final Node ret = new Node( passedEnv, selfSet, parents, children );
 		// must match existing instance's allowDUPs else bad call
-		if ( ret.isDUPAllowedForChildren() != passedAllowChildrenDUPs )
-		{
+		if ( ret.isDUPAllowedForChildren() != passedAllowChildrenDUPs ) {
 			RunTime.bug( "parents list failed to init right?" );
 		}
 		ret.assumedValid();
-		registerInstance(
-							passedEnv,
-							selfSet,
-							ret );
+		registerInstance( passedEnv, selfSet, ret );
 		
 		return ret;
 	}
 	
-
+	
 	/**
 	 * @param passedEnv
 	 * @param existingSelfSymbol
 	 * @param passedAllowChildrenDUPs
 	 * @return
 	 */
-	public static
-			Node
-			ensureNode(
-						Level050_DMLEnvironment passedEnv,
-						Symbol existingSelfSymbol,
-						boolean passedAllowChildrenDUPs )
-	{
+	public static Node ensureNode( final Level050_DMLEnvironment passedEnv, final Symbol existingSelfSymbol,
+									final boolean passedAllowChildrenDUPs ) {
 		
-		RunTime.assumedNotNull(
-								passedEnv,
-								existingSelfSymbol,
-								passedAllowChildrenDUPs );
+		RunTime.assumedNotNull( passedEnv, existingSelfSymbol );
 		RunTime.assumedTrue( passedEnv.isInitedSuccessfully() );
 		
-		if ( isNode(
-						passedEnv,
-						existingSelfSymbol ) )
-		{
-			return getExistingNode(
-									passedEnv,
-									existingSelfSymbol,
-									passedAllowChildrenDUPs );
-		}
-		else
-		{
-			return getNewNode(
-								passedEnv,
-								existingSelfSymbol,
-								passedAllowChildrenDUPs );
+		if ( isNode( passedEnv, existingSelfSymbol ) ) {
+			return getExistingNode( passedEnv, existingSelfSymbol, passedAllowChildrenDUPs );
+		} else {
+			return getNewNode( passedEnv, existingSelfSymbol, passedAllowChildrenDUPs );
 		}
 	}
 	
-
-	private static
-			void
-			internal_setAsListOrderedOfSymbolsWFF(
-													Level050_DMLEnvironment passedEnv,
-													Symbol passedSelf )
-	{
+	
+	private static void
+			internal_setAsListOrderedOfSymbolsWFF( final Level050_DMLEnvironment passedEnv, final Symbol passedSelf ) {
 		
-		RunTime.assumedNotNull(
-								passedSelf,
-								passedEnv );
+		RunTime.assumedNotNull( passedSelf, passedEnv );
 		RunTime.assumedTrue( passedEnv.isInitedSuccessfully() );
 		// was not set before
 		RunTime.assumedFalse( passedEnv.allNodes_Set.addToSet( passedSelf ) );
 	}
 	
-
+	
 	/**
 	 * override this and don't call super()
 	 */
-	protected
-			boolean
-			isItself()
-	{
+	protected boolean isItself() {
 		
-		RunTime.assumedNotNull(
-								selfAsDSet,
-								env );
+		RunTime.assumedNotNull( selfAsDSet, env );
 		RunTime.assumedTrue( env.isInitedSuccessfully() );
-		return isNode(
-						env,
-						selfAsDSet.getAsSymbol() );
+		return isNode( env, selfAsDSet.getAsSymbol() );
 	}
 	
-
-	public static
-			boolean
-			isNode(
-					Level050_DMLEnvironment passedEnv,
-					Symbol passedSelf )
-	{
+	
+	public static boolean isNode( final Level050_DMLEnvironment passedEnv, final Symbol passedSelf ) {
 		
-		RunTime.assumedNotNull(
-								passedEnv,
-								passedSelf );
+		RunTime.assumedNotNull( passedEnv, passedSelf );
 		RunTime.assumedTrue( passedEnv.isInitedSuccessfully() );
 		return passedEnv.allNodes_Set.hasSymbol( passedSelf );
 	}
 	
-
-	public
-			Symbol
-			getAsSymbol()
-	{
+	
+	public Symbol getAsSymbol() {
 		
-		this.assumedValid();
+		assumedValid();
 		return selfAsDSet.getAsSymbol();
 	}
 	
-
+	
 	/**
 	 * 
 	 */
-	public
-			void
-			assumedValid()
-	{
+	public void assumedValid() {
 		
-		RunTime.assumedNotNull(
-								selfAsDSet,
-								cachedParentsList,
-								cachedChildrenList );
+		RunTime.assumedNotNull( selfAsDSet, cachedParentsList, cachedChildrenList );
 		selfAsDSet.assumedValid();
-		RunTime.assumedTrue( this.isItself() );
+		RunTime.assumedTrue( isItself() );
 		cachedParentsList.assumedValid();
 		cachedChildrenList.assumedValid();
 		// consistency check: we assume that the Node contents (the 2 kids) don't get changed at this top level
@@ -424,80 +293,51 @@ public class Node
 		RunTime.assumedTrue( selfAsDSet.hasSymbol( cachedChildrenList.getAsSymbol() ) );
 		RunTime.assumedTrue( env.allNodeChildren_Set.hasSymbol( cachedChildrenList.getAsSymbol() ) );
 		
-
+		
 		RunTime.assumedFalse( cachedParentsList.isDUPAllowed() );
 		RunTime.assumedFalse( cachedParentsList.isNullAllowed() );
 		RunTime.assumedFalse( cachedChildrenList.isNullAllowed() );
 	}
 	
-
-	private final static
-			void
-			registerInstance(
-								Level050_DMLEnvironment env,
-								DomainSet domainSet,
-								Node newOne )
-	{
+	
+	private final static void
+			registerInstance( final Level050_DMLEnvironment env, final DomainSet domainSet, final Node newOne ) {
 		
-		RunTime.assumedNotNull(
-								env,
-								domainSet,
-								newOne );
-		RunTime.assumedFalse( allNodeInstances.ensure(
-														env,
-														domainSet,
-														newOne ) );
+		RunTime.assumedNotNull( env, domainSet, newOne );
+		RunTime.assumedFalse( allNodeInstances.ensure( env, domainSet, newOne ) );
 	}
 	
-
-	private final static
-			Node
-			getInstance(
-							Level050_DMLEnvironment env,
-							DomainSet domainSet )
-	{
+	
+	private final static Node getInstance( final Level050_DMLEnvironment env, final DomainSet domainSet ) {
 		
-		RunTime.assumedNotNull(
-								env,
-								domainSet );
-		return allNodeInstances.get(
-										env,
-										domainSet );
+		RunTime.assumedNotNull( env, domainSet );
+		return allNodeInstances.get( env, domainSet );
 	}
 	
-
-	public
-			long
-			sizeOfChildren()
-	{
+	
+	public long sizeOfChildren() {
 		
 		return cachedChildrenList.size();
 	}
 	
-
-	public
-			long
-			sizeOfParents()
-	{
+	
+	public long sizeOfParents() {
 		
 		return cachedParentsList.size();
 	}
 	
-
+	
 	/**
 	 * (it's not allowed for parents)
 	 * 
 	 * @return
 	 */
-	public
-			boolean
-			isDUPAllowedForChildren()
-	{
+	public boolean isDUPAllowedForChildren() {
 		
 		return cachedChildrenList.isDUPAllowed();
 	}
 	
-
+	
 	// /**
 	// * @param new2
 	// * @return
@@ -529,275 +369,155 @@ public class Node
 	// return parentsList.hasSymbol( parent.getAsSymbol() );
 	// }
 	
-	public
-			boolean
-			has(
-					NodeType nodeType,
-					Node whichSymbol )
-	{
+	public boolean has( final NodeType nodeType, final Node whichSymbol ) {
 		
-		RunTime.assumedNotNull(
-								nodeType,
-								whichSymbol );
-		ListOrderedOfSymbolsWithFastFind list = this.getListFor( nodeType );
+		RunTime.assumedNotNull( nodeType, whichSymbol );
+		final ListOrderedOfSymbolsWithFastFind list = getListFor( nodeType );
 		return list.hasSymbol( whichSymbol.getAsSymbol() );
 	}
 	
-
-	private
-			ListOrderedOfSymbolsWithFastFind
-			getListFor(
-						NodeType nodeType )
-	{
+	
+	private ListOrderedOfSymbolsWithFastFind getListFor( final NodeType nodeType ) {
 		
 		RunTime.assumedNotNull( nodeType );
 		ListOrderedOfSymbolsWithFastFind list = null;
-		switch ( nodeType )
-		{
-			case PARENT:
-				list = cachedParentsList;
-				break;
-			case CHILD:
-				list = cachedChildrenList;
-				break;
-			default:
-				RunTime.bug( "impossible" );
+		switch ( nodeType ) {
+		case PARENT:
+			list = cachedParentsList;
+			break;
+		case CHILD:
+			list = cachedChildrenList;
+			break;
+		default:
+			RunTime.bug( "impossible" );
 		}
 		RunTime.assumedNotNull( list );
 		return list;
 	}
 	
-
+	
 	/**
 	 * @param child
 	 * @param first
 	 * @return null if none
 	 */
-	public
-			Node
-			get(
-					NodeType nodeType,
-					Position pos )
-	{
+	public Node get( final NodeType nodeType, final Position pos ) {
 		
-		RunTime.assumedNotNull(
-								nodeType,
-								pos );
-		ListOrderedOfSymbolsWithFastFind list = this.getListFor( nodeType );
-		Symbol sym = list.get( pos );
-		if ( null != sym )
-		{
-			return getExistingNode(
-									env,
-									sym );
-		}
-		else
-		{
+		RunTime.assumedNotNull( nodeType, pos );
+		final ListOrderedOfSymbolsWithFastFind list = getListFor( nodeType );
+		final Symbol sym = list.get( pos );
+		if ( null != sym ) {
+			return getExistingNode( env, sym );
+		} else {
 			return null;
 		}
 	}
 	
-
+	
 	/**
 	 * @param nodeType
 	 * @param pos
 	 * @param posNode
 	 * @return
 	 */
-	public
-			Node
-			get(
-					NodeType nodeType,
-					Position pos,
-					Node posNode )
-	{
+	public Node get( final NodeType nodeType, final Position pos, final Node posNode ) {
 		
-		RunTime.assumedNotNull(
-								nodeType,
-								pos,
-								posNode );
-		this.assumedValid();
+		RunTime.assumedNotNull( nodeType, pos, posNode );
+		assumedValid();
 		posNode.assumedValid();
-		ListOrderedOfSymbolsWithFastFind list = this.getListFor( nodeType );
-		Symbol sym = list.get(
-								pos,
-								posNode.getAsSymbol() );
-		if ( null != sym )
-		{
-			return getExistingNode(
-									env,
-									sym );
-		}
-		else
-		{
+		final ListOrderedOfSymbolsWithFastFind list = getListFor( nodeType );
+		final Symbol sym = list.get( pos, posNode.getAsSymbol() );
+		if ( null != sym ) {
+			return getExistingNode( env, sym );
+		} else {
 			return null;
 		}
 	}
 	
-
+	
 	/**
 	 * @param nodeType
 	 * @param newNode
 	 * @param pos
 	 * @param posNode
 	 */
-	public
-			void
-			add(
-					NodeType nodeType,
-					Node newNode,
-					Position pos,
-					Node posNode )
-	{
+	public void add( final NodeType nodeType, final Node newNode, final Position pos, final Node posNode ) {
 		
-		RunTime.assumedNotNull(
-								nodeType,
-								newNode,
-								pos,
-								posNode );
-		RunTime.assumedFalse( this.isDUPAllowedForChildren() );
-		this.assumedValid();
+		RunTime.assumedNotNull( nodeType, newNode, pos, posNode );
+		RunTime.assumedFalse( isDUPAllowedForChildren() );
+		assumedValid();
 		newNode.assumedValid();
 		posNode.assumedValid();
 		
-		this.internal_add(
-							nodeType,
-							newNode,
-							pos,
-							posNode );
-		newNode.internal_append(
-									NodeType.getOpposite( nodeType ),
-									this );
+		this.internal_add( nodeType, newNode, pos, posNode );
+		newNode.internal_append( NodeType.getOpposite( nodeType ), this );
 	}
 	
-
-	public
-			void
-			add(
-					NodeType nodeType,
-					Node newNode,
-					Position pos )
-	{
+	
+	public void add( final NodeType nodeType, final Node newNode, final Position pos ) {
 		
-		RunTime.assumedNotNull(
-								nodeType,
-								newNode,
-								pos );
+		RunTime.assumedNotNull( nodeType, newNode, pos );
 		
-		this.assumedValid();
+		assumedValid();
 		newNode.assumedValid();
-		if ( this.has(
-						nodeType,
-						newNode ) )
-		{
+		if ( has( nodeType, newNode ) ) {
 			RunTime.badCall( "already exists, maybe use ensure method instead" );
 		}
 		
-		this.internal_add(
-							nodeType,
-							newNode,
-							pos );
-		newNode.internal_append(
-									NodeType.getOpposite( nodeType ),
-									this );
+		this.internal_add( nodeType, newNode, pos );
+		newNode.internal_append( NodeType.getOpposite( nodeType ), this );
 	}
 	
-
-	public
-			boolean
-			ensure(
-					NodeType nodeType,
-					Node whichNode )
-	{
+	
+	public boolean ensure( final NodeType nodeType, final Node whichNode ) {
 		
-		RunTime.assumedNotNull(
-								nodeType,
-								whichNode );
+		RunTime.assumedNotNull( nodeType, whichNode );
 		whichNode.assumedValid();
-		this.assumedValid();
-		boolean ret = this.has(
-								nodeType,
-								whichNode );
-		if ( !ret )
-		{
-			this.internal_append(
-									nodeType,
-									whichNode );
-			whichNode.internal_append(
-										NodeType.getOpposite( nodeType ),
-										this );
+		assumedValid();
+		final boolean ret = has( nodeType, whichNode );
+		if ( !ret ) {
+			internal_append( nodeType, whichNode );
+			whichNode.internal_append( NodeType.getOpposite( nodeType ), this );
 		}
-		this.assumedValid();
+		assumedValid();
 		whichNode.assumedValid();
 		return ret;
 	}
 	
-
-	private
-			void
-			internal_append(
-								NodeType nodeType,
-								Node newNode )
-	{
+	
+	private void internal_append( final NodeType nodeType, final Node newNode ) {
 		
-		RunTime.assumedNotNull(
-								nodeType,
-								newNode );
-		Symbol sym = newNode.getAsSymbol();
+		RunTime.assumedNotNull( nodeType, newNode );
+		final Symbol sym = newNode.getAsSymbol();
 		RunTime.assumedNotNull( sym );
-		ListOrderedOfSymbolsWithFastFind list = this.getListFor( nodeType );
+		final ListOrderedOfSymbolsWithFastFind list = getListFor( nodeType );
 		RunTime.assumedFalse( list.ensure( sym ) );
 	}
 	
-
+	
 	// TODO remove this method
-	private
-			void
-			internal_add(
-							NodeType nodeType,
-							Node newNode,
-							Position pos )
-	{
+	private void internal_add( final NodeType nodeType, final Node newNode, final Position pos ) {
 		
-		RunTime.assumedNotNull(
-								nodeType,
-								newNode,
-								pos );
-		Symbol sym = newNode.getAsSymbol();
+		RunTime.assumedNotNull( nodeType, newNode, pos );
+		final Symbol sym = newNode.getAsSymbol();
 		RunTime.assumedNotNull( sym );
-		ListOrderedOfSymbolsWithFastFind list = this.getListFor( nodeType );
-		list.add(
-					sym,
-					pos );
+		final ListOrderedOfSymbolsWithFastFind list = getListFor( nodeType );
+		list.add( sym, pos );
 	}
 	
-
+	
 	// TODO remove this method
-	private
-			void
-			internal_add(
-							NodeType nodeType,
-							Node newNode,
-							Position pos,
-							Node posNode )
-	{
+	private void internal_add( final NodeType nodeType, final Node newNode, final Position pos, final Node posNode ) {
 		
-		RunTime.assumedNotNull(
-								nodeType,
-								newNode,
-								pos,
-								posNode );
-		Symbol sym = newNode.getAsSymbol();
+		RunTime.assumedNotNull( nodeType, newNode, pos, posNode );
+		final Symbol sym = newNode.getAsSymbol();
 		RunTime.assumedNotNull( sym );
-		ListOrderedOfSymbolsWithFastFind list = this.getListFor( nodeType );
+		final ListOrderedOfSymbolsWithFastFind list = getListFor( nodeType );
 		RunTime.assumedFalse( list.isDUPAllowed() );// because posNode can't be twice or else which we talkin'bout?
-		list.add(
-					sym,
-					pos,
-					posNode.getAsSymbol() );
+		list.add( sym, pos, posNode.getAsSymbol() );
 	}
 	
-
+	
 	/**
 	 * @param child
 	 * @param after
@@ -805,132 +525,76 @@ public class Node
 	 * @return what got removed, if any;<br>
 	 *         null if none removed
 	 */
-	public
-			Node
-			remove(
-					NodeType nodeType,
-					Position pos,
-					Node posNode )
-	{
+	public Node remove( final NodeType nodeType, final Position pos, final Node posNode ) {
 		
-		RunTime.assumedNotNull(
-								nodeType,
-								pos,
-								posNode );
-		RunTime.assumedFalse( this.isDUPAllowedForChildren() );
+		RunTime.assumedNotNull( nodeType, pos, posNode );
+		RunTime.assumedFalse( isDUPAllowedForChildren() );
 		posNode.assumedValid();
-		this.assumedValid();
+		assumedValid();
 		
-		Node whichNode = this.get(
-									nodeType,
-									pos,
-									posNode );
-		if ( null == whichNode )
-		{
+		final Node whichNode = this.get( nodeType, pos, posNode );
+		if ( null == whichNode ) {
 			return null;// didn't exist
 		}
 		// exists:
-		RunTime.assumedTrue( this.remove(
-											nodeType,
-											whichNode ) );
-		RunTime.assumedFalse( this.has(
-										nodeType,
-										whichNode ) );
+		RunTime.assumedTrue( this.remove( nodeType, whichNode ) );
+		RunTime.assumedFalse( has( nodeType, whichNode ) );
 		return whichNode;
 	}
 	
-
+	
 	/**
 	 * @param child
 	 * @param first
 	 * @return
 	 */
-	public
-			Node
-			remove(
-					NodeType nodeType,
-					Position pos )
-	{
+	public Node remove( final NodeType nodeType, final Position pos ) {
 		
-		RunTime.assumedNotNull(
-								nodeType,
-								pos );
-		this.assumedValid();
-		Node whichNode = this.get(
-									nodeType,
-									pos );
-		if ( null == whichNode )
-		{
+		RunTime.assumedNotNull( nodeType, pos );
+		assumedValid();
+		final Node whichNode = this.get( nodeType, pos );
+		if ( null == whichNode ) {
 			return null;// didn't exist anyway
 		}
 		// existed
-		RunTime.assumedTrue( this.remove(
-											nodeType,
-											whichNode ) );
-		RunTime.assumedFalse( this.has(
-										nodeType,
-										whichNode ) );
+		RunTime.assumedTrue( this.remove( nodeType, whichNode ) );
+		RunTime.assumedFalse( has( nodeType, whichNode ) );
 		return whichNode;
 	}
 	
-
+	
 	/**
 	 * @param child
 	 * @param new3
 	 * @return
 	 */
-	public
-			boolean
-			remove(
-					NodeType nodeType,
-					Node whichNodeToRemove )
-	{
+	public boolean remove( final NodeType nodeType, final Node whichNodeToRemove ) {
 		
-		RunTime.assumedNotNull(
-								nodeType,
-								whichNodeToRemove );
+		RunTime.assumedNotNull( nodeType, whichNodeToRemove );
 		whichNodeToRemove.assumedValid();
-		this.assumedValid();
-		if ( !this.has(
-						nodeType,
-						whichNodeToRemove ) )
-		{
+		assumedValid();
+		if ( !has( nodeType, whichNodeToRemove ) ) {
 			return false;// didn't exist
 		}
 		// we're here so it exists
 		// this->which remove (child of this)
-		this.internal_remove(
-								nodeType,
-								whichNodeToRemove );
+		internal_remove( nodeType, whichNodeToRemove );
 		// this<-which remove (parent of which)
-		whichNodeToRemove.internal_remove(
-											NodeType.getOpposite( nodeType ),
-											this );
+		whichNodeToRemove.internal_remove( NodeType.getOpposite( nodeType ), this );
 		
-		RunTime.assumedFalse( whichNodeToRemove.has(
-														NodeType.getOpposite( nodeType ),
-														this ) );
-		RunTime.assumedFalse( this.has(
-										nodeType,
-										whichNodeToRemove ) );
+		RunTime.assumedFalse( whichNodeToRemove.has( NodeType.getOpposite( nodeType ), this ) );
+		RunTime.assumedFalse( has( nodeType, whichNodeToRemove ) );
 		return true;
 	}
 	
-
-	private
-			void
-			internal_remove(
-								NodeType nodeType,
-								Node whichNodeToRemove )
-	{
+	
+	private void internal_remove( final NodeType nodeType, final Node whichNodeToRemove ) {
 		
-		RunTime.assumedNotNull(
-								nodeType,
-								whichNodeToRemove );
-		Symbol sym = whichNodeToRemove.getAsSymbol();
+		RunTime.assumedNotNull( nodeType, whichNodeToRemove );
+		final Symbol sym = whichNodeToRemove.getAsSymbol();
 		RunTime.assumedNotNull( sym );
 		
-		ListOrderedOfSymbolsWithFastFind list = this.getListFor( nodeType );
+		final ListOrderedOfSymbolsWithFastFind list = getListFor( nodeType );
 		RunTime.assumedNotNull( list );
 		RunTime.assumedTrue( list.remove( sym ) );
 	}

@@ -25,13 +25,10 @@ package org.dml.database.bdb.level1;
 
 
 
-import org.dml.tools.Initer;
-import org.dml.tools.RunTime;
-import org.references.method.MethodParams;
+import org.dml.tools.*;
+import org.references.method.*;
 
-import com.sleepycat.je.DatabaseException;
-import com.sleepycat.je.Sequence;
-import com.sleepycat.je.SequenceConfig;
+import com.sleepycat.db.*;
 
 
 
@@ -47,14 +44,14 @@ import com.sleepycat.je.SequenceConfig;
 public class DBSequence extends Initer {
 	
 	
-
+	
 	// FIXME: maybe we don't want to keep it same for all?
 	// SequenceConfig will be kept the same for all Sequence -s, for now;that is
 	// same settings not same variable
 	private final SequenceConfig			allSequencesConfig	= new MySequenceConfig();
 	
-
-
+	
+	
 	private static final String				seqPrefix			= (char)0 + "_preseq_" + (char)0;
 	private static final String				seqSuffix			= (char)255 + "_postseq_" + (char)255;
 	
@@ -70,8 +67,8 @@ public class DBSequence extends Initer {
 	 * @param seqName
 	 * @throws DatabaseException
 	 */
-	public DBSequence( Level1_Storage_BerkeleyDB bdb1, String seqName ) {
-
+	public DBSequence( final Level1_Storage_BerkeleyDB bdb1, final String seqName ) {
+		
 		RunTime.assumedNotNull( bdb1 );
 		RunTime.assumedNotNull( seqName );
 		RunTime.assumedFalse( seqName.isEmpty() );
@@ -79,12 +76,13 @@ public class DBSequence extends Initer {
 		thisSeqName = seqPrefix + seqName + seqSuffix;
 	}
 	
+	
 	/**
 	 * @return
 	 * @throws DatabaseException
 	 */
 	public Sequence getSequence() throws DatabaseException {
-
+		
 		if ( null == thisSeq ) {
 			RunTime.assumedNotNull( bdb );
 			thisSeq = bdb.getNewSequence( thisSeqName, allSequencesConfig );
@@ -95,22 +93,23 @@ public class DBSequence extends Initer {
 	
 	
 	@Override
-	protected void done( MethodParams params ) {
-
+	protected void done( final MethodParams params ) {
+		
 		try {
 			if ( null != thisSeq ) {
 				RunTime.assumedNotNull( bdb, thisSeqName );
 				thisSeq = bdb.closeAnySeq( thisSeq, thisSeqName );
 			}
-		} catch ( Throwable t ) {
+		} catch ( final Throwable t ) {
 			RunTime.throPostponed( t );
 		}
 		RunTime.throwAllThatWerePostponed();
 	}
 	
+	
 	@Override
-	protected void start( MethodParams params ) {
-
+	protected void start( final MethodParams params ) {
+		
 		RunTime.assumedNull( params );
 		
 	}

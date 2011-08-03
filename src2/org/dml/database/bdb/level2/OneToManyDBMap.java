@@ -25,23 +25,16 @@ package org.dml.database.bdb.level2;
 
 
 
-import org.dml.database.bdb.level1.DatabaseCapsule;
-import org.dml.database.bdb.level1.Level1_Storage_BerkeleyDB;
-import org.dml.database.bdb.level1.OneToXDBMapCommonCode;
+import org.dml.database.bdb.level1.*;
 import org.dml.error.BugError;
-import org.dml.tools.Initer;
-import org.dml.tools.RunTime;
-import org.dml.tracking.Factory;
-import org.dml.tracking.Log;
-import org.references.Reference;
-import org.references.method.MethodParams;
-import org.references.method.PossibleParams;
+import org.dml.tools.*;
+import org.dml.tracking.*;
+import org.q.*;
+import org.references.*;
+import org.references.method.*;
 
-import com.sleepycat.bind.EntryBinding;
-import com.sleepycat.je.Database;
-import com.sleepycat.je.DatabaseEntry;
-import com.sleepycat.je.DatabaseException;
-import com.sleepycat.je.OperationStatus;
+import com.sleepycat.bind.*;
+import com.sleepycat.db.*;
 
 
 
@@ -61,10 +54,7 @@ import com.sleepycat.je.OperationStatus;
  * @param <InitialType>
  * @param <TerminalType>
  */
-public class OneToManyDBMap<InitialType, TerminalType>
-		extends
-		Initer
-{
+public class OneToManyDBMap<InitialType, TerminalType> extends Initer {
 	
 	private final Class<InitialType>			initialClass;
 	private final Class<TerminalType>			terminalClass;
@@ -92,19 +82,16 @@ public class OneToManyDBMap<InitialType, TerminalType>
 	public OneToManyDBMap(
 			// Level1_Storage_BerkeleyDB bdb1,
 			// String dbName1,
-			Class<InitialType> initialClass1,
-			EntryBinding<InitialType> initialBinding1,
-			Class<TerminalType> terminalClass1,
-			EntryBinding<TerminalType> terminalBinding1 )
-	{
+			final Class<InitialType> initialClass1, final EntryBinding<InitialType> initialBinding1,
+			final Class<TerminalType> terminalClass1, final EntryBinding<TerminalType> terminalBinding1 ) {
 		
 		RunTime.assumedNotNull(
-								// bdb1,
-								// dbName1,
-								initialClass1,
-								initialBinding1,
-								terminalClass1,
-								terminalBinding1 );
+		// bdb1,
+		// dbName1,
+			initialClass1,
+			initialBinding1,
+			terminalClass1,
+			terminalBinding1 );
 		// bdbL1 = bdb1;
 		// dbName = dbName1;
 		initialClass = initialClass1;
@@ -117,17 +104,12 @@ public class OneToManyDBMap<InitialType, TerminalType>
 	
 	
 	@Override
-	protected
-			void
-			start(
-					MethodParams params2 )
-	{
+	protected void start( final MethodParams params2 ) {
 		
 		RunTime.assumedNotNull( params2 );
 		
 		bdbL1 = (Level1_Storage_BerkeleyDB)params2.getEx( PossibleParams.level1_BDBStorage );
-		if ( null == bdbL1 )
-		{
+		if ( null == bdbL1 ) {
 			RunTime.badCall( "missing parameter" );
 		}
 		RunTime.assumedNotNull( bdbL1 );
@@ -136,59 +118,36 @@ public class OneToManyDBMap<InitialType, TerminalType>
 		RunTime.assumedNotNull( dbName );
 		RunTime.assumedFalse( dbName.isEmpty() );
 		
-		MethodParams iParams = params2.getClone();
+		final MethodParams iParams = params2.getClone();
 		// FIXME: investigate if only one new OneToManyDBConfig() is needed for all "OneToManyDBMap"s
-		RunTime.assumedNull( iParams.set(
-											PossibleParams.priDbConfig,
-											new OneToManyDBConfig() ) );
-		forwardDB = Factory.getNewInstanceAndInit(
-													DatabaseCapsule.class,
-													iParams );
+		RunTime.assumedNull( iParams.set( PossibleParams.priDbConfig, new OneToManyDBConfig() ) );
+		forwardDB = Factory.getNewInstanceAndInit( DatabaseCapsule.class, iParams );
 		
 		RunTime.assumedNotNull( forwardDB );
 		RunTime.assumedTrue( forwardDB.isInitedSuccessfully() );
 		
-		RunTime.assumedNotNull( iParams.set(
-												PossibleParams.dbName,
-												dbName
-														+ backwardSuffix ) );
+		RunTime.assumedNotNull( iParams.set( PossibleParams.dbName, dbName + backwardSuffix ) );
 		// FIXME: investigate if only one new OneToManyDBConfig() is needed for all "OneToManyDBMap"s same for
 		// above
-		RunTime.assumedNotNull( iParams.set(
-												PossibleParams.priDbConfig,
-												new OneToManyDBConfig() ) );
+		RunTime.assumedNotNull( iParams.set( PossibleParams.priDbConfig, new OneToManyDBConfig() ) );
 		// backwardDB.init( params );
-		backwardDB = Factory.getNewInstanceAndInit(
-													DatabaseCapsule.class,
-													iParams );
+		backwardDB = Factory.getNewInstanceAndInit( DatabaseCapsule.class, iParams );
 		RunTime.assumedNotNull( backwardDB );
 		RunTime.assumedTrue( backwardDB.isInitedSuccessfully() );
 	}
 	
 	
 	@Override
-	protected
-			void
-			done(
-					MethodParams params )
-	{
+	protected void done( final MethodParams params ) {
 		
-		Log.entry( "done OneToManyDBMap: "
-					+ dbName );
+		Log.entry( "done OneToManyDBMap: " + dbName );
 		
-		OneToXDBMapCommonCode.theDone(
-										this.isInitedSuccessfully(),
-										new Reference<Initer>(
-																forwardDB ),
-										new Reference<Initer>(
-																backwardDB ) );
+		OneToXDBMapCommonCode.theDone( isInitedSuccessfully(), new Reference<Initer>( forwardDB ), new Reference<Initer>(
+			backwardDB ) );
 	}
 	
 	
-	protected
-			Level1_Storage_BerkeleyDB
-			getBDBL1()
-	{
+	protected Level1_Storage_BerkeleyDB getBDBL1() {
 		RunTime.assumedNotNull( bdbL1 );
 		return bdbL1;
 	}
@@ -197,10 +156,7 @@ public class OneToManyDBMap<InitialType, TerminalType>
 	/**
 	 * @return
 	 */
-	public
-			String
-			getDBName()
-	{
+	public String getDBName() {
 		RunTime.assumedNotNull( dbName );
 		return dbName;
 	}
@@ -209,13 +165,10 @@ public class OneToManyDBMap<InitialType, TerminalType>
 	/**
 	 * @return
 	 */
-	private
-			Database
-			getForwardDB()
-	{
+	private Database getForwardDB() {
 		RunTime.assumedNotNull( forwardDB );
 		RunTime.assumedTrue( forwardDB.isInitedSuccessfully() );
-		Database d = forwardDB.getDB();
+		final Database d = forwardDB.getDB();
 		RunTime.assumedNotNull( d );
 		return d;
 	}
@@ -224,43 +177,30 @@ public class OneToManyDBMap<InitialType, TerminalType>
 	/**
 	 * @return
 	 */
-	private
-			Database
-			getBackwardDB()
-	{
+	private Database getBackwardDB() {
 		RunTime.assumedNotNull( backwardDB );
 		RunTime.assumedTrue( backwardDB.isInitedSuccessfully() );
-		Database d = backwardDB.getDB();
+		final Database d = backwardDB.getDB();
 		RunTime.assumedNotNull( d );
 		return d;
 	}
 	
 	
-	private
-			void
-			checkData(
-						TerminalType data )
-	{
+	private void checkData( final TerminalType data ) {
 		
 		RunTime.assumedNotNull( data );
 		// 1of3
-		if ( data.getClass() != terminalClass )
-		{
+		if ( data.getClass() != terminalClass ) {
 			RunTime.badCall( "shouldn't allow subclass of dataClass!! or else havoc" );
 		}
 	}
 	
 	
-	private
-			void
-			checkKey(
-						InitialType key )
-	{
+	private void checkKey( final InitialType key ) {
 		
 		RunTime.assumedNotNull( key );
 		// 1of3
-		if ( key.getClass() != initialClass )
-		{
+		if ( key.getClass() != initialClass ) {
 			RunTime.badCall( "shouldn't allow subclass of keyClass!! or else havoc" );
 		}
 	}
@@ -272,13 +212,7 @@ public class OneToManyDBMap<InitialType, TerminalType>
 	 * @return true if vector existed
 	 * @throws DatabaseException
 	 */
-	public
-			boolean
-			isVector(
-						InitialType initialObject,
-						TerminalType terminalObject )
-					throws DatabaseException
-	{
+	public boolean isVector( final InitialType initialObject, final TerminalType terminalObject ) throws DatabaseException {
 		this.checkKey( initialObject );
 		this.checkData( terminalObject );
 		
@@ -286,57 +220,34 @@ public class OneToManyDBMap<InitialType, TerminalType>
 		// another transaction (supposedly) to interlace between the two gets
 		TransactionCapsule txc = TransactionCapsule.getNewTransaction( this.getBDBL1() );
 		
-		DatabaseEntry keyEntry = new DatabaseEntry();
-		initialBinding.objectToEntry(
-										initialObject,
-										keyEntry );
+		final DatabaseEntry keyEntry = new DatabaseEntry();
+		initialBinding.objectToEntry( initialObject, keyEntry );
 		
-		DatabaseEntry dataEntry = new DatabaseEntry();
-		terminalBinding.objectToEntry(
-										terminalObject,
-										dataEntry );
+		final DatabaseEntry dataEntry = new DatabaseEntry();
+		terminalBinding.objectToEntry( terminalObject, dataEntry );
 		
 		OperationStatus ret1 = null, ret2 = null;
-		try
-		{
-			ret1 = this.getForwardDB().getSearchBoth(
-														txc.get(),
-														keyEntry,
-														dataEntry,
-														null );
-			ret2 = this.getBackwardDB().getSearchBoth(
-														txc.get(),
-														dataEntry,
-														keyEntry,
-														null );
+		try {
+			ret1 = this.getForwardDB().getSearchBoth( txc.get(), keyEntry, dataEntry, null );
+			ret2 = this.getBackwardDB().getSearchBoth( txc.get(), dataEntry, keyEntry, null );
 			// if ( ( ( OperationStatus.SUCCESS == ret1 ) && ( OperationStatus.SUCCESS != ret2 ) )
 			// || ( ( OperationStatus.SUCCESS != ret1 ) && ( OperationStatus.SUCCESS == ret2 ) ) )
-			if ( ( OperationStatus.SUCCESS == ret1 )
-					^ ( OperationStatus.SUCCESS == ret2 ) )
-			{
+			if ( ( OperationStatus.SUCCESS == ret1 ) ^ ( OperationStatus.SUCCESS == ret2 ) ) {
 				RunTime.bug( "one exists, the other doesn't; but should either both exist, or both not exist" );
 			}
-		}
-		catch ( Throwable t )
-		{
+		} catch ( final Throwable t ) {
 			RunTime.throPostponed( t );
-			try
-			{
+			try {
 				txc.abort();// this may throw
-			}
-			finally
-			{
+			} finally {
 				txc = null;
 			}
 			RunTime.throwAllThatWerePostponed();
 		}
 		
-		try
-		{
+		try {
 			txc.commit();
-		}
-		finally
-		{
+		} finally {
 			txc = null;
 		}
 		return ( OperationStatus.SUCCESS == ret1 );// ret2 is same
@@ -353,19 +264,10 @@ public class OneToManyDBMap<InitialType, TerminalType>
 	 * @return true if existed already; false if it didn't exist before call
 	 * @throws DatabaseException
 	 */
-	public
-			boolean
-			ensureVector(
-							InitialType initialObject,
-							TerminalType terminalObject )
-	{
+	public boolean ensureVector( final InitialType initialObject, final TerminalType terminalObject ) {
 		
-		RunTime.assumedNotNull(
-								initialObject,
-								terminalObject );
-		return ( OperationStatus.KEYEXIST == this.internal_makeVector(
-																		initialObject,
-																		terminalObject ) );
+		RunTime.assumedNotNull( initialObject, terminalObject );
+		return ( OperationStatus.KEYEXIST == this.internal_makeVector( initialObject, terminalObject ) );
 	}
 	
 	
@@ -378,71 +280,48 @@ public class OneToManyDBMap<InitialType, TerminalType>
 	 *             if inconsistency detected (ie. one link exists the other
 	 *             doesn't)
 	 */
-	private
-			OperationStatus
-			internal_makeVector(
-									InitialType initialObject,
-									TerminalType terminalObject )
-	{
+	private OperationStatus internal_makeVector( final InitialType initialObject, final TerminalType terminalObject ) {
 		this.checkKey( initialObject );
 		this.checkData( terminalObject );
 		
-		TransactionCapsule txc = TransactionCapsule.getNewTransaction( this.getBDBL1() );
+		TransactionCapsule txc;
+		try {
+			txc = TransactionCapsule.getNewTransaction( this.getBDBL1() );
+		} catch ( final DatabaseException e ) {
+			throw Q.rethrow( e );
+		}
 		
-		DatabaseEntry keyEntry = new DatabaseEntry();
-		initialBinding.objectToEntry(
-										initialObject,
-										keyEntry );
+		final DatabaseEntry keyEntry = new DatabaseEntry();
+		initialBinding.objectToEntry( initialObject, keyEntry );
 		
-		DatabaseEntry dataEntry = new DatabaseEntry();
-		terminalBinding.objectToEntry(
-										terminalObject,
-										dataEntry );
+		final DatabaseEntry dataEntry = new DatabaseEntry();
+		terminalBinding.objectToEntry( terminalObject, dataEntry );
 		
 		boolean commit = false;
 		OperationStatus ret1 = null, ret2 = null;
-		try
-		{
-			ret1 = this.getForwardDB().putNoDupData(
-														txc.get(),
-														keyEntry,
-														dataEntry );
-			ret2 = this.getBackwardDB().putNoDupData(
-														txc.get(),
-														dataEntry,
-														keyEntry );
-			if ( ( OperationStatus.SUCCESS == ret1 )
-					&& ( OperationStatus.SUCCESS == ret2 ) )
-			{
+		try {
+			ret1 = this.getForwardDB().putNoDupData( txc.get(), keyEntry, dataEntry );
+			ret2 = this.getBackwardDB().putNoDupData( txc.get(), dataEntry, keyEntry );
+			if ( ( OperationStatus.SUCCESS == ret1 ) && ( OperationStatus.SUCCESS == ret2 ) ) {
 				commit = true;
-			}
-			else
-			{
+			} else {
 				// if ( ( ( OperationStatus.KEYEXIST == ret1 ) && ( OperationStatus.KEYEXIST != ret2 ) )
 				// || ( ( OperationStatus.KEYEXIST != ret1 ) && ( OperationStatus.KEYEXIST == ret2 ) ) )
-				if ( ( OperationStatus.KEYEXIST == ret1 )
-						^ ( OperationStatus.KEYEXIST == ret2 ) )
-				{
+				if ( ( OperationStatus.KEYEXIST == ret1 ) ^ ( OperationStatus.KEYEXIST == ret2 ) ) {
 					RunTime.bug( "one link exists and the other does not; should either both exist or neither" );
 				}
 			}
 			
-		}
-		finally
-		{
-			try
-			{
-				if ( commit )
-				{
+		} catch ( final DatabaseException e ) {
+			throw Q.rethrow( e );
+		} finally {
+			try {
+				if ( commit ) {
 					txc.commit();
-				}
-				else
-				{
+				} else {
 					txc.abort();
 				}
-			}
-			finally
-			{
+			} finally {
 				txc = null;
 			}
 		}
@@ -456,21 +335,18 @@ public class OneToManyDBMap<InitialType, TerminalType>
 	 * @return
 	 * @throws DatabaseException
 	 */
-	public
-			BDBVectorIterator<InitialType, TerminalType>
-			getIterator_on_Terminals_of(
-											InitialType initialObject )
-	{
+	public BDBVectorIterator<InitialType, TerminalType> getIterator_on_Terminals_of( final InitialType initialObject ) {
 		
 		// DatabaseEntry keyEntry = new DatabaseEntry();
 		// initialBinding.objectToEntry( initialObject, keyEntry );
 		BDBVectorIterator<InitialType, TerminalType> ret;
-		ret = new BDBVectorIterator<InitialType, TerminalType>(
-																this.getBDBL1(),
-																this.getForwardDB(),
-																initialObject,
-																initialBinding,
-																terminalBinding );
+		ret =
+			new BDBVectorIterator<InitialType, TerminalType>(
+				this.getBDBL1(),
+				this.getForwardDB(),
+				initialObject,
+				initialBinding,
+				terminalBinding );
 		// ret.init( null );
 		// Factory.getNewInstanceAndInitWithoutParams( BDBVectorIterator.class, this.getBDBL1(), this.getForwardDB(),
 		// initialObject,
@@ -481,21 +357,18 @@ public class OneToManyDBMap<InitialType, TerminalType>
 	}
 	
 	
-	public
-			BDBVectorIterator<TerminalType, InitialType>
-			getIterator_on_Initials_of(
-										TerminalType terminalObject )
-					throws DatabaseException
+	public BDBVectorIterator<TerminalType, InitialType> getIterator_on_Initials_of( final TerminalType terminalObject )
 	// FIXME: see where DatabaseException doesn't need to be declared as thrown
 	{
 		
 		BDBVectorIterator<TerminalType, InitialType> ret;
-		ret = new BDBVectorIterator<TerminalType, InitialType>(
-																this.getBDBL1(),
-																this.getBackwardDB(),
-																terminalObject,
-																terminalBinding,
-																initialBinding );
+		ret =
+			new BDBVectorIterator<TerminalType, InitialType>(
+				this.getBDBL1(),
+				this.getBackwardDB(),
+				terminalObject,
+				terminalBinding,
+				initialBinding );
 		// ret.init( null );
 		// Factory.getNewInstanceAndInitWithoutParams( BDBVectorIterator.class, this.getBDBL1(), this.getBackwardDB(),
 		// terminalObject, terminalBinding, initialBinding );
@@ -504,42 +377,26 @@ public class OneToManyDBMap<InitialType, TerminalType>
 	}
 	
 	
-	public
-			long
-			countInitials(
-							TerminalType ofTerminalObject )
-					throws DatabaseException
-	{
+	public long countInitials( final TerminalType ofTerminalObject ) {
 		
-		BDBVectorIterator<TerminalType, InitialType> vi = this.getIterator_on_Initials_of( ofTerminalObject );
+		final BDBVectorIterator<TerminalType, InitialType> vi = this.getIterator_on_Initials_of( ofTerminalObject );
 		long count = -1;
-		try
-		{
+		try {
 			count = vi.count();
-		}
-		finally
-		{
+		} finally {
 			vi.close();
 		}
 		return count;
 	}
 	
 	
-	public
-			long
-			countTerminals(
-							InitialType ofInitialObject )
-					throws DatabaseException
-	{
+	public long countTerminals( final InitialType ofInitialObject ) {
 		
-		BDBVectorIterator<InitialType, TerminalType> vi = this.getIterator_on_Terminals_of( ofInitialObject );
+		final BDBVectorIterator<InitialType, TerminalType> vi = this.getIterator_on_Terminals_of( ofInitialObject );
 		long count = -1;
-		try
-		{
+		try {
 			count = vi.count();
-		}
-		finally
-		{
+		} finally {
 			vi.close();
 		}
 		return count;
@@ -554,13 +411,8 @@ public class OneToManyDBMap<InitialType, TerminalType>
 	 * @return null if not found
 	 * @throws DatabaseException
 	 */
-	public
-			TerminalType
-			findCommonTerminalForInitials(
-											InitialType initial1,
-											InitialType initial2 )
-					throws DatabaseException
-	{
+	public TerminalType findCommonTerminalForInitials( final InitialType initial1, final InitialType initial2 )
+			throws DatabaseException {
 		
 		this.checkKey( initial1 );
 		this.checkKey( initial2 );
@@ -569,40 +421,26 @@ public class OneToManyDBMap<InitialType, TerminalType>
 		BDBVectorIterator<InitialType, TerminalType> iterator = iter1;
 		InitialType comparator = initial2;
 		BDBVectorIterator<InitialType, TerminalType> iter2 = null;
-		try
-		{
+		try {
 			iter2 = this.getIterator_on_Terminals_of( initial2 );
-			try
-			{
-				if ( iter1.count() > iter2.count() )
-				{
+			try {
+				if ( iter1.count() > iter2.count() ) {
 					iterator = iter2;
 					comparator = initial1;
 				}
-			}
-			finally
-			{
+			} finally {
 				// deInit the unused one
-				if ( iterator == iter2 )
-				{
-					try
-					{
+				if ( iterator == iter2 ) {
+					try {
 						iter1.close();
-					}
-					finally
-					{
+					} finally {
 						iter1 = null;
 					}
-				}
-				else
-				{
-					try
-					{
+				} else {
+					try {
 						iter2.close();
 						
-					}
-					finally
-					{
+					} finally {
 						iter2 = null;
 					}
 				}
@@ -612,34 +450,22 @@ public class OneToManyDBMap<InitialType, TerminalType>
 			
 			iterator.goFirst();
 			TerminalType now = iterator.now();
-			while ( null != now )
-			{
-				if ( this.isVector(
-									comparator,
-									now ) )
-				{
+			while ( null != now ) {
+				if ( this.isVector( comparator, now ) ) {
 					// found one
-					if ( null != found )
-					{
+					if ( null != found ) {
 						RunTime.bug( "supposed to be only one, but we found two" );
-					}
-					else
-					{
+					} else {
 						found = now;
 					}
 				}
 				iterator.goNext();
 				now = iterator.now();
 			}
-		}
-		finally
-		{
-			try
-			{
+		} finally {
+			try {
 				iterator.close();
-			}
-			finally
-			{
+			} finally {
 				iterator = null;
 			}
 		}
@@ -655,27 +481,16 @@ public class OneToManyDBMap<InitialType, TerminalType>
 	 * @return true if existed
 	 * @throws DatabaseException
 	 */
-	public
-			boolean
-			removeVector(
-							InitialType initialObject,
-							TerminalType terminalObject )
-					throws DatabaseException
-	{
+	public boolean removeVector( final InitialType initialObject, final TerminalType terminalObject ) throws DatabaseException {
 		
-		RunTime.assumedNotNull(
-								initialObject,
-								terminalObject );
+		RunTime.assumedNotNull( initialObject, terminalObject );
 		
 		BDBVectorIterator<InitialType, TerminalType> iter = this.getIterator_on_Terminals_of( initialObject );
 		boolean found1 = false;
-		try
-		{
+		try {
 			iter.goFirst();
-			while ( null != iter.now() )
-			{
-				if ( iter.now() == terminalObject )
-				{
+			while ( null != iter.now() ) {
+				if ( iter.now() == terminalObject ) {
 					// found it
 					found1 = true;
 					break;
@@ -684,18 +499,13 @@ public class OneToManyDBMap<InitialType, TerminalType>
 			}
 			
 			
-			if ( found1 )
-			{
-				BDBVectorIterator<TerminalType, InitialType> reverseIter = this
-						.getIterator_on_Initials_of( terminalObject );
+			if ( found1 ) {
+				BDBVectorIterator<TerminalType, InitialType> reverseIter = this.getIterator_on_Initials_of( terminalObject );
 				boolean found2 = false;
-				try
-				{
+				try {
 					reverseIter.goFirst();
-					while ( null != reverseIter.now() )
-					{
-						if ( reverseIter.now() == initialObject )
-						{
+					while ( null != reverseIter.now() ) {
+						if ( reverseIter.now() == initialObject ) {
 							// found it
 							found2 = true;
 							break;
@@ -705,43 +515,31 @@ public class OneToManyDBMap<InitialType, TerminalType>
 					RunTime.assumedTrue( found2 );// must have!
 					// TODO encompass in a transaction
 					RunTime.assumedNotNull( reverseIter.now() );
-					long size1 = iter.count();
-					long size2 = reverseIter.count();
+					final long size1 = iter.count();
+					final long size2 = reverseIter.count();
 					RunTime.assumedNotNull( reverseIter.now() );
 					RunTime.assumedTrue( iter.delete() );
 					RunTime.assumedNotNull( reverseIter.now() );
 					RunTime.assumedTrue( reverseIter.delete() );
 					RunTime.assumedTrue( ( size1 - 1 ) == iter.count() );
 					RunTime.assumedTrue( ( size2 - 1 ) == reverseIter.count() );
-				}
-				finally
-				{
-					try
-					{
+				} finally {
+					try {
 						reverseIter.close();
-					}
-					finally
-					{
+					} finally {
 						reverseIter = null;
 					}
 				}
 			}
 			
-		}
-		finally
-		{
-			try
-			{
+		} finally {
+			try {
 				iter.close();
-			}
-			finally
-			{
+			} finally {
 				iter = null;
 			}
 		}
-		RunTime.assumedFalse( this.isVector(
-												initialObject,
-												terminalObject ) );
+		RunTime.assumedFalse( this.isVector( initialObject, terminalObject ) );
 		return found1;
 	}
 	

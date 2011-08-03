@@ -25,9 +25,9 @@ package org.references;
 
 
 
-import java.util.NoSuchElementException;
+import java.util.*;
 
-import org.dml.tools.RunTime;
+import org.dml.tools.*;
 
 
 
@@ -44,11 +44,12 @@ public class ListOfNonNullObjects<E> extends ListOfObjects<E> {
 	 * @return
 	 */
 	@Override
-	public boolean containsObject( E obj ) {
-
+	public boolean containsObject( final E obj ) {
+		
 		RunTime.assumedNotNull( obj );
 		return super.containsObject( obj );
 	}
+	
 	
 	/**
 	 * @param obj
@@ -57,11 +58,12 @@ public class ListOfNonNullObjects<E> extends ListOfObjects<E> {
 	 * @return true if obj is at index
 	 */
 	@Override
-	public boolean containsObjectAtPos( E obj, int index ) {
-
+	public boolean containsObjectAtPos( final E obj, final int index ) {
+		
 		RunTime.assumedNotNull( obj );
 		return super.containsObjectAtPos( obj, index );
 	}
+	
 	
 	/**
 	 * creates a new NodeRef to be added to this list, but it's not added via
@@ -71,22 +73,24 @@ public class ListOfNonNullObjects<E> extends ListOfObjects<E> {
 	 * @return new reference to <tt>obj</tt>
 	 */
 	@Override
-	protected ChainedReference<E> newRef( E obj ) {
-
+	protected ChainedReference<E> newRef( final E obj ) {
+		
 		RunTime.assumedNotNull( obj );// must not be null
 		return super.newRef( obj );
 	}
+	
 	
 	/**
 	 * @param obj
 	 * @return null or the reference containing the obj
 	 */
 	@Override
-	public ChainedReference<E> getRef( E obj ) {
-
+	public ChainedReference<E> getRef( final E obj ) {
+		
 		RunTime.assumedNotNull( obj );
 		return super.getRef( obj );
 	}
+	
 	
 	/**
 	 * @param pos
@@ -94,18 +98,19 @@ public class ListOfNonNullObjects<E> extends ListOfObjects<E> {
 	 * @return null or the object at specified position
 	 */
 	@Override
-	public E getObjectAt( Position pos ) {
-
+	public E getObjectAt( final Position pos ) {
+		
 		RunTime.assumedNotNull( pos );
 		E obj = null;
 		try {
 			obj = super.getObjectAt( pos );
-		} catch ( NoSuchElementException nsee ) {
+		} catch ( final NoSuchElementException nsee ) {
 			return null;
 		}
 		RunTime.assumedNotNull( obj );
 		return obj;
 	}
+	
 	
 	/**
 	 * @param index
@@ -113,13 +118,13 @@ public class ListOfNonNullObjects<E> extends ListOfObjects<E> {
 	 * @return null(aka not found) or the object at index
 	 */
 	@Override
-	public E getObjectAt( int index ) {
-
-		RunTime.assumedNotNull( index );
+	public E getObjectAt( final int index ) {
+		
+		// RunTime.assumedNotNull( index );
 		E obj = null;
 		try {
 			obj = super.getObjectAt( index );
-		} catch ( NoSuchElementException nsee ) {
+		} catch ( final NoSuchElementException nsee ) {
 			return null;
 		}
 		RunTime.assumedNotNull( obj );
@@ -134,17 +139,17 @@ public class ListOfNonNullObjects<E> extends ListOfObjects<E> {
 	 *            ...which object
 	 * @return null or the object
 	 */
-	public E getObjectAt( Position pos, E objPos ) {
-
+	public E getObjectAt( final Position pos, final E objPos ) {
+		
 		RunTime.assumedNotNull( pos, objPos );
 		E ret = null;
-		ChainedReference<E> refPos = this.getRef( objPos );
+		final ChainedReference<E> refPos = this.getRef( objPos );
 		if ( null == refPos ) {
 			// couldn't find objPos
 			RunTime.badCall( "position object not found" );
 		}
 		// ie. what's the ref that's BEFORE(pos) ref1(refPos) ?
-		ChainedReference<E> ref = this.getRefAt( pos, refPos );
+		final ChainedReference<E> ref = this.getRefAt( pos, refPos );
 		if ( null == ref ) {
 			ret = null;// not found
 		} else {
@@ -162,11 +167,12 @@ public class ListOfNonNullObjects<E> extends ListOfObjects<E> {
 	 * @return the ref
 	 */
 	@Override
-	public ChainedReference<E> addLast( E obj ) {
-
+	public ChainedReference<E> addLast( final E obj ) {
+		
 		RunTime.assumedNotNull( obj );
 		return super.addLast( obj );
 	}
+	
 	
 	/**
 	 * @param obj
@@ -175,8 +181,8 @@ public class ListOfNonNullObjects<E> extends ListOfObjects<E> {
 	 * @return the ref to the object
 	 */
 	@Override
-	public ChainedReference<E> addFirst( E obj ) {
-
+	public ChainedReference<E> addFirst( final E obj ) {
+		
 		RunTime.assumedNotNull( obj );
 		return super.addFirst( obj );
 	}
@@ -189,8 +195,8 @@ public class ListOfNonNullObjects<E> extends ListOfObjects<E> {
 	 *         one added)
 	 */
 	@Override
-	public ChainedReference<E> insert( E obj, Position position ) {
-
+	public ChainedReference<E> insert( final E obj, final Position position ) {
+		
 		RunTime.assumedNotNull( obj, position );
 		switch ( position ) {
 		case FIRST:
@@ -203,6 +209,7 @@ public class ListOfNonNullObjects<E> extends ListOfObjects<E> {
 		return null;// not reached
 	}
 	
+	
 	/**
 	 * @param newObj
 	 *            can't be null; can already exist;
@@ -210,28 +217,29 @@ public class ListOfNonNullObjects<E> extends ListOfObjects<E> {
 	 * @param posObj
 	 * @return false always
 	 */
-	public boolean insert( E newObj, Position pos, E posObj ) {
-
+	public boolean insert( final E newObj, final Position pos, final E posObj ) {
+		
 		RunTime.assumedNotNull( newObj, pos, posObj );
 		
-		ChainedReference<E> posRef = this.getRef( posObj );
+		final ChainedReference<E> posRef = this.getRef( posObj );
 		if ( null == posRef ) {
 			// posObj non existent? stop some bugs by throwing exception
 			throw new NoSuchElementException();
 		}
-		ChainedReference<E> newRef = this.newRef( newObj );
-		boolean ret = this.insertRefAt( newRef, pos, posRef );
+		final ChainedReference<E> newRef = this.newRef( newObj );
+		final boolean ret = insertRefAt( newRef, pos, posRef );
 		RunTime.assumedFalse( ret );
 		return ret;
 	}
+	
 	
 	/**
 	 * @param obj
 	 * @return true if existed; either way after call it's removed
 	 */
 	@Override
-	public boolean removeObject( E obj ) {
-
+	public boolean removeObject( final E obj ) {
+		
 		RunTime.assumedNotNull( obj );
 		return super.removeObject( obj );
 	}

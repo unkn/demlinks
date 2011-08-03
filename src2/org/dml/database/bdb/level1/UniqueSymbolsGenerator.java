@@ -25,15 +25,12 @@ package org.dml.database.bdb.level1;
 
 
 
-import org.dml.database.bdb.level2.Level2_Storage_BerkeleyDB;
-import org.dml.level010.Symbol;
-import org.dml.level010.TheStoredSymbol;
-import org.dml.tools.Initer;
-import org.dml.tools.RunTime;
-import org.dml.tracking.Factory;
-import org.references.method.MethodParams;
+import org.dml.level010.*;
+import org.dml.tools.*;
+import org.dml.tracking.*;
+import org.references.method.*;
 
-import com.sleepycat.je.DatabaseException;
+import com.sleepycat.db.*;
 
 
 
@@ -41,10 +38,7 @@ import com.sleepycat.je.DatabaseException;
  * 
  *
  */
-public class UniqueSymbolsGenerator
-		extends
-		Initer
-{
+public class UniqueSymbolsGenerator extends Initer {
 	
 	// it's null only once even if reInit() is called later
 	private DBSequence			seq						= null;
@@ -57,39 +51,26 @@ public class UniqueSymbolsGenerator
 	Level1_Storage_BerkeleyDB	bdbL1;
 	
 	
-	public UniqueSymbolsGenerator(
-			Level1_Storage_BerkeleyDB bdbLevel1 )
-	{
+	public UniqueSymbolsGenerator( final Level1_Storage_BerkeleyDB bdbLevel1 ) {
 		
 		RunTime.assumedNotNull( bdbLevel1 );
 		RunTime.assumedTrue( bdbLevel1.isInitedSuccessfully() );
 		bdbL1 = bdbLevel1;
 	}
 	
-
+	
 	/**
 	 * @return
-	 * @throws DatabaseException
 	 */
-	private final
-			DBSequence
-			getDBSeq()
-					throws DatabaseException
-	{
+	private final DBSequence getDBSeq() {
 		
-		if ( null == seq )
-		{
+		if ( null == seq ) {
 			// init once:
-			seq = Factory.getNewInstanceAndInitWithoutMethodParams(
-																	DBSequence.class,
-																	bdbL1,
-																	seq_UniqueSymbolsPuller );
+			seq = Factory.getNewInstanceAndInitWithoutMethodParams( DBSequence.class, bdbL1, seq_UniqueSymbolsPuller );
 			// seq = new DBSequence( bdbL1, seq_UniqueSymbolsPuller );
 			// seq.init( null );
 			
-		}
-		else
-		{
+		} else {
 			Factory.reInitIfNotInited( seq );
 			// if ( !seq.isInited() ) {
 			// seq.reInit();
@@ -99,66 +80,45 @@ public class UniqueSymbolsGenerator
 		return seq;
 	}
 	
-
+	
 	/**
 	 * @return a long that doesn't exist yet (and never will, even if
 	 *         exceptions occur)
 	 * @throws DatabaseException
 	 */
-	private
-			long
-			getUniqueLong()
-					throws DatabaseException
-	{
+	private long getUniqueLong() throws DatabaseException {
 		
-		return this.getDBSeq().getSequence().get(
-													null,
-													SEQ_DELTA );
+		return getDBSeq().getSequence().get( null, SEQ_DELTA );
 	}
 	
-
-	public final
-			Symbol
-			getNewUniqueSymbol()
-					throws DatabaseException
-	{
+	
+	public final Symbol getNewUniqueSymbol() throws DatabaseException {
 		
 		// this new Symbol is not saved anywhere in the database, but it's
 		// ensured that it will not be created again, so it's unique even if you
 		// don't save it in the database later
-		long l = this.getUniqueLong();
+		final long l = getUniqueLong();
 		RunTime.assumedTrue( l < 4123123123l );// just one silly limit, it can go way much higher (forgot how much tho)
-		Symbol sym = Symbol.getNew(
-									bdbL1,
-									TheStoredSymbol.getNew( l ) );
+		final Symbol sym = Symbol.getNew( bdbL1, TheStoredSymbol.getNew( new Long( l ) ) );
 		RunTime.assumedNotNull( sym );
 		return sym;
 	}
 	
-
+	
 	@Override
-	protected
-			void
-			done(
-					MethodParams params )
-	{
+	protected void done( final MethodParams params ) {
 		
 		// close seq
-		if ( null != seq )
-		{
+		if ( null != seq ) {
 			// seq = seq.done();
 			Factory.deInit( seq );
 			// don't null it
 		}
 	}
 	
-
+	
 	@Override
-	protected
-			void
-			start(
-					MethodParams params )
-	{
+	protected void start( final MethodParams params ) {
 		
 		RunTime.assumedNull( params );
 	}

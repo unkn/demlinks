@@ -25,19 +25,12 @@ package org.dml.database.bdb.level2;
 
 
 
-import org.dml.database.bdb.level1.Level1_Storage_BerkeleyDB;
-import org.dml.tools.Initer;
-import org.dml.tools.RunTime;
-import org.references.method.MethodParams;
+import org.dml.database.bdb.level1.*;
+import org.dml.tools.*;
+import org.q.*;
 
-import com.sleepycat.bind.EntryBinding;
-import com.sleepycat.je.Cursor;
-import com.sleepycat.je.CursorConfig;
-import com.sleepycat.je.Database;
-import com.sleepycat.je.DatabaseEntry;
-import com.sleepycat.je.DatabaseException;
-import com.sleepycat.je.LockMode;
-import com.sleepycat.je.OperationStatus;
+import com.sleepycat.bind.*;
+import com.sleepycat.db.*;
 
 
 
@@ -57,10 +50,7 @@ import com.sleepycat.je.OperationStatus;
  * @param <TerminalType>
  *            iterates on these
  */
-public class BDBVectorIterator<InitialType, TerminalType>
-		implements
-		VectorIterator<TerminalType>
-{
+public class BDBVectorIterator<InitialType, TerminalType> implements VectorIterator<TerminalType> {
 	
 	private final Database						db;
 	private final InitialType					initialObject;								// key
@@ -88,273 +78,202 @@ public class BDBVectorIterator<InitialType, TerminalType>
 	 * @param initialBinding1
 	 * @param terminalBinding1
 	 */
-	public BDBVectorIterator(
-			Level1_Storage_BerkeleyDB bdb_L1,
-			Database whichPriDB,
-			InitialType initialObject1,
-			EntryBinding<InitialType> initialBinding1,
-			EntryBinding<TerminalType> terminalBinding1 )
-	{
+	public BDBVectorIterator( final Level1_Storage_BerkeleyDB bdb_L1, final Database whichPriDB,
+			final InitialType initialObject1, final EntryBinding<InitialType> initialBinding1,
+			final EntryBinding<TerminalType> terminalBinding1 ) {
 		
-		RunTime.assumedNotNull(
-								bdb_L1,
-								whichPriDB,
-								initialObject1,
-								initialBinding1,
-								terminalBinding1 );
+		RunTime.assumedNotNull( bdb_L1, whichPriDB, initialObject1, initialBinding1, terminalBinding1 );
 		bdbL1 = bdb_L1;
 		db = whichPriDB;
 		initialObject = initialObject1;
 		initialBinding = initialBinding1;
 		terminalBinding = terminalBinding1;
 		deKey = new DatabaseEntry();
-		initialBinding.objectToEntry(
-										initialObject,
-										deKey );
+		initialBinding.objectToEntry( initialObject, deKey );
 		deData = new DatabaseEntry();
 		// TODO add transaction parameter and if null then make own tx
 		// maybe this won't work as expected; think again
 	}
 	
-
+	
 	@Override
-	public
-			Level1_Storage_BerkeleyDB
-			getBDBL1()
-	{
+	public Level1_Storage_BerkeleyDB getBDBL1() {
 		RunTime.assumedNotNull( bdbL1 );
 		return bdbL1;
 	}
 	
-
-	private final
-			Cursor
-			getCursor()
-					throws DatabaseException
-	{
+	
+	private final Cursor getCursor() throws DatabaseException {
 		
-		if ( null == cursor )
-		{
+		if ( null == cursor ) {
 			txn = TransactionCapsule.getNewTransaction( this.getBDBL1() );
-			cursor = db.openCursor(
-									txn.get(),
-									CursorConfig.READ_COMMITTED );
+			cursor = db.openCursor( txn.get(), CursorConfig.READ_COMMITTED );
 		}
 		RunTime.assumedNotNull( cursor );
 		return cursor;
 	}
 	
-
+	
 	/**
-	 * @throws DatabaseException
 	 */
 	@Override
-	public
-			void
-			goFirst()
-					throws DatabaseException
-	{
+	public void goFirst() {
 		
 		deData.setSize( 0 );
 		RunTime.assumedTrue( deData.getOffset() == 0 );
-		OperationStatus ret = this.getCursor().getSearchKey(
-																deKey,
-																deData,
-																Locky );
-		if ( OperationStatus.SUCCESS == ret )
-		{
-			this.setNow( terminalBinding.entryToObject( deData ) );
+		OperationStatus ret;
+		try {
+			ret = this.getCursor().getSearchKey( deKey, deData, Locky );
+		} catch ( final DatabaseException e ) {
+			throw Q.rethrow( e );
 		}
-		else
-		{
+		if ( OperationStatus.SUCCESS == ret ) {
+			this.setNow( terminalBinding.entryToObject( deData ) );
+		} else {
 			this.setNow( null );
 		}
 	}
 	
-
+	
 	@Override
-	public
-			void
-			goTo(
-					TerminalType terminal )
-					throws DatabaseException
-	{
+	public void goTo( final TerminalType terminal ) {
 		
-		terminalBinding.objectToEntry(
-										terminal,
-										deData );
+		terminalBinding.objectToEntry( terminal, deData );
 		RunTime.assumedTrue( deData.getOffset() == 0 );
-		OperationStatus ret = this.getCursor().getSearchBoth(
-																deKey,
-																deData,
-																Locky );
-		if ( OperationStatus.SUCCESS == ret )
-		{
-			this.setNow( terminalBinding.entryToObject( deData ) );
+		OperationStatus ret;
+		try {
+			ret = this.getCursor().getSearchBoth( deKey, deData, Locky );
+		} catch ( final DatabaseException e ) {
+			throw Q.rethrow( e );
 		}
-		else
-		{
+		if ( OperationStatus.SUCCESS == ret ) {
+			this.setNow( terminalBinding.entryToObject( deData ) );
+		} else {
 			this.setNow( null );
 		}
 	}
 	
-
+	
 	@Override
-	public
-			TerminalType
-			now()
-	{
+	public TerminalType now() {
 		
 		return currentTerminalObject;
 	}
 	
-
-	private
-			void
-			setNow(
-					TerminalType newNow )
-	{
+	
+	private void setNow( final TerminalType newNow ) {
 		
 		currentTerminalObject = newNow;// null allowed
 	}
 	
-
+	
 	@Override
-	public
-			void
-			goNext()
-					throws DatabaseException
-	{
+	public void goNext() {
 		
-		if ( null != this.now() )
-		{
+		if ( null != this.now() ) {
 			RunTime.assumedTrue( deData.getOffset() == 0 );
-			OperationStatus ret = this.getCursor().getNextDup(
-																deKey,
-																deData,
-																Locky );
-			if ( OperationStatus.SUCCESS == ret )
-			{
-				this.setNow( terminalBinding.entryToObject( deData ) );
+			OperationStatus ret;
+			try {
+				ret = this.getCursor().getNextDup( deKey, deData, Locky );
+			} catch ( final DatabaseException e ) {
+				throw Q.rethrow( e );
 			}
-			else
-			{
+			if ( OperationStatus.SUCCESS == ret ) {
+				this.setNow( terminalBinding.entryToObject( deData ) );
+			} else {
 				this.setNow( null );
 			}
-		}
-		else
-		{
+		} else {
 			RunTime.badCall( "called goNext() while now() was null" );
 		}
 	}
 	
-
+	
 	@Override
-	public
-			void
-			goPrev()
-					throws DatabaseException
-	{
+	public void goPrev() {
 		
-		if ( null != this.now() )
-		{
+		if ( null != this.now() ) {
 			RunTime.assumedTrue( deData.getOffset() == 0 );
-			OperationStatus ret = this.getCursor().getPrevDup(
-																deKey,
-																deData,
-																Locky );
-			if ( OperationStatus.SUCCESS == ret )
-			{
-				this.setNow( terminalBinding.entryToObject( deData ) );
+			OperationStatus ret;
+			try {
+				ret = this.getCursor().getPrevDup( deKey, deData, Locky );
+			} catch ( final DatabaseException e ) {
+				throw Q.rethrow( e );
 			}
-			else
-			{
+			if ( OperationStatus.SUCCESS == ret ) {
+				this.setNow( terminalBinding.entryToObject( deData ) );
+			} else {
 				this.setNow( null );
 			}
-		}
-		else
-		{
+		} else {
 			RunTime.badCall( "called goPrev() while now() was null" );
 		}
 	}
 	
-
+	
 	@Override
-	public
-			long
-			count()
-	{
-		if ( this.now() == null )
-		{
+	public long count() {
+		if ( this.now() == null ) {
 			this.goFirst();
-			if ( null == this.now() )
-			{
+			if ( null == this.now() ) {
 				return 0;
 			}
-			int ret = this.getCursor().count();
+			int ret;
+			try {
+				ret = this.getCursor().count();
+			} catch ( final DatabaseException e ) {
+				throw Q.rethrow( e );
+			}
 			this.setNow( null );
 			return ret;
-		}
-		else
-		{
-			return this.getCursor().count();
+		} else {
+			try {
+				return this.getCursor().count();
+			} catch ( final DatabaseException e ) {
+				throw Q.rethrow( e );
+			}
 		}
 	}
 	
-
+	
 	@Override
-	public final
-			void
-			close()
-	{
+	public final void close() {
 		
-		if ( null != cursor )
-		{
-			try
-			{
+		if ( null != cursor ) {
+			try {
 				cursor.close();
-			}
-			catch ( Throwable t )
-			{
+			} catch ( final Throwable t ) {
 				RunTime.throPostponed( t );
-				try
-				{
+				try {
 					txn.abort();
-				}
-				finally
-				{
+				} finally {
 					txn = null;
 				}
 				RunTime.throwAllThatWerePostponed();
-			}
-			finally
-			{
+			} finally {
 				cursor = null;
 			}
-			try
-			{
+			try {
 				txn.commit();
-			}
-			finally
-			{
+			} finally {
 				txn = null;
 			}
 		}
 	}
 	
-
+	
 	@Override
-	public
-			boolean
-			delete()
-					throws DatabaseException
-	{
+	public boolean delete() {
 		
-		if ( null == this.now() )
-		{
+		if ( null == this.now() ) {
 			return false;
 		}
-		OperationStatus ret = this.getCursor().delete();
+		OperationStatus ret;
+		try {
+			ret = this.getCursor().delete();
+		} catch ( final DatabaseException e ) {
+			throw Q.rethrow( e );
+		}
 		this.setNow( null );
 		RunTime.assumedTrue( OperationStatus.SUCCESS == ret );
 		return OperationStatus.SUCCESS == ret;

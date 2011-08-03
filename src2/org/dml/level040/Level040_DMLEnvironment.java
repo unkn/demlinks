@@ -25,12 +25,11 @@ package org.dml.level040;
 
 
 
-import org.dml.level010.JavaID;
-import org.dml.level010.Symbol;
-import org.dml.level025.SetOfTerminalSymbols;
-import org.dml.level030.Level030_DMLEnvironment;
-import org.dml.tools.RunTime;
-import org.references.method.MethodParams;
+import org.dml.level010.*;
+import org.dml.level025.*;
+import org.dml.level030.*;
+import org.dml.tools.*;
+import org.references.method.*;
 
 
 
@@ -45,7 +44,8 @@ public class Level040_DMLEnvironment extends Level030_DMLEnvironment {
 	private static final JavaID	allowDUPs_JavaID				= JavaID.ensureJavaIDFor( "allowDUPs" );
 	public SetOfTerminalSymbols	allowDUPs_Set					= null;
 	
-	private static final JavaID	allListsOOSWFF_JavaID			= JavaID.ensureJavaIDFor( "AllListOrderedOfSymbolsWithFastFind" );
+	private static final JavaID	allListsOOSWFF_JavaID			= JavaID
+																	.ensureJavaIDFor( "AllListOrderedOfSymbolsWithFastFind" );
 	public SetOfTerminalSymbols	allListsOOSWFF_Set				= null;
 	private static final JavaID	allListsOOS_JavaID				= JavaID.ensureJavaIDFor( "AllListOrderedOfSymbols" );
 	public SetOfTerminalSymbols	allListsOOS_Set					= null;
@@ -64,33 +64,36 @@ public class Level040_DMLEnvironment extends Level030_DMLEnvironment {
 	private static final JavaID	allRef2ElementsInEC_JavaID		= JavaID.ensureJavaIDFor( "allRef2Elements in ElementCapsules" );
 	public SetOfTerminalSymbols	allRef2ElementsInEC_Set			= null;
 	
+	
 	@Override
-	protected void start( MethodParams params ) {
-
+	protected void start( final MethodParams params ) {
+		
 		super.start( params );
-		this.initGeneralSymbols();
+		initGeneralSymbols();
 	}
+	
 	
 	/**
 	 * protected so we can override, else would've been private
 	 */
 	protected void initGeneralSymbols() {
-
+		
 		// persistent across restarts, and whatever the Symbol is, it is
 		// identifiable by the same JavaID no matter what
-		allowNull_Set = this.getAsSet( this.ensureSymbol( allowNull_JavaID ) );
-		allowDUPs_Set = this.getAsSet( this.ensureSymbol( allowDUPs_JavaID ) );
+		allowNull_Set = getAsSet( ensureSymbol( allowNull_JavaID ) );
+		allowDUPs_Set = getAsSet( ensureSymbol( allowDUPs_JavaID ) );
 		
-		allListsOOSWFF_Set = this.getAsSet( this.ensureSymbol( allListsOOSWFF_JavaID ) );
-		allListsOOS_Set = this.getAsSet( this.ensureSymbol( allListsOOS_JavaID ) );
-		allListsOOEC_Set = this.getAsSet( this.ensureSymbol( allListsOOEC_JavaID ) );
-		allHeads_Set = this.getAsSet( this.ensureSymbol( allHeads_JavaID ) );
-		allTails_Set = this.getAsSet( this.ensureSymbol( allTails_JavaID ) );
-		allElementCapsules_Set = this.getAsSet( this.ensureSymbol( allElementCapsules_JavaID ) );
-		allPrevElementCapsules_Set = this.getAsSet( this.ensureSymbol( allPrevElementCapsules_JavaID ) );
-		allNextElementCapsules_Set = this.getAsSet( this.ensureSymbol( allNextElementCapsules_JavaID ) );
-		allRef2ElementsInEC_Set = this.getAsSet( this.ensureSymbol( allRef2ElementsInEC_JavaID ) );
+		allListsOOSWFF_Set = getAsSet( ensureSymbol( allListsOOSWFF_JavaID ) );
+		allListsOOS_Set = getAsSet( ensureSymbol( allListsOOS_JavaID ) );
+		allListsOOEC_Set = getAsSet( ensureSymbol( allListsOOEC_JavaID ) );
+		allHeads_Set = getAsSet( ensureSymbol( allHeads_JavaID ) );
+		allTails_Set = getAsSet( ensureSymbol( allTails_JavaID ) );
+		allElementCapsules_Set = getAsSet( ensureSymbol( allElementCapsules_JavaID ) );
+		allPrevElementCapsules_Set = getAsSet( ensureSymbol( allPrevElementCapsules_JavaID ) );
+		allNextElementCapsules_Set = getAsSet( ensureSymbol( allNextElementCapsules_JavaID ) );
+		allRef2ElementsInEC_Set = getAsSet( ensureSymbol( allRef2ElementsInEC_JavaID ) );
 	}
+	
 	
 	// public ListOrderedOfSymbols getAsListOOS( Symbol listName, boolean allowNull, boolean allowDUPs ) {
 	//
@@ -105,12 +108,13 @@ public class Level040_DMLEnvironment extends Level030_DMLEnvironment {
 	 * @param listName
 	 * @return
 	 */
-	public ListOrderedOfSymbols getExistingListOOS( Symbol listName ) {
-
+	public ListOrderedOfSymbols getExistingListOOS( final Symbol listName ) {
+		
 		RunTime.assumedNotNull( listName );
-		ListOrderedOfSymbols list = ListOrderedOfSymbols.getExistingListOOSymbols( this, listName );
+		final ListOrderedOfSymbols list = ListOrderedOfSymbols.getExistingListOOSymbols( this, listName );
 		return list;
 	}
+	
 	
 	/**
 	 * use this when you do know the values for allowNull and allowDUPs, so they can be checked against the existing
@@ -121,21 +125,23 @@ public class Level040_DMLEnvironment extends Level030_DMLEnvironment {
 	 * @param expectedAllowDUPs
 	 * @return
 	 */
-	public ListOrderedOfSymbols getExistingListOOS( Symbol listName, boolean expectedAllowNull,
-			boolean expectedAllowDUPs ) {
-
-		RunTime.assumedNotNull( listName, expectedAllowNull, expectedAllowDUPs );
-		ListOrderedOfSymbols list = ListOrderedOfSymbols.getExistingListOOSymbols( this, listName, expectedAllowNull,
-				expectedAllowDUPs );
+	public ListOrderedOfSymbols getExistingListOOS( final Symbol listName, final boolean expectedAllowNull,
+													final boolean expectedAllowDUPs ) {
+		
+		RunTime.assumedNotNull( listName );
+		final ListOrderedOfSymbols list =
+			ListOrderedOfSymbols.getExistingListOOSymbols( this, listName, expectedAllowNull, expectedAllowDUPs );
 		return list;
 	}
 	
-	public ListOrderedOfSymbols getNewListOOS( Symbol listName, boolean allowNull, boolean allowDUPs ) {
-
-		RunTime.assumedNotNull( listName, allowNull, allowDUPs );
-		ListOrderedOfSymbols list = ListOrderedOfSymbols.getNewListOOSymbols( this, listName, allowNull, allowDUPs );
+	
+	public ListOrderedOfSymbols getNewListOOS( final Symbol listName, final boolean allowNull, final boolean allowDUPs ) {
+		
+		RunTime.assumedNotNull( listName );
+		final ListOrderedOfSymbols list = ListOrderedOfSymbols.getNewListOOSymbols( this, listName, allowNull, allowDUPs );
 		return list;
 	}
+	
 	
 	/**
 	 * if it doesn't exist is created<br>
@@ -146,10 +152,10 @@ public class Level040_DMLEnvironment extends Level030_DMLEnvironment {
 	 * @param allowDUPs
 	 * @return
 	 */
-	public ListOrderedOfSymbols ensureListOOS( Symbol listName, boolean allowNull, boolean allowDUPs ) {
-
-		RunTime.assumedNotNull( listName, allowNull, allowDUPs );
-		ListOrderedOfSymbols list = ListOrderedOfSymbols.ensureListOOSymbols( this, listName, allowNull, allowDUPs );
+	public ListOrderedOfSymbols ensureListOOS( final Symbol listName, final boolean allowNull, final boolean allowDUPs ) {
+		
+		RunTime.assumedNotNull( listName );
+		final ListOrderedOfSymbols list = ListOrderedOfSymbols.ensureListOOSymbols( this, listName, allowNull, allowDUPs );
 		return list;
 	}
 	
@@ -162,13 +168,14 @@ public class Level040_DMLEnvironment extends Level030_DMLEnvironment {
 	 *            expected value for this.
 	 * @return
 	 */
-	public ListOrderedOfSymbolsWithFastFind getExistingListOOSWFF( Symbol listName, boolean allowDUPs ) {
-
-		RunTime.assumedNotNull( listName, allowDUPs );
-		ListOrderedOfSymbolsWithFastFind list = ListOrderedOfSymbolsWithFastFind.getExistingListOOSWFF( this, listName,
-				allowDUPs );
+	public ListOrderedOfSymbolsWithFastFind getExistingListOOSWFF( final Symbol listName, final boolean allowDUPs ) {
+		
+		RunTime.assumedNotNull( listName );
+		final ListOrderedOfSymbolsWithFastFind list =
+			ListOrderedOfSymbolsWithFastFind.getExistingListOOSWFF( this, listName, allowDUPs );
 		return list;
 	}
+	
 	
 	/**
 	 * existing but with unknown params ie. the allowDUPs is unknown at least.
@@ -176,27 +183,28 @@ public class Level040_DMLEnvironment extends Level030_DMLEnvironment {
 	 * @param listName
 	 * @return
 	 */
-	public ListOrderedOfSymbolsWithFastFind getExistingListOOSWFF( Symbol listName ) {
-
+	public ListOrderedOfSymbolsWithFastFind getExistingListOOSWFF( final Symbol listName ) {
+		
 		RunTime.assumedNotNull( listName );
-		ListOrderedOfSymbolsWithFastFind list = ListOrderedOfSymbolsWithFastFind.getExistingListOOSWFF( this, listName );
+		final ListOrderedOfSymbolsWithFastFind list = ListOrderedOfSymbolsWithFastFind.getExistingListOOSWFF( this, listName );
 		return list;
 	}
 	
 	
-	public ListOrderedOfSymbolsWithFastFind getNewListOOSWFF( Symbol listName, boolean allowDUPs ) {
-
-		RunTime.assumedNotNull( listName, allowDUPs );
-		ListOrderedOfSymbolsWithFastFind list = ListOrderedOfSymbolsWithFastFind.getNewListOOSWFF( this, listName,
-				allowDUPs );
+	public ListOrderedOfSymbolsWithFastFind getNewListOOSWFF( final Symbol listName, final boolean allowDUPs ) {
+		
+		RunTime.assumedNotNull( listName );
+		final ListOrderedOfSymbolsWithFastFind list =
+			ListOrderedOfSymbolsWithFastFind.getNewListOOSWFF( this, listName, allowDUPs );
 		return list;
 	}
 	
-	public ListOrderedOfSymbolsWithFastFind ensureListOOSWFF( Symbol listName, boolean allowDUPs ) {
-
-		RunTime.assumedNotNull( listName, allowDUPs );
-		ListOrderedOfSymbolsWithFastFind list = ListOrderedOfSymbolsWithFastFind.ensureListOOSWFF( this, listName,
-				allowDUPs );
+	
+	public ListOrderedOfSymbolsWithFastFind ensureListOOSWFF( final Symbol listName, final boolean allowDUPs ) {
+		
+		RunTime.assumedNotNull( listName );
+		final ListOrderedOfSymbolsWithFastFind list =
+			ListOrderedOfSymbolsWithFastFind.ensureListOOSWFF( this, listName, allowDUPs );
 		return list;
 	}
 }
