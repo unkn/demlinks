@@ -48,7 +48,7 @@ public class TheStoredSymbol
 	// TheStoredSymbol-s when cache is over X
 	
 	// we cache them here to avoid doing many 'new's but FIXME: we shouldn't cache too many for memory reasons
-	private static final TwoWayHashMapOfNonNullUniques<TheStoredSymbol, Long>	allStoredSymbolsFromAllEnvironments	= new TwoWayHashMapOfNonNullUniques<TheStoredSymbol, Long>();
+	private static final RAMTwoWayHashMapOfNonNullUniques<TheStoredSymbol, Long>	allStoredSymbolsFromAllEnvironments	= new RAMTwoWayHashMapOfNonNullUniques<TheStoredSymbol, Long>();
 	
 	private final Long											l;
 	
@@ -80,7 +80,7 @@ public class TheStoredSymbol
 		{
 			ret = new TheStoredSymbol(
 										l1 );
-			RunTime.assumedFalse( allStoredSymbolsFromAllEnvironments.putOrGet(
+			RunTime.assumedFalse( allStoredSymbolsFromAllEnvironments.ensureExists(
 																				ret,
 																				l1 ) );
 		}
@@ -157,7 +157,7 @@ public class TheStoredSymbol
 			void
 			junitClearCache()
 	{
-		allStoredSymbolsFromAllEnvironments.clear();
+		allStoredSymbolsFromAllEnvironments.removeAll();
 	}
 	
 }

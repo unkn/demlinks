@@ -231,8 +231,8 @@ public class BDBEnvironment extends BasicEnvironment {
 		// envConf.setMaxLogFileSize( 10 * 1024 * 1024 );// 10meg alloc
 		envConf.setRunFatalRecovery( false );
 		
-		envConf.setInitializeRegions( false );// XXX: maybe experiment with this, unsure
-		envConf.setInitializeReplication( false );// for now
+		// envConf.setInitializeRegions( false );// XXX: maybe experiment with this, unsure
+		// envConf.setInitializeReplication( false );// for now
 		// envConf.setInitialMutexes( 100 );// must investigate 10 is not enough!
 		
 		// envConf.setJoinEnvironment( false );
@@ -260,7 +260,7 @@ public class BDBEnvironment extends BasicEnvironment {
 		// envConf.setUseEnvironmentRoot( false );
 		
 		envConf.setYieldCPU( false );// XXX: experiment with this
-		envConf.setVerbose( VerboseConfig.FILEOPS, true );
+		// envConf.setVerbose( VerboseConfig.FILEOPS, true );
 		envConf.setVerbose( VerboseConfig.DEADLOCK, true );
 		envConf.setVerbose( VerboseConfig.RECOVERY, true );
 		envConf.setVerbose( VerboseConfig.REGISTER, true );
@@ -394,7 +394,7 @@ public class BDBEnvironment extends BasicEnvironment {
 				
 				// 2nd
 				if ( null != db_Name2Node ) {
-					db_Name2Node.close();
+					db_Name2Node.discard();
 				}
 				
 				// close symbol generator and it's sequence
@@ -551,7 +551,7 @@ public class BDBEnvironment extends BasicEnvironment {
 			} else {
 				// both were in no vector, we need to create it
 				// vector doesn't exist, we make it for the first time
-				final boolean tempRet = db_Name2Node.ensureNode2Name( name, node );
+				final boolean tempRet = db_Name2Node.createOrGet( name, node );
 				assert !tempRet : Q.bug( "should not have already existed" );
 				ret = Boolean.FALSE;// meaning vector did not already exist, we had to create it
 			}// else

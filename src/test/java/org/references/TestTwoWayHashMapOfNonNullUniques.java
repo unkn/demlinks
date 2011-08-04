@@ -98,21 +98,21 @@ public class TestTwoWayHashMapOfNonNullUniques {
 		assertFalse( Z.equalsByReference_enforceNotNull( key1, key2 ) );
 		assertTrue( Z.areSameClass_canNotBeNull( key1, key2 ) );
 		
-		final TwoWayHashMapOfNonNullUniques<KeyA, String> hm =
-			new TwoWayHashMapOfNonNullUniques<TestTwoWayHashMapOfNonNullUniques.KeyA, String>();
+		final RAMTwoWayHashMapOfNonNullUniques<KeyA, String> hm =
+			new RAMTwoWayHashMapOfNonNullUniques<TestTwoWayHashMapOfNonNullUniques.KeyA, String>();
 		final String one = "one";
 		final String two = "two";
 		assertTrue( hm.isEmpty() );
 		assertTrue( hm.size() == 0 );
 		
-		assertFalse( hm.putOrGet( key1, one ) );
+		assertFalse( hm.ensureExists( key1, one ) );
 		assertTrue( hm.size() == 1 );
 		
-		assertTrue( hm.putOrGet( key1, one ) );
+		assertTrue( hm.ensureExists( key1, one ) );
 		assertTrue( hm.size() == 1 );
 		
 		try {
-			hm.putOrGet( key2, two );
+			hm.ensureExists( key2, two );
 			Q.fail();
 		} catch ( final BadCallError bce ) {
 			// good

@@ -81,7 +81,7 @@ public class Symbol
 
 	// FIXME: limit cache size here (which means we may encounter two diff Symbol instances with same contents so you
 	// must always use .equals()):
-	private static final HashMap<Level1_Storage_BerkeleyDB, TwoWayHashMapOfNonNullUniques<Symbol, TheStoredSymbol>>	all_Symbols_from_BDBStorage	= new HashMap<Level1_Storage_BerkeleyDB, TwoWayHashMapOfNonNullUniques<Symbol, TheStoredSymbol>>();
+	private static final HashMap<Level1_Storage_BerkeleyDB, RAMTwoWayHashMapOfNonNullUniques<Symbol, TheStoredSymbol>>	all_Symbols_from_BDBStorage	= new HashMap<Level1_Storage_BerkeleyDB, RAMTwoWayHashMapOfNonNullUniques<Symbol, TheStoredSymbol>>();
 	
 	
 	/**
@@ -237,10 +237,10 @@ public class Symbol
 		RunTime.assumedNotNull( bdb );
 		RunTime.assumedTrue( bdb.isInitedSuccessfully() );
 		
-		TwoWayHashMapOfNonNullUniques<Symbol, TheStoredSymbol> temp2WayHashMap = all_Symbols_from_BDBStorage.get( bdb );
+		RAMTwoWayHashMapOfNonNullUniques<Symbol, TheStoredSymbol> temp2WayHashMap = all_Symbols_from_BDBStorage.get( bdb );
 		if ( null != temp2WayHashMap )
 		{
-			temp2WayHashMap.clear();
+			temp2WayHashMap.removeAll();
 			RunTime.assumedTrue( all_Symbols_from_BDBStorage.remove( bdb ) == temp2WayHashMap );
 		}
 	}
@@ -265,7 +265,7 @@ public class Symbol
 								bdbL1,
 								tsSym );
 		RunTime.assumedTrue( bdbL1.isInitedSuccessfully() );
-		TwoWayHashMapOfNonNullUniques<Symbol, TheStoredSymbol> temp2WayHashMap = null;
+		RAMTwoWayHashMapOfNonNullUniques<Symbol, TheStoredSymbol> temp2WayHashMap = null;
 		int count = 0;
 		do
 		{
@@ -274,7 +274,7 @@ public class Symbol
 			{
 				if ( null != all_Symbols_from_BDBStorage.put(
 																bdbL1,
-																new TwoWayHashMapOfNonNullUniques<Symbol, TheStoredSymbol>() ) )
+																new RAMTwoWayHashMapOfNonNullUniques<Symbol, TheStoredSymbol>() ) )
 				{
 					RunTime.bug( "should not have existed, bugged get or what?" );
 				}
@@ -295,7 +295,7 @@ public class Symbol
 			existingOne = new Symbol(
 										bdbL1,
 										tsSym );
-			if ( temp2WayHashMap.putOrGet(
+			if ( temp2WayHashMap.ensureExists(
 											existingOne,
 											tsSym ) )
 			{

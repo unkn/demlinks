@@ -160,7 +160,7 @@ public class TestCollision
 			}
 		
 
-		results.clear();
+		results.removeAll();
 		n1.calculateCollisions(
 								scene,
 								results );

@@ -188,7 +188,7 @@ public class TestCollisionTree extends SimpleGame {
 		}
 		
 
-		results.clear();
+		results.removeAll();
 		sphereNode.findCollisions( torusNode, results );
 		
 		if ( results.getNumber() > 0 ) {

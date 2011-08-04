@@ -20,3 +20,9 @@ so use this:
 		Q.fail();//this throws a child of Error, so don't catch Error :P if you do, use `throw null` here instead;
 	} catch ( final AssertionError e ) {
 	}
+
+
+
+2. // XXX: maybe reuse? instead of new-ing all the time 
+!!- no reusing! to catch bugs is better new-ing; with reuse we may
+ even induce new bugs! for now, it's good that we catch usage of == instead of .equals()

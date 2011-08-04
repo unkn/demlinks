@@ -218,7 +218,7 @@ public abstract class BaseFixedLogicrateGame extends AbstractGame {
 	protected void quit() {
 
 		if ( display != null ) {
-			display.close();
+			display.discard();
 		}
 		// System.exit( 0 ); ?
 	}

@@ -39,7 +39,7 @@ import org.toolza.*;
  */
 public class ThreadLocalTwoWayHashMap<K, V>
 		extends
-		ThreadLocal<TwoWayHashMapOfNonNullUniques<K, V>>
+		ThreadLocal<RAMTwoWayHashMapOfNonNullUniques<K, V>>
 {
 	
 	public ThreadLocalTwoWayHashMap()
@@ -50,10 +50,10 @@ public class ThreadLocalTwoWayHashMap<K, V>
 
 	@Override
 	protected synchronized
-			TwoWayHashMapOfNonNullUniques<K, V>
+			RAMTwoWayHashMapOfNonNullUniques<K, V>
 			initialValue()
 	{
-		return new TwoWayHashMapOfNonNullUniques<K, V>();
+		return new RAMTwoWayHashMapOfNonNullUniques<K, V>();
 	}
 	
 }

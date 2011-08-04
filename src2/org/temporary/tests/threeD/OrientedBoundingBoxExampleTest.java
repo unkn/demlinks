@@ -491,7 +491,7 @@ public class OrientedBoundingBoxExampleTest
 		// update scene worker tools
 		// sceneWorkerHandler.update();
 		
-		results.clear();
+		results.removeAll();
 		n1Target.calculateCollisions(
 										scene,
 										results );

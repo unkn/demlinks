@@ -54,7 +54,7 @@ import org.toolza.*;
  *            unique & never null
  * 
  */
-public class TwoWayHashMapOfNonNullUniques<KEY, DATA> {
+public class RAMTwoWayHashMapOfNonNullUniques<KEY, DATA> extends BaseForTwoWayMapOfUniques<KEY, DATA> {
 	
 	private final HashMap<KEY, DATA>	mapKeyData	= new HashMap<KEY, DATA>();
 	private final HashMap<DATA, KEY>	mapDataKey	= new HashMap<DATA, KEY>();
@@ -64,7 +64,8 @@ public class TwoWayHashMapOfNonNullUniques<KEY, DATA> {
 	 * @param key
 	 * @return true if existed
 	 */
-	public synchronized boolean removeByKey( final KEY key ) {
+	@Override
+	protected synchronized boolean internalForOverride_removeByKey( final KEY key ) {
 		assert Q.nn( key );
 		final DATA data = mapKeyData.get( key );
 		if ( null != data ) {
@@ -93,8 +94,8 @@ public class TwoWayHashMapOfNonNullUniques<KEY, DATA> {
 	 * @param key
 	 * @return null if not found
 	 */
-	public synchronized DATA getData( final KEY key ) {
-		
+	@Override
+	protected synchronized DATA internalForOverride_getData( final KEY key ) {
 		assert Q.nn( key );
 		
 		final DATA data = mapKeyData.get( key );
@@ -111,8 +112,8 @@ public class TwoWayHashMapOfNonNullUniques<KEY, DATA> {
 	 * @param data
 	 * @return null if not found
 	 */
-	public synchronized KEY getKey( final DATA data ) {
-		
+	@Override
+	protected synchronized KEY internalForOverride_getKey( final DATA data ) {
 		assert Q.nn( data );
 		
 		final KEY key = mapDataKey.get( data );
@@ -129,8 +130,8 @@ public class TwoWayHashMapOfNonNullUniques<KEY, DATA> {
 	 * @param data
 	 * @return true if already existed
 	 */
-	public synchronized boolean putOrGet( final KEY key, final DATA data ) {
-		
+	@Override
+	protected synchronized boolean internalForOverride_ensureExists( final KEY key, final DATA data ) {
 		assert Q.nn( key );
 		assert Q.nn( data );
 		
@@ -154,7 +155,8 @@ public class TwoWayHashMapOfNonNullUniques<KEY, DATA> {
 	}
 	
 	
-	public synchronized void clear() {
+	@Override
+	protected synchronized void internalForOverride_removeAll() {
 		// XXX: transaction:
 		mapKeyData.clear();
 		mapDataKey.clear();
@@ -163,14 +165,12 @@ public class TwoWayHashMapOfNonNullUniques<KEY, DATA> {
 	}
 	
 	
-	public synchronized boolean isEmpty() {
-		return 0 == size();
-	}
-	
-	
-	public synchronized int size() {
+	@Override
+	protected synchronized int internalForOverride_size() {
 		final int size = mapKeyData.size();
 		assert mapDataKey.size() == size;
 		return size;
 	}
+	
+	
 }

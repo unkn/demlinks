@@ -146,7 +146,7 @@ public class BDBTwoWayHashMap {
 	}
 	
 	
-	public void close() {
+	public void discard() {
 		try {
 			Q.info( "closing " + this.getClass().getSimpleName() + ": " + priDb.getDatabaseName() );
 			if ( null != secDb ) {
@@ -171,7 +171,7 @@ public class BDBTwoWayHashMap {
 	 * @return true if already existed, false if it didn't;<br>
 	 *         either way it does after this call
 	 */
-	public boolean ensureNode2Name( final String name, final BDBNode node ) {
+	public boolean createOrGet( final String name, final BDBNode node ) {
 		assert null != name;
 		assert null != node;
 		
@@ -245,4 +245,5 @@ public class BDBTwoWayHashMap {
 		// even induce new bugs! for now, it's good that we catch usage of == instead of .equals()
 		return new BDBNode( LongBinding.entryToLong( deData ) );
 	}
+	
 }

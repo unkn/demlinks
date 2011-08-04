@@ -3,6 +3,7 @@
  * Copyright (c) 2005-2011, AtKaaZ
  * All rights reserved.
  * this file is part of DemLinks
+ * File created on Aug 4, 2011 11:51:31 PM
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -31,61 +32,39 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.bdb;
-
-import static org.junit.Assert.*;
-
-import org.bdbLevel1.*;
-import org.generic.env.*;
-import org.junit.*;
+package org.references;
 
 
-
-public class DBTwoWayHashMap_Test {
+/**
+ * @param <KEY>
+ * @param <DATA>
+ * 
+ */
+public interface GenericTwoWayMapOfUniques<KEY, DATA> {
 	
-	private BDBTwoWayHashMap				x	= null;
-	private final String			_a	= "A";
-	private final BDBNode	_b	= new BDBNode( 2l );
-	private BDBEnvironment					env	= null;
-	
-	
-	@Before
-	public void setUp() {
-		env = new BDBEnvironment( JUnitConstants.BDB_ENVIRONMENT_STORE_DIR, true );
-		x = new BDBTwoWayHashMap( env, "some 1-to-1 dbMap" );
-	}
+	public KEY getKey( final DATA data );
 	
 	
-	@After
-	public void tearDown() {
-		if ( null != x ) {
-			x.discard();
-		}
-		
-		if ( null != env ) {
-			env.shutdown( true );
-		}
-	}
+	public DATA getData( final KEY key );
 	
 	
-	@Test
-	public void linkTest() {
-		final GenericTransaction txn = env.beginTransaction();
-		try {
-			assertFalse( x.createOrGet( _a, _b ) );
-			assertTrue( x.getName( _b ).equals( _a ) );
-			assertTrue( x.getNode( _a ).equals( _b ) );
-			// different objects, same content
-			assertTrue( x.getName( _b ) != x.getName( _b ) );
-			
-			assertTrue( _a != x.getName( _b ) );
-			assertTrue( _b != x.getNode( _a ) );
-			assertTrue( _b.equals( x.getNode( x.getName( _b ) ) ) );
-			assertTrue( x.createOrGet( _a, _b ) );
-			txn.success();
-		} finally {
-			txn.finish();
-		}
-	}
+	public boolean ensureExists( final KEY key, final DATA data );
 	
+	
+	public boolean removeByKey( final KEY key );
+	
+	
+	public void removeAll();
+	
+	
+	public boolean isEmpty();
+	
+	
+	public int size();
+	
+	
+	/**
+	 * once discarded it may never be used<br>
+	 */
+	public void discard();
 }
