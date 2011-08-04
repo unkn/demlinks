@@ -55,7 +55,8 @@ public abstract class BaseForThreadSafeTwoWayMapOfUniques<KEY, DATA> implements 
 	// could discard this
 	// first but the subclass will still execute that method after lock acquire; so to fix, we must make these in base
 	// synchronized, but the downside is not all implementations need these to be synchronized so loosing concurrency?
-	private volatile boolean	discarded	= false;
+	private volatile boolean	discarded		= false;
+	private volatile Throwable	discardedWhere	= null;
 	
 	
 	/*
@@ -86,7 +87,10 @@ public abstract class BaseForThreadSafeTwoWayMapOfUniques<KEY, DATA> implements 
 	@Override
 	public final synchronized void discard() {
 		assertInvariants();
+		assert !discarded : "this should never reach this when already discarded";
 		discarded = true;
+		assert null == discardedWhere;// this is only reached once
+		discardedWhere = new StackTrace( "Stack trace of when it was discarded" );
 		internalForOverride_discard();
 	}
 	
@@ -101,7 +105,9 @@ public abstract class BaseForThreadSafeTwoWayMapOfUniques<KEY, DATA> implements 
 	 * any of the methods<br>
 	 */
 	protected final void assertInvariants() {
-		assert !discarded : Q.plainThrow( new AlreadyDiscardedException() );
+		assert !discarded : Q.badCall(
+			"the instance was already discarded, see the cause-exception for this one to see where it was discarded",
+			discardedWhere );
 		internalForOverride_assertInvariants();
 	}
 	

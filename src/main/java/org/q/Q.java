@@ -98,6 +98,14 @@ public abstract class Q {
 	}
 	
 	
+	public static BadCallError badCall( final String msg, final Throwable cause ) {
+		assert null != cause : "cause shouldn't be null";
+		final BadCallError ex = new BadCallError( msg, cause );
+		showEx( ex );
+		throw ex;
+	}
+	
+	
 	/**
 	 * @param msg
 	 * @return never

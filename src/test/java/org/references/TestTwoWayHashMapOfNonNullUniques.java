@@ -130,7 +130,8 @@ public class TestTwoWayHashMapOfNonNullUniques {
 	
 	@Test
 	public void testMany() {
-		final long n = 100000;
+		// TODO: we likely want to make this test for any instance not just RAM hash map...
+		final long n = 10000;
 		final RAMTwoWayHashMapOfNonNullUniques<Long, String> hm = new RAMTwoWayHashMapOfNonNullUniques<Long, String>();
 		assertTrue( hm.isEmpty() );
 		for ( long i = 0; i < n; i++ ) {
@@ -151,14 +152,14 @@ public class TestTwoWayHashMapOfNonNullUniques {
 		try {
 			hm.discard();
 			Q.fail();
-		} catch ( final AlreadyDiscardedException ae ) {
+		} catch ( final BadCallError ae ) {
 			// good
 		}
 		
 		try {
 			hm.getData( new Long( 1 ) );
 			Q.fail();
-		} catch ( final AlreadyDiscardedException ae ) {
+		} catch ( final BadCallError ae ) {
 			// good
 		}
 	}

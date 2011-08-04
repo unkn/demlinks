@@ -3,6 +3,7 @@
  * Copyright (c) 2005-2011, AtKaaZ
  * All rights reserved.
  * this file is part of DemLinks
+ * File created on Aug 5, 2011 12:58:33 AM
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -31,25 +32,20 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.q;
+package org.references;
 
 
 /**
  *
  */
 @SuppressWarnings( "serial" )
-public class BadCallError extends Error {
-	
-	public BadCallError( final String msg ) {
-		super( msg );
-	}
-	
+public class StackTrace extends Throwable {
 	
 	/**
 	 * @param msg
-	 * @param cause
 	 */
-	public BadCallError( final String msg, final Throwable cause ) {
-		super( msg, cause );
+	public StackTrace( final String msg ) {
+		super( msg );
 	}
+	
 }
