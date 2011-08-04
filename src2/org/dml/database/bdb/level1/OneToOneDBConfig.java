@@ -40,6 +40,7 @@ public class OneToOneDBConfig extends DatabaseConfig {
 	public OneToOneDBConfig() {
 		
 		super();
+		setType( DatabaseType.HASH );// XXX: or BTREE? investigate
 		setAllowCreate( true );
 		// this.setDeferredWrite( false );
 		// this.setKeyPrefixing( false );

@@ -27,7 +27,8 @@ package org.dml.level010;
 
 
 import org.dml.tools.RunTime;
-import org.dml.tools.TwoWayHashMap;
+import org.references.*;
+import org.toolza.*;
 
 
 
@@ -47,7 +48,7 @@ public class TheStoredSymbol
 	// TheStoredSymbol-s when cache is over X
 	
 	// we cache them here to avoid doing many 'new's but FIXME: we shouldn't cache too many for memory reasons
-	private static final TwoWayHashMap<TheStoredSymbol, Long>	allStoredSymbolsFromAllEnvironments	= new TwoWayHashMap<TheStoredSymbol, Long>();
+	private static final TwoWayHashMapOfNonNullUniques<TheStoredSymbol, Long>	allStoredSymbolsFromAllEnvironments	= new TwoWayHashMapOfNonNullUniques<TheStoredSymbol, Long>();
 	
 	private final Long											l;
 	
@@ -79,7 +80,7 @@ public class TheStoredSymbol
 		{
 			ret = new TheStoredSymbol(
 										l1 );
-			RunTime.assumedFalse( allStoredSymbolsFromAllEnvironments.ensure(
+			RunTime.assumedFalse( allStoredSymbolsFromAllEnvironments.putOrGet(
 																				ret,
 																				l1 ) );
 		}

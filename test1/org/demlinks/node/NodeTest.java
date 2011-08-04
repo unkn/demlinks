@@ -22,28 +22,21 @@ package org.demlinks.node;
 
 
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
-import javax.naming.CannotProceedException;
-
-import org.demlinks.exceptions.InconsistentLinkException;
-import org.junit.Before;
-import org.junit.Test;
+import org.demlinks.exceptions.*;
+import org.junit.*;
+import org.q.*;
 
 
 
-public class NodeTest
-{
+public class NodeTest {
 	
 	Node	parent, child;
 	
 	
 	@Before
-	public
-			void
-			init()
-	{
+	public void init() {
 		
 		parent = new Node();
 		child = new Node();
@@ -51,44 +44,29 @@ public class NodeTest
 	
 	
 	@Test
-	public
-			void
-			testInsert()
-	{
+	public void testInsert() {
 		
-		Node a = new Node();
-		Node b = new Node();
-		Node c = new Node();
-		Node d = new Node();
+		final Node a = new Node();
+		final Node b = new Node();
+		final Node c = new Node();
+		final Node d = new Node();
 		assertFalse( parent.appendChild( a ) );
 		assertTrue( parent.getLastChild() == a );
-		assertFalse( parent.insertChildAfter(
-												c,
-												a ) );
+		assertFalse( parent.insertChildAfter( c, a ) );
 		assertTrue( parent.getFirstChild() == a );
 		assertTrue( parent.getLastChild() == c );
-		assertFalse( parent.insertChildBefore(
-												b,
-												c ) );
-		assertFalse( parent.insertChildAfter(
-												d,
-												c ) );
+		assertFalse( parent.insertChildBefore( b, c ) );
+		assertFalse( parent.insertChildAfter( d, c ) );
 		assertTrue( parent.getChildNextOf( a ) == b );
 		assertTrue( parent.getChildPrevOf( d ) == c );
 		assertTrue( parent.numChildren() == 4 );
 		assertFalse( child.appendParent( a ) );
 		assertTrue( child.getLastParent() == a );
-		assertFalse( child.insertParentAfter(
-												c,
-												a ) );
+		assertFalse( child.insertParentAfter( c, a ) );
 		assertTrue( child.getFirstParent() == a );
 		assertTrue( child.getLastParent() == c );
-		assertFalse( child.insertParentBefore(
-												b,
-												c ) );
-		assertFalse( child.insertParentAfter(
-												d,
-												c ) );
+		assertFalse( child.insertParentBefore( b, c ) );
+		assertFalse( child.insertParentAfter( d, c ) );
 		assertTrue( child.getParentNextOf( a ) == b );
 		assertTrue( child.getParentPrevOf( d ) == c );
 		assertTrue( child.numParents() == 4 );
@@ -96,10 +74,7 @@ public class NodeTest
 	
 	
 	@Test
-	public
-			void
-			testGet()
-	{
+	public void testGet() {
 		
 		Node a, b, c, d, e, f, g;
 		a = new Node();
@@ -117,8 +92,7 @@ public class NodeTest
 		assertFalse( a.appendParent( g ) );
 		Node parser = a.getFirstChild();
 		assertTrue( b == parser );
-		while ( null != parser )
-		{
+		while ( null != parser ) {
 			System.out.println( parser );
 			parser = a.getChildNextOf( parser );
 		}
@@ -141,10 +115,7 @@ public class NodeTest
 	
 	
 	@Test
-	public
-			void
-			testAppendChild()
-	{
+	public void testAppendChild() {
 		
 		assertFalse( parent.hasChild( child ) );
 		assertFalse( child.hasChild( parent ) );
@@ -163,85 +134,54 @@ public class NodeTest
 		assertFalse( child.hasChild( parent ) );
 		assertTrue( child.hasParent( parent ) );// parent<-child ? yes
 		assertFalse( parent.hasParent( child ) );// child<-parent ? no
-		boolean excepted = false;
-		try
-		{
+		try {
 			parent.appendChild( null );
+			Q.fail();
+		} catch ( final NullPointerException e ) {
 		}
-		catch ( NullPointerException e )
-		{
-			excepted = true;
-		}
-		assertTrue( excepted );
 		assertTrue( parent.numChildren() == 1 );
 	}
 	
 	
 	@Test
-	public
-			void
-			testNullParams()
-	{
+	public void testNullParams() {
 		
-		boolean excepted = false;
-		try
-		{
+		try {
 			parent.hasChild( null );
+			Q.fail();
+		} catch ( final NullPointerException e ) {
 		}
-		catch ( NullPointerException e )
-		{
-			excepted = true;
-		}
-		assertTrue( excepted );
-		excepted = false;
-		try
-		{
+		try {
 			parent.hasParent( null );
+			Q.fail();
+		} catch ( final NullPointerException e ) {
 		}
-		catch ( NullPointerException e )
-		{
-			excepted = true;
-		}
-		assertTrue( excepted );
-		excepted = false;
-		try
-		{
+		try {
 			parent.appendChild( null );
+			Q.fail();
+		} catch ( final NullPointerException e ) {
 		}
-		catch ( NullPointerException e )
-		{
-			excepted = true;
-		}
-		assertTrue( excepted );
 	}
 	
 	
 	@Test
-	public
-			void
-			testInconsistentLink()
-	{
+	public void testInconsistentLink() {
 		
 		assertFalse( parent.internalAppendChild( child ) );
 		assertTrue( parent.internalAppendChild( child ) );
 		boolean excepted = false;
-		try
-		{
+		try {
 			parent.hasChild( child );
-		}
-		catch ( InconsistentLinkException e )
-		{
+			Q.fail();
+		} catch ( final InconsistentLinkException e ) {
 			excepted = true;
 		}
 		assertTrue( excepted );
 		excepted = false;
-		try
-		{
+		try {
 			parent.appendChild( child );
 			// after the above call, the link will nolonger be inconsistent
-		}
-		catch ( InconsistentLinkException e )
-		{
+		} catch ( final InconsistentLinkException e ) {
 			excepted = true;
 		}
 		assertTrue( excepted );
@@ -250,12 +190,9 @@ public class NodeTest
 		assertFalse( child.internalAppendParent( parent ) );
 		assertTrue( child.internalAppendParent( parent ) );
 		excepted = false;
-		try
-		{
+		try {
 			child.hasParent( parent );
-		}
-		catch ( InconsistentLinkException e )
-		{
+		} catch ( final InconsistentLinkException e ) {
 			excepted = true;
 		}
 		assertTrue( excepted );
@@ -263,10 +200,7 @@ public class NodeTest
 	
 	
 	@Test
-	public
-			void
-			testRemove()
-	{
+	public void testRemove() {
 		
 		assertTrue( child.numParents() == 0 );
 		assertTrue( parent.numChildren() == 0 );
@@ -288,10 +222,7 @@ public class NodeTest
 	
 	
 	@Test
-	public
-			void
-			testGetNextParent()
-	{
+	public void testGetNextParent() {
 		
 		Node a, b, c, d, e, f;
 		a = new Node();
@@ -308,35 +239,23 @@ public class NodeTest
 		assertFalse( child.appendParent( a ) );// a->child
 		
 		// get first
-		assertTrue( null == child.getNextParent(
-													parent,
-													null ) );
+		assertTrue( null == child.getNextParent( parent, null ) );
 		
 		
 		assertFalse( child.appendParent( b ) );// b->child
 		assertTrue( child.getFirstParent() == a );
-		Node tmp = child.getNextParent(
-										parent,
-										null );
+		final Node tmp = child.getNextParent( parent, null );
 		assertFalse( null == tmp );
 		assertTrue( b == tmp );
-		assertTrue( null == child.getNextParent(
-													parent,
-													b ) );
+		assertTrue( null == child.getNextParent( parent, b ) );
 		assertFalse( child.appendParent( c ) );
 		assertFalse( child.appendParent( d ) );
 		assertFalse( child.appendParent( e ) );
 		assertFalse( child.appendParent( f ) );
 		
-		assertTrue( d == child.getNextParent(
-												parent,
-												b ) );
-		assertTrue( f == child.getNextParent(
-												parent,
-												d ) );
-		assertTrue( null == child.getNextParent(
-													parent,
-													f ) );
+		assertTrue( d == child.getNextParent( parent, b ) );
+		assertTrue( f == child.getNextParent( parent, d ) );
+		assertTrue( null == child.getNextParent( parent, f ) );
 		
 	}
 }

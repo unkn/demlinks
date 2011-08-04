@@ -24,9 +24,8 @@ package org.demlinks.node;
 
 import javax.naming.*;
 
-import org.demlinks.debug.*;
-import org.demlinks.errors.*;
 import org.demlinks.exceptions.*;
+import org.q.*;
 
 
 
@@ -64,7 +63,7 @@ public class Node {
 	 */
 	public boolean appendChild( final Node child ) {
 		
-		Debug.nullException( child );
+		assert Q.nn( child );
 		final boolean existed1 = internalAppendChild( child );
 		final boolean existed2 = child.internalAppendParent( this );
 		if ( existed1 ^ existed2 ) {
@@ -85,7 +84,7 @@ public class Node {
 	 */
 	public boolean appendParent( final Node parent ) {
 		
-		Debug.nullException( parent );
+		assert Q.nn( parent );
 		return parent.appendChild( this );
 	}
 	
@@ -121,7 +120,7 @@ public class Node {
 	 */
 	public boolean hasChild( final Node child ) {
 		
-		Debug.nullException( child );
+		assert Q.nn( child );
 		final boolean link1 = childrenList.hasNode( child );
 		final boolean link2 = child.parentsList.hasNode( this );// isn't that private
 		// field?
@@ -139,7 +138,7 @@ public class Node {
 	 */
 	public boolean hasChildAtPos( final Node child, final int index ) {
 		
-		Debug.nullException( child );
+		assert Q.nn( child );
 		final boolean link1 = childrenList.hasNodeAtPos( child, index );
 		final boolean link2 = child.parentsList.hasNode( this );// not at pos
 		if ( ( link1 ) && ( !link2 ) ) {// special case IF
@@ -159,7 +158,7 @@ public class Node {
 	 */
 	public boolean hasParent( final Node parent ) {
 		
-		Debug.nullException( parent );
+		assert Q.nn( parent );
 		return parent.hasChild( this );// counting on hasChild to check both
 	}
 	
@@ -246,7 +245,7 @@ public class Node {
 	 */
 	public Node getChildAt( final int zeroBasedIndex ) {
 		
-		// Debug.nullException( zeroBasedIndex );
+		// assert Q.nn(zeroBasedIndex );
 		return childrenList.getNodeAt( zeroBasedIndex );
 	}
 	
@@ -259,7 +258,7 @@ public class Node {
 	 */
 	public Node getParentAt( final int zeroBasedIndex ) {
 		
-		// Debug.nullException( zeroBasedIndex );
+		// assert Q.nn(zeroBasedIndex );
 		return parentsList.getNodeAt( zeroBasedIndex );
 	}
 	
@@ -271,7 +270,7 @@ public class Node {
 	 */
 	public Node getChildNextOf( final Node ofWhatNode ) {
 		
-		Debug.nullException( ofWhatNode );
+		assert Q.nn( ofWhatNode );
 		return childrenList.getNodeAfter( ofWhatNode );
 	}
 	
@@ -283,7 +282,7 @@ public class Node {
 	 */
 	public Node getChildPrevOf( final Node ofWhatNode ) {
 		
-		Debug.nullException( ofWhatNode );
+		assert Q.nn( ofWhatNode );
 		return childrenList.getNodeBefore( ofWhatNode );
 	}
 	
@@ -295,7 +294,7 @@ public class Node {
 	 */
 	public Node getParentNextOf( final Node ofWhatNode ) {
 		
-		Debug.nullException( ofWhatNode );
+		assert Q.nn( ofWhatNode );
 		return parentsList.getNodeAfter( ofWhatNode );
 	}
 	
@@ -312,7 +311,7 @@ public class Node {
 	 */
 	public Node getNextParent( final Node thatHasThisParent, final Node continueFromNode ) {
 		
-		Debug.nullException( thatHasThisParent );
+		assert Q.nn( thatHasThisParent );
 		
 		Node parser;
 		if ( continueFromNode == null ) {
@@ -338,10 +337,9 @@ public class Node {
 	 */
 	public Node getParentPrevOf( final Node ofWhatNode ) {
 		
-		Debug.nullException( ofWhatNode );
+		assert Q.nn( ofWhatNode );
 		return parentsList.getNodeBefore( ofWhatNode );
 	}
-	
 	
 	
 	/**
@@ -375,7 +373,10 @@ public class Node {
 	 */
 	private boolean internalInsert( final NodeList inWhichList, final Node whatNewNode, final Position pos, final Node posNode ) {
 		
-		Debug.nullException( inWhichList, whatNewNode, pos, posNode );
+		assert Q.nn( inWhichList );
+		assert Q.nn( whatNewNode );
+		assert Q.nn( pos );
+		assert Q.nn( posNode );
 		// some people are paranoid here :-"
 		if ( ( inWhichList != childrenList ) && ( inWhichList != parentsList ) ) {
 			throw new BadCallError( "invalid list specified" );
@@ -389,35 +390,40 @@ public class Node {
 	
 	public boolean insertChildAfter( final Node newChild, final Node afterWhatChildNode ) {
 		
-		Debug.nullException( newChild, afterWhatChildNode );
+		assert Q.nn( newChild );
+		assert Q.nn( afterWhatChildNode );
 		return internalInsert( childrenList, newChild, Position.AFTER, afterWhatChildNode );
 	}
 	
 	
 	public boolean insertChildBefore( final Node newChild, final Node beforeWhatChildNode ) {
 		
-		Debug.nullException( newChild, beforeWhatChildNode );
+		assert Q.nn( newChild );
+		assert Q.nn( beforeWhatChildNode );
 		return internalInsert( childrenList, newChild, Position.BEFORE, beforeWhatChildNode );
 	}
 	
 	
 	public boolean insertParentAfter( final Node newParent, final Node afterWhatParentNode ) {
 		
-		Debug.nullException( newParent, afterWhatParentNode );
+		assert Q.nn( newParent );
+		assert Q.nn( afterWhatParentNode );
 		return internalInsert( parentsList, newParent, Position.AFTER, afterWhatParentNode );
 	}
 	
 	
 	public boolean insertParentBefore( final Node newParent, final Node beforeWhatParentNode ) {
 		
-		Debug.nullException( newParent, beforeWhatParentNode );
+		assert Q.nn( newParent );
+		assert Q.nn( beforeWhatParentNode );
 		return internalInsert( parentsList, newParent, Position.BEFORE, beforeWhatParentNode );
 	}
 	
 	
 	public void integrityCheck() {
 		
-		Debug.nullException( childrenList, parentsList );
+		assert Q.nn( childrenList );
+		assert Q.nn( parentsList );
 		
 		Node parser = childrenList.getFirstNode();
 		while ( null != parser ) {

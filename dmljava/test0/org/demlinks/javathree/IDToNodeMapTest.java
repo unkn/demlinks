@@ -19,7 +19,7 @@ public class IDToNodeMapTest
 	
 	IDToNodeMap	imap;
 	Id			a, b, c, d, e, f, g;
-	Node		nodea, nodeb;
+	Node0		nodea, nodeb;
 	
 	
 	@Before
@@ -45,8 +45,8 @@ public class IDToNodeMapTest
 		g = new Id(
 					"gggggg" );
 		
-		nodea = new Node();
-		nodeb = new Node();
+		nodea = new Node0();
+		nodeb = new Node0();
 	}
 	
 	
@@ -55,7 +55,7 @@ public class IDToNodeMapTest
 			showAllKeys(
 							String s )
 	{
-		Iterator<Map.Entry<Id, Node>> itr = imap.getKeyValueIterator();
+		Iterator<Map.Entry<Id, Node0>> itr = imap.getKeyValueIterator();
 		System.out.println( s );
 		while ( itr.hasNext() )
 		{

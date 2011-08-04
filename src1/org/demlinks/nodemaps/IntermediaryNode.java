@@ -1,19 +1,20 @@
-/*  Copyright (C) 2005-2008 AtKaaZ <atkaaz@users.sourceforge.net>
- 	
- 	This file and its contents are part of DeMLinks.
-
-    DeMLinks is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    DeMLinks is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with DeMLinks.  If not, see <http://www.gnu.org/licenses/>.
+/*
+ * Copyright (C) 2005-2008 AtKaaZ <atkaaz@users.sourceforge.net>
+ * 
+ * This file and its contents are part of DeMLinks.
+ * 
+ * DeMLinks is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * DeMLinks is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with DeMLinks. If not, see <http://www.gnu.org/licenses/>.
  */
 
 
@@ -21,8 +22,8 @@ package org.demlinks.nodemaps;
 
 
 
-import org.demlinks.errors.BugError;
-import org.demlinks.node.Node;
+import org.demlinks.node.*;
+import org.q.*;
 
 
 
@@ -41,55 +42,53 @@ import org.demlinks.node.Node;
 public class IntermediaryNode extends PointerNode {
 	
 	public IntermediaryNode() {
-
+		
 		super();
-		Environment.internalEnsureNodeIsChildOf( this,
-				Environment.AllIntermediaryNodes );
+		Environment.internalEnsureNodeIsChildOf( this, Environment.AllIntermediaryNodes );
 	}
+	
 	
 	@Override
 	public void integrityCheck() {
-
+		
 		super.integrityCheck();
 		// if you remove extends PointerNode then uncomment:
 		// if ( this.numChildren() > 1 ) {
 		// throw new BugError(
 		// "someone made the pointer have more than 1 child" );
 		// }
-		if ( !this.hasParent( Environment.AllIntermediaryNodes ) ) {
-			throw new BugError( "somehow the parent was removed" );
+		if ( !hasParent( Environment.AllIntermediaryNodes ) ) {
+			Q.bug( "somehow the parent was removed" );
 		}
 		
 		// test for more than or less than 1 NodeWithDupChildren parent
-		Node parser = this.getFirstParent();
+		Node parser = getFirstParent();
 		int count = 0;
 		while ( null != parser ) {
-			boolean one = Environment.isNodeWithDupChildren( parser );
-			boolean two = parser.hasParent( Environment.AllNodeWithDupChildrenNodes );
+			final boolean one = Environment.isNodeWithDupChildren( parser );
+			final boolean two = parser.hasParent( Environment.AllNodeWithDupChildrenNodes );
 			if ( one ^ two ) {
-				throw new BugError(
-						"inconsitency detected for that method in Environment" );
+				Q.bug( "inconsitency detected for that method in Environment" );
 			}
 			if ( one ) {// one == two, always
 				count++;
 			}
-			parser = this.getParentNextOf( parser );
+			parser = getParentNextOf( parser );
 		}
 		if ( count > 1 ) {
-			throw new BugError( "IntermediaryNode should have only 0..1 "
-					+ "NodeWithDupChildren type parents" );
+			Q.bug( "IntermediaryNode should have only 0..1 " + "NodeWithDupChildren type parents" );
 		}
 	}
+	
 	
 	/**
 	 * @return there's only one NodeWithDupChildrenNodes parent for any
 	 *         IntermediaryNode; return it
 	 */
 	public NodeWithDupChildren getFather() {
-
+		
 		// TODO test unit for this
-		this.integrityCheck();
-		return (NodeWithDupChildren)this.getNextParent(
-				Environment.AllNodeWithDupChildrenNodes, null );
+		integrityCheck();
+		return (NodeWithDupChildren)getNextParent( Environment.AllNodeWithDupChildrenNodes, null );
 	}
 }

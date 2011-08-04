@@ -22,10 +22,10 @@ package org.demlinks.nodemaps;
 
 
 
-import org.demlinks.debug.*;
 import org.demlinks.errors.*;
 import org.demlinks.exceptions.*;
 import org.demlinks.node.*;
+import org.q.*;
 
 
 
@@ -102,7 +102,7 @@ public class Environment {
 	 */
 	public CharNode mapNewChar( final char c ) {
 		
-		// Debug.nullException( c );
+		// assert null != c );
 		
 		if ( isMappedChar( c ) ) {
 			throw new BadParameterException( "mapping already exists." );
@@ -112,7 +112,7 @@ public class Environment {
 		final String s = String.valueOf( c );
 		if ( !mapCharsToNodes.putKeyValue( s, node ) ) {
 			// if false, then already existed
-			throw new BugError( "'c' was already associated: " + s + ":" + mapCharsToNodes.getValue( s ) );
+			Q.bug( "'c' was already associated: " + s + ":" + mapCharsToNodes.getValue( s ) );
 			// which means the method isNodeForChar(c) above doesn't work as it
 			// should
 		}
@@ -199,7 +199,7 @@ public class Environment {
 	 */
 	public WordNode addWord( final String word ) {
 		
-		Debug.nullException( word );
+		assert null != word;
 		if ( !isGoodWord( word ) ) {
 			throw new BadParameterException();
 		}
@@ -254,15 +254,15 @@ public class Environment {
 	public Node getNodeForWord( final String word ) {
 		
 		
-		Debug.nullException( word );
+		assert null != word;
 		if ( word.length() < 1 ) {
 			throw new BadParameterException( "word must be at least 1 char" );
 		}
 		// list of all WordNodes that match this word
 		Environment.lastSolutionsForLastGottenWord.clearAllChildren();
 		Environment.wordToBeProcessed.dupClearAllChildren();
-		Debug.assertTrue( Environment.wordToBeProcessed.numChildren() == 0 );
-		Debug.assertTrue( Environment.lastSolutionsForLastGottenWord.numChildren() == 0 );
+		assert Environment.wordToBeProcessed.numChildren() == 0;
+		assert Environment.lastSolutionsForLastGottenWord.numChildren() == 0;
 		// TODO split this in two: bool init(), bool nextStep()
 		for ( int i = 0; i < word.length(); i++ ) {
 			final char c = word.charAt( i );
@@ -279,8 +279,8 @@ public class Environment {
 		
 		Environment.intermediaryNodeForNodeOnPos0.clearAllChildren();
 		Environment.nodeThatHasToBeOnPos0.clearAllChildren();
-		Debug.assertTrue( Environment.intermediaryNodeForNodeOnPos0.numChildren() == 0 );
-		Debug.assertTrue( Environment.nodeThatHasToBeOnPos0.numChildren() == 0 );
+		assert Environment.intermediaryNodeForNodeOnPos0.numChildren() == 0;
+		assert Environment.nodeThatHasToBeOnPos0.numChildren() == 0;
 		
 		if ( Environment.nodeThatHasToBeOnPos0.appendChild( Environment.wordToBeProcessed.dupGetFirstChild() ) ) {
 			throw new BugError( "couldn't've existed" );
@@ -318,7 +318,7 @@ public class Environment {
 				}
 				
 				if ( !Environment.nodeThatHasToBeOnPos0.removeChild( Environment.nodeThatHasToBeOnPos0.getLastChild() ) ) {
-					throw new BugError();
+					Q.bug();
 				}
 				
 				// next of first
@@ -410,8 +410,8 @@ public class Environment {
 	 */
 	private void digDownRightForWord( final NodeWithDupChildren wordNode, final IntermediaryNode lastINFound, int level ) {
 		
-		Debug.nullException( wordNode );
-		Debug.assertTrue( Environment.isWordNode( wordNode ) );
+		assert null != wordNode;
+		assert Environment.isWordNode( wordNode );
 		IntermediaryNode in = lastINFound;// can be null
 		
 		Environment.scanStatus.setNull();
@@ -427,7 +427,7 @@ public class Environment {
 		final Node currentNode0 = new Node();
 		NodeWithDupChildren curr0 = wordNode;
 		if ( currentNode0.appendChild( curr0 ) ) {
-			throw new BugError();
+			Q.bug();
 		}
 		
 		
@@ -471,16 +471,16 @@ public class Environment {
 					break;
 				}
 				if ( !inList.removeChild( in ) ) {
-					throw new BugError();
+					Q.bug();
 				}
 				// remove first, then use the one that was before the removed
 				// one
 				if ( !currentNode0.removeChild( curr0 ) ) {
-					throw new BugError();
+					Q.bug();
 				}
 				curr0 = (NodeWithDupChildren)currentNode0.getLastChild();
 				if ( null == curr0 ) {
-					throw new BugError();
+					Q.bug();
 				}
 				// if ( !Environment.isWordNode( curr0 ) ) {
 				// throw new BugError();
@@ -570,7 +570,7 @@ public class Environment {
 	protected IntermediaryNode getNextIntermediaryNodeForNodeAt( final Node forNode, final int indexPos,
 																	final IntermediaryNode previouslyFoundIN ) {
 		
-		Debug.nullException( forNode );
+		assert null != forNode;
 		Node parser = null;
 		if ( null != previouslyFoundIN ) {
 			parser = previouslyFoundIN;
@@ -629,7 +629,7 @@ public class Environment {
 	 */
 	public boolean isGoodWord( final String word ) {
 		
-		Debug.nullException( word );
+		assert null != word;
 		final int len = word.length();
 		if ( len <= 0 ) {
 			throw new BadParameterException();
@@ -682,7 +682,7 @@ public class Environment {
 	 */
 	public static boolean isPointer( final Node whatNode ) {
 		
-		Debug.nullException( whatNode );
+		assert null != whatNode;
 		whatNode.integrityCheck();
 		return whatNode.hasParent( AllPointerNodes );
 	}
@@ -690,7 +690,7 @@ public class Environment {
 	
 	public static boolean isPhrase( final Node whatNode ) {
 		
-		Debug.nullException( whatNode );
+		assert null != whatNode;
 		whatNode.integrityCheck();
 		return whatNode.hasParent( AllPhraseNodes );
 	}
@@ -704,7 +704,7 @@ public class Environment {
 	 */
 	public static boolean isNodeWithDupChildren( final Node whatNode ) {
 		
-		Debug.nullException( whatNode );
+		assert null != whatNode;
 		whatNode.integrityCheck();
 		return whatNode.hasParent( AllNodeWithDupChildrenNodes );
 	}
@@ -718,7 +718,7 @@ public class Environment {
 	 */
 	public static boolean isRandomNode( final Node whatNode ) {
 		
-		Debug.nullException( whatNode );
+		assert null != whatNode;
 		whatNode.integrityCheck();
 		return whatNode.hasParent( AllRandomNodes );
 	}
@@ -730,7 +730,7 @@ public class Environment {
 	 */
 	public static boolean isIntermediaryNode( final Node whatNode ) {
 		
-		Debug.nullException( whatNode );
+		assert null != whatNode;
 		whatNode.integrityCheck();
 		return whatNode.hasParent( AllIntermediaryNodes );
 	}
@@ -745,7 +745,8 @@ public class Environment {
 	 */
 	protected static void internalEnsureNodeIsChildOf( final Node childNode, final Node parentNode ) {
 		
-		Debug.nullException( childNode, parentNode );
+		assert null != childNode;
+		assert null != parentNode;
 		boolean existsAlready = false;
 		try {
 			existsAlready = parentNode.appendChild( childNode );
@@ -766,7 +767,7 @@ public class Environment {
 	 */
 	public static boolean isWordNode( final Node whatNode ) {
 		
-		Debug.nullException( whatNode );
+		assert null != whatNode;
 		whatNode.integrityCheck();
 		return whatNode.hasParent( AllWordNodes );
 	}
@@ -774,7 +775,7 @@ public class Environment {
 	
 	public static boolean isCharNode( final Node whatNode ) {
 		
-		Debug.nullException( whatNode );
+		assert null != whatNode;
 		whatNode.integrityCheck();
 		return whatNode.hasParent( AllCharNodes );
 	}
@@ -782,7 +783,7 @@ public class Environment {
 	
 	public static boolean isWordDelimiter( final Node whatNode ) {
 		
-		Debug.nullException( whatNode );
+		assert null != whatNode;
 		whatNode.integrityCheck();
 		return whatNode.hasParent( AllWordDelimiterNodes );
 	}
@@ -797,15 +798,15 @@ public class Environment {
 	 */
 	public PhraseNode addPhrase( final String phrase ) {
 		
-		Debug.nullException( phrase );
-		Debug.assertTrue( !phrase.isEmpty() );
+		assert null != phrase;
+		assert !phrase.isEmpty();
 		
 		
 		final Node manyPhrases = getNodeForPhrase( phrase );
 		if ( manyPhrases.numChildren() != 0 ) {
 			final PhraseNode phraseNode = (PhraseNode)manyPhrases.getFirstChild();
 			if ( !isPhrase( phraseNode ) ) {
-				throw new BugError();
+				Q.bug();
 			}
 			return phraseNode;
 		}
@@ -824,7 +825,7 @@ public class Environment {
 					// continue building the word
 					word += c;
 				} else {
-					throw new BugError( "not word char and not delimiter char => unexpected char" );
+					Q.bug( "not word char and not delimiter char => unexpected char" );
 				}
 			}// not else!
 			
@@ -857,7 +858,6 @@ public class Environment {
 	}
 	
 	
-	
 	public Node getNodeForPhrase( final String phrase ) {
 		
 		// TODO Auto-generated method stub
@@ -872,7 +872,7 @@ public class Environment {
 	 */
 	public CharNode ensureNodeForDelimiter( final char delim ) {
 		
-		// Debug.nullException( delim );
+		// assert null != delim );
 		if ( !isDelimiter( delim ) ) {
 			throw new BadParameterException();
 		}
@@ -895,14 +895,14 @@ public class Environment {
 	 */
 	public CharNode getNodeForDelimiter( final char delim ) {
 		
-		// Debug.nullException( delim );
+		// assert null != delim );
 		if ( !isDelimiter( delim ) ) {
 			throw new BadParameterException();
 		}
 		final CharNode cn = getNodeForChar( delim );
 		if ( null != cn ) {
 			if ( !Environment.isWordDelimiter( cn ) ) {
-				throw new BugError();
+				Q.bug();
 			}
 		}
 		return cn;

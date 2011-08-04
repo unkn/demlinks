@@ -115,7 +115,7 @@ public abstract class BaseSimpleFixedLogicrateGame extends
 	/**
 	 * The root of our normal scene graph.
 	 */
-	protected Node				rootNode;
+	protected Node0				rootNode;
 	
 	/**
 	 * Handles our mouse/keyboard input.
@@ -130,12 +130,12 @@ public abstract class BaseSimpleFixedLogicrateGame extends
 	/**
 	 * The root node for our stats and text.
 	 */
-	protected Node				statNode;
+	protected Node0				statNode;
 	
 	/**
 	 * The root node for our stats graphs.
 	 */
-	protected Node				graphNode;
+	protected Node0				graphNode;
 	
 	/**
 	 * Alpha bits to use for the renderer. Any changes must be made prior to
@@ -527,7 +527,7 @@ public abstract class BaseSimpleFixedLogicrateGame extends
 	protected void initGame() {
 
 		/** Create rootNode */
-		rootNode = new Node( "rootNode" );
+		rootNode = new Node0( "rootNode" );
 		
 		/**
 		 * Create a wirestate to toggle on and off. Starts disabled with default
@@ -548,12 +548,12 @@ public abstract class BaseSimpleFixedLogicrateGame extends
 		
 		// -- STATS, text node
 		// Finally, a stand alone node (not attached to root on purpose)
-		statNode = new Node( "Stats node" );
+		statNode = new Node0( "Stats node" );
 		statNode.setCullHint( Spatial.CullHint.Never );
 		statNode.setRenderQueueMode( Renderer.QUEUE_ORTHO );
 		
 		if ( Debug.stats ) {
-			graphNode = new Node( "Graph node" );
+			graphNode = new Node0( "Graph node" );
 			graphNode.setCullHint( Spatial.CullHint.Never );
 			statNode.attachChild( graphNode );
 			

@@ -71,7 +71,7 @@ public class TestCollisionTree extends SimpleGame {
 	
 	TriMesh				sphereMesh, torusMesh;
 	
-	Node				torusNode, sphereNode;
+	Node0				torusNode, sphereNode;
 	
 	CollisionResults	results;
 	
@@ -99,7 +99,7 @@ public class TestCollisionTree extends SimpleGame {
 		sphereMesh.setModelBound( new BoundingBox() );
 		sphereMesh.updateModelBound();
 		
-		torusNode = new Node( "torus node" );
+		torusNode = new Node0( "torus node" );
 		
 		torusMesh = new PQTorus( "tort", 5, 4, 2f, .5f, 128, 16 );
 		torusMesh.setLocalTranslation( new Vector3f( 0, 0, 0 ) );
@@ -107,7 +107,7 @@ public class TestCollisionTree extends SimpleGame {
 		torusMesh.setModelBound( new BoundingBox() );
 		torusMesh.updateModelBound();
 		
-		sphereNode = new Node( "sphere node" );
+		sphereNode = new Node0( "sphere node" );
 		
 		SpatialTransformer st = new SpatialTransformer( 1 );
 		st.setRepeatType( Controller.RT_CYCLE );

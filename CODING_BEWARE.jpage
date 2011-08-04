@@ -1,0 +1,22 @@
+BEWARE:
+
+1. in junit don't use this construct:
+try {
+	parent.appendChild( null );
+	fail();
+} catch ( final AssertionError e ) {
+}
+
+because fail() will throw AssertionError, so if you were expecting to catch appendChild's AssertionError, you can't be sure it
+wasn't fail() who threw it;
+
+so then, use `throw null` instead; unless you're trying to catch NullPointerException, then it's no good again;
+
+use Q.fail() it will throw a subclass of Error
+
+so use this:
+	try {
+		parent.appendChild( null );
+		Q.fail();//this throws a child of Error, so don't catch Error :P if you do, use `throw null` here instead;
+	} catch ( final AssertionError e ) {
+	}

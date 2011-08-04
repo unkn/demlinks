@@ -22,10 +22,10 @@ package org.demlinks.javathree;
 
 
 
-import java.util.NoSuchElementException;
+import java.util.*;
 
-import org.demlinks.debug.Debug;
-import org.demlinks.references.Reference;
+import org.demlinks.references.*;
+import org.q.*;
 
 
 
@@ -42,8 +42,7 @@ import org.demlinks.references.Reference;
  * have its backwards list contain the Node object identified by sourceID<br>
  * 
  */
-public class Environment
-{
+public class Environment {
 	
 	// fields
 	private final IDToNodeMap	allIDNodeTuples;	// unique elements
@@ -54,8 +53,7 @@ public class Environment
 	 * Environment containing ID to Node mappings<br>
 	 * ID is {@link String} identifier Node is a {@link NodeLevel0} object
 	 */
-	public Environment()
-	{
+	public Environment() {
 		super();
 		allIDNodeTuples = new IDToNodeMap();
 	}
@@ -68,13 +66,9 @@ public class Environment
 	 * @return true if the node exists in this environment, doesn't matter if it
 	 *         has any forward/backwards
 	 */
-	public
-			boolean
-			isNode(
-					Id nodeID )
-	{
-		Debug.nullException( nodeID );
-		return ( null != this.getNode( nodeID ) );
+	public boolean isNode( final Id nodeID ) {
+		assert Q.nn( nodeID );
+		return ( null != getNode( nodeID ) );
 	}
 	
 	
@@ -82,12 +76,8 @@ public class Environment
 	 * @return the Node object that's mapped to the ID, if it doesn't exist in
 	 *         the Environment then null
 	 */
-	private
-			Node
-			getNode(
-						Id nodeID )
-	{
-		Debug.nullException( nodeID );
+	private Node0 getNode( final Id nodeID ) {
+		assert Q.nn( nodeID );
 		return allIDNodeTuples.getNode( nodeID );
 	}
 	
@@ -96,12 +86,8 @@ public class Environment
 	 * @return the ID that is mapped to the Node object, in this environment, or
 	 *         null if there's no such mapping
 	 */
-	private
-			Id
-			getID(
-					Node node )
-	{
-		Debug.nullException( node );
+	private Id getID( final Node0 node ) {
+		assert Q.nn( node );
 		return allIDNodeTuples.getID( node );// should be useful when parsing
 	}
 	
@@ -112,23 +98,12 @@ public class Environment
 	 * @return false if id was already mapped to a node; true if it wasn't
 	 * @throws Exception
 	 */
-	private
-			boolean
-			internalMapIDToNode(
-									Id nodeID,
-									Node nodeObject )
-	{
-		return allIDNodeTuples.put(
-									nodeID,
-									nodeObject );
+	private boolean internalMapIDToNode( final Id nodeID, final Node0 nodeObject ) {
+		return allIDNodeTuples.put( nodeID, nodeObject );
 	}
 	
 	
-	private
-			void
-			internalUnMapID(
-								Id nodeID )
-	{
+	private void internalUnMapID( final Id nodeID ) {
 		allIDNodeTuples.removeID( nodeID );
 	}
 	
@@ -136,10 +111,7 @@ public class Environment
 	/**
 	 * @return number of Nodes in the environment
 	 */
-	public
-			int
-			size()
-	{
+	public int size() {
 		return allIDNodeTuples.size();
 	}
 	
@@ -154,21 +126,12 @@ public class Environment
 	 *         Node object
 	 * @throws Exception
 	 */
-	private
-			Node
-			ensureNode(
-						Id nodeID )
-	{
-		Node n = this.getNode( nodeID );
-		if ( null == n )
-		{
-			n = new Node();
-			if ( !this.internalMapIDToNode(
-											nodeID,
-											n ) )
-			{
-				throw new AssertionError(
-											"overwritten something, which is impossible" );
+	private Node0 ensureNode( final Id nodeID ) {
+		Node0 n = getNode( nodeID );
+		if ( null == n ) {
+			n = new Node0();
+			if ( !internalMapIDToNode( nodeID, n ) ) {
+				Q.bug( "overwritten something, which is impossible" );
 			}
 		}
 		return n;
@@ -180,23 +143,15 @@ public class Environment
 	 * @param destinationNode
 	 * @return
 	 */
-	private
-			boolean
-			internalLinkForward(
-									Node sourceNode,
-									Node destinationNode )
-	{
+	private boolean internalLinkForward( final Node0 sourceNode, final Node0 destinationNode ) {
 		// this method is here to prevent the ie. test suite calling link(node,
 		// node)
 		// assumes both Nodes exist and are not null params, else expect
 		// exceptions
-		boolean ret1 = sourceNode.linkForward( destinationNode );
-		boolean ret2 = destinationNode.linkBackward( sourceNode );
-		if ( ret1
-				^ ret2 )
-		{
-			throw new AssertionError(
-										"inconsistent link detected" );
+		final boolean ret1 = sourceNode.linkForward( destinationNode );
+		final boolean ret2 = destinationNode.linkBackward( sourceNode );
+		if ( ret1 ^ ret2 ) {
+			Q.bug( "inconsistent link detected" );
 		}
 		return ret1;
 	}
@@ -224,66 +179,47 @@ public class Environment
 	 *             if ID to Node mapping fails
 	 * @transaction protected
 	 */
-	public
-			boolean
-			linkForward(
-							Id sourceID,
-							Id destinationID )
-					throws Exception
-	{
+	public boolean linkForward( final Id sourceID, final Id destinationID ) throws Exception {
 		// 1.it will create empty Node objects if they don't already exist
 		// 2.map them to IDs
 		// 3.THEN link them
 		
 		boolean sourceCreated = false;
-		Node sourceNode = this.getNode( sourceID );// fetch existing Node
-		if ( null == sourceNode )
-		{
+		Node0 sourceNode = getNode( sourceID );// fetch existing Node
+		if ( null == sourceNode ) {
 			// ah there was no existing Node object with that ID
 			// we create a new one
-			sourceNode = this.ensureNode( sourceID );
+			sourceNode = ensureNode( sourceID );
 			sourceCreated = true;
 		}
 		
 		boolean destinationCreated = false;
-		Node destinationNode = this.getNode( destinationID );// fetch existing Node
-																// identified by
-																// destinationID
-		if ( null == destinationNode )
-		{
+		Node0 destinationNode = getNode( destinationID );// fetch existing Node
+															// identified by
+															// destinationID
+		if ( null == destinationNode ) {
 			// nothing existing? create one
-			destinationNode = this.ensureNode( destinationID );
+			destinationNode = ensureNode( destinationID );
 			destinationCreated = true;
 		}
 		
 		boolean ret = false;
-		try
-		{
-			ret = this.internalLinkForward(
-											sourceNode,
-											destinationNode );// link the
+		try {
+			ret = internalLinkForward( sourceNode, destinationNode );// link the
 			// Node
 			// objects
-		}
-		catch ( Exception e )
-		{
-			try
-			{
-				if ( sourceCreated )
-				{
-					this.removeNode( sourceID );
+		} catch ( final Exception e ) {
+			try {
+				if ( sourceCreated ) {
+					removeNode( sourceID );
 				}
 				
-				if ( destinationCreated )
-				{
-					this.removeNode( destinationID );
+				if ( destinationCreated ) {
+					removeNode( destinationID );
 				}
-			}
-			catch ( Exception f )
-			{
+			} catch ( final Exception f ) {
 				e.printStackTrace();
-				throw new AssertionError(
-											f );
+				Q.rethrow( f );
 			}
 			throw e;
 		}
@@ -299,23 +235,15 @@ public class Environment
 	 * @param nodeID
 	 * @return the removed Node
 	 */
-	public
-			Node
-			removeNode(
-						Id nodeID )
-	{
-		Node n = this.getNode( nodeID );
-		if ( n == null )
-		{
-			throw new AssertionError(
-										"attempt to remove a non-existing node ID" );
+	public Node0 removeNode( final Id nodeID ) {
+		final Node0 n = getNode( nodeID );
+		if ( n == null ) {
+			Q.badCall( "attempt to remove a non-existing node ID" );
 		}
-		if ( !n.isAlone() )
-		{
-			throw new AssertionError(
-										"attempt to remove a non-empty node. Clear its lists first!" );
+		if ( !n.isAlone() ) {
+			Q.badCall( "attempt to remove a non-empty node. Clear its lists first!" );
 		}
-		this.internalUnMapID( nodeID );
+		internalUnMapID( nodeID );
 		return n;
 	}
 	
@@ -325,23 +253,13 @@ public class Environment
 	 * @param destinationID
 	 * @return
 	 */
-	public
-			boolean
-			isLinkForward(
-							Id sourceID,
-							Id destinationID )
-	{
-		Debug.nullException(
-								sourceID,
-								destinationID );
-		Node sourceNode = this.getNode( sourceID );
-		Node destinationNode = this.getNode( destinationID );
-		if ( ( null != sourceNode )
-				&& ( null != destinationNode ) )
-		{
-			return this.internalIsLinkForward(
-												sourceNode,
-												destinationNode );
+	public boolean isLinkForward( final Id sourceID, final Id destinationID ) {
+		assert Q.nn( sourceID );
+		assert Q.nn( destinationID );
+		final Node0 sourceNode = getNode( sourceID );
+		final Node0 destinationNode = getNode( destinationID );
+		if ( ( null != sourceNode ) && ( null != destinationNode ) ) {
+			return internalIsLinkForward( sourceNode, destinationNode );
 		}
 		// backward OR forward doesn't exist hence neither the link
 		return false;
@@ -356,44 +274,25 @@ public class Environment
 	 * @param destinationNode
 	 * @return true if (mutual) link between the two nodes exists
 	 */
-	private
-			boolean
-			internalIsLinkForward(
-									Node sourceNode,
-									Node destinationNode )
-	{
-		Debug.nullException(
-								sourceNode,
-								destinationNode );
-		boolean one = sourceNode.isLinkForward( destinationNode );
-		boolean two = destinationNode.isLinkBackward( sourceNode );
-		if ( one
-				^ two )
-		{
-			throw new AssertionError(
-										"inconsistent link detected" );
+	private boolean internalIsLinkForward( final Node0 sourceNode, final Node0 destinationNode ) {
+		assert Q.nn( sourceNode );
+		assert Q.nn( destinationNode );
+		final boolean one = sourceNode.isLinkForward( destinationNode );
+		final boolean two = destinationNode.isLinkBackward( sourceNode );
+		if ( one ^ two ) {
+			Q.bug( "inconsistent link detected" );
 		}
 		return one;
 	}
 	
 	
-	public
-			boolean
-			unLinkForward(
-							Id backwardId,
-							Id forwardId )
-	{
-		Debug.nullException(
-								backwardId,
-								forwardId );
-		Node sourceNode = this.getNode( backwardId );
-		Node destinationNode = this.getNode( forwardId );
-		if ( ( null != sourceNode )
-				&& ( null != destinationNode ) )
-		{
-			return this.internalUnLinkForward(
-												sourceNode,
-												destinationNode );
+	public boolean unLinkForward( final Id backwardId, final Id forwardId ) {
+		assert Q.nn( backwardId );
+		assert Q.nn( forwardId );
+		final Node0 sourceNode = getNode( backwardId );
+		final Node0 destinationNode = getNode( forwardId );
+		if ( ( null != sourceNode ) && ( null != destinationNode ) ) {
+			return internalUnLinkForward( sourceNode, destinationNode );
 		}
 		return false;
 	}
@@ -405,117 +304,72 @@ public class Environment
 	 * @return true if link existed before call; false if it didn't exist before
 	 *         call; either way it no longer exists after call
 	 */
-	private
-			boolean
-			internalUnLinkForward(
-									Node sourceNode,
-									Node destinationNode )
-	{
-		Debug.nullException(
-								sourceNode,
-								destinationNode );
-		boolean one = sourceNode.unLinkForward( destinationNode );
-		boolean two = destinationNode.unLinkBackward( sourceNode );
-		if ( one
-				^ two )
-		{
-			throw new AssertionError(
-										"inconsistent link detected" );
+	private boolean internalUnLinkForward( final Node0 sourceNode, final Node0 destinationNode ) {
+		assert Q.nn( sourceNode );
+		assert Q.nn( destinationNode );
+		final boolean one = sourceNode.unLinkForward( destinationNode );
+		final boolean two = destinationNode.unLinkBackward( sourceNode );
+		if ( one ^ two ) {
+			Q.bug( "inconsistent link detected" );
 		}
 		return one;
 	}
 	
 	
-	public
-			int
-			getSize(
-						Id nodeID,
-						List list )
-	{
-		Node n = this.getNode( nodeID );
-		if ( null == n )
-		{
-			throw new NoSuchElementException(
-												"inexistent Node, in the environment" );
+	public int getSize( final Id nodeID, final List list ) {
+		final Node0 n = getNode( nodeID );
+		if ( null == n ) {
+			throw new NoSuchElementException( "inexistent Node, in the environment" );
 		}
-		return n.getList(
-							list ).size();
+		return n.getList( list ).size();
 	}
 	
 	
-	public
-			NodeParser
-			getParser(
-						Id nodeID,
-						List list,
-						Location location )
-	{
-		Parser p = new Parser(
-								nodeID,
-								list,
-								location );
+	public NodeParser getParser( final Id nodeID, final List list, final Location location ) {
+		final Parser p = new Parser( nodeID, list, location );
 		return p;
 	}
 	
-	private class Parser
-			implements
-			NodeParser
-	{
+	private class Parser implements NodeParser {
 		
-		Reference<Node>	current	= null;
-		NodeRefsList	nrl		= null;
+		Reference<Node0>	current	= null;
+		NodeRefsList		nrl		= null;
 		
 		
 		// TODO parser for NodeRefsList
 		// TODO remove L1 and L2 from NodeRefsList by generalizing to RefsList
 		// or so
-		public Parser(
-				Id nodeID,
-				List list,
-				Location location )
-		{
+		public Parser( final Id nodeID, final List list, final Location location ) {
 			// this(nodeID, list, location, null);
-			Debug.nullException(
-									nodeID,
-									list,
-									location );
+			assert Q.nn( nodeID );
+			assert Q.nn( list );
+			assert Q.nn( location );
 			@SuppressWarnings( "synthetic-access" )
-			Node n = Environment.this.getNode( nodeID );
-			Debug.nullException( n );
+			final Node0 n = getNode( nodeID );
+			assert Q.nn( n );
 			nrl = n.getList( list );
-			Debug.nullException( nrl );
+			assert Q.nn( nrl );
 			current = nrl.getNodeRefAt( location );// could be null
 		}
 		
 		
 		@Override
-		public
-				Id
-				getCurrentID()
-		{
-			if ( current == null )
-			{
+		public Id getCurrentID() {
+			if ( current == null ) {
 				return null;
 			}
-			Node n = current.getObject();
+			final Node0 n = current.getObject();
 			@SuppressWarnings( "synthetic-access" )
-			Id i = Environment.this.getID( n );
+			final Id i = getID( n );
 			return i;// could be null
 		}
 		
 		
 		@Override
-		public
-				void
-				go(
-					Location location )
-						throws Exception
-		{
+		public void go( final Location location ) throws Exception {
 			// TODO when list is modified, add a variable that's incremented on
 			// add/replace/move in NodeRefsList_L1, copy it here
-			current = nrl.getNodeRefAt(
-										location,
-										current );
+			current = nrl.getNodeRefAt( location, current );
 		}
 		
 	}

@@ -97,9 +97,9 @@ public class OrientedBoundingBoxExampleTest
 	
 	boolean						collided;
 	private CollisionResults	results;
-	private Node				scene, n1Target;
+	private Node0				scene, n1Target;
 	
-	Node						n2Bullet;
+	Node0						n2Bullet;
 	
 	
 	public static
@@ -197,11 +197,11 @@ public class OrientedBoundingBoxExampleTest
 			}
 		};
 		
-		scene = new Node(
+		scene = new Node0(
 							"3D Scene Root" );
-		n1Target = new Node(
+		n1Target = new Node0(
 								"node1Target" );
-		n2Bullet = new Node(
+		n2Bullet = new Node0(
 								"node2Bullet" );
 		
 		n1Target.attachChild( target );

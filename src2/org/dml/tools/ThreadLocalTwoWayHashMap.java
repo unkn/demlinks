@@ -24,6 +24,9 @@
 
 package org.dml.tools;
 
+import org.references.*;
+import org.toolza.*;
+
 
 
 /**
@@ -36,7 +39,7 @@ package org.dml.tools;
  */
 public class ThreadLocalTwoWayHashMap<K, V>
 		extends
-		ThreadLocal<TwoWayHashMap<K, V>>
+		ThreadLocal<TwoWayHashMapOfNonNullUniques<K, V>>
 {
 	
 	public ThreadLocalTwoWayHashMap()
@@ -47,10 +50,10 @@ public class ThreadLocalTwoWayHashMap<K, V>
 
 	@Override
 	protected synchronized
-			TwoWayHashMap<K, V>
+			TwoWayHashMapOfNonNullUniques<K, V>
 			initialValue()
 	{
-		return new TwoWayHashMap<K, V>();
+		return new TwoWayHashMapOfNonNullUniques<K, V>();
 	}
 	
 }

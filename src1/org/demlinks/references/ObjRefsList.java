@@ -24,9 +24,8 @@ package org.demlinks.references;
 
 import java.util.*;
 
-import org.demlinks.debug.*;
-import org.demlinks.errors.*;
 import org.demlinks.node.*;
+import org.q.*;
 
 
 
@@ -48,7 +47,7 @@ public class ObjRefsList<E> extends RefsList<E> {
 	// * @return the object that was removed, or null is none was
 	// */
 	// public E removeObject(Position position) {
-	// Debug.nullException(position);
+	// assert null !=(position);
 	// Reference<E> nr = getNodeRefAt(position);
 	// if (null != nr) {
 	// E nod = nr.getObject();
@@ -64,7 +63,7 @@ public class ObjRefsList<E> extends RefsList<E> {
 	 */
 	public boolean containsObject( final E obj ) {
 		
-		Debug.nullException( obj );
+		assert null != ( obj );
 		return ( null != this.getRef( obj ) );
 	}
 	
@@ -77,7 +76,7 @@ public class ObjRefsList<E> extends RefsList<E> {
 	 */
 	public boolean containsObjectAtPos( final E obj, final int index ) {
 		
-		Debug.nullException( obj );
+		assert null != ( obj );
 		final Reference<E> ref = this.getRefAtPos( index );
 		if ( null == ref ) {
 			return false;// doesn't contain it
@@ -95,7 +94,7 @@ public class ObjRefsList<E> extends RefsList<E> {
 	 */
 	public Reference<E> newRef( final E obj ) {
 		
-		Debug.nullException( obj );
+		assert null != ( obj );
 		final Reference<E> n = new Reference<E>();
 		n.setObject( obj );// is no longer null
 		return n;// should never return null
@@ -108,7 +107,7 @@ public class ObjRefsList<E> extends RefsList<E> {
 	 */
 	public Reference<E> getRef( final E obj ) {
 		
-		Debug.nullException( obj );
+		assert null != ( obj );
 		Reference<E> parser = getFirstRef();
 		while ( null != parser ) {
 			if ( obj.equals( parser.getObject() ) ) {
@@ -129,9 +128,9 @@ public class ObjRefsList<E> extends RefsList<E> {
 	 */
 	public Reference<E> getRefAtPos( final int index ) {
 		
-		// Debug.nullException( index );
+		// assert null !=( index );
 		if ( ( index < 0 ) || ( index >= size() ) ) {
-			throw new BadCallError( "out of bounds" );
+			Q.badCall( "out of bounds" );
 		}
 		
 		Reference<E> parser = getFirstRef();
@@ -154,7 +153,7 @@ public class ObjRefsList<E> extends RefsList<E> {
 	 */
 	public E getObjectAt( final Position pos ) {
 		
-		Debug.nullException( pos );
+		assert null != ( pos );
 		final Reference<E> ref = this.getRefAt( pos );
 		if ( ref != null ) {
 			return ref.getObject();
@@ -170,7 +169,7 @@ public class ObjRefsList<E> extends RefsList<E> {
 	 */
 	public E getObjectAt( final int index ) {
 		
-		// Debug.nullException( index );
+		// assert null !=( index );
 		final Reference<E> ref = this.getRefAtPos( index );
 		if ( ref != null ) {
 			return ref.getObject();
@@ -188,7 +187,8 @@ public class ObjRefsList<E> extends RefsList<E> {
 	 */
 	public E getObjectAt( final Position pos, final E objPos ) {
 		
-		Debug.nullException( pos, objPos );
+		assert null != ( pos );
+		assert null != objPos;
 		final Reference<E> refPos = this.getRef( objPos );
 		if ( refPos == null ) {
 			// couldn't find objPos
@@ -211,7 +211,7 @@ public class ObjRefsList<E> extends RefsList<E> {
 	 */
 	public boolean addLast( final E obj ) {
 		
-		Debug.nullException( obj );
+		assert null != ( obj );
 		Reference<E> nr = this.getRef( obj );
 		if ( null != nr ) {
 			// already exists, not added/moved
@@ -230,7 +230,7 @@ public class ObjRefsList<E> extends RefsList<E> {
 	 */
 	public boolean addFirst( final E obj ) {
 		
-		Debug.nullException( obj );
+		assert null != ( obj );
 		Reference<E> nr = this.getRef( obj );
 		if ( null != nr ) {
 			// already exists, not added/moved
@@ -248,14 +248,15 @@ public class ObjRefsList<E> extends RefsList<E> {
 	 */
 	public boolean insert( final E obj, final Position position ) {
 		
-		Debug.nullException( obj, position );
+		assert null != ( obj );
+		assert null != position;
 		switch ( position ) {
 		case FIRST:
 			return this.addFirst( obj );
 		case LAST:
 			return this.addLast( obj );
 		default:
-			throw new AssertionError( "undefined location here." );
+			throw Q.badCall( "undefined location here." );
 		}
 	}
 	
@@ -269,7 +270,9 @@ public class ObjRefsList<E> extends RefsList<E> {
 	 */
 	public boolean insert( final E newObj, final Position pos, final E posObj ) {
 		
-		Debug.nullException( newObj, pos, posObj );
+		assert null != ( newObj );
+		assert null != pos;
+		assert null != posObj;
 		final Reference<E> posRef = this.getRef( posObj );
 		if ( null == posRef ) {
 			// posObj non existant? stop some bugs by throwing exception
@@ -291,7 +294,7 @@ public class ObjRefsList<E> extends RefsList<E> {
 	 */
 	public boolean removeObject( final E obj ) {
 		
-		Debug.nullException( obj );
+		assert null != ( obj );
 		final Reference<E> nr = this.getRef( obj );
 		if ( null == nr ) {
 			return false;

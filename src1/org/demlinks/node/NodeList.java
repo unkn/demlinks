@@ -22,8 +22,8 @@ package org.demlinks.node;
 
 
 
-import org.demlinks.debug.*;
 import org.demlinks.references.*;
+import org.q.*;
 
 
 
@@ -47,7 +47,7 @@ public class NodeList extends ObjRefsList<Node> {
 	 */
 	public boolean appendNode( final Node nodeToAppend ) {
 		
-		Debug.nullException( nodeToAppend );// why not assert? because param(ie.
+		assert Q.nn( nodeToAppend );// why not assert? because param(ie.
 		// nodeToAppend) could be
 		// dynamically set on runtime
 		return this.addLast( nodeToAppend );
@@ -73,7 +73,7 @@ public class NodeList extends ObjRefsList<Node> {
 	
 	public Node getNodeAfter( final Node node ) {
 		
-		Debug.nullException( node );
+		assert Q.nn( node );
 		return this.getObjectAt( Position.AFTER, node );
 	}
 	
@@ -85,21 +85,21 @@ public class NodeList extends ObjRefsList<Node> {
 	 */
 	public Node getNodeAt( final int index ) {
 		
-		// Debug.nullException( index );
+		// assert null != index );
 		return this.getObjectAt( index );
 	}
 	
 	
 	public Node getNodeBefore( final Node node ) {
 		
-		Debug.nullException( node );
+		assert Q.nn( node );
 		return this.getObjectAt( Position.BEFORE, node );
 	}
 	
 	
 	public boolean hasNode( final Node node ) {
 		
-		Debug.nullException( node );
+		assert Q.nn( node );
 		return containsObject( node );
 	}
 	
@@ -112,7 +112,7 @@ public class NodeList extends ObjRefsList<Node> {
 	 */
 	public boolean hasNodeAtPos( final Node node, final int index ) {
 		
-		// Debug.nullException( node, index );
+		// assert null != node, index );
 		return containsObjectAtPos( node, index );
 	}
 	
@@ -128,7 +128,8 @@ public class NodeList extends ObjRefsList<Node> {
 	 */
 	public boolean insertNode( final Node whichNode, final Position whatPos ) {
 		
-		Debug.nullException( whichNode, whatPos );
+		assert Q.nn( whichNode );// null != whichNode;
+		assert Q.nn( whatPos );
 		return this.insert( whichNode, whatPos );
 	}
 	
@@ -142,7 +143,8 @@ public class NodeList extends ObjRefsList<Node> {
 	 */
 	public boolean insertAfterNode( final Node newNode, final Node afterNode ) {
 		
-		Debug.nullException( newNode, afterNode );
+		assert Q.nn( newNode );
+		assert Q.nn( afterNode );
 		return this.insert( newNode, Position.AFTER, afterNode );
 	}
 	
@@ -159,7 +161,8 @@ public class NodeList extends ObjRefsList<Node> {
 	 */
 	public boolean insertBeforeNode( final Node newNode, final Node beforeNode ) {
 		
-		Debug.nullException( newNode, beforeNode );
+		assert Q.nn( newNode );
+		assert Q.nn( beforeNode );
 		return this.insert( newNode, Position.BEFORE, beforeNode );
 	}
 	
@@ -172,7 +175,7 @@ public class NodeList extends ObjRefsList<Node> {
 	 */
 	public boolean removeNode( final Node node ) {
 		
-		Debug.nullException( node );
+		assert Q.nn( node );
 		final boolean ret = removeObject( node );
 		return ret;
 	}

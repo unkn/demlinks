@@ -156,7 +156,7 @@ public class HelloIntersection
 	// get the root node of the scene
 	@Override
 	public
-			Node
+			Node0
 			getRootNode()
 	{
 		

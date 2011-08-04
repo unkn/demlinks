@@ -40,6 +40,7 @@ public class OneToManyDBConfig extends DatabaseConfig {
 	public OneToManyDBConfig() {
 		
 		super();
+		setType( DatabaseType.BTREE );// for sure
 		setAllowCreate( true );
 		// this.setDeferredWrite( false );
 		// this.setKeyPrefixing( false );

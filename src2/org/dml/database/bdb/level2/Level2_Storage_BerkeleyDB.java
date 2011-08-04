@@ -25,11 +25,10 @@ package org.dml.database.bdb.level2;
 
 
 
-import org.dml.database.bdb.level1.Level1_Storage_BerkeleyDB;
-import org.dml.tools.RunTime;
-import org.dml.tracking.Factory;
-import org.references.method.MethodParams;
-import org.references.method.PossibleParams;
+import org.dml.database.bdb.level1.*;
+import org.dml.tools.*;
+import org.dml.tracking.*;
+import org.references.method.*;
 
 
 
@@ -37,54 +36,39 @@ import org.references.method.PossibleParams;
  * 
  *
  */
-public class Level2_Storage_BerkeleyDB
-		extends
-		Level1_Storage_BerkeleyDB
-{
+public class Level2_Storage_BerkeleyDB extends Level1_Storage_BerkeleyDB {
 	
 	private DBMapSymbolsTuple	dbSymbolsTuple		= null;
-	private final static String	dbSymbolsTuple_NAME	= "tuple(Symbol<->Symbol)";
+	private final static String	dbSymbolsTuple_NAME	= "tuple(Symbol2Symbol)";
 	
 	
 	/**
 	 * @return never null
 	 */
-	public
-			DBMapSymbolsTuple
-			getDBMapSymbolsTuple()
-	{
-		RunTime.assumedTrue( this.isInitedSuccessfully() );
+	public DBMapSymbolsTuple getDBMapSymbolsTuple() {
+		RunTime.assumedTrue( isInitedSuccessfully() );
 		RunTime.assumedNotNull( dbSymbolsTuple );
 		RunTime.assumedTrue( dbSymbolsTuple.isInitedSuccessfully() );
 		return dbSymbolsTuple;
 	}
 	
-
+	
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see org.dml.database.bdb.level1.Level1_Storage_BerkeleyDB#done()
 	 */
 	@Override
-	protected
-			void
-			done(
-					MethodParams params )
-	{
-		if ( this.isInitedSuccessfully() )
-		{
+	protected void done( final MethodParams params ) {
+		if ( isInitedSuccessfully() ) {
 			RunTime.assumedNotNull( dbSymbolsTuple );
 		}
 		
-		if ( null != dbSymbolsTuple )
-		{
+		if ( null != dbSymbolsTuple ) {
 			// dbSymbolsTuple.deInit();
-			try
-			{
+			try {
 				Factory.deInit_WithPostponedThrows( dbSymbolsTuple );
-			}
-			finally
-			{
+			} finally {
 				dbSymbolsTuple = null;
 			}
 		}
@@ -92,33 +76,23 @@ public class Level2_Storage_BerkeleyDB
 		super.done( params );// last
 	}
 	
-
+	
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see org.dml.database.bdb.level1.Level1_Storage_BerkeleyDB#start(org.references.method.MethodParams)
 	 */
 	@Override
-	protected
-			void
-			start(
-					MethodParams params )
-	{
+	protected void start( final MethodParams params ) {
 		RunTime.assumedNotNull( params );
 		
 		super.start( params );// first
 		
-		MethodParams iParams = MethodParams.getNew();// params.getClone();
-		RunTime.assumedNull( iParams.set(
-											PossibleParams.level1_BDBStorage,
-											this ) );
-		RunTime.assumedNull( iParams.set(
-											PossibleParams.dbName,
-											dbSymbolsTuple_NAME ) );
+		final MethodParams iParams = MethodParams.getNew();// params.getClone();
+		RunTime.assumedNull( iParams.set( PossibleParams.level1_BDBStorage, this ) );
+		RunTime.assumedNull( iParams.set( PossibleParams.dbName, dbSymbolsTuple_NAME ) );
 		
-		dbSymbolsTuple = Factory.getNewInstanceAndInit(
-														DBMapSymbolsTuple.class,
-														iParams );
+		dbSymbolsTuple = Factory.getNewInstanceAndInit( DBMapSymbolsTuple.class, iParams );
 		RunTime.assumedNotNull( dbSymbolsTuple );
 		RunTime.assumedTrue( dbSymbolsTuple.isInitedSuccessfully() );
 		

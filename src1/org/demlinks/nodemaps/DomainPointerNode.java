@@ -1,13 +1,10 @@
-
-
 package org.demlinks.nodemaps;
 
 
 
-import org.demlinks.debug.Debug;
-import org.demlinks.errors.BugError;
-import org.demlinks.exceptions.BadParameterException;
-import org.demlinks.node.Node;
+import org.demlinks.exceptions.*;
+import org.demlinks.node.*;
+import org.q.*;
 
 
 
@@ -16,43 +13,46 @@ public class DomainPointerNode extends PointerNode {
 	// can point to children only from this domain
 	private final Node	domain;
 	
-	public DomainPointerNode( Node domain1 ) {
-
+	
+	public DomainPointerNode( final Node domain1 ) {
+		
 		super();
-		Debug.nullException( domain1 );
-		Environment.internalEnsureNodeIsChildOf( this,
-				Environment.AllDomainPointerNodes );
-		this.domain = domain1;
+		assert null != domain1;
+		Environment.internalEnsureNodeIsChildOf( this, Environment.AllDomainPointerNodes );
+		domain = domain1;
 	}
+	
 	
 	@Override
 	public void integrityCheck() {
-
+		
 		super.integrityCheck();
 		// if ( this.numChildren() > 1 ) {
 		// throw new BugError(
 		// "someone made the pointer have more than 1 child" );
 		// }
-		if ( !this.hasParent( Environment.AllDomainPointerNodes ) ) {
+		if ( !hasParent( Environment.AllDomainPointerNodes ) ) {
 			throw new BugError( "somehow the parent was removed" );
 		}
-		Node p = this.getPointee();
+		final Node p = getPointee();
 		if ( null != p ) {
-			if ( !this.domain.hasChild( p ) ) {
+			if ( !domain.hasChild( p ) ) {
 				throw new BugError( "pointee is not from domain" );
 			}
 		}
 	}
 	
+	
 	@Override
-	public boolean pointTo( Node pointee ) {
-
-		Debug.nullException( pointee );
-		if ( !this.domain.hasChild( pointee ) ) {
+	public boolean pointTo( final Node pointee ) {
+		
+		assert null != pointee;
+		if ( !domain.hasChild( pointee ) ) {
 			throw new BadParameterException( "parameter is not from domain" );
 		}
 		return super.pointTo( pointee );
 	}
+	
 	
 	/**
 	 * @return true if successfully moved to point to next Node from the domain;<br>
@@ -60,24 +60,24 @@ public class DomainPointerNode extends PointerNode {
 	 *         else more to point to, in the next direction;
 	 */
 	public boolean pointToNext() {
-
-		if ( !this.canPointToNext() ) {
+		
+		if ( !canPointToNext() ) {
 			return false;
 		}
 		
-		this.pointTo( this.domain.getChildNextOf( this.getPointee() ) );
+		pointTo( domain.getChildNextOf( getPointee() ) );
 		return true;
 	}
 	
+	
 	/**
-	 * @return true if there's a next that we can point to using
-	 *         {@link #pointToNext()}
+	 * @return true if there's a next that we can point to using {@link #pointToNext()}
 	 */
 	public boolean canPointToNext() {
-
-		Node current = this.getPointee();
+		
+		final Node current = getPointee();
 		if ( null != current ) {
-			Node next = this.domain.getChildNextOf( current );
+			final Node next = domain.getChildNextOf( current );
 			if ( null != next ) {
 				return true;
 			}
@@ -85,19 +85,19 @@ public class DomainPointerNode extends PointerNode {
 		return false;
 	}
 	
+	
 	/**
 	 * @return
 	 * @see #pointToNext()
 	 */
 	public boolean pointToPrev() {
-
-		Node current = this.getPointee();
+		
+		final Node current = getPointee();
 		if ( null != current ) {
-			Node prev = this.domain.getChildPrevOf( current );
+			final Node prev = domain.getChildPrevOf( current );
 			if ( null != prev ) {
-				if ( !this.pointTo( prev ) ) {
-					throw new BugError(
-							"should be true since a pointee existed before" );
+				if ( !pointTo( prev ) ) {
+					throw new BugError( "should be true since a pointee existed before" );
 				}
 				return true;
 			}
@@ -105,12 +105,13 @@ public class DomainPointerNode extends PointerNode {
 		return false;
 	}
 	
+	
 	/**
 	 * @return the domain this pointer is defined upon
 	 */
 	public Node getDomain() {
-
-		return this.domain;
+		
+		return domain;
 	}
 	// TODO junit test for this class
 }

@@ -73,7 +73,7 @@ public class TestCollision
 	
 	Text						text;
 	
-	private Node				scene;
+	private Node0				scene;
 	
 	private final Quaternion	rotQuat	= new Quaternion();
 	
@@ -90,7 +90,7 @@ public class TestCollision
 	
 	private CollisionResults	results;
 	
-	private Node				n1, n2;
+	private Node0				n1, n2;
 	
 	
 	/**
@@ -259,7 +259,7 @@ public class TestCollision
 												0 ) );
 		statNode.attachChild( text );
 		
-		scene = new Node(
+		scene = new Node0(
 							"3D Scene Root" );
 		
 		Vector3f max = new Vector3f(
@@ -271,9 +271,9 @@ public class TestCollision
 										-5,
 										-5 );
 		
-		n1 = new Node(
+		n1 = new Node0(
 						"Node 1" );
-		n2 = new Node(
+		n2 = new Node0(
 						"Node 2" );
 		
 		t = new Sphere(

@@ -65,7 +65,7 @@ public class TestSimpleRagDoll
 {
 	
 	public
-			Node
+			Node0
 			getRootNode()
 	{
 		return rootNode;

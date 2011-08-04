@@ -32,6 +32,7 @@ import org.dml.tracking.*;
 import org.q.*;
 import org.references.*;
 import org.references.method.*;
+import org.toolza.*;
 
 import com.sleepycat.bind.tuple.*;
 import com.sleepycat.db.*;
@@ -69,7 +70,7 @@ public class Level1_Storage_BerkeleyDB extends Initer {
 																								new ListOfUniqueNonNullObjects<SecondaryDatabase>();
 	private UniqueSymbolsGenerator								symGen						= null;
 	
-	private final static String									dbNAME_JavaID_To_NodeID		= "map(JavaID<->NodeID)";
+	private final static String									dbNAME_JavaID_To_NodeID		= "map(JavaID2NodeID)";
 	private final static String									UNINITIALIZED_STRING		= "uninitializedString";
 	
 	
@@ -252,22 +253,23 @@ public class Level1_Storage_BerkeleyDB extends Initer {
 	private void internalWipeEnv() {
 		
 		final File dir = new File( envHomeDir );
-		final String[] allThoseInDir = dir.list();
-		if ( null != allThoseInDir ) {
-			for ( final String element : allThoseInDir ) {
-				final File n = new File( envHomeDir + File.separator + element );
-				if ( !n.isFile() ) {
-					continue;
-				}
-				if ( ( !n.getPath().matches( ".*\\.jdb" ) ) && ( !( n.getPath().matches( ".*\\.lck" ) ) ) ) {
-					continue;
-				}
-				Log.special( "removing " + n.getPath() );
-				if ( !n.delete() ) {
-					Log.warn( "Failed removing " + n.getAbsolutePath() );
-				}
-			}
-		}
+		F.delFileOrTree( dir );
+		// final String[] allThoseInDir = dir.list();
+		// if ( null != allThoseInDir ) {
+		// for ( final String element : allThoseInDir ) {
+		// final File n = new File( envHomeDir + File.separator + element );
+		// if ( !n.isFile() ) {
+		// continue;
+		// }
+		// if ( ( !n.getPath().matches( ".*\\.jdb" ) ) && ( !( n.getPath().matches( ".*\\.lck" ) ) ) ) {
+		// continue;
+		// }
+		// Log.special( "removing " + n.getPath() );
+		// if ( !n.delete() ) {
+		// Log.warn( "Failed removing " + n.getAbsolutePath() );
+		// }
+		// }
+		// }
 	}
 	
 	
@@ -325,7 +327,7 @@ public class Level1_Storage_BerkeleyDB extends Initer {
 			environmentConfig.setTxnNoSync( true );
 			environmentConfig.setTxnWriteNoSync( false );
 			// environmentConfig.setTxnSerializableIsolation( true );// FIXME: what's the equivalent of this?
-			environmentConfig.setInitializeCache( false );// SharedCache( false );
+			environmentConfig.setInitializeCache( true );// SharedCache( false );
 			// environmentConfig.setConfigParam( EnvironmentConfig.TRACE_LEVEL, "OFF" );
 			// environmentConfig.setConfigParam( EnvironmentConfig.TRACE_CONSOLE, "false" );
 			// environmentConfig.setConfigParam( EnvironmentConfig.TRACE_FILE, "false" );
@@ -615,6 +617,7 @@ public class Level1_Storage_BerkeleyDB extends Initer {
 		if ( null == seqDbConf ) {
 			// init once:
 			seqDbConf = new DatabaseConfig();
+			seqDbConf.setType( DatabaseType.HASH );
 			seqDbConf.setAllowCreate( true );
 			// seqDbConf.setDeferredWrite( false );
 			// seqDbConf.setKeyPrefixing( true );

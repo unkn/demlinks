@@ -40,10 +40,11 @@ public class OneToOneSecondaryDBConfig extends SecondaryConfig {
 	public OneToOneSecondaryDBConfig() {
 		
 		super();
+		setType( DatabaseType.HASH );// FIXME: see if BTREE is needed
 		setAllowCreate( true );
 		setAllowPopulate( true );
 		// this.setDeferredWrite( false );
-		setForeignKeyDatabase( null );
+		// setForeignKeyDatabase( null );//XXX: bdb bug with null param => NPE
 		setExclusiveCreate( false );
 		setImmutableSecondaryKey( false );
 		setReadOnly( false );

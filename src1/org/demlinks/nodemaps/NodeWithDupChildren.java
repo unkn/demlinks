@@ -23,10 +23,9 @@ package org.demlinks.nodemaps;
 
 
 import org.demlinks.constants.*;
-import org.demlinks.debug.*;
-import org.demlinks.errors.*;
 import org.demlinks.exceptions.*;
 import org.demlinks.node.*;
+import org.q.*;
 
 
 
@@ -42,14 +41,14 @@ public class NodeWithDupChildren extends Node {
 	@Override
 	public Node getChildAt( final int zeroBasedIndex ) {
 		
-		throw new BadCallError( "use .dup* methods" );
+		throw Q.badCall( "use .dup* methods" );
 	}
 	
 	
 	@Override
 	public boolean appendChild( final Node child ) {
 		
-		throw new BadCallError( "use .dup* methods" );
+		throw Q.badCall( "use .dup* methods" );
 	}
 	
 	
@@ -98,11 +97,11 @@ public class NodeWithDupChildren extends Node {
 	 */
 	public void dupAppendChild( final Node childNode ) {
 		
-		Debug.nullException( childNode );
+		assert Q.nn( childNode );
 		final IntermediaryNode IN = new IntermediaryNode();
 		if ( IN.pointTo( childNode ) ) {
 			// already pointed? impossible
-			throw new BugError();
+			Q.bug();
 		}
 		if ( super.appendChild( IN ) ) {
 			// IN existed? impossible
@@ -170,7 +169,7 @@ public class NodeWithDupChildren extends Node {
 	 */
 	public IntermediaryNode getIntermediaryForFirstChild( final Node childNode ) {
 		
-		Debug.nullException( childNode );
+		assert Q.nn( childNode );
 		return getIntermediaryForNextChild( childNode, this.getIntermediaryForFirstChild(), false );
 	}
 	
@@ -186,7 +185,7 @@ public class NodeWithDupChildren extends Node {
 	 */
 	public IntermediaryNode getIntermediaryForLastChild( final Node childNode ) {
 		
-		Debug.nullException( childNode );
+		assert Q.nn( childNode );
 		return getIntermediaryForPrevChild( childNode, this.getIntermediaryForLastChild(), DO.NOSKIP );
 	}
 	
@@ -205,7 +204,8 @@ public class NodeWithDupChildren extends Node {
 	public IntermediaryNode getIntermediaryForNextChild( final Node childNode, final IntermediaryNode startingFromThisIN,
 															final boolean skipIN ) {
 		
-		Debug.nullException( childNode, startingFromThisIN );
+		assert Q.nn( childNode );
+		assert Q.nn( startingFromThisIN );
 		// we skip startingFromThisIN because startingFromThisIN.child ==
 		// childNode already
 		IntermediaryNode parser;
@@ -244,7 +244,8 @@ public class NodeWithDupChildren extends Node {
 	public IntermediaryNode getIntermediaryForPrevChild( final Node childNode, final IntermediaryNode startingFromThisIN,
 															final boolean skipIN ) {
 		
-		Debug.nullException( childNode, startingFromThisIN );
+		assert Q.nn( childNode );
+		assert Q.nn( startingFromThisIN );
 		// we skip startingFromThisIN because startingFromThisIN.child ==
 		// childNode already
 		IntermediaryNode parser;
@@ -276,7 +277,7 @@ public class NodeWithDupChildren extends Node {
 	 */
 	public IntermediaryNode getNextIntermediary( final IntermediaryNode startingFromThisIN ) {
 		
-		Debug.nullException( startingFromThisIN );
+		assert Q.nn( startingFromThisIN );
 		final IntermediaryNode iN = (IntermediaryNode)( getChildNextOf( startingFromThisIN ) );
 		if ( null != iN ) {
 			if ( !Environment.isIntermediaryNode( iN ) ) {
@@ -293,7 +294,7 @@ public class NodeWithDupChildren extends Node {
 	 */
 	public IntermediaryNode getPrevIntermediary( final IntermediaryNode startingFromThisIN ) {
 		
-		Debug.nullException( startingFromThisIN );
+		assert Q.nn( startingFromThisIN );
 		final IntermediaryNode iN = (IntermediaryNode)( getChildPrevOf( startingFromThisIN ) );
 		
 		if ( null != iN ) {
@@ -308,7 +309,7 @@ public class NodeWithDupChildren extends Node {
 	
 	public int getCountOfChildren( final Node childNode ) {
 		
-		Debug.nullException( childNode );
+		assert Q.nn( childNode );
 		integrityCheck();
 		int count = 0;
 		IntermediaryNode iN = this.getIntermediaryForFirstChild( childNode );
@@ -328,7 +329,7 @@ public class NodeWithDupChildren extends Node {
 	 */
 	public void dupRemoveIntermediaryNode( final IntermediaryNode intermediaryNodeToRemove ) {
 		
-		Debug.nullException( intermediaryNodeToRemove );
+		assert Q.nn( intermediaryNodeToRemove );
 		integrityCheck();
 		if ( !hasChild( intermediaryNodeToRemove ) ) {
 			throw new BadParameterException( "the IN is not from this NodeWithDupChildren" );
@@ -346,7 +347,7 @@ public class NodeWithDupChildren extends Node {
 	@Override
 	public boolean clearAllChildren() {
 		
-		throw new BadCallError( "use .dup*" );
+		throw Q.badCall( "use .dup*" );
 	}
 	
 	

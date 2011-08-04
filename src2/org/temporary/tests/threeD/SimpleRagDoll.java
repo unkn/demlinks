@@ -58,12 +58,12 @@ import com.jmex.physics.PhysicsSpace;
  */
 public class SimpleRagDoll {
 
-    private Node ragdollNode;
+    private Node0 ragdollNode;
     private PhysicsSpace physicsSpace;
 
     public SimpleRagDoll( PhysicsSpace physicsSpace1 ) {
         this.physicsSpace = physicsSpace1;
-        ragdollNode = new Node();
+        ragdollNode = new Node0();
         buildRagdoll();
     }
 
@@ -151,7 +151,7 @@ public class SimpleRagDoll {
         leftShoulderAxis.setPositionMaximum( max );
     }
 
-    public Node getRagdollNode() {
+    public Node0 getRagdollNode() {
         return ragdollNode;
     }
 

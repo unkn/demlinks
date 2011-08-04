@@ -1,19 +1,20 @@
-/*  Copyright (C) 2005-2008 AtKaaZ <atkaaz@users.sourceforge.net>
- 	
- 	This file and its contents are part of DeMLinks.
-
-    DeMLinks is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    DeMLinks is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with DeMLinks.  If not, see <http://www.gnu.org/licenses/>.
+/*
+ * Copyright (C) 2005-2008 AtKaaZ <atkaaz@users.sourceforge.net>
+ * 
+ * This file and its contents are part of DeMLinks.
+ * 
+ * DeMLinks is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * DeMLinks is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with DeMLinks. If not, see <http://www.gnu.org/licenses/>.
  */
 
 
@@ -21,11 +22,10 @@ package org.demlinks.node;
 
 
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
+import org.q.*;
 
 
 
@@ -34,153 +34,133 @@ public class NodeListTest {
 	Node		node1, node2, node3, nullNode;
 	NodeList	list;
 	
+	
 	@Before
 	public void init() {
-
-		this.node1 = new Node();
-		this.node2 = new Node();
-		this.node3 = new Node();
-		this.nullNode = null;
-		this.list = new NodeList();
+		
+		node1 = new Node();
+		node2 = new Node();
+		node3 = new Node();
+		nullNode = null;
+		list = new NodeList();
 	}
+	
 	
 	@Test
 	public void testAppendNode() {
-
-		assertTrue( this.list.isEmpty() );
-		assertTrue( this.list.getFirstNode() == null );
-		assertTrue( this.list.getLastNode() == null );
-		assertFalse( this.list.hasNode( this.node1 ) );
-		assertFalse( this.list.hasNode( this.node2 ) );
-		assertFalse( this.list.appendNode( this.node1 ) ); // false= node didn't
+		
+		assertTrue( list.isEmpty() );
+		assertTrue( list.getFirstNode() == null );
+		assertTrue( list.getLastNode() == null );
+		assertFalse( list.hasNode( node1 ) );
+		assertFalse( list.hasNode( node2 ) );
+		assertFalse( list.appendNode( node1 ) ); // false= node didn't
 		// already exist
-		assertTrue( this.node1 == this.list.getLastNode() );
-		assertFalse( this.list.appendNode( this.node2 ) );
-		assertTrue( this.node2 == this.list.getLastNode() );
-		assertTrue( this.list.appendNode( this.node1 ) );// already there
-		assertFalse( this.node1 == this.list.getLastNode() );// it wasn't moved
+		assertTrue( node1 == list.getLastNode() );
+		assertFalse( list.appendNode( node2 ) );
+		assertTrue( node2 == list.getLastNode() );
+		assertTrue( list.appendNode( node1 ) );// already there
+		assertFalse( node1 == list.getLastNode() );// it wasn't moved
 		// last
-		assertTrue( 2 == this.list.size() );
-		boolean excepted = false;
+		assertTrue( 2 == list.size() );
 		try {
-			this.list.appendNode( this.nullNode );
-		} catch ( NullPointerException e ) {
-			excepted = true;
+			list.appendNode( nullNode );
+			Q.fail();
+		} catch ( final NullPointerException e ) {
 		}
-		assertTrue( excepted );
-		assertTrue( this.node2 == this.list.getNodeAfter( this.node1 ) );
-		assertTrue( this.node1 == this.list.getNodeBefore( this.node2 ) );
-		assertTrue( this.list.getNodeAfter( this.node2 ) == null );
-		assertTrue( this.list.getNodeBefore( this.node1 ) == null );
-		excepted = false;
+		assertTrue( node2 == list.getNodeAfter( node1 ) );
+		assertTrue( node1 == list.getNodeBefore( node2 ) );
+		assertTrue( list.getNodeAfter( node2 ) == null );
+		assertTrue( list.getNodeBefore( node1 ) == null );
 		try {
-			this.list.hasNode( this.nullNode );
-		} catch ( NullPointerException e ) {
-			excepted = true;
+			list.hasNode( nullNode );
+			Q.fail();
+		} catch ( final NullPointerException e ) {
 		}
-		assertTrue( excepted );
-		assertTrue( this.list.hasNode( this.node1 ) );
-		assertTrue( this.list.hasNode( this.node2 ) );
+		assertTrue( list.hasNode( node1 ) );
+		assertTrue( list.hasNode( node2 ) );
 	}
+	
 	
 	@Test
 	public void testInsertNode() {
-
-		assertTrue( this.list.isEmpty() );
-		assertFalse( this.list.insertNode( this.node1, Position.FIRST ) );
-		assertFalse( this.list.insertNode( this.node2, Position.LAST ) );
-		assertTrue( this.list.getFirstNode() == this.node1 );
-		assertTrue( this.list.getLastNode() == this.node2 );
-		assertTrue( this.list.size() == 2 );
-		boolean excepted = false;
+		
+		assertTrue( list.isEmpty() );
+		assertFalse( list.insertNode( node1, Position.FIRST ) );
+		assertFalse( list.insertNode( node2, Position.LAST ) );
+		assertTrue( list.getFirstNode() == node1 );
+		assertTrue( list.getLastNode() == node2 );
+		assertTrue( list.size() == 2 );
 		try {
-			this.list.insertNode( this.nullNode, Position.FIRST );
-		} catch ( NullPointerException e ) {
-			excepted = true;
+			list.insertNode( nullNode, Position.FIRST );
+			Q.fail();
+		} catch ( final NullPointerException e ) {
 		}
-		assertTrue( excepted );
-		excepted = false;
 		try {
-			this.list.insertNode( this.node1, null );
-		} catch ( NullPointerException e ) {
-			excepted = true;
+			list.insertNode( node1, null );
+			Q.fail();
+		} catch ( final NullPointerException e ) {
 		}
-		assertTrue( excepted );
-		excepted = false;
 		try {
-			this.list.insertNode( null, null );
-		} catch ( NullPointerException e ) {
-			excepted = true;
+			list.insertNode( null, null );
+			Q.fail();
+		} catch ( final NullPointerException e ) {
 		}
-		assertTrue( excepted );
 	}
+	
 	
 	@Test
 	public void testInsertAfterNode() {
-
-		assertTrue( this.list.isEmpty() );
-		assertFalse( this.list.appendNode( this.node1 ) );
-		assertFalse( this.list.insertAfterNode( this.node2, this.node1 ) );
-		assertTrue( this.list.getLastNode() == this.node2 );
-		assertFalse( this.list.insertAfterNode( this.node3, this.node2 ) );
-		assertTrue( this.list.getLastNode() == this.node3 );
-		assertTrue( this.list.size() == 3 );
-		assertTrue( this.list.removeNode( this.node2 ) );
-		assertFalse( this.list.removeNode( this.node2 ) );
-		assertTrue( this.list.size() == 2 );
-		assertTrue( this.list.hasNode( this.node1 ) );
-		assertTrue( this.list.hasNode( this.node3 ) );
-		assertFalse( this.list.insertBeforeNode( this.node2, this.node3 ) );
-		assertTrue( this.list.getNodeAfter( this.node1 ) == this.list.getNodeBefore( this.node3 ) );
-		assertTrue( this.list.getNodeAfter( this.node1 ) == this.node2 );
-		boolean excepted = false;
+		
+		assertTrue( list.isEmpty() );
+		assertFalse( list.appendNode( node1 ) );
+		assertFalse( list.insertAfterNode( node2, node1 ) );
+		assertTrue( list.getLastNode() == node2 );
+		assertFalse( list.insertAfterNode( node3, node2 ) );
+		assertTrue( list.getLastNode() == node3 );
+		assertTrue( list.size() == 3 );
+		assertTrue( list.removeNode( node2 ) );
+		assertFalse( list.removeNode( node2 ) );
+		assertTrue( list.size() == 2 );
+		assertTrue( list.hasNode( node1 ) );
+		assertTrue( list.hasNode( node3 ) );
+		assertFalse( list.insertBeforeNode( node2, node3 ) );
+		assertTrue( list.getNodeAfter( node1 ) == list.getNodeBefore( node3 ) );
+		assertTrue( list.getNodeAfter( node1 ) == node2 );
 		try {
-			this.list.insertAfterNode( this.nullNode, this.node2 );
-		} catch ( NullPointerException e ) {
-			excepted = true;
+			list.insertAfterNode( nullNode, node2 );
+			Q.fail();
+		} catch ( final NullPointerException e ) {
 		}
-		assertTrue( excepted );
-		excepted = false;
 		try {
-			this.list.insertAfterNode( this.node1, this.nullNode );
-		} catch ( NullPointerException e ) {
-			excepted = true;
+			list.insertAfterNode( node1, nullNode );
+			Q.fail();
+		} catch ( final NullPointerException e ) {
 		}
-		assertTrue( excepted );
-		excepted = false;
 		try {
-			this.list.insertAfterNode( this.nullNode, this.nullNode );
-		} catch ( NullPointerException e ) {
-			excepted = true;
+			list.insertAfterNode( nullNode, nullNode );
+			Q.fail();
+		} catch ( final NullPointerException e ) {
 		}
-		assertTrue( excepted );
-		excepted = false;
 		try {
-			this.list.insertBeforeNode( this.nullNode, this.node2 );
-		} catch ( NullPointerException e ) {
-			excepted = true;
+			list.insertBeforeNode( nullNode, node2 );
+			Q.fail();
+		} catch ( final NullPointerException e ) {
 		}
-		assertTrue( excepted );
-		excepted = false;
 		try {
-			this.list.insertBeforeNode( this.node1, this.nullNode );
-		} catch ( NullPointerException e ) {
-			excepted = true;
+			list.insertBeforeNode( node1, nullNode );
+			Q.fail();
+		} catch ( final NullPointerException e ) {
 		}
-		assertTrue( excepted );
-		excepted = false;
 		try {
-			this.list.insertBeforeNode( this.nullNode, this.nullNode );
-		} catch ( NullPointerException e ) {
-			excepted = true;
+			list.insertBeforeNode( nullNode, nullNode );
+			Q.fail();
+		} catch ( final NullPointerException e ) {
 		}
-		assertTrue( excepted );
-		excepted = false;
 		try {
-			this.list.removeNode( this.nullNode );
-		} catch ( NullPointerException e ) {
-			excepted = true;
+			list.removeNode( nullNode );
+			Q.fail();
+		} catch ( final NullPointerException e ) {
 		}
-		assertTrue( excepted );
 	}
 }

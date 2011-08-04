@@ -121,7 +121,7 @@ public class OrientedBoundingBoxExampleTest3
 	
 
 	public
-			Node
+			Node0
 			getRootNode()
 	{
 		return rootNode;
