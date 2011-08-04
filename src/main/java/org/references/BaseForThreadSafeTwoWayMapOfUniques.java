@@ -34,19 +34,25 @@
  */
 package org.references;
 
+import org.q.*;
+
+
 
 /**
  * just make sure you call assertInvariants(); before each method call, <br>
  * which makes sure you're not using them after discard() was called<br>
  * if you override discard() make sure you call super() first<br>
+ * this should be threadsafe, unless you create new methods in subclass and forget to use "synchronized" keyword, which is not
+ * needed for the methods you override!<br>
  * 
  * @param <KEY>
  * @param <DATA>
  * 
  */
-public abstract class BaseForTwoWayMapOfUniques<KEY, DATA> implements GenericTwoWayMapOfUniques<KEY, DATA> {
+public abstract class BaseForThreadSafeTwoWayMapOfUniques<KEY, DATA> implements GenericTwoWayMapOfUniques<KEY, DATA> {
 	
-	// FIXME: if overridders are allowed to be synchronized then while waiting on the lock, the other thread could discard this
+	// FIXME: if overridden internal methods are allowed to be synchronized then while waiting on the lock, the other thread
+	// could discard this
 	// first but the subclass will still execute that method after lock acquire; so to fix, we must make these in base
 	// synchronized, but the downside is not all implementations need these to be synchronized so loosing concurrency?
 	private volatile boolean	discarded	= false;
@@ -58,7 +64,7 @@ public abstract class BaseForTwoWayMapOfUniques<KEY, DATA> implements GenericTwo
 	 * @see org.references.TwoWayMapOfUniques#isEmpty()
 	 */
 	@Override
-	public final boolean isEmpty() {
+	public final synchronized boolean isEmpty() {
 		assertInvariants();
 		return 0 == size();
 	}
@@ -72,12 +78,14 @@ public abstract class BaseForTwoWayMapOfUniques<KEY, DATA> implements GenericTwo
 	/**
 	 * if you override this, call super() first!<br>
 	 * this will make sure it's not already discarded and set discarded flag<br>
+	 * once discarded this instance may never be used again<br>
+	 * it will throw from any of these methods if such an attempt is made<br>
 	 * 
 	 * @see org.references.GenericTwoWayMapOfUniques#discard()
 	 */
 	@Override
-	public final void discard() {
-		assert !discarded;
+	public final synchronized void discard() {
+		assertInvariants();
 		discarded = true;
 		internalForOverride_discard();
 	}
@@ -88,8 +96,12 @@ public abstract class BaseForTwoWayMapOfUniques<KEY, DATA> implements GenericTwo
 	}
 	
 	
+	/**
+	 * by default throws(if asserts are enabled ie. vm arg: -ea) if discard() was called once and you are now attempting to use
+	 * any of the methods<br>
+	 */
 	protected final void assertInvariants() {
-		assert !discarded;
+		assert !discarded : Q.plainThrow( new AlreadyDiscardedException() );
 		internalForOverride_assertInvariants();
 	}
 	
@@ -111,7 +123,7 @@ public abstract class BaseForTwoWayMapOfUniques<KEY, DATA> implements GenericTwo
 	 * @see org.references.TwoWayMapOfUniques#getKey(java.lang.Object)
 	 */
 	@Override
-	public final KEY getKey( final DATA data ) {
+	public final synchronized KEY getKey( final DATA data ) {
 		assertInvariants();
 		return internalForOverride_getKey( data );
 	}
@@ -126,7 +138,7 @@ public abstract class BaseForTwoWayMapOfUniques<KEY, DATA> implements GenericTwo
 	 * @see org.references.TwoWayMapOfUniques#getData(java.lang.Object)
 	 */
 	@Override
-	public final DATA getData( final KEY key ) {
+	public final synchronized DATA getData( final KEY key ) {
 		assertInvariants();
 		return internalForOverride_getData( key );
 	}
@@ -141,7 +153,7 @@ public abstract class BaseForTwoWayMapOfUniques<KEY, DATA> implements GenericTwo
 	 * @see org.references.TwoWayMapOfUniques#ensureExists(java.lang.Object, java.lang.Object)
 	 */
 	@Override
-	public final boolean ensureExists( final KEY key, final DATA data ) {
+	public final synchronized boolean ensureExists( final KEY key, final DATA data ) {
 		assertInvariants();
 		return internalForOverride_ensureExists( key, data );
 	}
@@ -156,7 +168,7 @@ public abstract class BaseForTwoWayMapOfUniques<KEY, DATA> implements GenericTwo
 	 * @see org.references.TwoWayMapOfUniques#removeByKey(java.lang.Object)
 	 */
 	@Override
-	public final boolean removeByKey( final KEY key ) {
+	public final synchronized boolean removeByKey( final KEY key ) {
 		assertInvariants();
 		return internalForOverride_removeByKey( key );
 	}
@@ -171,7 +183,7 @@ public abstract class BaseForTwoWayMapOfUniques<KEY, DATA> implements GenericTwo
 	 * @see org.references.TwoWayMapOfUniques#removeAll()
 	 */
 	@Override
-	public final void removeAll() {
+	public final synchronized void removeAll() {
 		assertInvariants();
 		internalForOverride_removeAll();
 	}
@@ -186,7 +198,7 @@ public abstract class BaseForTwoWayMapOfUniques<KEY, DATA> implements GenericTwo
 	 * @see org.references.TwoWayMapOfUniques#size()
 	 */
 	@Override
-	public final int size() {
+	public final synchronized int size() {
 		assertInvariants();
 		return internalForOverride_size();
 	}

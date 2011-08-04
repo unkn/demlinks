@@ -98,8 +98,7 @@ public class TestTwoWayHashMapOfNonNullUniques {
 		assertFalse( Z.equalsByReference_enforceNotNull( key1, key2 ) );
 		assertTrue( Z.areSameClass_canNotBeNull( key1, key2 ) );
 		
-		final RAMTwoWayHashMapOfNonNullUniques<KeyA, String> hm =
-			new RAMTwoWayHashMapOfNonNullUniques<TestTwoWayHashMapOfNonNullUniques.KeyA, String>();
+		final RAMTwoWayHashMapOfNonNullUniques<KeyA, String> hm = new RAMTwoWayHashMapOfNonNullUniques<KeyA, String>();
 		final String one = "one";
 		final String two = "two";
 		assertTrue( hm.isEmpty() );
@@ -126,5 +125,41 @@ public class TestTwoWayHashMapOfNonNullUniques {
 		assertTrue( hm.isEmpty() );
 		
 		assertTrue( Z.equalsWithCompatClasses_allowsNull( null, null ) );
+	}
+	
+	
+	@Test
+	public void testMany() {
+		final long n = 100000;
+		final RAMTwoWayHashMapOfNonNullUniques<Long, String> hm = new RAMTwoWayHashMapOfNonNullUniques<Long, String>();
+		assertTrue( hm.isEmpty() );
+		for ( long i = 0; i < n; i++ ) {
+			final boolean ret = hm.ensureExists( new Long( i ), String.valueOf( i ) );
+			assertFalse( ret );
+		}
+		assertTrue( hm.size() == n );
+		for ( long i = 0; i < n; i++ ) {
+			final boolean ret = hm.ensureExists( new Long( i ), String.valueOf( i ) );
+			assertTrue( ret );
+		}
+		assertTrue( hm.size() == n );
+		assertFalse( hm.isEmpty() );
+		hm.removeAll();
+		assertTrue( hm.isEmpty() );
+		hm.discard();
+		
+		try {
+			hm.discard();
+			Q.fail();
+		} catch ( final AlreadyDiscardedException ae ) {
+			// good
+		}
+		
+		try {
+			hm.getData( new Long( 1 ) );
+			Q.fail();
+		} catch ( final AlreadyDiscardedException ae ) {
+			// good
+		}
 	}
 }

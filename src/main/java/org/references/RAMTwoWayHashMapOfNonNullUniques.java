@@ -54,7 +54,7 @@ import org.toolza.*;
  *            unique & never null
  * 
  */
-public class RAMTwoWayHashMapOfNonNullUniques<KEY, DATA> extends BaseForTwoWayMapOfUniques<KEY, DATA> {
+public class RAMTwoWayHashMapOfNonNullUniques<KEY, DATA> extends BaseForThreadSafeTwoWayMapOfUniques<KEY, DATA> {
 	
 	private final HashMap<KEY, DATA>	mapKeyData	= new HashMap<KEY, DATA>();
 	private final HashMap<DATA, KEY>	mapDataKey	= new HashMap<DATA, KEY>();
@@ -65,7 +65,7 @@ public class RAMTwoWayHashMapOfNonNullUniques<KEY, DATA> extends BaseForTwoWayMa
 	 * @return true if existed
 	 */
 	@Override
-	protected synchronized boolean internalForOverride_removeByKey( final KEY key ) {
+	protected boolean internalForOverride_removeByKey( final KEY key ) {
 		assert Q.nn( key );
 		final DATA data = mapKeyData.get( key );
 		if ( null != data ) {
@@ -95,7 +95,7 @@ public class RAMTwoWayHashMapOfNonNullUniques<KEY, DATA> extends BaseForTwoWayMa
 	 * @return null if not found
 	 */
 	@Override
-	protected synchronized DATA internalForOverride_getData( final KEY key ) {
+	protected DATA internalForOverride_getData( final KEY key ) {
 		assert Q.nn( key );
 		
 		final DATA data = mapKeyData.get( key );
@@ -113,7 +113,7 @@ public class RAMTwoWayHashMapOfNonNullUniques<KEY, DATA> extends BaseForTwoWayMa
 	 * @return null if not found
 	 */
 	@Override
-	protected synchronized KEY internalForOverride_getKey( final DATA data ) {
+	protected KEY internalForOverride_getKey( final DATA data ) {
 		assert Q.nn( data );
 		
 		final KEY key = mapDataKey.get( data );
@@ -131,7 +131,7 @@ public class RAMTwoWayHashMapOfNonNullUniques<KEY, DATA> extends BaseForTwoWayMa
 	 * @return true if already existed
 	 */
 	@Override
-	protected synchronized boolean internalForOverride_ensureExists( final KEY key, final DATA data ) {
+	protected boolean internalForOverride_ensureExists( final KEY key, final DATA data ) {
 		assert Q.nn( key );
 		assert Q.nn( data );
 		
@@ -156,7 +156,7 @@ public class RAMTwoWayHashMapOfNonNullUniques<KEY, DATA> extends BaseForTwoWayMa
 	
 	
 	@Override
-	protected synchronized void internalForOverride_removeAll() {
+	protected void internalForOverride_removeAll() {
 		// XXX: transaction:
 		mapKeyData.clear();
 		mapDataKey.clear();
@@ -166,7 +166,7 @@ public class RAMTwoWayHashMapOfNonNullUniques<KEY, DATA> extends BaseForTwoWayMa
 	
 	
 	@Override
-	protected synchronized int internalForOverride_size() {
+	protected int internalForOverride_size() {
 		final int size = mapKeyData.size();
 		assert mapDataKey.size() == size;
 		return size;

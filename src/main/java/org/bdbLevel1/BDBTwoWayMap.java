@@ -45,7 +45,7 @@ import com.sleepycat.db.*;
  * @param <DATA>
  * 
  */
-public class BDBTwoWayMap<KEY, DATA> extends BaseForTwoWayMapOfUniques<KEY, DATA> {
+public class BDBTwoWayMap<KEY, DATA> extends BaseForThreadSafeTwoWayMapOfUniques<KEY, DATA> {
 	
 	public BDBTwoWayMap( final Environment env, final String dbName1 ) {
 		

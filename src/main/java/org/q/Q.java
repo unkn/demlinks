@@ -220,6 +220,11 @@ public abstract class Q {
 	}
 	
 	
+	public static boolean plainThrow( final RuntimeException childOfRTE ) {
+		assert null != childOfRTE;
+		throw childOfRTE;
+	}
+	
 	
 	public static boolean thro( final Throwable cause ) {
 		assert null != cause;

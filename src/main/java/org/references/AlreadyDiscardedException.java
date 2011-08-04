@@ -3,7 +3,7 @@
  * Copyright (c) 2005-2011, AtKaaZ
  * All rights reserved.
  * this file is part of DemLinks
- * File created on Aug 4, 2011 11:51:31 PM
+ * File created on Aug 5, 2011 12:48:44 AM
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -36,35 +36,9 @@ package org.references;
 
 
 /**
- * @param <KEY>
- * @param <DATA>
- * 
+ * thrown when detected
  */
-public interface GenericTwoWayMapOfUniques<KEY, DATA> {
-	
-	public KEY getKey( final DATA data );
-	
-	
-	public DATA getData( final KEY key );
-	
-	
-	public boolean ensureExists( final KEY key, final DATA data );
-	
-	
-	public boolean removeByKey( final KEY key );
-	
-	
-	public void removeAll();
-	
-	
-	public boolean isEmpty();
-	
-	
-	public int size();
-	
-	
-	/**
-	 * once discarded this instance may never be used again<br>
-	 */
-	public void discard();
+@SuppressWarnings( "serial" )
+public class AlreadyDiscardedException extends RuntimeException {
+	//
 }
