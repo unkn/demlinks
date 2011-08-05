@@ -65,6 +65,28 @@ public abstract class BaseFor_ThreadSafeTwoWayMapOfUniques<KEY, DATA> implements
 	/*
 	 * (non-Javadoc)
 	 * 
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals( final Object obj ) {
+		throw Q.ni();
+	}
+	
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		throw Q.ni();
+	}
+	
+	
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.references.TwoWayMapOfUniques#isEmpty()
 	 */
 	@Override

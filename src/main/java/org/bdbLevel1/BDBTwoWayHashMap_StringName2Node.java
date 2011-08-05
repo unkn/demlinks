@@ -61,6 +61,7 @@ public class BDBTwoWayHashMap_StringName2Node extends GenericBDBTwoWayMapOfNNU<S
 	 *         either way it does after this call
 	 */
 	public boolean ensureMapExists( final String name, final BDBNode node ) {
+		// null checks are done in base class
 		return ensureExists( name, node );
 	}
 	
@@ -70,7 +71,7 @@ public class BDBTwoWayHashMap_StringName2Node extends GenericBDBTwoWayMapOfNNU<S
 	 * @return null if not found
 	 */
 	public String getName( final BDBNode node ) {
-		assert null != node;
+		// null checks are done in base class
 		return getKey( node );
 	}
 	
@@ -80,7 +81,7 @@ public class BDBTwoWayHashMap_StringName2Node extends GenericBDBTwoWayMapOfNNU<S
 	 * @return null if not found
 	 */
 	public BDBNode getNode( final String name ) {
-		assert null != name;
+		// null checks are done in base class
 		return getData( name );
 	}
 	
