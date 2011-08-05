@@ -3,7 +3,7 @@
  * Copyright (c) 2005-2011, AtKaaZ
  * All rights reserved.
  * this file is part of DemLinks
- * File created on Aug 4, 2011 11:51:31 PM
+ * File created on Aug 5, 2011 8:22:08 AM
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -32,48 +32,43 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.references;
+package org.bdbLevel1;
+
+import com.sleepycat.bind.tuple.*;
+
 
 
 /**
- * @param <KEY>
- * @param <DATA>
- * 
+ *
  */
-public interface GenericTwoWayMapOfUniques<KEY, DATA> {
+public class BDBNodeBinding extends TupleBinding<BDBNode> {
 	
-	/**
-	 * @param data
-	 * @return null only if not found
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sleepycat.bind.tuple.TupleBinding#entryToObject(com.sleepycat.bind.tuple.TupleInput)
 	 */
-	public KEY getKey( final DATA data );
+	@Override
+	public BDBNode entryToObject( final TupleInput input ) {
+		// assert Q.nn( input);no need, it will NPE below anyway
+		final long l = input.readLong();
+		final BDBNode nid = new BDBNode( l );
+		assert ( nid.getId() == l );
+		return nid;
+	}
 	
 	
-	/**
-	 * @param key
-	 * @return null only if not found
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sleepycat.bind.tuple.TupleBinding#objectToEntry(java.lang.Object, com.sleepycat.bind.tuple.TupleOutput)
 	 */
-	public DATA getData( final KEY key );
+	@Override
+	public void objectToEntry( final BDBNode node, final TupleOutput output ) {
+		// assert Q.nn( node );no need, it will NPE below
+		// assert Q.nn( output );same
+		final long myLong = node.getId();
+		output.writeLong( myLong );
+	}
 	
-	
-	public boolean ensureExists( final KEY key, final DATA data );
-	
-	
-	public boolean removeByKey( final KEY key );
-	
-	
-	public void removeAll();
-	
-	
-	public boolean isEmpty();
-	
-	
-	public int size();
-	
-	
-	/**
-	 * once discarded this instance may never be used again<br>
-	 * this is useful when the backend is a database, to allow closing it<br>
-	 */
-	public void discard();
 }

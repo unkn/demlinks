@@ -26,3 +26,9 @@ so use this:
 2. // XXX: maybe reuse? instead of new-ing all the time 
 !!- no reusing! to catch bugs is better new-ing; with reuse we may
  even induce new bugs! for now, it's good that we catch usage of == instead of .equals()
+ 
+ 
+3. when not yet implemented stuff ie. methods, use:
+	throw Q.ni();
+or just:
+	Q.ni(); if you don't require a return value ie. if method is void

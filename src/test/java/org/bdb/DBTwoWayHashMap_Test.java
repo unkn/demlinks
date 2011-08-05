@@ -43,7 +43,7 @@ import org.junit.*;
 
 public class DBTwoWayHashMap_Test {
 	
-	private BDBTwoWayHashMap				x	= null;
+	private BDBTwoWayHashMap_StringName2Node				x	= null;
 	private final String			_a	= "A";
 	private final BDBNode	_b	= new BDBNode( 2l );
 	private BDBEnvironment					env	= null;
@@ -52,7 +52,7 @@ public class DBTwoWayHashMap_Test {
 	@Before
 	public void setUp() {
 		env = new BDBEnvironment( JUnitConstants.BDB_ENVIRONMENT_STORE_DIR, true );
-		x = new BDBTwoWayHashMap( env, "some 1-to-1 dbMap" );
+		x = new BDBTwoWayHashMap_StringName2Node( env, "some 1-to-1 dbMap" );
 	}
 	
 	
@@ -72,7 +72,7 @@ public class DBTwoWayHashMap_Test {
 	public void linkTest() {
 		final GenericTransaction txn = env.beginTransaction();
 		try {
-			assertFalse( x.createOrGet( _a, _b ) );
+			assertFalse( x.ensureExists( _a, _b ) );
 			assertTrue( x.getName( _b ).equals( _a ) );
 			assertTrue( x.getNode( _a ).equals( _b ) );
 			// different objects, same content
@@ -81,7 +81,7 @@ public class DBTwoWayHashMap_Test {
 			assertTrue( _a != x.getName( _b ) );
 			assertTrue( _b != x.getNode( _a ) );
 			assertTrue( _b.equals( x.getNode( x.getName( _b ) ) ) );
-			assertTrue( x.createOrGet( _a, _b ) );
+			assertTrue( x.ensureExists( _a, _b ) );
 			txn.success();
 		} finally {
 			txn.finish();

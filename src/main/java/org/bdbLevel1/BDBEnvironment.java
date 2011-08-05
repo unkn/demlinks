@@ -53,7 +53,7 @@ public class BDBEnvironment extends BasicEnvironment {
 	private final Environment			env;
 	
 	// two-way mapping between these two:
-	private final BDBTwoWayHashMap		db_Name2Node;
+	private final BDBTwoWayHashMap_StringName2Node		db_Name2Node;
 	// Bad Address errors can be seen from using "<->" in names because they are stored as filenames
 	private final static String			NAME_of_db_for_Name2Node	= "map(nameString2nodeLong)";
 	
@@ -315,7 +315,7 @@ public class BDBEnvironment extends BasicEnvironment {
 			dbOfSequences = env.openDatabase( ourTxn.getTransaction(), BDBEnvironment.NAME_dbOfSequences, null, sequenceDbConf );
 			assert null != dbOfSequences;
 			
-			db_Name2Node = new BDBTwoWayHashMap( env, BDBEnvironment.NAME_of_db_for_Name2Node );
+			db_Name2Node = new BDBTwoWayHashMap_StringName2Node( env, BDBEnvironment.NAME_of_db_for_Name2Node );
 			
 			sequence =
 				new BDBNamedSequence(
@@ -551,7 +551,7 @@ public class BDBEnvironment extends BasicEnvironment {
 			} else {
 				// both were in no vector, we need to create it
 				// vector doesn't exist, we make it for the first time
-				final boolean tempRet = db_Name2Node.createOrGet( name, node );
+				final boolean tempRet = db_Name2Node.ensureExists( name, node );
 				assert !tempRet : Q.bug( "should not have already existed" );
 				ret = Boolean.FALSE;// meaning vector did not already exist, we had to create it
 			}// else

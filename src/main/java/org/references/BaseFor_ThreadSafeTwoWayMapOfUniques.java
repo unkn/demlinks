@@ -45,13 +45,16 @@ import org.q.*;
  * this should be threadsafe, unless you create new methods in subclass and forget to use "synchronized" keyword, which is not
  * needed for the methods you override!<br>
  * 
+ * does not enforce that KEY or DATA are non-null<br>
+ * 
  * @param <KEY>
  * @param <DATA>
  * 
  */
-public abstract class BaseForThreadSafeTwoWayMapOfUniques<KEY, DATA> implements GenericTwoWayMapOfUniques<KEY, DATA> {
+public abstract class BaseFor_ThreadSafeTwoWayMapOfUniques<KEY, DATA> implements GenericTwoWayMapOfUniques<KEY, DATA> {
 	
-	// FIXME: if overridden internal methods are allowed to be synchronized then while waiting on the lock, the other thread
+	// fixed(now synchronized the main methods): if overridden internal methods are allowed to be synchronized then while
+	// waiting on the lock, the other thread
 	// could discard this
 	// first but the subclass will still execute that method after lock acquire; so to fix, we must make these in base
 	// synchronized, but the downside is not all implementations need these to be synchronized so loosing concurrency?

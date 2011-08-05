@@ -3,7 +3,6 @@
  * Copyright (c) 2005-2011, AtKaaZ
  * All rights reserved.
  * this file is part of DemLinks
- * File created on Aug 4, 2011 11:51:31 PM
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -32,48 +31,59 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.references;
+package org.bdbLevel1;
+
+import com.sleepycat.db.*;
+
 
 
 /**
- * @param <KEY>
- * @param <DATA>
- * 
+
  */
-public interface GenericTwoWayMapOfUniques<KEY, DATA> {
-	
-	/**
-	 * @param data
-	 * @return null only if not found
-	 */
-	public KEY getKey( final DATA data );
+public class BDBTwoWayHashMap_StringName2Node extends GenericBDBTwoWayMapOfNNU<String, BDBNode> {
 	
 	
-	/**
-	 * @param key
-	 * @return null only if not found
-	 */
-	public DATA getData( final KEY key );
+	
+	public BDBTwoWayHashMap_StringName2Node( final BDBEnvironment env, final String dbName1 ) {
+		this( env.getBDBEnv(), dbName1 );
+	}
 	
 	
-	public boolean ensureExists( final KEY key, final DATA data );
-	
-	
-	public boolean removeByKey( final KEY key );
-	
-	
-	public void removeAll();
-	
-	
-	public boolean isEmpty();
-	
-	
-	public int size();
+	public BDBTwoWayHashMap_StringName2Node( final Environment env, final String dbName1 ) {
+		super( env, dbName1, String.class, BDBNode.class );
+	}
 	
 	
 	/**
-	 * once discarded this instance may never be used again<br>
-	 * this is useful when the backend is a database, to allow closing it<br>
+	 * @param name
+	 * @param node
+	 * @return true if already existed, false if it didn't;<br>
+	 *         either way it does after this call
 	 */
-	public void discard();
+	public boolean ensureMapExists( final String name, final BDBNode node ) {
+		return ensureExists( name, node );
+	}
+	
+	
+	/**
+	 * @param node
+	 * @return null if not found
+	 */
+	public String getName( final BDBNode node ) {
+		assert null != node;
+		return getKey( node );
+	}
+	
+	
+	/**
+	 * @param name
+	 * @return null if not found
+	 */
+	public BDBNode getNode( final String name ) {
+		assert null != name;
+		return getData( name );
+	}
+	
+	
+	
 }

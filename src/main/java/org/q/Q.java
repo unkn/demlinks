@@ -59,7 +59,8 @@ public abstract class Q {
 	
 	
 	/**
-	 * typical usage: assert Q.nn(var);
+	 * nn=notNull<br>
+	 * typical usage: assert Q.nn(var);<br>
 	 * 
 	 * @param expectedNotNullObjectHere
 	 * @return
