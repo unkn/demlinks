@@ -130,15 +130,23 @@ public class TestTwoWayHashMapOfNonNullUniques {
 	
 	@Test
 	public void testMany() {
-		// TODO: we likely want to make this test for any instance not just RAM hash map...
-		final long n = 10000;
 		final RAMTwoWayHashMapOfNonNullUniques<Long, String> hm = new RAMTwoWayHashMapOfNonNullUniques<Long, String>();
+		testMany( hm );
+	}
+	
+	
+	public static void testMany( final GenericTwoWayMapOfUniques<Long, String> hm ) {
+		// doing it: we likely want to make this test for any instance not just RAM hash map...
+		final long n = 100;
+		
 		assertTrue( hm.isEmpty() );
 		for ( long i = 0; i < n; i++ ) {
 			final boolean ret = hm.ensureExists( new Long( i ), String.valueOf( i ) );
 			assertFalse( ret );
 		}
-		assertTrue( hm.size() == n );
+		final int s = hm.size();
+		assertTrue( "" + s, s == n );
+		assertTrue( "" + s, s == hm.size() );// on second call
 		for ( long i = 0; i < n; i++ ) {
 			final boolean ret = hm.ensureExists( new Long( i ), String.valueOf( i ) );
 			assertTrue( ret );

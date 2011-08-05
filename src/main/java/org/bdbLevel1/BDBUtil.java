@@ -3,6 +3,7 @@
  * Copyright (c) 2005-2011, AtKaaZ
  * All rights reserved.
  * this file is part of DemLinks
+ * File created on Aug 5, 2011 1:04:06 PM
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -31,75 +32,46 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.bdb;
+package org.bdbLevel1;
 
-import static org.junit.Assert.*;
+import org.q.*;
 
-import org.bdbLevel1.*;
-import org.generic.env.*;
-import org.junit.*;
+import com.sleepycat.db.*;
 
 
 
-public class DBTwoWayHashMap_Test {
+/**
+ *
+ */
+public abstract class BDBUtil {
 	
-	private BDBTwoWayHashMap_StringName2Node	x	= null;
-	private final String						_a	= "A";
-	private final BDBNode						_b	= new BDBNode( 2l );
-	private BDBEnvironment						env	= null;
-	
-	
-	@Before
-	public void setUp() {
-		env = new BDBEnvironment( JUnitConstants.BDB_ENVIRONMENT_STORE_DIR, true );
-		x = new BDBTwoWayHashMap_StringName2Node( env, "some 1-to-1 dbMap" );
-	}
-	
-	
-	@After
-	public void tearDown() {
-		if ( null != x ) {
-			x.discard();
+	public static int getSize( final Database db, final Environment env, final StatsConfig statsConfig1 ) {
+		assert Q.nn( db );
+		
+		DatabaseStats dbStats;
+		try {
+			dbStats = db.getStats( BDBTransaction.getCurrentTransaction( env ), statsConfig1 );
+		} catch ( final DatabaseException e ) {
+			throw Q.rethrow( e );
 		}
 		
-		if ( null != env ) {
-			env.shutdown( true );
+		final int numKeys;
+		final int numData;
+		if ( dbStats.getClass() == HashStats.class ) {
+			final HashStats hs = (HashStats)dbStats;
+			numKeys = hs.getNumKeys();
+			numData = hs.getNumData();
+		} else {
+			if ( dbStats.getClass() == BtreeStats.class ) {
+				final BtreeStats bs = (BtreeStats)dbStats;
+				numKeys = bs.getNumKeys();
+				numData = bs.getNumData();
+			} else {
+				throw Q.ni();
+			}
 		}
+		
+		assert numKeys == numData;// no dups remember?
+		return numKeys;
 	}
-	
-	
-	@Test
-	public void linkTest() {
-		final GenericTransaction txn = env.beginTransaction();
-		try {
-			assertFalse( x.ensureExists( _a, _b ) );
-			assertTrue( x.getName( _b ).equals( _a ) );
-			assertTrue( x.getNode( _a ).equals( _b ) );
-			// different objects, same content
-			assertTrue( x.getName( _b ) != x.getName( _b ) );
-			
-			assertTrue( _a != x.getName( _b ) );
-			assertTrue( _b != x.getNode( _a ) );
-			assertTrue( _b.equals( x.getNode( x.getName( _b ) ) ) );
-			assertTrue( x.ensureExists( _a, _b ) );
-			txn.success();
-		} finally {
-			txn.finish();
-		}
-	}
-	
-	
-	@Test
-	public void testMany() {
-		final GenericTransaction txn = env.beginTransaction();
-		try {
-			final GenericBDBTwoWayMapOfNNU<Long, String> y =
-				new GenericBDBTwoWayMapOfNNU<Long, String>( env, "some 1-to-1 dbMap", Long.class, String.class );
-			org.references.TestTwoWayHashMapOfNonNullUniques.testMany( y );
-			txn.success();
-		} finally {
-			txn.finish();
-		}
-	}
-	
 }

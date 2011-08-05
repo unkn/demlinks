@@ -38,6 +38,7 @@ import java.io.*;
 
 import org.q.*;
 import org.references.*;
+import org.toolza.*;
 
 import com.sleepycat.bind.tuple.*;
 import com.sleepycat.db.*;
@@ -72,6 +73,8 @@ public class GenericBDBTwoWayMapOfNNU<KEY, DATA> extends BaseFor_ThreadSafeTwoWa
 	private final Class<KEY>		_keyClass;
 	private final Class<DATA>		_dataClass;
 	
+	private final StatsConfig		statsConfig;
+	
 	
 	public GenericBDBTwoWayMapOfNNU( final BDBEnvironment env, final String dbName1, final Class<KEY> keyClass,
 			final Class<DATA> dataClass ) {
@@ -91,10 +94,7 @@ public class GenericBDBTwoWayMapOfNNU<KEY, DATA> extends BaseFor_ThreadSafeTwoWa
 	 *            specific class, subclasses are not allowed!
 	 */
 	public GenericBDBTwoWayMapOfNNU( final Environment env, final String dbName1, final Class<KEY> keyClass,
-			final Class<DATA> dataClass
-	// final TupleBinding<KEY> keyBinding,
-	// final TupleBinding<DATA> dataBinding
-	) {
+			final Class<DATA> dataClass ) {
 		_env = env;
 		assert Q.nn( _env );
 		
@@ -111,28 +111,53 @@ public class GenericBDBTwoWayMapOfNNU<KEY, DATA> extends BaseFor_ThreadSafeTwoWa
 		assert Q.nn( _dataBinding );
 		
 		
-		final SecondaryConfig secConf = new SecondaryConfig();
-		secConf.setAllowCreate( true );
-		secConf.setType( DatabaseType.HASH );// XXX: check if BTREE is better? ie. via some benchmark sometime in the future
-		// secConf.setAllowPopulate( true );
-		// secConf.setDeferredWrite( false );
-		// secConf.setForeignKeyDatabase( null );TODO:bdb method bugged for null param; report this!
-		secConf.setExclusiveCreate( false );
-		secConf.setImmutableSecondaryKey( false );// XXX: investigate if true is needed here
-		secConf.setReadOnly( false );
-		secConf.setSortedDuplicates( false );// must be false
-		// secConf.setTemporary( false );
-		secConf.setTransactional( BDBEnvironment.ENABLE_TRANSACTIONS );
+		statsConfig = new StatsConfig();
+		statsConfig.setFast( false );// if true size returns 0 while transaction not closed( but dno if txn closed rets 0 still)
 		
-		assert !secConf.getSortedDuplicates();
-		final SecondaryKeyCreator keyCreator = new SecondaryKeyCreator() {
+		// final DatabaseConfig dbConf = new DatabaseConfig();
+		// dbConf.setAllowCreate( true );
+		// dbConf.setType( DatabaseType.HASH );
+		// // dbConf.setDeferredWrite( false );
+		// // dbConf.setKeyPrefixing( false );
+		// dbConf.setSortedDuplicates( false );// must be false!
+		// dbConf.setTransactional( BDBEnvironment.ENABLE_TRANSACTIONS );
+		// dbConf.setChecksum( true );
+		//
+		// assert !dbConf.getSortedDuplicates();
+		
+		final SecondaryConfig secAndPriConf = new SecondaryConfig();
+		secAndPriConf.setAllowCreate( true );
+		secAndPriConf.setAllowPopulate( true );// not needed tho, only populated if sec is empty but pri isn't
+		secAndPriConf.setType( DatabaseType.HASH );// XXX: check if BTREE is better? ie. via some benchmark sometime in the
+													// future
+		secAndPriConf.setChecksum( true );
+		// secConf.setEncrypted( password )
+		secAndPriConf.setMultiversion( false );
+		secAndPriConf.setReverseSplitOff( false );
+		secAndPriConf.setTransactionNotDurable( false );
+		secAndPriConf.setUnsortedDuplicates( false );
+		// secAndPriConf.setDeferredWrite( false );
+		// secAndPriConf.setForeignKeyDatabase( null );TODO:bdb method bugged for null param; report this!
+		secAndPriConf.setExclusiveCreate( false );
+		secAndPriConf.setImmutableSecondaryKey( false );// XXX: investigate if true is needed here
+		secAndPriConf.setReadOnly( false );
+		secAndPriConf.setSortedDuplicates( false );// must be false
+		// secConf.setTemporary( false );
+		secAndPriConf.setTransactional( BDBEnvironment.ENABLE_TRANSACTIONS );
+		
+		assert !secAndPriConf.getSortedDuplicates();
+		assert !secAndPriConf.getUnsortedDuplicates();
+		assert !secAndPriConf.getReverseSplitOff();
+		secAndPriConf.setKeyCreator( new SecondaryKeyCreator() {
 			
 			@Override
 			public boolean createSecondaryKey( final SecondaryDatabase secondary, final DatabaseEntry key,
 												final DatabaseEntry data, final DatabaseEntry result ) {
 				
-				// if this differs, then we need perhaps to set it to result
-				// also
+				// if ( data.getData().length != data.getSize() ) {
+				// XXX: this happens with bdb native (ie. .dll version) but not with bdb je aka java edition version
+				// Q.warn( "len=" + data.getData().length + " size=" + data.getSize() + " data=" + data );
+				// }
 				// assert data.getData().length == data.getSize() : "len=" + data.getData().length + " size=" + data.getSize()
 				// + " data=" + data;
 				// XXX: looks like length and size can differ ie. 8 vs 100, maybe latter is with padding
@@ -142,18 +167,9 @@ public class GenericBDBTwoWayMapOfNNU<KEY, DATA> extends BaseFor_ThreadSafeTwoWa
 				// System.out.println( key + "!" + data + "!" + result );
 				return true;
 			}
-		};
-		secConf.setKeyCreator( keyCreator );
+		} );
 		
-		final DatabaseConfig dbConf = new DatabaseConfig();
-		dbConf.setAllowCreate( true );
-		dbConf.setType( DatabaseType.HASH );// XXX: check if BTREE is better?
-		// dbConf.setDeferredWrite( false );
-		// dbConf.setKeyPrefixing( false );
-		dbConf.setSortedDuplicates( false );// must be false!
-		dbConf.setTransactional( BDBEnvironment.ENABLE_TRANSACTIONS );
 		
-		assert !dbConf.getSortedDuplicates();
 		
 		// pri db
 		try {
@@ -162,19 +178,27 @@ public class GenericBDBTwoWayMapOfNNU<KEY, DATA> extends BaseFor_ThreadSafeTwoWa
 				null,
 				dbName1,
 				null,
-				dbConf );
+				secAndPriConf/*
+							 * using the same conf from secondary, but it will be treated as just a simple DatabaseConfig
+							 * instead
+							 */
+			);
 			secDb = env.openSecondaryDatabase( null,
 			// BETransaction.getCurrentTransaction( _env ),
 				secPrefix + dbName1,
 				null,
 				priDb,
-				secConf );
+				secAndPriConf );
 		} catch ( final FileNotFoundException e ) {
 			throw Q.rethrow( e );
 		} catch ( final DatabaseException e ) {
 			throw Q.rethrow( e );
 		}
 		
+		// assert !dbConf.getByteSwapped() : "priDb was created with a different byte order than on this machine dbBO="
+		// + dbConf.getByteOrder();
+		assert !secAndPriConf.getByteSwapped() : "databases were created with a different byte order than on this machine dbBO="
+			+ secAndPriConf.getByteOrder();
 	}
 	
 	
@@ -321,6 +345,8 @@ public class GenericBDBTwoWayMapOfNNU<KEY, DATA> extends BaseFor_ThreadSafeTwoWa
 		} catch ( final DatabaseException e ) {
 			Q.rethrow( e );
 		}
+		assert Z.equalsWithCompatClasses_enforceNotNull( internalForOverride_getData( key ), data );
+		assert Z.equalsWithCompatClasses_enforceNotNull( internalForOverride_getKey( data ), key );
 		return ret.equals( OperationStatus.KEYEXIST );
 	}
 	
@@ -343,7 +369,17 @@ public class GenericBDBTwoWayMapOfNNU<KEY, DATA> extends BaseFor_ThreadSafeTwoWa
 	 */
 	@Override
 	protected void internalForOverride_removeAll() {
-		throw Q.ni();// TODO: implement?
+		final int sizeNow = internalForOverride_size();
+		int sizeAfterTrunc;
+		try {
+			sizeAfterTrunc = priDb.truncate( BDBTransaction.getCurrentTransaction( _env ), true );
+		} catch ( final DatabaseException e ) {
+			throw Q.rethrow( e );
+		}
+		assert -1 != sizeAfterTrunc;
+		assert sizeNow == sizeAfterTrunc : "should be the same";
+		assert 0 == internalForOverride_size() : "should be empty now";
+		assert isEmpty();
 	}
 	
 	
@@ -354,7 +390,10 @@ public class GenericBDBTwoWayMapOfNNU<KEY, DATA> extends BaseFor_ThreadSafeTwoWa
 	 */
 	@Override
 	protected int internalForOverride_size() {
-		throw Q.ni();// TODO: implement?
+		final int s1 = BDBUtil.getSize( priDb, _env, statsConfig );
+		final int s2 = BDBUtil.getSize( secDb, _env, statsConfig );
+		assert s1 == s2 : "should be same `size` in both databases";
+		return s1;
 	}
 	
 }
