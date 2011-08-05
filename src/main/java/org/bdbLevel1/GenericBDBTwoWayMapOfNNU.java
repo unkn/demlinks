@@ -39,6 +39,7 @@ import java.io.*;
 import org.q.*;
 import org.references.*;
 
+import com.sleepycat.bind.*;
 import com.sleepycat.bind.tuple.*;
 import com.sleepycat.db.*;
 
@@ -196,30 +197,30 @@ public class GenericBDBTwoWayMapOfNNU<KEY, DATA> extends BaseFor_ThreadSafeTwoWa
 	}
 	
 	
-	private void checkDataIsValid( final DATA data ) {
-		assert Q.nn( data );
-		// 1of3
-		if ( data.getClass() != _dataClass ) {
-			Q.badCall( "shouldn't allow subclass of dataClass current=`" + data.getClass() + "` expected=`" + _dataClass
-				+ "`!! because\n" + " the binding only knows how to transform the base class, "
-				+ "so it might miss any of the subclass' extra data/fields" );
-		}
-	}
-	
-	
-	private void checkKeyIsValid( final KEY key ) {
-		
-		assert Q.nn( key );
-		// shouldn't allow subclass of keyClass!! or else havoc, well data loss
-		// since TupleBinding treats it as Base class, so assuming the subclass
-		// has new fields they won't be stored/retreived from DB
-		// 1of3
-		if ( key.getClass() != _keyClass ) {
-			Q.badCall( "shouldn't allow subclass of keyClass current=`" + key.getClass() + "` expected=`" + _keyClass
-				+ "`!! \n" + "because the binding only knows how to transform the base class, "
-				+ "so it might miss any of the subclass' extra data/fields" );
-		}
-	}
+	// private void checkDataIsValid( final DATA data ) {
+	// assert Q.nn( data );
+	// // 1of3
+	// if ( data.getClass() != _dataClass ) {
+	// Q.badCall( "shouldn't allow subclass of dataClass current=`" + data.getClass() + "` expected=`" + _dataClass
+	// + "`!! because\n" + " the binding only knows how to transform the base class, "
+	// + "so it might miss any of the subclass' extra data/fields" );
+	// }
+	// }
+	//
+	//
+	// private void checkKeyIsValid( final KEY key ) {
+	//
+	// assert Q.nn( key );
+	// // shouldn't allow subclass of keyClass!! or else havoc, well data loss
+	// // since TupleBinding treats it as Base class, so assuming the subclass
+	// // has new fields they won't be stored/retreived from DB
+	// // 1of3
+	// if ( key.getClass() != _keyClass ) {
+	// Q.badCall( "shouldn't allow subclass of keyClass current=`" + key.getClass() + "` expected=`" + _keyClass
+	// + "`!! \n" + "because the binding only knows how to transform the base class, "
+	// + "so it might miss any of the subclass' extra data/fields" );
+	// }
+	// }
 	
 	
 	/*
@@ -229,11 +230,21 @@ public class GenericBDBTwoWayMapOfNNU<KEY, DATA> extends BaseFor_ThreadSafeTwoWa
 	 */
 	@Override
 	protected KEY internalForOverride_getKey( final DATA data ) {
-		checkDataIsValid( data );
-		// assert null != data;
+		assert Q.nn( data );
+		// checkDataIsValid( data );
+		final EntryBinding<DATA> dataBinding;
+		if ( data.getClass() == _dataClass ) {
+			dataBinding = _dataBinding;
+		} else {
+			// then it can only be a subclass, get the binding for the subclass since it may differ in processing from the base
+			// class' binding; ie. subclass may have extra fields which will be processed by its own binding but not by the
+			// base' binding; hence why we do need to use the subclass' binding
+			dataBinding = (EntryBinding<DATA>)AllTupleBindings.getBinding( data.getClass() );
+		}
+		assert null != dataBinding;
 		
 		final DatabaseEntry deData = new DatabaseEntry();
-		_dataBinding.objectToEntry( data, deData );
+		dataBinding.objectToEntry( data, deData );
 		// LongBinding.longToEntry( node.getId(), deData );
 		
 		final DatabaseEntry deKey = new DatabaseEntry();
@@ -251,9 +262,9 @@ public class GenericBDBTwoWayMapOfNNU<KEY, DATA> extends BaseFor_ThreadSafeTwoWa
 		assert deData.equals( deKey );
 		
 		final KEY key = _keyBinding.entryToObject( pKey );
-		checkKeyIsValid( key );
+		// checkKeyIsValid( key );
 		// StringBinding.entryToString( pKey );
-		// assert Q.nn( key );// should not be null here
+		assert Q.nn( key );// should not be null here
 		return key;
 	}
 	
