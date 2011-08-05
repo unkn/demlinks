@@ -47,6 +47,16 @@ public abstract class BDBUtil {
 	
 	public static int getSize( final Database db, final Environment env, final StatsConfig statsConfig1 ) {
 		assert Q.nn( db );
+		assert Q.nn( env );
+		// assert Q.nn( env);
+		if ( null != statsConfig1 ) {
+			if ( statsConfig1.getFast() ) {
+				Q
+					.warn( "sould probably not use getFast() it will not report the size right if the current transaction that added some items is still open, "
+						+ "and did not yet test if it does when txn is indeed closed; "
+						+ "but for sure without fast enabled it reports right!" );
+			}
+		}
 		
 		DatabaseStats dbStats;
 		try {
