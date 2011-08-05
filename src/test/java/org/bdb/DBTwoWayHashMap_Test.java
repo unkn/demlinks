@@ -35,7 +35,6 @@ package org.bdb;
 
 import static org.junit.Assert.*;
 
-import org.bdb.references.*;
 import org.bdbLevel1.*;
 import org.generic.env.*;
 import org.junit.*;
@@ -44,10 +43,10 @@ import org.junit.*;
 
 public class DBTwoWayHashMap_Test {
 	
-	private BDBTwoWayHashMap_StringName2Node				x	= null;
-	private final String			_a	= "A";
-	private final BDBNode	_b	= new BDBNode( 2l );
-	private BDBEnvironment					env	= null;
+	private BDBTwoWayHashMap_StringName2Node	x	= null;
+	private final String						_a	= "A";
+	private final BDBNode						_b	= new BDBNode( 2l );
+	private BDBEnvironment						env	= null;
 	
 	
 	@Before
