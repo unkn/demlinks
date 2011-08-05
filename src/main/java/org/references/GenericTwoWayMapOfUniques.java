@@ -36,8 +36,12 @@ package org.references;
 
 
 /**
+ * will typically allow also subclasses of KEY.class resp. DATA.class to be used<br>
+ * 
  * @param <KEY>
+ *            the type of key, which allows instances this type or its subclasses to be used as key
  * @param <DATA>
+ *            same
  * 
  */
 public interface GenericTwoWayMapOfUniques<KEY, DATA> {

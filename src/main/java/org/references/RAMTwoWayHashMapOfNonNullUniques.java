@@ -45,8 +45,11 @@ import org.toolza.*;
 
 
 /**
- * can locate the counterpart by either KEY or DATA
- * TODO: add multiverse transaction atomicity xD
+ * can locate the counterpart by either KEY or DATA<br>
+ * TODO: add multiverse transaction atomicity<br>
+ * 
+ * allows subclasses<br>
+ * TODO: junit tests showing that subclasses are allowed and even mixing them in the same hashmap instance is allowed<br>
  * 
  * @param <KEY>
  *            unique & never null
