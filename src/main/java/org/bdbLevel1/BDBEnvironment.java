@@ -48,35 +48,35 @@ import com.sleepycat.db.*;
  */
 public class BDBEnvironment extends BasicEnvironment {
 	
-	private static final int			BDBLOCK_TIMEOUT_MS			= 3 * 1000000;
+	private static final int						BDBLOCK_TIMEOUT_MS			= 3 * 1000000;
 	
-	private final Environment			env;
+	private final Environment						env;
 	
 	// two-way mapping between these two:
-	private final BDBTwoWayHashMap_StringName2Node		db_Name2Node;
+	private final BDBTwoWayHashMap_StringName2Node	db_Name2Node;
 	// Bad Address errors can be seen from using "<->" in names because they are stored as filenames
-	private final static String			NAME_of_db_for_Name2Node	= "map(nameString2nodeLong)";
+	private final static String						NAME_of_db_for_Name2Node	= "map(nameString2nodeLong)";
 	
 	// this is used to generate new unique LongIdents, based on unique long numbers
-	private final BDBNamedSequence		sequence;
-	private static final String			NAMEofSEQ_longIdents		= "sequenceforgeneratinguniquelongs";
+	private final BDBNamedSequence					sequence;
+	private static final String						NAMEofSEQ_longIdents		= "sequenceforgeneratinguniquelongs";
 	// delta difference between `generated longs which are unique`
-	private static final int			longIdents_Delta			= +1;
+	private static final int						longIdents_Delta			= +1;
 	
 	
 	// a database where all sequences will be stored:(only 1 db per bdb env)
-	private final Database				dbOfSequences;
-	private final static String			NAME_dbOfSequences			= "dbthatstoresallsequences";
+	private final Database							dbOfSequences;
+	private final static String						NAME_dbOfSequences			= "dbthatstoresallsequences";
 	
-	private static final long			MIN_ForLongs				= 0l;
-	private static final long			START_VALUE_ForLongs		= BDBEnvironment.MIN_ForLongs;
+	private static final long						MIN_ForLongs				= 0l;
+	private static final long						START_VALUE_ForLongs		= BDBEnvironment.MIN_ForLongs;
 	
 	// imposing a silly limit, for now:
-	private static final long			MAX_ForLongs				= 4123123123l;
+	private static final long						MAX_ForLongs				= 4123123123l;
 	
 	
-	private final BDBSetOfNodes			dbSet;
-	private final static String			DBNAME_OneNode_to_ManyNodes	= "mapOne2Many(nodeLong2nodeLong)";
+	private final BDBSetOfNodes						dbSet;
+	private final static String						DBNAME_OneNode_to_ManyNodes	= "mapOne2Many(nodeLong2nodeLong)";
 	
 	
 	// DUR and LOCK and CURSORCONFIG are tightly connected, well not really anymore...
@@ -92,28 +92,29 @@ public class BDBEnvironment extends BasicEnvironment {
 	 * WRITE_NO_SYNC
 	 * Write but do not synchronously flush the log on transaction commit.
 	 */
-	public final static boolean			ENABLE_TRANSACTIONS			= true;
+	public final static boolean						ENABLE_TRANSACTIONS			= true;
 	
-	public static final LockMode		LOCK						= ENABLE_TRANSACTIONS ? LockMode.RMW : LockMode.DEFAULT;
+	public static final LockMode					LOCK						= ENABLE_TRANSACTIONS ? LockMode.RMW
+																					: LockMode.DEFAULT;
 	// XXX: should never use READ_COMMITED or READ_UNCOMMITTED
-	public static final LockMode		CURSORLOCK					= LockMode.RMW;
+	public static final LockMode					CURSORLOCK					= LockMode.RMW;
 	// DEFAULT;
 	// RMW;
 	
-	public static final CursorConfig	CURSORCONFIG				= CursorConfig.DEFAULT;
+	public static final CursorConfig				CURSORCONFIG				= CursorConfig.DEFAULT;
 	// FIXME: with DEFAULT: BDB0697 Write attempted on read-only cursor; and CDB enabled
 	// WRITECURSOR;
 	// DEFAULT;
 	// new CursorConfig().setReadUncommitted( true ); we don't want RU or RC here
 	
 	// stuff to prevent(least we can do) new-ing more than one BerkeleyEnv:
-	private static boolean				once						= false;
-	private final static ReentrantLock	rl							= new ReentrantLock();
+	private static boolean							once						= false;
+	private final static ReentrantLock				rl							= new ReentrantLock();
 	
 	
-	private volatile boolean			shuttingDown				= false;
-	private volatile Thread				shutdownThread				= null;
-	private final Timer					timer						= new Timer( Timer.TYPE.MILLIS );
+	private volatile boolean						shuttingDown				= false;
+	private volatile Thread							shutdownThread				= null;
+	private final Timer								timer						= new Timer( Timer.TYPE.MILLIS );
 	
 	
 	

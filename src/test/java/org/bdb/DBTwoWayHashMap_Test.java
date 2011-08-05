@@ -35,6 +35,7 @@ package org.bdb;
 
 import static org.junit.Assert.*;
 
+import org.bdb.references.*;
 import org.bdbLevel1.*;
 import org.generic.env.*;
 import org.junit.*;

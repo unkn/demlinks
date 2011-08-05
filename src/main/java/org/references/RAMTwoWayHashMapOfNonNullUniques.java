@@ -176,4 +176,36 @@ public class RAMTwoWayHashMapOfNonNullUniques<KEY, DATA> extends BaseFor_ThreadS
 	}
 	
 	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.references.BaseFor_ThreadSafeTwoWayMapOfUniques#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals( final Object obj ) {
+		if ( Z.equalsByReference_enforceNotNull( this, obj ) ) {
+			return true;
+		}
+		assert Z.areSameClass_canNotBeNull( this, obj ) : "not allowing comparison between ie. base and subclass, for now, "
+			+ "since they may have diff .equals() or it's just using the same base.equals() which may not indicate that they"
+			+ " are still equal if user forgot to override/implement subclass.equals()";
+		assert obj instanceof RAMTwoWayHashMapOfNonNullUniques;
+		@SuppressWarnings( "unchecked" )
+		final RAMTwoWayHashMapOfNonNullUniques<KEY, DATA> o = (RAMTwoWayHashMapOfNonNullUniques<KEY, DATA>)obj;
+		final boolean ret1 = mapKeyData.equals( o.mapKeyData );
+		final boolean ret2 = mapDataKey.equals( o.mapDataKey );
+		assert ret1 ^ ret2 : Q.bug( "both must be equal or both must be unequal; bug somewhere" );
+		return ret1;
+	}
+	
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.references.BaseFor_ThreadSafeTwoWayMapOfUniques#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		return mapKeyData.hashCode();
+	}
 }
