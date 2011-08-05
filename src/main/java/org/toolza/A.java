@@ -48,4 +48,20 @@ public abstract class A {
 	public static String number( final double val ) {
 		return commaDelimitedFormatter.format( val );
 	}
+	
+	
+	// /**
+	// * @param data
+	// * @return
+	// */
+	// public static String arrayToString( final byte[] data ) {
+	// // String str = "";
+	// assert Q.nn( data );
+	// return UtfOps.bytesToString( data, 0, data.length );
+	// // for ( final byte element : data ) {
+	// // str += (char)element;
+	// // StringBinding
+	// // }
+	// // return str;
+	// }
 }

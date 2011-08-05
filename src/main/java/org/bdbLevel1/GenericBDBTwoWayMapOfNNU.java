@@ -127,7 +127,9 @@ public class GenericBDBTwoWayMapOfNNU<KEY, DATA> extends BaseFor_ThreadSafeTwoWa
 				
 				// if this differs, then we need perhaps to set it to result
 				// also
-				assert data.getData().length == data.getSize();
+				// assert data.getData().length == data.getSize() : "len=" + data.getData().length + " size=" + data.getSize()
+				// + " data=" + data;
+				// XXX: looks like length and size can differ ie. 8 vs 100, maybe latter is with padding
 				result.setData( data.getData() );
 				result.setSize( data.getSize() );// this seems useless but let above assert check that for us
 				
