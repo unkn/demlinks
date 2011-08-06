@@ -48,7 +48,7 @@ import com.sleepycat.db.*;
  */
 public class BDBEnvironment extends BasicEnvironment {
 	
-	private static final int						BDBLOCK_TIMEOUT_MS			= 3 * 1000000;
+	private static final int						BDBLOCK_TIMEOUT_MicroSeconds			= 3 * 1000000;
 	
 	private final Environment						env;
 	
@@ -208,7 +208,7 @@ public class BDBEnvironment extends BasicEnvironment {
 		
 		envConf.setInitializeLocking( ENABLE_TRANSACTIONS );
 		envConf.setLockDetectMode( LockDetectMode.YOUNGEST );
-		envConf.setLockTimeout( BDBLOCK_TIMEOUT_MS );
+		envConf.setLockTimeout( BDBLOCK_TIMEOUT_MicroSeconds );
 		// final int x = 100;
 		// envConf.setMaxLockers( x );
 		// envConf.setMaxLockObjects( x );
@@ -220,7 +220,7 @@ public class BDBEnvironment extends BasicEnvironment {
 		envConf.setTxnNotDurable( true );
 		envConf.setTxnNoWait( true );
 		envConf.setTxnSnapshot( ENABLE_TRANSACTIONS );
-		envConf.setTxnTimeout( BDBLOCK_TIMEOUT_MS );
+		envConf.setTxnTimeout( BDBLOCK_TIMEOUT_MicroSeconds );
 		//
 		envConf.setInitializeLogging( true );// XXX: set to true tho
 		envConf.setLogInMemory( false );
