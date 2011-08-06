@@ -51,8 +51,8 @@ public class TestManyNodes {
 	private final static String			ROOT_LIST						= "ROOT_LIST";
 	
 	// 10000 to 20k seems optimal
-	private static final int			HOWMANY_PER_TRANSACTION			= 3000;
-	private static final int			HOWMANY_RELATIONSHIPS_FOR_ONE	= 10000;
+	private static final int			HOWMANY_PER_TRANSACTION			= 30000;
+	private static final int			HOWMANY_RELATIONSHIPS_FOR_ONE	= 1000000;
 	
 	private final GenericEnvironment	env;
 	private GenericNode					list;
@@ -108,10 +108,11 @@ public class TestManyNodes {
 				middleElement = env.createOrGetNode( MIDDLE );
 				env.makeVector( list, headElement );
 				System.out.println( "first time creating the relationships..." );
+				final int half = HOWMANY_RELATIONSHIPS_FOR_ONE / 2;
 				t3.start();
 				int i = 0;
 				try {
-					for ( i = 0; i < HOWMANY_RELATIONSHIPS_FOR_ONE; i++ ) {
+					for ( i = 0; i < half; i++ ) {
 						env.makeVector( list, env.createNewUniqueNode() );
 						if ( ( i % HOWMANY_PER_TRANSACTION ) == 0 ) {
 							txn.success();
@@ -120,7 +121,7 @@ public class TestManyNodes {
 							System.out.println( "new txn at " + i );
 						}
 						
-						if ( i == ( HOWMANY_RELATIONSHIPS_FOR_ONE / 2 ) ) {
+						if ( i == ( half / 2 ) ) {
 							env.makeVector( list, middleElement );
 						}
 					}// for
@@ -129,14 +130,13 @@ public class TestManyNodes {
 					System.out.println( i );
 				}
 				t3.stop();
-				System.out.println( "just created " + A.number( HOWMANY_RELATIONSHIPS_FOR_ONE / 2 ) + " rels, took="
-					+ t3.getDeltaPrintFriendly() );
+				System.out.println( "just created " + A.number( half ) + " rels, took=" + t3.getDeltaPrintFriendly() );
 				showMem();
 				
 				
 				System.out.println( "first time creating more relationships..." );
 				t3.start();
-				for ( i = 0; i < HOWMANY_RELATIONSHIPS_FOR_ONE; i++ ) {
+				for ( i = 0; i < half; i++ ) {
 					env.makeVector( env.createNewUniqueNode(), tailElement );
 					if ( ( i % HOWMANY_PER_TRANSACTION ) == 0 ) {
 						txn.success();
@@ -144,13 +144,13 @@ public class TestManyNodes {
 						txn = env.beginTransaction();
 					}
 					
-					if ( i == ( HOWMANY_RELATIONSHIPS_FOR_ONE / 2 ) ) {
+					if ( i == ( half / 2 ) ) {
 						env.makeVector( list, tailElement );
 					}
 				}
 				t3.stop();
-				System.out.println( "just created another bunch of " + A.number( HOWMANY_RELATIONSHIPS_FOR_ONE / 2 )
-					+ " rels, took=" + t3.getDeltaPrintFriendly() );
+				System.out.println( "just created another bunch of " + A.number( half ) + " rels, took="
+					+ t3.getDeltaPrintFriendly() );
 				showMem();
 			} else {
 				assert null != middleElement;
@@ -164,6 +164,185 @@ public class TestManyNodes {
 		}
 	}
 	
+	
+	/*
+	 * with 100% cpu max limit, rather than the usual 44% where not specified:
+	 * ----------------
+	 * usedmem=317920
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\dbthatstoresallsequences`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000001`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000002`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000003`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000004`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000005`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000006`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000007`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000008`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000009`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000010`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000011`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000012`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000013`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000014`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000015`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000016`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000017`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000018`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000019`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000020`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000021`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000022`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000023`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000024`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000025`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000026`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000027`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000028`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000029`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000030`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000031`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000032`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000033`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000034`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000035`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000036`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000037`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000038`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000039`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000040`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000041`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000042`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000043`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000044`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000045`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000046`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000047`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000048`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000049`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000050`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000051`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000052`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000053`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000054`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000055`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000056`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000057`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000058`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000059`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000060`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000061`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000062`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000063`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000064`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000065`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000066`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000067`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000068`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000069`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000070`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000071`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000072`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000073`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000074`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000075`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000076`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000077`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000078`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000079`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000080`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000081`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000082`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000083`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000084`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000085`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000086`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000087`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000088`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000089`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000090`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000091`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000092`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000093`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\map(nameString2nodeLong)`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\mapOne2Many(nodeLong2nodeLong)`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\mapOne2Many(nodeLong2nodeLong)_backward_but_also_primary`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\secondarymap(nameString2nodeLong)`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\__db.001`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\__db.002`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\__db.003`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\__db.register`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb`
+	 * BDB1524 1052: register environment
+	 * BDB1525 1052: creating .\bin\JUnit.tempDb\__db.register
+	 * BDB1526 1052: adding self to registry
+	 * BDB1532 1052: locking slot 00 at offset 0
+	 * BDB2525 No log files found
+	 * BDB1533 1052: recovery completed, unlocking
+	 * usedmem=2745216
+	 * class org.bdbLevel1.BDBEnvironment
+	 * first time creating the relationships...
+	 * new txn at 0
+	 * new txn at 30000
+	 * new txn at 60000
+	 * new txn at 90000
+	 * new txn at 120000
+	 * new txn at 150000
+	 * new txn at 180000
+	 * new txn at 210000
+	 * new txn at 240000
+	 * new txn at 270000
+	 * new txn at 300000
+	 * new txn at 330000
+	 * new txn at 360000
+	 * new txn at 390000
+	 * new txn at 420000
+	 * new txn at 450000
+	 * new txn at 480000
+	 * 500000
+	 * just created 500,000 rels, took=34,790 ms
+	 * usedmem=2277176
+	 * first time creating more relationships...
+	 * just created another bunch of 500,000 rels, took=36,053 ms
+	 * usedmem=974184
+	 * closed transaction
+	 * usedmem=974184
+	 * run for `class org.bdbLevel1.BDBEnvironment`
+	 * trying isVector():
+	 * ROOT_LIST -> START 63 ms
+	 * ROOT_LIST -> MIDDLE 0 ms
+	 * ROOT_LIST -> END 0 ms
+	 * ROOT_LIST -> START 0 ms
+	 * ROOT_LIST -> MIDDLE 0 ms
+	 * ROOT_LIST -> END 0 ms
+	 * ROOT_LIST -> START 0 ms
+	 * ROOT_LIST -> MIDDLE 0 ms
+	 * ROOT_LIST -> END 0 ms
+	 * ROOT_LIST -> START 0 ms
+	 * ROOT_LIST -> MIDDLE 0 ms
+	 * ROOT_LIST -> END 0 ms
+	 * ROOT_LIST -> START 0 ms
+	 * ROOT_LIST -> MIDDLE 0 ms
+	 * ROOT_LIST -> END 0 ms
+	 * ROOT_LIST -> START 0 ms
+	 * ROOT_LIST -> MIDDLE 0 ms
+	 * ROOT_LIST -> END 0 ms
+	 * ROOT_LIST -> START 0 ms
+	 * ROOT_LIST -> MIDDLE 0 ms
+	 * ROOT_LIST -> END 0 ms
+	 * ROOT_LIST -> START 0 ms
+	 * ROOT_LIST -> MIDDLE 0 ms
+	 * ROOT_LIST -> END 0 ms
+	 * ROOT_LIST -> START 0 ms
+	 * ROOT_LIST -> MIDDLE 0 ms
+	 * ROOT_LIST -> END 0 ms
+	 * ROOT_LIST -> START 0 ms
+	 * ROOT_LIST -> MIDDLE 0 ms
+	 * ROOT_LIST -> END 0 ms
+	 * usedmem=1068896
+	 * usedmem=1068896
+	 * usedmem=1068896
+	 * usedmem=601856
+	 */
 	
 	public void run() {
 		final GenericTransaction t = env.beginTransaction();
