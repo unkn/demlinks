@@ -112,7 +112,7 @@ public class TestBDBNativeAKAviaJNI {
 	// set all these 4 to true for consistency, but also lack of speed; all to false for max speed
 	private static final boolean	ENABLE_TRANSACTIONS				= true;
 	@SuppressWarnings( "unused" )
-	private static final boolean	DURABLE_TXNS					= true ? true : !ENABLE_TRANSACTIONS;
+	private static final boolean	DURABLE_TXNS					= false ? true : !ENABLE_TRANSACTIONS;
 	private static final boolean	ENABLE_LOCKING					= true;
 	@SuppressWarnings( "unused" )
 	// only enabled when transactions are enabled, and if that first bool is true
@@ -1504,6 +1504,8 @@ public class TestBDBNativeAKAviaJNI {
 		envConf.setMaxLocks( 10000 );// 10k seems ok, but 1k not
 		envConf.setMutexIncrement( 10000 );// 100 or 1k or 5k is not enough
 		envConf.setTransactional( ENABLE_TRANSACTIONS );
+		envConf.setMultiversion( MVC );// oh yeah xD
+		
 		if ( ENABLE_TRANSACTIONS ) {
 			// // envConf.setDurability( DUR );
 			// envConf.setTxnNoSync( true );// XXX: should be false for consistency
@@ -1535,7 +1537,6 @@ public class TestBDBNativeAKAviaJNI {
 		envConf.setRegister( false && ENABLE_TRANSACTIONS );
 		//
 		envConf.setMessageStream( System.err );
-		envConf.setMultiversion( MVC );// oh yeah xD
 		//
 		// envConf.setNoLocking( false );
 		// envConf.setNoPanic( false );
@@ -1647,7 +1648,7 @@ public class TestBDBNativeAKAviaJNI {
 	
 	
 	protected void add100( final boolean firstTime, final boolean cont ) throws DatabaseException {
-		final Transaction t = beginTxn();
+		final Transaction t = beginTxn( null );
 		addCheckTimer.start();
 		try {
 			// final TupleBinding<String> keyBinding = AllTupleBindings.getBinding( String.class );
@@ -1692,14 +1693,14 @@ public class TestBDBNativeAKAviaJNI {
 	}
 	
 	
-	protected Transaction beginTxn() throws DatabaseException {
+	protected Transaction beginTxn( final Transaction parent ) throws DatabaseException {
 		if ( ENABLE_TRANSACTIONS ) {
 			final TransactionConfig txnConfig = new TransactionConfig();
 			txnConfig.setNoWait( NOWAIT );
 			txnConfig.setSnapshot( MVC );
 			// txnConfig.setSync( true );
 			// txnConfig.set
-			return env.beginTransaction( null, txnConfig );
+			return env.beginTransaction( parent, txnConfig );
 		} else {
 			return null;
 		}
@@ -1731,7 +1732,7 @@ public class TestBDBNativeAKAviaJNI {
 	
 	
 	private void check100() throws DatabaseException {
-		final Transaction t = beginTxn();
+		final Transaction t = beginTxn( null );
 		addCheckTimer.start();
 		try {
 			// final TupleBinding<String> keyBinding = AllTupleBindings.getBinding( String.class );
