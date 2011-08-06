@@ -43,13 +43,14 @@ import com.sleepycat.je.*;
 
 
 /**
+ * this is supposed to have errors because we're using db.jar from bdb native/jni instead of bdb je aka java edition<br>
  * in conclusion, each txn sees data that is committed by other transactions, aka as db revisions advance
  * the current open transaction can see the data from the last revision, rather than the data from the same revision of the db
  * that was existing at the time the txn was created
  */
 public class TestBDBJavaEditionSerializableIsolation {
 	
-	// won't work for 100 or less, due to locks being granted on a per page(ie. 512bytes?) basis; ie. dbpage
+	// with JE a lock happens on a per record basis, in bdb native/jni on a per page basis
 	private static final int	HOWMANY	= 2;
 	private final TestBDBJE		x		= new TestBDBJE();
 	

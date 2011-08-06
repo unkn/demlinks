@@ -70,3 +70,27 @@ and bdb je is 1.45 times slower than bdb-native via jni
 bdb je(pure 100% java implementation of bdb) only knows btree btw
 
 7. bdb je doesn't know nested transactions, but bdb jni does;
+
+8. really? cmon
+when CDB is enabled/in-use
+As a consequence of the Berkeley DB Concurrent Data Store locking model, the following sequences of operations will cause a 
+thread to block itself indefinitely:
+
+    Keeping a cursor open while issuing a DB->put() or DB->del() access method call.
+    Attempting to open a write cursor while another cursor is already being held open by the same thread of control. Note that 
+it is correct operation for one thread of control to attempt to open a write cursor or to perform a non-cursor write 
+(DB->put() or DB->del()) while a write cursor is already active in another thread. It is only a problem if these things are 
+done within a single thread of control -- in which case that thread will block and never be able to release the lock that is 
+blocking it.
+    Not testing Berkeley DB error return codes (if any cursor operation returns an unexpected error, that cursor must still be 
+closed).
+
+     Berkeley DB Concurrent Data Store groups use a TXN handle to indicate the shared locker ID to Berkeley DB calls, and call 
+DB_TXN->commit() to end the group. This is a convenient way to pass the locked ID to the calls where it is needed, but should 
+not be confused with the real transactional semantics provided by Berkeley DB Transactional Data Store. In particular, Berkeley 
+DB Concurrent Data Store groups do not provide any abort or recovery facilities, and have no impact on durability of operations.
+
+9. as I've noticed:
+ with bdb JE a lock happens on a per record basis, in bdb native/jni on a per page basis ie. locking LockMode.RMW first record 
+will also lock at least 100 of consecutive ones, but not 1000 of them.
+
