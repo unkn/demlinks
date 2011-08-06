@@ -92,8 +92,6 @@ public class BDBSetOfNodes implements GenericLevel2 {
 	 * 
 	 * @param env1
 	 * @param dbName1
-	 * @throws DatabaseException
-	 * @throws FileNotFoundException
 	 */
 	public BDBSetOfNodes( final Environment env1, final String dbName1 ) {
 		// XXX: here we must allow only Environment to be passed instead of BerkEnv, due to BerkEnv not yet being initialized

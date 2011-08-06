@@ -134,7 +134,7 @@ public class GenericBDBTwoWayMapOfNNU<KEY, DATA> extends BaseFor_ThreadSafeTwoWa
 		// secConf.setEncrypted( password )
 		secAndPriConf.setMultiversion( false );
 		secAndPriConf.setReverseSplitOff( false );
-		secAndPriConf.setTransactionNotDurable( false );
+		secAndPriConf.setTransactionNotDurable( false );// ie. it IS durable
 		secAndPriConf.setUnsortedDuplicates( false );
 		// secAndPriConf.setDeferredWrite( false );
 		// secAndPriConf.setForeignKeyDatabase( null );TODO:bdb method bugged for null param; report this!

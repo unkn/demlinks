@@ -94,8 +94,9 @@ public class BDBEnvironment extends BasicEnvironment {
 	 */
 	public final static boolean						ENABLE_TRANSACTIONS				= true;
 	
-	public static final LockMode					LOCK							= ENABLE_TRANSACTIONS ? LockMode.RMW
-																						: LockMode.DEFAULT;
+	public static final LockMode					LOCK							= LockMode.DEFAULT;
+	// ENABLE_TRANSACTIONS ? LockMode.RMW
+	// : LockMode.DEFAULT;
 	// XXX: should never use READ_COMMITED or READ_UNCOMMITTED
 	public static final LockMode					CURSORLOCK						= LockMode.RMW;
 	// DEFAULT;
@@ -137,6 +138,7 @@ public class BDBEnvironment extends BasicEnvironment {
 	 * @param deleteFirst
 	 *            used in JUnit only<br>
 	 */
+	@SuppressWarnings( "unused" )
 	public BDBEnvironment( final String envHomeDir1, final boolean deleteFirst ) {
 		L.tryLock( BDBEnvironment.rl );
 		try {
@@ -158,8 +160,8 @@ public class BDBEnvironment extends BasicEnvironment {
 		final EnvironmentConfig envConf = new EnvironmentConfig();
 		envConf.setAllowCreate( true );
 		envConf.setLockDown( false );
-		envConf.setDirectDatabaseIO( true );// XXX: experiment with this!
-		envConf.setDirectLogIO( true );// XXX: and this
+		envConf.setDirectDatabaseIO( false );// false here is way faster than true; ie. twice
+		envConf.setDirectLogIO( false );// this doesn't seem to be affected, true/false same
 		//
 		// // envConf.setEncrypted( password )
 		envConf.setOverwrite( false );
@@ -206,20 +208,22 @@ public class BDBEnvironment extends BasicEnvironment {
 		// envConf.setInitializeCDB( true );//this1of2
 		// envConf.setCDBLockAllDatabases( true );//this2of2 are unique and go together
 		
-		envConf.setInitializeLocking( ENABLE_TRANSACTIONS );
+		envConf.setInitializeLocking( true && ENABLE_TRANSACTIONS );
 		envConf.setLockDetectMode( LockDetectMode.YOUNGEST );
 		envConf.setLockTimeout( BDBLOCK_TIMEOUT_MicroSeconds );
-		// final int x = 100;
+		final int x = 1000;
 		// envConf.setMaxLockers( x );
 		// envConf.setMaxLockObjects( x );
 		// envConf.setMaxLocks( x );
+		envConf.setMaxLocks( x );
+		envConf.setMutexIncrement( x );
 		envConf.setTransactional( ENABLE_TRANSACTIONS );
 		// // envConf.setDurability( DUR );
-		// envConf.setTxnNoSync( true );// XXX: should be false for consistency
-		envConf.setTxnWriteNoSync( true );// can't use both
+		envConf.setTxnNoSync( true );// XXX: should be false for consistency
+		// envConf.setTxnWriteNoSync( false );// can't use both
 		envConf.setTxnNotDurable( true );
 		envConf.setTxnNoWait( true );
-		envConf.setTxnSnapshot( ENABLE_TRANSACTIONS );
+		envConf.setTxnSnapshot( false && ENABLE_TRANSACTIONS );// set this to false to see huge speed
 		envConf.setTxnTimeout( BDBLOCK_TIMEOUT_MicroSeconds );
 		//
 		envConf.setInitializeLogging( true );// XXX: set to true tho
@@ -242,11 +246,11 @@ public class BDBEnvironment extends BasicEnvironment {
 		envConf.setRegister( ENABLE_TRANSACTIONS );
 		//
 		envConf.setMessageStream( System.err );
-		envConf.setMultiversion( true );// oh yeah xD
+		envConf.setMultiversion( true || ENABLE_TRANSACTIONS );// this only affects the open of the databases
 		//
-		envConf.setNoLocking( false );
-		envConf.setNoPanic( false );
-		envConf.setNoMMap( false );
+		// envConf.setNoLocking( false );
+		// envConf.setNoPanic( false );
+		envConf.setNoMMap( false );// false is better
 		//
 		// envConf.setPrivate( BerkEnv.once );// this fails true as long as we have that single-open constraint
 		//
@@ -255,7 +259,7 @@ public class BDBEnvironment extends BasicEnvironment {
 		// envConf.setSystemMemory( true );// XXX: experiment, this fails
 		//
 		// // envConf.setTemporaryDirectory( temporaryDirectory )
-		envConf.setThreaded( true );
+		envConf.setThreaded( false );// true only if threads want to access the env handle(ie. java instance) at the same time
 		//
 		// envConf.setUseEnvironment( false );
 		// envConf.setUseEnvironmentRoot( false );
@@ -306,7 +310,7 @@ public class BDBEnvironment extends BasicEnvironment {
 			// init once first time:
 			final DatabaseConfig sequenceDbConf = new DatabaseConfig();// seq != sec(ondary) I always read that
 			sequenceDbConf.setAllowCreate( true );
-			sequenceDbConf.setType( DatabaseType.HASH );
+			sequenceDbConf.setType( DatabaseType.BTREE );
 			// sequenceDbConf.setDeferredWrite( false );
 			// sequenceDbConf.setKeyPrefixing( false );// no more prefixing
 			sequenceDbConf.setSortedDuplicates( false );// false here

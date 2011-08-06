@@ -51,11 +51,13 @@ import com.sleepycat.db.*;
  */
 public class TestBDBNativeAKAviaJNI {
 	
+	// fastest with txn on and mvc on, lock off, durable off;
+	
 	// set all these 4 to true for consistency, but also lack of speed; all to false for max speed
 	private static final boolean	ENABLE_TRANSACTIONS				= true;
 	@SuppressWarnings( "unused" )
-	private static final boolean	DURABLE_TXNS					= true ? ENABLE_TRANSACTIONS : false;
-	private static final boolean	ENABLE_LOCKING					= false;
+	private static final boolean	DURABLE_TXNS					= false ? true : !ENABLE_TRANSACTIONS;
+	private static final boolean	ENABLE_LOCKING					= true;
 	@SuppressWarnings( "unused" )
 	// only enabled when transactions are enabled, and if that first bool is true
 	private static final boolean	MVC								= false ? ENABLE_TRANSACTIONS : false;
@@ -843,7 +845,279 @@ public class TestBDBNativeAKAviaJNI {
 	 * usedmem=2521992
 	 * adding from [111800 to 223600)
 	 * stopped it
-	 * ================= txn on, dur on, no locking no mvc:
+	 * ================= txn on, dur off(fixed dur from now on, above it still not fixed meaning above:
+	 * ============ `dur on` means it's off), yes locking, no mvc:
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000001`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\secondarytheDBFileName`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\theDBFileName`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\__db.001`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\__db.002`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\__db.003`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb`
+	 * BDB2525 No log files found
+	 * environment open took: 109 ms
+	 * Database type: DatabaseType.BTREE
+	 * usedmem=4144784
+	 * adding from [0 to 111800) add100 executed in: 12,386 ms
+	 * usedmem=4226560
+	 * adding from [0 to 111800) add100 executed in: 5,009 ms
+	 * usedmem=1102016
+	 * adding from [0 to 111800) add100 executed in: 3,885 ms
+	 * usedmem=2522216
+	 * adding from [111800 to 223600) add100 executed in: 12,029 ms
+	 * usedmem=1102048
+	 * adding from [223600 to 335400) add100 executed in: 15,868 ms
+	 * usedmem=4226392
+	 * adding from [335400 to 447200) add100 executed in: 13,823 ms
+	 * usedmem=2900872
+	 * checking from 0 to 447200 junitBDBJNI:: BDB2034 unable to allocate memory for mutex; resize mutex region
+	 * ============ same but disabled locking:
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000001`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\secondarytheDBFileName`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\theDBFileName`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\__db.001`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\__db.002`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\__db.003`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\__db.freezer.0.0.4K`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\__db.freezer.0.1.4K`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\__db.freezer.0.10.4K`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\__db.freezer.0.11.4K`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\__db.freezer.0.12.4K`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\__db.freezer.0.13.4K`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\__db.freezer.0.14.4K`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\__db.freezer.0.15.4K`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\__db.freezer.0.16.4K`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\__db.freezer.0.17.4K`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\__db.freezer.0.18.4K`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\__db.freezer.0.19.4K`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\__db.freezer.0.2.4K`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\__db.freezer.0.20.4K`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\__db.freezer.0.21.4K`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\__db.freezer.0.22.4K`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\__db.freezer.0.23.4K`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\__db.freezer.0.24.4K`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\__db.freezer.0.25.4K`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\__db.freezer.0.26.4K`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\__db.freezer.0.27.4K`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\__db.freezer.0.28.4K`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\__db.freezer.0.29.4K`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\__db.freezer.0.3.4K`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\__db.freezer.0.30.4K`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\__db.freezer.0.31.4K`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\__db.freezer.0.32.4K`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\__db.freezer.0.33.4K`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\__db.freezer.0.34.4K`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\__db.freezer.0.35.4K`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\__db.freezer.0.36.4K`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\__db.freezer.0.4.4K`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\__db.freezer.0.5.4K`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\__db.freezer.0.6.4K`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\__db.freezer.0.7.4K`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\__db.freezer.0.8.4K`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\__db.freezer.0.9.4K`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb`
+	 * BDB2525 No log files found
+	 * environment open took: 125 ms
+	 * Database type: DatabaseType.BTREE
+	 * usedmem=4194824
+	 * adding from [0 to 111800) add100 executed in: 12,667 ms
+	 * usedmem=4321104
+	 * adding from [0 to 111800) add100 executed in: 4,712 ms
+	 * usedmem=1196696
+	 * adding from [0 to 111800) add100 executed in: 3,480 ms
+	 * usedmem=2522216
+	 * adding from [111800 to 223600) add100 executed in: 13,651 ms
+	 * usedmem=1196768
+	 * adding from [223600 to 335400) add100 executed in: 16,210 ms
+	 * usedmem=4321112
+	 * adding from [335400 to 447200) add100 executed in: 13,838 ms
+	 * usedmem=2901008
+	 * checking from 0 to 447200 junitBDBJNI:: BDB2055 Lock table is out of available lock entries
+	 * tearDown took: 63 ms
+	 * ======================= txn on, mvc on, lock off, txndur off:
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\secondarytheDBFileName`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\theDBFileName`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\__db.001`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\__db.002`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\__db.003`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb`
+	 * BDB2525 No log files found
+	 * environment open took: 125 ms
+	 * Database type: DatabaseType.BTREE
+	 * usedmem=4121208
+	 * adding from [0 to 111800) add100 executed in: 11,216 ms
+	 * usedmem=4226368
+	 * adding from [0 to 111800) add100 executed in: 4,634 ms
+	 * usedmem=1102000
+	 * adding from [0 to 111800) add100 executed in: 3,511 ms
+	 * usedmem=2522200
+	 * adding from [111800 to 223600) add100 executed in: 12,278 ms
+	 * usedmem=1101936
+	 * adding from [223600 to 335400) add100 executed in: 15,523 ms
+	 * usedmem=4226376
+	 * adding from [335400 to 447200) add100 executed in: 12,107 ms
+	 * usedmem=2900856
+	 * checking from 0 to 447200 check100 executed in: 23,151 ms
+	 * usedmem=1198376
+	 * all above adds/check (aka part2) executed in 82,420 ms
+	 * tearDown took: 64 ms
+	 * =============== same but with direct db io set to false, log io to true still:
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\secondarytheDBFileName`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\theDBFileName`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\__db.001`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\__db.002`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\__db.003`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb`
+	 * BDB2525 No log files found
+	 * environment open took: 110 ms
+	 * Database type: DatabaseType.BTREE
+	 * usedmem=4121184
+	 * adding from [0 to 111800) add100 executed in: 6,677 ms
+	 * usedmem=4214056
+	 * adding from [0 to 111800) add100 executed in: 1,849 ms
+	 * usedmem=1101576
+	 * adding from [0 to 111800) add100 executed in: 1,483 ms
+	 * usedmem=2516376
+	 * adding from [111800 to 223600) add100 executed in: 7,083 ms
+	 * usedmem=1101592
+	 * adding from [223600 to 335400) add100 executed in: 11,672 ms
+	 * usedmem=4214152
+	 * adding from [335400 to 447200) add100 executed in: 9,314 ms
+	 * usedmem=2893640
+	 * checking from 0 to 447200 check100 executed in: 7,349 ms
+	 * usedmem=1197584
+	 * all above adds/check (aka part2) executed in 45,427 ms
+	 * tearDown took: 375 ms
+	 * ========== same but both db&log direct i/o set to false:
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000001`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\secondarytheDBFileName`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\theDBFileName`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\__db.001`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\__db.002`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\__db.003`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb`
+	 * BDB2525 No log files found
+	 * environment open took: 110 ms
+	 * Database type: DatabaseType.BTREE
+	 * usedmem=4125440
+	 * adding from [0 to 111800) add100 executed in: 6,630 ms
+	 * usedmem=4214296
+	 * adding from [0 to 111800) add100 executed in: 1,842 ms
+	 * usedmem=1101616
+	 * adding from [0 to 111800) add100 executed in: 1,500 ms
+	 * usedmem=2516624
+	 * adding from [111800 to 223600) add100 executed in: 7,037 ms
+	 * usedmem=1101704
+	 * adding from [223600 to 335400) add100 executed in: 11,797 ms
+	 * usedmem=4214488
+	 * adding from [335400 to 447200) add100 executed in: 9,267 ms
+	 * usedmem=2893968
+	 * checking from 0 to 447200 check100 executed in: 7,286 ms
+	 * usedmem=1197728
+	 * all above adds/check (aka part2) executed in 45,359 ms
+	 * tearDown took: 500 ms
+	 * ============== same but with nommap :
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000001`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\secondarytheDBFileName`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\theDBFileName`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\__db.001`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\__db.002`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\__db.003`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb`
+	 * BDB2525 No log files found
+	 * environment open took: 125 ms
+	 * Database type: DatabaseType.BTREE
+	 * usedmem=4059384
+	 * adding from [0 to 111800) add100 executed in: 6,677 ms
+	 * usedmem=4215728
+	 * adding from [0 to 111800) add100 executed in: 1,841 ms
+	 * usedmem=1101656
+	 * adding from [0 to 111800) add100 executed in: 1,483 ms
+	 * usedmem=2517176
+	 * adding from [111800 to 223600) add100 executed in: 7,133 ms
+	 * usedmem=1101656
+	 * adding from [223600 to 335400) add100 executed in: 11,872 ms
+	 * usedmem=4215800
+	 * adding from [335400 to 447200) add100 executed in: 9,363 ms
+	 * usedmem=2894720
+	 * checking from 0 to 447200 check100 executed in: 7,257 ms
+	 * usedmem=1197776
+	 * all above adds/check (aka part2) executed in 45,642 ms
+	 * tearDown took: 360 ms
+	 * =============== with systemmemory false, nommap false:
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000001`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\secondarytheDBFileName`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\theDBFileName`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\__db.001`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\__db.002`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\__db.003`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb`
+	 * BDB2525 No log files found
+	 * environment open took: 109 ms
+	 * Database type: DatabaseType.BTREE
+	 * usedmem=4144952
+	 * adding from [0 to 111800) add100 executed in: 6,802 ms
+	 * usedmem=4215688
+	 * adding from [0 to 111800) add100 executed in: 1,826 ms
+	 * usedmem=1101680
+	 * adding from [0 to 111800) add100 executed in: 1,483 ms
+	 * usedmem=2517168
+	 * adding from [111800 to 223600) add100 executed in: 7,101 ms
+	 * usedmem=1101640
+	 * adding from [223600 to 335400) add100 executed in: 11,672 ms
+	 * usedmem=4215784
+	 * adding from [335400 to 447200) add100 executed in: 9,329 ms
+	 * usedmem=2894704
+	 * checking from 0 to 447200 check100 executed in: 7,226 ms
+	 * usedmem=1197760
+	 * all above adds/check (aka part2) executed in 45,439 ms
+	 * tearDown took: 454 ms
+	 * ================= mvc on, locking on, txn on, txndur off:
+	 * BDB2525 No log files found
+	 * environment open took: 109 ms
+	 * Database type: DatabaseType.BTREE
+	 * usedmem=4186408
+	 * adding from [0 to 111800) add100 executed in: 6,693 ms
+	 * usedmem=4310024
+	 * adding from [0 to 111800) add100 executed in: 1,876 ms
+	 * usedmem=1195936
+	 * adding from [0 to 111800) add100 executed in: 1,498 ms
+	 * usedmem=2516968
+	 * adding from [111800 to 223600) add100 executed in: 7,133 ms
+	 * usedmem=1195936
+	 * adding from [223600 to 335400) add100 executed in: 11,671 ms
+	 * usedmem=4309880
+	 * adding from [335400 to 447200) add100 executed in: 9,346 ms
+	 * usedmem=2894504
+	 * checking from 0 to 447200 junitBDBJNI:: BDB2034 unable to allocate memory for mutex; resize mutex region
+	 * ======== after fixing:
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000001`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\secondarytheDBFileName`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\theDBFileName`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\__db.001`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\__db.002`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\__db.003`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb`
+	 * BDB2525 No log files found
+	 * environment open took: 109 ms
+	 * Database type: DatabaseType.BTREE
+	 * usedmem=4144480
+	 * adding from [0 to 111800) add100 executed in: 6,474 ms
+	 * usedmem=4226584
+	 * adding from [0 to 111800) add100 executed in: 1,577 ms
+	 * usedmem=1101968
+	 * adding from [0 to 111800) add100 executed in: 1,592 ms
+	 * usedmem=2522296
+	 * adding from [111800 to 223600) add100 executed in: 6,272 ms
+	 * usedmem=1101936
+	 * adding from [223600 to 335400) add100 executed in: 6,350 ms
+	 * usedmem=4226640
+	 * adding from [335400 to 447200) add100 executed in: 6,366 ms
+	 * usedmem=2901008
+	 * checking from 0 to 447200 check100 executed in: 6,553 ms
+	 * usedmem=1198368
+	 * all above adds/check (aka part2) executed in 35,184 ms
+	 * tearDown took: 641 ms
 	 */
 	@Before
 	public void setUp() {
@@ -874,6 +1148,135 @@ public class TestBDBNativeAKAviaJNI {
 	}
 	
 	
+	@SuppressWarnings( "unused" )
+	private void setupBDBNativeEnv() throws FileNotFoundException, DatabaseException {
+		envConf.setAllowCreate( true );
+		envConf.setLockDown( false );
+		envConf.setDirectDatabaseIO( false );// false here is twice as fast as true
+		envConf.setDirectLogIO( false );// XXX: and this
+		//
+		// // envConf.setEncrypted( password )
+		envConf.setOverwrite( false );
+		
+		envConf.setErrorStream( System.err );
+		envConf.setErrorPrefix( "junitBDBJNI:" );
+		
+		// useless:
+		envConf.setEventHandler( new EventHandlerAdapter() {
+			
+			/*
+			 * (non-Javadoc)
+			 * 
+			 * @see com.sleepycat.db.EventHandlerAdapter#handlePanicEvent()
+			 */
+			@Override
+			public void handlePanicEvent() {
+				System.err.println( "panic event" );
+			}
+		} );
+		
+		envConf.setFeedbackHandler( new FeedbackHandler() {
+			
+			@Override
+			public void recoveryFeedback( final Environment environment, final int percent ) {
+				System.err.println( "recoveryFeedback" );
+			}
+			
+			
+			@Override
+			public void upgradeFeedback( final Database database, final int percent ) {
+				System.err.println( "upgradeFeedback" );
+			}
+			
+			
+			@Override
+			public void verifyFeedback( final Database database, final int percent ) {
+				System.err.println( "verifyFeedback" );
+			}
+		} );
+		
+		envConf.setHotbackupInProgress( false );
+		envConf.setInitializeCache( true );// XXX: experiment with this
+		// envConf.setInitializeCDB( true );//this1of2
+		// envConf.setCDBLockAllDatabases( true );//this2of2 are unique and go together
+		
+		if ( ENABLE_LOCKING ) {
+			envConf.setInitializeLocking( ENABLE_LOCKING );
+		} else {
+			envConf.setInitializeLocking( ENABLE_TRANSACTIONS );
+		}
+		envConf.setLockDetectMode( LockDetectMode.YOUNGEST );
+		envConf.setLockTimeout( BDBLOCK_TIMEOUT_MicroSeconds );
+		final int x = HOWMANY;
+		// envConf.setMaxLockers( x );
+		// envConf.setMaxLockObjects( x );
+		envConf.setMaxLocks( x );
+		envConf.setMutexIncrement( HOWMANY );
+		envConf.setTransactional( ENABLE_TRANSACTIONS );
+		if ( ENABLE_TRANSACTIONS ) {
+			// // envConf.setDurability( DUR );
+			envConf.setTxnNoSync( true );// XXX: should be false for consistency
+			// envConf.setTxnWriteNoSync( true );// can't use both
+			envConf.setTxnNotDurable( !DURABLE_TXNS );// fixed but prolly got overwritten by db's setting so no diff here
+			envConf.setTxnNoWait( true );
+			envConf.setTxnSnapshot( false && MVC );
+			envConf.setTxnTimeout( BDBLOCK_TIMEOUT_MicroSeconds );
+		}
+		
+		//
+		envConf.setInitializeLogging( true );// XXX: set to true tho
+		envConf.setLogInMemory( false );
+		envConf.setLogAutoRemove( false );// set to true for smaller sized dbs
+		envConf.setLogBufferSize( 0 );// XXX: uses defaults; can experiment with this
+		envConf.setLogZero( false );// XXX:wow this totally writes 2gig of zeroes when true
+		// // envConf.setLogDirectory( logDirectory )
+		// envConf.setMaxLogFileSize( Integer.MAX_VALUE );//this allocated 2gig log
+		// envConf.setMaxLogFileSize( 10 * 1024 * 1024 );// 10meg alloc
+		envConf.setRunFatalRecovery( false );
+		
+		// envConf.setInitializeRegions( false );// XXX: maybe experiment with this, unsure
+		// envConf.setInitializeReplication( false );// for now
+		// envConf.setInitialMutexes( 100 );// must investigate 10 is not enough!
+		
+		// envConf.setJoinEnvironment( false );
+		//
+		envConf.setRunRecovery( true && ENABLE_TRANSACTIONS );
+		envConf.setRegister( false && ENABLE_TRANSACTIONS );
+		//
+		envConf.setMessageStream( System.err );
+		envConf.setMultiversion( MVC );// oh yeah xD
+		//
+		// envConf.setNoLocking( false );
+		// envConf.setNoPanic( false );
+		envConf.setNoMMap( false );// XXX:false seems faster but possibly only having any effect when db.setReadOnly(true)
+		//
+		// envConf.setPrivate( BerkEnv.once );// this fails true as long as we have that single-open constraint
+		//
+		// envConf.setReplicationInMemory( false );
+		//
+		envConf.setSystemMemory( false );// false is faster
+		//
+		// // envConf.setTemporaryDirectory( temporaryDirectory )
+		envConf.setThreaded( false );// must be false for this test anyway
+		//
+		// envConf.setUseEnvironment( false );
+		// envConf.setUseEnvironmentRoot( false );
+		
+		envConf.setYieldCPU( false );// XXX: experiment with this
+		// envConf.setVerbose( VerboseConfig.FILEOPS, true );
+		envConf.setVerbose( VerboseConfig.DEADLOCK, true );
+		envConf.setVerbose( VerboseConfig.RECOVERY, true );
+		envConf.setVerbose( VerboseConfig.REGISTER, true );
+		envConf.setVerbose( VerboseConfig.REPLICATION, true );
+		
+		final Timer timed = new Timer( Timer.TYPE.MILLIS );
+		timed.start();
+		env = new Environment( storeDir, envConf );
+		timed.stop();
+		System.out.println( "environment open took: " + timed.getDeltaPrintFriendly() );
+	}
+	
+	
 	private void setupBDBNativeDb( final DatabaseType dbtype ) {
 		
 		secAndPriConf = new SecondaryConfig();
@@ -885,7 +1288,7 @@ public class TestBDBNativeAKAviaJNI {
 		// secConf.setEncrypted( password )
 		secAndPriConf.setMultiversion( MVC );
 		secAndPriConf.setReverseSplitOff( false );
-		secAndPriConf.setTransactionNotDurable( DURABLE_TXNS );// XXX: normally false
+		secAndPriConf.setTransactionNotDurable( !DURABLE_TXNS );// XXX: normally false
 		secAndPriConf.setUnsortedDuplicates( false );
 		// secAndPriConf.setDeferredWrite( false );
 		// secAndPriConf.setForeignKeyDatabase( null );TODO:bdb method bugged for null param; report this!
@@ -945,134 +1348,6 @@ public class TestBDBNativeAKAviaJNI {
 		} catch ( final DatabaseException e ) {
 			throw Q.rethrow( e );
 		}
-	}
-	
-	
-	@SuppressWarnings( "unused" )
-	private void setupBDBNativeEnv() throws FileNotFoundException, DatabaseException {
-		envConf.setAllowCreate( true );
-		envConf.setLockDown( false );
-		envConf.setDirectDatabaseIO( true );// XXX: experiment with this!
-		envConf.setDirectLogIO( true );// XXX: and this
-		//
-		// // envConf.setEncrypted( password )
-		envConf.setOverwrite( false );
-		
-		envConf.setErrorStream( System.err );
-		envConf.setErrorPrefix( "junitBDBJNI:" );
-		
-		// useless:
-		envConf.setEventHandler( new EventHandlerAdapter() {
-			
-			/*
-			 * (non-Javadoc)
-			 * 
-			 * @see com.sleepycat.db.EventHandlerAdapter#handlePanicEvent()
-			 */
-			@Override
-			public void handlePanicEvent() {
-				System.err.println( "panic event" );
-			}
-		} );
-		
-		envConf.setFeedbackHandler( new FeedbackHandler() {
-			
-			@Override
-			public void recoveryFeedback( final Environment environment, final int percent ) {
-				System.err.println( "recoveryFeedback" );
-			}
-			
-			
-			@Override
-			public void upgradeFeedback( final Database database, final int percent ) {
-				System.err.println( "upgradeFeedback" );
-			}
-			
-			
-			@Override
-			public void verifyFeedback( final Database database, final int percent ) {
-				System.err.println( "verifyFeedback" );
-			}
-		} );
-		
-		envConf.setHotbackupInProgress( false );
-		envConf.setInitializeCache( true );// XXX: experiment with this
-		// envConf.setInitializeCDB( true );//this1of2
-		// envConf.setCDBLockAllDatabases( true );//this2of2 are unique and go together
-		
-		if ( ENABLE_LOCKING ) {
-			envConf.setInitializeLocking( ENABLE_LOCKING );
-		} else {
-			envConf.setInitializeLocking( ENABLE_TRANSACTIONS );
-		}
-		envConf.setLockDetectMode( LockDetectMode.YOUNGEST );
-		envConf.setLockTimeout( BDBLOCK_TIMEOUT_MicroSeconds );
-		// final int x = 100;
-		// envConf.setMaxLockers( x );
-		// envConf.setMaxLockObjects( x );
-		// envConf.setMaxLocks( x );
-		envConf.setTransactional( ENABLE_TRANSACTIONS );
-		if ( ENABLE_TRANSACTIONS ) {
-			// // envConf.setDurability( DUR );
-			envConf.setTxnNoSync( true );// XXX: should be false for consistency
-			// envConf.setTxnWriteNoSync( true );// can't use both
-			envConf.setTxnNotDurable( true );
-			envConf.setTxnNoWait( true );
-			envConf.setTxnSnapshot( MVC );
-			envConf.setTxnTimeout( BDBLOCK_TIMEOUT_MicroSeconds );
-		}
-		
-		//
-		envConf.setInitializeLogging( true );// XXX: set to true tho
-		envConf.setLogInMemory( false );
-		envConf.setLogAutoRemove( false );// set to true for smaller sized dbs
-		envConf.setLogBufferSize( 0 );// XXX: uses defaults; can experiment with this
-		envConf.setLogZero( false );// XXX:wow this totally writes 2gig of zeroes when true
-		// // envConf.setLogDirectory( logDirectory )
-		// envConf.setMaxLogFileSize( Integer.MAX_VALUE );//this allocated 2gig log
-		// envConf.setMaxLogFileSize( 10 * 1024 * 1024 );// 10meg alloc
-		envConf.setRunFatalRecovery( false );
-		
-		// envConf.setInitializeRegions( false );// XXX: maybe experiment with this, unsure
-		// envConf.setInitializeReplication( false );// for now
-		// envConf.setInitialMutexes( 100 );// must investigate 10 is not enough!
-		
-		// envConf.setJoinEnvironment( false );
-		//
-		envConf.setRunRecovery( true && ENABLE_TRANSACTIONS );
-		envConf.setRegister( false && ENABLE_TRANSACTIONS );
-		//
-		envConf.setMessageStream( System.err );
-		envConf.setMultiversion( true );// oh yeah xD
-		//
-		envConf.setNoLocking( false );
-		envConf.setNoPanic( false );
-		envConf.setNoMMap( false );
-		//
-		// envConf.setPrivate( BerkEnv.once );// this fails true as long as we have that single-open constraint
-		//
-		envConf.setReplicationInMemory( false );
-		//
-		envConf.setSystemMemory( true );// XXX: experiment, this fails
-		//
-		// // envConf.setTemporaryDirectory( temporaryDirectory )
-		envConf.setThreaded( true );
-		//
-		// envConf.setUseEnvironment( false );
-		// envConf.setUseEnvironmentRoot( false );
-		
-		envConf.setYieldCPU( false );// XXX: experiment with this
-		// envConf.setVerbose( VerboseConfig.FILEOPS, true );
-		envConf.setVerbose( VerboseConfig.DEADLOCK, true );
-		envConf.setVerbose( VerboseConfig.RECOVERY, true );
-		envConf.setVerbose( VerboseConfig.REGISTER, true );
-		envConf.setVerbose( VerboseConfig.REPLICATION, true );
-		
-		final Timer timed = new Timer( Timer.TYPE.MILLIS );
-		timed.start();
-		env = new Environment( storeDir, envConf );
-		timed.stop();
-		System.out.println( "environment open took: " + timed.getDeltaPrintFriendly() );
 	}
 	
 	

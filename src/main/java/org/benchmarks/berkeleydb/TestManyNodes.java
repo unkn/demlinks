@@ -51,7 +51,7 @@ public class TestManyNodes {
 	private final static String			ROOT_LIST						= "ROOT_LIST";
 	
 	// 10000 to 20k seems optimal
-	private static final int			HOWMANY_PER_TRANSACTION			= 10000;
+	private static final int			HOWMANY_PER_TRANSACTION			= 1000;
 	private static final int			HOWMANY_RELATIONSHIPS_FOR_ONE	= 1000000;
 	
 	private final GenericEnvironment	env;
@@ -109,17 +109,24 @@ public class TestManyNodes {
 				env.makeVector( list, headElement );
 				System.out.println( "first time creating the relationships..." );
 				t3.start();
-				for ( int i = 0; i < HOWMANY_RELATIONSHIPS_FOR_ONE; i++ ) {
-					env.makeVector( list, env.createNewUniqueNode() );
-					if ( ( i % HOWMANY_PER_TRANSACTION ) == 0 ) {
-						txn.success();
-						txn.finish();
-						txn = env.beginTransaction();
-					}
+				int i = 0;
+				try {
+					for ( i = 0; i < HOWMANY_RELATIONSHIPS_FOR_ONE; i++ ) {
+						env.makeVector( list, env.createNewUniqueNode() );
+						if ( ( i % HOWMANY_PER_TRANSACTION ) == 0 ) {
+							txn.success();
+							txn.finish();
+							txn = env.beginTransaction();
+							System.out.println( "new txn at " + i );
+						}
+						
+						if ( i == ( HOWMANY_RELATIONSHIPS_FOR_ONE / 2 ) ) {
+							env.makeVector( list, middleElement );
+						}
+					}// for
 					
-					if ( i == ( HOWMANY_RELATIONSHIPS_FOR_ONE / 2 ) ) {
-						env.makeVector( list, middleElement );
-					}
+				} finally {
+					System.out.println( i );
 				}
 				t3.stop();
 				System.out.println( "just created " + A.number( HOWMANY_RELATIONSHIPS_FOR_ONE / 2 ) + " rels, took="
@@ -129,7 +136,7 @@ public class TestManyNodes {
 				
 				System.out.println( "first time creating more relationships..." );
 				t3.start();
-				for ( int i = 0; i < HOWMANY_RELATIONSHIPS_FOR_ONE; i++ ) {
+				for ( i = 0; i < HOWMANY_RELATIONSHIPS_FOR_ONE; i++ ) {
 					env.makeVector( env.createNewUniqueNode(), tailElement );
 					if ( ( i % HOWMANY_PER_TRANSACTION ) == 0 ) {
 						txn.success();
