@@ -15,5 +15,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="lib/junit/junit-4.9b2.jar" sourcepath="lib/junit/junit-4.9b2-src.jar"/>
+	<classpathentry kind="lib" path="lib/berkeleydb/je-4.1.10/lib/je-4.1.10.jar" sourcepath="lib/berkeleydb/je-4.1.10/src"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

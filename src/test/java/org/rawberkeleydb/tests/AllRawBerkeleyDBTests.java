@@ -41,7 +41,7 @@ import org.junit.runners.*;
 @RunWith( Suite.class )
 @Suite.SuiteClasses(
 		value = {
-			Test1.class,
+			TestBDBNativeAKAviaJNI.class,
 		} )
 public class AllRawBerkeleyDBTests {
 	// always empty

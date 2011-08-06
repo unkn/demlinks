@@ -35,22 +35,22 @@
 package org.rawberkeleydb.tests;
 
 import java.io.*;
+import java.util.concurrent.*;
 
 import org.bdb.*;
-import org.bdbLevel1.*;
 import org.junit.*;
 import org.q.*;
 import org.toolza.*;
 
 import com.sleepycat.bind.tuple.*;
-import com.sleepycat.db.*;
+import com.sleepycat.je.*;
 
 
 
 /**
  *
  */
-public class Test1 {
+public class TestBDBJE {
 	
 	private static final boolean	ENABLE_TRANSACTIONS				= true;
 	private static final long		BDBLOCK_TIMEOUT_MicroSeconds	= 3 * 1000000;
@@ -59,6 +59,7 @@ public class Test1 {
 	// hash dbtype fails for 1000
 	private static final int		HOWMANY							= 800;
 	public static final LockMode	LOCK							= ENABLE_TRANSACTIONS ? LockMode.RMW : LockMode.DEFAULT;
+	public static final Durability	DUR								= Durability.COMMIT_NO_SYNC;
 	
 	private Environment				env;
 	private EnvironmentConfig		envConf;
@@ -79,19 +80,18 @@ public class Test1 {
 	}
 	
 	
-	private void setup1Db( final DatabaseType dbtype ) {
+	private void setupBDBNativeDb() {
 		
 		secAndPriConf = new SecondaryConfig();
 		secAndPriConf.setAllowCreate( true );
 		secAndPriConf.setAllowPopulate( false );// not needed tho, only populated if sec is empty but pri isn't
-		secAndPriConf.setType( dbtype );
-		System.out.println( "Database type: " + dbtype );
-		secAndPriConf.setChecksum( true );// this has virtually no impact
-		// secConf.setEncrypted( password )
-		secAndPriConf.setMultiversion( false );
-		secAndPriConf.setReverseSplitOff( false );
-		secAndPriConf.setTransactionNotDurable( false );
-		secAndPriConf.setUnsortedDuplicates( false );
+		System.out.println( "Database type: BTREE" );
+		// secAndPriConf.setChecksum( true );// this has virtually no impact
+		// // secConf.setEncrypted( password )
+		// secAndPriConf.setMultiversion( false );
+		// secAndPriConf.setReverseSplitOff( false );
+		// secAndPriConf.setTransactionNotDurable( false );
+		// secAndPriConf.setUnsortedDuplicates( false );
 		// secAndPriConf.setDeferredWrite( false );
 		// secAndPriConf.setForeignKeyDatabase( null );TODO:bdb method bugged for null param; report this!
 		secAndPriConf.setExclusiveCreate( false );
@@ -102,8 +102,8 @@ public class Test1 {
 		secAndPriConf.setTransactional( ENABLE_TRANSACTIONS );
 		
 		assert !secAndPriConf.getSortedDuplicates();
-		assert !secAndPriConf.getUnsortedDuplicates();
-		assert !secAndPriConf.getReverseSplitOff();
+		// assert !secAndPriConf.getUnsortedDuplicates();
+		// assert !secAndPriConf.getReverseSplitOff();
 		secAndPriConf.setKeyCreator( new SecondaryKeyCreator() {
 			
 			@Override
@@ -133,7 +133,6 @@ public class Test1 {
 			// BETransaction.getCurrentTransaction( _env ),
 				null,
 				dbName,
-				null,
 				secAndPriConf/*
 							 * using the same conf from secondary, but it will be treated as just a simple DatabaseConfig
 							 * instead
@@ -142,93 +141,34 @@ public class Test1 {
 			secDb = env.openSecondaryDatabase( null,
 			// BETransaction.getCurrentTransaction( _env ),
 				secPrefix + dbName,
-				null,
 				priDb,
 				secAndPriConf );
-		} catch ( final FileNotFoundException e ) {
-			throw Q.rethrow( e );
 		} catch ( final DatabaseException e ) {
 			throw Q.rethrow( e );
 		}
 	}
 	
 	
-	private void setup1Env() throws FileNotFoundException, DatabaseException {
+	private void setupBDBNativeEnv() throws DatabaseException {
 		envConf.setAllowCreate( true );
-		envConf.setLockDown( false );
-		envConf.setDirectDatabaseIO( true );// XXX: experiment with this!
-		envConf.setDirectLogIO( true );// XXX: and this
-		//
-		// // envConf.setEncrypted( password )
-		envConf.setOverwrite( false );
 		
-		envConf.setErrorStream( System.err );
-		envConf.setErrorPrefix( "junitBDBJNI:" );
-		
-		// useless:
-		envConf.setEventHandler( new EventHandlerAdapter() {
-			
-			/*
-			 * (non-Javadoc)
-			 * 
-			 * @see com.sleepycat.db.EventHandlerAdapter#handlePanicEvent()
-			 */
-			@Override
-			public void handlePanicEvent() {
-				System.err.println( "panic event" );
-			}
-		} );
-		
-		envConf.setFeedbackHandler( new FeedbackHandler() {
-			
-			@Override
-			public void recoveryFeedback( final Environment environment, final int percent ) {
-				System.err.println( "recoveryFeedback" );
-			}
-			
-			
-			@Override
-			public void upgradeFeedback( final Database database, final int percent ) {
-				System.err.println( "upgradeFeedback" );
-			}
-			
-			
-			@Override
-			public void verifyFeedback( final Database database, final int percent ) {
-				System.err.println( "verifyFeedback" );
-			}
-		} );
-		
-		envConf.setHotbackupInProgress( false );
-		envConf.setInitializeCache( true );// XXX: experiment with this
 		// envConf.setInitializeCDB( true );//this1of2
 		// envConf.setCDBLockAllDatabases( true );//this2of2 are unique and go together
 		
-		envConf.setInitializeLocking( ENABLE_TRANSACTIONS );
-		envConf.setLockDetectMode( LockDetectMode.YOUNGEST );
-		envConf.setLockTimeout( BDBLOCK_TIMEOUT_MicroSeconds );
-		// final int x = 100;
-		// envConf.setMaxLockers( x );
-		// envConf.setMaxLockObjects( x );
-		// envConf.setMaxLocks( x );
+		envConf.setLocking( ENABLE_TRANSACTIONS );
+		envConf.setLockTimeout( BDBLOCK_TIMEOUT_MicroSeconds, TimeUnit.MICROSECONDS );
 		envConf.setTransactional( ENABLE_TRANSACTIONS );
-		// // envConf.setDurability( DUR );
+		envConf.setDurability( DUR );
 		// envConf.setTxnNoSync( true );// XXX: should be false for consistency
-		envConf.setTxnWriteNoSync( true );// can't use both
-		envConf.setTxnNotDurable( true );
-		envConf.setTxnNoWait( true );
-		envConf.setTxnSnapshot( ENABLE_TRANSACTIONS );
-		envConf.setTxnTimeout( BDBLOCK_TIMEOUT_MicroSeconds );
+		// envConf.setTxnWriteNoSync( true );// can't use both
+		// envConf.setTxnNotDurable( true );
+		// envConf.setTxnNoWait( true );
+		// envConf.setTxnSnapshot( ENABLE_TRANSACTIONS );
+		envConf.setTxnTimeout( BDBLOCK_TIMEOUT_MicroSeconds, TimeUnit.MICROSECONDS );
 		//
-		envConf.setInitializeLogging( true );// XXX: set to true tho
-		envConf.setLogInMemory( false );
-		envConf.setLogAutoRemove( false );// set to true for smaller sized dbs
-		envConf.setLogBufferSize( 0 );// XXX: uses defaults; can experiment with this
-		envConf.setLogZero( false );// XXX:wow this totally writes 2gig of zeroes when true
 		// // envConf.setLogDirectory( logDirectory )
 		// envConf.setMaxLogFileSize( Integer.MAX_VALUE );//this allocated 2gig log
 		// envConf.setMaxLogFileSize( 10 * 1024 * 1024 );// 10meg alloc
-		envConf.setRunFatalRecovery( false );
 		
 		// envConf.setInitializeRegions( false );// XXX: maybe experiment with this, unsure
 		// envConf.setInitializeReplication( false );// for now
@@ -236,34 +176,12 @@ public class Test1 {
 		
 		// envConf.setJoinEnvironment( false );
 		//
-		envConf.setRunRecovery( true );
-		envConf.setRegister( true );
-		//
-		envConf.setMessageStream( System.err );
-		envConf.setMultiversion( true );// oh yeah xD
-		//
-		envConf.setNoLocking( false );
-		envConf.setNoPanic( false );
-		envConf.setNoMMap( false );
 		//
 		// envConf.setPrivate( BerkEnv.once );// this fails true as long as we have that single-open constraint
 		//
-		envConf.setReplicationInMemory( false );
-		//
-		envConf.setSystemMemory( true );// XXX: experiment, this fails
-		//
-		// // envConf.setTemporaryDirectory( temporaryDirectory )
-		envConf.setThreaded( true );
 		//
 		// envConf.setUseEnvironment( false );
 		// envConf.setUseEnvironmentRoot( false );
-		
-		envConf.setYieldCPU( false );// XXX: experiment with this
-		// envConf.setVerbose( VerboseConfig.FILEOPS, true );
-		envConf.setVerbose( VerboseConfig.DEADLOCK, true );
-		envConf.setVerbose( VerboseConfig.RECOVERY, true );
-		envConf.setVerbose( VerboseConfig.REGISTER, true );
-		envConf.setVerbose( VerboseConfig.REPLICATION, true );
 		
 		final Timer timed = new Timer( Timer.TYPE.MILLIS );
 		timed.start();
@@ -296,7 +214,7 @@ public class Test1 {
 		final Timer timed = new Timer( Timer.TYPE.MILLIS );
 		final TransactionConfig txnConfig = new TransactionConfig();
 		txnConfig.setNoWait( true );
-		txnConfig.setSnapshot( true );
+		// txnConfig.setSnapshot( true );
 		// txnConfig.set
 		
 		timed.start();
@@ -305,8 +223,6 @@ public class Test1 {
 			t = env.beginTransaction( null, txnConfig );
 		}
 		try {
-			final TupleBinding<String> keyBinding = AllTupleBindings.getBinding( String.class );
-			final TupleBinding<Long> dataBinding = AllTupleBindings.getBinding( Long.class );
 			int initial = 0;
 			if ( cont ) {
 				initial = leftOverForAdd100;
@@ -318,7 +234,7 @@ public class Test1 {
 				final String key = "" + i;
 				final Long data = new Long( i );
 				final DatabaseEntry deKey = new DatabaseEntry();
-				keyBinding.objectToEntry( key, deKey );
+				StringBinding.stringToEntry( key, deKey );
 				final DatabaseEntry deData = new DatabaseEntry();
 				dataBinding.objectToEntry( data, deData );
 				OperationStatus ret = null;
@@ -407,8 +323,9 @@ public class Test1 {
 	
 	@Test
 	public void testBTree() throws DatabaseException, FileNotFoundException {
-		setup1Env();
-		setup1Db( DatabaseType.BTREE );
+		// only BTree exists in BDB JE
+		setupBDBNativeEnv();
+		setupBDBNativeDb();
 		part2();
 	}
 	
@@ -433,10 +350,4 @@ public class Test1 {
 	}
 	
 	
-	@Test
-	public void testHash() throws DatabaseException, FileNotFoundException {
-		setup1Env();
-		setup1Db( DatabaseType.HASH );
-		part2();
-	}
 }

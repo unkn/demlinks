@@ -128,7 +128,7 @@ public class GenericBDBTwoWayMapOfNNU<KEY, DATA> extends BaseFor_ThreadSafeTwoWa
 		final SecondaryConfig secAndPriConf = new SecondaryConfig();
 		secAndPriConf.setAllowCreate( true );
 		secAndPriConf.setAllowPopulate( true );// not needed tho, only populated if sec is empty but pri isn't
-		secAndPriConf.setType( DatabaseType.HASH );// XXX: check if BTREE is better? ie. via some benchmark sometime in the
+		secAndPriConf.setType( DatabaseType.BTREE );// XXX: check if BTREE is better? ie. via some benchmark sometime in the
 													// future
 		secAndPriConf.setChecksum( true );
 		// secConf.setEncrypted( password )

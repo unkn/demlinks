@@ -57,7 +57,7 @@ public class Timer {
 	}
 	
 	private final TYPE	type;
-	private long		startTime;
+	private long		startTime	= 0;
 	private long		stopTime;
 	
 	
@@ -81,6 +81,7 @@ public class Timer {
 	
 	
 	public void stop() {
+		assert 0 != startTime : "was not started";
 		switch ( type ) {
 		case MILLIS:
 			stopTime = System.currentTimeMillis();

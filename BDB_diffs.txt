@@ -2,6 +2,8 @@ bdb-native aka DB
 bdb java edition aka JE
 bdb-native via jni aka JNI
 
+see 5. , you can use only one of: bdb-native or bdbje, not both at the same time; java limitation
+
 some quotes from the web, to identify some of the differences between BDB variants:
 ie. from here: http://dbaspot.com/berkeley-db/265171-java-jni-api-versus-java-edition.html
 and here: http://download.oracle.com/docs/cd/E17076_02/html/programmer_reference/am_conf_select.html
@@ -52,4 +54,13 @@ accessing one particular key in the Btree implies that the application is more l
 there is no locality of reference for the Hash access method, and so key "AAAAA" is as likely to be stored on the same database 
  page with key "ZZZZZ" as with key "AAAAB" 
 In the Btree access method, because items are sorted, key "AAAAA" is far more likely to be near key "AAAAB" than key "ZZZZZ"
+
+
+5. cannot use both db.jar (from JNI) and je-4.1.10.jar (from bdb je) at the same time in the same app, due to them having defined
+the same package name:
+import com.sleepycat.bind.tuple.*;
+
+thus:
+The method stringToEntry(String, DatabaseEntry) in the type StringBinding is not applicable for the arguments 
+(String, DatabaseEntry)
 

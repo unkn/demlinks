@@ -137,7 +137,7 @@ public class TestTwoWayHashMapOfNonNullUniques {
 	
 	public static void testMany( final GenericTwoWayMapOfUniques<Long, String> hm ) {
 		// doing it: we likely want to make this test for any instance not just RAM hash map...
-		final long n = 100;
+		final long n = 1000;
 		
 		assertTrue( hm.isEmpty() );
 		for ( long i = 0; i < n; i++ ) {
