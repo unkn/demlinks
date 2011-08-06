@@ -48,11 +48,16 @@ import com.sleepycat.je.*;
 
 
 /**
- *
+ * in order to be able to compile and execute this, due to both db.jar and je-4.1.10.jar using the same name for at least one
+ * package, you must do this:
+ * Project->Properties->Java Build Path->Order and Export
+ * move db.jar on bottom such that je-4.1.10.jar is above it
+ * this will make sure je's packages are seen first, but anything using db-native aka jni, won't compile
  */
 public class TestBDBJE {
 	
 	private static final boolean	ENABLE_TRANSACTIONS				= true;
+	private static final boolean	ENABLE_LOCKING					= false;
 	private static final long		BDBLOCK_TIMEOUT_MicroSeconds	= 3 * 1000000;
 	private static final String		secPrefix						= "secondary";
 	private static final String		dbName							= "theDBFileName";
@@ -60,6 +65,10 @@ public class TestBDBJE {
 	private static final int		HOWMANY							= 800;
 	public static final LockMode	LOCK							= ENABLE_TRANSACTIONS ? LockMode.RMW : LockMode.DEFAULT;
 	public static final Durability	DUR								= Durability.COMMIT_NO_SYNC;
+	@SuppressWarnings( "unused" )
+	public static final LockMode	LOCKMODE						= ENABLE_TRANSACTIONS && ENABLE_LOCKING ? LockMode.RMW
+																		: LockMode.DEFAULT;
+	
 	
 	private Environment				env;
 	private EnvironmentConfig		envConf;
@@ -80,78 +89,10 @@ public class TestBDBJE {
 	}
 	
 	
-	private void setupBDBNativeDb() {
-		
-		secAndPriConf = new SecondaryConfig();
-		secAndPriConf.setAllowCreate( true );
-		secAndPriConf.setAllowPopulate( false );// not needed tho, only populated if sec is empty but pri isn't
-		System.out.println( "Database type: BTREE" );
-		// secAndPriConf.setChecksum( true );// this has virtually no impact
-		// // secConf.setEncrypted( password )
-		// secAndPriConf.setMultiversion( false );
-		// secAndPriConf.setReverseSplitOff( false );
-		// secAndPriConf.setTransactionNotDurable( false );
-		// secAndPriConf.setUnsortedDuplicates( false );
-		// secAndPriConf.setDeferredWrite( false );
-		// secAndPriConf.setForeignKeyDatabase( null );TODO:bdb method bugged for null param; report this!
-		secAndPriConf.setExclusiveCreate( false );
-		secAndPriConf.setImmutableSecondaryKey( false );// XXX: investigate if true is needed here
-		secAndPriConf.setReadOnly( false );
-		secAndPriConf.setSortedDuplicates( false );// must be false
-		// secConf.setTemporary( false );
-		secAndPriConf.setTransactional( ENABLE_TRANSACTIONS );
-		
-		assert !secAndPriConf.getSortedDuplicates();
-		// assert !secAndPriConf.getUnsortedDuplicates();
-		// assert !secAndPriConf.getReverseSplitOff();
-		secAndPriConf.setKeyCreator( new SecondaryKeyCreator() {
-			
-			@Override
-			public boolean createSecondaryKey( final SecondaryDatabase secondary, final DatabaseEntry key,
-												final DatabaseEntry data, final DatabaseEntry result ) {
-				
-				// if ( data.getData().length != data.getSize() ) {
-				// XXX: this happens with bdb native (ie. .dll version) but not with bdb je aka java edition version
-				// Q.warn( "len=" + data.getData().length + " size=" + data.getSize() + " data=" + data );
-				// }
-				// assert data.getData().length == data.getSize() : "len=" + data.getData().length + " size=" + data.getSize()
-				// + " data=" + data;
-				// XXX: looks like length and size can differ ie. 8 vs 100, maybe latter is with padding
-				result.setData( data.getData() );
-				result.setSize( data.getSize() );// this seems useless but let above assert check that for us
-				
-				// System.out.println( key + "!" + data + "!" + result );
-				return true;
-			}
-		} );
-		
-		
-		
-		// pri db
-		try {
-			priDb = env.openDatabase(
-			// BETransaction.getCurrentTransaction( _env ),
-				null,
-				dbName,
-				secAndPriConf/*
-							 * using the same conf from secondary, but it will be treated as just a simple DatabaseConfig
-							 * instead
-							 */
-			);
-			secDb = env.openSecondaryDatabase( null,
-			// BETransaction.getCurrentTransaction( _env ),
-				secPrefix + dbName,
-				priDb,
-				secAndPriConf );
-		} catch ( final DatabaseException e ) {
-			throw Q.rethrow( e );
-		}
-	}
-	
 	
 	private void setupBDBNativeEnv() throws DatabaseException {
 		envConf.setAllowCreate( true );
-		
+		envConf.setLocking( ENABLE_LOCKING );
 		// envConf.setInitializeCDB( true );//this1of2
 		// envConf.setCDBLockAllDatabases( true );//this2of2 are unique and go together
 		
@@ -191,6 +132,70 @@ public class TestBDBJE {
 	}
 	
 	
+	private void setupBDBNativeDb() {
+		
+		secAndPriConf = new SecondaryConfig();
+		secAndPriConf.setAllowCreate( true );
+		secAndPriConf.setAllowPopulate( false );// not needed tho, only populated if sec is empty but pri isn't
+		System.out.println( "Database type: BTREE" );
+		// secAndPriConf.setChecksum( true );// this has virtually no impact
+		// // secConf.setEncrypted( password )
+		// secAndPriConf.setMultiversion( false );
+		// secAndPriConf.setReverseSplitOff( false );
+		// secAndPriConf.setTransactionNotDurable( false );
+		// secAndPriConf.setUnsortedDuplicates( false );
+		// secAndPriConf.setDeferredWrite( false );
+		// secAndPriConf.setForeignKeyDatabase( null );TODO:bdb method bugged for null param; report this!
+		secAndPriConf.setExclusiveCreate( false );
+		secAndPriConf.setImmutableSecondaryKey( false );// XXX: investigate if true is needed here
+		secAndPriConf.setReadOnly( false );
+		secAndPriConf.setSortedDuplicates( false );// must be false
+		// secConf.setTemporary( false );
+		secAndPriConf.setTransactional( ENABLE_TRANSACTIONS );
+		
+		assert !secAndPriConf.getSortedDuplicates();
+		// assert !secAndPriConf.getUnsortedDuplicates();
+		// assert !secAndPriConf.getReverseSplitOff();
+		secAndPriConf.setKeyCreator( new SecondaryKeyCreator() {
+			
+			@Override
+			public boolean createSecondaryKey( final SecondaryDatabase secondary, final com.sleepycat.je.DatabaseEntry key,
+												final com.sleepycat.je.DatabaseEntry data,
+												final com.sleepycat.je.DatabaseEntry result ) {
+				// if ( data.getData().length != data.getSize() ) {
+				// XXX: this happens with bdb native (ie. .dll version) but not with bdb je aka java edition version
+				// Q.warn( "len=" + data.getData().length + " size=" + data.getSize() + " data=" + data );
+				// }
+				// assert data.getData().length == data.getSize() : "len=" + data.getData().length + " size=" + data.getSize()
+				// + " data=" + data;
+				// XXX: looks like length and size can differ ie. 8 vs 100, maybe latter is with padding
+				result.setData( data.getData() );
+				result.setSize( data.getSize() );// this seems useless but let above assert check that for us
+				
+				// System.out.println( key + "!" + data + "!" + result );
+				return true;
+			}
+		} );
+		
+		
+		
+		priDb = env.openDatabase(
+		// BETransaction.getCurrentTransaction( _env ),
+			null,
+			dbName,
+			secAndPriConf/*
+						 * using the same conf from secondary, but it will be treated as just a simple DatabaseConfig
+						 * instead
+						 */
+		);
+		secDb = env.openSecondaryDatabase( null,
+		// BETransaction.getCurrentTransaction( _env ),
+			secPrefix + dbName,
+			priDb,
+			secAndPriConf );
+	}
+	
+	
 	@After
 	public void tearDown() throws DatabaseException {
 		final Timer timed = new Timer( Timer.TYPE.MILLIS );
@@ -211,18 +216,11 @@ public class TestBDBJE {
 	
 	
 	private void add100( final boolean firstTime, final boolean cont ) throws DatabaseException {
-		final Timer timed = new Timer( Timer.TYPE.MILLIS );
-		final TransactionConfig txnConfig = new TransactionConfig();
-		txnConfig.setNoWait( true );
-		// txnConfig.setSnapshot( true );
-		// txnConfig.set
-		
-		timed.start();
-		Transaction t = null;
-		if ( ENABLE_TRANSACTIONS ) {
-			t = env.beginTransaction( null, txnConfig );
-		}
+		beginTxn();
+		addCheckTimer.start();
 		try {
+			// final TupleBinding<String> keyBinding = AllTupleBindings.getBinding( String.class );
+			// final TupleBinding<Long> dataBinding = AllTupleBindings.getBinding( Long.class );
 			int initial = 0;
 			if ( cont ) {
 				initial = leftOverForAdd100;
@@ -232,11 +230,11 @@ public class TestBDBJE {
 			System.out.print( "adding from [" + initial + " to " + final_ + ") " );
 			for ( i = initial; i < final_; i++ ) {
 				final String key = "" + i;
-				final Long data = new Long( i );
+				// final Long data = new Long( i );
 				final DatabaseEntry deKey = new DatabaseEntry();
 				StringBinding.stringToEntry( key, deKey );
 				final DatabaseEntry deData = new DatabaseEntry();
-				dataBinding.objectToEntry( data, deData );
+				LongBinding.longToEntry( i, deData );
 				OperationStatus ret = null;
 				try {
 					ret = priDb.putNoOverwrite( t, deKey, deData );
@@ -253,76 +251,98 @@ public class TestBDBJE {
 			// System.out.println( "leftover=" + leftOverForAdd100 );
 			
 			// System.out.println( "committing" );
-			if ( null != t ) {
-				t.commit();
-			}
+			commit();
 		} catch ( final Throwable t2 ) {
-			if ( null != t ) {
-				t.abort();
-			}
+			abort();
 			Q.rethrow( t2 );
 		}
-		timed.stop();
-		System.out.println( "add100 executed in: " + timed.getDeltaPrintFriendly() );
+		addCheckTimer.stop();
+		System.out.println( "add100 executed in: " + addCheckTimer.getDeltaPrintFriendly() );
 	}
 	
 	
-	private void check100() throws DatabaseException {
-		final Timer timed = new Timer( Timer.TYPE.MILLIS );
-		final TransactionConfig txnConfig = new TransactionConfig();
-		txnConfig.setNoWait( true );
-		txnConfig.setSnapshot( true );
-		// txnConfig.set
-		
-		timed.start();
-		Transaction t = null;
+	private Transaction	t;
+	
+	
+	private void beginTxn() throws DatabaseException {
+		t = null;
 		if ( ENABLE_TRANSACTIONS ) {
+			final TransactionConfig txnConfig = new TransactionConfig();
+			txnConfig.setNoWait( true );
+			// txnConfig.setSync( true );
+			// txnConfig.set
 			t = env.beginTransaction( null, txnConfig );
 		}
+	}
+	
+	
+	/**
+	 * @throws DatabaseException
+	 * 
+	 */
+	private void abort() throws DatabaseException {
+		if ( ENABLE_TRANSACTIONS ) {
+			t.abort();
+		}
+	}
+	
+	
+	/**
+	 * @throws DatabaseException
+	 * 
+	 */
+	private void commit() throws DatabaseException {
+		if ( ENABLE_TRANSACTIONS ) {
+			t.commit();
+		}
+	}
+	
+	final Timer	addCheckTimer	= new Timer( Timer.TYPE.MILLIS );
+	
+	
+	private void check100() throws DatabaseException {
+		beginTxn();
+		addCheckTimer.start();
 		try {
-			final TupleBinding<String> keyBinding = AllTupleBindings.getBinding( String.class );
-			final TupleBinding<Long> dataBinding = AllTupleBindings.getBinding( Long.class );
+			// final TupleBinding<String> keyBinding = AllTupleBindings.getBinding( String.class );
+			// final TupleBinding<Long> dataBinding = AllTupleBindings.getBinding( Long.class );
 			
 			System.out.print( "checking from 0 to " + leftOverForAdd100 + " " );
 			for ( int i = 0; i < leftOverForAdd100; i++ ) {
 				final String key = "" + i;
-				final Long data = new Long( i );
+				// final Long data = new Long( i );
 				final DatabaseEntry deKey = new DatabaseEntry();
-				keyBinding.objectToEntry( key, deKey );
+				StringBinding.stringToEntry( key, deKey );
 				final DatabaseEntry deData = new DatabaseEntry();
-				dataBinding.objectToEntry( data, deData );
+				LongBinding.longToEntry( i, deData );
 				OperationStatus ret = null;
 				try {
-					ret = priDb.get( t, deKey, deData, LOCK );
+					ret = priDb.get( t, deKey, deData, LOCKMODE );
 				} catch ( final DatabaseException e ) {
 					Q.rethrow( e );
 				}
 				// System.out.println( ret );
 				assert ret == OperationStatus.SUCCESS;
-				final Long data2 = dataBinding.entryToObject( deData );
-				assert data.equals( data2 );
-				assert data != data2;
+				assert i == LongBinding.entryToLong( deData );
+				// assert i != data2;
 				// ret.equals( OperationStatus.KEYEXIST )
 				
 			}// for
 			
 			// System.out.println( "committing" );
-			if ( null != t ) {
-				t.commit();
-			}
+			commit();
 		} catch ( final Throwable t2 ) {
-			if ( null != t ) {
-				t.abort();
-			}
+			abort();
+			
 			Q.rethrow( t2 );
 		}
-		timed.stop();
-		System.out.println( "check100 executed in: " + timed.getDeltaPrintFriendly() );
+		addCheckTimer.stop();
+		System.out.println( "check100 executed in: " + addCheckTimer.getDeltaPrintFriendly() );
 	}
 	
 	
 	@Test
-	public void testBTree() throws DatabaseException, FileNotFoundException {
+	public void testBTree() throws DatabaseException {
 		// only BTree exists in BDB JE
 		setupBDBNativeEnv();
 		setupBDBNativeDb();
