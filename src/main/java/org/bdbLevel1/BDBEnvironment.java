@@ -216,12 +216,12 @@ public class BDBEnvironment extends BasicEnvironment {
 		// envConf.setMaxLockObjects( x );
 		// envConf.setMaxLocks( x );
 		envConf.setMaxLocks( x );
-		envConf.setMutexIncrement( x );
+		envConf.setMutexIncrement( 100 );// we need this, value of 1 should be ok too but hey we don't want this called 2often
 		envConf.setTransactional( ENABLE_TRANSACTIONS );
 		// // envConf.setDurability( DUR );
-		envConf.setTxnNoSync( true );// XXX: should be false for consistency
-		// envConf.setTxnWriteNoSync( false );// can't use both
-		envConf.setTxnNotDurable( true );
+		envConf.setTxnNoSync( false );// XXX: should be false for consistency
+		envConf.setTxnWriteNoSync( true );// can't use both
+		envConf.setTxnNotDurable( false );
 		envConf.setTxnNoWait( true );
 		envConf.setTxnSnapshot( false && ENABLE_TRANSACTIONS );// set this to false to see huge speed
 		envConf.setTxnTimeout( BDBLOCK_TIMEOUT_MicroSeconds );

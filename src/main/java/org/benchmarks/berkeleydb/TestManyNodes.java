@@ -51,8 +51,8 @@ public class TestManyNodes {
 	private final static String			ROOT_LIST						= "ROOT_LIST";
 	
 	// 10000 to 20k seems optimal
-	private static final int			HOWMANY_PER_TRANSACTION			= 1000;
-	private static final int			HOWMANY_RELATIONSHIPS_FOR_ONE	= 1000000;
+	private static final int			HOWMANY_PER_TRANSACTION			= 3000;
+	private static final int			HOWMANY_RELATIONSHIPS_FOR_ONE	= 10000;
 	
 	private final GenericEnvironment	env;
 	private GenericNode					list;
