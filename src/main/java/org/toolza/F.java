@@ -42,6 +42,11 @@ import java.io.*;
  */
 public abstract class F {
 	
+	public static void showMem() {
+		System.out.println( "usedmem=" + ( Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory() ) );
+	}
+	
+	
 	public static void delFileOrTree( final File fileOrPath ) {
 		assert null != fileOrPath;
 		if ( fileOrPath.exists() ) {

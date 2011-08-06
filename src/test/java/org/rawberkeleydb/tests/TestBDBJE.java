@@ -56,13 +56,13 @@ import com.sleepycat.je.*;
  */
 public class TestBDBJE {
 	
-	private static final boolean	ENABLE_TRANSACTIONS				= true;
+	private static final boolean	ENABLE_TRANSACTIONS				= false;
 	private static final boolean	ENABLE_LOCKING					= false;
 	private static final long		BDBLOCK_TIMEOUT_MicroSeconds	= 3 * 1000000;
 	private static final String		secPrefix						= "secondary";
 	private static final String		dbName							= "theDBFileName";
 	// hash dbtype fails for 1000
-	private static final int		HOWMANY							= 800;
+	private static final int		HOWMANY							= 111800;
 	public static final LockMode	LOCK							= ENABLE_TRANSACTIONS ? LockMode.RMW : LockMode.DEFAULT;
 	public static final Durability	DUR								= Durability.COMMIT_NO_SYNC;
 	@SuppressWarnings( "unused" )
@@ -79,6 +79,291 @@ public class TestBDBJE {
 	private int						leftOverForAdd100				= 0;
 	
 	
+	/*
+	 * this is the output for 1800 HOWMANY, yes txns and nolocking:
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\00000000.jdb`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\je.info.0`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\je.lck`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb`
+	 * environment open took: 951 ms
+	 * Database type: BTREE
+	 * adding from [0 to 1800) add100 executed in: 749 ms
+	 * adding from [0 to 1800) add100 executed in: 62 ms
+	 * adding from [0 to 1800) add100 executed in: 47 ms
+	 * adding from [1800 to 3600) add100 executed in: 125 ms
+	 * adding from [3600 to 5400) add100 executed in: 126 ms
+	 * adding from [5400 to 7200) add100 executed in: 125 ms
+	 * checking from 0 to 7200 check100 executed in: 249 ms
+	 * all above adds/check (aka part2) executed in 1,483 ms
+	 * tearDown took: 94 ms
+	 * ------------------------ and again:
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\00000000.jdb`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\je.info.0`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\je.lck`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb`
+	 * environment open took: 1,014 ms
+	 * Database type: BTREE
+	 * adding from [0 to 1800) add100 executed in: 734 ms
+	 * adding from [0 to 1800) add100 executed in: 78 ms
+	 * adding from [0 to 1800) add100 executed in: 31 ms
+	 * adding from [1800 to 3600) add100 executed in: 125 ms
+	 * adding from [3600 to 5400) add100 executed in: 125 ms
+	 * adding from [5400 to 7200) add100 executed in: 125 ms
+	 * checking from 0 to 7200 check100 executed in: 265 ms
+	 * all above adds/check (aka part2) executed in 1,483 ms
+	 * tearDown took: 78 ms
+	 * ------------------- and one more time:
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\00000000.jdb`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\je.info.0`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\je.lck`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb`
+	 * environment open took: 936 ms
+	 * Database type: BTREE
+	 * adding from [0 to 1800) add100 executed in: 749 ms
+	 * adding from [0 to 1800) add100 executed in: 78 ms
+	 * adding from [0 to 1800) add100 executed in: 31 ms
+	 * adding from [1800 to 3600) add100 executed in: 125 ms
+	 * adding from [3600 to 5400) add100 executed in: 125 ms
+	 * adding from [5400 to 7200) add100 executed in: 125 ms
+	 * checking from 0 to 7200 check100 executed in: 265 ms
+	 * all above adds/check (aka part2) executed in 1,498 ms
+	 * tearDown took: 78 ms
+	 * ================== this is with locking and txns both on:
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\00000000.jdb`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\je.info.0`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\je.lck`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb`
+	 * environment open took: 983 ms
+	 * Database type: BTREE
+	 * adding from [0 to 1800) add100 executed in: 734 ms
+	 * adding from [0 to 1800) add100 executed in: 78 ms
+	 * adding from [0 to 1800) add100 executed in: 31 ms
+	 * adding from [1800 to 3600) add100 executed in: 125 ms
+	 * adding from [3600 to 5400) add100 executed in: 126 ms
+	 * adding from [5400 to 7200) add100 executed in: 125 ms
+	 * checking from 0 to 7200 check100 executed in: 249 ms
+	 * all above adds/check (aka part2) executed in 1,468 ms
+	 * tearDown took: 94 ms
+	 * ------------------------------ and again:
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\00000000.jdb`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\je.info.0`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\je.lck`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb`
+	 * environment open took: 951 ms
+	 * Database type: BTREE
+	 * adding from [0 to 1800) add100 executed in: 733 ms
+	 * adding from [0 to 1800) add100 executed in: 78 ms
+	 * adding from [0 to 1800) add100 executed in: 31 ms
+	 * adding from [1800 to 3600) add100 executed in: 125 ms
+	 * adding from [3600 to 5400) add100 executed in: 126 ms
+	 * adding from [5400 to 7200) add100 executed in: 125 ms
+	 * checking from 0 to 7200 check100 executed in: 249 ms
+	 * all above adds/check (aka part2) executed in 1,467 ms
+	 * tearDown took: 78 ms
+	 * --------- and again:
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\00000000.jdb`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\je.info.0`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\je.lck`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb`
+	 * environment open took: 1,170 ms
+	 * Database type: BTREE
+	 * adding from [0 to 1800) add100 executed in: 717 ms
+	 * adding from [0 to 1800) add100 executed in: 78 ms
+	 * adding from [0 to 1800) add100 executed in: 32 ms
+	 * adding from [1800 to 3600) add100 executed in: 124 ms
+	 * adding from [3600 to 5400) add100 executed in: 126 ms
+	 * adding from [5400 to 7200) add100 executed in: 125 ms
+	 * checking from 0 to 7200 check100 executed in: 250 ms
+	 * all above adds/check (aka part2) executed in 1,468 ms
+	 * tearDown took: 171 ms
+	 * ====================== no txn and no locking:
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\00000000.jdb`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\je.info.0`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\je.lck`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb`
+	 * environment open took: 920 ms
+	 * Database type: BTREE
+	 * adding from [0 to 1800) add100 executed in: 655 ms
+	 * adding from [0 to 1800) add100 executed in: 47 ms
+	 * adding from [0 to 1800) add100 executed in: 46 ms
+	 * adding from [1800 to 3600) add100 executed in: 110 ms
+	 * adding from [3600 to 5400) add100 executed in: 109 ms
+	 * adding from [5400 to 7200) add100 executed in: 110 ms
+	 * checking from 0 to 7200 check100 executed in: 234 ms
+	 * all above adds/check (aka part2) executed in 1,327 ms
+	 * tearDown took: 94 ms
+	 * ---------- again:
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\00000000.jdb`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\je.info.0`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\je.lck`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb`
+	 * environment open took: 921 ms
+	 * Database type: BTREE
+	 * adding from [0 to 1800) add100 executed in: 670 ms
+	 * adding from [0 to 1800) add100 executed in: 63 ms
+	 * adding from [0 to 1800) add100 executed in: 31 ms
+	 * adding from [1800 to 3600) add100 executed in: 109 ms
+	 * adding from [3600 to 5400) add100 executed in: 125 ms
+	 * adding from [5400 to 7200) add100 executed in: 111 ms
+	 * checking from 0 to 7200 check100 executed in: 219 ms
+	 * all above adds/check (aka part2) executed in 1,328 ms
+	 * tearDown took: 109 ms
+	 * =================== no txn, yes locking:
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\00000000.jdb`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\je.info.0`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\je.lck`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb`
+	 * environment open took: 905 ms
+	 * Database type: BTREE
+	 * adding from [0 to 1800) add100 executed in: 656 ms
+	 * adding from [0 to 1800) add100 executed in: 62 ms
+	 * adding from [0 to 1800) add100 executed in: 47 ms
+	 * adding from [1800 to 3600) add100 executed in: 109 ms
+	 * adding from [3600 to 5400) add100 executed in: 109 ms
+	 * adding from [5400 to 7200) add100 executed in: 112 ms
+	 * checking from 0 to 7200 check100 executed in: 219 ms
+	 * all above adds/check (aka part2) executed in 1,314 ms
+	 * tearDown took: 109 ms
+	 * ------- again:
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\00000000.jdb`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\je.info.0`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\je.lck`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb`
+	 * environment open took: 920 ms
+	 * Database type: BTREE
+	 * adding from [0 to 1800) add100 executed in: 672 ms
+	 * adding from [0 to 1800) add100 executed in: 62 ms
+	 * adding from [0 to 1800) add100 executed in: 31 ms
+	 * adding from [1800 to 3600) add100 executed in: 109 ms
+	 * adding from [3600 to 5400) add100 executed in: 110 ms
+	 * adding from [5400 to 7200) add100 executed in: 110 ms
+	 * checking from 0 to 7200 check100 executed in: 234 ms
+	 * all above adds/check (aka part2) executed in 1,328 ms
+	 * tearDown took: 109 ms
+	 */
+	
+	/*
+	 * ===================== 111800 HOWMANY, txn on and lock on:
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\00000000.jdb`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\00000001.jdb`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\00000002.jdb`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\00000003.jdb`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\00000004.jdb`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\00000005.jdb`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\00000006.jdb`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\je.info.0`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\je.lck`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb`
+	 * environment open took: 968 ms
+	 * Database type: BTREE
+	 * usedmem=8253544
+	 * adding from [0 to 111800) add100 executed in: 9,644 ms
+	 * usedmem=63280432
+	 * adding from [0 to 111800) add100 executed in: 2,826 ms
+	 * usedmem=47603808
+	 * adding from [0 to 111800) add100 executed in: 2,513 ms
+	 * usedmem=62139712
+	 * adding from [111800 to 223600) add100 executed in: 9,143 ms
+	 * usedmem=111428680
+	 * adding from [223600 to 335400) add100 executed in: 9,236 ms
+	 * usedmem=131888984
+	 * adding from [335400 to 447200) add100 executed in: 8,458 ms
+	 * usedmem=191025712
+	 * checking from 0 to 447200 check100 executed in: 10,408 ms
+	 * usedmem=182286136
+	 * all above adds/check (aka part2) executed in 52,228 ms
+	 * tearDown took: 188 ms
+	 * ------------- again:
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\00000000.jdb`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\00000001.jdb`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\00000002.jdb`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\00000003.jdb`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\00000004.jdb`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\00000005.jdb`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\00000006.jdb`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\je.info.0`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\je.lck`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb`
+	 * environment open took: 920 ms
+	 * Database type: BTREE
+	 * usedmem=8253504
+	 * adding from [0 to 111800) add100 executed in: 9,641 ms
+	 * usedmem=63278464
+	 * adding from [0 to 111800) add100 executed in: 2,811 ms
+	 * usedmem=47599816
+	 * adding from [0 to 111800) add100 executed in: 2,482 ms
+	 * usedmem=62134896
+	 * adding from [111800 to 223600) add100 executed in: 9,205 ms
+	 * usedmem=111684080
+	 * adding from [223600 to 335400) add100 executed in: 9,230 ms
+	 * usedmem=132049496
+	 * adding from [335400 to 447200) add100 executed in: 8,535 ms
+	 * usedmem=191925384
+	 * checking from 0 to 447200 check100 executed in: 10,455 ms
+	 * usedmem=184823432
+	 * all above adds/check (aka part2) executed in 52,359 ms
+	 * tearDown took: 157 ms
+	 * ===================== same ammount, no txn and no locking:
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\00000000.jdb`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\00000001.jdb`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\00000002.jdb`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\00000003.jdb`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\00000004.jdb`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\00000005.jdb`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\00000006.jdb`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\je.info.0`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\je.lck`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb`
+	 * environment open took: 936 ms
+	 * Database type: BTREE
+	 * usedmem=8176224
+	 * adding from [0 to 111800) add100 executed in: 8,221 ms
+	 * usedmem=32742856
+	 * adding from [0 to 111800) add100 executed in: 2,016 ms
+	 * usedmem=33471760
+	 * adding from [0 to 111800) add100 executed in: 1,919 ms
+	 * usedmem=33745088
+	 * adding from [111800 to 223600) add100 executed in: 7,770 ms
+	 * usedmem=66579760
+	 * adding from [223600 to 335400) add100 executed in: 8,035 ms
+	 * usedmem=95490864
+	 * adding from [335400 to 447200) add100 executed in: 7,536 ms
+	 * usedmem=100827160
+	 * checking from 0 to 447200 check100 executed in: 8,209 ms
+	 * usedmem=121744792
+	 * all above adds/check (aka part2) executed in 43,706 ms
+	 * tearDown took: 157 ms
+	 * ------------ again:
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\00000000.jdb`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\00000001.jdb`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\00000002.jdb`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\00000003.jdb`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\00000004.jdb`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\00000005.jdb`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\00000006.jdb`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\je.info.0`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\je.lck`
+	 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb`
+	 * environment open took: 904 ms
+	 * Database type: BTREE
+	 * usedmem=8163272
+	 * adding from [0 to 111800) add100 executed in: 8,221 ms
+	 * usedmem=32749224
+	 * adding from [0 to 111800) add100 executed in: 2,045 ms
+	 * usedmem=33478760
+	 * adding from [0 to 111800) add100 executed in: 1,935 ms
+	 * usedmem=33752544
+	 * adding from [111800 to 223600) add100 executed in: 7,723 ms
+	 * usedmem=66901016
+	 * adding from [223600 to 335400) add100 executed in: 8,036 ms
+	 * usedmem=95525640
+	 * adding from [335400 to 447200) add100 executed in: 7,536 ms
+	 * usedmem=100752696
+	 * checking from 0 to 447200 check100 executed in: 8,284 ms
+	 * usedmem=121781520
+	 * all above adds/check (aka part2) executed in 43,780 ms
+	 * tearDown took: 220 ms
+	 */
 	@Before
 	public void setUp() {
 		storeDir = new File( JUnitConstants.BDB_ENVIRONMENT_STORE_DIR );
@@ -358,13 +643,21 @@ public class TestBDBJE {
 		leftOverForAdd100 = 0;
 		final Timer t1 = new Timer( Timer.TYPE.MILLIS );
 		t1.start();
+		F.showMem();
 		add100( true, true );
+		F.showMem();
 		add100( false, false );
+		F.showMem();
 		add100( false, false );
+		F.showMem();
 		add100( false, true );
+		F.showMem();
 		add100( false, true );
+		F.showMem();
 		add100( false, true );
+		F.showMem();
 		check100();
+		F.showMem();
 		t1.stop();
 		System.out.println( "all above adds/check (aka part2) executed in " + t1.getDeltaPrintFriendly() );
 	}
