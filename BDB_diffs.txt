@@ -1,0 +1,55 @@
+bdb-native aka DB
+bdb java edition aka JE
+bdb-native via jni aka JNI
+
+some quotes from the web, to identify some of the differences between BDB variants:
+ie. from here: http://dbaspot.com/berkeley-db/265171-java-jni-api-versus-java-edition.html
+and here: http://download.oracle.com/docs/cd/E17076_02/html/programmer_reference/am_conf_select.html
+
+1. DB is file+log and JE is log-only.
+The JNI will be a factor, copying bytes in and out is not cheap.
+
+Due to the fact that DB is written for the LCD in a ANSI C world
+threads were not available. That and the difference in architecture
+between the products lead to the 5% difference in API and
+implementation when switching between the two products (DB Java/JNI and
+BDB JE).
+
+2. Berkeley DB XML is written entirely in C++ as a layer on top of Berkeley DB.
+to use BDB XML you must go the native route and use DB
+
+3. there is more house keeping for your application to do when you use DB.
+
+4. there are a few times when you absolutely must use Btree:
+
+    If you want to use bulk put and get operations.
+
+    If having your database clustered on sort order is important to you.
+
+    If you want to be able to create records using cursors.
+
+    If you have multiple threads/processes simultaneously creating new records, and you want to be able to efficiently iterate 
+    over those records using a cursor.
+
+But beyond those limitations, there are some application characteristics that should cause you to suspect that Heap will work 
+better for your application than Btree. They are:
+
+    Your application will run in an environment with constrained resources and you want to set a hard limit on the size of the 
+    database file.
+
+    You want to limit the disk space growth of your database file, and your application performs a roughly equivalent number of 
+    record creations and deletions.
+
+    Inserts into a Btree require sorting the new record onto its proper page. This operation can require multiple page reads. 
+    A Heap database can simply reuse whatever empty page space it can find in the cache. Insert-intensive applications will
+     typically find that Heap is much more efficient than Btree, especially as the size of the database increases.
+
+the Btree access method should be used when there is any locality of reference among keys. Locality of reference means that 
+accessing one particular key in the Btree implies that the application is more likely to access keys near to the key being
+ accessed, where "near" is defined by the sort order. For example, if keys are timestamps, and it is likely that a request for 
+ an 8AM timestamp will be followed by a request for a 9AM timestamp, the Btree access method is generally the right choice.
+ 
+there is no locality of reference for the Hash access method, and so key "AAAAA" is as likely to be stored on the same database 
+ page with key "ZZZZZ" as with key "AAAAB" 
+In the Btree access method, because items are sorted, key "AAAAA" is far more likely to be near key "AAAAB" than key "ZZZZZ"
+
