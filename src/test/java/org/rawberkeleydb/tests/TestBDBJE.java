@@ -53,11 +53,42 @@ import com.sleepycat.je.*;
  * Project->Properties->Java Build Path->Order and Export
  * move db.jar on bottom such that je-4.1.10.jar is above it
  * this will make sure je's packages are seen first, but anything using db-native aka jni, won't compile
+ * 
+ * stats with 100% cpu limit:
+ * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\00000000.jdb`
+ * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\00000001.jdb`
+ * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\00000002.jdb`
+ * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\00000003.jdb`
+ * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\00000004.jdb`
+ * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\00000005.jdb`
+ * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\00000006.jdb`
+ * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\je.info.0`
+ * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\je.lck`
+ * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb`
+ * environment open took: 312 ms
+ * Database type: BTREE
+ * usedmem=8286688
+ * adding from [0 to 111800) add100 executed in: 2,589 ms
+ * usedmem=63260768
+ * adding from [0 to 111800) add100 executed in: 719 ms
+ * usedmem=47621000
+ * adding from [0 to 111800) add100 executed in: 624 ms
+ * usedmem=62159928
+ * adding from [111800 to 223600) add100 executed in: 2,576 ms
+ * usedmem=111540280
+ * adding from [223600 to 335400) add100 executed in: 2,606 ms
+ * usedmem=131992800
+ * adding from [335400 to 447200) add100 executed in: 2,263 ms
+ * usedmem=191929392
+ * checking from 0 to 447200 check100 executed in: 2,685 ms
+ * usedmem=185038032
+ * all above adds/check (aka part2) executed in 14,062 ms
+ * tearDown took: 157 ms
  */
 public class TestBDBJE {
 	
-	private static final boolean	ENABLE_TRANSACTIONS				= false;
-	private static final boolean	ENABLE_LOCKING					= false;
+	private static final boolean	ENABLE_TRANSACTIONS				= true;
+	private static final boolean	ENABLE_LOCKING					= true;
 	private static final long		BDBLOCK_TIMEOUT_MicroSeconds	= 3 * 1000000;
 	private static final String		secPrefix						= "secondary";
 	private static final String		dbName							= "theDBFileName";
@@ -65,6 +96,7 @@ public class TestBDBJE {
 	private static final int		HOWMANY							= 111800;
 	public static final LockMode	LOCK							= ENABLE_TRANSACTIONS ? LockMode.RMW : LockMode.DEFAULT;
 	public static final Durability	DUR								= Durability.COMMIT_NO_SYNC;
+	// COMMIT_NO_SYNC;
 	@SuppressWarnings( "unused" )
 	public static final LockMode	LOCKMODE						= ENABLE_TRANSACTIONS && ENABLE_LOCKING ? LockMode.RMW
 																		: LockMode.DEFAULT;
@@ -378,19 +410,137 @@ public class TestBDBJE {
 	private void setupBDBNativeEnv() throws DatabaseException {
 		envConf.setAllowCreate( true );
 		envConf.setLocking( ENABLE_LOCKING );
-		// envConf.setInitializeCDB( true );//this1of2
-		// envConf.setCDBLockAllDatabases( true );//this2of2 are unique and go together
-		
-		envConf.setLocking( ENABLE_TRANSACTIONS );
 		envConf.setLockTimeout( BDBLOCK_TIMEOUT_MicroSeconds, TimeUnit.MICROSECONDS );
+		
 		envConf.setTransactional( ENABLE_TRANSACTIONS );
-		envConf.setDurability( DUR );
+		envConf.setTxnTimeout( BDBLOCK_TIMEOUT_MicroSeconds, TimeUnit.MICROSECONDS );
+		// envConf.setDurability( DUR );
+		/*
+		 * with Durability.COMMIT_SYNC
+		 * environment open took: 952 ms
+		 * Database type: BTREE
+		 * usedmem=9036728
+		 * adding from [0 to 111800) add100 executed in: 9,828 ms
+		 * usedmem=72491536
+		 * adding from [0 to 111800) add100 executed in: 2,810 ms
+		 * usedmem=60221856
+		 * adding from [0 to 111800) add100 executed in: 2,544 ms
+		 * usedmem=56861064
+		 * adding from [111800 to 223600) add100 executed in: 9,392 ms
+		 * usedmem=109955520
+		 * adding from [223600 to 335400) add100 executed in: 9,455 ms
+		 * usedmem=129847840
+		 * adding from [335400 to 447200) add100 executed in: 8,737 ms
+		 * usedmem=189597248
+		 * checking from 0 to 447200 check100 executed in: 10,462 ms
+		 * usedmem=178351824
+		 * all above adds/check (aka part2) executed in 53,228 ms
+		 * tearDown took: 157 ms
+		 * 
+		 * with COMMIT_WRITE_NO_SYNC:
+		 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\00000000.jdb`
+		 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\00000001.jdb`
+		 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\00000002.jdb`
+		 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\00000003.jdb`
+		 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\00000004.jdb`
+		 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\00000005.jdb`
+		 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\00000006.jdb`
+		 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\je.info.0`
+		 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\je.lck`
+		 * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb`
+		 * environment open took: 905 ms
+		 * Database type: BTREE
+		 * usedmem=8258336
+		 * adding from [0 to 111800) add100 executed in: 9,688 ms
+		 * usedmem=63282600
+		 * adding from [0 to 111800) add100 executed in: 2,809 ms
+		 * usedmem=47604016
+		 * adding from [0 to 111800) add100 executed in: 2,512 ms
+		 * usedmem=62140336
+		 * adding from [111800 to 223600) add100 executed in: 9,272 ms
+		 * usedmem=110161480
+		 * adding from [223600 to 335400) add100 executed in: 9,299 ms
+		 * usedmem=125558464
+		 * adding from [335400 to 447200) add100 executed in: 9,481 ms
+		 * usedmem=151582720
+		 * checking from 0 to 447200 check100 executed in: 9,922 ms
+		 * usedmem=207294984
+		 * all above adds/check (aka part2) executed in 52,983 ms
+		 * tearDown took: 175 ms
+		 * 
+		 * with Durability.COMMIT_NO_SYNC
+		 * environment open took: 905 ms
+		 * Database type: BTREE
+		 * usedmem=8251704
+		 * adding from [0 to 111800) add100 executed in: 9,687 ms
+		 * usedmem=70062872
+		 * adding from [0 to 111800) add100 executed in: 2,856 ms
+		 * usedmem=55744592
+		 * adding from [0 to 111800) add100 executed in: 2,559 ms
+		 * usedmem=70976752
+		 * adding from [111800 to 223600) add100 executed in: 9,236 ms
+		 * usedmem=94128760
+		 * adding from [223600 to 335400) add100 executed in: 9,175 ms
+		 * usedmem=148089744
+		 * adding from [335400 to 447200) add100 executed in: 8,581 ms
+		 * usedmem=192569048
+		 * checking from 0 to 447200 check100 executed in: 10,593 ms
+		 * usedmem=152985496
+		 * all above adds/check (aka part2) executed in 52,719 ms
+		 * tearDown took: 191 ms
+		 */
+		envConf.setTxnWriteNoSync( true );
+		// envConf.setTxnNoSync( true );
+		/*
+		 * with envConf.setTxnNoSync( true );
+		 * environment open took: 920 ms
+		 * Database type: BTREE
+		 * usedmem=8275800
+		 * adding from [0 to 111800) add100 executed in: 9,625 ms
+		 * usedmem=63256056
+		 * adding from [0 to 111800) add100 executed in: 2,826 ms
+		 * usedmem=47617440
+		 * adding from [0 to 111800) add100 executed in: 2,513 ms
+		 * usedmem=62155104
+		 * adding from [111800 to 223600) add100 executed in: 9,205 ms
+		 * usedmem=111515752
+		 * adding from [223600 to 335400) add100 executed in: 9,299 ms
+		 * usedmem=131967920
+		 * adding from [335400 to 447200) add100 executed in: 8,394 ms
+		 * usedmem=190766384
+		 * checking from 0 to 447200 check100 executed in: 10,328 ms
+		 * usedmem=183359424
+		 * all above adds/check (aka part2) executed in 52,190 ms
+		 * tearDown took: 172 ms
+		 * 
+		 * with setTxnWriteNoSync( true )
+		 * environment open took: 905 ms
+		 * Database type: BTREE
+		 * usedmem=8255856
+		 * adding from [0 to 111800) add100 executed in: 9,626 ms
+		 * usedmem=70029176
+		 * adding from [0 to 111800) add100 executed in: 2,856 ms
+		 * usedmem=55810968
+		 * adding from [0 to 111800) add100 executed in: 2,560 ms
+		 * usedmem=71052888
+		 * adding from [111800 to 223600) add100 executed in: 9,283 ms
+		 * usedmem=94074392
+		 * adding from [223600 to 335400) add100 executed in: 9,174 ms
+		 * usedmem=148000920
+		 * adding from [335400 to 447200) add100 executed in: 8,581 ms
+		 * usedmem=192536888
+		 * checking from 0 to 447200 check100 executed in: 10,565 ms
+		 * usedmem=151696896
+		 * all above adds/check (aka part2) executed in 52,661 ms
+		 * tearDown took: 157 ms
+		 */
 		// envConf.setTxnNoSync( true );// XXX: should be false for consistency
 		// envConf.setTxnWriteNoSync( true );// can't use both
 		// envConf.setTxnNotDurable( true );
 		// envConf.setTxnNoWait( true );
 		// envConf.setTxnSnapshot( ENABLE_TRANSACTIONS );
-		envConf.setTxnTimeout( BDBLOCK_TIMEOUT_MicroSeconds, TimeUnit.MICROSECONDS );
+		envConf.setCacheMode( CacheMode.DEFAULT );
+		
 		//
 		// // envConf.setLogDirectory( logDirectory )
 		// envConf.setMaxLogFileSize( Integer.MAX_VALUE );//this allocated 2gig log
@@ -554,6 +704,7 @@ public class TestBDBJE {
 		if ( ENABLE_TRANSACTIONS ) {
 			final TransactionConfig txnConfig = new TransactionConfig();
 			txnConfig.setNoWait( true );
+			// txnConfig.setDurability( DUR ); // supposedly it's inherited from environment or else!
 			// txnConfig.setSync( true );
 			// txnConfig.set
 			t = env.beginTransaction( null, txnConfig );

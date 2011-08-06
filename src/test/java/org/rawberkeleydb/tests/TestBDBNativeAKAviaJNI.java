@@ -47,7 +47,61 @@ import com.sleepycat.db.*;
 
 
 /**
- *
+ * with 100%cpu limit:
+ * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000001`
+ * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\secondarytheDBFileName`
+ * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\theDBFileName`
+ * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\__db.001`
+ * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\__db.002`
+ * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\__db.003`
+ * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb`
+ * BDB2525 No log files found
+ * environment open took: 31 ms
+ * Database type: DatabaseType.BTREE
+ * usedmem=4118520
+ * adding from [0 to 111800) add100 executed in: 1,763 ms
+ * usedmem=4224168
+ * adding from [0 to 111800) add100 executed in: 407 ms
+ * usedmem=1099752
+ * adding from [0 to 111800) add100 executed in: 390 ms
+ * usedmem=2519952
+ * adding from [111800 to 223600) add100 executed in: 1,716 ms
+ * usedmem=1099728
+ * adding from [223600 to 335400) add100 executed in: 1,702 ms
+ * usedmem=4224264
+ * adding from [335400 to 447200) add100 executed in: 1,766 ms
+ * usedmem=2898744
+ * checking from 0 to 447200 check100 executed in: 1,797 ms
+ * usedmem=1196136
+ * all above adds/check (aka part2) executed in 9,541 ms
+ * tearDown took: 547 ms
+ * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000001`
+ * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\secondarytheDBFileName`
+ * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\theDBFileName`
+ * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\__db.001`
+ * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\__db.002`
+ * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\__db.003`
+ * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb`
+ * BDB2525 No log files found
+ * environment open took: 0 ms
+ * Database type: DatabaseType.HASH
+ * usedmem=1364632
+ * adding from [0 to 111800) add100 executed in: 7,457 ms
+ * usedmem=4563064
+ * adding from [0 to 111800) add100 executed in: 1,327 ms
+ * usedmem=1344472
+ * adding from [0 to 111800) add100 executed in: 1,328 ms
+ * usedmem=2764408
+ * adding from [111800 to 223600) add100 executed in: 8,097 ms
+ * usedmem=1439136
+ * adding from [223600 to 335400) add100 executed in: 7,021 ms
+ * usedmem=4563000
+ * adding from [335400 to 447200) add100 executed in: 10,185 ms
+ * usedmem=3143088
+ * checking from 0 to 447200 check100 executed in: 9,179 ms
+ * usedmem=1439120
+ * all above adds/check (aka part2) executed in 44,594 ms
+ * tearDown took: 750 ms
  */
 public class TestBDBNativeAKAviaJNI {
 	
@@ -1386,17 +1440,6 @@ public class TestBDBNativeAKAviaJNI {
 	
 	@SuppressWarnings( "unused" )
 	private void setupBDBNativeEnv() throws FileNotFoundException, DatabaseException {
-		envConf.setAllowCreate( true );
-		envConf.setLockDown( false );
-		envConf.setDirectDatabaseIO( false );// false here is twice as fast as true
-		envConf.setDirectLogIO( false );// XXX: and this
-		//
-		// // envConf.setEncrypted( password )
-		envConf.setOverwrite( false );
-		
-		envConf.setErrorStream( System.err );
-		envConf.setErrorPrefix( "junitBDBJNI:" );
-		
 		// useless:
 		envConf.setEventHandler( new EventHandlerAdapter() {
 			
@@ -1431,6 +1474,17 @@ public class TestBDBNativeAKAviaJNI {
 			}
 		} );
 		
+		
+		envConf.setAllowCreate( true );
+		envConf.setLockDown( false );
+		envConf.setDirectDatabaseIO( false );// false here is twice as fast as true
+		envConf.setDirectLogIO( false );// XXX: and this
+		//
+		// // envConf.setEncrypted( password )
+		envConf.setOverwrite( false );
+		
+		envConf.setErrorStream( System.err );
+		envConf.setErrorPrefix( "junitBDBJNI:" );
 		envConf.setHotbackupInProgress( false );
 		envConf.setInitializeCache( true );// XXX: experiment with this
 		// envConf.setInitializeCDB( true );//this1of2

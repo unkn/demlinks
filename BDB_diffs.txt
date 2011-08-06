@@ -64,3 +64,9 @@ thus:
 The method stringToEntry(String, DatabaseEntry) in the type StringBinding is not applicable for the arguments 
 (String, DatabaseEntry)
 
+6. from my own tests, 
+in bdb-native(using a .dll or .so library directly from java via jni), btree is 4.4 times faster than hash
+and bdb je is 1.45 times slower than bdb-native via jni
+bdb je(pure 100% java implementation of bdb) only knows btree btw
+
+7. bdb je doesn't know nested transactions, but bdb jni does;
