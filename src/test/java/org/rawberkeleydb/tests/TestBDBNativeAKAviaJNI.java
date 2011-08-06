@@ -112,11 +112,11 @@ public class TestBDBNativeAKAviaJNI {
 	// set all these 4 to true for consistency, but also lack of speed; all to false for max speed
 	private static final boolean	ENABLE_TRANSACTIONS				= true;
 	@SuppressWarnings( "unused" )
-	private static final boolean	DURABLE_TXNS					= false ? true : !ENABLE_TRANSACTIONS;
+	private static final boolean	DURABLE_TXNS					= true ? true : !ENABLE_TRANSACTIONS;
 	private static final boolean	ENABLE_LOCKING					= true;
 	@SuppressWarnings( "unused" )
 	// only enabled when transactions are enabled, and if that first bool is true
-	private static final boolean	MVC								= false ? ENABLE_TRANSACTIONS : false;
+	private static final boolean	MVC								= true ? ENABLE_TRANSACTIONS : false;
 	
 	
 	// hash dbtype fails for 1000; 800 works though
@@ -140,13 +140,14 @@ public class TestBDBNativeAKAviaJNI {
 	@SuppressWarnings( "unused" )
 	public static final LockMode	LOCKMODE						= ENABLE_TRANSACTIONS && ENABLE_LOCKING ? LockMode.RMW
 																		: LockMode.DEFAULT;
+	private static final boolean	NOWAIT							= false;
 	
 	
-	private Environment				env;
+	protected Environment			env;
 	private EnvironmentConfig		envConf;
 	private File					storeDir;
 	private SecondaryConfig			secAndPriConf;
-	private Database				priDb;
+	protected Database				priDb;
 	private SecondaryDatabase		secDb;
 	private int						leftOverForAdd100				= 0;
 	
@@ -1439,7 +1440,7 @@ public class TestBDBNativeAKAviaJNI {
 	
 	
 	@SuppressWarnings( "unused" )
-	private void setupBDBNativeEnv() throws FileNotFoundException, DatabaseException {
+	protected void setupBDBNativeEnv() throws FileNotFoundException, DatabaseException {
 		// useless:
 		envConf.setEventHandler( new EventHandlerAdapter() {
 			
@@ -1508,8 +1509,8 @@ public class TestBDBNativeAKAviaJNI {
 			// envConf.setTxnNoSync( true );// XXX: should be false for consistency
 			envConf.setTxnWriteNoSync( true );// can't use both
 			envConf.setTxnNotDurable( !DURABLE_TXNS );// fixed but prolly got overwritten by db's setting so no diff here
-			envConf.setTxnNoWait( true );
-			envConf.setTxnSnapshot( false && MVC );
+			envConf.setTxnNoWait( NOWAIT );
+			envConf.setTxnSnapshot( MVC );// basically no effect in speed
 			envConf.setTxnTimeout( BDBLOCK_TIMEOUT_MicroSeconds );
 		}
 		
@@ -1567,7 +1568,7 @@ public class TestBDBNativeAKAviaJNI {
 	}
 	
 	
-	private void setupBDBNativeDb( final DatabaseType dbtype ) {
+	protected void setupBDBNativeDb( final DatabaseType dbtype ) {
 		
 		secAndPriConf = new SecondaryConfig();
 		secAndPriConf.setAllowCreate( true );
@@ -1577,6 +1578,7 @@ public class TestBDBNativeAKAviaJNI {
 		secAndPriConf.setChecksum( true );// this has virtually no impact
 		// secConf.setEncrypted( password )
 		secAndPriConf.setMultiversion( MVC );
+		// secAndPriConf.setSnapshot( MVC );
 		secAndPriConf.setReverseSplitOff( false );
 		secAndPriConf.setTransactionNotDurable( !DURABLE_TXNS );// XXX: normally false
 		secAndPriConf.setUnsortedDuplicates( false );
@@ -1640,9 +1642,12 @@ public class TestBDBNativeAKAviaJNI {
 		}
 	}
 	
+	final DatabaseEntry	deKey	= new DatabaseEntry();
+	final DatabaseEntry	deData	= new DatabaseEntry();
 	
-	private void add100( final boolean firstTime, final boolean cont ) throws DatabaseException {
-		beginTxn();
+	
+	protected void add100( final boolean firstTime, final boolean cont ) throws DatabaseException {
+		final Transaction t = beginTxn();
 		addCheckTimer.start();
 		try {
 			// final TupleBinding<String> keyBinding = AllTupleBindings.getBinding( String.class );
@@ -1657,9 +1662,9 @@ public class TestBDBNativeAKAviaJNI {
 			for ( i = initial; i < final_; i++ ) {
 				final String key = "" + i;
 				// final Long data = new Long( i );
-				final DatabaseEntry deKey = new DatabaseEntry();
+				// final DatabaseEntry deKey = new DatabaseEntry();
+				// final DatabaseEntry deData = new DatabaseEntry();
 				StringBinding.stringToEntry( key, deKey );
-				final DatabaseEntry deData = new DatabaseEntry();
 				LongBinding.longToEntry( i, deData );
 				OperationStatus ret = null;
 				try {
@@ -1677,9 +1682,9 @@ public class TestBDBNativeAKAviaJNI {
 			// System.out.println( "leftover=" + leftOverForAdd100 );
 			
 			// System.out.println( "committing" );
-			commit();
+			commit( t );
 		} catch ( final Throwable t2 ) {
-			abort();
+			abort( t );
 			Q.rethrow( t2 );
 		}
 		addCheckTimer.stop();
@@ -1687,18 +1692,16 @@ public class TestBDBNativeAKAviaJNI {
 	}
 	
 	
-	private Transaction	t;
-	
-	
-	private void beginTxn() throws DatabaseException {
-		t = null;
+	protected Transaction beginTxn() throws DatabaseException {
 		if ( ENABLE_TRANSACTIONS ) {
 			final TransactionConfig txnConfig = new TransactionConfig();
-			txnConfig.setNoWait( true );
+			txnConfig.setNoWait( NOWAIT );
 			txnConfig.setSnapshot( MVC );
 			// txnConfig.setSync( true );
 			// txnConfig.set
-			t = env.beginTransaction( null, txnConfig );
+			return env.beginTransaction( null, txnConfig );
+		} else {
+			return null;
 		}
 	}
 	
@@ -1707,7 +1710,7 @@ public class TestBDBNativeAKAviaJNI {
 	 * @throws DatabaseException
 	 * 
 	 */
-	private void abort() throws DatabaseException {
+	protected void abort( final Transaction t ) throws DatabaseException {
 		if ( ENABLE_TRANSACTIONS ) {
 			t.abort();
 		}
@@ -1718,7 +1721,7 @@ public class TestBDBNativeAKAviaJNI {
 	 * @throws DatabaseException
 	 * 
 	 */
-	private void commit() throws DatabaseException {
+	protected void commit( final Transaction t ) throws DatabaseException {
 		if ( ENABLE_TRANSACTIONS ) {
 			t.commit();
 		}
@@ -1728,7 +1731,7 @@ public class TestBDBNativeAKAviaJNI {
 	
 	
 	private void check100() throws DatabaseException {
-		beginTxn();
+		final Transaction t = beginTxn();
 		addCheckTimer.start();
 		try {
 			// final TupleBinding<String> keyBinding = AllTupleBindings.getBinding( String.class );
@@ -1738,9 +1741,9 @@ public class TestBDBNativeAKAviaJNI {
 			for ( int i = 0; i < leftOverForAdd100; i++ ) {
 				final String key = "" + i;
 				// final Long data = new Long( i );
-				final DatabaseEntry deKey = new DatabaseEntry();
+				// final DatabaseEntry deKey = new DatabaseEntry();
+				// final DatabaseEntry deData = new DatabaseEntry();
 				StringBinding.stringToEntry( key, deKey );
-				final DatabaseEntry deData = new DatabaseEntry();
 				LongBinding.longToEntry( i, deData );
 				OperationStatus ret = null;
 				try {
@@ -1757,9 +1760,9 @@ public class TestBDBNativeAKAviaJNI {
 			}// for
 			
 			// System.out.println( "committing" );
-			commit();
+			commit( t );
 		} catch ( final Throwable t2 ) {
-			abort();
+			abort( t );
 			
 			Q.rethrow( t2 );
 		}
@@ -1776,6 +1779,7 @@ public class TestBDBNativeAKAviaJNI {
 	}
 	
 	
+	@Ignore
 	@Test
 	public void testHash() throws DatabaseException, FileNotFoundException {
 		setupBDBNativeEnv();
