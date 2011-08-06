@@ -55,21 +55,105 @@ public class Test1 {
 	private static final boolean	ENABLE_TRANSACTIONS				= true;
 	private static final long		BDBLOCK_TIMEOUT_MicroSeconds	= 3 * 1000000;
 	private static final String		secPrefix						= "secondary";
-	private static final String		dbName							= "avalidfilename";
+	private static final String		dbName							= "theDBFileName";
+	// hash dbtype fails for 1000
+	private static final int		HOWMANY							= 800;
+	public static final LockMode	LOCK							= ENABLE_TRANSACTIONS ? LockMode.RMW : LockMode.DEFAULT;
+	
 	private Environment				env;
 	private EnvironmentConfig		envConf;
 	private File					storeDir;
 	private SecondaryConfig			secAndPriConf;
 	private Database				priDb;
 	private SecondaryDatabase		secDb;
+	private int						leftOverForAdd100				= 0;
 	
 	
 	@Before
-	public void setUp() throws FileNotFoundException, DatabaseException {
+	public void setUp() {
 		storeDir = new File( JUnitConstants.BDB_ENVIRONMENT_STORE_DIR );
+		F.delFileOrTree( storeDir );
 		storeDir.mkdirs();
 		envConf = new EnvironmentConfig();
 		
+	}
+	
+	
+	private void setup1Db( final DatabaseType dbtype ) {
+		
+		secAndPriConf = new SecondaryConfig();
+		secAndPriConf.setAllowCreate( true );
+		secAndPriConf.setAllowPopulate( false );// not needed tho, only populated if sec is empty but pri isn't
+		secAndPriConf.setType( dbtype );
+		System.out.println( "Database type: " + dbtype );
+		secAndPriConf.setChecksum( true );// this has virtually no impact
+		// secConf.setEncrypted( password )
+		secAndPriConf.setMultiversion( false );
+		secAndPriConf.setReverseSplitOff( false );
+		secAndPriConf.setTransactionNotDurable( false );
+		secAndPriConf.setUnsortedDuplicates( false );
+		// secAndPriConf.setDeferredWrite( false );
+		// secAndPriConf.setForeignKeyDatabase( null );TODO:bdb method bugged for null param; report this!
+		secAndPriConf.setExclusiveCreate( false );
+		secAndPriConf.setImmutableSecondaryKey( false );// XXX: investigate if true is needed here
+		secAndPriConf.setReadOnly( false );
+		secAndPriConf.setSortedDuplicates( false );// must be false
+		// secConf.setTemporary( false );
+		secAndPriConf.setTransactional( ENABLE_TRANSACTIONS );
+		
+		assert !secAndPriConf.getSortedDuplicates();
+		assert !secAndPriConf.getUnsortedDuplicates();
+		assert !secAndPriConf.getReverseSplitOff();
+		secAndPriConf.setKeyCreator( new SecondaryKeyCreator() {
+			
+			@Override
+			public boolean createSecondaryKey( final SecondaryDatabase secondary, final DatabaseEntry key,
+												final DatabaseEntry data, final DatabaseEntry result ) {
+				
+				// if ( data.getData().length != data.getSize() ) {
+				// XXX: this happens with bdb native (ie. .dll version) but not with bdb je aka java edition version
+				// Q.warn( "len=" + data.getData().length + " size=" + data.getSize() + " data=" + data );
+				// }
+				// assert data.getData().length == data.getSize() : "len=" + data.getData().length + " size=" + data.getSize()
+				// + " data=" + data;
+				// XXX: looks like length and size can differ ie. 8 vs 100, maybe latter is with padding
+				result.setData( data.getData() );
+				result.setSize( data.getSize() );// this seems useless but let above assert check that for us
+				
+				// System.out.println( key + "!" + data + "!" + result );
+				return true;
+			}
+		} );
+		
+		
+		
+		// pri db
+		try {
+			priDb = env.openDatabase(
+			// BETransaction.getCurrentTransaction( _env ),
+				null,
+				dbName,
+				null,
+				secAndPriConf/*
+							 * using the same conf from secondary, but it will be treated as just a simple DatabaseConfig
+							 * instead
+							 */
+			);
+			secDb = env.openSecondaryDatabase( null,
+			// BETransaction.getCurrentTransaction( _env ),
+				secPrefix + dbName,
+				null,
+				priDb,
+				secAndPriConf );
+		} catch ( final FileNotFoundException e ) {
+			throw Q.rethrow( e );
+		} catch ( final DatabaseException e ) {
+			throw Q.rethrow( e );
+		}
+	}
+	
+	
+	private void setup1Env() throws FileNotFoundException, DatabaseException {
 		envConf.setAllowCreate( true );
 		envConf.setLockDown( false );
 		envConf.setDirectDatabaseIO( true );// XXX: experiment with this!
@@ -166,7 +250,7 @@ public class Test1 {
 		//
 		envConf.setReplicationInMemory( false );
 		//
-		// envConf.setSystemMemory( true );// XXX: experiment, this fails
+		envConf.setSystemMemory( true );// XXX: experiment, this fails
 		//
 		// // envConf.setTemporaryDirectory( temporaryDirectory )
 		envConf.setThreaded( true );
@@ -181,83 +265,18 @@ public class Test1 {
 		envConf.setVerbose( VerboseConfig.REGISTER, true );
 		envConf.setVerbose( VerboseConfig.REPLICATION, true );
 		
+		final Timer timed = new Timer( Timer.TYPE.MILLIS );
+		timed.start();
 		env = new Environment( storeDir, envConf );
-		
-		
-		secAndPriConf = new SecondaryConfig();
-		secAndPriConf.setAllowCreate( true );
-		secAndPriConf.setAllowPopulate( true );// not needed tho, only populated if sec is empty but pri isn't
-		secAndPriConf.setType( DatabaseType.HASH );// XXX: check if BTREE is better? ie. via some benchmark sometime in the
-													// future
-		secAndPriConf.setChecksum( true );
-		// secConf.setEncrypted( password )
-		secAndPriConf.setMultiversion( false );
-		secAndPriConf.setReverseSplitOff( false );
-		secAndPriConf.setTransactionNotDurable( false );
-		secAndPriConf.setUnsortedDuplicates( false );
-		// secAndPriConf.setDeferredWrite( false );
-		// secAndPriConf.setForeignKeyDatabase( null );TODO:bdb method bugged for null param; report this!
-		secAndPriConf.setExclusiveCreate( false );
-		secAndPriConf.setImmutableSecondaryKey( false );// XXX: investigate if true is needed here
-		secAndPriConf.setReadOnly( false );
-		secAndPriConf.setSortedDuplicates( false );// must be false
-		// secConf.setTemporary( false );
-		secAndPriConf.setTransactional( BDBEnvironment.ENABLE_TRANSACTIONS );
-		
-		assert !secAndPriConf.getSortedDuplicates();
-		assert !secAndPriConf.getUnsortedDuplicates();
-		assert !secAndPriConf.getReverseSplitOff();
-		secAndPriConf.setKeyCreator( new SecondaryKeyCreator() {
-			
-			@Override
-			public boolean createSecondaryKey( final SecondaryDatabase secondary, final DatabaseEntry key,
-												final DatabaseEntry data, final DatabaseEntry result ) {
-				
-				// if ( data.getData().length != data.getSize() ) {
-				// XXX: this happens with bdb native (ie. .dll version) but not with bdb je aka java edition version
-				// Q.warn( "len=" + data.getData().length + " size=" + data.getSize() + " data=" + data );
-				// }
-				// assert data.getData().length == data.getSize() : "len=" + data.getData().length + " size=" + data.getSize()
-				// + " data=" + data;
-				// XXX: looks like length and size can differ ie. 8 vs 100, maybe latter is with padding
-				result.setData( data.getData() );
-				result.setSize( data.getSize() );// this seems useless but let above assert check that for us
-				
-				// System.out.println( key + "!" + data + "!" + result );
-				return true;
-			}
-		} );
-		
-		
-		
-		// pri db
-		try {
-			priDb = env.openDatabase(
-			// BETransaction.getCurrentTransaction( _env ),
-				null,
-				dbName,
-				null,
-				secAndPriConf/*
-							 * using the same conf from secondary, but it will be treated as just a simple DatabaseConfig
-							 * instead
-							 */
-			);
-			secDb = env.openSecondaryDatabase( null,
-			// BETransaction.getCurrentTransaction( _env ),
-				secPrefix + dbName,
-				null,
-				priDb,
-				secAndPriConf );
-		} catch ( final FileNotFoundException e ) {
-			throw Q.rethrow( e );
-		} catch ( final DatabaseException e ) {
-			throw Q.rethrow( e );
-		}
+		timed.stop();
+		System.out.println( "environment open took: " + timed.getDeltaPrintFriendly() );
 	}
 	
 	
 	@After
 	public void tearDown() throws DatabaseException {
+		final Timer timed = new Timer( Timer.TYPE.MILLIS );
+		timed.start();
 		if ( null != secDb ) {
 			secDb.close();
 		}
@@ -268,32 +287,156 @@ public class Test1 {
 		if ( null != env ) {
 			env.close();
 		}
-		F.delFileOrTree( storeDir );
+		timed.stop();
+		System.out.println( "tearDown took: " + timed.getDeltaPrintFriendly() );
+	}
+	
+	
+	private void add100( final boolean firstTime, final boolean cont ) throws DatabaseException {
+		final Timer timed = new Timer( Timer.TYPE.MILLIS );
+		final TransactionConfig txnConfig = new TransactionConfig();
+		txnConfig.setNoWait( true );
+		txnConfig.setSnapshot( true );
+		// txnConfig.set
+		
+		timed.start();
+		Transaction t = null;
+		if ( ENABLE_TRANSACTIONS ) {
+			t = env.beginTransaction( null, txnConfig );
+		}
+		try {
+			final TupleBinding<String> keyBinding = AllTupleBindings.getBinding( String.class );
+			final TupleBinding<Long> dataBinding = AllTupleBindings.getBinding( Long.class );
+			int initial = 0;
+			if ( cont ) {
+				initial = leftOverForAdd100;
+			}
+			int i;
+			final int final_ = ( initial + HOWMANY );
+			System.out.print( "adding from [" + initial + " to " + final_ + ") " );
+			for ( i = initial; i < final_; i++ ) {
+				final String key = "" + i;
+				final Long data = new Long( i );
+				final DatabaseEntry deKey = new DatabaseEntry();
+				keyBinding.objectToEntry( key, deKey );
+				final DatabaseEntry deData = new DatabaseEntry();
+				dataBinding.objectToEntry( data, deData );
+				OperationStatus ret = null;
+				try {
+					ret = priDb.putNoOverwrite( t, deKey, deData );
+				} catch ( final DatabaseException e ) {
+					Q.rethrow( e );
+				}
+				// System.out.println( ret );
+				assert ( ( firstTime || cont ) && ( ret == OperationStatus.SUCCESS ) )
+					|| ( ( !firstTime ) && ( ret == OperationStatus.KEYEXIST ) );
+				// ret.equals( OperationStatus.KEYEXIST )
+				
+			}// for
+			leftOverForAdd100 = i;
+			// System.out.println( "leftover=" + leftOverForAdd100 );
+			
+			// System.out.println( "committing" );
+			if ( null != t ) {
+				t.commit();
+			}
+		} catch ( final Throwable t2 ) {
+			if ( null != t ) {
+				t.abort();
+			}
+			Q.rethrow( t2 );
+		}
+		timed.stop();
+		System.out.println( "add100 executed in: " + timed.getDeltaPrintFriendly() );
+	}
+	
+	
+	private void check100() throws DatabaseException {
+		final Timer timed = new Timer( Timer.TYPE.MILLIS );
+		final TransactionConfig txnConfig = new TransactionConfig();
+		txnConfig.setNoWait( true );
+		txnConfig.setSnapshot( true );
+		// txnConfig.set
+		
+		timed.start();
+		Transaction t = null;
+		if ( ENABLE_TRANSACTIONS ) {
+			t = env.beginTransaction( null, txnConfig );
+		}
+		try {
+			final TupleBinding<String> keyBinding = AllTupleBindings.getBinding( String.class );
+			final TupleBinding<Long> dataBinding = AllTupleBindings.getBinding( Long.class );
+			
+			System.out.print( "checking from 0 to " + leftOverForAdd100 + " " );
+			for ( int i = 0; i < leftOverForAdd100; i++ ) {
+				final String key = "" + i;
+				final Long data = new Long( i );
+				final DatabaseEntry deKey = new DatabaseEntry();
+				keyBinding.objectToEntry( key, deKey );
+				final DatabaseEntry deData = new DatabaseEntry();
+				dataBinding.objectToEntry( data, deData );
+				OperationStatus ret = null;
+				try {
+					ret = priDb.get( t, deKey, deData, LOCK );
+				} catch ( final DatabaseException e ) {
+					Q.rethrow( e );
+				}
+				// System.out.println( ret );
+				assert ret == OperationStatus.SUCCESS;
+				final Long data2 = dataBinding.entryToObject( deData );
+				assert data.equals( data2 );
+				assert data != data2;
+				// ret.equals( OperationStatus.KEYEXIST )
+				
+			}// for
+			
+			// System.out.println( "committing" );
+			if ( null != t ) {
+				t.commit();
+			}
+		} catch ( final Throwable t2 ) {
+			if ( null != t ) {
+				t.abort();
+			}
+			Q.rethrow( t2 );
+		}
+		timed.stop();
+		System.out.println( "check100 executed in: " + timed.getDeltaPrintFriendly() );
 	}
 	
 	
 	@Test
-	public void test1() {
-		final TupleBinding<String> keyBinding = AllTupleBindings.getBinding( String.class );
-		final TupleBinding<Long> dataBinding = AllTupleBindings.getBinding( Long.class );
-		
-		final int n = 100;// 100 takes 0.8->1 seconds
-		for ( int i = 0; i < n; i++ ) {
-			final String key = "" + i;
-			final Long data = new Long( i );
-			final DatabaseEntry deKey = new DatabaseEntry();
-			keyBinding.objectToEntry( key, deKey );
-			final DatabaseEntry deData = new DatabaseEntry();
-			dataBinding.objectToEntry( data, deData );
-			OperationStatus ret = null;
-			try {
-				ret = priDb.putNoOverwrite( null, deKey, deData );
-			} catch ( final DatabaseException e ) {
-				Q.rethrow( e );
-			}
-			// System.out.println( ret );
-			assert ret == OperationStatus.SUCCESS;
-			// ret.equals( OperationStatus.KEYEXIST )
-		}// for
+	public void testBTree() throws DatabaseException, FileNotFoundException {
+		setup1Env();
+		setup1Db( DatabaseType.BTREE );
+		part2();
+	}
+	
+	
+	/**
+	 * @throws DatabaseException
+	 * 
+	 */
+	private void part2() throws DatabaseException {
+		leftOverForAdd100 = 0;
+		final Timer t1 = new Timer( Timer.TYPE.MILLIS );
+		t1.start();
+		add100( true, true );
+		add100( false, false );
+		add100( false, false );
+		add100( false, true );
+		add100( false, true );
+		add100( false, true );
+		check100();
+		t1.stop();
+		System.out.println( "all above adds/check (aka part2) executed in " + t1.getDeltaPrintFriendly() );
+	}
+	
+	
+	@Test
+	public void testHash() throws DatabaseException, FileNotFoundException {
+		setup1Env();
+		setup1Db( DatabaseType.HASH );
+		part2();
 	}
 }
