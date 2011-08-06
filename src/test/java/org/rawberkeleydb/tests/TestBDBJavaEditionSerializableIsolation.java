@@ -34,13 +34,11 @@
  */
 package org.rawberkeleydb.tests;
 
-import java.io.*;
-
 import org.junit.*;
 import org.q.*;
 
 import com.sleepycat.bind.tuple.*;
-import com.sleepycat.db.*;
+import com.sleepycat.je.*;
 
 
 
@@ -49,11 +47,11 @@ import com.sleepycat.db.*;
  * the current open transaction can see the data from the last revision, rather than the data from the same revision of the db
  * that was existing at the time the txn was created
  */
-public class TestJNISerializable {
+public class TestBDBJavaEditionSerializableIsolation {
 	
 	// won't work for 100 or less, due to locks being granted on a per page(ie. 512bytes?) basis; ie. dbpage
-	private static final int				HOWMANY	= 1000;
-	private final TestBDBNativeAKAviaJNI	x		= new TestBDBNativeAKAviaJNI();
+	private static final int	HOWMANY	= 2;
+	private final TestBDBJE		x		= new TestBDBJE();
 	
 	
 	@Before
@@ -72,25 +70,25 @@ public class TestJNISerializable {
 	private Transaction	parent;
 	
 	
-	@Test
-	public void test1AsSiblingsOfParentTxn() throws DatabaseException, FileNotFoundException {
-		x.setupBDBNativeEnv();
-		x.setupBDBNativeDb( DatabaseType.BTREE );
-		parent = x.beginTxn( null );
-		try {
-			whole();
-			x.commit( parent );
-		} catch ( final Throwable t ) {
-			x.abort( parent );
-			Q.rethrow( t );
-		}
-	}
+	// @Test
+	// public void test1AsSiblingsOfParentTxn() throws DatabaseException {
+	// x.setupBDBNativeEnv();
+	// x.setupBDBNativeDb();
+	// parent = x.beginTxn( null );
+	// try {
+	// whole();
+	// x.commit( parent );
+	// } catch ( final Throwable t ) {
+	// x.abort( parent );
+	// Q.rethrow( t );
+	// }
+	// }
 	
 	
 	@Test
-	public void test2WithoutExplicitParentTxn() throws DatabaseException, FileNotFoundException {
+	public void test2WithoutExplicitParentTxn() throws DatabaseException {
 		x.setupBDBNativeEnv();
-		x.setupBDBNativeDb( DatabaseType.BTREE );
+		x.setupBDBNativeDb();
 		parent = null;
 		whole();
 	}
@@ -140,19 +138,13 @@ public class TestJNISerializable {
 			final DatabaseEntry lastData = new DatabaseEntry();
 			LongBinding.longToEntry( last, lastKey );
 			final OperationStatus ret3 = x.priDb.get( t, lastKey, lastData, LockMode.RMW );
-			// XXX: bdb bug? if LockMode.RMW here, it will kill the lock:
-			// BDB0068 DB_LOCK_DEADLOCK: Locker killed to resolve a deadlock: BDB0068 DB_LOCK_DEADLOCK: Locker killed to
-			// resolve
-			// a deadlock
-			// but this works with: LockMode.DEFAULT
-			// all this only when txndur is set aka DURABLE_TXNS set to true
 			
 			assert ret == OperationStatus.SUCCESS;
 			try {
 				if ( LongBinding.entryToLong( lastData ) != last ) {
-					Q.bug( "as expected" );
+					Q.bug( "just as expected" );
 				}
-				Q.fail();// not expected
+				Q.fail();// this isn't expected!
 			} catch ( final BugError ae ) {
 				// good as expected, this means:
 				// the current txn "t" doesn't snapshot see the db
@@ -179,7 +171,7 @@ public class TestJNISerializable {
 			
 			final long newValue = HOWMANY + 1;
 			LongBinding.longToEntry( newValue, lastData );
-			lastData.setReadOnly( true );
+			// lastData.setReadOnly( true );
 			OperationStatus ret4 = x.priDb.put( parallelTxn, lastKey, lastData );
 			assert ret4 == OperationStatus.SUCCESS;
 			ret4 = null;

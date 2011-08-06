@@ -95,7 +95,7 @@ public class TestBDBJE {
 	// hash dbtype fails for 1000
 	private static final int		HOWMANY							= 111800;
 	public static final LockMode	LOCK							= ENABLE_TRANSACTIONS ? LockMode.RMW : LockMode.DEFAULT;
-	public static final Durability	DUR								= Durability.COMMIT_NO_SYNC;
+	public static final Durability	DUR								= Durability.COMMIT_WRITE_NO_SYNC;
 	// COMMIT_NO_SYNC;
 	@SuppressWarnings( "unused" )
 	public static final LockMode	LOCKMODE						= ENABLE_TRANSACTIONS && ENABLE_LOCKING ? LockMode.RMW
@@ -106,7 +106,7 @@ public class TestBDBJE {
 	private EnvironmentConfig		envConf;
 	private File					storeDir;
 	private SecondaryConfig			secAndPriConf;
-	private Database				priDb;
+	protected Database				priDb;
 	private SecondaryDatabase		secDb;
 	private int						leftOverForAdd100				= 0;
 	
@@ -407,14 +407,14 @@ public class TestBDBJE {
 	
 	
 	
-	private void setupBDBNativeEnv() throws DatabaseException {
+	protected void setupBDBNativeEnv() throws DatabaseException {
 		envConf.setAllowCreate( true );
 		envConf.setLocking( ENABLE_LOCKING );
 		envConf.setLockTimeout( BDBLOCK_TIMEOUT_MicroSeconds, TimeUnit.MICROSECONDS );
 		
 		envConf.setTransactional( ENABLE_TRANSACTIONS );
 		envConf.setTxnTimeout( BDBLOCK_TIMEOUT_MicroSeconds, TimeUnit.MICROSECONDS );
-		// envConf.setDurability( DUR );
+		envConf.setDurability( DUR );
 		/*
 		 * with Durability.COMMIT_SYNC
 		 * environment open took: 952 ms
@@ -489,7 +489,7 @@ public class TestBDBJE {
 		 * all above adds/check (aka part2) executed in 52,719 ms
 		 * tearDown took: 191 ms
 		 */
-		envConf.setTxnWriteNoSync( true );
+		// envConf.setTxnWriteNoSync( true );
 		// envConf.setTxnNoSync( true );
 		/*
 		 * with envConf.setTxnNoSync( true );
@@ -567,7 +567,7 @@ public class TestBDBJE {
 	}
 	
 	
-	private void setupBDBNativeDb() {
+	protected void setupBDBNativeDb() {
 		
 		secAndPriConf = new SecondaryConfig();
 		secAndPriConf.setAllowCreate( true );
@@ -651,7 +651,7 @@ public class TestBDBJE {
 	
 	
 	private void add100( final boolean firstTime, final boolean cont ) throws DatabaseException {
-		beginTxn();
+		final Transaction t = beginTxn( null );
 		addCheckTimer.start();
 		try {
 			// final TupleBinding<String> keyBinding = AllTupleBindings.getBinding( String.class );
@@ -686,9 +686,9 @@ public class TestBDBJE {
 			// System.out.println( "leftover=" + leftOverForAdd100 );
 			
 			// System.out.println( "committing" );
-			commit();
+			commit( t );
 		} catch ( final Throwable t2 ) {
-			abort();
+			abort( t );
 			Q.rethrow( t2 );
 		}
 		addCheckTimer.stop();
@@ -696,18 +696,17 @@ public class TestBDBJE {
 	}
 	
 	
-	private Transaction	t;
 	
-	
-	private void beginTxn() throws DatabaseException {
-		t = null;
+	protected Transaction beginTxn( final Transaction parent ) throws DatabaseException {
 		if ( ENABLE_TRANSACTIONS ) {
 			final TransactionConfig txnConfig = new TransactionConfig();
 			txnConfig.setNoWait( true );
 			// txnConfig.setDurability( DUR ); // supposedly it's inherited from environment or else!
 			// txnConfig.setSync( true );
 			// txnConfig.set
-			t = env.beginTransaction( null, txnConfig );
+			return env.beginTransaction( parent, txnConfig );
+		} else {
+			return null;
 		}
 	}
 	
@@ -716,7 +715,7 @@ public class TestBDBJE {
 	 * @throws DatabaseException
 	 * 
 	 */
-	private void abort() throws DatabaseException {
+	protected void abort( final Transaction t ) throws DatabaseException {
 		if ( ENABLE_TRANSACTIONS ) {
 			t.abort();
 		}
@@ -727,7 +726,7 @@ public class TestBDBJE {
 	 * @throws DatabaseException
 	 * 
 	 */
-	private void commit() throws DatabaseException {
+	protected void commit( final Transaction t ) throws DatabaseException {
 		if ( ENABLE_TRANSACTIONS ) {
 			t.commit();
 		}
@@ -737,7 +736,7 @@ public class TestBDBJE {
 	
 	
 	private void check100() throws DatabaseException {
-		beginTxn();
+		final Transaction t = beginTxn( null );
 		addCheckTimer.start();
 		try {
 			// final TupleBinding<String> keyBinding = AllTupleBindings.getBinding( String.class );
@@ -766,9 +765,9 @@ public class TestBDBJE {
 			}// for
 			
 			// System.out.println( "committing" );
-			commit();
+			commit( t );
 		} catch ( final Throwable t2 ) {
-			abort();
+			abort( t );
 			
 			Q.rethrow( t2 );
 		}
