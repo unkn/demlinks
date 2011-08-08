@@ -3,6 +3,7 @@
  * Copyright (c) 2005-2011, AtKaaZ
  * All rights reserved.
  * this file is part of DemLinks
+ * File created on Aug 4, 2011 2:07:13 PM
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -31,27 +32,13 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.q;
+package org.dml.storage.bdb.exceptions;
 
 
 /**
  *
  */
 @SuppressWarnings( "serial" )
-public class BugError
-		extends Error
-{
+public class SequenceOverflow extends RuntimeException {
 	
-	public BugError( final String msg ) {
-		super( msg );
-	}
-	
-	
-	/**
-	 * @param msg
-	 * @param cause
-	 */
-	public BugError( final String msg, final Throwable cause ) {
-		super( msg, cause );
-	}
 }

@@ -3,6 +3,7 @@
  * Copyright (c) 2005-2011, AtKaaZ
  * All rights reserved.
  * this file is part of DemLinks
+ * File created on Aug 5, 2011 8:22:08 AM
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -31,27 +32,43 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.q;
+package org.dml.storage.bdbLevel1;
+
+import org.dml.storage.*;
+
+import com.sleepycat.bind.tuple.*;
+
 
 
 /**
  *
  */
-@SuppressWarnings( "serial" )
-public class BugError
-		extends Error
+public class BDBNodeBinding
+		extends GenericNodeBinding
+// extends TupleBinding<BDBNode>
 {
 	
-	public BugError( final String msg ) {
-		super( msg );
-	}
+	// /*
+	// * (non-Javadoc)
+	// *
+	// * @see com.sleepycat.bind.tuple.TupleBinding#objectToEntry(java.lang.Object, com.sleepycat.bind.tuple.TupleOutput)
+	// */
+	// @Override
+	// public void objectToEntry( final BDBNode node, final TupleOutput output ) {
+	// // assert Q.nn( node );no need, it will NPE below
+	// // assert Q.nn( output );same
+	// final long myLong = node.getId();
+	// output.writeLong( myLong );
+	// }
 	
 	
-	/**
-	 * @param msg
-	 * @param cause
-	 */
-	public BugError( final String msg, final Throwable cause ) {
-		super( msg, cause );
+	@Override
+	public BDBNode entryToObject( final TupleInput input ) {
+		// assert Q.nn( input);no need, it will NPE below anyway
+		final long fromLong = input.readLong();
+		final BDBNode node = BDBNode.getBDBNodeInstance( fromLong );
+		assert ( node.getId() == fromLong );// this also tests for null as you can see
+		return node;
 	}
+	
 }

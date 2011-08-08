@@ -31,27 +31,31 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.q;
+package org.dml.storage.bdbLevel2;
+
+import org.dml.storage.*;
+import org.dml.storage.bdbLevel1.*;
+
 
 
 /**
- *
+ * the pointer always points to something (from domain) thus it is never null aka pointing to nothing<br>
+ * in this regard it is non-null!
  */
-@SuppressWarnings( "serial" )
-public class BugError
-		extends Error
+public class L0NonNullDomainPointer_ToTerminal
+		extends L0DomainPointer_ToTerminal
 {
 	
-	public BugError( final String msg ) {
-		super( msg );
+	
+	public L0NonNullDomainPointer_ToTerminal( final BDBStorage env1, final GenericNode selfNode, final GenericNode domainNode ) {
+		super( env1, selfNode, domainNode );
+		// XXX: do NOT check for integrity, ie. don't check if terminal is not null and in domain!
 	}
 	
 	
-	/**
-	 * @param msg
-	 * @param cause
-	 */
-	public BugError( final String msg, final Throwable cause ) {
-		super( msg, cause );
+	@Override
+	public boolean isValidTerminal( final GenericNode terminalNode ) {
+		return ( null != terminalNode ) && ( super.isValidTerminal( terminalNode ) );
 	}
+	
 }

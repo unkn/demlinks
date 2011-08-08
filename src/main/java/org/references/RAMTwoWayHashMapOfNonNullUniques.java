@@ -57,7 +57,7 @@ import org.toolza.*;
  *            unique & never null
  * 
  */
-public class RAMTwoWayHashMapOfNonNullUniques<KEY, DATA> extends BaseFor_ThreadSafeTwoWayMapOfUniques<KEY, DATA> {
+public class RAMTwoWayHashMapOfNonNullUniques<KEY, DATA> extends GenericThreadSafeTwoWayMapOfUniques_Base<KEY, DATA> {
 	
 	private final HashMap<KEY, DATA>	mapKeyData	= new HashMap<KEY, DATA>();
 	private final HashMap<DATA, KEY>	mapDataKey	= new HashMap<DATA, KEY>();

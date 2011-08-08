@@ -39,26 +39,28 @@ import static org.junit.Assert.*;
 
 import java.util.*;
 
-import org.bdbLevel1.*;
-import org.bdbLevel2.*;
+import org.dml.storage.*;
+import org.dml.storage.bdbLevel1.*;
+import org.dml.storage.bdbLevel2.*;
 import org.junit.*;
 import org.q.*;
 import org.toolza.Timer;
 
 
 
-public class TestSetOfNodes {
+public class TestSetOfNodes
+{
 	
-	private BDBEnvironment		env;
+	private BDBStorage			env;
 	private L0Set_OfTerminals	set1;
-	private BDBNode				setInitial;
+	private GenericNode			setInitial;
 	
 	
 	@Before
 	public void setUp() {
 		final Timer t = new Timer( Timer.TYPE.MILLIS );
 		t.start();
-		env = new BDBEnvironment( JUnitConstants.BDB_ENVIRONMENT_STORE_DIR, true );
+		env = new BDBStorage( JUnitConstants.BDB_ENVIRONMENT_STORE_DIR, true );
 		setInitial = env.createNewUniqueNode();
 		set1 = new L0Set_OfTerminals( env, setInitial );
 		t.stop();
@@ -84,7 +86,7 @@ public class TestSetOfNodes {
 		t.start();
 		assertTrue( set1.size() == 0 );
 		
-		final BDBNode one = env.createNewUniqueNode();
+		final GenericNode one = env.createNewUniqueNode();
 		assertNotNull( one );
 		assertFalse( set1.ensureIsAddedToSet( one ) );
 		assertTrue( set1.size() == 1 );
@@ -101,20 +103,20 @@ public class TestSetOfNodes {
 		assertFalse( set1.contains( setInitial ) );
 		
 		final int startSize = set1.size();
-		final BDBNode two = env.createNewUniqueNode();
+		final GenericNode two = env.createNewUniqueNode();
 		assertNotNull( two );
 		assertTrue( two != one );
 		assertFalse( set1.ensureIsAddedToSet( two ) );
 		assertTrue( set1.size() == ( startSize + 1 ) );
 		assertTrue( env.isVector( set1.getSelf(), two ) );
 		
-		final BDBNode three = env.createNewUniqueNode();
+		final GenericNode three = env.createNewUniqueNode();
 		assertNotNull( three );
 		assertFalse( set1.ensureIsAddedToSet( three ) );
 		assertTrue( env.isVector( set1.getSelf(), three ) );
 		assertTrue( set1.size() == ( startSize + 2 ) );
 		
-		final IteratorOnTerminalNodes_InDualPriDBs iter = set1.getIterator();
+		final GenericIteratorOnTerminalNodes iter = set1.getIterator();
 		assertTrue( iter.goFirst().equals( one ) );
 		
 		assertNull( iter.goPrev() );// even tho errored here,
@@ -136,7 +138,7 @@ public class TestSetOfNodes {
 		
 		
 		
-		BDBNode now = iter.goFirst();
+		GenericNode now = iter.goFirst();
 		while ( now != null ) {
 			now = iter.goNext();
 		}
@@ -160,7 +162,7 @@ public class TestSetOfNodes {
 		assertTrue( iter.size() == 2 );
 		assertTrue( set1.size() == 2 );
 		// assertTrue( this.set1.remove( two ) );
-		final IteratorOnTerminalNodes_InDualPriDBs iter2 = iter;// this.set1.getIterator( );
+		final GenericIteratorOnTerminalNodes iter2 = iter;// this.set1.getIterator( );
 		// iter2.goFirst();
 		// while ( iter2.now() != null ) {
 		// System.out.println( "iter2=" + iter2.now() );
@@ -172,7 +174,7 @@ public class TestSetOfNodes {
 		assertNull( iter2.goPrev() );
 		now = iter2.goTo( three );
 		assertNull( iter2.goNext() );
-		final BDBNode now2 = iter2.goTo( three );
+		final GenericNode now2 = iter2.goTo( three );
 		assertTrue( now != now2 );// diff instances, always returning new BerkNodeAdapter()
 		assertTrue( now.equals( now2 ) );
 		
@@ -189,11 +191,11 @@ public class TestSetOfNodes {
 		assertFalse( env.isVector( set1.getSelf(), three ) );
 		assertTrue( iter2.size() == 1 );
 		
-		
-		iter2.finished( true );
+		iter2.success();
+		iter2.finished();
 		assertFalse( env.isVector( set1.getSelf(), three ) );
 		
-		final BDBNode dsotInitial = env.createNewUniqueNode();
+		final GenericNode dsotInitial = env.createNewUniqueNode();
 		final L0DomainSet_OfTerminals dsot = new L0DomainSet_OfTerminals( env, dsotInitial, setInitial );
 		assertTrue( set1.getSelf().equals( setInitial ) );
 		try {
@@ -325,7 +327,7 @@ public class TestSetOfNodes {
 	
 	@Test
 	public void testAlreadyExisting() {
-		final BDBNode l1 = env.createNewUniqueNode();
+		final GenericNode l1 = env.createNewUniqueNode();
 		assertNotNull( l1 );
 		final L0Set_OfTerminals sos = new L0Set_OfTerminals( env, set1.getSelf() );
 		assertFalse( set1.ensureIsAddedToSet( l1 ) );
@@ -344,7 +346,7 @@ public class TestSetOfNodes {
 		assertTrue( sos2 != set1 );
 		assertTrue( sos != sos2 );
 		
-		final BDBNode domain = env.createNewUniqueNode();
+		final GenericNode domain = env.createNewUniqueNode();
 		L0Set_OfTerminals dsos;
 		// doesn't check integrity, thus not throws here:
 		dsos = new L0DomainSet_OfTerminals( env, sos2.getSelf(), domain );
@@ -366,14 +368,14 @@ public class TestSetOfNodes {
 	
 	@Test
 	public void testPointer() {
-		final BDBNode ptrInitial = env.createNewUniqueNode();
+		final GenericNode ptrInitial = env.createNewUniqueNode();
 		assertNotNull( ptrInitial );
 		final L0Pointer_ToTerminal ptr = new L0Pointer_ToTerminal( env, ptrInitial );
 		assertTrue( ptr.getSelf().equals( ptrInitial ) );
 		assertTrue( ptr.getSelf() != ptrInitial );
 		assertNull( ptr.getPointeeTerminal() );
 		
-		final BDBNode newL = env.createNewUniqueNode();
+		final GenericNode newL = env.createNewUniqueNode();
 		assertNotNull( newL );
 		assertFalse( env.ensureVector( ptrInitial, newL ) );
 		

@@ -38,7 +38,8 @@ package org.q;
 /**
  *
  */
-public abstract class Q {
+public abstract class Q
+{
 	
 	private static final boolean	showFullInfo			= false;
 	private static final boolean	infoEnabled				= false;
@@ -128,7 +129,12 @@ public abstract class Q {
 	 * @return never
 	 */
 	public static BugError bug( final String msg ) {
-		final BugError ex = new BugError( msg );
+		throw bug( msg, null );
+	}
+	
+	
+	public static BugError bug( final String msg, final Throwable cause ) {
+		final BugError ex = new BugError( msg, cause );
 		showEx( ex );
 		throw ex;
 	}

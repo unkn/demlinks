@@ -31,27 +31,52 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.q;
+package org.dml.storage;
 
 
 /**
  *
  */
-@SuppressWarnings( "serial" )
-public class BugError
-		extends Error
-{
+public interface GenericStorage {
 	
-	public BugError( final String msg ) {
-		super( msg );
-	}
+	public GenericTransaction beginTransaction();
+	
+	
+	public void shutdown();
+	
+	
+	public void shutdown( boolean delete );
+	
+	
+	public GenericNode createOrGetNode( final String name );
+	
+	
+	public GenericNode getNode( final String name );
 	
 	
 	/**
-	 * @param msg
-	 * @param cause
+	 * @return never null
 	 */
-	public BugError( final String msg, final Throwable cause ) {
-		super( msg, cause );
-	}
+	public GenericNode createNewUniqueNode();
+	
+	
+	public void makeVector( final GenericNode initialNode, final GenericNode terminalNode );
+	
+	
+	/**
+	 * is? initialNode->terminalNode<br>
+	 * but terminalNode->initialNode is a different thing<br>
+	 * 
+	 * @param initialNode
+	 * @param terminalNode
+	 * @return
+	 */
+	public boolean isVector( final GenericNode initialNode, final GenericNode terminalNode );
+	
+	
+	/**
+	 * @param forNode
+	 * @return can be null if node has no associated name
+	 */
+	public String getName( final GenericNode forNode );
 }

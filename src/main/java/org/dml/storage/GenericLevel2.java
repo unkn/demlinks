@@ -31,27 +31,39 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.q;
+package org.dml.storage;
 
 
-/**
- *
- */
-@SuppressWarnings( "serial" )
-public class BugError
-		extends Error
+
+
+public interface GenericLevel2
 {
 	
-	public BugError( final String msg ) {
-		super( msg );
-	}
+	public boolean isVector( final GenericNode initialLong, final GenericNode terminalLong );
 	
 	
-	/**
-	 * @param msg
-	 * @param cause
-	 */
-	public BugError( final String msg, final Throwable cause ) {
-		super( msg, cause );
-	}
+	public void createNewVectorOrThrow( final GenericNode initialLong, final GenericNode terminalLong );
+	
+	
+	public boolean ensureVector( final GenericNode initialLong, final GenericNode terminalLong );
+	
+	
+	public boolean removeVector( final GenericNode initialObject, final GenericNode terminalObject );
+	
+	
+	public GenericIteratorOnTerminalNodes getIterator_on_Terminals_of( final GenericNode initialObject );
+	
+	
+	public GenericIteratorOnTerminalNodes getIterator_on_Initials_of( final GenericNode ofTerminalObject );
+	
+	
+	public int countInitials( final GenericNode ofTerminalObject );
+	
+	
+	public int countTerminals( final GenericNode ofInitialObject );
+	
+	
+	public GenericNode findCommonTerminalForInitials( final GenericNode initial1, final GenericNode initial2 );
+	
+	
 }

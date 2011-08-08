@@ -35,23 +35,24 @@ package org.bdb;
 
 import static org.junit.Assert.*;
 
-import org.bdbLevel1.*;
-import org.generic.env.*;
+import org.dml.storage.*;
+import org.dml.storage.bdbLevel1.*;
 import org.junit.*;
 
 
 
-public class DBTwoWayHashMap_Test {
+public class DBTwoWayHashMap_Test
+{
 	
 	private BDBTwoWayHashMap_StringName2Node	x	= null;
 	private final String						_a	= "A";
-	private final BDBNode						_b	= new BDBNode( 2l );
-	private BDBEnvironment						env	= null;
+	private final BDBNode						_b	= BDBNode.getBDBNodeInstance( 2l );
+	private BDBStorage							env	= null;
 	
 	
 	@Before
 	public void setUp() {
-		env = new BDBEnvironment( JUnitConstants.BDB_ENVIRONMENT_STORE_DIR, true );
+		env = new BDBStorage( JUnitConstants.BDB_ENVIRONMENT_STORE_DIR, true );
 		x = new BDBTwoWayHashMap_StringName2Node( env, "some 1-to-1 dbMap" );
 	}
 	
@@ -84,7 +85,7 @@ public class DBTwoWayHashMap_Test {
 			assertTrue( x.ensureExists( _a, _b ) );
 			txn.success();
 		} finally {
-			txn.finish();
+			txn.finished();
 		}
 	}
 	
@@ -98,7 +99,7 @@ public class DBTwoWayHashMap_Test {
 			org.references.TestTwoWayHashMapOfNonNullUniques.testMany( y );
 			txn.success();
 		} finally {
-			txn.finish();
+			txn.finished();
 		}
 	}
 	

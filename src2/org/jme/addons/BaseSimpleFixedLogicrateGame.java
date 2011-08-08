@@ -337,7 +337,7 @@ public abstract class BaseSimpleFixedLogicrateGame extends
 		
 		if ( KeyBindingManager.getKeyBindingManager().isValidCommand( "exit",
 				false ) ) {
-			this.finish();
+			this.finished();
 		}
 	}
 	

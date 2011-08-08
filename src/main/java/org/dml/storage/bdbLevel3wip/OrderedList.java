@@ -31,27 +31,71 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.q;
+package org.dml.storage.bdbLevel3wip;
 
 
-/**
- *
- */
-@SuppressWarnings( "serial" )
-public class BugError
-		extends Error
-{
+
+public interface OrderedList {
 	
-	public BugError( final String msg ) {
-		super( msg );
-	}
+	/**
+	 * makes sure the longIdent exists, if it doesn't then append it<br>
+	 * 
+	 * @param whichLongIdent
+	 * @return true if already existed and thus nothing was done to change anything (which means it may not be positioned last)
+	 */
+	public boolean ensure( Long whichLongIdent );
+	
+	
+	public boolean contains( Long whichLongIdent );
+	
+	
+	// void assumedValid();
+	
+	
+	public long size();
+	
+	
+	public void add( Long whichLongIdent, Position pos );
 	
 	
 	/**
-	 * @param msg
-	 * @param cause
+	 * cannot be used when DUPs are allowed
+	 * 
 	 */
-	public BugError( final String msg, final Throwable cause ) {
-		super( msg, cause );
-	}
+	public void add( Long whichLongIdent, Position pos, Long posLong );
+	
+	
+	/**
+	 * @return null if didn't exist, else the Symbol which was removed
+	 */
+	public Long remove( Position pos, Long posLong );
+	
+	
+	/**
+	 * @param pos
+	 * @return null if didn't exist, else the Symbol which was removed
+	 */
+	public Long remove( Position pos );
+	
+	
+	/**
+	 * @return true if existed
+	 */
+	public boolean remove( Long whichLong );
+	
+	
+	/**
+	 * @param first
+	 */
+	public Long get( Position first );
+	
+	
+	/**
+	 * can't use this when DUPs are allowed ie. posLong may exist twice, so which one r u referring to?
+	 * 
+	 */
+	public Long get( Position pos, Long posLong );
+	
+	
+	public Long getSelf();
 }

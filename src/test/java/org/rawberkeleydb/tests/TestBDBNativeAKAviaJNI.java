@@ -137,12 +137,14 @@ import com.sleepycat.db.*;
  */
 public class TestBDBNativeAKAviaJNI {
 	
-	// fastest with txn on and mvc on, lock off, durable off;
+	// fastest with txn on and lock on, mvc off, dur off; 9,848 ms
+	// fastest with txn on and mvc on, lock off, durable off; 15,199 ms - not fastest anymore
 	// when locking is on, mvc must be off, else takes too long to check & unable to allocate space...(forgot exact msg)
 	//
 	
 	// set all these 4 to true for consistency, but also lack of speed; all to false for max speed
 	public static final boolean		ENABLE_TRANSACTIONS				= true;
+	// when the dur is on: 41,968 ms when off: 9,848 ms
 	@SuppressWarnings( "unused" )
 	public static final boolean		DURABLE_TXNS					= false ? true : !ENABLE_TRANSACTIONS;
 	public static final boolean		ENABLE_LOCKING					= true;

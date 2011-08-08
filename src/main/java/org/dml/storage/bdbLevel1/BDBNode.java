@@ -31,27 +31,43 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.q;
+package org.dml.storage.bdbLevel1;
+
+import org.dml.storage.*;
+
 
 
 /**
- *
+
  */
-@SuppressWarnings( "serial" )
-public class BugError
-		extends Error
+public class BDBNode
+		extends GenericNodeBase
 {
 	
-	public BugError( final String msg ) {
-		super( msg );
-	}
+	public static final BDBNodeBinding	binding	= new BDBNodeBinding();
 	
 	
 	/**
-	 * @param msg
-	 * @param cause
+	 * @param fromLong
+	 *            used internally by bDB as an identifier and it's stored in the db
 	 */
-	public BugError( final String msg, final Throwable cause ) {
-		super( msg, cause );
+	private BDBNode( final long fromLong ) {
+		super( fromLong );
+	}
+	
+	
+	public static BDBNode getBDBNodeInstance( final long forLong ) {
+		return new BDBNode( forLong );
+	}
+	
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#clone()
+	 */
+	@Override
+	public BDBNode clone() {
+		return (BDBNode)super.clone();
 	}
 }

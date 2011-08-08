@@ -36,19 +36,19 @@ package org.bdb;
 
 import static org.junit.Assert.*;
 
-import org.bdbLevel1.*;
+import org.dml.storage.bdbLevel1.*;
 import org.junit.*;
 
 
 
 public class TestNodeName {
 	
-	private BDBEnvironment	env;
+	private BDBStorage	env;
 	
 	
 	@Before
 	public void setUp() {
-		env = new BDBEnvironment( JUnitConstants.BDB_ENVIRONMENT_STORE_DIR, true );
+		env = new BDBStorage( JUnitConstants.BDB_ENVIRONMENT_STORE_DIR, true );
 	}
 	
 	

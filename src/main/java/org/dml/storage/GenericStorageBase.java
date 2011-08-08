@@ -31,27 +31,16 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.q;
+package org.dml.storage;
 
 
 /**
  *
  */
-@SuppressWarnings( "serial" )
-public class BugError
-		extends Error
-{
+public abstract class GenericStorageBase implements GenericStorage {
 	
-	public BugError( final String msg ) {
-		super( msg );
-	}
-	
-	
-	/**
-	 * @param msg
-	 * @param cause
-	 */
-	public BugError( final String msg, final Throwable cause ) {
-		super( msg, cause );
+	@Override
+	public final void shutdown() {
+		this.shutdown( false );
 	}
 }

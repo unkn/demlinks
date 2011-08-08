@@ -37,26 +37,28 @@ package org.bdb;
 
 import static org.junit.Assert.*;
 
-import org.bdbLevel1.*;
+import org.dml.storage.*;
+import org.dml.storage.bdbLevel1.*;
 import org.junit.*;
 
 
 
-public class DBSetTest {
+public class DBSetTest
+{
 	
-	private BDBSetOfNodes			o2m	= null;
+	private BDBSetOfNodes		o2m	= null;
 	// the following two should be random unique names not already in the dbase
 	// or else the tests may fail, that's ok the database is cleared before and after the tests!
-	private final BDBNode	_a	= new BDBNode( 1l );
-	private final BDBNode	_b	= new BDBNode( 2l );
-	private final BDBNode	_c	= new BDBNode( 3l );
-	private BDBEnvironment					env	= null;
+	private final GenericNode	_a	= BDBNode.getBDBNodeInstance( 1l );
+	private final GenericNode	_b	= BDBNode.getBDBNodeInstance( 2l );
+	private final GenericNode	_c	= BDBNode.getBDBNodeInstance( 3l );
+	private BDBStorage			env	= null;
 	
 	
 	@Before
 	public void setUp() {
 		
-		env = new BDBEnvironment( JUnitConstants.BDB_ENVIRONMENT_STORE_DIR, true );
+		env = new BDBStorage( JUnitConstants.BDB_ENVIRONMENT_STORE_DIR, true );
 		assert null != env;
 		
 		o2m = new BDBSetOfNodes( env, "one to many dbmap" );
@@ -112,10 +114,10 @@ public class DBSetTest {
 		
 		assertTrue( o2m.ensureVector( _c, _b ) );
 		
-		IteratorOnTerminalNodes_InDualPriDBs iter = o2m.getIterator_on_Initials_of( _c );
+		GenericIteratorOnTerminalNodes iter = o2m.getIterator_on_Initials_of( _c );
 		assertNotNull( iter );
 		try {
-			BDBNode now = iter.goFirst();
+			GenericNode now = iter.goFirst();
 			assert null != now;
 			do {
 				System.out.println( now + " -> _c" );
@@ -134,7 +136,7 @@ public class DBSetTest {
 		
 		iter = o2m.getIterator_on_Terminals_of( _c );
 		try {
-			BDBNode now = iter.goFirst();
+			GenericNode now = iter.goFirst();
 			assert null != now;
 			do {
 				System.out.println( "_c -> " + now );

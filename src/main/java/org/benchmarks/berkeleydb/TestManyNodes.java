@@ -34,8 +34,8 @@
 package org.benchmarks.berkeleydb;
 
 import org.bdb.*;
-import org.bdbLevel1.*;
-import org.generic.env.*;
+import org.dml.storage.*;
+import org.dml.storage.bdbLevel1.*;
 import org.toolza.*;
 
 
@@ -45,23 +45,23 @@ import org.toolza.*;
  */
 public class TestManyNodes {
 	
-	private final static String			END								= "END";
-	private final static String			START							= "START";
-	private final static String			MIDDLE							= "MIDDLE";
-	private final static String			ROOT_LIST						= "ROOT_LIST";
+	private final static String		END								= "END";
+	private final static String		START							= "START";
+	private final static String		MIDDLE							= "MIDDLE";
+	private final static String		ROOT_LIST						= "ROOT_LIST";
 	
 	// 10000 to 20k seems optimal
-	private static final int			HOWMANY_PER_TRANSACTION			= 30000;
-	private static final int			HOWMANY_RELATIONSHIPS_FOR_ONE	= 1000000;
+	private static final int		HOWMANY_PER_TRANSACTION			= 30000;
+	private static final int		HOWMANY_RELATIONSHIPS_FOR_ONE	= 1000000;
 	
-	private final GenericEnvironment	env;
-	private GenericNode					list;
-	private GenericNode					middleElement;
-	private GenericNode					headElement;
-	private GenericNode					tailElement;
+	private final GenericStorage	env;
+	private GenericNode				list;
+	private GenericNode				middleElement;
+	private GenericNode				headElement;
+	private GenericNode				tailElement;
 	
 	
-	public TestManyNodes( final GenericEnvironment _env ) {
+	public TestManyNodes( final GenericStorage _env ) {
 		assert null != _env;
 		env = _env;
 	}
@@ -75,8 +75,7 @@ public class TestManyNodes {
 	public static void main( final String[] args ) {
 		showMem();
 		final boolean deleteFirst = true;
-		final TestManyNodes t2 =
-			new TestManyNodes( new BDBEnvironment( JUnitConstants.BDB_ENVIRONMENT_STORE_DIR, deleteFirst ) );
+		final TestManyNodes t2 = new TestManyNodes( new BDBStorage( JUnitConstants.BDB_ENVIRONMENT_STORE_DIR, deleteFirst ) );
 		
 		showMem();
 		t2.init();
@@ -116,7 +115,7 @@ public class TestManyNodes {
 						env.makeVector( list, env.createNewUniqueNode() );
 						if ( ( i % HOWMANY_PER_TRANSACTION ) == 0 ) {
 							txn.success();
-							txn.finish();
+							txn.finished();
 							txn = env.beginTransaction();
 							System.out.println( "new txn at " + i );
 						}
@@ -140,7 +139,7 @@ public class TestManyNodes {
 					env.makeVector( env.createNewUniqueNode(), tailElement );
 					if ( ( i % HOWMANY_PER_TRANSACTION ) == 0 ) {
 						txn.success();
-						txn.finish();
+						txn.finished();
 						txn = env.beginTransaction();
 					}
 					
@@ -159,7 +158,7 @@ public class TestManyNodes {
 			}// if
 			txn.success();
 		} finally {
-			txn.finish();
+			txn.finished();
 			System.out.println( "closed transaction" );
 		}
 	}
@@ -360,7 +359,7 @@ public class TestManyNodes {
 			
 			t.success();
 		} finally {
-			t.finish();
+			t.finished();
 		}
 	}
 	

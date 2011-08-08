@@ -36,8 +36,8 @@ package org.bdb;
 
 import static org.junit.Assert.*;
 
-import org.bdb.exceptions.*;
-import org.bdbLevel1.*;
+import org.dml.storage.bdb.exceptions.*;
+import org.dml.storage.bdbLevel1.*;
 import org.junit.*;
 import org.q.*;
 
@@ -47,9 +47,9 @@ public class TestBDBEnvironment {
 	
 	@Test
 	public void testUNG() {
-		BDBEnvironment env = null;
+		BDBStorage env = null;
 		try {
-			env = new BDBEnvironment( JUnitConstants.BDB_ENVIRONMENT_STORE_DIR, true );
+			env = new BDBStorage( JUnitConstants.BDB_ENVIRONMENT_STORE_DIR, true );
 			
 			final String sameName = "some name";
 			final int delta = +1;
@@ -106,12 +106,12 @@ public class TestBDBEnvironment {
 				env.shutdown();
 			}
 		}
-		BDBEnvironment env3 = null;
-		BDBEnvironment env5 = null;
+		BDBStorage env3 = null;
+		BDBStorage env5 = null;
 		try {
-			env3 = new BDBEnvironment( JUnitConstants.BDB_ENVIRONMENT_STORE_DIR, false );
+			env3 = new BDBStorage( JUnitConstants.BDB_ENVIRONMENT_STORE_DIR, false );
 			try {
-				env5 = new BDBEnvironment( JUnitConstants.BDB_ENVIRONMENT_STORE_DIR, false );
+				env5 = new BDBStorage( JUnitConstants.BDB_ENVIRONMENT_STORE_DIR, false );
 				Q.fail();
 			} catch ( final Throwable t ) {
 				if ( Q.isBareException( t, BadCallError.class ) ) {

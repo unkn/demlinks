@@ -31,27 +31,38 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.q;
+package org.dml.storage;
+
 
 
 /**
- *
+ * in-java representation for the underlying db-stored node
  */
-@SuppressWarnings( "serial" )
-public class BugError
-		extends Error
+public interface GenericNode
+		extends Cloneable
 {
 	
-	public BugError( final String msg ) {
-		super( msg );
-	}
+	public long getId();
 	
 	
-	/**
-	 * @param msg
-	 * @param cause
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
-	public BugError( final String msg, final Throwable cause ) {
-		super( msg, cause );
-	}
+	@Override
+	public boolean equals( Object obj );
+	
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode();
+	
+	
+	// public GenericNode clone() throws CloneNotSupportedException;
+	public GenericNode clone();// throws CloneNotSupportedException;
 }
