@@ -49,12 +49,7 @@ public interface GenericStorage
 	public void shutdown( boolean delete );
 	
 	
-	public GenericNode createOrGetNode( final String name );
-	
-	
-	public GenericNode getNode( final String name );
-	
-	
+	// =============== Level 1: name and node
 	/**
 	 * @param forNode
 	 * @return can be null if node has no associated name
@@ -62,11 +57,19 @@ public interface GenericStorage
 	public String getName( final GenericNode forNode );
 	
 	
+	public GenericNode getNode( final String name );
+	
+	
+	public GenericNode createOrGetNode( final String name );
+	
+	
 	/**
 	 * @return never null
 	 */
 	public GenericNode createNewUniqueNode();
 	
+	
+	// =============== Level 2: tuple of nodes
 	
 	public void makeVector( final GenericNode initialNode, final GenericNode terminalNode );
 	
@@ -105,7 +108,7 @@ public interface GenericStorage
 	 * 
 	 * @param initialNode1
 	 * @param initialNode2
-	 * @return
+	 * @return X
 	 */
 	public GenericNode findCommonTerminalForInitials( final GenericNode initialNode1, final GenericNode initialNode2 );
 	
