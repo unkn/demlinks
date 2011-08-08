@@ -17,6 +17,11 @@ between the products lead to the 5% difference in API and
 implementation when switching between the two products (DB Java/JNI and
 BDB JE).
 
+"The architecture is based on a log-based, no-overwrite storage system, enabling high concurrency and speed while providing ACID 
+transactions and record-level locking."
+"Record level locking for high concurrency"
+from: http://www.oracle.com/technetwork/database/berkeleydb/overview/index-093405.html 
+
 2. Berkeley DB XML is written entirely in C++ as a layer on top of Berkeley DB.
 to use BDB XML you must go the native route and use DB
 

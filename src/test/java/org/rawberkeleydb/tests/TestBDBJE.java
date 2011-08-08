@@ -84,6 +84,38 @@ import com.sleepycat.je.*;
  * usedmem=185038032
  * all above adds/check (aka part2) executed in 14,062 ms
  * tearDown took: 157 ms
+ * ================ ok, second try now cpu at 100% max limit:
+ * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\00000000.jdb`
+ * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\00000001.jdb`
+ * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\00000002.jdb`
+ * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\00000003.jdb`
+ * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\00000004.jdb`
+ * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\00000005.jdb`
+ * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\00000006.jdb`
+ * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\je.info.0`
+ * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\je.lck`
+ * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb`
+ * environment open took: 343 ms
+ * Database type: BTREE
+ * usedmem=17921256
+ * adding from [0 to 111800) add100 executed in: 2,808 ms
+ * usedmem=174473128
+ * adding from [0 to 111800) add100 executed in: 609 ms
+ * usedmem=125320968
+ * adding from [0 to 111800) add100 executed in: 406 ms
+ * usedmem=316701176
+ * adding from [111800 to 223600) add100 executed in: 2,093 ms
+ * usedmem=181064712
+ * adding from [223600 to 335400) add100 executed in: 1,624 ms
+ * usedmem=207586712
+ * adding from [335400 to 447200) add100 executed in: 1,779 ms
+ * usedmem=182467736
+ * checking from 0 to 447200 check100 executed in: 1,717 ms
+ * usedmem=345130480
+ * all above adds/check (aka part2) executed in 11,036 ms
+ * tearDown took: 157 ms
+ * =====manually checked:
+ * env home dir size: 66.3 MB (69,553,300 bytes)
  */
 public class TestBDBJE {
 	

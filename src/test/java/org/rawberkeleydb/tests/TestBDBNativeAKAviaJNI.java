@@ -103,6 +103,37 @@ import com.sleepycat.db.*;
  * usedmem=1439120
  * all above adds/check (aka part2) executed in 44,594 ms
  * tearDown took: 750 ms
+ * ============== again now @ 100%:
+ * Preloading depended library first: `libdb52`
+ * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\log.0000000001`
+ * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\secondarytheDBFileName`
+ * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\theDBFileName`
+ * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\__db.001`
+ * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\__db.002`
+ * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb\__db.003`
+ * deleting: `E:\wrkspc\demlinks\.\bin\JUnit.tempDb`
+ * BDB2525 No log files found
+ * environment open took: 31 ms
+ * Database type: DatabaseType.BTREE
+ * usedmem=5419864
+ * adding from [0 to 111800) add100 executed in: 2,044 ms
+ * usedmem=15363392
+ * adding from [0 to 111800) add100 executed in: 391 ms
+ * usedmem=13866864
+ * adding from [0 to 111800) add100 executed in: 390 ms
+ * usedmem=13327512
+ * adding from [111800 to 223600) add100 executed in: 1,840 ms
+ * usedmem=20775088
+ * adding from [223600 to 335400) add100 executed in: 1,827 ms
+ * usedmem=28336856
+ * adding from [335400 to 447200) add100 executed in: 1,842 ms
+ * usedmem=5073752
+ * checking from 0 to 447200 check100 executed in: 1,654 ms
+ * usedmem=16183472
+ * all above adds/check (aka part2) executed in 9,988 ms
+ * tearDown took: 890 ms
+ * =====manually checked:
+ * env home dir size: 48.8 MB (51,240,960 bytes)
  */
 public class TestBDBNativeAKAviaJNI {
 	
