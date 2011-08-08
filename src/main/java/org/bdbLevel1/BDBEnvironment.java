@@ -162,17 +162,6 @@ public class BDBEnvironment extends BasicEnvironment {
 		}
 		
 		final EnvironmentConfig envConf = new EnvironmentConfig();
-		envConf.setAllowCreate( true );
-		envConf.setLockDown( false );
-		envConf.setDirectDatabaseIO( false );// false here is way faster than true; ie. twice
-		envConf.setDirectLogIO( false );// this doesn't seem to be affected, true/false same
-		//
-		// // envConf.setEncrypted( password )
-		envConf.setOverwrite( false );
-		
-		envConf.setErrorStream( System.err );
-		envConf.setErrorPrefix( "BDBJNI:" );
-		
 		// useless:
 		envConf.setEventHandler( new EventHandlerAdapter() {
 			
@@ -207,6 +196,19 @@ public class BDBEnvironment extends BasicEnvironment {
 			}
 		} );
 		
+		envConf.setAllowCreate( true );
+		envConf.setLockDown( false );
+		envConf.setDirectDatabaseIO( false );// false here is way faster than true; ie. twice
+		envConf.setDirectLogIO( false );// this doesn't seem to be affected, true/false same
+		//
+		// // envConf.setEncrypted( password )
+		envConf.setOverwrite( false );
+		
+		envConf.setErrorStream( System.err );
+		envConf.setErrorPrefix( "BDBJNI:" );
+		envConf.setMessageStream( System.err );
+		
+		
 		envConf.setHotbackupInProgress( false );
 		envConf.setInitializeCache( true );// XXX: experiment with this
 		// envConf.setInitializeCDB( true );//this1of2
@@ -221,6 +223,7 @@ public class BDBEnvironment extends BasicEnvironment {
 		// envConf.setMaxLocks( x );
 		envConf.setMaxLocks( x );
 		envConf.setMutexIncrement( 100 );// we need this, value of 1 should be ok too but hey we don't want this called 2often
+		
 		envConf.setTransactional( ENABLE_TRANSACTIONS );
 		// // envConf.setDurability( DUR );
 		envConf.setTxnNoSync( false );// XXX: should be false for consistency
@@ -237,8 +240,8 @@ public class BDBEnvironment extends BasicEnvironment {
 		envConf.setLogZero( false );// XXX:wow this totally writes 2gig of zeroes when true
 		// // envConf.setLogDirectory( logDirectory )
 		// envConf.setMaxLogFileSize( Integer.MAX_VALUE );//this allocated 2gig log
-		// envConf.setMaxLogFileSize( 10 * 1024 * 1024 );// 10meg alloc
-		envConf.setRunFatalRecovery( false );
+		// envConf.setMaxLogFileSize( 1 * 1024 * 1024 );// 10meg alloc
+		
 		
 		// envConf.setInitializeRegions( false );// XXX: maybe experiment with this, unsure
 		// envConf.setInitializeReplication( false );// for now
@@ -246,11 +249,11 @@ public class BDBEnvironment extends BasicEnvironment {
 		
 		// envConf.setJoinEnvironment( false );
 		//
-		envConf.setRunRecovery( ENABLE_TRANSACTIONS );
+		envConf.setRunFatalRecovery( false );
 		envConf.setRegister( ENABLE_TRANSACTIONS );
+		envConf.setRunRecovery( ENABLE_TRANSACTIONS );
 		//
-		envConf.setMessageStream( System.err );
-		envConf.setMultiversion( true || ENABLE_TRANSACTIONS );// this only affects the open of the databases
+		envConf.setMultiversion( false || ENABLE_TRANSACTIONS );// this only affects the open of the databases
 		//
 		// envConf.setNoLocking( false );
 		// envConf.setNoPanic( false );
@@ -260,7 +263,7 @@ public class BDBEnvironment extends BasicEnvironment {
 		//
 		envConf.setReplicationInMemory( false );
 		//
-		// envConf.setSystemMemory( true );// XXX: experiment, this fails
+		envConf.setSystemMemory( false );// need false here for linux I think
 		//
 		// // envConf.setTemporaryDirectory( temporaryDirectory )
 		envConf.setThreaded( false );// true only if threads want to access the env handle(ie. java instance) at the same time
@@ -318,7 +321,7 @@ public class BDBEnvironment extends BasicEnvironment {
 			// sequenceDbConf.setDeferredWrite( false );
 			// sequenceDbConf.setKeyPrefixing( false );// no more prefixing
 			sequenceDbConf.setSortedDuplicates( false );// false here
-			sequenceDbConf.setTransactional( ENABLE_TRANSACTIONS );// transactions again
+			sequenceDbConf.setTransactional( ENABLE_TRANSACTIONS );
 			assert null != BDBEnvironment.NAME_dbOfSequences;
 			assert BDBEnvironment.NAME_dbOfSequences.length() > 0;
 			dbOfSequences = env.openDatabase( ourTxn.getTransaction(), BDBEnvironment.NAME_dbOfSequences, null, sequenceDbConf );
