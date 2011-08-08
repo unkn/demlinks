@@ -83,9 +83,11 @@ same contents inside it, tested with md5
 * NOTE: the Debug version is slower by 3.4 times than Release;
 
 Debug:
+
 	adding from [0 to 111800) add100 executed in: 6,590 ms
 	all above adds/check (aka part2) executed in 34,619 ms
 Release:
+
 	adding from [0 to 111800) add100 executed in: 1,903 ms
 	all above adds/check (aka part2) executed in 10,003 ms
 
