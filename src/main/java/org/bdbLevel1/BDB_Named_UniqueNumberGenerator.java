@@ -44,8 +44,10 @@ import com.sleepycat.db.*;
 /**
  * a BerkeleyDB Sequence that is associated with a name, and also obviously with its long<br>
  * this will help you generate the next unique number (unique within this same named Sequence)<br>
+ * TODO: junit test for checking what happens if 2 parallel txns are generating next long before either completes
+ * AND on rollback<br>
  */
-public class BDBNamedSequence {
+public class BDB_Named_UniqueNumberGenerator {
 	
 	private Sequence	thisSeq	= null;
 	
@@ -53,6 +55,7 @@ public class BDBNamedSequence {
 	/**
 	 * @param environ
 	 * @param seqName
+	 *            the name of this generator (in BDB the name of the Sequence associated with this)
 	 * @param min
 	 *            usually 0
 	 * @param initialValue
@@ -62,8 +65,8 @@ public class BDBNamedSequence {
 	 * @param wrap
 	 *            true if wraps around when reaches max value, it wraps to min
 	 */
-	public BDBNamedSequence( final BDBEnvironment environ, final String seqName, final long min, final long initialValue,
-			final long max, final boolean wrap ) {
+	public BDB_Named_UniqueNumberGenerator( final BDBEnvironment environ, final String seqName, final long min,
+			final long initialValue, final long max, final boolean wrap ) {
 		assert null != environ;
 		assert null != seqName;
 		
@@ -74,11 +77,16 @@ public class BDBNamedSequence {
 		final SequenceConfig sequenceConf = new SequenceConfig();
 		sequenceConf.setAllowCreate( true );
 		sequenceConf.setAutoCommitNoSync( false );
+		// we actually don't want to have a long used somewhere else but the seq not know it reached that far because sys failed
+		// and the sequence is now next-ing from a lower number
+		
 		sequenceConf.setExclusiveCreate( false );
 		
 		// when seq.get(txn,x); "The txn handle must be null if the sequence handle was opened with a non-zero cache size."
-		sequenceConf.setCacheSize( 0 );
 		// thus if it's 0, we can use transaction, if it's >0 we must use null transactions only :)
+		sequenceConf.setCacheSize( 10 );// doing this just to make sure we're not allowed to use txns with this;
+		// we don't want to use txns because two parallel ones can potentially get the same number due to read_uncommited not
+		// being used so they don't see eachother's modifs while in progress; anyway this is my guess;
 		
 		sequenceConf.setWrap( wrap );// no wrap else it would overwrite or rather get/use existing stuff
 		
@@ -86,7 +94,7 @@ public class BDBNamedSequence {
 		sequenceConf.setRange( min, max );
 		sequenceConf.setInitialValue( initialValue );
 		
-		Q.info( "opening sequence with name `" + seqName + "`" );
+		Q.info( "opening bdb Sequence aka <unique number generator> with name `" + seqName + "`" );
 		final DatabaseEntry deKey = new DatabaseEntry();
 		StringBinding.stringToEntry( seqName, deKey );
 		
@@ -125,7 +133,9 @@ public class BDBNamedSequence {
 	 */
 	public long getNextUniqueLong( final int incrementDelta ) {
 		try {
-			return thisSeq.get( null, incrementDelta );
+			return thisSeq.get( null// XXX:we don't want a transaction here, else risk of getting same number in 2 parallel txns
+				,
+				incrementDelta );
 		} catch ( final IllegalArgumentException iae ) {
 			// this means probably: BDB4011 Sequence overflow
 			throw new SequenceOverflow();

@@ -59,7 +59,7 @@ public class BDBEnvironment extends BasicEnvironment {
 	private final static String						NAME_of_db_for_Name2Node		= "map(nameString2nodeLong)";
 	
 	// this is used to generate new unique LongIdents, based on unique long numbers
-	private final BDBNamedSequence					sequence;
+	private final BDB_Named_UniqueNumberGenerator	sequence;
 	private static final String						NAMEofSEQ_longIdents			= "sequenceforgeneratinguniquelongs";
 	// delta difference between `generated longs which are unique`
 	private static final int						longIdents_Delta				= +1;
@@ -119,7 +119,7 @@ public class BDBEnvironment extends BasicEnvironment {
 	private final Timer								timer							= new Timer( Timer.TYPE.MILLIS );
 	
 	static {
-		PreloadNativeLibraries.initIfNotInited();
+		PreloadBDBNativeLibraries.initIfNotInited();
 	}
 	
 	
@@ -327,7 +327,7 @@ public class BDBEnvironment extends BasicEnvironment {
 			db_Name2Node = new BDBTwoWayHashMap_StringName2Node( env, BDBEnvironment.NAME_of_db_for_Name2Node );
 			
 			sequence =
-				new BDBNamedSequence(
+				new BDB_Named_UniqueNumberGenerator(
 					this,
 					BDBEnvironment.NAMEofSEQ_longIdents,
 					BDBEnvironment.MIN_ForLongs,
@@ -444,35 +444,18 @@ public class BDBEnvironment extends BasicEnvironment {
 	/**
 	 * intended to be used for JUnit testing when a clean start is required ie.
 	 * no leftovers from previous JUnits or runs in the database<br>
-	 * this should wipe all logs and locks of BDB Environment (which is
+	 * this should wipe entire home folder for that environment (which is
 	 * supposedly everything incl. DBs)<br>
-	 * <br>
 	 * 
 	 * @param envHomeDir
 	 */
 	private final void internalWipeEnv( final File envHomeDir ) {
 		assert null != envHomeDir;
 		F.delFileOrTree( envHomeDir );
-		// final String[] allThoseInDir = envHomeDir.list();
-		// if ( null != allThoseInDir ) {
-		// for ( final String element : allThoseInDir ) {
-		// final File n = new File( envHomeDir + File.separator + element );
-		// if ( !n.isFile() ) {
-		// continue;
-		// }
-		// if ( ( !n.getPath().matches( ".*\\.jdb" ) ) && ( !( n.getPath().matches( ".*\\.lck" ) ) ) ) {
-		// continue;
-		// }
-		// Q.info( "removing " + n.getPath() );
-		// if ( !n.delete() ) {
-		// Q.warn( "Failed removing " + n.getAbsolutePath() );
-		// }
-		// }
-		// }
 	}
 	
 	
-	// ============================= L1 below: handles IDs and Longs
+	// ============================= L1 below: handles mapping Node to its ID(aka long)
 	
 	/**
 	 * the Long must already exist else null is returned<br>
@@ -573,7 +556,7 @@ public class BDBEnvironment extends BasicEnvironment {
 	
 	
 	/**
-	 * that is, without associating it with a stringIdent !<br>
+	 * that is, without associating it with a name !<br>
 	 * it will never be null, it will throw before that happens<br>
 	 * 
 	 * @return long

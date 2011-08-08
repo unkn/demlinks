@@ -43,11 +43,20 @@ import org.q.*;
  */
 public class BDBNode implements GenericNode {
 	
-	private final long	node;
+	public static final BDBNodeBinding	binding	= new BDBNodeBinding();
+	
+	private final long					longNode;
 	
 	
-	public BDBNode( final long bdbNode ) {
-		node = bdbNode;
+	/**
+	 * get new node instance for this (long) identifier<br>
+	 * the long is used by bDB to store this node internally,<br>
+	 * but this instance is just a wrapper(for that long) inside java<br>
+	 * 
+	 * @param fromLong
+	 */
+	public BDBNode( final long fromLong ) {
+		longNode = fromLong;
 	}
 	
 	
@@ -58,7 +67,7 @@ public class BDBNode implements GenericNode {
 	 */
 	@Override
 	public long getId() {
-		return node;
+		return longNode;
 	}
 	
 	
@@ -77,7 +86,7 @@ public class BDBNode implements GenericNode {
 		}
 		Q.assumeSameExactClassElseThrow( this, obj );
 		final BDBNode n = (BDBNode)obj;
-		return node == n.node;
+		return longNode == n.longNode;
 	}
 	
 	
@@ -89,7 +98,9 @@ public class BDBNode implements GenericNode {
 	@Override
 	public int hashCode() {
 		// Q.ni();
-		return (int)node;
+		return (int)longNode;
 	}
+	
+	
 	
 }

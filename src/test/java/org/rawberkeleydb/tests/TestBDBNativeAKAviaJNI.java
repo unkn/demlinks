@@ -153,7 +153,7 @@ public class TestBDBNativeAKAviaJNI {
 	private int						leftOverForAdd100				= 0;
 	
 	static {
-		PreloadNativeLibraries.initIfNotInited();
+		PreloadBDBNativeLibraries.initIfNotInited();
 	}
 	
 	

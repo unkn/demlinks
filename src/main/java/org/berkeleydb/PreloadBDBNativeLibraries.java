@@ -41,11 +41,13 @@ import com.sleepycat.db.internal.*;
 /**
  *
  */
-public class PreloadNativeLibraries {
+public class PreloadBDBNativeLibraries {
 	
 	// set to true to use the debug versions of the libs (those with the "d" suffix) which is likely 3.4 times slower than norm.
 	private static final boolean	DEBUG	= false;
-	static {
+	// final static Timer t = new Timer( Timer.TYPE.MILLIS );
+	static {// this takes 0ms or 3,5 million ns aka 0.0035ms; it once took 16ms on real low cpu speed
+	// t.start();
 		if ( DEBUG ) {
 			System.out.println( "DEBUG is enabled, slow mode..." );
 		}
@@ -63,10 +65,14 @@ public class PreloadNativeLibraries {
 		// }
 		System.setProperty( "sleepycat.db.libname", "libdb_java" + suffix );// libdb_java52
 		// see db_javaJNI class for more info, that's the class that will load the lib set in the property
+		// db_javaJNI. j=new db_javaJNI();
+		
 	}
 	
 	
 	public static void initIfNotInited() {
 		// empty because the class' static block will be executed, once; regardless of how many times you call this method
+		// t.stop();
+		// System.out.println( "PreloadBDBNativeLibraries: " + t.getDeltaPrintFriendly() );
 	}
 }

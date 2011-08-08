@@ -100,8 +100,8 @@ public class IteratorOnTerminalNodes_InDualPriDBs extends IterOnTerminalNodes_In
 		final IterOnTerminalNodes_InOnePriDB iterReverse = new IterOnTerminalNodes_InOnePriDB( reverse, delThisOne );
 		try {
 			final BDBNode l = iterReverse.goTo( _initialNode );// pos on initialObject in this tuple:
-																		// current->initialObject
-			assert null != l : "the specified longIdent for deletion was not found";
+																// current->initialObject
+			assert null != l : "the specified Node for deletion was not found";
 			iterReverse.delete();// del this: current<-initialObject
 			iterReverse.success();
 		} finally {

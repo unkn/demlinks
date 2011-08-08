@@ -34,5 +34,5 @@ import org.junit.runners.Suite;
 @Suite.SuiteClasses( value = {
 		ChainedReferenceTest.class, RefsListTest.class, ObjRefsListTest.class, ReferenceTest.class,
 } )
-public class AllTestsReferences {
+public class AllTestsReferences2 {
 }

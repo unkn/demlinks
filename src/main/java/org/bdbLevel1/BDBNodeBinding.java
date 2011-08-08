@@ -51,10 +51,10 @@ public class BDBNodeBinding extends TupleBinding<BDBNode> {
 	@Override
 	public BDBNode entryToObject( final TupleInput input ) {
 		// assert Q.nn( input);no need, it will NPE below anyway
-		final long l = input.readLong();
-		final BDBNode nid = new BDBNode( l );
-		assert ( nid.getId() == l );
-		return nid;
+		final long fromLong = input.readLong();
+		final BDBNode node = new BDBNode( fromLong );
+		assert ( node.getId() == fromLong );
+		return node;
 	}
 	
 	

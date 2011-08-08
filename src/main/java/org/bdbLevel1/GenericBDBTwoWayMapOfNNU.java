@@ -52,6 +52,9 @@ import com.sleepycat.db.*;
  * inside berkeleyDB<br>
  * searchable by either of the two, ie. as if both were keys or rather as if they were both in 2 hashmaps<br>
  * 
+ * this is implemented using `one primary and one secondary` databases<br>
+ * can't really implement it differently that would be better, if you think about it<br>
+ * 
  * XXX: this CANNOT allow subclasses of KEY/DATA; only specific classes are allowed! because we can't know what type of object
  * we stored in the database so to make sure we use THAT `specific for that class type` binding when converting it back to java
  * object<br>
@@ -105,6 +108,7 @@ public class GenericBDBTwoWayMapOfNNU<KEY, DATA> extends BaseFor_ThreadSafeTwoWa
 		_dataClass = dataClass;
 		assert Q.nn( _keyClass );
 		assert Q.nn( _dataClass );
+		
 		_keyBinding = AllTupleBindings.getBinding( _keyClass );
 		_dataBinding = AllTupleBindings.getBinding( _dataClass );
 		assert Q.nn( _keyBinding );

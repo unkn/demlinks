@@ -56,11 +56,11 @@ public class TestBDBEnvironment {
 			final long max = 10;
 			final long min = -201;
 			final long initialValue = -6;
-			final BDBNamedSequence ung = new BDBNamedSequence( env, sameName, min, initialValue, max, false );
+			final BDB_Named_UniqueNumberGenerator ung = new BDB_Named_UniqueNumberGenerator( env, sameName, min, initialValue, max, false );
 			long l1 = ung.getNextUniqueLong( delta );
 			
 			assertTrue( initialValue == l1 );
-			final BDBNamedSequence ung2 = new BDBNamedSequence( env, sameName, min, initialValue, max, false );
+			final BDB_Named_UniqueNumberGenerator ung2 = new BDB_Named_UniqueNumberGenerator( env, sameName, min, initialValue, max, false );
 			final long l2 = ung2.getNextUniqueLong( delta );
 			// System.out.println( ung + " / " + ung2 );
 			assertTrue( ung2 != ung );// they are same internally in BDB though.

@@ -35,7 +35,6 @@ package org.bdbLevel1;
 
 import org.q.*;
 
-import com.sleepycat.bind.tuple.*;
 import com.sleepycat.db.*;
 
 
@@ -52,10 +51,10 @@ import com.sleepycat.db.*;
 public class IterOnTerminalNodes_InOnePriDB {
 	
 	private final Database				db;
-	protected final BDBNode				_initialNode;							// key
-																				
+	protected final BDBNode				_initialNode;									// key
+																						
 	private Cursor						cursor;
-	private final BDBTransaction			txn;
+	private final BDBTransaction		txn;
 	private boolean						failed			= true;
 	
 	private static final LockMode		Locky			= BDBEnvironment.CURSORLOCK;
@@ -89,8 +88,18 @@ public class IterOnTerminalNodes_InOnePriDB {
 	private DatabaseEntry getNewInitialObjectDataEntry() {
 		// XXX: see if this can be shared, for current instance of `this` anyway - foo it, it's better as it is!
 		final DatabaseEntry deKey = new DatabaseEntry();
-		LongBinding.longToEntry( _initialNode.getId(), deKey );
+		nodeToEntry( _initialNode, deKey );
 		return deKey;
+	}
+	
+	
+	private static void nodeToEntry( final BDBNode readNode, final DatabaseEntry outDE ) {
+		BDBNode.binding.objectToEntry( readNode, outDE );
+	}
+	
+	
+	private static BDBNode entryToNode( final DatabaseEntry readDE ) {
+		return BDBNode.binding.entryToObject( readDE );
 	}
 	
 	
@@ -107,7 +116,7 @@ public class IterOnTerminalNodes_InOnePriDB {
 			throw Q.rethrow( e );
 		}
 		if ( ret.equals( OperationStatus.SUCCESS ) ) {
-			return new BDBNode( LongBinding.entryToLong( deData ) );
+			return entryToNode( deData );
 		} else {
 			return null;
 		}
@@ -115,15 +124,10 @@ public class IterOnTerminalNodes_InOnePriDB {
 	
 	
 	public BDBNode goTo( final BDBNode terminalNode ) {
-		assert null != terminalNode;
-		return this.goTo( terminalNode.getId() );
-	}
-	
-	
-	private BDBNode goTo( final long terminalNode ) {
 		final DatabaseEntry deData = new DatabaseEntry();
-		LongBinding.longToEntry( terminalNode, deData );
+		nodeToEntry( terminalNode, deData );
 		assert deData.getOffset() == 0;
+		assert deData.getSize() > 0;
 		OperationStatus ret;
 		try {
 			ret = cursor.getSearchBoth( getNewInitialObjectDataEntry(), deData, IterOnTerminalNodes_InOnePriDB.Locky );
@@ -131,9 +135,9 @@ public class IterOnTerminalNodes_InOnePriDB {
 			throw Q.rethrow( e );
 		}
 		if ( ret.equals( OperationStatus.SUCCESS ) ) {
-			final long foundOne = LongBinding.entryToLong( deData );
-			assert foundOne == terminalNode;
-			return new BDBNode( foundOne );
+			final BDBNode foundOne = entryToNode( deData );
+			assert foundOne.equals( terminalNode );
+			return foundOne;
 		} else {
 			return null;
 		}
@@ -142,28 +146,23 @@ public class IterOnTerminalNodes_InOnePriDB {
 	
 	protected BDBNode getCurrent() {
 		final DatabaseEntry deKey = new DatabaseEntry();
-		// assert deKey.getOffset() == 0;
 		final DatabaseEntry deData = new DatabaseEntry();
-		// assert deData.getOffset() == 0;
 		
 		OperationStatus ret = OperationStatus.NOTFOUND;
 		try {
-			try {
-				ret = cursor.getCurrent( deKey, deData, IterOnTerminalNodes_InOnePriDB.Locky );
-			} catch ( final DatabaseException e ) {
-				throw Q.rethrow( e );
-			}
+			ret = cursor.getCurrent( deKey, deData, IterOnTerminalNodes_InOnePriDB.Locky );
+		} catch ( final DatabaseException e ) {
+			throw Q.rethrow( e );
 		} catch ( final IllegalArgumentException iae ) {// this worked for bdbje: IllegalStateException ise ) {
 			// ignore, which will cause prev ret value to be kept and null returned for this method
 			// FIXME: fix this, to find another way, else much spam on console:
 			// BDB0631 Cursor position must be set before performing this operation
+			// but also it seems slower...
 		}
 		
 		if ( ret.equals( OperationStatus.SUCCESS ) ) {
-			final long key = LongBinding.entryToLong( deKey );
-			assert _initialNode.getId() == key;
-			final long data = LongBinding.entryToLong( deData );
-			return new BDBNode( data );
+			assert _initialNode.equals( entryToNode( deKey ) );
+			return entryToNode( deData );
 		} else {
 			return null;
 		}
@@ -190,7 +189,7 @@ public class IterOnTerminalNodes_InOnePriDB {
 			throw Q.rethrow( e );
 		}
 		if ( ret.equals( OperationStatus.SUCCESS ) ) {
-			return new BDBNode( LongBinding.entryToLong( deData ) );
+			return entryToNode( deData );
 		} else {
 			return null;
 		}
@@ -201,7 +200,7 @@ public class IterOnTerminalNodes_InOnePriDB {
 		final DatabaseEntry deData = new DatabaseEntry();
 		final BDBNode theNow = getCurrent();
 		assert null != theNow;
-		LongBinding.longToEntry( theNow.getId(), deData );
+		nodeToEntry( theNow, deData );
 		assert deData.getOffset() == 0;
 		
 		return deData;
@@ -219,7 +218,7 @@ public class IterOnTerminalNodes_InOnePriDB {
 			throw Q.rethrow( e );
 		}
 		if ( ret.equals( OperationStatus.SUCCESS ) ) {
-			return new BDBNode( LongBinding.entryToLong( deData ) );
+			return entryToNode( deData );
 		} else {
 			return null;
 		}
@@ -242,7 +241,7 @@ public class IterOnTerminalNodes_InOnePriDB {
 		}
 		
 		if ( null != now ) {
-			this.goTo( now );
+			goTo( now );
 			assert getCurrent().equals( now );
 		} else {
 			assert getCurrent() != null;// since it went First because cursor needed to be inited

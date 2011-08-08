@@ -43,34 +43,45 @@ import org.bdbLevel1.*;
 import org.bdbLevel2.*;
 import org.junit.*;
 import org.q.*;
+import org.toolza.Timer;
 
 
 
 public class TestSetOfNodes {
 	
-	private BDBEnvironment					env;
+	private BDBEnvironment		env;
 	private L0Set_OfTerminals	set1;
-	private BDBNode					setInitial;
+	private BDBNode				setInitial;
 	
 	
 	@Before
 	public void setUp() {
+		final Timer t = new Timer( Timer.TYPE.MILLIS );
+		t.start();
 		env = new BDBEnvironment( JUnitConstants.BDB_ENVIRONMENT_STORE_DIR, true );
 		setInitial = env.createNewUniqueNode();
 		set1 = new L0Set_OfTerminals( env, setInitial );
+		t.stop();
+		System.out.println( "setUp: " + t.getDeltaPrintFriendly() );
 	}
 	
 	
 	@After
 	public void tearDown() {
+		final Timer t = new Timer( Timer.TYPE.MILLIS );
+		t.start();
 		if ( null != env ) {
 			env.shutdown( true );
 		}
+		t.stop();
+		System.out.println( "tearDown: " + t.getDeltaPrintFriendly() );
 	}
 	
 	
 	@Test
 	public void testWithout() {
+		final Timer t = new Timer( Timer.TYPE.MILLIS );
+		t.start();
 		assertTrue( set1.size() == 0 );
 		
 		final BDBNode one = env.createNewUniqueNode();
@@ -215,8 +226,7 @@ public class TestSetOfNodes {
 		assertTrue( dsot.equals( dsot3 ) );
 		assertTrue( dsot.equals( dsot4 ) );
 		assertTrue( dsot4.equals( dsot ) );
-		final L0DomainSet_OfTerminals dsot5 =
-			new L0DomainSet_OfTerminals( env, dsot.getSelf(), env.createNewUniqueNode() );
+		final L0DomainSet_OfTerminals dsot5 = new L0DomainSet_OfTerminals( env, dsot.getSelf(), env.createNewUniqueNode() );
 		try {
 			// same set but different domains?, which reminds me
 			// XXX:we should not be able to `new` same set with two different domains; thing is we only detect this here when
@@ -308,7 +318,8 @@ public class TestSetOfNodes {
 		set1.clearAll();
 		assertTrue( set1.size() == 0 );
 		assertTrue( set1.isEmpty() );
-		
+		t.stop();
+		System.out.println( t.getDeltaPrintFriendly() );
 	}
 	
 	
@@ -350,7 +361,6 @@ public class TestSetOfNodes {
 		} catch ( final BadCallError ae ) {
 			// the way
 		}
-		
 	}
 	
 	
@@ -378,8 +388,7 @@ public class TestSetOfNodes {
 		assertTrue( ptr.equals( ptr2 ) );
 		
 		// this is not valid, since it uses same self as ptr2
-		final L0DomainPointer_ToTerminal dptr =
-			new L0DomainPointer_ToTerminal( env, ptr2.getSelf(), set1.getSelf() );
+		final L0DomainPointer_ToTerminal dptr = new L0DomainPointer_ToTerminal( env, ptr2.getSelf(), set1.getSelf() );
 		
 		try {
 			dptr.getPointeeTerminal();// detects that pointee is not in domain!
