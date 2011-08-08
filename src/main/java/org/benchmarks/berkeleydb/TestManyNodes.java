@@ -55,14 +55,14 @@ public class TestManyNodes
 	private static final int		HOWMANY_PER_TRANSACTION			= 30000;
 	private static final int		HOWMANY_RELATIONSHIPS_FOR_ONE	= 1000000;
 	
-	private final GenericStorage	env;
-	private GenericNode				list;
-	private GenericNode				middleElement;
-	private GenericNode				headElement;
-	private GenericNode				tailElement;
+	private final StorageGeneric	env;
+	private NodeGeneric				list;
+	private NodeGeneric				middleElement;
+	private NodeGeneric				headElement;
+	private NodeGeneric				tailElement;
 	
 	
-	public TestManyNodes( final GenericStorage _env ) {
+	public TestManyNodes( final StorageGeneric _env ) {
 		assert null != _env;
 		env = _env;
 	}
@@ -93,7 +93,7 @@ public class TestManyNodes
 	
 	
 	public void init() {
-		GenericTransaction txn = env.beginTransaction();
+		TransactionGeneric txn = env.beginTransaction();
 		try {
 			list = env.getNode( ROOT_LIST );
 			middleElement = env.getNode( MIDDLE );
@@ -346,7 +346,7 @@ public class TestManyNodes
 	 */
 	
 	public void run() {
-		final GenericTransaction t = env.beginTransaction();
+		final TransactionGeneric t = env.beginTransaction();
 		try {
 			System.out.println( "run for `" + env.getClass() + "`" );
 			System.out.println( "trying isVector():" );
@@ -373,7 +373,7 @@ public class TestManyNodes
 	private final Timer	t3	= new Timer( Timer.TYPE.MILLIS );
 	
 	
-	private void goFind2( final GenericNode initialNode, final GenericNode terminalNode ) {
+	private void goFind2( final NodeGeneric initialNode, final NodeGeneric terminalNode ) {
 		t3.start();
 		final boolean ret = env.isVector( initialNode, terminalNode );
 		assert ret;

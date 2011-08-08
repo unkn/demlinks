@@ -38,7 +38,7 @@ package org.dml.storage;
 /**
  * in-java representation for the underlying db-stored node
  */
-public interface GenericNode
+public interface NodeGeneric
 		extends Cloneable
 {
 	
@@ -64,5 +64,5 @@ public interface GenericNode
 	
 	
 	// public GenericNode clone() throws CloneNotSupportedException;
-	public GenericNode clone();// throws CloneNotSupportedException;
+	public NodeGeneric clone();// throws CloneNotSupportedException;
 }

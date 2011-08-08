@@ -46,7 +46,7 @@ import com.sleepycat.db.*;
  */
 public class IteratorOnTerminalNodes_InDualPriDBs
 		extends IterOnTerminalNodes_InOnePriDB
-		implements GenericIteratorOnTerminalNodes
+		implements IteratorOnTerminalNodesGeneric
 {
 	
 	private final Database	reverse;
@@ -65,7 +65,7 @@ public class IteratorOnTerminalNodes_InDualPriDBs
 	 *            the initial in first DB, we iterate on this items' children(aka its terminals)<br>
 	 */
 	protected IteratorOnTerminalNodes_InDualPriDBs( final Database priForwardDB, final Database priBackwardDB,
-			final GenericNode fixedInitialObjectInFirstDB ) {
+			final NodeGeneric fixedInitialObjectInFirstDB ) {
 		super( priForwardDB, fixedInitialObjectInFirstDB );
 		assert fixedInitialObjectInFirstDB == _initialNode;
 		assert null != priBackwardDB;
@@ -81,7 +81,7 @@ public class IteratorOnTerminalNodes_InDualPriDBs
 	@Override
 	public void delete() {
 		// initialObject->current
-		final GenericNode current = super.getCurrent();
+		final NodeGeneric current = super.getCurrent();
 		super.delete();// del this: initialObject->current
 		deleteFromReverse( current );
 	}
@@ -89,7 +89,7 @@ public class IteratorOnTerminalNodes_InDualPriDBs
 	
 	@Override
 	public void deleteAll() {// we don't need this
-		GenericNode cur;
+		NodeGeneric cur;
 		while ( ( cur = goFirst() ) != null ) {
 			super.delete();
 			deleteFromReverse( cur );
@@ -101,11 +101,11 @@ public class IteratorOnTerminalNodes_InDualPriDBs
 	/**
 	 * @param delThisOne
 	 */
-	private void deleteFromReverse( final GenericNode delThisOne ) {
+	private void deleteFromReverse( final NodeGeneric delThisOne ) {
 		assert null != delThisOne;
 		final IterOnTerminalNodes_InOnePriDB iterReverse = new IterOnTerminalNodes_InOnePriDB( reverse, delThisOne );
 		try {
-			final GenericNode l = iterReverse.goTo( _initialNode );// pos on initialObject in this tuple:
+			final NodeGeneric l = iterReverse.goTo( _initialNode );// pos on initialObject in this tuple:
 																	// current->initialObject
 			assert null != l : "the specified Node for deletion was not found";
 			iterReverse.delete();// del this: current<-initialObject

@@ -41,7 +41,7 @@ import com.sleepycat.bind.tuple.*;
 /**
 	 *
 	 */
-public abstract class GenericNodeBinding extends TupleBinding<GenericNode> {
+public abstract class GenericNodeBinding extends TupleBinding<NodeGeneric> {
 	
 	/*
 	 * (non-Javadoc)
@@ -49,7 +49,7 @@ public abstract class GenericNodeBinding extends TupleBinding<GenericNode> {
 	 * @see com.sleepycat.bind.tuple.TupleBinding#objectToEntry(java.lang.Object, com.sleepycat.bind.tuple.TupleOutput)
 	 */
 	@Override
-	public void objectToEntry( final GenericNode node, final TupleOutput output ) {
+	public void objectToEntry( final NodeGeneric node, final TupleOutput output ) {
 		// assert Q.nn( node );no need, it will NPE below
 		// assert Q.nn( output );same
 		final long myLong = node.getId();

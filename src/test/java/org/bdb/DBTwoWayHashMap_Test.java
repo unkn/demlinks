@@ -72,7 +72,7 @@ public class DBTwoWayHashMap_Test
 	
 	@Test
 	public void linkTest() {
-		final GenericTransaction txn = env.beginTransaction();
+		final TransactionGeneric txn = env.beginTransaction();
 		try {
 			assertFalse( x.ensureExists( _a, _b ) );
 			assertTrue( x.getName( _b ).equals( _a ) );
@@ -93,7 +93,7 @@ public class DBTwoWayHashMap_Test
 	
 	@Test
 	public void testMany() {
-		final GenericTransaction txn = env.beginTransaction();
+		final TransactionGeneric txn = env.beginTransaction();
 		try {
 			final GenericBDBTwoWayMapOfNNU<Long, String> y =
 				new GenericBDBTwoWayMapOfNNU<Long, String>( env, "some 1-to-1 dbMap", Long.class, String.class );

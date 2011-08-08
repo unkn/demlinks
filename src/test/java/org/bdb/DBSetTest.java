@@ -50,9 +50,9 @@ public class DBSetTest
 	private BDBSetOfNodes		o2m	= null;
 	// the following two should be random unique names not already in the dbase
 	// or else the tests may fail, that's ok the database is cleared before and after the tests!
-	private final GenericNode	_a	= BDBNode.getBDBNodeInstance( 1l );
-	private final GenericNode	_b	= BDBNode.getBDBNodeInstance( 2l );
-	private final GenericNode	_c	= BDBNode.getBDBNodeInstance( 3l );
+	private final NodeGeneric	_a	= BDBNode.getBDBNodeInstance( 1l );
+	private final NodeGeneric	_b	= BDBNode.getBDBNodeInstance( 2l );
+	private final NodeGeneric	_c	= BDBNode.getBDBNodeInstance( 3l );
 	private StorageBDBNative	env	= null;
 	
 	
@@ -115,10 +115,10 @@ public class DBSetTest
 		
 		assertTrue( o2m.ensureVector( _c, _b ) );
 		
-		GenericIteratorOnTerminalNodes iter = o2m.getIterator_on_Initials_of( _c );
+		IteratorOnTerminalNodesGeneric iter = o2m.getIterator_on_Initials_of( _c );
 		assertNotNull( iter );
 		try {
-			GenericNode now = iter.goFirst();
+			NodeGeneric now = iter.goFirst();
 			assert null != now;
 			do {
 				System.out.println( now + " -> _c" );
@@ -137,7 +137,7 @@ public class DBSetTest
 		
 		iter = o2m.getIterator_on_Terminals_of( _c );
 		try {
-			GenericNode now = iter.goFirst();
+			NodeGeneric now = iter.goFirst();
 			assert null != now;
 			do {
 				System.out.println( "_c -> " + now );

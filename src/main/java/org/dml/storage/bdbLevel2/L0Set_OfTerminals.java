@@ -46,8 +46,8 @@ import org.q.*;
 public class L0Set_OfTerminals
 {
 	
-	protected final GenericStorage	env;
-	private final GenericNode		_selfNode;
+	protected final StorageGeneric	env;
+	private final NodeGeneric		_selfNode;
 	
 	
 	/**
@@ -58,7 +58,7 @@ public class L0Set_OfTerminals
 	 *            non-null<br>
 	 *            will be cloned(for now)<br>
 	 */
-	public L0Set_OfTerminals( final GenericStorage env1, final GenericNode selfNode ) {
+	public L0Set_OfTerminals( final StorageGeneric env1, final NodeGeneric selfNode ) {
 		assert null != env1;
 		assert null != selfNode;
 		env = env1;
@@ -66,7 +66,7 @@ public class L0Set_OfTerminals
 	}
 	
 	
-	public GenericNode getSelf() {
+	public NodeGeneric getSelf() {
 		return _selfNode;
 	}
 	
@@ -75,13 +75,13 @@ public class L0Set_OfTerminals
 	 * @param node
 	 * @return true if already existed
 	 */
-	public boolean ensureIsAddedToSet( final GenericNode node ) {
+	public boolean ensureIsAddedToSet( final NodeGeneric node ) {
 		assert isValidTerminal( node );
 		return env.ensureVector( _selfNode, node );
 	}
 	
 	
-	public boolean contains( final GenericNode longIdent ) {
+	public boolean contains( final NodeGeneric longIdent ) {
 		// assert this.isValidTerminal( longIdent ); no
 		return env.isVector( _selfNode, longIdent );
 	}
@@ -100,13 +100,13 @@ public class L0Set_OfTerminals
 	}
 	
 	
-	public boolean remove( final GenericNode node ) {
+	public boolean remove( final NodeGeneric node ) {
 		assert isValidTerminal( node );
 		return env.removeVector( _selfNode, node );
 	}
 	
 	
-	public boolean isValidTerminal( final GenericNode node ) {
+	public boolean isValidTerminal( final NodeGeneric node ) {
 		return ( null != node );// allowing add self to set //&& ( !self.equals( longIdent ) );
 	}
 	
@@ -116,7 +116,7 @@ public class L0Set_OfTerminals
 	 * 
 	 * @return
 	 */
-	public GenericIteratorOnTerminalNodes getIterator() {
+	public IteratorOnTerminalNodesGeneric getIterator() {
 		return env.getIterator_on_Terminals_of( _selfNode );
 	}
 	
@@ -124,8 +124,8 @@ public class L0Set_OfTerminals
 	public void clearAll() {
 		// Q.ni();
 		// TODO: implement this in another way, ie. by deleting that key? because deleting all its children kind of does that
-		// exact thing but slower, no?
-		final GenericIteratorOnTerminalNodes iter = getIterator();
+		// exact thing, but slower, yes?
+		final IteratorOnTerminalNodesGeneric iter = getIterator();
 		try {
 			iter.deleteAll();
 			assert iter.size() == 0;

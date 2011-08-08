@@ -67,7 +67,7 @@ import com.sleepycat.db.*;
  * maybe this restriction will happen in a higher level ie. DomainSet or something<br>
  */
 public class BDBSetOfNodes
-		implements GenericLevel2
+		implements Level2Generic
 {
 	
 	private static final String	backwardSuffix	= "_backward_but_also_primary";
@@ -152,7 +152,7 @@ public class BDBSetOfNodes
 	
 	
 	@Override
-	public boolean isVector( final GenericNode initialLong, final GenericNode terminalLong ) {
+	public boolean isVector( final NodeGeneric initialLong, final NodeGeneric terminalLong ) {
 		assert null != initialLong;
 		assert null != terminalLong;
 		
@@ -192,7 +192,7 @@ public class BDBSetOfNodes
 	 * @return true if existed already; false if it didn't exist before call
 	 */
 	@Override
-	public boolean ensureVector( final GenericNode initialLong, final GenericNode terminalLong ) {
+	public boolean ensureVector( final NodeGeneric initialLong, final NodeGeneric terminalLong ) {
 		assert null != initialLong;
 		assert null != terminalLong;
 		
@@ -207,7 +207,7 @@ public class BDBSetOfNodes
 	 * @param terminalLong
 	 */
 	@Override
-	public void createNewVectorOrThrow( final GenericNode initialLong, final GenericNode terminalLong ) {
+	public void createNewVectorOrThrow( final NodeGeneric initialLong, final NodeGeneric terminalLong ) {
 		assert null != initialLong;
 		assert null != terminalLong;
 		
@@ -231,7 +231,7 @@ public class BDBSetOfNodes
 	 *             if inconsistency detected (ie. one link exists the other
 	 *             doesn't)
 	 */
-	private OperationStatus internal_makeVector( final GenericNode initialLong, final GenericNode terminalLong ) {
+	private OperationStatus internal_makeVector( final NodeGeneric initialLong, final NodeGeneric terminalLong ) {
 		assert null != initialLong;
 		assert null != terminalLong;
 		
@@ -266,7 +266,7 @@ public class BDBSetOfNodes
 	 * @return iter
 	 */
 	@Override
-	public GenericIteratorOnTerminalNodes getIterator_on_Terminals_of( final GenericNode initialObject ) {
+	public IteratorOnTerminalNodesGeneric getIterator_on_Terminals_of( final NodeGeneric initialObject ) {
 		assert null != initialObject;
 		
 		return new IteratorOnTerminalNodes_InDualPriDBs( priForwardDB, priBackwardDB, initialObject );
@@ -282,7 +282,7 @@ public class BDBSetOfNodes
 	 * @return iter
 	 */
 	@Override
-	public GenericIteratorOnTerminalNodes getIterator_on_Initials_of( final GenericNode ofTerminalObject ) {
+	public IteratorOnTerminalNodesGeneric getIterator_on_Initials_of( final NodeGeneric ofTerminalObject ) {
 		assert null != ofTerminalObject;
 		
 		return new IteratorOnTerminalNodes_InDualPriDBs( priBackwardDB, priForwardDB, ofTerminalObject );
@@ -290,7 +290,7 @@ public class BDBSetOfNodes
 	
 	
 	@Override
-	public int countInitials( final GenericNode ofTerminalObject ) {
+	public int countInitials( final NodeGeneric ofTerminalObject ) {
 		assert null != ofTerminalObject;
 		
 		final IterOnTerminalNodes_InOnePriDB vi = new IterOnTerminalNodes_InOnePriDB( priBackwardDB, ofTerminalObject );
@@ -306,7 +306,7 @@ public class BDBSetOfNodes
 	
 	
 	@Override
-	public int countTerminals( final GenericNode ofInitialObject ) {
+	public int countTerminals( final NodeGeneric ofInitialObject ) {
 		assert null != ofInitialObject;
 		
 		final IterOnTerminalNodes_InOnePriDB vi = new IterOnTerminalNodes_InOnePriDB( priForwardDB, ofInitialObject );
@@ -329,15 +329,15 @@ public class BDBSetOfNodes
 	 * @return null if not found
 	 */
 	@Override
-	public GenericNode findCommonTerminalForInitials( final GenericNode initial1, final GenericNode initial2 ) {
+	public NodeGeneric findCommonTerminalForInitials( final NodeGeneric initial1, final NodeGeneric initial2 ) {
 		assert null != initial1;
 		assert null != initial2;
 		
-		GenericNode found = null;
+		NodeGeneric found = null;
 		// we choose the one with the least elements
 		final IterOnTerminalNodes_InOnePriDB iterFor1 = new IterOnTerminalNodes_InOnePriDB( priForwardDB, initial1 );
 		IterOnTerminalNodes_InOnePriDB iterOnSmallest = iterFor1;
-		GenericNode comparator = initial2;
+		NodeGeneric comparator = initial2;
 		IterOnTerminalNodes_InOnePriDB iterFor2 = null;
 		try {
 			iterFor2 = new IterOnTerminalNodes_InOnePriDB( priForwardDB, initial2 );
@@ -358,7 +358,7 @@ public class BDBSetOfNodes
 			
 			// parse iter1's elements and see if any is in iter2
 			
-			GenericNode now = iterOnSmallest.goFirst();
+			NodeGeneric now = iterOnSmallest.goFirst();
 			while ( null != now ) {
 				if ( isVector( comparator, now ) ) {
 					// found one
@@ -390,14 +390,14 @@ public class BDBSetOfNodes
 	 * @return true if existed
 	 */
 	@Override
-	public boolean removeVector( final GenericNode initialObject, final GenericNode terminalObject ) {
+	public boolean removeVector( final NodeGeneric initialObject, final NodeGeneric terminalObject ) {
 		
 		assert null != initialObject;
 		assert null != terminalObject;
 		
-		GenericIteratorOnTerminalNodes iter = getIterator_on_Terminals_of( initialObject );
+		IteratorOnTerminalNodesGeneric iter = getIterator_on_Terminals_of( initialObject );
 		try {
-			final GenericNode now = iter.goTo( terminalObject );
+			final NodeGeneric now = iter.goTo( terminalObject );
 			if ( null == now ) {
 				assert !isVector( initialObject, terminalObject );
 				return false;// didn't exist

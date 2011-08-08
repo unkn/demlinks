@@ -39,20 +39,20 @@ package org.dml.storage;
 /**
  *
  */
-public interface GenericIteratorOnTerminalNodes
-		extends GenericTransaction
+public interface IteratorOnTerminalNodesGeneric
+		extends TransactionGeneric
 {
 	
-	public GenericNode goFirst();
+	public NodeGeneric goFirst();
 	
 	
-	public GenericNode goPrev();
+	public NodeGeneric goPrev();
 	
 	
-	public GenericNode goNext();
+	public NodeGeneric goNext();
 	
 	
-	public GenericNode goTo( final GenericNode terminalNode );
+	public NodeGeneric goTo( final NodeGeneric terminalNode );
 	
 	
 	public int size();

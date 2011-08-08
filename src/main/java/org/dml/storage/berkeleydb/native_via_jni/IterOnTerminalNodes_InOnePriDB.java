@@ -51,12 +51,12 @@ import com.sleepycat.db.*;
  * XXX: if you implement insert, be aware that inserts as deletes must be executed in both databases, else inconsistencies!
  */
 public class IterOnTerminalNodes_InOnePriDB
-		implements GenericTransaction
+		implements TransactionGeneric
 // implements GenericIteratorOnTerminalNodes
 {
 	
 	private final Database				db;
-	protected final GenericNode			_initialNode;										// key
+	protected final NodeGeneric			_initialNode;										// key
 																							
 	private Cursor						cursor;
 	private final BDBTransaction		txn;
@@ -71,7 +71,7 @@ public class IterOnTerminalNodes_InOnePriDB
 	 * @param initialNode
 	 *            iteration is done on the terminals of this initial!
 	 */
-	public IterOnTerminalNodes_InOnePriDB( final Database whichPriDB, final GenericNode initialNode ) {
+	public IterOnTerminalNodes_InOnePriDB( final Database whichPriDB, final NodeGeneric initialNode ) {
 		assert null != whichPriDB;
 		assert null != initialNode;
 		
@@ -98,17 +98,17 @@ public class IterOnTerminalNodes_InOnePriDB
 	}
 	
 	
-	private static void nodeToEntry( final GenericNode readNode, final DatabaseEntry outDE ) {
+	private static void nodeToEntry( final NodeGeneric readNode, final DatabaseEntry outDE ) {
 		BDBNode.binding.objectToEntry( readNode, outDE );
 	}
 	
 	
-	private static GenericNode entryToNode( final DatabaseEntry readDE ) {
+	private static NodeGeneric entryToNode( final DatabaseEntry readDE ) {
 		return BDBNode.binding.entryToObject( readDE );
 	}
 	
 	
-	public GenericNode goFirst() {
+	public NodeGeneric goFirst() {
 		final DatabaseEntry deData = new DatabaseEntry();
 		assert deData.getSize() == 0;
 		assert deData.getOffset() == 0;
@@ -128,7 +128,7 @@ public class IterOnTerminalNodes_InOnePriDB
 	}
 	
 	
-	public GenericNode goTo( final GenericNode terminalNode ) {
+	public NodeGeneric goTo( final NodeGeneric terminalNode ) {
 		final DatabaseEntry deData = new DatabaseEntry();
 		nodeToEntry( terminalNode, deData );
 		assert deData.getOffset() == 0;
@@ -140,7 +140,7 @@ public class IterOnTerminalNodes_InOnePriDB
 			throw Q.rethrow( e );
 		}
 		if ( ret.equals( OperationStatus.SUCCESS ) ) {
-			final GenericNode foundOne = entryToNode( deData );
+			final NodeGeneric foundOne = entryToNode( deData );
 			assert foundOne.equals( terminalNode );
 			return foundOne;
 		} else {
@@ -149,7 +149,7 @@ public class IterOnTerminalNodes_InOnePriDB
 	}
 	
 	
-	protected GenericNode getCurrent() {
+	protected NodeGeneric getCurrent() {
 		final DatabaseEntry deKey = new DatabaseEntry();
 		final DatabaseEntry deData = new DatabaseEntry();
 		
@@ -177,7 +177,7 @@ public class IterOnTerminalNodes_InOnePriDB
 	/**
 	 * @return null if no next
 	 */
-	public GenericNode goNext() {
+	public NodeGeneric goNext() {
 		assert null != getCurrent() : Q.badCall( "called goNext() while current was null" );
 		final DatabaseEntry deData =
 		// new DatabaseEntry();
@@ -203,7 +203,7 @@ public class IterOnTerminalNodes_InOnePriDB
 	
 	private DatabaseEntry getNewCurrentObjectDataEntry() {
 		final DatabaseEntry deData = new DatabaseEntry();
-		final GenericNode theNow = getCurrent();
+		final NodeGeneric theNow = getCurrent();
 		assert null != theNow;
 		nodeToEntry( theNow, deData );
 		assert deData.getOffset() == 0;
@@ -212,7 +212,7 @@ public class IterOnTerminalNodes_InOnePriDB
 	}
 	
 	
-	public GenericNode goPrev() {
+	public NodeGeneric goPrev() {
 		assert null != getCurrent() : Q.badCall( "called goPrev() while now() was null" );
 		final DatabaseEntry deData = getNewCurrentObjectDataEntry();
 		// assert deData.getOffset() == 0;
@@ -231,7 +231,7 @@ public class IterOnTerminalNodes_InOnePriDB
 	
 	
 	public int size() {
-		final GenericNode now = getCurrent();
+		final NodeGeneric now = getCurrent();
 		if ( null == now ) {
 			if ( null == goFirst() ) {
 				return 0;// has no elements

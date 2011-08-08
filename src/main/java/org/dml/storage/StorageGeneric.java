@@ -37,10 +37,10 @@ package org.dml.storage;
 /**
  *
  */
-public interface GenericStorage
+public interface StorageGeneric
 {
 	
-	public GenericTransaction beginTransaction();
+	public TransactionGeneric beginTransaction();
 	
 	
 	public void shutdown();
@@ -54,27 +54,27 @@ public interface GenericStorage
 	 * @param forNode
 	 * @return can be null if node has no associated name
 	 */
-	public String getName( final GenericNode forNode );
+	public String getName( final NodeGeneric forNode );
 	
 	
-	public GenericNode getNode( final String name );
+	public NodeGeneric getNode( final String name );
 	
 	
-	public GenericNode createOrGetNode( final String name );
+	public NodeGeneric createOrGetNode( final String name );
 	
 	
 	/**
 	 * @return never null
 	 */
-	public GenericNode createNewUniqueNode();
+	public NodeGeneric createNewUniqueNode();
 	
 	
 	// =============== Level 2: tuple of nodes
 	
-	public void makeVector( final GenericNode initialNode, final GenericNode terminalNode );
+	public void makeVector( final NodeGeneric initialNode, final NodeGeneric terminalNode );
 	
 	
-	public boolean ensureVector( final GenericNode initialNode, final GenericNode terminalNode );
+	public boolean ensureVector( final NodeGeneric initialNode, final NodeGeneric terminalNode );
 	
 	
 	/**
@@ -85,20 +85,20 @@ public interface GenericStorage
 	 * @param terminalNode
 	 * @return
 	 */
-	public boolean isVector( final GenericNode initialNode, final GenericNode terminalNode );
+	public boolean isVector( final NodeGeneric initialNode, final NodeGeneric terminalNode );
 	
 	
 	
-	public GenericIteratorOnTerminalNodes getIterator_on_Initials_of( final GenericNode terminalNode );
+	public IteratorOnTerminalNodesGeneric getIterator_on_Initials_of( final NodeGeneric terminalNode );
 	
 	
-	public GenericIteratorOnTerminalNodes getIterator_on_Terminals_of( final GenericNode initialNode );
+	public IteratorOnTerminalNodesGeneric getIterator_on_Terminals_of( final NodeGeneric initialNode );
 	
 	
-	public int countInitials( final GenericNode ofTerminalNode );
+	public int countInitials( final NodeGeneric ofTerminalNode );
 	
 	
-	public int countTerminals( final GenericNode ofInitialNode );
+	public int countTerminals( final NodeGeneric ofInitialNode );
 	
 	
 	/**
@@ -110,8 +110,8 @@ public interface GenericStorage
 	 * @param initialNode2
 	 * @return X
 	 */
-	public GenericNode findCommonTerminalForInitials( final GenericNode initialNode1, final GenericNode initialNode2 );
+	public NodeGeneric findCommonTerminalForInitials( final NodeGeneric initialNode1, final NodeGeneric initialNode2 );
 	
 	
-	public boolean removeVector( final GenericNode initialNode, final GenericNode terminalNode );
+	public boolean removeVector( final NodeGeneric initialNode, final NodeGeneric terminalNode );
 }

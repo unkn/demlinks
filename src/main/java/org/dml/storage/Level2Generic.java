@@ -36,34 +36,34 @@ package org.dml.storage;
 
 
 
-public interface GenericLevel2
+public interface Level2Generic
 {
 	
-	public boolean isVector( final GenericNode initialLong, final GenericNode terminalLong );
+	public boolean isVector( final NodeGeneric initialLong, final NodeGeneric terminalLong );
 	
 	
-	public void createNewVectorOrThrow( final GenericNode initialLong, final GenericNode terminalLong );
+	public void createNewVectorOrThrow( final NodeGeneric initialLong, final NodeGeneric terminalLong );
 	
 	
-	public boolean ensureVector( final GenericNode initialLong, final GenericNode terminalLong );
+	public boolean ensureVector( final NodeGeneric initialLong, final NodeGeneric terminalLong );
 	
 	
-	public boolean removeVector( final GenericNode initialObject, final GenericNode terminalObject );
+	public boolean removeVector( final NodeGeneric initialObject, final NodeGeneric terminalObject );
 	
 	
-	public GenericIteratorOnTerminalNodes getIterator_on_Terminals_of( final GenericNode initialObject );
+	public IteratorOnTerminalNodesGeneric getIterator_on_Terminals_of( final NodeGeneric initialObject );
 	
 	
-	public GenericIteratorOnTerminalNodes getIterator_on_Initials_of( final GenericNode ofTerminalObject );
+	public IteratorOnTerminalNodesGeneric getIterator_on_Initials_of( final NodeGeneric ofTerminalObject );
 	
 	
-	public int countInitials( final GenericNode ofTerminalObject );
+	public int countInitials( final NodeGeneric ofTerminalObject );
 	
 	
-	public int countTerminals( final GenericNode ofInitialObject );
+	public int countTerminals( final NodeGeneric ofInitialObject );
 	
 	
-	public GenericNode findCommonTerminalForInitials( final GenericNode initial1, final GenericNode initial2 );
+	public NodeGeneric findCommonTerminalForInitials( final NodeGeneric initial1, final NodeGeneric initial2 );
 	
 	
 }

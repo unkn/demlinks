@@ -53,7 +53,7 @@ public class TestSetOfNodes
 	
 	private StorageBDBNative	env;
 	private L0Set_OfTerminals	set1;
-	private GenericNode			setInitial;
+	private NodeGeneric			setInitial;
 	
 	
 	@Before
@@ -86,7 +86,7 @@ public class TestSetOfNodes
 		t.start();
 		assertTrue( set1.size() == 0 );
 		
-		final GenericNode one = env.createNewUniqueNode();
+		final NodeGeneric one = env.createNewUniqueNode();
 		assertNotNull( one );
 		assertFalse( set1.ensureIsAddedToSet( one ) );
 		assertTrue( set1.size() == 1 );
@@ -103,20 +103,20 @@ public class TestSetOfNodes
 		assertFalse( set1.contains( setInitial ) );
 		
 		final int startSize = set1.size();
-		final GenericNode two = env.createNewUniqueNode();
+		final NodeGeneric two = env.createNewUniqueNode();
 		assertNotNull( two );
 		assertTrue( two != one );
 		assertFalse( set1.ensureIsAddedToSet( two ) );
 		assertTrue( set1.size() == ( startSize + 1 ) );
 		assertTrue( env.isVector( set1.getSelf(), two ) );
 		
-		final GenericNode three = env.createNewUniqueNode();
+		final NodeGeneric three = env.createNewUniqueNode();
 		assertNotNull( three );
 		assertFalse( set1.ensureIsAddedToSet( three ) );
 		assertTrue( env.isVector( set1.getSelf(), three ) );
 		assertTrue( set1.size() == ( startSize + 2 ) );
 		
-		final GenericIteratorOnTerminalNodes iter = set1.getIterator();
+		final IteratorOnTerminalNodesGeneric iter = set1.getIterator();
 		assertTrue( iter.goFirst().equals( one ) );
 		
 		assertNull( iter.goPrev() );// even tho errored here,
@@ -138,7 +138,7 @@ public class TestSetOfNodes
 		
 		
 		
-		GenericNode now = iter.goFirst();
+		NodeGeneric now = iter.goFirst();
 		while ( now != null ) {
 			now = iter.goNext();
 		}
@@ -162,7 +162,7 @@ public class TestSetOfNodes
 		assertTrue( iter.size() == 2 );
 		assertTrue( set1.size() == 2 );
 		// assertTrue( this.set1.remove( two ) );
-		final GenericIteratorOnTerminalNodes iter2 = iter;// this.set1.getIterator( );
+		final IteratorOnTerminalNodesGeneric iter2 = iter;// this.set1.getIterator( );
 		// iter2.goFirst();
 		// while ( iter2.now() != null ) {
 		// System.out.println( "iter2=" + iter2.now() );
@@ -174,7 +174,7 @@ public class TestSetOfNodes
 		assertNull( iter2.goPrev() );
 		now = iter2.goTo( three );
 		assertNull( iter2.goNext() );
-		final GenericNode now2 = iter2.goTo( three );
+		final NodeGeneric now2 = iter2.goTo( three );
 		assertTrue( now != now2 );// diff instances, always returning new BerkNodeAdapter()
 		assertTrue( now.equals( now2 ) );
 		
@@ -195,7 +195,7 @@ public class TestSetOfNodes
 		iter2.finished();
 		assertFalse( env.isVector( set1.getSelf(), three ) );
 		
-		final GenericNode dsotInitial = env.createNewUniqueNode();
+		final NodeGeneric dsotInitial = env.createNewUniqueNode();
 		final L0DomainSet_OfTerminals dsot = new L0DomainSet_OfTerminals( env, dsotInitial, setInitial );
 		assertTrue( set1.getSelf().equals( setInitial ) );
 		try {
@@ -327,7 +327,7 @@ public class TestSetOfNodes
 	
 	@Test
 	public void testAlreadyExisting() {
-		final GenericNode l1 = env.createNewUniqueNode();
+		final NodeGeneric l1 = env.createNewUniqueNode();
 		assertNotNull( l1 );
 		final L0Set_OfTerminals sos = new L0Set_OfTerminals( env, set1.getSelf() );
 		assertFalse( set1.ensureIsAddedToSet( l1 ) );
@@ -346,7 +346,7 @@ public class TestSetOfNodes
 		assertTrue( sos2 != set1 );
 		assertTrue( sos != sos2 );
 		
-		final GenericNode domain = env.createNewUniqueNode();
+		final NodeGeneric domain = env.createNewUniqueNode();
 		L0Set_OfTerminals dsos;
 		// doesn't check integrity, thus not throws here:
 		dsos = new L0DomainSet_OfTerminals( env, sos2.getSelf(), domain );
@@ -368,14 +368,14 @@ public class TestSetOfNodes
 	
 	@Test
 	public void testPointer() {
-		final GenericNode ptrInitial = env.createNewUniqueNode();
+		final NodeGeneric ptrInitial = env.createNewUniqueNode();
 		assertNotNull( ptrInitial );
 		final L0Pointer_ToTerminal ptr = new L0Pointer_ToTerminal( env, ptrInitial );
 		assertTrue( ptr.getSelf().equals( ptrInitial ) );
 		assertTrue( ptr.getSelf() != ptrInitial );
 		assertNull( ptr.getPointeeTerminal() );
 		
-		final GenericNode newL = env.createNewUniqueNode();
+		final NodeGeneric newL = env.createNewUniqueNode();
 		assertNotNull( newL );
 		assertFalse( env.ensureVector( ptrInitial, newL ) );
 		

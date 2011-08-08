@@ -49,7 +49,7 @@ public class L0DomainSet_OfTerminals
 		extends L0Set_OfTerminals
 {
 	
-	private final GenericNode	_domainNode;
+	private final NodeGeneric	_domainNode;
 	
 	
 	/**
@@ -57,7 +57,7 @@ public class L0DomainSet_OfTerminals
 	 * @param selfNode
 	 * @param domainNode
 	 */
-	public L0DomainSet_OfTerminals( final StorageBDBNative env1, final GenericNode selfNode, final GenericNode domainNode ) {
+	public L0DomainSet_OfTerminals( final StorageBDBNative env1, final NodeGeneric selfNode, final NodeGeneric domainNode ) {
 		super( env1, selfNode );
 		assert null != domainNode;
 		assert !selfNode.equals( domainNode );
@@ -71,7 +71,7 @@ public class L0DomainSet_OfTerminals
 	 * @see org.simpler.SetOfTerminals#isValidTerminal(java.lang.Long)
 	 */
 	@Override
-	public boolean isValidTerminal( final GenericNode terminalNode ) {
+	public boolean isValidTerminal( final NodeGeneric terminalNode ) {
 		if ( ( super.isValidTerminal( terminalNode ) ) && ( isInDomain( terminalNode ) ) ) {
 			return true;
 		} else {
@@ -80,12 +80,12 @@ public class L0DomainSet_OfTerminals
 	}
 	
 	
-	public boolean isInDomain( final GenericNode terminalNode ) {
+	public boolean isInDomain( final NodeGeneric terminalNode ) {
 		return ( ( !_domainNode.equals( terminalNode ) ) && ( env.isVector( _domainNode, terminalNode ) ) );
 	}
 	
 	
-	public GenericNode getDomain() {
+	public NodeGeneric getDomain() {
 		return _domainNode;
 	}
 	

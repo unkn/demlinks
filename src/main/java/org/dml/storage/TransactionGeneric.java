@@ -37,7 +37,7 @@ package org.dml.storage;
 /**
  *
  */
-public interface GenericTransaction {
+public interface TransactionGeneric {
 	
 	public void success();
 	

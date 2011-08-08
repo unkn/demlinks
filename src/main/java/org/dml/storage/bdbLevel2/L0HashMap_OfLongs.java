@@ -62,13 +62,13 @@ public class L0HashMap_OfLongs
 {
 	
 	private final StorageBDBNative	env;
-	private final GenericNode		_selfNode;
+	private final NodeGeneric		_selfNode;
 	
 	
 	private final L0Set_OfTerminals	selfAsSet;
 	
 	
-	public L0HashMap_OfLongs( final StorageBDBNative env1, final GenericNode selfNode ) {
+	public L0HashMap_OfLongs( final StorageBDBNative env1, final NodeGeneric selfNode ) {
 		assert null != env1;
 		assert null != selfNode;
 		env = env1;
@@ -76,9 +76,9 @@ public class L0HashMap_OfLongs
 		selfAsSet = new L0Set_OfTerminals( env, _selfNode );
 		
 		// checking to make sure all values have (at least) one key
-		final GenericIteratorOnTerminalNodes iter = selfAsSet.getIterator();
+		final IteratorOnTerminalNodesGeneric iter = selfAsSet.getIterator();
 		try {
-			GenericNode cur = iter.goFirst();
+			NodeGeneric cur = iter.goFirst();
 			while ( null != cur ) {
 				if ( env.countInitials( cur ) <= 0 ) {
 					throw Q.badCall( "dangling value (long=" + cur + ", its stringId=" + env.getName( cur )
@@ -94,7 +94,7 @@ public class L0HashMap_OfLongs
 	}
 	
 	
-	public GenericNode getValue_akaTerminal( final GenericNode forKey_akaInitialNode ) {
+	public NodeGeneric getValue_akaTerminal( final NodeGeneric forKey_akaInitialNode ) {
 		assert null != forKey_akaInitialNode;
 		return env.findCommonTerminalForInitials( _selfNode, forKey_akaInitialNode );
 	}
@@ -105,7 +105,7 @@ public class L0HashMap_OfLongs
 	 * @param terminalNode
 	 * @return true if already existed!
 	 */
-	public boolean put( final GenericNode initialNode, final GenericNode terminalNode ) {
+	public boolean put( final NodeGeneric initialNode, final NodeGeneric terminalNode ) {
 		final boolean ret1 = selfAsSet.ensureIsAddedToSet( terminalNode );// env.ensureVector( self, terminalLong );
 		final boolean ret2 = env.ensureVector( initialNode, terminalNode );
 		assert ret1 ^ ret2 : Q.badCall( "both should've been either false or true; but they differed!" );
@@ -119,7 +119,7 @@ public class L0HashMap_OfLongs
 	 * @param initialNode
 	 * @param terminalNode
 	 */
-	public void putAsNewOrThrow( final GenericNode initialNode, final GenericNode terminalNode ) {
+	public void putAsNewOrThrow( final NodeGeneric initialNode, final NodeGeneric terminalNode ) {
 		final boolean ret = put( initialNode, terminalNode );
 		if ( ret ) {
 			Q.badCall( "already existed!" );

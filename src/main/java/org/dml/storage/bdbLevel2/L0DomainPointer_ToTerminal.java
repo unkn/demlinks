@@ -47,11 +47,11 @@ public class L0DomainPointer_ToTerminal
 		extends L0Pointer_ToTerminal
 {
 	
-	private final GenericNode		_domainNode;
+	private final NodeGeneric		_domainNode;
 	private final StorageBDBNative	env;
 	
 	
-	public L0DomainPointer_ToTerminal( final StorageBDBNative env1, final GenericNode selfNode, final GenericNode domainNode ) {
+	public L0DomainPointer_ToTerminal( final StorageBDBNative env1, final NodeGeneric selfNode, final NodeGeneric domainNode ) {
 		super( env1, selfNode );
 		assert null != env1;
 		env = env1;
@@ -69,7 +69,7 @@ public class L0DomainPointer_ToTerminal
 	 *            null or a longIdent
 	 * @return true if valid for this
 	 */
-	public boolean isValidTerminal( final GenericNode terminalNode ) {
+	public boolean isValidTerminal( final NodeGeneric terminalNode ) {
 		return ( ( null == terminalNode ) || ( ( !_domainNode.equals( terminalNode ) ) && ( env.isVector(
 			_domainNode,
 			terminalNode ) ) ) );
@@ -77,21 +77,21 @@ public class L0DomainPointer_ToTerminal
 	
 	
 	@Override
-	public void setPointee( final GenericNode toWhatTerminalNode ) {
+	public void setPointee( final NodeGeneric toWhatTerminalNode ) {
 		assert isValidTerminal( toWhatTerminalNode );
 		super.setPointee( toWhatTerminalNode );
 	}
 	
 	
 	@Override
-	public GenericNode getPointeeTerminal() {
-		final GenericNode terminal = super.getPointeeTerminal();
+	public NodeGeneric getPointeeTerminal() {
+		final NodeGeneric terminal = super.getPointeeTerminal();
 		assert isValidTerminal( terminal ) : "something else must've changed our pointee and made this inconsistent with our domain";
 		return terminal;
 	}
 	
 	
-	public GenericNode getDomain() {
+	public NodeGeneric getDomain() {
 		return _domainNode;
 	}
 	

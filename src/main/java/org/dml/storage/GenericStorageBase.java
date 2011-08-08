@@ -37,7 +37,7 @@ package org.dml.storage;
 /**
  *
  */
-public abstract class GenericStorageBase implements GenericStorage {
+public abstract class GenericStorageBase implements StorageGeneric {
 	
 	@Override
 	public final void shutdown() {

@@ -488,7 +488,7 @@ public class StorageBDBNative
 	 * @return can be null
 	 */
 	@Override
-	public String getName( final GenericNode node ) {
+	public String getName( final NodeGeneric node ) {
 		assert null != node;
 		assert node.getClass() == BDBNode.class;
 		final BDBNode bNode = (BDBNode)node;
@@ -615,7 +615,7 @@ public class StorageBDBNative
 	 * @param terminalNode
 	 */
 	@Override
-	public void makeVector( final GenericNode initialNode, final GenericNode terminalNode ) {
+	public void makeVector( final NodeGeneric initialNode, final NodeGeneric terminalNode ) {
 		assert null != initialNode;
 		assert null != terminalNode;
 		assert initialNode.getClass() == BDBNode.class;
@@ -627,7 +627,7 @@ public class StorageBDBNative
 	
 	
 	@Override
-	public boolean ensureVector( final GenericNode initialNode, final GenericNode terminalNode ) {
+	public boolean ensureVector( final NodeGeneric initialNode, final NodeGeneric terminalNode ) {
 		assert null != initialNode;
 		assert null != terminalNode;
 		return dbSet.ensureVector( initialNode, terminalNode );
@@ -635,7 +635,7 @@ public class StorageBDBNative
 	
 	
 	@Override
-	public boolean isVector( final GenericNode initialNode, final GenericNode terminalNode ) {
+	public boolean isVector( final NodeGeneric initialNode, final NodeGeneric terminalNode ) {
 		assert null != initialNode;
 		assert null != terminalNode;
 		assert initialNode.getClass() == BDBNode.class;
@@ -647,28 +647,28 @@ public class StorageBDBNative
 	
 	
 	@Override
-	public GenericIteratorOnTerminalNodes getIterator_on_Initials_of( final GenericNode terminalNode ) {
+	public IteratorOnTerminalNodesGeneric getIterator_on_Initials_of( final NodeGeneric terminalNode ) {
 		assert null != terminalNode;
 		return dbSet.getIterator_on_Initials_of( terminalNode );
 	}
 	
 	
 	@Override
-	public GenericIteratorOnTerminalNodes getIterator_on_Terminals_of( final GenericNode initialNode ) {
+	public IteratorOnTerminalNodesGeneric getIterator_on_Terminals_of( final NodeGeneric initialNode ) {
 		assert null != initialNode;
 		return dbSet.getIterator_on_Terminals_of( initialNode );
 	}
 	
 	
 	@Override
-	public int countInitials( final GenericNode ofTerminalNode ) {
+	public int countInitials( final NodeGeneric ofTerminalNode ) {
 		assert null != ofTerminalNode;
 		return dbSet.countInitials( ofTerminalNode );
 	}
 	
 	
 	@Override
-	public int countTerminals( final GenericNode ofInitialNode ) {
+	public int countTerminals( final NodeGeneric ofInitialNode ) {
 		assert null != ofInitialNode;
 		return dbSet.countTerminals( ofInitialNode );
 	}
@@ -684,7 +684,7 @@ public class StorageBDBNative
 	 * @return
 	 */
 	@Override
-	public GenericNode findCommonTerminalForInitials( final GenericNode initialNode1, final GenericNode initialNode2 ) {
+	public NodeGeneric findCommonTerminalForInitials( final NodeGeneric initialNode1, final NodeGeneric initialNode2 ) {
 		assert null != initialNode1;
 		assert null != initialNode2;
 		return dbSet.findCommonTerminalForInitials( initialNode1, initialNode2 );
@@ -692,7 +692,7 @@ public class StorageBDBNative
 	
 	
 	@Override
-	public boolean removeVector( final GenericNode initialNode, final GenericNode terminalNode ) {
+	public boolean removeVector( final NodeGeneric initialNode, final NodeGeneric terminalNode ) {
 		assert null != initialNode;
 		assert null != terminalNode;
 		return dbSet.removeVector( initialNode, terminalNode );
@@ -705,7 +705,7 @@ public class StorageBDBNative
 	 * @see org.generic.env.EnvAdapter#beginTxn()
 	 */
 	@Override
-	public GenericTransaction beginTransaction() {
+	public TransactionGeneric beginTransaction() {
 		return BDBTransaction.beginChild( getBDBEnv() );
 	}
 	

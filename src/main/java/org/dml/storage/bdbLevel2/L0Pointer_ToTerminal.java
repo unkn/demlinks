@@ -51,12 +51,12 @@ public class L0Pointer_ToTerminal
 	private final L0Set_OfTerminals	setOf1Element;
 	
 	
-	public L0Pointer_ToTerminal( final StorageBDBNative env1, final GenericNode selfNode ) {
+	public L0Pointer_ToTerminal( final StorageBDBNative env1, final NodeGeneric selfNode ) {
 		setOf1Element = new L0Set_OfTerminals( env1, selfNode );
 	}
 	
 	
-	public GenericNode getSelf() {
+	public NodeGeneric getSelf() {
 		return setOf1Element.getSelf();
 	}
 	
@@ -65,7 +65,7 @@ public class L0Pointer_ToTerminal
 	 * @param toWhatTerminalNode
 	 *            can be null
 	 */
-	public void setPointee( final GenericNode toWhatTerminalNode ) {
+	public void setPointee( final NodeGeneric toWhatTerminalNode ) {
 		setOf1Element.clearAll();// removes prev if any
 		assert setOf1Element.isEmpty();
 		
@@ -80,7 +80,7 @@ public class L0Pointer_ToTerminal
 	/**
 	 * @return null if none
 	 */
-	public GenericNode getPointeeTerminal() {
+	public NodeGeneric getPointeeTerminal() {
 		final int size = setOf1Element.size();
 		assert ( size == 0 ) || ( size == 1 ) : Q.bug( "inconsistency fail, this pointer `" + getSelf()
 			+ "` must point to 0 or 1 terminals only" );
@@ -89,9 +89,9 @@ public class L0Pointer_ToTerminal
 		}
 		
 		// get first one (should be only one)
-		final GenericIteratorOnTerminalNodes iter = setOf1Element.getIterator();
+		final IteratorOnTerminalNodesGeneric iter = setOf1Element.getIterator();
 		try {
-			final GenericNode termNode = iter.goFirst();
+			final NodeGeneric termNode = iter.goFirst();
 			iter.success();
 			return termNode;
 		} finally {

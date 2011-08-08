@@ -49,7 +49,7 @@ import com.sleepycat.db.*;
  * time and if so, do ThreadLocal\<Transaction\> instead
  */
 public class BDBTransaction
-		implements GenericTransaction
+		implements TransactionGeneric
 {
 	
 	private static ThreadLocal<Transaction>	bdbTransactionSingleton	= new ThreadLocal<Transaction>()

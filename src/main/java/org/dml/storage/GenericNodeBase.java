@@ -43,7 +43,7 @@ import org.q.*;
  * they're to be compared via .equals()<br>
  */
 public abstract class GenericNodeBase
-		implements GenericNode// , Cloneable
+		implements NodeGeneric// , Cloneable
 {
 	
 	private final long	longNode;
@@ -80,7 +80,7 @@ public abstract class GenericNodeBase
 			return false;
 		}
 		Q.assumeSameExactClassElseThrow( this, obj );
-		final GenericNode n = (GenericNode)obj;
+		final NodeGeneric n = (NodeGeneric)obj;
 		return getId() == n.getId();
 	}
 	

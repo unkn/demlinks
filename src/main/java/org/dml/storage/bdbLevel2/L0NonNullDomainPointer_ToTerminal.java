@@ -47,15 +47,15 @@ public class L0NonNullDomainPointer_ToTerminal
 {
 	
 	
-	public L0NonNullDomainPointer_ToTerminal( final StorageBDBNative env1, final GenericNode selfNode,
-			final GenericNode domainNode ) {
+	public L0NonNullDomainPointer_ToTerminal( final StorageBDBNative env1, final NodeGeneric selfNode,
+			final NodeGeneric domainNode ) {
 		super( env1, selfNode, domainNode );
 		// XXX: do NOT check for integrity, ie. don't check if terminal is not null and in domain!
 	}
 	
 	
 	@Override
-	public boolean isValidTerminal( final GenericNode terminalNode ) {
+	public boolean isValidTerminal( final NodeGeneric terminalNode ) {
 		return ( null != terminalNode ) && ( super.isValidTerminal( terminalNode ) );
 	}
 	
