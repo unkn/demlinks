@@ -34,7 +34,7 @@
 package org.dml.storage.bdbLevel2;
 
 import org.dml.storage.*;
-import org.dml.storage.bdbLevel1.*;
+import org.dml.storage.berkeleydb.native_via_jni.*;
 
 
 
@@ -47,7 +47,8 @@ public class L0NonNullDomainPointer_ToTerminal
 {
 	
 	
-	public L0NonNullDomainPointer_ToTerminal( final BDBStorage env1, final GenericNode selfNode, final GenericNode domainNode ) {
+	public L0NonNullDomainPointer_ToTerminal( final StorageBDBNative env1, final GenericNode selfNode,
+			final GenericNode domainNode ) {
 		super( env1, selfNode, domainNode );
 		// XXX: do NOT check for integrity, ie. don't check if terminal is not null and in domain!
 	}

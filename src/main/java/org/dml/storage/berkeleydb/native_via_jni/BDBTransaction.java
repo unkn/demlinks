@@ -31,7 +31,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.dml.storage.bdbLevel1;
+package org.dml.storage.berkeleydb.native_via_jni;
 
 import org.dml.storage.*;
 import org.q.*;
@@ -48,9 +48,12 @@ import com.sleepycat.db.*;
  * FIXME: check if sibling transactions are doable, ie. multiple threads each using different Transaction instance at the same
  * time and if so, do ThreadLocal\<Transaction\> instead
  */
-public class BDBTransaction implements GenericTransaction {
+public class BDBTransaction
+		implements GenericTransaction
+{
 	
-	private static ThreadLocal<Transaction>	bdbTransactionSingleton	= new ThreadLocal<Transaction>() {
+	private static ThreadLocal<Transaction>	bdbTransactionSingleton	= new ThreadLocal<Transaction>()
+																	{
 																		
 																		/*
 																		 * (non-Javadoc)
@@ -92,7 +95,7 @@ public class BDBTransaction implements GenericTransaction {
 	
 	public static Transaction getCurrentTransaction( final Environment env ) {
 		handleEnv( env );
-		if ( BDBStorage.ENABLE_TRANSACTIONS ) {
+		if ( StorageBDBNative.ENABLE_TRANSACTIONS ) {
 			assert null != bdbTransactionSingleton.get() : "you never called .begin(...) yet";
 			return bdbTransactionSingleton.get();
 		} else {
@@ -124,7 +127,7 @@ public class BDBTransaction implements GenericTransaction {
 	 */
 	public static BDBTransaction beginChild( final Environment env ) {
 		handleEnv( env );
-		if ( BDBStorage.ENABLE_TRANSACTIONS ) {
+		if ( StorageBDBNative.ENABLE_TRANSACTIONS ) {
 			if ( null == bdbTransactionSingleton.get() ) {
 				try {
 					bdbTransactionSingleton.set( _env.beginTransaction( null, txnConfig ) );
@@ -192,7 +195,7 @@ public class BDBTransaction implements GenericTransaction {
 			if ( failed ) {
 				if ( 0 == currentTransactionDepth ) {
 					try {
-						if ( BDBStorage.ENABLE_TRANSACTIONS ) {
+						if ( StorageBDBNative.ENABLE_TRANSACTIONS ) {
 							Q.info( "TXN: real abort" );
 							bdbTransactionSingleton.get().abort();
 						}
@@ -207,7 +210,7 @@ public class BDBTransaction implements GenericTransaction {
 			} else {
 				if ( 0 == currentTransactionDepth ) {
 					try {
-						if ( BDBStorage.ENABLE_TRANSACTIONS ) {
+						if ( StorageBDBNative.ENABLE_TRANSACTIONS ) {
 							Q.info( "TXN: real commit" );
 							bdbTransactionSingleton.get().commit();
 						}

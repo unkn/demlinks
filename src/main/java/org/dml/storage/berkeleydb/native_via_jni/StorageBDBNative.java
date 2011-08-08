@@ -31,13 +31,14 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.dml.storage.bdbLevel1;
+package org.dml.storage.berkeleydb.native_via_jni;
 
 import java.io.*;
 import java.util.concurrent.locks.*;
 
 import org.berkeleydb.*;
 import org.dml.storage.*;
+import org.dml.storage.berkeleydb.commons.*;
 import org.q.*;
 import org.toolza.*;
 
@@ -47,7 +48,7 @@ import com.sleepycat.db.*;
 
 /**
  */
-public class BDBStorage
+public class StorageBDBNative
 		extends GenericStorageBase
 {
 	
@@ -72,7 +73,7 @@ public class BDBStorage
 	private final static String						NAME_dbOfSequences				= "dbthatstoresallsequences";
 	
 	private static final long						MIN_ForLongs					= 0l;
-	private static final long						START_VALUE_ForLongs			= BDBStorage.MIN_ForLongs;
+	private static final long						START_VALUE_ForLongs			= StorageBDBNative.MIN_ForLongs;
 	
 	// imposing a silly limit, for now:
 	private static final long						MAX_ForLongs					= 4123123123l;
@@ -145,16 +146,16 @@ public class BDBStorage
 	 *            used in JUnit only<br>
 	 */
 	@SuppressWarnings( "unused" )
-	public BDBStorage( final String envHomeDir1, final boolean deleteFirst ) {
-		L.tryLock( BDBStorage.rl );
+	public StorageBDBNative( final String envHomeDir1, final boolean deleteFirst ) {
+		L.tryLock( StorageBDBNative.rl );
 		try {
-			if ( BDBStorage.once ) {
+			if ( StorageBDBNative.once ) {
 				Q.badCall( "only allowed one time! and no singletons" );
 			} else {
-				BDBStorage.once = true;
+				StorageBDBNative.once = true;
 			}
 		} finally {
-			BDBStorage.rl.unlock();
+			StorageBDBNative.rl.unlock();
 		}
 		assert null != envHomeDir1;
 		assert !envHomeDir1.isEmpty();
@@ -327,23 +328,24 @@ public class BDBStorage
 			// sequenceDbConf.setKeyPrefixing( false );// no more prefixing
 			sequenceDbConf.setSortedDuplicates( false );// false here
 			sequenceDbConf.setTransactional( ENABLE_TRANSACTIONS );
-			assert null != BDBStorage.NAME_dbOfSequences;
-			assert BDBStorage.NAME_dbOfSequences.length() > 0;
-			dbOfSequences = env.openDatabase( ourTxn.getTransaction(), BDBStorage.NAME_dbOfSequences, null, sequenceDbConf );
+			assert null != StorageBDBNative.NAME_dbOfSequences;
+			assert StorageBDBNative.NAME_dbOfSequences.length() > 0;
+			dbOfSequences =
+				env.openDatabase( ourTxn.getTransaction(), StorageBDBNative.NAME_dbOfSequences, null, sequenceDbConf );
 			assert null != dbOfSequences;
 			
-			db_Name2Node = new BDBTwoWayHashMap_StringName2Node( env, BDBStorage.NAME_of_db_for_Name2Node );
+			db_Name2Node = new BDBTwoWayHashMap_StringName2Node( env, StorageBDBNative.NAME_of_db_for_Name2Node );
 			
 			sequence =
 				new BDB_Named_UniqueNumberGenerator(
 					this,
-					BDBStorage.NAMEofSEQ_longIdents,
-					BDBStorage.MIN_ForLongs,
-					BDBStorage.START_VALUE_ForLongs,
-					BDBStorage.MAX_ForLongs,
+					StorageBDBNative.NAMEofSEQ_longIdents,
+					StorageBDBNative.MIN_ForLongs,
+					StorageBDBNative.START_VALUE_ForLongs,
+					StorageBDBNative.MAX_ForLongs,
 					false );
 			
-			dbSet = new BDBSetOfNodes( env, BDBStorage.DBNAME_OneNode_to_ManyNodes );
+			dbSet = new BDBSetOfNodes( env, StorageBDBNative.DBNAME_OneNode_to_ManyNodes );
 			
 			ourTxn.success();
 		} catch ( final FileNotFoundException e ) {
@@ -385,10 +387,10 @@ public class BDBStorage
 	 */
 	@Override
 	public void shutdown( final boolean delete ) {
-		L.tryLock( BDBStorage.rl );
+		L.tryLock( StorageBDBNative.rl );
 		try {
-			assert BDBStorage.once : "you're not supposed to call this more than once; ie. it won't silently ignore";
-			BDBStorage.once = false;
+			assert StorageBDBNative.once : "you're not supposed to call this more than once; ie. it won't silently ignore";
+			StorageBDBNative.once = false;
 			if ( !shuttingDown ) {
 				assert null != shutdownThread;
 				final boolean ret = Runtime.getRuntime().removeShutdownHook( shutdownThread );
@@ -444,7 +446,7 @@ public class BDBStorage
 			}
 			
 		} finally {
-			BDBStorage.rl.unlock();
+			StorageBDBNative.rl.unlock();
 		}
 	}
 	
@@ -571,7 +573,7 @@ public class BDBStorage
 	 */
 	@Override
 	public final BDBNode createNewUniqueNode() {
-		return BDBNode.getBDBNodeInstance( sequence.getNextUniqueLong( BDBStorage.longIdents_Delta ) );
+		return BDBNode.getBDBNodeInstance( sequence.getNextUniqueLong( StorageBDBNative.longIdents_Delta ) );
 	}
 	
 	

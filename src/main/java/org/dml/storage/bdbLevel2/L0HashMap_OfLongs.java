@@ -34,7 +34,7 @@
 package org.dml.storage.bdbLevel2;
 
 import org.dml.storage.*;
-import org.dml.storage.bdbLevel1.*;
+import org.dml.storage.berkeleydb.native_via_jni.*;
 import org.q.*;
 
 
@@ -61,14 +61,14 @@ import org.q.*;
 public class L0HashMap_OfLongs
 {
 	
-	private final BDBStorage		env;
+	private final StorageBDBNative	env;
 	private final GenericNode		_selfNode;
 	
 	
 	private final L0Set_OfTerminals	selfAsSet;
 	
 	
-	public L0HashMap_OfLongs( final BDBStorage env1, final GenericNode selfNode ) {
+	public L0HashMap_OfLongs( final StorageBDBNative env1, final GenericNode selfNode ) {
 		assert null != env1;
 		assert null != selfNode;
 		env = env1;

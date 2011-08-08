@@ -3,7 +3,6 @@
  * Copyright (c) 2005-2011, AtKaaZ
  * All rights reserved.
  * this file is part of DemLinks
- * File created on Aug 5, 2011 8:22:08 AM
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -32,43 +31,43 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.dml.storage.bdbLevel1;
+package org.dml.storage.berkeleydb.commons;
 
 import org.dml.storage.*;
-
-import com.sleepycat.bind.tuple.*;
 
 
 
 /**
- *
+
  */
-public class BDBNodeBinding
-		extends GenericNodeBinding
-// extends TupleBinding<BDBNode>
+public class BDBNode
+		extends GenericNodeBase
 {
 	
-	// /*
-	// * (non-Javadoc)
-	// *
-	// * @see com.sleepycat.bind.tuple.TupleBinding#objectToEntry(java.lang.Object, com.sleepycat.bind.tuple.TupleOutput)
-	// */
-	// @Override
-	// public void objectToEntry( final BDBNode node, final TupleOutput output ) {
-	// // assert Q.nn( node );no need, it will NPE below
-	// // assert Q.nn( output );same
-	// final long myLong = node.getId();
-	// output.writeLong( myLong );
-	// }
+	public static final BDBNodeBinding	binding	= new BDBNodeBinding();
 	
 	
-	@Override
-	public BDBNode entryToObject( final TupleInput input ) {
-		// assert Q.nn( input);no need, it will NPE below anyway
-		final long fromLong = input.readLong();
-		final BDBNode node = BDBNode.getBDBNodeInstance( fromLong );
-		assert ( node.getId() == fromLong );// this also tests for null as you can see
-		return node;
+	/**
+	 * @param fromLong
+	 *            used internally by bDB as an identifier and it's stored in the db
+	 */
+	private BDBNode( final long fromLong ) {
+		super( fromLong );
 	}
 	
+	
+	public static BDBNode getBDBNodeInstance( final long forLong ) {
+		return new BDBNode( forLong );
+	}
+	
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#clone()
+	 */
+	@Override
+	public BDBNode clone() {
+		return (BDBNode)super.clone();
+	}
 }

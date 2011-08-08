@@ -31,7 +31,9 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.dml.storage.bdbLevel1;
+package org.dml.storage.berkeleydb.native_via_jni;
+
+import org.dml.storage.berkeleydb.commons.*;
 
 import com.sleepycat.db.*;
 
@@ -40,11 +42,13 @@ import com.sleepycat.db.*;
 /**
 
  */
-public class BDBTwoWayHashMap_StringName2Node extends GenericBDBTwoWayMapOfNNU<String, BDBNode> {
+public class BDBTwoWayHashMap_StringName2Node
+		extends GenericBDBTwoWayMapOfNNU<String, BDBNode>
+{
 	
 	
 	
-	public BDBTwoWayHashMap_StringName2Node( final BDBStorage env, final String dbName1 ) {
+	public BDBTwoWayHashMap_StringName2Node( final StorageBDBNative env, final String dbName1 ) {
 		this( env.getBDBEnv(), dbName1 );
 	}
 	

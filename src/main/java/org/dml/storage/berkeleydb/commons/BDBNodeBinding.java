@@ -3,7 +3,7 @@
  * Copyright (c) 2005-2011, AtKaaZ
  * All rights reserved.
  * this file is part of DemLinks
- * File created on Aug 5, 2011 1:04:06 PM
+ * File created on Aug 5, 2011 8:22:08 AM
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -32,56 +32,43 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.dml.storage.bdbLevel1;
+package org.dml.storage.berkeleydb.commons;
 
-import org.q.*;
+import org.dml.storage.*;
 
-import com.sleepycat.db.*;
+import com.sleepycat.bind.tuple.*;
 
 
 
 /**
  *
  */
-public abstract class BDBUtil {
+public class BDBNodeBinding
+		extends GenericNodeBinding
+// extends TupleBinding<BDBNode>
+{
 	
-	public static int getSize( final Database db, final Environment env, final StatsConfig statsConfig1 ) {
-		assert Q.nn( db );
-		assert Q.nn( env );
-		// assert Q.nn( env);
-		if ( null != statsConfig1 ) {
-			if ( statsConfig1.getFast() ) {
-				Q
-					.warn( "sould probably not use getFast() it will not report the size right if the current transaction that added some items is still open, "
-						+ "and did not yet test if it does when txn is indeed closed; "
-						+ "but for sure without fast enabled it reports right!" );
-			}
-		}
-		
-		DatabaseStats dbStats;
-		try {
-			dbStats = db.getStats( BDBTransaction.getCurrentTransaction( env ), statsConfig1 );
-		} catch ( final DatabaseException e ) {
-			throw Q.rethrow( e );
-		}
-		
-		final int numKeys;
-		final int numData;
-		if ( dbStats.getClass() == HashStats.class ) {
-			final HashStats hs = (HashStats)dbStats;
-			numKeys = hs.getNumKeys();
-			numData = hs.getNumData();
-		} else {
-			if ( dbStats.getClass() == BtreeStats.class ) {
-				final BtreeStats bs = (BtreeStats)dbStats;
-				numKeys = bs.getNumKeys();
-				numData = bs.getNumData();
-			} else {
-				throw Q.ni();
-			}
-		}
-		
-		assert numKeys == numData;// no dups remember?
-		return numKeys;
+	// /*
+	// * (non-Javadoc)
+	// *
+	// * @see com.sleepycat.bind.tuple.TupleBinding#objectToEntry(java.lang.Object, com.sleepycat.bind.tuple.TupleOutput)
+	// */
+	// @Override
+	// public void objectToEntry( final BDBNode node, final TupleOutput output ) {
+	// // assert Q.nn( node );no need, it will NPE below
+	// // assert Q.nn( output );same
+	// final long myLong = node.getId();
+	// output.writeLong( myLong );
+	// }
+	
+	
+	@Override
+	public BDBNode entryToObject( final TupleInput input ) {
+		// assert Q.nn( input);no need, it will NPE below anyway
+		final long fromLong = input.readLong();
+		final BDBNode node = BDBNode.getBDBNodeInstance( fromLong );
+		assert ( node.getId() == fromLong );// this also tests for null as you can see
+		return node;
 	}
+	
 }

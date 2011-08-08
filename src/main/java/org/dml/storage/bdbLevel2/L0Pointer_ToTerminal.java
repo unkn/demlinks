@@ -34,7 +34,7 @@
 package org.dml.storage.bdbLevel2;
 
 import org.dml.storage.*;
-import org.dml.storage.bdbLevel1.*;
+import org.dml.storage.berkeleydb.native_via_jni.*;
 import org.q.*;
 
 
@@ -51,7 +51,7 @@ public class L0Pointer_ToTerminal
 	private final L0Set_OfTerminals	setOf1Element;
 	
 	
-	public L0Pointer_ToTerminal( final BDBStorage env1, final GenericNode selfNode ) {
+	public L0Pointer_ToTerminal( final StorageBDBNative env1, final GenericNode selfNode ) {
 		setOf1Element = new L0Set_OfTerminals( env1, selfNode );
 	}
 	

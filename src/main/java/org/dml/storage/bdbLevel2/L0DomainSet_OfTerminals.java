@@ -34,7 +34,7 @@
 package org.dml.storage.bdbLevel2;
 
 import org.dml.storage.*;
-import org.dml.storage.bdbLevel1.*;
+import org.dml.storage.berkeleydb.native_via_jni.*;
 import org.q.*;
 
 
@@ -57,7 +57,7 @@ public class L0DomainSet_OfTerminals
 	 * @param selfNode
 	 * @param domainNode
 	 */
-	public L0DomainSet_OfTerminals( final BDBStorage env1, final GenericNode selfNode, final GenericNode domainNode ) {
+	public L0DomainSet_OfTerminals( final StorageBDBNative env1, final GenericNode selfNode, final GenericNode domainNode ) {
 		super( env1, selfNode );
 		assert null != domainNode;
 		assert !selfNode.equals( domainNode );

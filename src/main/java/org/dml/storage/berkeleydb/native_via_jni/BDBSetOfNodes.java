@@ -31,7 +31,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.dml.storage.bdbLevel1;
+package org.dml.storage.berkeleydb.native_via_jni;
 
 
 import java.io.*;
@@ -82,7 +82,7 @@ public class BDBSetOfNodes
 	 * @param env1
 	 * @param dbName1
 	 */
-	public BDBSetOfNodes( final BDBStorage env1, final String dbName1 ) {
+	public BDBSetOfNodes( final StorageBDBNative env1, final String dbName1 ) {
 		this( env1.getBDBEnv(), dbName1 );
 	}
 	
@@ -113,7 +113,7 @@ public class BDBSetOfNodes
 		// user-defined order, ie. consider A->B then A->C , B will always be before C no matter which operation went first
 		// thus you cannot put A->C then A->B when parsing with iterator, thus consider A as a set containing B and C, w/o order
 		dbConf.setSortedDuplicates( true );// must be true, also for quick finding; the order cannot be user-defined here!
-		dbConf.setTransactional( BDBStorage.ENABLE_TRANSACTIONS );
+		dbConf.setTransactional( StorageBDBNative.ENABLE_TRANSACTIONS );
 		dbConf.setType( DatabaseType.BTREE );
 		
 		try {
@@ -167,8 +167,8 @@ public class BDBSetOfNodes
 		// another transaction (supposedly) to interlace between the two gets
 		final BDBTransaction txn = BDBTransaction.beginChild( env );
 		try {
-			ret1 = priForwardDB.getSearchBoth( txn.getTransaction(), keyEntry, dataEntry, BDBStorage.LOCK );
-			ret2 = priBackwardDB.getSearchBoth( txn.getTransaction(), dataEntry, keyEntry, BDBStorage.LOCK );
+			ret1 = priForwardDB.getSearchBoth( txn.getTransaction(), keyEntry, dataEntry, StorageBDBNative.LOCK );
+			ret2 = priBackwardDB.getSearchBoth( txn.getTransaction(), dataEntry, keyEntry, StorageBDBNative.LOCK );
 			txn.success();
 		} catch ( final DatabaseException e ) {
 			throw Q.rethrow( e );

@@ -36,7 +36,8 @@ package org.bdb;
 import static org.junit.Assert.*;
 
 import org.dml.storage.*;
-import org.dml.storage.bdbLevel1.*;
+import org.dml.storage.berkeleydb.commons.*;
+import org.dml.storage.berkeleydb.native_via_jni.*;
 import org.junit.*;
 
 
@@ -47,12 +48,12 @@ public class DBTwoWayHashMap_Test
 	private BDBTwoWayHashMap_StringName2Node	x	= null;
 	private final String						_a	= "A";
 	private final BDBNode						_b	= BDBNode.getBDBNodeInstance( 2l );
-	private BDBStorage							env	= null;
+	private StorageBDBNative					env	= null;
 	
 	
 	@Before
 	public void setUp() {
-		env = new BDBStorage( JUnitConstants.BDB_ENVIRONMENT_STORE_DIR, true );
+		env = new StorageBDBNative( JUnitConstants.BDB_ENVIRONMENT_STORE_DIR, true );
 		x = new BDBTwoWayHashMap_StringName2Node( env, "some 1-to-1 dbMap" );
 	}
 	

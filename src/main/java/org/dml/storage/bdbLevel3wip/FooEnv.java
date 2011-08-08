@@ -35,10 +35,11 @@ package org.dml.storage.bdbLevel3wip;
 
 import org.dml.storage.bdbLevel1.*;
 import org.dml.storage.bdbLevel2.*;
+import org.dml.storage.berkeleydb.native_via_jni.*;
 
 
 
-public class FooEnv extends BDBStorage {
+public class FooEnv extends StorageBDBNative {
 	
 	private static final String				allLOOLWFF_StringID							= "allListsOrderedOfLongsWithFastFind";
 	public final Long						allLOOLWFF_LongID							=

@@ -38,7 +38,8 @@ package org.bdb;
 import static org.junit.Assert.*;
 
 import org.dml.storage.*;
-import org.dml.storage.bdbLevel1.*;
+import org.dml.storage.berkeleydb.commons.*;
+import org.dml.storage.berkeleydb.native_via_jni.*;
 import org.junit.*;
 
 
@@ -52,13 +53,13 @@ public class DBSetTest
 	private final GenericNode	_a	= BDBNode.getBDBNodeInstance( 1l );
 	private final GenericNode	_b	= BDBNode.getBDBNodeInstance( 2l );
 	private final GenericNode	_c	= BDBNode.getBDBNodeInstance( 3l );
-	private BDBStorage			env	= null;
+	private StorageBDBNative	env	= null;
 	
 	
 	@Before
 	public void setUp() {
 		
-		env = new BDBStorage( JUnitConstants.BDB_ENVIRONMENT_STORE_DIR, true );
+		env = new StorageBDBNative( JUnitConstants.BDB_ENVIRONMENT_STORE_DIR, true );
 		assert null != env;
 		
 		o2m = new BDBSetOfNodes( env, "one to many dbmap" );

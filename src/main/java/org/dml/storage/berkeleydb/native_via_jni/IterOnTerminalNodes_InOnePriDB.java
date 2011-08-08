@@ -31,9 +31,10 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.dml.storage.bdbLevel1;
+package org.dml.storage.berkeleydb.native_via_jni;
 
 import org.dml.storage.*;
+import org.dml.storage.berkeleydb.commons.*;
 import org.q.*;
 
 import com.sleepycat.db.*;
@@ -55,14 +56,14 @@ public class IterOnTerminalNodes_InOnePriDB
 {
 	
 	private final Database				db;
-	protected final GenericNode			_initialNode;								// key
-																					
+	protected final GenericNode			_initialNode;										// key
+																							
 	private Cursor						cursor;
 	private final BDBTransaction		txn;
 	private boolean						failed			= true;
 	
-	private static final LockMode		Locky			= BDBStorage.CURSORLOCK;
-	private static final CursorConfig	cursorConfig	= BDBStorage.CURSORCONFIG;
+	private static final LockMode		Locky			= StorageBDBNative.CURSORLOCK;
+	private static final CursorConfig	cursorConfig	= StorageBDBNative.CURSORCONFIG;
 	
 	
 	/**

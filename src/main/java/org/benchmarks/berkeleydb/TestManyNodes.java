@@ -35,7 +35,7 @@ package org.benchmarks.berkeleydb;
 
 import org.bdb.*;
 import org.dml.storage.*;
-import org.dml.storage.bdbLevel1.*;
+import org.dml.storage.berkeleydb.native_via_jni.*;
 import org.toolza.*;
 
 
@@ -43,7 +43,8 @@ import org.toolza.*;
 /**
  *
  */
-public class TestManyNodes {
+public class TestManyNodes
+{
 	
 	private final static String		END								= "END";
 	private final static String		START							= "START";
@@ -75,7 +76,8 @@ public class TestManyNodes {
 	public static void main( final String[] args ) {
 		showMem();
 		final boolean deleteFirst = true;
-		final TestManyNodes t2 = new TestManyNodes( new BDBStorage( JUnitConstants.BDB_ENVIRONMENT_STORE_DIR, deleteFirst ) );
+		final TestManyNodes t2 =
+			new TestManyNodes( new StorageBDBNative( JUnitConstants.BDB_ENVIRONMENT_STORE_DIR, deleteFirst ) );
 		
 		showMem();
 		t2.init();

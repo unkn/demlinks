@@ -31,9 +31,10 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.dml.storage.bdbLevel1;
+package org.dml.storage.berkeleydb.native_via_jni;
 
 import org.dml.storage.bdb.exceptions.*;
+import org.dml.storage.berkeleydb.native_via_jni.*;
 import org.q.*;
 
 import com.sleepycat.bind.tuple.*;
@@ -65,7 +66,7 @@ public class BDB_Named_UniqueNumberGenerator {
 	 * @param wrap
 	 *            true if wraps around when reaches max value, it wraps to min
 	 */
-	public BDB_Named_UniqueNumberGenerator( final BDBStorage environ, final String seqName, final long min,
+	public BDB_Named_UniqueNumberGenerator( final StorageBDBNative environ, final String seqName, final long min,
 			final long initialValue, final long max, final boolean wrap ) {
 		assert null != environ;
 		assert null != seqName;

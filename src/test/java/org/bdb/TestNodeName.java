@@ -36,19 +36,21 @@ package org.bdb;
 
 import static org.junit.Assert.*;
 
-import org.dml.storage.bdbLevel1.*;
+import org.dml.storage.berkeleydb.commons.*;
+import org.dml.storage.berkeleydb.native_via_jni.*;
 import org.junit.*;
 
 
 
-public class TestNodeName {
+public class TestNodeName
+{
 	
-	private BDBStorage	env;
+	private StorageBDBNative	env;
 	
 	
 	@Before
 	public void setUp() {
-		env = new BDBStorage( JUnitConstants.BDB_ENVIRONMENT_STORE_DIR, true );
+		env = new StorageBDBNative( JUnitConstants.BDB_ENVIRONMENT_STORE_DIR, true );
 	}
 	
 	

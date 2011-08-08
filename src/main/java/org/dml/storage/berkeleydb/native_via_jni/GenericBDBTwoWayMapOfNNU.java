@@ -32,10 +32,11 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.dml.storage.bdbLevel1;
+package org.dml.storage.berkeleydb.native_via_jni;
 
 import java.io.*;
 
+import org.dml.storage.berkeleydb.commons.*;
 import org.q.*;
 import org.references.*;
 import org.toolza.*;
@@ -64,7 +65,9 @@ import com.sleepycat.db.*;
  * @param <DATA>
  *            ie. Node
  */
-public class GenericBDBTwoWayMapOfNNU<KEY, DATA> extends GenericThreadSafeTwoWayMapOfUniques_Base<KEY, DATA> {
+public class GenericBDBTwoWayMapOfNNU<KEY, DATA>
+		extends GenericThreadSafeTwoWayMapOfUniques_Base<KEY, DATA>
+{
 	
 	private static final String		secPrefix	= "secondary";
 	private final Database			priDb;
@@ -79,7 +82,7 @@ public class GenericBDBTwoWayMapOfNNU<KEY, DATA> extends GenericThreadSafeTwoWay
 	private final StatsConfig		statsConfig;
 	
 	
-	public GenericBDBTwoWayMapOfNNU( final BDBStorage env, final String dbName1, final Class<KEY> keyClass,
+	public GenericBDBTwoWayMapOfNNU( final StorageBDBNative env, final String dbName1, final Class<KEY> keyClass,
 			final Class<DATA> dataClass ) {
 		this( env.getBDBEnv(), dbName1, keyClass, dataClass );
 	}
@@ -147,12 +150,13 @@ public class GenericBDBTwoWayMapOfNNU<KEY, DATA> extends GenericThreadSafeTwoWay
 		secAndPriConf.setReadOnly( false );
 		secAndPriConf.setSortedDuplicates( false );// must be false
 		// secConf.setTemporary( false );
-		secAndPriConf.setTransactional( BDBStorage.ENABLE_TRANSACTIONS );
+		secAndPriConf.setTransactional( StorageBDBNative.ENABLE_TRANSACTIONS );
 		
 		assert !secAndPriConf.getSortedDuplicates();
 		assert !secAndPriConf.getUnsortedDuplicates();
 		assert !secAndPriConf.getReverseSplitOff();
-		secAndPriConf.setKeyCreator( new SecondaryKeyCreator() {
+		secAndPriConf.setKeyCreator( new SecondaryKeyCreator()
+		{
 			
 			@Override
 			public boolean createSecondaryKey( final SecondaryDatabase secondary, final DatabaseEntry key,
@@ -276,7 +280,7 @@ public class GenericBDBTwoWayMapOfNNU<KEY, DATA> extends GenericThreadSafeTwoWay
 		// deData=new DatabaseEntry(data.getBytes(BerkeleyDB.ENCODING));
 		OperationStatus ret;
 		try {
-			ret = secDb.get( BDBTransaction.getCurrentTransaction( _env ), deData, pKey, deKey, BDBStorage.LOCK );
+			ret = secDb.get( BDBTransaction.getCurrentTransaction( _env ), deData, pKey, deKey, StorageBDBNative.LOCK );
 		} catch ( final DatabaseException e ) {
 			throw Q.rethrow( e );
 		}
@@ -310,7 +314,7 @@ public class GenericBDBTwoWayMapOfNNU<KEY, DATA> extends GenericThreadSafeTwoWay
 		final DatabaseEntry deData = new DatabaseEntry();
 		OperationStatus ret;
 		try {
-			ret = priDb.get( BDBTransaction.getCurrentTransaction( _env ), deKey, deData, BDBStorage.LOCK );
+			ret = priDb.get( BDBTransaction.getCurrentTransaction( _env ), deKey, deData, StorageBDBNative.LOCK );
 		} catch ( final DatabaseException e ) {
 			throw Q.rethrow( e );
 		}

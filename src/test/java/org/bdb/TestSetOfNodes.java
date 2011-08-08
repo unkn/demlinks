@@ -40,8 +40,8 @@ import static org.junit.Assert.*;
 import java.util.*;
 
 import org.dml.storage.*;
-import org.dml.storage.bdbLevel1.*;
 import org.dml.storage.bdbLevel2.*;
+import org.dml.storage.berkeleydb.native_via_jni.*;
 import org.junit.*;
 import org.q.*;
 import org.toolza.Timer;
@@ -51,7 +51,7 @@ import org.toolza.Timer;
 public class TestSetOfNodes
 {
 	
-	private BDBStorage			env;
+	private StorageBDBNative	env;
 	private L0Set_OfTerminals	set1;
 	private GenericNode			setInitial;
 	
@@ -60,7 +60,7 @@ public class TestSetOfNodes
 	public void setUp() {
 		final Timer t = new Timer( Timer.TYPE.MILLIS );
 		t.start();
-		env = new BDBStorage( JUnitConstants.BDB_ENVIRONMENT_STORE_DIR, true );
+		env = new StorageBDBNative( JUnitConstants.BDB_ENVIRONMENT_STORE_DIR, true );
 		setInitial = env.createNewUniqueNode();
 		set1 = new L0Set_OfTerminals( env, setInitial );
 		t.stop();
