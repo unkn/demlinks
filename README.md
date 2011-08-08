@@ -31,4 +31,4 @@ or better yet:
 
 ------------------
 
-These contents are in README.md file which is in Markdown format. 
+These contents are in README.md file which is in Markdown format.
