@@ -110,13 +110,13 @@ public class TestBDBNativeAKAviaJNI {
 	//
 	
 	// set all these 4 to true for consistency, but also lack of speed; all to false for max speed
-	private static final boolean	ENABLE_TRANSACTIONS				= true;
+	public static final boolean		ENABLE_TRANSACTIONS				= true;
 	@SuppressWarnings( "unused" )
-	private static final boolean	DURABLE_TXNS					= false ? true : !ENABLE_TRANSACTIONS;
-	private static final boolean	ENABLE_LOCKING					= true;
+	public static final boolean		DURABLE_TXNS					= false ? true : !ENABLE_TRANSACTIONS;
+	public static final boolean		ENABLE_LOCKING					= true;
 	@SuppressWarnings( "unused" )
 	// only enabled when transactions are enabled, and if that first bool is true
-	private static final boolean	MVC								= true ? ENABLE_TRANSACTIONS : false;
+	public static final boolean		MVC								= false ? ENABLE_TRANSACTIONS : false;
 	
 	
 	// hash dbtype fails for 1000; 800 works though
@@ -1494,7 +1494,7 @@ public class TestBDBNativeAKAviaJNI {
 		if ( ENABLE_LOCKING ) {
 			envConf.setInitializeLocking( ENABLE_LOCKING );
 		} else {
-			envConf.setInitializeLocking( ENABLE_TRANSACTIONS );
+			envConf.setInitializeLocking( false && ENABLE_TRANSACTIONS );
 		}
 		envConf.setLockDetectMode( LockDetectMode.YOUNGEST );
 		envConf.setLockTimeout( BDBLOCK_TIMEOUT_MicroSeconds );
@@ -1546,8 +1546,10 @@ public class TestBDBNativeAKAviaJNI {
 		//
 		// envConf.setReplicationInMemory( false );
 		//
-		envConf.setSystemMemory( true );// false is faster, but now true is faster grrr
-		//
+		envConf.setSystemMemory( false );// false is faster, but now true is faster grrr
+		// required false under ubuntu linux or else this error happens java.lang.IllegalArgumentException: Invalid argument:
+		// BDB0115 no base system shared memory ID specified
+		
 		// // envConf.setTemporaryDirectory( temporaryDirectory )
 		envConf.setThreaded( false );// must be false for this test anyway
 		//
@@ -1770,6 +1772,7 @@ public class TestBDBNativeAKAviaJNI {
 		addCheckTimer.stop();
 		System.out.println( "check100 executed in: " + addCheckTimer.getDeltaPrintFriendly() );
 	}
+	
 	
 	
 	@Test

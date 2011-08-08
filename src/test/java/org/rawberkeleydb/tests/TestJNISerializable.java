@@ -34,6 +34,8 @@
  */
 package org.rawberkeleydb.tests;
 
+import static org.junit.Assert.*;
+
 import java.io.*;
 
 import org.junit.*;
@@ -98,6 +100,9 @@ public class TestJNISerializable {
 	
 	
 	private void whole() throws DatabaseException {
+		assertTrue( x.MVC );
+		assertTrue( x.ENABLE_LOCKING );
+		assertTrue( x.ENABLE_TRANSACTIONS );
 		Transaction t = x.beginTxn( parent );
 		int numAdded = 0;
 		final int firstItem = 0;
