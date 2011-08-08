@@ -37,6 +37,7 @@ package org.rawberkeleydb.tests;
 import java.io.*;
 
 import org.bdb.*;
+import org.berkeleydb.*;
 import org.junit.*;
 import org.q.*;
 import org.toolza.*;
@@ -150,6 +151,10 @@ public class TestBDBNativeAKAviaJNI {
 	protected Database				priDb;
 	private SecondaryDatabase		secDb;
 	private int						leftOverForAdd100				= 0;
+	
+	static {
+		PreloadNativeLibraries.initIfNotInited();
+	}
 	
 	
 	/*

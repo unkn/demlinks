@@ -36,6 +36,7 @@ package org.bdbLevel1;
 import java.io.*;
 import java.util.concurrent.locks.*;
 
+import org.berkeleydb.*;
 import org.generic.env.*;
 import org.q.*;
 import org.toolza.*;
@@ -117,18 +118,21 @@ public class BDBEnvironment extends BasicEnvironment {
 	private volatile Thread							shutdownThread					= null;
 	private final Timer								timer							= new Timer( Timer.TYPE.MILLIS );
 	
-	
-	
 	static {
-		// if you install: Berkeley DB 11gR2 5.2.28 and restart, under windows this means the libdb52.dll would be on PATH
-		// else you need the following because that .dll isn't on path so we manually load it rather than allow windows to load
-		// it when db.jar is trying to load the libdb_java52.dll one whos dependency is libdb52.dll:
-		// the property java.library.path (or something like that) is used to load these which likely isn't in OS' env PATH
-		if ( System.getProperty( "os.name" ).toLowerCase().indexOf( "win" ) > -1 ) {
-			System.loadLibrary( "libdb52" );
-			System.loadLibrary( "libdb_java52" );
-		}
+		PreloadNativeLibraries.initIfNotInited();
 	}
+	
+	
+	// static {
+	// // if you install: Berkeley DB 11gR2 5.2.28 and restart, under windows this means the libdb52.dll would be on PATH
+	// // else you need the following because that .dll isn't on path so we manually load it rather than allow windows to load
+	// // it when db.jar is trying to load the libdb_java52.dll one whos dependency is libdb52.dll:
+	// // the property java.library.path (or something like that) is used to load these which likely isn't in OS' env PATH
+	// if ( System.getProperty( "os.name" ).toLowerCase().indexOf( "win" ) > -1 ) {
+	// System.loadLibrary( "libdb52" );
+	// System.loadLibrary( "libdb_java52" );
+	// }
+	// }
 	
 	
 	/**

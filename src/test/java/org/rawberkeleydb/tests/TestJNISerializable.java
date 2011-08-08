@@ -100,7 +100,7 @@ public class TestJNISerializable {
 	
 	
 	private void whole() throws DatabaseException {
-		assertTrue( x.MVC );
+		// assertTrue( x.MVC );even with this true, no go, because only pages are mvcc-ed not entire db
 		assertTrue( x.ENABLE_LOCKING );
 		assertTrue( x.ENABLE_TRANSACTIONS );
 		Transaction t = x.beginTxn( parent );
