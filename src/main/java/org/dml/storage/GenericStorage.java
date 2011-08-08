@@ -37,7 +37,8 @@ package org.dml.storage;
 /**
  *
  */
-public interface GenericStorage {
+public interface GenericStorage
+{
 	
 	public GenericTransaction beginTransaction();
 	
@@ -55,12 +56,22 @@ public interface GenericStorage {
 	
 	
 	/**
+	 * @param forNode
+	 * @return can be null if node has no associated name
+	 */
+	public String getName( final GenericNode forNode );
+	
+	
+	/**
 	 * @return never null
 	 */
 	public GenericNode createNewUniqueNode();
 	
 	
 	public void makeVector( final GenericNode initialNode, final GenericNode terminalNode );
+	
+	
+	public boolean ensureVector( final GenericNode initialNode, final GenericNode terminalNode );
 	
 	
 	/**
@@ -74,9 +85,30 @@ public interface GenericStorage {
 	public boolean isVector( final GenericNode initialNode, final GenericNode terminalNode );
 	
 	
+	
+	public GenericIteratorOnTerminalNodes getIterator_on_Initials_of( final GenericNode terminalNode );
+	
+	
+	public GenericIteratorOnTerminalNodes getIterator_on_Terminals_of( final GenericNode initialNode );
+	
+	
+	public int countInitials( final GenericNode ofTerminalNode );
+	
+	
+	public int countTerminals( final GenericNode ofInitialNode );
+	
+	
 	/**
-	 * @param forNode
-	 * @return can be null if node has no associated name
+	 * A->X<br>
+	 * B->X<br>
+	 * find X<br>
+	 * 
+	 * @param initialNode1
+	 * @param initialNode2
+	 * @return
 	 */
-	public String getName( final GenericNode forNode );
+	public GenericNode findCommonTerminalForInitials( final GenericNode initialNode1, final GenericNode initialNode2 );
+	
+	
+	public boolean removeVector( final GenericNode initialNode, final GenericNode terminalNode );
 }

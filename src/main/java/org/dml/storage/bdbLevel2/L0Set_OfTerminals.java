@@ -34,7 +34,6 @@
 package org.dml.storage.bdbLevel2;
 
 import org.dml.storage.*;
-import org.dml.storage.bdbLevel1.*;
 import org.q.*;
 
 
@@ -47,8 +46,8 @@ import org.q.*;
 public class L0Set_OfTerminals
 {
 	
-	protected final BDBStorage	env;
-	private final GenericNode	_selfNode;
+	protected final GenericStorage	env;
+	private final GenericNode		_selfNode;
 	
 	
 	/**
@@ -59,7 +58,7 @@ public class L0Set_OfTerminals
 	 *            non-null<br>
 	 *            will be cloned(for now)<br>
 	 */
-	public L0Set_OfTerminals( final BDBStorage env1, final GenericNode selfNode ) {
+	public L0Set_OfTerminals( final GenericStorage env1, final GenericNode selfNode ) {
 		assert null != env1;
 		assert null != selfNode;
 		env = env1;

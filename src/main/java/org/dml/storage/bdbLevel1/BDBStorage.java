@@ -624,6 +624,7 @@ public class BDBStorage
 	}
 	
 	
+	@Override
 	public boolean ensureVector( final GenericNode initialNode, final GenericNode terminalNode ) {
 		assert null != initialNode;
 		assert null != terminalNode;
@@ -643,24 +644,28 @@ public class BDBStorage
 	}
 	
 	
+	@Override
 	public GenericIteratorOnTerminalNodes getIterator_on_Initials_of( final GenericNode terminalNode ) {
 		assert null != terminalNode;
 		return dbSet.getIterator_on_Initials_of( terminalNode );
 	}
 	
 	
+	@Override
 	public GenericIteratorOnTerminalNodes getIterator_on_Terminals_of( final GenericNode initialNode ) {
 		assert null != initialNode;
 		return dbSet.getIterator_on_Terminals_of( initialNode );
 	}
 	
 	
+	@Override
 	public int countInitials( final GenericNode ofTerminalNode ) {
 		assert null != ofTerminalNode;
 		return dbSet.countInitials( ofTerminalNode );
 	}
 	
 	
+	@Override
 	public int countTerminals( final GenericNode ofInitialNode ) {
 		assert null != ofInitialNode;
 		return dbSet.countTerminals( ofInitialNode );
@@ -676,6 +681,7 @@ public class BDBStorage
 	 * @param initialNode2
 	 * @return
 	 */
+	@Override
 	public GenericNode findCommonTerminalForInitials( final GenericNode initialNode1, final GenericNode initialNode2 ) {
 		assert null != initialNode1;
 		assert null != initialNode2;
@@ -683,6 +689,7 @@ public class BDBStorage
 	}
 	
 	
+	@Override
 	public boolean removeVector( final GenericNode initialNode, final GenericNode terminalNode ) {
 		assert null != initialNode;
 		assert null != terminalNode;
