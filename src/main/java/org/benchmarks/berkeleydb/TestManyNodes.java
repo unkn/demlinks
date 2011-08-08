@@ -373,15 +373,15 @@ public class TestManyNodes
 	private final Timer	t3	= new Timer( Timer.TYPE.MILLIS );
 	
 	
-	private void goFind2( final NodeGeneric initialNode, final NodeGeneric terminalNode ) {
+	private void goFind2( final NodeGeneric initialNode, final NodeGeneric childNode ) {
 		t3.start();
-		final boolean ret = env.isVector( initialNode, terminalNode );
+		final boolean ret = env.isVector( initialNode, childNode );
 		assert ret;
 		t3.stop();
 		System.out.printf(
 			"%10s -> %10s %10s%n",
 			env.getName( initialNode ),
-			env.getName( terminalNode ),
+			env.getName( childNode ),
 			t3.getDeltaPrintFriendly() );
 	}
 	

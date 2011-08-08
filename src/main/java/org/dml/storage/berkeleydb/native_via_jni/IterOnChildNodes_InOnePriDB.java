@@ -42,17 +42,17 @@ import com.sleepycat.db.*;
 
 
 /**
- * iterator on terminals!<br>
+ * iterator on children!<br>
  * <br>
  * X,Y aka X->Y<br>
- * initial->terminal<br>
+ * initial->child<br>
  * initial aka leftmost aka first aka initial aka X<br>
- * terminal aka rightmost aka last aka terminal aka Y<br>
+ * child aka rightmost aka last aka child aka Y<br>
  * XXX: if you implement insert, be aware that inserts as deletes must be executed in both databases, else inconsistencies!
  */
-public class IterOnTerminalNodes_InOnePriDB
+public class IterOnChildNodes_InOnePriDB
 		implements TransactionGeneric
-// implements GenericIteratorOnTerminalNodes
+// implements GenericIteratorOnChildNodes
 {
 	
 	private final Database				db;
@@ -69,9 +69,9 @@ public class IterOnTerminalNodes_InOnePriDB
 	/**
 	 * @param whichPriDB
 	 * @param initialNode
-	 *            iteration is done on the terminals of this initial!
+	 *            iteration is done on the children of this initial!
 	 */
-	public IterOnTerminalNodes_InOnePriDB( final Database whichPriDB, final NodeGeneric initialNode ) {
+	public IterOnChildNodes_InOnePriDB( final Database whichPriDB, final NodeGeneric initialNode ) {
 		assert null != whichPriDB;
 		assert null != initialNode;
 		
@@ -80,7 +80,7 @@ public class IterOnTerminalNodes_InOnePriDB
 		
 		try {
 			txn = BDBTransaction.beginChild( db.getEnvironment() );
-			cursor = db.openCursor( txn.getTransaction(), IterOnTerminalNodes_InOnePriDB.cursorConfig );
+			cursor = db.openCursor( txn.getTransaction(), IterOnChildNodes_InOnePriDB.cursorConfig );
 		} catch ( final DatabaseException e ) {
 			throw Q.rethrow( e );
 		}
@@ -116,7 +116,7 @@ public class IterOnTerminalNodes_InOnePriDB
 		try {
 			ret = cursor.
 			// getFirst( - fail, it's first key in the database instead!
-				getSearchKey( getNewInitialObjectDataEntry(), deData, IterOnTerminalNodes_InOnePriDB.Locky );
+				getSearchKey( getNewInitialObjectDataEntry(), deData, IterOnChildNodes_InOnePriDB.Locky );
 		} catch ( final DatabaseException e ) {
 			throw Q.rethrow( e );
 		}
@@ -128,20 +128,20 @@ public class IterOnTerminalNodes_InOnePriDB
 	}
 	
 	
-	public NodeGeneric goTo( final NodeGeneric terminalNode ) {
+	public NodeGeneric goTo( final NodeGeneric childNode ) {
 		final DatabaseEntry deData = new DatabaseEntry();
-		nodeToEntry( terminalNode, deData );
+		nodeToEntry( childNode, deData );
 		assert deData.getOffset() == 0;
 		assert deData.getSize() > 0;
 		OperationStatus ret;
 		try {
-			ret = cursor.getSearchBoth( getNewInitialObjectDataEntry(), deData, IterOnTerminalNodes_InOnePriDB.Locky );
+			ret = cursor.getSearchBoth( getNewInitialObjectDataEntry(), deData, IterOnChildNodes_InOnePriDB.Locky );
 		} catch ( final DatabaseException e ) {
 			throw Q.rethrow( e );
 		}
 		if ( ret.equals( OperationStatus.SUCCESS ) ) {
 			final NodeGeneric foundOne = entryToNode( deData );
-			assert foundOne.equals( terminalNode );
+			assert foundOne.equals( childNode );
 			return foundOne;
 		} else {
 			return null;
@@ -155,7 +155,7 @@ public class IterOnTerminalNodes_InOnePriDB
 		
 		OperationStatus ret = OperationStatus.NOTFOUND;
 		try {
-			ret = cursor.getCurrent( deKey, deData, IterOnTerminalNodes_InOnePriDB.Locky );
+			ret = cursor.getCurrent( deKey, deData, IterOnChildNodes_InOnePriDB.Locky );
 		} catch ( final DatabaseException e ) {
 			throw Q.rethrow( e );
 		} catch ( final IllegalArgumentException iae ) {// this worked for bdbje: IllegalStateException ise ) {
@@ -189,7 +189,7 @@ public class IterOnTerminalNodes_InOnePriDB
 			// new DatabaseEntry()
 				getNewInitialObjectDataEntry(),
 				deData,
-				IterOnTerminalNodes_InOnePriDB.Locky );
+				IterOnChildNodes_InOnePriDB.Locky );
 		} catch ( final DatabaseException e ) {
 			throw Q.rethrow( e );
 		}
@@ -218,7 +218,7 @@ public class IterOnTerminalNodes_InOnePriDB
 		// assert deData.getOffset() == 0;
 		OperationStatus ret;
 		try {
-			ret = cursor.getPrevDup( getNewInitialObjectDataEntry(), deData, IterOnTerminalNodes_InOnePriDB.Locky );
+			ret = cursor.getPrevDup( getNewInitialObjectDataEntry(), deData, IterOnChildNodes_InOnePriDB.Locky );
 		} catch ( final DatabaseException e ) {
 			throw Q.rethrow( e );
 		}
@@ -260,7 +260,7 @@ public class IterOnTerminalNodes_InOnePriDB
 	 * else inconsistency between the two databases ie. A->B deleted but B->A not<br>
 	 */
 	protected void delete() {
-		// assert this.getClass() == IteratorOnTerminalNodes_InDualPriDBs.class : "just making sure you're not using delete()"
+		// assert this.getClass() == IteratorOnChildNodes_InDualPriDBs.class : "just making sure you're not using delete()"
 		// + " from here instead of from that class, which deletes both links in both databases" + " the current class is: "
 		// + this.getClass(); actually this has to be allowed due to this being the class
 		assert null != getCurrent() : Q.badCall( "called delete on no current item! ie. now() was null" );

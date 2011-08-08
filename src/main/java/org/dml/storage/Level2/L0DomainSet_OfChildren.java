@@ -34,59 +34,54 @@
 package org.dml.storage.Level2;
 
 import org.dml.storage.*;
+import org.dml.storage.berkeleydb.native_via_jni.*;
 import org.q.*;
 
 
 
 /**
- * allows unset aka null<br>
- * pointee must be child of domain<br>
+ * domain is enforced only if asserts are enabled and only for java calls ie. in java environment<br>
+ * does not allow domain or self to be added to set<br>
+ * does not check for integrity if domainset already exists when constructed<br>
+ * does not allow: self to equal domain<br>
  */
-public class L0DomainPointer_ToTerminal
-		extends L0Pointer_ToTerminal
+public class L0DomainSet_OfChildren
+		extends L0Set_OfChildren
 {
 	
-	private final NodeGeneric		_domainNode;
-	private final StorageGeneric	env;
-	
-	
-	public L0DomainPointer_ToTerminal( final StorageGeneric env1, final NodeGeneric selfNode, final NodeGeneric domainNode ) {
-		super( env1, selfNode );
-		assert null != env1;
-		env = env1;
-		assert null != domainNode;
-		_domainNode = domainNode.clone();
-		// XXX: don't check if existing terminal is valid because it will not work in constructor, need static get
-	}
+	private final NodeGeneric	_domainNode;
 	
 	
 	/**
-	 * null allowed<br>
-	 * and child must be part of domain<br>
-	 * 
-	 * @param terminalNode
-	 *            null or a longIdent
-	 * @return true if valid for this
+	 * @param env1
+	 * @param selfNode
+	 * @param domainNode
 	 */
-	public boolean isValidTerminal( final NodeGeneric terminalNode ) {
-		return ( ( null == terminalNode ) || ( ( !_domainNode.equals( terminalNode ) ) && ( env.isVector(
-			_domainNode,
-			terminalNode ) ) ) );
+	public L0DomainSet_OfChildren( final StorageBDBNative env1, final NodeGeneric selfNode, final NodeGeneric domainNode ) {
+		super( env1, selfNode );
+		assert null != domainNode;
+		assert !selfNode.equals( domainNode );
+		_domainNode = domainNode.clone();// cloned to catch `==` bugs somewhere (do use .equals)
 	}
 	
 	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.simpler.SetOfChildren#isValidChild(java.lang.Long)
+	 */
 	@Override
-	public void setPointee( final NodeGeneric toWhatTerminalNode ) {
-		assert isValidTerminal( toWhatTerminalNode );
-		super.setPointee( toWhatTerminalNode );
+	public boolean isValidChild( final NodeGeneric childNode ) {
+		if ( ( super.isValidChild( childNode ) ) && ( isInDomain( childNode ) ) ) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	
-	@Override
-	public NodeGeneric getPointeeTerminal() {
-		final NodeGeneric terminal = super.getPointeeTerminal();
-		assert isValidTerminal( terminal ) : "something else must've changed our pointee and made this inconsistent with our domain";
-		return terminal;
+	public boolean isInDomain( final NodeGeneric childNode ) {
+		return ( ( !_domainNode.equals( childNode ) ) && ( env.isVector( _domainNode, childNode ) ) );
 	}
 	
 	
@@ -97,13 +92,23 @@ public class L0DomainPointer_ToTerminal
 	
 	@Override
 	public boolean equals( final Object obj ) {
+		// Q.badCall( "not yet implemented, tho below code is good" );
 		if ( super.equals( obj ) ) {
-			assert obj.getClass() == this.getClass();// redundant
-			assert _domainNode.equals( ( (L0DomainPointer_ToTerminal)obj )._domainNode ) : Q
+			assert obj.getClass() == this.getClass();
+			// assert obj instanceof DomainSet_OfChildren :
+			// "user is comparing to a super instance, as oppose to same or subclass";
+			assert _domainNode.equals( ( (L0DomainSet_OfChildren)obj )._domainNode ) : Q
 				.badCall( "same self but different domains, user did a boobo somewhere" );
 			return true;
 		} else {
 			return false;
 		}
+	}
+	
+	
+	@Override
+	protected Object clone() throws CloneNotSupportedException {
+		// FIXME: use Q.showEx for the case when this is thrown in try and overwritten in finally, to be seen on console
+		throw new CloneNotSupportedException( "not implemented" );
 	}
 }

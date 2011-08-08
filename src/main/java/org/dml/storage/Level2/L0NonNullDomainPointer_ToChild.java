@@ -3,7 +3,6 @@
  * Copyright (c) 2005-2011, AtKaaZ
  * All rights reserved.
  * this file is part of DemLinks
- * File created on Aug 8, 2011 7:01:37 PM
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -32,37 +31,32 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.dml.storage;
+package org.dml.storage.Level2;
+
+import org.dml.storage.*;
+import org.dml.storage.berkeleydb.native_via_jni.*;
 
 
 
 /**
- *
+ * the pointer always points to something (from domain) thus it is never null aka pointing to nothing<br>
+ * in this regard it is non-null!
  */
-public interface IteratorOnTerminalNodesGeneric
-		extends TransactionGeneric
+public class L0NonNullDomainPointer_ToChild
+		extends L0DomainPointer_ToChild
 {
 	
-	public NodeGeneric goFirst();
+	
+	public L0NonNullDomainPointer_ToChild( final StorageBDBNative env1, final NodeGeneric selfNode,
+			final NodeGeneric domainNode ) {
+		super( env1, selfNode, domainNode );
+		// XXX: do NOT check for integrity, ie. don't check if child is not null and in domain!
+	}
 	
 	
-	public NodeGeneric goPrev();
+	@Override
+	public boolean isValidChild( final NodeGeneric childNode ) {
+		return ( null != childNode ) && ( super.isValidChild( childNode ) );
+	}
 	
-	
-	public NodeGeneric goNext();
-	
-	
-	public NodeGeneric goTo( final NodeGeneric terminalNode );
-	
-	
-	public int size();
-	
-	
-	public void delete();
-	
-	
-	/**
-	 * TODO: remove this maybe? because we must use a different way, ie. delete key instead of its data one by one
-	 */
-	public void deleteAll();
 }

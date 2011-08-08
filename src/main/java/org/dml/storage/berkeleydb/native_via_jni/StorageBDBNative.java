@@ -612,65 +612,65 @@ public class StorageBDBNative
 	 * it will throw if already exists!<br>
 	 * 
 	 * @param initialNode
-	 * @param terminalNode
+	 * @param childNode
 	 */
 	@Override
-	public void makeVector( final NodeGeneric initialNode, final NodeGeneric terminalNode ) {
+	public void makeVector( final NodeGeneric initialNode, final NodeGeneric childNode ) {
 		assert null != initialNode;
-		assert null != terminalNode;
+		assert null != childNode;
 		assert initialNode.getClass() == BDBNode.class;
-		assert terminalNode.getClass() == BDBNode.class;
+		assert childNode.getClass() == BDBNode.class;
 		final BDBNode iNode = (BDBNode)initialNode;
-		final BDBNode tNode = (BDBNode)terminalNode;
+		final BDBNode tNode = (BDBNode)childNode;
 		dbSet.createNewVectorOrThrow( iNode, tNode );
 	}
 	
 	
 	@Override
-	public boolean ensureVector( final NodeGeneric initialNode, final NodeGeneric terminalNode ) {
+	public boolean ensureVector( final NodeGeneric initialNode, final NodeGeneric childNode ) {
 		assert null != initialNode;
-		assert null != terminalNode;
-		return dbSet.ensureVector( initialNode, terminalNode );
+		assert null != childNode;
+		return dbSet.ensureVector( initialNode, childNode );
 	}
 	
 	
 	@Override
-	public boolean isVector( final NodeGeneric initialNode, final NodeGeneric terminalNode ) {
+	public boolean isVector( final NodeGeneric initialNode, final NodeGeneric childNode ) {
 		assert null != initialNode;
-		assert null != terminalNode;
+		assert null != childNode;
 		assert initialNode.getClass() == BDBNode.class;
-		assert terminalNode.getClass() == BDBNode.class;
+		assert childNode.getClass() == BDBNode.class;
 		final BDBNode iNode = (BDBNode)initialNode;
-		final BDBNode tNode = (BDBNode)terminalNode;
+		final BDBNode tNode = (BDBNode)childNode;
 		return dbSet.isVector( iNode, tNode );
 	}
 	
 	
 	@Override
-	public IteratorOnTerminalNodesGeneric getIterator_on_Initials_of( final NodeGeneric terminalNode ) {
-		assert null != terminalNode;
-		return dbSet.getIterator_on_Initials_of( terminalNode );
+	public IteratorOnChildNodesGeneric getIterator_on_Initials_of( final NodeGeneric childNode ) {
+		assert null != childNode;
+		return dbSet.getIterator_on_Initials_of( childNode );
 	}
 	
 	
 	@Override
-	public IteratorOnTerminalNodesGeneric getIterator_on_Terminals_of( final NodeGeneric initialNode ) {
+	public IteratorOnChildNodesGeneric getIterator_on_Children_of( final NodeGeneric initialNode ) {
 		assert null != initialNode;
-		return dbSet.getIterator_on_Terminals_of( initialNode );
+		return dbSet.getIterator_on_Children_of( initialNode );
 	}
 	
 	
 	@Override
-	public int countInitials( final NodeGeneric ofTerminalNode ) {
-		assert null != ofTerminalNode;
-		return dbSet.countInitials( ofTerminalNode );
+	public int countInitials( final NodeGeneric ofChildNode ) {
+		assert null != ofChildNode;
+		return dbSet.countInitials( ofChildNode );
 	}
 	
 	
 	@Override
-	public int countTerminals( final NodeGeneric ofInitialNode ) {
+	public int countChildren( final NodeGeneric ofInitialNode ) {
 		assert null != ofInitialNode;
-		return dbSet.countTerminals( ofInitialNode );
+		return dbSet.countChildren( ofInitialNode );
 	}
 	
 	
@@ -684,18 +684,18 @@ public class StorageBDBNative
 	 * @return
 	 */
 	@Override
-	public NodeGeneric findCommonTerminalForInitials( final NodeGeneric initialNode1, final NodeGeneric initialNode2 ) {
+	public NodeGeneric findCommonChildForInitials( final NodeGeneric initialNode1, final NodeGeneric initialNode2 ) {
 		assert null != initialNode1;
 		assert null != initialNode2;
-		return dbSet.findCommonTerminalForInitials( initialNode1, initialNode2 );
+		return dbSet.findCommonChildForInitials( initialNode1, initialNode2 );
 	}
 	
 	
 	@Override
-	public boolean removeVector( final NodeGeneric initialNode, final NodeGeneric terminalNode ) {
+	public boolean removeVector( final NodeGeneric initialNode, final NodeGeneric childNode ) {
 		assert null != initialNode;
-		assert null != terminalNode;
-		return dbSet.removeVector( initialNode, terminalNode );
+		assert null != childNode;
+		return dbSet.removeVector( initialNode, childNode );
 	}
 	
 	

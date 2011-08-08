@@ -115,7 +115,7 @@ public class DBSetTest
 		
 		assertTrue( o2m.ensureVector( _c, _b ) );
 		
-		IteratorOnTerminalNodesGeneric iter = o2m.getIterator_on_Initials_of( _c );
+		IteratorOnChildNodesGeneric iter = o2m.getIterator_on_Initials_of( _c );
 		assertNotNull( iter );
 		try {
 			NodeGeneric now = iter.goFirst();
@@ -135,7 +135,7 @@ public class DBSetTest
 			}
 		}
 		
-		iter = o2m.getIterator_on_Terminals_of( _c );
+		iter = o2m.getIterator_on_Children_of( _c );
 		try {
 			NodeGeneric now = iter.goFirst();
 			assert null != now;
@@ -158,7 +158,7 @@ public class DBSetTest
 		System.out.println( "count=" + o2m.countInitials( _a ) );
 		
 		assertTrue( 1 == o2m.countInitials( _a ) );
-		assertTrue( 2 == o2m.countTerminals( _a ) );
+		assertTrue( 2 == o2m.countChildren( _a ) );
 		
 	}
 	

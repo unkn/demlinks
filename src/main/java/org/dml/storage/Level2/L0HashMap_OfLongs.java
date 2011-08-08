@@ -64,7 +64,7 @@ public class L0HashMap_OfLongs
 	private final NodeGeneric		_selfNode;
 	
 	
-	private final L0Set_OfTerminals	selfAsSet;
+	private final L0Set_OfChildren	selfAsSet;
 	
 	
 	public L0HashMap_OfLongs( final StorageGeneric env1, final NodeGeneric selfNode ) {
@@ -72,10 +72,10 @@ public class L0HashMap_OfLongs
 		assert null != selfNode;
 		env = env1;
 		_selfNode = selfNode.clone();// this is cloned for hitting bug with `==` in later code
-		selfAsSet = new L0Set_OfTerminals( env, _selfNode );
+		selfAsSet = new L0Set_OfChildren( env, _selfNode );
 		
 		// checking to make sure all values have (at least) one key
-		final IteratorOnTerminalNodesGeneric iter = selfAsSet.getIterator();
+		final IteratorOnChildNodesGeneric iter = selfAsSet.getIterator();
 		try {
 			NodeGeneric cur = iter.goFirst();
 			while ( null != cur ) {
@@ -93,20 +93,20 @@ public class L0HashMap_OfLongs
 	}
 	
 	
-	public NodeGeneric getValue_akaTerminal( final NodeGeneric forKey_akaInitialNode ) {
+	public NodeGeneric getValue_akaChild( final NodeGeneric forKey_akaInitialNode ) {
 		assert null != forKey_akaInitialNode;
-		return env.findCommonTerminalForInitials( _selfNode, forKey_akaInitialNode );
+		return env.findCommonChildForInitials( _selfNode, forKey_akaInitialNode );
 	}
 	
 	
 	/**
 	 * @param initialNode
-	 * @param terminalNode
+	 * @param childNode
 	 * @return true if already existed!
 	 */
-	public boolean put( final NodeGeneric initialNode, final NodeGeneric terminalNode ) {
-		final boolean ret1 = selfAsSet.ensureIsAddedToSet( terminalNode );// env.ensureVector( self, terminalLong );
-		final boolean ret2 = env.ensureVector( initialNode, terminalNode );
+	public boolean put( final NodeGeneric initialNode, final NodeGeneric childNode ) {
+		final boolean ret1 = selfAsSet.ensureIsAddedToSet( childNode );// env.ensureVector( self, childLong );
+		final boolean ret2 = env.ensureVector( initialNode, childNode );
 		assert ret1 ^ ret2 : Q.badCall( "both should've been either false or true; but they differed!" );
 		return ret1;
 	}
@@ -116,10 +116,10 @@ public class L0HashMap_OfLongs
 	 * it will throw if any already existed<br>
 	 * 
 	 * @param initialNode
-	 * @param terminalNode
+	 * @param childNode
 	 */
-	public void putAsNewOrThrow( final NodeGeneric initialNode, final NodeGeneric terminalNode ) {
-		final boolean ret = put( initialNode, terminalNode );
+	public void putAsNewOrThrow( final NodeGeneric initialNode, final NodeGeneric childNode ) {
+		final boolean ret = put( initialNode, childNode );
 		if ( ret ) {
 			Q.badCall( "already existed!" );
 		}

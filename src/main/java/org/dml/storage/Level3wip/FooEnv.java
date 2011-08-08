@@ -44,13 +44,13 @@ public class FooEnv extends StorageBDBNative {
 	private static final String				allLOOLWFF_StringID							= "allListsOrderedOfLongsWithFastFind";
 	public final Long						allLOOLWFF_LongID							=
 																							ensureNodeForName( allLOOLWFF_StringID );
-	public final L0Set_OfTerminals	allLOOLWFF_Set								= new L0Set_OfTerminals(
+	public final L0Set_OfChildren	allLOOLWFF_Set								= new L0Set_OfChildren(
 																							this,
 																							allLOOLWFF_LongID );
 	
 	private static final String				allLOOL_StringID							= "allListsOrderedOfLongs";
 	public final Long						allLOOL_LongID								= ensureNodeForName( allLOOL_StringID );
-	public final L0Set_OfTerminals	allLOOL_Set									= new L0Set_OfTerminals(
+	public final L0Set_OfChildren	allLOOL_Set									= new L0Set_OfChildren(
 																							this,
 																							allLOOL_LongID );
 	
@@ -58,7 +58,7 @@ public class FooEnv extends StorageBDBNative {
 																							"allSets that are part of ListsOrderedOfLongsWithFastFind";
 	public final Long						allSetsOfLOOLWWF_LongID						=
 																							ensureNodeForName( allSetsOfLOOLWWF_StringID );
-	public final L0Set_OfTerminals	allSetsOfLOOLWWF_Set						= new L0Set_OfTerminals(
+	public final L0Set_OfChildren	allSetsOfLOOLWWF_Set						= new L0Set_OfChildren(
 																							this,
 																							allSetsOfLOOLWWF_LongID );
 	

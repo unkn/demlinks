@@ -43,9 +43,9 @@ public class ElementCapsule {
 	private final FooEnv					env;
 	private final Long						self;
 	private final L0HashMap_OfLongs	selfAsHashMap;
-	private L0Pointer_ToTerminal		ptr2Prev;
-	private L0Pointer_ToTerminal		ptr2Element;
-	private L0Pointer_ToTerminal		ptr2Next;
+	private L0Pointer_ToChild		ptr2Prev;
+	private L0Pointer_ToChild		ptr2Element;
+	private L0Pointer_ToChild		ptr2Next;
 	
 	
 	public static ElementCapsule getExisting( final FooEnv env1, final Long self1 ) {
@@ -86,20 +86,20 @@ public class ElementCapsule {
 		// they all exist by now
 		assert selfAsHashMap.size() == 3;
 		
-		final Long ptr2Prev_long = selfAsHashMap.getValue_akaTerminal( env.allPtrToPrevForElementCapsules_LongID );
+		final Long ptr2Prev_long = selfAsHashMap.getValue_akaChild( env.allPtrToPrevForElementCapsules_LongID );
 		assert null != ptr2Prev_long;
-		ptr2Prev = new L0Pointer_ToTerminal( env, ptr2Prev_long );
+		ptr2Prev = new L0Pointer_ToChild( env, ptr2Prev_long );
 		// at this point it can be non-null, since we don't know if we just created it or it already exited!
 		// this can be null, if if the only capsule in the list (ie. both first and last; aka head/tail)
 		
-		final Long ptr2Next_long = selfAsHashMap.getValue_akaTerminal( env.allPtrToNextForElementCapsules_LongID );
+		final Long ptr2Next_long = selfAsHashMap.getValue_akaChild( env.allPtrToNextForElementCapsules_LongID );
 		assert null != ptr2Next_long;
-		ptr2Next = new L0Pointer_ToTerminal( env, ptr2Next_long );
+		ptr2Next = new L0Pointer_ToChild( env, ptr2Next_long );
 		// this can be null, if if the only capsule in the list (ie. both first and last; aka head/tail)
 		
-		final Long ptr2Element_long = selfAsHashMap.getValue_akaTerminal( env.allPtrToElementForElementCapsules_LongID );
+		final Long ptr2Element_long = selfAsHashMap.getValue_akaChild( env.allPtrToElementForElementCapsules_LongID );
 		assert null != ptr2Element_long;
-		ptr2Element = new L0Pointer_ToTerminal( env, ptr2Element_long );
+		ptr2Element = new L0Pointer_ToChild( env, ptr2Element_long );
 		// assert null != getElement_neverNull() : "the existing capsule must point to an element, it can't be null(yet it is)";
 		getElement_neverNull();
 	}
@@ -140,7 +140,7 @@ public class ElementCapsule {
 	
 	
 	public ElementCapsule getNextCapsule() {
-		final Long p = ptr2Next.getPointeeTerminal();
+		final Long p = ptr2Next.getPointeeChild();
 		if ( null == p ) {
 			return null;
 		} else {
@@ -150,7 +150,7 @@ public class ElementCapsule {
 	
 	
 	public ElementCapsule getPrevCapsule() {
-		final Long p = ptr2Prev.getPointeeTerminal();
+		final Long p = ptr2Prev.getPointeeChild();
 		if ( null == p ) {
 			return null;
 		} else {
@@ -160,7 +160,7 @@ public class ElementCapsule {
 	
 	
 	public Long getElement_neverNull() {
-		final Long e = ptr2Element.getPointeeTerminal();
+		final Long e = ptr2Element.getPointeeChild();
 		if ( null == e ) {
 			throw Q.badCall( "was null" );
 		} else {

@@ -39,19 +39,19 @@ import org.q.*;
 
 
 /**
- * a pointer is an initial that points to one or none terminal<br>
+ * a pointer is an initial that points to one or none child<br>
  * can even point to self, no constrains ffs<br>
- * this can be modified in other places by other methods and we don't check for integrity, ie. it can become a set of terminals,
+ * this can be modified in other places by other methods and we don't check for integrity, ie. it can become a set of children,
  * I don't give a floop<br>
  */
-public class L0Pointer_ToTerminal
+public class L0Pointer_ToChild
 {
 	
-	private final L0Set_OfTerminals	setOf1Element;
+	private final L0Set_OfChildren	setOf1Element;
 	
 	
-	public L0Pointer_ToTerminal( final StorageGeneric env1, final NodeGeneric selfNode ) {
-		setOf1Element = new L0Set_OfTerminals( env1, selfNode );
+	public L0Pointer_ToChild( final StorageGeneric env1, final NodeGeneric selfNode ) {
+		setOf1Element = new L0Set_OfChildren( env1, selfNode );
 	}
 	
 	
@@ -61,15 +61,15 @@ public class L0Pointer_ToTerminal
 	
 	
 	/**
-	 * @param toWhatTerminalNode
+	 * @param toWhatChildNode
 	 *            can be null
 	 */
-	public void setPointee( final NodeGeneric toWhatTerminalNode ) {
+	public void setPointee( final NodeGeneric toWhatChildNode ) {
 		setOf1Element.clearAll();// removes prev if any
 		assert setOf1Element.isEmpty();
 		
-		if ( null != toWhatTerminalNode ) {
-			final boolean result = setOf1Element.ensureIsAddedToSet( toWhatTerminalNode );
+		if ( null != toWhatChildNode ) {
+			final boolean result = setOf1Element.ensureIsAddedToSet( toWhatChildNode );
 			assert !result : Q.bug( "should not have existed!" );
 			assert setOf1Element.size() == 1;
 		}
@@ -79,16 +79,16 @@ public class L0Pointer_ToTerminal
 	/**
 	 * @return null if none
 	 */
-	public NodeGeneric getPointeeTerminal() {
+	public NodeGeneric getPointeeChild() {
 		final int size = setOf1Element.size();
 		assert ( size == 0 ) || ( size == 1 ) : Q.bug( "inconsistency fail, this pointer `" + getSelf()
-			+ "` must point to 0 or 1 terminals only" );
+			+ "` must point to 0 or 1 children only" );
 		if ( size == 0 ) {
 			return null;
 		}
 		
 		// get first one (should be only one)
-		final IteratorOnTerminalNodesGeneric iter = setOf1Element.getIterator();
+		final IteratorOnChildNodesGeneric iter = setOf1Element.getIterator();
 		try {
 			final NodeGeneric termNode = iter.goFirst();
 			iter.success();
@@ -112,7 +112,7 @@ public class L0Pointer_ToTerminal
 		
 		// if they are equal, they must not be different classes
 		return Q.returnParamButIfTrueAssertSameClass(
-			( (L0Pointer_ToTerminal)obj ).setOf1Element.equals( setOf1Element ),
+			( (L0Pointer_ToChild)obj ).setOf1Element.equals( setOf1Element ),
 			this,
 			obj );
 	}

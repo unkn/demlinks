@@ -43,7 +43,7 @@ import org.q.*;
  * to act as null but that's on a higher level<br>
  * allows self to be added to set, ie. circular allower<br>
  */
-public class L0Set_OfTerminals
+public class L0Set_OfChildren
 {
 	
 	protected final StorageGeneric	env;
@@ -58,7 +58,7 @@ public class L0Set_OfTerminals
 	 *            non-null<br>
 	 *            will be cloned(for now)<br>
 	 */
-	public L0Set_OfTerminals( final StorageGeneric env1, final NodeGeneric selfNode ) {
+	public L0Set_OfChildren( final StorageGeneric env1, final NodeGeneric selfNode ) {
 		assert null != env1;
 		assert null != selfNode;
 		env = env1;
@@ -76,13 +76,13 @@ public class L0Set_OfTerminals
 	 * @return true if already existed
 	 */
 	public boolean ensureIsAddedToSet( final NodeGeneric node ) {
-		assert isValidTerminal( node );
+		assert isValidChild( node );
 		return env.ensureVector( _selfNode, node );
 	}
 	
 	
 	public boolean contains( final NodeGeneric longIdent ) {
-		// assert this.isValidTerminal( longIdent ); no
+		// assert this.isValidChild( longIdent ); no
 		return env.isVector( _selfNode, longIdent );
 	}
 	
@@ -91,7 +91,7 @@ public class L0Set_OfTerminals
 	 * @return it's int(not long) because cursor.count() returns int! bdb limitation i guess
 	 */
 	public int size() {
-		return env.countTerminals( _selfNode );
+		return env.countChildren( _selfNode );
 	}
 	
 	
@@ -101,12 +101,12 @@ public class L0Set_OfTerminals
 	
 	
 	public boolean remove( final NodeGeneric node ) {
-		assert isValidTerminal( node );
+		assert isValidChild( node );
 		return env.removeVector( _selfNode, node );
 	}
 	
 	
-	public boolean isValidTerminal( final NodeGeneric node ) {
+	public boolean isValidChild( final NodeGeneric node ) {
 		return ( null != node );// allowing add self to set //&& ( !self.equals( longIdent ) );
 	}
 	
@@ -116,8 +116,8 @@ public class L0Set_OfTerminals
 	 * 
 	 * @return
 	 */
-	public IteratorOnTerminalNodesGeneric getIterator() {
-		return env.getIterator_on_Terminals_of( _selfNode );
+	public IteratorOnChildNodesGeneric getIterator() {
+		return env.getIterator_on_Children_of( _selfNode );
 	}
 	
 	
@@ -125,7 +125,7 @@ public class L0Set_OfTerminals
 		// Q.ni();
 		// TODO: implement this in another way, ie. by deleting that key? because deleting all its children kind of does that
 		// exact thing, but slower, yes?
-		final IteratorOnTerminalNodesGeneric iter = getIterator();
+		final IteratorOnChildNodesGeneric iter = getIterator();
 		try {
 			iter.deleteAll();
 			assert iter.size() == 0;
@@ -147,7 +147,7 @@ public class L0Set_OfTerminals
 		assert Q.assumeSameFamilyClasses( this, obj );
 		
 		// if they are equal, they must not be different classes
-		return Q.returnParamButIfTrueAssertSameClass( ( (L0Set_OfTerminals)obj )._selfNode.equals( _selfNode ), this, obj );
+		return Q.returnParamButIfTrueAssertSameClass( ( (L0Set_OfChildren)obj )._selfNode.equals( _selfNode ), this, obj );
 	}
 	
 	

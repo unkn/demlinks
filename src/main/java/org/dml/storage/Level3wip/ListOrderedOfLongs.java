@@ -57,7 +57,7 @@ public class ListOrderedOfLongs implements OrderedList {
 		// if (!env.allLOOL_Set.contains( self )) {
 		// env.allLOOL_Set.addToSet( longIdent )
 		// }
-		// if (env.isVector( , terminalLong ))
+		// if (env.isVector( , childLong ))
 	}
 	
 	
@@ -73,7 +73,7 @@ public class ListOrderedOfLongs implements OrderedList {
 	
 	
 	private ElementCapsule getExistingHeadOrNull() {
-		final Long head = selfAsHashMap.getValue_akaTerminal( env.allHeadsForLOOL_LongID );
+		final Long head = selfAsHashMap.getValue_akaChild( env.allHeadsForLOOL_LongID );
 		if ( null != head ) {
 			// if ( null != ecHead ) {
 			// Q.warn( "the list changed without our awareness" );

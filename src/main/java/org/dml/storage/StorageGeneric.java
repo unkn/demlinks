@@ -71,34 +71,34 @@ public interface StorageGeneric
 	
 	// =============== Level 2: tuple of nodes
 	
-	public void makeVector( final NodeGeneric initialNode, final NodeGeneric terminalNode );
+	public void makeVector( final NodeGeneric initialNode, final NodeGeneric childNode );
 	
 	
-	public boolean ensureVector( final NodeGeneric initialNode, final NodeGeneric terminalNode );
+	public boolean ensureVector( final NodeGeneric initialNode, final NodeGeneric childNode );
 	
 	
 	/**
-	 * is? initialNode->terminalNode<br>
-	 * but terminalNode->initialNode is a different thing<br>
+	 * is? initialNode->childNode<br>
+	 * but childNode->initialNode is a different thing<br>
 	 * 
 	 * @param initialNode
-	 * @param terminalNode
+	 * @param childNode
 	 * @return
 	 */
-	public boolean isVector( final NodeGeneric initialNode, final NodeGeneric terminalNode );
+	public boolean isVector( final NodeGeneric initialNode, final NodeGeneric childNode );
 	
 	
 	
-	public IteratorOnTerminalNodesGeneric getIterator_on_Initials_of( final NodeGeneric terminalNode );
+	public IteratorOnChildNodesGeneric getIterator_on_Initials_of( final NodeGeneric childNode );
 	
 	
-	public IteratorOnTerminalNodesGeneric getIterator_on_Terminals_of( final NodeGeneric initialNode );
+	public IteratorOnChildNodesGeneric getIterator_on_Children_of( final NodeGeneric initialNode );
 	
 	
-	public int countInitials( final NodeGeneric ofTerminalNode );
+	public int countInitials( final NodeGeneric ofChildNode );
 	
 	
-	public int countTerminals( final NodeGeneric ofInitialNode );
+	public int countChildren( final NodeGeneric ofInitialNode );
 	
 	
 	/**
@@ -110,8 +110,8 @@ public interface StorageGeneric
 	 * @param initialNode2
 	 * @return X
 	 */
-	public NodeGeneric findCommonTerminalForInitials( final NodeGeneric initialNode1, final NodeGeneric initialNode2 );
+	public NodeGeneric findCommonChildForInitials( final NodeGeneric initialNode1, final NodeGeneric initialNode2 );
 	
 	
-	public boolean removeVector( final NodeGeneric initialNode, final NodeGeneric terminalNode );
+	public boolean removeVector( final NodeGeneric initialNode, final NodeGeneric childNode );
 }

@@ -206,7 +206,7 @@ public abstract class Q
 		assert null != sameOrSubclassObjectHere;
 		if ( _this.getClass().isAssignableFrom( sameOrSubclassObjectHere.getClass() ) ) {
 			// if (is obj's class same or subclass of this's class)
-			// if ( ( obj instanceof Pointer_ToTerminal ) ) {// means !(this class and all its subclasses)
+			// if ( ( obj instanceof Pointer_ToChild ) ) {// means !(this class and all its subclasses)
 			return true;
 		}
 		throw Q.badCall( "you're comparing two very different class types!(obj.class==" + sameOrSubclassObjectHere.getClass()

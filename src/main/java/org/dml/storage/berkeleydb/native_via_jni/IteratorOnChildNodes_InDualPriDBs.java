@@ -44,9 +44,9 @@ import com.sleepycat.db.*;
  * Vector aka OrderedPair<br>
  * this takes care of both primary databases ie. on delete()<br>
  */
-public class IteratorOnTerminalNodes_InDualPriDBs
-		extends IterOnTerminalNodes_InOnePriDB
-		implements IteratorOnTerminalNodesGeneric
+public class IteratorOnChildNodes_InDualPriDBs
+		extends IterOnChildNodes_InOnePriDB
+		implements IteratorOnChildNodesGeneric
 {
 	
 	private final Database	reverse;
@@ -58,13 +58,13 @@ public class IteratorOnTerminalNodes_InDualPriDBs
 	 * ie. ordered pair: X,Y aka X->Y<br>
 	 * 
 	 * @param priForwardDB
-	 *            the database that contains initial which is connected to the terminal items below<br>
+	 *            the database that contains initial which is connected to the child items below<br>
 	 * @param priBackwardDB
-	 *            the database that contains the terminal items we will be iterating upon<br>
+	 *            the database that contains the child items we will be iterating upon<br>
 	 * @param fixedInitialObjectInFirstDB
-	 *            the initial in first DB, we iterate on this items' children(aka its terminals)<br>
+	 *            the initial in first DB, we iterate on this items' children(aka its children)<br>
 	 */
-	protected IteratorOnTerminalNodes_InDualPriDBs( final Database priForwardDB, final Database priBackwardDB,
+	protected IteratorOnChildNodes_InDualPriDBs( final Database priForwardDB, final Database priBackwardDB,
 			final NodeGeneric fixedInitialObjectInFirstDB ) {
 		super( priForwardDB, fixedInitialObjectInFirstDB );
 		assert fixedInitialObjectInFirstDB == _initialNode;
@@ -103,7 +103,7 @@ public class IteratorOnTerminalNodes_InDualPriDBs
 	 */
 	private void deleteFromReverse( final NodeGeneric delThisOne ) {
 		assert null != delThisOne;
-		final IterOnTerminalNodes_InOnePriDB iterReverse = new IterOnTerminalNodes_InOnePriDB( reverse, delThisOne );
+		final IterOnChildNodes_InOnePriDB iterReverse = new IterOnChildNodes_InOnePriDB( reverse, delThisOne );
 		try {
 			final NodeGeneric l = iterReverse.goTo( _initialNode );// pos on initialObject in this tuple:
 																	// current->initialObject

@@ -152,15 +152,15 @@ public class BDBSetOfNodes
 	
 	
 	@Override
-	public boolean isVector( final NodeGeneric initialLong, final NodeGeneric terminalLong ) {
+	public boolean isVector( final NodeGeneric initialLong, final NodeGeneric childLong ) {
 		assert null != initialLong;
-		assert null != terminalLong;
+		assert null != childLong;
 		
 		final DatabaseEntry keyEntry = new DatabaseEntry();
 		LongBinding.longToEntry( initialLong.getId(), keyEntry );
 		
 		final DatabaseEntry dataEntry = new DatabaseEntry();
-		LongBinding.longToEntry( terminalLong.getId(), dataEntry );
+		LongBinding.longToEntry( childLong.getId(), dataEntry );
 		
 		OperationStatus ret1 = null, ret2 = null;
 		// maybe a transaction here is unnecessary, however we don't want
@@ -177,7 +177,7 @@ public class BDBSetOfNodes
 		}
 		assert null != ret1;
 		assert ret1.equals( ret2 ) : Q.bug( "one exists, the other doesn't; but should either both exist, or both not exist: "
-			+ initialLong + "<->" + terminalLong );
+			+ initialLong + "<->" + childLong );
 		return ( ret1.equals( OperationStatus.SUCCESS ) );// ret2 is same
 	}
 	
@@ -188,15 +188,15 @@ public class BDBSetOfNodes
 	 * this is like a new that doesn't throw if the group already exists<br>
 	 * 
 	 * @param initialLong
-	 * @param terminalLong
+	 * @param childLong
 	 * @return true if existed already; false if it didn't exist before call
 	 */
 	@Override
-	public boolean ensureVector( final NodeGeneric initialLong, final NodeGeneric terminalLong ) {
+	public boolean ensureVector( final NodeGeneric initialLong, final NodeGeneric childLong ) {
 		assert null != initialLong;
-		assert null != terminalLong;
+		assert null != childLong;
 		
-		return ( internal_makeVector( initialLong, terminalLong ).equals( OperationStatus.KEYEXIST ) );
+		return ( internal_makeVector( initialLong, childLong ).equals( OperationStatus.KEYEXIST ) );
 	}
 	
 	
@@ -204,15 +204,15 @@ public class BDBSetOfNodes
 	 * it will throw if already exists!<br>
 	 * 
 	 * @param initialLong
-	 * @param terminalLong
+	 * @param childLong
 	 */
 	@Override
-	public void createNewVectorOrThrow( final NodeGeneric initialLong, final NodeGeneric terminalLong ) {
+	public void createNewVectorOrThrow( final NodeGeneric initialLong, final NodeGeneric childLong ) {
 		assert null != initialLong;
-		assert null != terminalLong;
+		assert null != childLong;
 		
-		if ( ensureVector( initialLong, terminalLong ) ) {
-			// final OperationStatus ret = internal_makeVector( initialLong, terminalLong );
+		if ( ensureVector( initialLong, childLong ) ) {
+			// final OperationStatus ret = internal_makeVector( initialLong, childLong );
 			// if ( ret.equals( OperationStatus.KEYEXIST ) ) {
 			throw Q.badCall( "you expected to create a new vector, and yet that vector already existed!" );
 			// } else {
@@ -225,27 +225,27 @@ public class BDBSetOfNodes
 	
 	/**
 	 * @param initialLong
-	 * @param terminalLong
+	 * @param childLong
 	 * @return OperationStatus.SUCCESS or KEYEXIST
 	 * @throws BugError
 	 *             if inconsistency detected (ie. one link exists the other
 	 *             doesn't)
 	 */
-	private OperationStatus internal_makeVector( final NodeGeneric initialLong, final NodeGeneric terminalLong ) {
+	private OperationStatus internal_makeVector( final NodeGeneric initialLong, final NodeGeneric childLong ) {
 		assert null != initialLong;
-		assert null != terminalLong;
+		assert null != childLong;
 		
 		final DatabaseEntry keyEntry_initial = new DatabaseEntry();
 		LongBinding.longToEntry( initialLong.getId(), keyEntry_initial );
 		
-		final DatabaseEntry dataEntry_terminal = new DatabaseEntry();
-		LongBinding.longToEntry( terminalLong.getId(), dataEntry_terminal );
+		final DatabaseEntry dataEntry_child = new DatabaseEntry();
+		LongBinding.longToEntry( childLong.getId(), dataEntry_child );
 		
 		OperationStatus ret1 = null, ret2 = null;
 		final BDBTransaction txn = BDBTransaction.beginChild( env );
 		try {
-			ret1 = priForwardDB.putNoDupData( txn.getTransaction(), keyEntry_initial, dataEntry_terminal );
-			ret2 = priBackwardDB.putNoDupData( txn.getTransaction(), dataEntry_terminal, keyEntry_initial );
+			ret1 = priForwardDB.putNoDupData( txn.getTransaction(), keyEntry_initial, dataEntry_child );
+			ret2 = priBackwardDB.putNoDupData( txn.getTransaction(), dataEntry_child, keyEntry_initial );
 			txn.success();
 		} catch ( final DatabaseException e ) {
 			Q.rethrow( e );
@@ -266,10 +266,10 @@ public class BDBSetOfNodes
 	 * @return iter
 	 */
 	@Override
-	public IteratorOnTerminalNodesGeneric getIterator_on_Terminals_of( final NodeGeneric initialObject ) {
+	public IteratorOnChildNodesGeneric getIterator_on_Children_of( final NodeGeneric initialObject ) {
 		assert null != initialObject;
 		
-		return new IteratorOnTerminalNodes_InDualPriDBs( priForwardDB, priBackwardDB, initialObject );
+		return new IteratorOnChildNodes_InDualPriDBs( priForwardDB, priBackwardDB, initialObject );
 	}
 	
 	
@@ -278,22 +278,22 @@ public class BDBSetOfNodes
 	 * though there may be order of insertion is kept, but there's no control given to user about order of items, thus consider
 	 * this orderless<br>
 	 * 
-	 * @param ofTerminalObject
+	 * @param ofChildObject
 	 * @return iter
 	 */
 	@Override
-	public IteratorOnTerminalNodesGeneric getIterator_on_Initials_of( final NodeGeneric ofTerminalObject ) {
-		assert null != ofTerminalObject;
+	public IteratorOnChildNodesGeneric getIterator_on_Initials_of( final NodeGeneric ofChildObject ) {
+		assert null != ofChildObject;
 		
-		return new IteratorOnTerminalNodes_InDualPriDBs( priBackwardDB, priForwardDB, ofTerminalObject );
+		return new IteratorOnChildNodes_InDualPriDBs( priBackwardDB, priForwardDB, ofChildObject );
 	}
 	
 	
 	@Override
-	public int countInitials( final NodeGeneric ofTerminalObject ) {
-		assert null != ofTerminalObject;
+	public int countInitials( final NodeGeneric ofChildObject ) {
+		assert null != ofChildObject;
 		
-		final IterOnTerminalNodes_InOnePriDB vi = new IterOnTerminalNodes_InOnePriDB( priBackwardDB, ofTerminalObject );
+		final IterOnChildNodes_InOnePriDB vi = new IterOnChildNodes_InOnePriDB( priBackwardDB, ofChildObject );
 		int count = -1;
 		try {
 			count = vi.size();
@@ -306,10 +306,10 @@ public class BDBSetOfNodes
 	
 	
 	@Override
-	public int countTerminals( final NodeGeneric ofInitialObject ) {
+	public int countChildren( final NodeGeneric ofInitialObject ) {
 		assert null != ofInitialObject;
 		
-		final IterOnTerminalNodes_InOnePriDB vi = new IterOnTerminalNodes_InOnePriDB( priForwardDB, ofInitialObject );
+		final IterOnChildNodes_InOnePriDB vi = new IterOnChildNodes_InOnePriDB( priForwardDB, ofInitialObject );
 		int count = -1;
 		try {
 			count = vi.size();
@@ -329,18 +329,18 @@ public class BDBSetOfNodes
 	 * @return null if not found
 	 */
 	@Override
-	public NodeGeneric findCommonTerminalForInitials( final NodeGeneric initial1, final NodeGeneric initial2 ) {
+	public NodeGeneric findCommonChildForInitials( final NodeGeneric initial1, final NodeGeneric initial2 ) {
 		assert null != initial1;
 		assert null != initial2;
 		
 		NodeGeneric found = null;
 		// we choose the one with the least elements
-		final IterOnTerminalNodes_InOnePriDB iterFor1 = new IterOnTerminalNodes_InOnePriDB( priForwardDB, initial1 );
-		IterOnTerminalNodes_InOnePriDB iterOnSmallest = iterFor1;
+		final IterOnChildNodes_InOnePriDB iterFor1 = new IterOnChildNodes_InOnePriDB( priForwardDB, initial1 );
+		IterOnChildNodes_InOnePriDB iterOnSmallest = iterFor1;
 		NodeGeneric comparator = initial2;
-		IterOnTerminalNodes_InOnePriDB iterFor2 = null;
+		IterOnChildNodes_InOnePriDB iterFor2 = null;
 		try {
-			iterFor2 = new IterOnTerminalNodes_InOnePriDB( priForwardDB, initial2 );
+			iterFor2 = new IterOnChildNodes_InOnePriDB( priForwardDB, initial2 );
 			
 			if ( iterFor1.size() > iterFor2.size() ) {
 				iterOnSmallest = iterFor2;
@@ -386,26 +386,26 @@ public class BDBSetOfNodes
 	
 	/**
 	 * @param initialObject
-	 * @param terminalObject
+	 * @param childObject
 	 * @return true if existed
 	 */
 	@Override
-	public boolean removeVector( final NodeGeneric initialObject, final NodeGeneric terminalObject ) {
+	public boolean removeVector( final NodeGeneric initialObject, final NodeGeneric childObject ) {
 		
 		assert null != initialObject;
-		assert null != terminalObject;
+		assert null != childObject;
 		
-		IteratorOnTerminalNodesGeneric iter = getIterator_on_Terminals_of( initialObject );
+		IteratorOnChildNodesGeneric iter = getIterator_on_Children_of( initialObject );
 		try {
-			final NodeGeneric now = iter.goTo( terminalObject );
+			final NodeGeneric now = iter.goTo( childObject );
 			if ( null == now ) {
-				assert !isVector( initialObject, terminalObject );
+				assert !isVector( initialObject, childObject );
 				return false;// didn't exist
 			} else {
 				// found it
 				iter.delete();
 				iter.success();
-				assert !isVector( initialObject, terminalObject );
+				assert !isVector( initialObject, childObject );
 				return true;
 			}
 		} finally {
@@ -414,7 +414,7 @@ public class BDBSetOfNodes
 			} finally {
 				iter = null;
 			}
-			// assert !isVector( initialObject, terminalObject ); this will effin overwrite the thrown exception in try
+			// assert !isVector( initialObject, childObject ); this will effin overwrite the thrown exception in try
 		}
 	}
 }

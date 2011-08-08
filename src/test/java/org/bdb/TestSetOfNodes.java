@@ -52,7 +52,7 @@ public class TestSetOfNodes
 {
 	
 	private StorageBDBNative	env;
-	private L0Set_OfTerminals	set1;
+	private L0Set_OfChildren	set1;
 	private NodeGeneric			setInitial;
 	
 	
@@ -62,7 +62,7 @@ public class TestSetOfNodes
 		t.start();
 		env = new StorageBDBNative( JUnitConstants.BDB_ENVIRONMENT_STORE_DIR, true );
 		setInitial = env.createNewUniqueNode();
-		set1 = new L0Set_OfTerminals( env, setInitial );
+		set1 = new L0Set_OfChildren( env, setInitial );
 		t.stop();
 		System.out.println( "setUp: " + t.getDeltaPrintFriendly() );
 	}
@@ -116,7 +116,7 @@ public class TestSetOfNodes
 		assertTrue( env.isVector( set1.getSelf(), three ) );
 		assertTrue( set1.size() == ( startSize + 2 ) );
 		
-		final IteratorOnTerminalNodesGeneric iter = set1.getIterator();
+		final IteratorOnChildNodesGeneric iter = set1.getIterator();
 		assertTrue( iter.goFirst().equals( one ) );
 		
 		assertNull( iter.goPrev() );// even tho errored here,
@@ -162,7 +162,7 @@ public class TestSetOfNodes
 		assertTrue( iter.size() == 2 );
 		assertTrue( set1.size() == 2 );
 		// assertTrue( this.set1.remove( two ) );
-		final IteratorOnTerminalNodesGeneric iter2 = iter;// this.set1.getIterator( );
+		final IteratorOnChildNodesGeneric iter2 = iter;// this.set1.getIterator( );
 		// iter2.goFirst();
 		// while ( iter2.now() != null ) {
 		// System.out.println( "iter2=" + iter2.now() );
@@ -196,15 +196,15 @@ public class TestSetOfNodes
 		assertFalse( env.isVector( set1.getSelf(), three ) );
 		
 		final NodeGeneric dsotInitial = env.createNewUniqueNode();
-		final L0DomainSet_OfTerminals dsot = new L0DomainSet_OfTerminals( env, dsotInitial, setInitial );
+		final L0DomainSet_OfChildren dsot = new L0DomainSet_OfChildren( env, dsotInitial, setInitial );
 		assertTrue( set1.getSelf().equals( setInitial ) );
 		try {
-			final L0DomainSet_OfTerminals adsot = new L0DomainSet_OfTerminals( env, set1.getSelf(), setInitial );
+			final L0DomainSet_OfChildren adsot = new L0DomainSet_OfChildren( env, set1.getSelf(), setInitial );
 			Q.fail();
 		} catch ( final AssertionError ae ) {
 			// good
 		}
-		final L0Set_OfTerminals sot3 = new L0Set_OfTerminals( env, dsotInitial );
+		final L0Set_OfChildren sot3 = new L0Set_OfChildren( env, dsotInitial );
 		assertTrue( sot3.getSelf().equals( dsot.getSelf() ) );
 		try {
 			sot3.equals( dsot );
@@ -220,15 +220,15 @@ public class TestSetOfNodes
 			// good
 		}
 		
-		final L0DomainSet_OfTerminals dsot3 = new L0DomainSet_OfTerminals( env, dsot.getSelf(), dsot.getDomain() );
-		final L0Set_OfTerminals dsot4 = new L0DomainSet_OfTerminals( env, dsot.getSelf(), dsot.getDomain() );
+		final L0DomainSet_OfChildren dsot3 = new L0DomainSet_OfChildren( env, dsot.getSelf(), dsot.getDomain() );
+		final L0Set_OfChildren dsot4 = new L0DomainSet_OfChildren( env, dsot.getSelf(), dsot.getDomain() );
 		assertTrue( dsot != dsot4 );
 		assertTrue( dsot3 != dsot4 );
 		assertTrue( dsot3 != dsot );
 		assertTrue( dsot.equals( dsot3 ) );
 		assertTrue( dsot.equals( dsot4 ) );
 		assertTrue( dsot4.equals( dsot ) );
-		final L0DomainSet_OfTerminals dsot5 = new L0DomainSet_OfTerminals( env, dsot.getSelf(), env.createNewUniqueNode() );
+		final L0DomainSet_OfChildren dsot5 = new L0DomainSet_OfChildren( env, dsot.getSelf(), env.createNewUniqueNode() );
 		try {
 			// same set but different domains?, which reminds me
 			// XXX:we should not be able to `new` same set with two different domains; thing is we only detect this here when
@@ -240,7 +240,7 @@ public class TestSetOfNodes
 		}
 		
 		dsot.hashCode();
-		final HashSet<L0Set_OfTerminals> hm = new HashSet<L0Set_OfTerminals>();
+		final HashSet<L0Set_OfChildren> hm = new HashSet<L0Set_OfChildren>();
 		assertTrue( hm.add( dsot ) );
 		assertTrue( hm.add( set1 ) );
 		assertTrue( hm.size() == 2 );
@@ -273,7 +273,7 @@ public class TestSetOfNodes
 		} catch ( final AssertionError ae ) {
 			// right
 		}
-		assertFalse( dsot.isValidTerminal( three ) );
+		assertFalse( dsot.isValidChild( three ) );
 		assertFalse( dsot.contains( three ) );
 		
 		try {
@@ -329,11 +329,11 @@ public class TestSetOfNodes
 	public void testAlreadyExisting() {
 		final NodeGeneric l1 = env.createNewUniqueNode();
 		assertNotNull( l1 );
-		final L0Set_OfTerminals sos = new L0Set_OfTerminals( env, set1.getSelf() );
+		final L0Set_OfChildren sos = new L0Set_OfChildren( env, set1.getSelf() );
 		assertFalse( set1.ensureIsAddedToSet( l1 ) );
 		assertTrue( set1.size() == 1 );
 		assertTrue( sos.size() == 1 );
-		final L0Set_OfTerminals sos2 = new L0Set_OfTerminals( env, set1.getSelf() );
+		final L0Set_OfChildren sos2 = new L0Set_OfChildren( env, set1.getSelf() );
 		assertTrue( sos2.size() == 1 );
 		
 		assertTrue( sos.equals( sos2 ) );
@@ -347,18 +347,18 @@ public class TestSetOfNodes
 		assertTrue( sos != sos2 );
 		
 		final NodeGeneric domain = env.createNewUniqueNode();
-		L0Set_OfTerminals dsos;
+		L0Set_OfChildren dsos;
 		// doesn't check integrity, thus not throws here:
-		dsos = new L0DomainSet_OfTerminals( env, sos2.getSelf(), domain );
+		dsos = new L0DomainSet_OfChildren( env, sos2.getSelf(), domain );
 		
 		assertFalse( env.ensureVector( domain, l1 ) );
-		dsos = new L0DomainSet_OfTerminals( env, sos2.getSelf(), domain );
+		dsos = new L0DomainSet_OfChildren( env, sos2.getSelf(), domain );
 		assertTrue( dsos.getSelf().equals( sos2.getSelf() ) );
 		assertTrue( dsos.size() == 1 );
 		
 		try {
 			// can't compare a super with the subclass
-			dsos.equals( set1 );// actually calls DomainSet_OfTerminals.equals
+			dsos.equals( set1 );// actually calls DomainSet_OfChildren.equals
 			Q.fail();
 		} catch ( final BadCallError ae ) {
 			// the way
@@ -370,30 +370,30 @@ public class TestSetOfNodes
 	public void testPointer() {
 		final NodeGeneric ptrInitial = env.createNewUniqueNode();
 		assertNotNull( ptrInitial );
-		final L0Pointer_ToTerminal ptr = new L0Pointer_ToTerminal( env, ptrInitial );
+		final L0Pointer_ToChild ptr = new L0Pointer_ToChild( env, ptrInitial );
 		assertTrue( ptr.getSelf().equals( ptrInitial ) );
 		assertTrue( ptr.getSelf() != ptrInitial );
-		assertNull( ptr.getPointeeTerminal() );
+		assertNull( ptr.getPointeeChild() );
 		
 		final NodeGeneric newL = env.createNewUniqueNode();
 		assertNotNull( newL );
 		assertFalse( env.ensureVector( ptrInitial, newL ) );
 		
 		// this isn't valid because it's using the same self as ptr
-		final L0Pointer_ToTerminal ptr2 = new L0Pointer_ToTerminal( env, ptrInitial );
-		assertNotNull( ptr2.getPointeeTerminal() );
-		assertTrue( ptr2.getPointeeTerminal().equals( newL ) );
-		assertTrue( ptr2.getPointeeTerminal() != newL );
-		assertTrue( ptr.getPointeeTerminal().equals( ptr2.getPointeeTerminal() ) );
-		assertTrue( ptr.getPointeeTerminal() != ptr2.getPointeeTerminal() );
+		final L0Pointer_ToChild ptr2 = new L0Pointer_ToChild( env, ptrInitial );
+		assertNotNull( ptr2.getPointeeChild() );
+		assertTrue( ptr2.getPointeeChild().equals( newL ) );
+		assertTrue( ptr2.getPointeeChild() != newL );
+		assertTrue( ptr.getPointeeChild().equals( ptr2.getPointeeChild() ) );
+		assertTrue( ptr.getPointeeChild() != ptr2.getPointeeChild() );
 		assertTrue( ptr != ptr2 );
 		assertTrue( ptr.equals( ptr2 ) );
 		
 		// this is not valid, since it uses same self as ptr2
-		final L0DomainPointer_ToTerminal dptr = new L0DomainPointer_ToTerminal( env, ptr2.getSelf(), set1.getSelf() );
+		final L0DomainPointer_ToChild dptr = new L0DomainPointer_ToChild( env, ptr2.getSelf(), set1.getSelf() );
 		
 		try {
-			dptr.getPointeeTerminal();// detects that pointee is not in domain!
+			dptr.getPointeeChild();// detects that pointee is not in domain!
 			Q.fail();
 		} catch ( final AssertionError ae ) {
 			// it detected!
@@ -414,7 +414,7 @@ public class TestSetOfNodes
 		}
 		
 		dptr.hashCode();
-		final HashSet<L0Pointer_ToTerminal> hm = new HashSet<L0Pointer_ToTerminal>();
+		final HashSet<L0Pointer_ToChild> hm = new HashSet<L0Pointer_ToChild>();
 		assertTrue( hm.add( dptr ) );
 		assertTrue( dptr.getSelf().equals( ptr.getSelf() ) );
 		
@@ -443,30 +443,30 @@ public class TestSetOfNodes
 		
 		assertFalse( set1.ensureIsAddedToSet( newL ) );
 		
-		assertTrue( dptr.getPointeeTerminal().equals( newL ) );
+		assertTrue( dptr.getPointeeChild().equals( newL ) );
 		
-		final L0NonNullDomainPointer_ToTerminal nndptr =
-			new L0NonNullDomainPointer_ToTerminal( env, dptr.getSelf(), dptr.getDomain() );
+		final L0NonNullDomainPointer_ToChild nndptr =
+			new L0NonNullDomainPointer_ToChild( env, dptr.getSelf(), dptr.getDomain() );
 		
-		assertTrue( newL.equals( nndptr.getPointeeTerminal() ) );
-		assertTrue( newL != nndptr.getPointeeTerminal() );
+		assertTrue( newL.equals( nndptr.getPointeeChild() ) );
+		assertTrue( newL != nndptr.getPointeeChild() );
 		assertTrue( dptr.getDomain().equals( nndptr.getDomain() ) );
 		assertTrue( dptr.getDomain() != nndptr.getDomain() );
 		
 		dptr.setPointee( null );
-		assertNull( dptr.getPointeeTerminal() );
+		assertNull( dptr.getPointeeChild() );
 		
 		try {
-			nndptr.getPointeeTerminal();
+			nndptr.getPointeeChild();
 			Q.fail();
 		} catch ( final AssertionError ae ) {
 			// good
 		}
 		
-		final L0NonNullDomainPointer_ToTerminal nndptr2 =
-			new L0NonNullDomainPointer_ToTerminal( env, dptr.getSelf(), dptr.getDomain() );
+		final L0NonNullDomainPointer_ToChild nndptr2 =
+			new L0NonNullDomainPointer_ToChild( env, dptr.getSelf(), dptr.getDomain() );
 		try {
-			nndptr2.getPointeeTerminal();
+			nndptr2.getPointeeChild();
 			Q.fail();
 		} catch ( final AssertionError ae ) {
 			// good
@@ -480,7 +480,7 @@ public class TestSetOfNodes
 		}
 		
 		nndptr2.setPointee( newL );
-		assertTrue( newL.equals( nndptr.getPointeeTerminal() ) );
+		assertTrue( newL.equals( nndptr.getPointeeChild() ) );
 		
 	}
 }
