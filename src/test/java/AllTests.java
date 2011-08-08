@@ -32,7 +32,6 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 import org.bdb.*;
-import org.bdbLevel1.*;
 import org.junit.runner.*;
 import org.junit.runners.*;
 import org.references.*;
@@ -42,7 +41,8 @@ import org.references.*;
 @RunWith( Suite.class )
 @Suite.SuiteClasses(
 		value = {
-			AllTestsReferences.class, AllTestsBDB.class
+			AllTestsReferences.class, AllTestsBDB.class,
+		// AllRawBerkeleyDBTests.class too time consuming to add here
 		} )
 public class AllTests {
 	// always empty

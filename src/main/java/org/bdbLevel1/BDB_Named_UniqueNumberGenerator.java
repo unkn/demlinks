@@ -84,9 +84,10 @@ public class BDB_Named_UniqueNumberGenerator {
 		
 		// when seq.get(txn,x); "The txn handle must be null if the sequence handle was opened with a non-zero cache size."
 		// thus if it's 0, we can use transaction, if it's >0 we must use null transactions only :)
-		sequenceConf.setCacheSize( 10 );// doing this just to make sure we're not allowed to use txns with this;
+		sequenceConf.setCacheSize( 1 );// doing this just to make sure we're not allowed to use txns with this;
 		// we don't want to use txns because two parallel ones can potentially get the same number due to read_uncommited not
 		// being used so they don't see eachother's modifs while in progress; anyway this is my guess;
+		// XXX: seems like cachesize will cause delta to be delta+cachesize-1; so we keep cachesize at 1 for now
 		
 		sequenceConf.setWrap( wrap );// no wrap else it would overwrite or rather get/use existing stuff
 		
