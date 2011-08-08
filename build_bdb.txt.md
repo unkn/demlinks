@@ -1,10 +1,13 @@
 this will describe how to build berkeleydb native .dll (for windows) and the .jar
 from f3e25ba30ea351354118bb7785075f5f  db-5.2.28.zip
-============
 
-instructions are found in 
+
+instructions are found in
+ 
 docs/installation/build_win.html
+
 docs/installation/build_win_java.html
+
 after unzipping that file
 
 -------------------
