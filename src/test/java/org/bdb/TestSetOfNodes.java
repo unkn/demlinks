@@ -40,7 +40,7 @@ import static org.junit.Assert.*;
 import java.util.*;
 
 import org.dml.storage.*;
-import org.dml.storage.bdbLevel2.*;
+import org.dml.storage.Level2.*;
 import org.dml.storage.berkeleydb.native_via_jni.*;
 import org.junit.*;
 import org.q.*;

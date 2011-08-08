@@ -31,10 +31,9 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.dml.storage.bdbLevel2;
+package org.dml.storage.Level2;
 
 import org.dml.storage.*;
-import org.dml.storage.berkeleydb.native_via_jni.*;
 import org.q.*;
 
 
@@ -61,14 +60,14 @@ import org.q.*;
 public class L0HashMap_OfLongs
 {
 	
-	private final StorageBDBNative	env;
+	private final StorageGeneric	env;
 	private final NodeGeneric		_selfNode;
 	
 	
 	private final L0Set_OfTerminals	selfAsSet;
 	
 	
-	public L0HashMap_OfLongs( final StorageBDBNative env1, final NodeGeneric selfNode ) {
+	public L0HashMap_OfLongs( final StorageGeneric env1, final NodeGeneric selfNode ) {
 		assert null != env1;
 		assert null != selfNode;
 		env = env1;

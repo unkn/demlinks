@@ -31,10 +31,10 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.dml.storage.bdbLevel3wip;
+package org.dml.storage.Level3wip;
 
+import org.dml.storage.Level2.*;
 import org.dml.storage.bdbLevel1.*;
-import org.dml.storage.bdbLevel2.*;
 import org.dml.storage.berkeleydb.native_via_jni.*;
 
 

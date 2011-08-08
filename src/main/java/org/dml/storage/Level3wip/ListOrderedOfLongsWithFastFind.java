@@ -31,108 +31,96 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.dml.storage.bdbLevel3wip;
+package org.dml.storage.Level3wip;
 
-import org.dml.storage.bdbLevel2.*;
+import org.dml.storage.Level2.*;
+import org.q.*;
 
 
 
-public class ListOrderedOfLongs implements OrderedList {
+/**
+ * self->list1
+ * self->set1
+ * allListsOrderedOfLongs->list1
+ * allListsOrderedOfLongsWithFastFind->self
+ * 
+ */
+public class ListOrderedOfLongsWithFastFind implements OrderedList {
 	
 	protected final FooEnv					env;
 	private final Long						self;
 	private final L0HashMap_OfLongs	selfAsHashMap;
-	
-	
-	// private ElementCapsule ecHead = null;
-	
-	
-	public ListOrderedOfLongs( final FooEnv env1, final Long longIdentSelf ) {
+	private final ListOrderedOfLongs		orderedList;
+	private final L0Set_OfTerminals	ffSet;			// fast find set
+															
+															
+															
+	public ListOrderedOfLongsWithFastFind( final FooEnv env1, final Long longIdentSelf ) {
 		assert null != env1;
 		assert null != longIdentSelf;
 		env = env1;
 		self = new Long( longIdentSelf.longValue() );// this is cloned for hitting bug with `==` in later code
 		selfAsHashMap = new L0HashMap_OfLongs( env, self );
-		env.allLOOL_Set.ensureIsAddedToSet( self );
-		// if (!env.allLOOL_Set.contains( self )) {
-		// env.allLOOL_Set.addToSet( longIdent )
-		// }
-		// if (env.isVector( , terminalLong ))
+		
+		// env.allLOOLWFF_Set->self
+		if ( env.allLOOLWFF_Set.contains( self ) ) {
+			// then it already exists, more or less, as LOOLWFF
+		} else {
+			final boolean ret = env.allLOOLWFF_Set.ensureIsAddedToSet( self );
+			assert !ret : Q.bug( "could not have already existed, else the `if` before is bugged" );
+		}
+		
+		final int size = selfAsHashMap.size();
+		assert ( size == 0 ) || ( size == 2 ) : "size can be one of two 0,2 but was size=" + size;
+		
+		if ( size == 0 ) {
+			// we need to create those
+			selfAsHashMap.put( env.allLOOL_LongID, env.getNewUniqueNode_NeverNull() );// orderedList
+			selfAsHashMap.put( env.allSetsOfLOOLWWF_LongID, env.getNewUniqueNode_NeverNull() );// ffSet
+		}
+		// they exist now, we're getting them
+		
+		assert selfAsHashMap.size() == 2;
+		// env.allLOOL_LongID->olSelf
+		// self->olSelf
+		final Long olSelf = selfAsHashMap.getValue_akaTerminal( env.allLOOL_LongID );
+		assert null != olSelf;
+		orderedList = new ListOrderedOfLongs( env, olSelf );
+		
+		// env.allSetsOfLOOLWWF_LongID->ffSet
+		final Long ffSelf = selfAsHashMap.getValue_akaTerminal( env.allSetsOfLOOLWWF_LongID );
+		assert null != ffSelf;
+		ffSet = new L0Set_OfTerminals( env, ffSelf );
 	}
+	
 	
 	
 	@Override
 	public boolean ensure( final Long whichLongIdent ) {
-		if ( contains( whichLongIdent ) ) {
+		if ( ffSet.contains( whichLongIdent ) ) {
 			return true;
-		} else {
-			add( whichLongIdent, Position.LAST );
-			return false;
 		}
+		final boolean ret = ffSet.ensureIsAddedToSet( whichLongIdent );
+		assert !ret : "couldn't alredy exist, else .contains() is bugged";
+		orderedList.add( whichLongIdent, Position.LAST );
+		return false;
 	}
 	
-	
-	private ElementCapsule getExistingHeadOrNull() {
-		final Long head = selfAsHashMap.getValue_akaTerminal( env.allHeadsForLOOL_LongID );
-		if ( null != head ) {
-			// if ( null != ecHead ) {
-			// Q.warn( "the list changed without our awareness" );
-			// // ecHead.destroy();
-			// // ecHead = null;
-			// }
-			return ElementCapsule.getExisting( env, head );
-		} else {
-			return null;
-		}
-		// if ( null == head ) {
-		// head = env.getNewUniqueLongIdent();
-		// final boolean ret = selfAsHashMap.put( env.allHeadsForLOOL_LongID, head );
-		// assert !ret : "could not have already existed!";
-		// }
-		//
-		// assert null != head;
-		// return ecHead;
-	}
-	
-	
-	// private Long makeHead() {
-	// ElementCapsule ecHead = getExistingHead();
-	// assert null == ecHead;
-	// ecHead = new ElementCapsule( env, ecHead );
-	// }
 	
 	
 	@Override
 	public boolean contains( final Long whichLongIdent ) {
 		assert null != whichLongIdent;
-		
-		ElementCapsule parser = getExistingHeadOrNull();
-		while ( null != parser ) {
-			// if ( null != parser ) {// is not empty
-			// else start parsing
-			// do {
-			final Long elem = parser.getElement_neverNull();
-			// assert null != elem;
-			if ( whichLongIdent.equals( elem ) ) {
-				return true;
-			}
-			parser = parser.getNextCapsule();
-			// } while ( null != ( parser = parser.getNextCapsule() ) );
-		}
-		return false;
+		return ffSet.contains( whichLongIdent );
 	}
 	
-	
-	public boolean isEmpty() {
-		return null == getExistingHeadOrNull();
-	}
 	
 	
 	@Override
 	public long size() {
-		// TODO Auto-generated method stub
-		return 0;
+		return orderedList.size();
 	}
+	
 	
 	
 	@Override
@@ -142,11 +130,13 @@ public class ListOrderedOfLongs implements OrderedList {
 	}
 	
 	
+	
 	@Override
 	public void add( final Long whichLongIdent, final Position pos, final Long posLong ) {
 		// TODO Auto-generated method stub
 		
 	}
+	
 	
 	
 	@Override
@@ -156,11 +146,13 @@ public class ListOrderedOfLongs implements OrderedList {
 	}
 	
 	
+	
 	@Override
 	public Long remove( final Position pos ) {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
 	
 	
 	@Override
@@ -170,6 +162,7 @@ public class ListOrderedOfLongs implements OrderedList {
 	}
 	
 	
+	
 	@Override
 	public Long get( final Position first ) {
 		// TODO Auto-generated method stub
@@ -177,11 +170,13 @@ public class ListOrderedOfLongs implements OrderedList {
 	}
 	
 	
+	
 	@Override
 	public Long get( final Position pos, final Long posLong ) {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
 	
 	
 	@Override

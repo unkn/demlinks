@@ -31,32 +31,71 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.dml.storage.bdbLevel2;
-
-import org.dml.storage.*;
-import org.dml.storage.berkeleydb.native_via_jni.*;
+package org.dml.storage.Level3wip;
 
 
 
-/**
- * the pointer always points to something (from domain) thus it is never null aka pointing to nothing<br>
- * in this regard it is non-null!
- */
-public class L0NonNullDomainPointer_ToTerminal
-		extends L0DomainPointer_ToTerminal
-{
+public interface OrderedList {
+	
+	/**
+	 * makes sure the longIdent exists, if it doesn't then append it<br>
+	 * 
+	 * @param whichLongIdent
+	 * @return true if already existed and thus nothing was done to change anything (which means it may not be positioned last)
+	 */
+	public boolean ensure( Long whichLongIdent );
 	
 	
-	public L0NonNullDomainPointer_ToTerminal( final StorageBDBNative env1, final NodeGeneric selfNode,
-			final NodeGeneric domainNode ) {
-		super( env1, selfNode, domainNode );
-		// XXX: do NOT check for integrity, ie. don't check if terminal is not null and in domain!
-	}
+	public boolean contains( Long whichLongIdent );
 	
 	
-	@Override
-	public boolean isValidTerminal( final NodeGeneric terminalNode ) {
-		return ( null != terminalNode ) && ( super.isValidTerminal( terminalNode ) );
-	}
+	// void assumedValid();
 	
+	
+	public long size();
+	
+	
+	public void add( Long whichLongIdent, Position pos );
+	
+	
+	/**
+	 * cannot be used when DUPs are allowed
+	 * 
+	 */
+	public void add( Long whichLongIdent, Position pos, Long posLong );
+	
+	
+	/**
+	 * @return null if didn't exist, else the Symbol which was removed
+	 */
+	public Long remove( Position pos, Long posLong );
+	
+	
+	/**
+	 * @param pos
+	 * @return null if didn't exist, else the Symbol which was removed
+	 */
+	public Long remove( Position pos );
+	
+	
+	/**
+	 * @return true if existed
+	 */
+	public boolean remove( Long whichLong );
+	
+	
+	/**
+	 * @param first
+	 */
+	public Long get( Position first );
+	
+	
+	/**
+	 * can't use this when DUPs are allowed ie. posLong may exist twice, so which one r u referring to?
+	 * 
+	 */
+	public Long get( Position pos, Long posLong );
+	
+	
+	public Long getSelf();
 }

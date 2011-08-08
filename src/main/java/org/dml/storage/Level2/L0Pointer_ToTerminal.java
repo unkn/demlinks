@@ -31,10 +31,9 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.dml.storage.bdbLevel2;
+package org.dml.storage.Level2;
 
 import org.dml.storage.*;
-import org.dml.storage.berkeleydb.native_via_jni.*;
 import org.q.*;
 
 
@@ -51,7 +50,7 @@ public class L0Pointer_ToTerminal
 	private final L0Set_OfTerminals	setOf1Element;
 	
 	
-	public L0Pointer_ToTerminal( final StorageBDBNative env1, final NodeGeneric selfNode ) {
+	public L0Pointer_ToTerminal( final StorageGeneric env1, final NodeGeneric selfNode ) {
 		setOf1Element = new L0Set_OfTerminals( env1, selfNode );
 	}
 	
