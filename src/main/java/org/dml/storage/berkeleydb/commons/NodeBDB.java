@@ -3,7 +3,6 @@
  * Copyright (c) 2005-2011, AtKaaZ
  * All rights reserved.
  * this file is part of DemLinks
- * File created on Aug 8, 2011 7:04:18 PM
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -32,28 +31,45 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.dml.storage;
+package org.dml.storage.berkeleydb.commons;
 
-import com.sleepycat.bind.tuple.*;
+import org.dml.storage.*;
 
 
 
 /**
-	 *
+
+ */
+public class NodeBDB
+		extends Base_NodeGeneric
+{
+	
+	public static final Binding_BDBNode	binding	= new Binding_BDBNode();
+	
+	
+	public static NodeBDB getBDBNodeInstance( final long forLong ) {
+		return new NodeBDB( forLong );
+	}
+	
+	
+	/**
+	 * private constructor<br>
+	 * 
+	 * @param fromLong
+	 *            used internally by bDB as an identifier and it's stored in the db
 	 */
-public abstract class GenericNodeBinding extends TupleBinding<NodeGeneric> {
+	private NodeBDB( final long fromLong ) {
+		super( fromLong );
+	}
+	
 	
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.sleepycat.bind.tuple.TupleBinding#objectToEntry(java.lang.Object, com.sleepycat.bind.tuple.TupleOutput)
+	 * @see java.lang.Object#clone()
 	 */
 	@Override
-	public void objectToEntry( final NodeGeneric node, final TupleOutput output ) {
-		// assert Q.nn( node );no need, it will NPE below
-		// assert Q.nn( output );same
-		final long myLong = node.getId();
-		output.writeLong( myLong );
+	public NodeBDB clone() {
+		return (NodeBDB)super.clone();
 	}
-	
 }

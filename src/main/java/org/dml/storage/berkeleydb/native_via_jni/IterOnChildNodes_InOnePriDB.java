@@ -99,12 +99,12 @@ public class IterOnChildNodes_InOnePriDB
 	
 	
 	private static void nodeToEntry( final NodeGeneric readNode, final DatabaseEntry outDE ) {
-		BDBNode.binding.objectToEntry( readNode, outDE );
+		NodeBDB.binding.objectToEntry( readNode, outDE );
 	}
 	
 	
 	private static NodeGeneric entryToNode( final DatabaseEntry readDE ) {
-		return BDBNode.binding.entryToObject( readDE );
+		return NodeBDB.binding.entryToObject( readDE );
 	}
 	
 	

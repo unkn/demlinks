@@ -89,10 +89,10 @@ public interface StorageGeneric
 	
 	
 	
-	public IteratorOnChildNodesGeneric getIterator_on_Initials_of( final NodeGeneric childNode );
+	public IteratorGeneric_OnChildNodes getIterator_on_Initials_of( final NodeGeneric childNode );
 	
 	
-	public IteratorOnChildNodesGeneric getIterator_on_Children_of( final NodeGeneric initialNode );
+	public IteratorGeneric_OnChildNodes getIterator_on_Children_of( final NodeGeneric initialNode );
 	
 	
 	public int countInitials( final NodeGeneric ofChildNode );

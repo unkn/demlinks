@@ -47,7 +47,7 @@ public class DBTwoWayHashMap_Test
 	
 	private BDBTwoWayHashMap_StringName2Node	x	= null;
 	private final String						_a	= "A";
-	private final BDBNode						_b	= BDBNode.getBDBNodeInstance( 2l );
+	private final NodeBDB						_b	= NodeBDB.getBDBNodeInstance( 2l );
 	private StorageBDBNative					env	= null;
 	
 	

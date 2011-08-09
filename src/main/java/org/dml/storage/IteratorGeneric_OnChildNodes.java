@@ -3,7 +3,7 @@
  * Copyright (c) 2005-2011, AtKaaZ
  * All rights reserved.
  * this file is part of DemLinks
- * File created on Aug 5, 2011 8:22:08 AM
+ * File created on Aug 8, 2011 7:01:37 PM
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -32,43 +32,37 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.dml.storage.berkeleydb.commons;
-
-import org.dml.storage.*;
-
-import com.sleepycat.bind.tuple.*;
+package org.dml.storage;
 
 
 
 /**
  *
  */
-public class BDBNodeBinding
-		extends GenericNodeBinding
-// extends TupleBinding<BDBNode>
+public interface IteratorGeneric_OnChildNodes
+		extends TransactionGeneric
 {
 	
-	// /*
-	// * (non-Javadoc)
-	// *
-	// * @see com.sleepycat.bind.tuple.TupleBinding#objectToEntry(java.lang.Object, com.sleepycat.bind.tuple.TupleOutput)
-	// */
-	// @Override
-	// public void objectToEntry( final BDBNode node, final TupleOutput output ) {
-	// // assert Q.nn( node );no need, it will NPE below
-	// // assert Q.nn( output );same
-	// final long myLong = node.getId();
-	// output.writeLong( myLong );
-	// }
+	public NodeGeneric goFirst();
 	
 	
-	@Override
-	public BDBNode entryToObject( final TupleInput input ) {
-		// assert Q.nn( input);no need, it will NPE below anyway
-		final long fromLong = input.readLong();
-		final BDBNode node = BDBNode.getBDBNodeInstance( fromLong );
-		assert ( node.getId() == fromLong );// this also tests for null as you can see
-		return node;
-	}
+	public NodeGeneric goPrev();
 	
+	
+	public NodeGeneric goNext();
+	
+	
+	public NodeGeneric goTo( final NodeGeneric childNode );
+	
+	
+	public int size();
+	
+	
+	public void delete();
+	
+	
+	/**
+	 * TODO: remove this maybe? because we must use a different way, ie. delete key instead of its data one by one
+	 */
+	public void deleteAll();
 }

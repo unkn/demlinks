@@ -43,7 +43,7 @@ import com.sleepycat.db.*;
 
  */
 public class BDBTwoWayHashMap_StringName2Node
-		extends GenericBDBTwoWayMapOfNNU<String, BDBNode>
+		extends GenericBDBTwoWayMapOfNNU<String, NodeBDB>
 {
 	
 	
@@ -54,7 +54,7 @@ public class BDBTwoWayHashMap_StringName2Node
 	
 	
 	public BDBTwoWayHashMap_StringName2Node( final Environment env, final String dbName1 ) {
-		super( env, dbName1, String.class, BDBNode.class );
+		super( env, dbName1, String.class, NodeBDB.class );
 	}
 	
 	
@@ -64,7 +64,7 @@ public class BDBTwoWayHashMap_StringName2Node
 	 * @return true if already existed, false if it didn't;<br>
 	 *         either way it does after this call
 	 */
-	public boolean ensureMapExists( final String name, final BDBNode node ) {
+	public boolean ensureMapExists( final String name, final NodeBDB node ) {
 		// null checks are done in base class
 		return ensureExists( name, node );
 	}
@@ -74,7 +74,7 @@ public class BDBTwoWayHashMap_StringName2Node
 	 * @param node
 	 * @return null if not found
 	 */
-	public String getName( final BDBNode node ) {
+	public String getName( final NodeBDB node ) {
 		// null checks are done in base class
 		return getKey( node );
 	}
@@ -84,7 +84,7 @@ public class BDBTwoWayHashMap_StringName2Node
 	 * @param name
 	 * @return null if not found
 	 */
-	public BDBNode getNode( final String name ) {
+	public NodeBDB getNode( final String name ) {
 		// null checks are done in base class
 		return getData( name );
 	}

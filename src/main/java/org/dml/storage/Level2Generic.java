@@ -51,10 +51,10 @@ public interface Level2Generic
 	public boolean removeVector( final NodeGeneric initialObject, final NodeGeneric childObject );
 	
 	
-	public IteratorOnChildNodesGeneric getIterator_on_Children_of( final NodeGeneric initialObject );
+	public IteratorGeneric_OnChildNodes getIterator_on_Children_of( final NodeGeneric initialObject );
 	
 	
-	public IteratorOnChildNodesGeneric getIterator_on_Initials_of( final NodeGeneric ofChildObject );
+	public IteratorGeneric_OnChildNodes getIterator_on_Initials_of( final NodeGeneric ofChildObject );
 	
 	
 	public int countInitials( final NodeGeneric ofChildObject );

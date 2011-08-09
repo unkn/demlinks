@@ -3,7 +3,6 @@
  * Copyright (c) 2005-2011, AtKaaZ
  * All rights reserved.
  * this file is part of DemLinks
- * File created on Aug 8, 2011 7:01:37 PM
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -35,34 +34,13 @@
 package org.dml.storage;
 
 
-
 /**
  *
  */
-public interface IteratorOnChildNodesGeneric
-		extends TransactionGeneric
-{
+public abstract class Base_StorageGeneric implements StorageGeneric {
 	
-	public NodeGeneric goFirst();
-	
-	
-	public NodeGeneric goPrev();
-	
-	
-	public NodeGeneric goNext();
-	
-	
-	public NodeGeneric goTo( final NodeGeneric childNode );
-	
-	
-	public int size();
-	
-	
-	public void delete();
-	
-	
-	/**
-	 * TODO: remove this maybe? because we must use a different way, ie. delete key instead of its data one by one
-	 */
-	public void deleteAll();
+	@Override
+	public final void shutdown() {
+		this.shutdown( false );
+	}
 }

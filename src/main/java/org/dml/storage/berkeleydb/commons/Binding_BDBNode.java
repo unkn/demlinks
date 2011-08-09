@@ -3,6 +3,7 @@
  * Copyright (c) 2005-2011, AtKaaZ
  * All rights reserved.
  * this file is part of DemLinks
+ * File created on Aug 5, 2011 8:22:08 AM
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -31,16 +32,28 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.dml.storage;
+package org.dml.storage.berkeleydb.commons;
+
+import org.dml.storage.*;
+
+import com.sleepycat.bind.tuple.*;
+
 
 
 /**
  *
  */
-public abstract class GenericStorageBase implements StorageGeneric {
+public class Binding_BDBNode
+		extends Binding_GenericNode
+{
 	
 	@Override
-	public final void shutdown() {
-		this.shutdown( false );
+	public NodeBDB entryToObject( final TupleInput input ) {
+		// assert Q.nn( input);no need, it will NPE below anyway
+		final long fromLong = input.readLong();
+		final NodeBDB node = NodeBDB.getBDBNodeInstance( fromLong );
+		assert ( node.getId() == fromLong );// this also tests for null as you can see
+		return node;
 	}
+	
 }

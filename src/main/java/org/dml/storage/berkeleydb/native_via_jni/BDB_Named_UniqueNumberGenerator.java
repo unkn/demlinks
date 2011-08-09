@@ -33,8 +33,7 @@
  */
 package org.dml.storage.berkeleydb.native_via_jni;
 
-import org.dml.storage.bdb.exceptions.*;
-import org.dml.storage.berkeleydb.native_via_jni.*;
+import org.dml.storage.berkeleydb.commons.*;
 import org.q.*;
 
 import com.sleepycat.bind.tuple.*;
@@ -48,7 +47,8 @@ import com.sleepycat.db.*;
  * TODO: junit test for checking what happens if 2 parallel txns are generating next long before either completes
  * AND on rollback<br>
  */
-public class BDB_Named_UniqueNumberGenerator {
+public class BDB_Named_UniqueNumberGenerator
+{
 	
 	private Sequence	thisSeq	= null;
 	

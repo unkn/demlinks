@@ -49,7 +49,7 @@ import com.sleepycat.db.*;
 /**
  */
 public class StorageBDBNative
-		extends GenericStorageBase
+		extends Base_StorageGeneric
 {
 	
 	private static final int						BDBLOCK_TIMEOUT_MicroSeconds	= 3 * 1000000;
@@ -477,7 +477,7 @@ public class StorageBDBNative
 	 * @return null if not found;
 	 */
 	@Override
-	public BDBNode getNode( final String byName ) {
+	public NodeBDB getNode( final String byName ) {
 		assert null != byName;
 		return db_Name2Node.getNode( byName );
 	}
@@ -490,14 +490,14 @@ public class StorageBDBNative
 	@Override
 	public String getName( final NodeGeneric node ) {
 		assert null != node;
-		assert node.getClass() == BDBNode.class;
-		final BDBNode bNode = (BDBNode)node;
+		assert node.getClass() == NodeBDB.class;
+		final NodeBDB bNode = (NodeBDB)node;
 		
 		return db_Name2Node.getName( bNode );// can be null
 	}
 	
 	
-	public void createNameForNode( final String name, final BDBNode node ) {
+	public void createNameForNode( final String name, final NodeBDB node ) {
 		assert null != name;
 		assert null != node;
 		if ( ensure_NameForNode( name, node ) ) {
@@ -513,12 +513,12 @@ public class StorageBDBNative
 	 * @param node
 	 * @return true if already existed
 	 */
-	public boolean ensure_NameForNode( final String name, final BDBNode node ) {
+	public boolean ensure_NameForNode( final String name, final NodeBDB node ) {
 		assert null != name;
 		assert null != node;
 		
 		Boolean ret = null;
-		final BDBNode existingNode = getNode( name );
+		final NodeBDB existingNode = getNode( name );
 		final String existingName = getName( node );
 		
 		final boolean nameAlreadyInAVector = ( null != existingNode );
@@ -572,8 +572,8 @@ public class StorageBDBNative
 	 * @return long
 	 */
 	@Override
-	public final BDBNode createNewUniqueNode() {
-		return BDBNode.getBDBNodeInstance( sequence.getNextUniqueLong( StorageBDBNative.longIdents_Delta ) );
+	public final NodeBDB createNewUniqueNode() {
+		return NodeBDB.getBDBNodeInstance( sequence.getNextUniqueLong( StorageBDBNative.longIdents_Delta ) );
 	}
 	
 	
@@ -585,10 +585,10 @@ public class StorageBDBNative
 	 * @return the node, ie. never null
 	 */
 	@Override
-	public BDBNode createOrGetNode( final String name ) {
+	public NodeBDB createOrGetNode( final String name ) {
 		assert null != name;
 		final BDBTransaction txn = BDBTransaction.beginChild( getBDBEnv() );
-		BDBNode node = null;
+		NodeBDB node = null;
 		try {
 			node = getNode( name );
 			if ( null == node ) {
@@ -618,10 +618,10 @@ public class StorageBDBNative
 	public void makeVector( final NodeGeneric initialNode, final NodeGeneric childNode ) {
 		assert null != initialNode;
 		assert null != childNode;
-		assert initialNode.getClass() == BDBNode.class;
-		assert childNode.getClass() == BDBNode.class;
-		final BDBNode iNode = (BDBNode)initialNode;
-		final BDBNode tNode = (BDBNode)childNode;
+		assert initialNode.getClass() == NodeBDB.class;
+		assert childNode.getClass() == NodeBDB.class;
+		final NodeBDB iNode = (NodeBDB)initialNode;
+		final NodeBDB tNode = (NodeBDB)childNode;
 		dbSet.createNewVectorOrThrow( iNode, tNode );
 	}
 	
@@ -638,23 +638,23 @@ public class StorageBDBNative
 	public boolean isVector( final NodeGeneric initialNode, final NodeGeneric childNode ) {
 		assert null != initialNode;
 		assert null != childNode;
-		assert initialNode.getClass() == BDBNode.class;
-		assert childNode.getClass() == BDBNode.class;
-		final BDBNode iNode = (BDBNode)initialNode;
-		final BDBNode tNode = (BDBNode)childNode;
+		assert initialNode.getClass() == NodeBDB.class;
+		assert childNode.getClass() == NodeBDB.class;
+		final NodeBDB iNode = (NodeBDB)initialNode;
+		final NodeBDB tNode = (NodeBDB)childNode;
 		return dbSet.isVector( iNode, tNode );
 	}
 	
 	
 	@Override
-	public IteratorOnChildNodesGeneric getIterator_on_Initials_of( final NodeGeneric childNode ) {
+	public IteratorGeneric_OnChildNodes getIterator_on_Initials_of( final NodeGeneric childNode ) {
 		assert null != childNode;
 		return dbSet.getIterator_on_Initials_of( childNode );
 	}
 	
 	
 	@Override
-	public IteratorOnChildNodesGeneric getIterator_on_Children_of( final NodeGeneric initialNode ) {
+	public IteratorGeneric_OnChildNodes getIterator_on_Children_of( final NodeGeneric initialNode ) {
 		assert null != initialNode;
 		return dbSet.getIterator_on_Children_of( initialNode );
 	}

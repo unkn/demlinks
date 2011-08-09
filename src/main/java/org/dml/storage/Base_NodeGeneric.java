@@ -42,7 +42,7 @@ import org.q.*;
  * multiple java instances of this can exist but for the same underlying node (aka long)<br>
  * they're to be compared via .equals()<br>
  */
-public abstract class GenericNodeBase
+public abstract class Base_NodeGeneric
 		implements NodeGeneric// , Cloneable
 {
 	
@@ -55,7 +55,7 @@ public abstract class GenericNodeBase
 	 * 
 	 * @param fromLong
 	 */
-	protected GenericNodeBase( final long fromLong ) {
+	protected Base_NodeGeneric( final long fromLong ) {
 		longNode = fromLong;
 	}
 	
@@ -103,9 +103,9 @@ public abstract class GenericNodeBase
 	 * @see java.lang.Object#clone()
 	 */
 	@Override
-	public GenericNodeBase clone() {
+	public Base_NodeGeneric clone() {
 		try {
-			return (GenericNodeBase)super.clone();
+			return (Base_NodeGeneric)super.clone();
 		} catch ( final CloneNotSupportedException e ) {
 			throw Q.bug( "not possible", e );
 		}

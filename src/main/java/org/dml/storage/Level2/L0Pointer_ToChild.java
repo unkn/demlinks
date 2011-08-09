@@ -88,7 +88,7 @@ public class L0Pointer_ToChild
 		}
 		
 		// get first one (should be only one)
-		final IteratorOnChildNodesGeneric iter = setOf1Element.getIterator();
+		final IteratorGeneric_OnChildNodes iter = setOf1Element.getIterator();
 		try {
 			final NodeGeneric termNode = iter.goFirst();
 			iter.success();

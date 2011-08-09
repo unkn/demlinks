@@ -50,7 +50,7 @@ public class AllTupleBindings
 		// add to this list any objects that you expect to store into a BDB
 		// dbase, allows overriding existing ones from TupleBinding
 		// addNonPrimitiveRestrictedToSameClass( BDBNode.class, new BDBNodeBinding() );
-		addNonPrimitiveAllowingSubclass( BDBNode.class, new BDBNodeBinding() );
+		addNonPrimitiveAllowingSubclass( NodeBDB.class, new Binding_BDBNode() );
 	}
 	
 	

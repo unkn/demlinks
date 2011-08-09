@@ -266,7 +266,7 @@ public class BDBSetOfNodes
 	 * @return iter
 	 */
 	@Override
-	public IteratorOnChildNodesGeneric getIterator_on_Children_of( final NodeGeneric initialObject ) {
+	public IteratorGeneric_OnChildNodes getIterator_on_Children_of( final NodeGeneric initialObject ) {
 		assert null != initialObject;
 		
 		return new IteratorOnChildNodes_InDualPriDBs( priForwardDB, priBackwardDB, initialObject );
@@ -282,7 +282,7 @@ public class BDBSetOfNodes
 	 * @return iter
 	 */
 	@Override
-	public IteratorOnChildNodesGeneric getIterator_on_Initials_of( final NodeGeneric ofChildObject ) {
+	public IteratorGeneric_OnChildNodes getIterator_on_Initials_of( final NodeGeneric ofChildObject ) {
 		assert null != ofChildObject;
 		
 		return new IteratorOnChildNodes_InDualPriDBs( priBackwardDB, priForwardDB, ofChildObject );
@@ -395,7 +395,7 @@ public class BDBSetOfNodes
 		assert null != initialObject;
 		assert null != childObject;
 		
-		IteratorOnChildNodesGeneric iter = getIterator_on_Children_of( initialObject );
+		IteratorGeneric_OnChildNodes iter = getIterator_on_Children_of( initialObject );
 		try {
 			final NodeGeneric now = iter.goTo( childObject );
 			if ( null == now ) {

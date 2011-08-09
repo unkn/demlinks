@@ -116,7 +116,7 @@ public class TestSetOfNodes
 		assertTrue( env.isVector( set1.getSelf(), three ) );
 		assertTrue( set1.size() == ( startSize + 2 ) );
 		
-		final IteratorOnChildNodesGeneric iter = set1.getIterator();
+		final IteratorGeneric_OnChildNodes iter = set1.getIterator();
 		assertTrue( iter.goFirst().equals( one ) );
 		
 		assertNull( iter.goPrev() );// even tho errored here,
@@ -162,7 +162,7 @@ public class TestSetOfNodes
 		assertTrue( iter.size() == 2 );
 		assertTrue( set1.size() == 2 );
 		// assertTrue( this.set1.remove( two ) );
-		final IteratorOnChildNodesGeneric iter2 = iter;// this.set1.getIterator( );
+		final IteratorGeneric_OnChildNodes iter2 = iter;// this.set1.getIterator( );
 		// iter2.goFirst();
 		// while ( iter2.now() != null ) {
 		// System.out.println( "iter2=" + iter2.now() );

@@ -46,7 +46,7 @@ import com.sleepycat.db.*;
  */
 public class IteratorOnChildNodes_InDualPriDBs
 		extends IterOnChildNodes_InOnePriDB
-		implements IteratorOnChildNodesGeneric
+		implements IteratorGeneric_OnChildNodes
 {
 	
 	private final Database	reverse;

@@ -116,7 +116,7 @@ public class L0Set_OfChildren
 	 * 
 	 * @return
 	 */
-	public IteratorOnChildNodesGeneric getIterator() {
+	public IteratorGeneric_OnChildNodes getIterator() {
 		return env.getIterator_on_Children_of( _selfNode );
 	}
 	
@@ -125,7 +125,7 @@ public class L0Set_OfChildren
 		// Q.ni();
 		// TODO: implement this in another way, ie. by deleting that key? because deleting all its children kind of does that
 		// exact thing, but slower, yes?
-		final IteratorOnChildNodesGeneric iter = getIterator();
+		final IteratorGeneric_OnChildNodes iter = getIterator();
 		try {
 			iter.deleteAll();
 			assert iter.size() == 0;

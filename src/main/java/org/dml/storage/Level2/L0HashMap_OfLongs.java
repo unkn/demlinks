@@ -75,7 +75,7 @@ public class L0HashMap_OfLongs
 		selfAsSet = new L0Set_OfChildren( env, _selfNode );
 		
 		// checking to make sure all values have (at least) one key
-		final IteratorOnChildNodesGeneric iter = selfAsSet.getIterator();
+		final IteratorGeneric_OnChildNodes iter = selfAsSet.getIterator();
 		try {
 			NodeGeneric cur = iter.goFirst();
 			while ( null != cur ) {

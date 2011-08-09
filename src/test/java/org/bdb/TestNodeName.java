@@ -64,11 +64,11 @@ public class TestNodeName
 	
 	@Test
 	public void test1() {
-		final BDBNode lNew = env.createNewUniqueNode();
+		final NodeBDB lNew = env.createNewUniqueNode();
 		assertNotNull( lNew );
 		assertFalse( lNew.equals( env.createNewUniqueNode() ) );
 		final String strId = "boo";
-		final BDBNode longId = env.createOrGetNode( strId );
+		final NodeBDB longId = env.createOrGetNode( strId );
 		assertNotNull( longId );
 		assertTrue( longId.equals( env.createOrGetNode( strId ) ) );
 		
