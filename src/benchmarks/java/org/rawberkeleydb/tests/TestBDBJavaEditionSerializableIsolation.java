@@ -36,6 +36,7 @@ package org.rawberkeleydb.tests;
 
 import org.junit.*;
 import org.q.*;
+import org.tests.rawberkeleydb.java_edition.*;
 
 import com.sleepycat.bind.tuple.*;
 import com.sleepycat.je.*;

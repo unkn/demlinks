@@ -33,7 +33,6 @@
  */
 package org.dml.storage.Level2;
 
-import org.dml.storage.berkeleydb.native_via_jni.*;
 import org.dml.storage.commons.*;
 import org.q.*;
 
@@ -57,7 +56,7 @@ public class L0DomainSet_OfChildren
 	 * @param selfNode
 	 * @param domainNode
 	 */
-	public L0DomainSet_OfChildren( final StorageBDBNative env1, final NodeGeneric selfNode, final NodeGeneric domainNode ) {
+	public L0DomainSet_OfChildren( final StorageGeneric env1, final NodeGeneric selfNode, final NodeGeneric domainNode ) {
 		super( env1, selfNode );
 		assert null != domainNode;
 		assert !selfNode.equals( domainNode );

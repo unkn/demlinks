@@ -40,6 +40,7 @@ import java.io.*;
 
 import org.junit.*;
 import org.q.*;
+import org.tests.rawberkeleydb.jni.*;
 
 import com.sleepycat.bind.tuple.*;
 import com.sleepycat.db.*;

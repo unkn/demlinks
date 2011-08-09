@@ -37,7 +37,6 @@ package org.bdb;
 
 import static org.junit.Assert.*;
 
-import org.dml.storage.berkeleydb.native_via_jni.*;
 import org.dml.storage.commons.*;
 import org.junit.*;
 
@@ -46,13 +45,13 @@ import org.junit.*;
 public class DBSetTest
 {
 	
-	private BDBSetOfNodes		o2m	= null;
+	private BDBSetOfNodes	o2m	= null;
 	// the following two should be random unique names not already in the dbase
 	// or else the tests may fail, that's ok the database is cleared before and after the tests!
-	private NodeGeneric			_a;
-	private NodeGeneric			_b;
-	private NodeGeneric			_c;
-	private StorageBDBNative	env	= null;
+	private NodeGeneric		_a;
+	private NodeGeneric		_b;
+	private NodeGeneric		_c;
+	private StorageGeneric	env	= null;
 	
 	
 	@Before

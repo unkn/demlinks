@@ -42,7 +42,8 @@ import org.q.*;
  * have its backwards list contain the Node object identified by sourceID<br>
  * 
  */
-public class Environment {
+public class Environment
+{
 	
 	// fields
 	private final IDToNodeMap	allIDNodeTuples;	// unique elements
@@ -175,11 +176,9 @@ public class Environment {
 	 *            ie. backward
 	 * @param destinationID
 	 *            ie. forward
-	 * @throws Exception
-	 *             if ID to Node mapping fails
 	 * @transaction protected
 	 */
-	public boolean linkForward( final Id sourceID, final Id destinationID ) throws Exception {
+	public boolean linkForward( final Id sourceID, final Id destinationID ) {
 		// 1.it will create empty Node objects if they don't already exist
 		// 2.map them to IDs
 		// 3.THEN link them
@@ -330,7 +329,9 @@ public class Environment {
 		return p;
 	}
 	
-	private class Parser implements NodeParser {
+	private class Parser
+			implements NodeParser
+	{
 		
 		Reference<Node0>	current	= null;
 		NodeRefsList		nrl		= null;

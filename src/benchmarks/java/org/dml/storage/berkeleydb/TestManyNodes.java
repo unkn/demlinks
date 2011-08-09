@@ -34,7 +34,7 @@
 package org.dml.storage.berkeleydb;
 
 import org.bdb.*;
-import org.dml.storage.berkeleydb.javaedition.*;
+import org.dml.storage.berkeleydb.java_edition.*;
 import org.dml.storage.berkeleydb.native_via_jni.*;
 import org.dml.storage.commons.*;
 import org.junit.*;

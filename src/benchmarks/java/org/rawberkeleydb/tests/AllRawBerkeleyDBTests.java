@@ -35,6 +35,7 @@ package org.rawberkeleydb.tests;
  */
 import org.junit.runner.*;
 import org.junit.runners.*;
+import org.tests.rawberkeleydb.jni.*;
 
 
 

@@ -33,7 +33,6 @@
  */
 package org.dml.storage.Level2;
 
-import org.dml.storage.berkeleydb.native_via_jni.*;
 import org.dml.storage.commons.*;
 
 
@@ -47,8 +46,7 @@ public class L0NonNullDomainPointer_ToChild
 {
 	
 	
-	public L0NonNullDomainPointer_ToChild( final StorageBDBNative env1, final NodeGeneric selfNode,
-			final NodeGeneric domainNode ) {
+	public L0NonNullDomainPointer_ToChild( final StorageGeneric env1, final NodeGeneric selfNode, final NodeGeneric domainNode ) {
 		super( env1, selfNode, domainNode );
 		// XXX: do NOT check for integrity, ie. don't check if child is not null and in domain!
 	}
