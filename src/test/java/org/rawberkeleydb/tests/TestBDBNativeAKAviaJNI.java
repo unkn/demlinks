@@ -37,7 +37,7 @@ package org.rawberkeleydb.tests;
 import java.io.*;
 
 import org.bdb.*;
-import org.berkeleydb.*;
+import org.dml.storage.berkeleydb.native_via_jni.*;
 import org.junit.*;
 import org.q.*;
 import org.toolza.*;
@@ -135,7 +135,8 @@ import com.sleepycat.db.*;
  * =====manually checked:
  * env home dir size: 48.8 MB (51,240,960 bytes)
  */
-public class TestBDBNativeAKAviaJNI {
+public class TestBDBNativeAKAviaJNI
+{
 	
 	// fastest with txn on and lock on, mvc off, dur off; 9,848 ms
 	// fastest with txn on and mvc on, lock off, durable off; 15,199 ms - not fastest anymore
@@ -1480,7 +1481,8 @@ public class TestBDBNativeAKAviaJNI {
 	@SuppressWarnings( "unused" )
 	protected void setupBDBNativeEnv() throws FileNotFoundException, DatabaseException {
 		// useless:
-		envConf.setEventHandler( new EventHandlerAdapter() {
+		envConf.setEventHandler( new EventHandlerAdapter()
+		{
 			
 			/*
 			 * (non-Javadoc)
@@ -1493,7 +1495,8 @@ public class TestBDBNativeAKAviaJNI {
 			}
 		} );
 		
-		envConf.setFeedbackHandler( new FeedbackHandler() {
+		envConf.setFeedbackHandler( new FeedbackHandler()
+		{
 			
 			@Override
 			public void recoveryFeedback( final Environment environment, final int percent ) {
@@ -1635,7 +1638,8 @@ public class TestBDBNativeAKAviaJNI {
 		assert !secAndPriConf.getSortedDuplicates();
 		assert !secAndPriConf.getUnsortedDuplicates();
 		assert !secAndPriConf.getReverseSplitOff();
-		secAndPriConf.setKeyCreator( new SecondaryKeyCreator() {
+		secAndPriConf.setKeyCreator( new SecondaryKeyCreator()
+		{
 			
 			@Override
 			public boolean createSecondaryKey( final SecondaryDatabase secondary, final DatabaseEntry key,

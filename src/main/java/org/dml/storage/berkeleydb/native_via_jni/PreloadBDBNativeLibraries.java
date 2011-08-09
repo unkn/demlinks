@@ -32,7 +32,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.berkeleydb;
+package org.dml.storage.berkeleydb.native_via_jni;
 
 import com.sleepycat.db.internal.*;
 

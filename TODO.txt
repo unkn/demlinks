@@ -1,3 +1,4 @@
 TODO:
 
 - update things in txt, see what's no longer relevant
+- try to "fix" bdb-native locking per page rather than per record, and see if this is really a stopper when doing nested txns

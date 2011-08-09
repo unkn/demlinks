@@ -45,5 +45,7 @@ do this instead:
 simply because you may forget to assign the field and since the field isn't checked for null, fail will be later or possibly never
 
 ------------------------------------------------------
+5. must override each .clone() when extending/implementing from NodeGeneric interface
+in each subclass and cast it to the current class on return
 ------------------------------------------------------
 ------------------------------------------------------
