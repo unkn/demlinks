@@ -1,11 +1,11 @@
-#Mon Aug 08 19:26:47 CEST 2011
+#Tue Aug 09 22:00:00 CEST 2011
 eclipse.preferences.version=1
 org.eclipse.jdt.core.builder.cleanOutputFolder=clean
 org.eclipse.jdt.core.builder.duplicateResourceTask=warning
 org.eclipse.jdt.core.builder.invalidClasspath=abort
 org.eclipse.jdt.core.builder.recreateModifiedClassFileInOutputFolder=ignore
 org.eclipse.jdt.core.builder.resourceCopyExclusionFilter=*.launch
-org.eclipse.jdt.core.circularClasspath=error
+org.eclipse.jdt.core.circularClasspath=warning
 org.eclipse.jdt.core.classpath.exclusionPatterns=enabled
 org.eclipse.jdt.core.classpath.multipleOutputLocations=enabled
 org.eclipse.jdt.core.compiler.codegen.inlineJsrBytecode=enabled
@@ -384,5 +384,5 @@ org.eclipse.jdt.core.formatter.use_tabs_only_for_leading_indentations=false
 org.eclipse.jdt.core.formatter.wrap_before_binary_operator=true
 org.eclipse.jdt.core.formatter.wrap_before_or_operator_multicatch=true
 org.eclipse.jdt.core.formatter.wrap_outer_expressions_when_nested=true
-org.eclipse.jdt.core.incompatibleJDKLevel=warning
+org.eclipse.jdt.core.incompatibleJDKLevel=error
 org.eclipse.jdt.core.incompleteClasspath=error
