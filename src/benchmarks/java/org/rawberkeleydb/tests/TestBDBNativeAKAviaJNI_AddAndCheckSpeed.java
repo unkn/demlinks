@@ -135,7 +135,7 @@ import com.sleepycat.db.*;
  * =====manually checked:
  * env home dir size: 48.8 MB (51,240,960 bytes)
  */
-public class TestBDBNativeAKAviaJNI
+public class TestBDBNativeAKAviaJNI_AddAndCheckSpeed
 {
 	
 	// fastest with txn on and lock on, mvc off, dur off; 9,848 ms

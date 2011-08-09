@@ -34,25 +34,28 @@
  */
 package org.rawberkeleydb.tests;
 
+import static org.junit.Assert.*;
+
+import java.io.*;
+
 import org.junit.*;
 import org.q.*;
 
 import com.sleepycat.bind.tuple.*;
-import com.sleepycat.je.*;
+import com.sleepycat.db.*;
 
 
 
 /**
- * this is supposed to have errors because we're using db.jar from bdb native/jni instead of bdb je aka java edition<br>
  * in conclusion, each txn sees data that is committed by other transactions, aka as db revisions advance
  * the current open transaction can see the data from the last revision, rather than the data from the same revision of the db
  * that was existing at the time the txn was created
  */
-public class TestBDBJavaEditionSerializableIsolation {
+public class TestJNISerializable {
 	
-	// with JE a lock happens on a per record basis, in bdb native/jni on a per page basis
-	private static final int	HOWMANY	= 2;
-	private final TestBDBJE		x		= new TestBDBJE();
+	// won't work for 100 or less, due to locks being granted on a per page(ie. 512bytes?) basis; ie. dbpage
+	private static final int				HOWMANY	= 1000;
+	private final TestBDBNativeAKAviaJNI_AddAndCheckSpeed	x		= new TestBDBNativeAKAviaJNI_AddAndCheckSpeed();
 	
 	
 	@Before
@@ -71,25 +74,25 @@ public class TestBDBJavaEditionSerializableIsolation {
 	private Transaction	parent;
 	
 	
-	// @Test
-	// public void test1AsSiblingsOfParentTxn() throws DatabaseException {
-	// x.setupBDBNativeEnv();
-	// x.setupBDBNativeDb();
-	// parent = x.beginTxn( null );
-	// try {
-	// whole();
-	// x.commit( parent );
-	// } catch ( final Throwable t ) {
-	// x.abort( parent );
-	// Q.rethrow( t );
-	// }
-	// }
+	@Test
+	public void test1AsSiblingsOfParentTxn() throws DatabaseException, FileNotFoundException {
+		x.setupBDBNativeEnv();
+		x.setupBDBNativeDb( DatabaseType.BTREE );
+		parent = x.beginTxn( null );
+		try {
+			whole();
+			x.commit( parent );
+		} catch ( final Throwable t ) {
+			x.abort( parent );
+			Q.rethrow( t );
+		}
+	}
 	
 	
 	@Test
-	public void test2WithoutExplicitParentTxn() throws DatabaseException {
+	public void test2WithoutExplicitParentTxn() throws DatabaseException, FileNotFoundException {
 		x.setupBDBNativeEnv();
-		x.setupBDBNativeDb();
+		x.setupBDBNativeDb( DatabaseType.BTREE );
 		parent = null;
 		whole();
 	}
@@ -97,6 +100,9 @@ public class TestBDBJavaEditionSerializableIsolation {
 	
 	
 	private void whole() throws DatabaseException {
+		// assertTrue( x.MVC );even with this true, no go, because only pages are mvcc-ed not entire db
+		assertTrue( x.ENABLE_LOCKING );
+		assertTrue( x.ENABLE_TRANSACTIONS );
 		Transaction t = x.beginTxn( parent );
 		int numAdded = 0;
 		final int firstItem = 0;
@@ -139,13 +145,19 @@ public class TestBDBJavaEditionSerializableIsolation {
 			final DatabaseEntry lastData = new DatabaseEntry();
 			LongBinding.longToEntry( last, lastKey );
 			final OperationStatus ret3 = x.priDb.get( t, lastKey, lastData, LockMode.RMW );
+			// XXX: bdb bug? if LockMode.RMW here, it will kill the lock:
+			// BDB0068 DB_LOCK_DEADLOCK: Locker killed to resolve a deadlock: BDB0068 DB_LOCK_DEADLOCK: Locker killed to
+			// resolve
+			// a deadlock
+			// but this works with: LockMode.DEFAULT
+			// all this only when txndur is set aka DURABLE_TXNS set to true
 			
 			assert ret == OperationStatus.SUCCESS;
 			try {
 				if ( LongBinding.entryToLong( lastData ) != last ) {
-					Q.bug( "just as expected" );
+					Q.bug( "as expected" );
 				}
-				Q.fail();// this isn't expected!
+				Q.fail();// not expected
 			} catch ( final BugError ae ) {
 				// good as expected, this means:
 				// the current txn "t" doesn't snapshot see the db
@@ -172,7 +184,7 @@ public class TestBDBJavaEditionSerializableIsolation {
 			
 			final long newValue = HOWMANY + 1;
 			LongBinding.longToEntry( newValue, lastData );
-			// lastData.setReadOnly( true );
+			lastData.setReadOnly( true );
 			OperationStatus ret4 = x.priDb.put( parallelTxn, lastKey, lastData );
 			assert ret4 == OperationStatus.SUCCESS;
 			ret4 = null;

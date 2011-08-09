@@ -31,11 +31,12 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAG
  */
-package org.benchmarks.berkeleydb;
+package org.dml.storage.berkeleydb;
 
 import org.bdb.*;
 import org.dml.storage.berkeleydb.native_via_jni.*;
 import org.dml.storage.commons.*;
+import org.junit.*;
 import org.toolza.*;
 
 
@@ -54,18 +55,13 @@ public class TestManyNodes
 	// 10000 to 20k seems optimal
 	private static final int		HOWMANY_PER_TRANSACTION			= 30000;
 	private static final int		HOWMANY_RELATIONSHIPS_FOR_ONE	= 1000000;
+	private static final boolean	deleteBeforeInit				= false;
 	
-	private final StorageGeneric	env;
 	private NodeGeneric				list;
 	private NodeGeneric				middleElement;
 	private NodeGeneric				headElement;
 	private NodeGeneric				tailElement;
-	
-	
-	public TestManyNodes( final StorageGeneric _env ) {
-		assert null != _env;
-		env = _env;
-	}
+	private StorageGeneric			env;
 	
 	
 	private static void showMem() {
@@ -73,26 +69,38 @@ public class TestManyNodes
 	}
 	
 	
-	public static void main( final String[] args ) {
-		showMem();
-		final boolean deleteFirst = true;
-		final TestManyNodes t2 =
-			new TestManyNodes( new StorageBDBNative( JUnitConstants.BDB_ENVIRONMENT_STORE_DIR, deleteFirst ) );
+	@Before
+	public void setUp() {
+		System.out.println( "java.class.path now = " + System.getProperties().getProperty( "java.class.path", null ) );
 		
 		showMem();
-		t2.init();
-		showMem();
-		
-		t2.run();
-		showMem();
-		t2.shutdown();
-		showMem();
-		Runtime.getRuntime().gc();
+		env = new StorageBDBNative( JUnitConstants.BDB_ENVIRONMENT_STORE_DIR, deleteBeforeInit );
 		showMem();
 	}
 	
 	
-	public void init() {
+	@After
+	public void tearDown() {
+		showMem();
+		if ( null != env ) {
+			env.shutdown( false );// no need to be in finally, it's already on shutdownhook
+		}
+		showMem();
+		Runtime.getRuntime().gc();
+		System.out.println( "after garbage collector" );
+		showMem();
+	}
+	
+	
+	@Test
+	public void go() {
+		init();
+		run();
+	}
+	
+	
+	private void init() {
+		showMem();
 		TransactionGeneric txn = env.beginTransaction();
 		try {
 			list = env.getNode( ROOT_LIST );
@@ -135,7 +143,7 @@ public class TestManyNodes
 				showMem();
 				
 				
-				System.out.println( "first time creating more relationships..." );
+				System.out.println( "creating more relationships..." );
 				t3.start();
 				for ( i = 0; i < half; i++ ) {
 					env.makeVector( env.createNewUniqueNode(), tailElement );
@@ -162,6 +170,7 @@ public class TestManyNodes
 		} finally {
 			txn.finished();
 			System.out.println( "closed transaction" );
+			showMem();
 		}
 	}
 	
@@ -344,8 +353,8 @@ public class TestManyNodes
 	 * usedmem=1068896
 	 * usedmem=601856
 	 */
-	
-	public void run() {
+	private void run() {
+		showMem();
 		final TransactionGeneric t = env.beginTransaction();
 		try {
 			System.out.println( "run for `" + env.getClass() + "`" );
@@ -362,12 +371,8 @@ public class TestManyNodes
 			t.success();
 		} finally {
 			t.finished();
+			showMem();
 		}
-	}
-	
-	
-	public void shutdown() {
-		env.shutdown( false );// no need to be in finally, it's already on shutdownhook
 	}
 	
 	private final Timer	t3	= new Timer( Timer.TYPE.MILLIS );

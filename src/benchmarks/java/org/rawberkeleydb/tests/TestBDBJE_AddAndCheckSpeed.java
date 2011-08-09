@@ -117,7 +117,7 @@ import com.sleepycat.je.*;
  * =====manually checked:
  * env home dir size: 66.3 MB (69,553,300 bytes)
  */
-public class TestBDBJE {
+public class TestBDBJE_AddAndCheckSpeed {
 	
 	private static final boolean	ENABLE_TRANSACTIONS				= true;
 	private static final boolean	ENABLE_LOCKING					= true;
