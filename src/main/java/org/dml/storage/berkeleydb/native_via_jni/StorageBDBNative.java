@@ -37,8 +37,8 @@ import java.io.*;
 import java.util.concurrent.locks.*;
 
 import org.berkeleydb.*;
-import org.dml.storage.*;
 import org.dml.storage.berkeleydb.commons.*;
+import org.dml.storage.commons.*;
 import org.q.*;
 import org.toolza.*;
 

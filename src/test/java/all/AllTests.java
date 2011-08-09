@@ -1,3 +1,4 @@
+package all;
 /**
  * 
  * Copyright (c) 2005-2011, AtKaaZ
@@ -31,16 +32,19 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.dml.storage;
+import org.bdb.*;
+import org.junit.runner.*;
+import org.junit.runners.*;
+import org.references.*;
 
 
-/**
- *
- */
-public abstract class Base_StorageGeneric implements StorageGeneric {
-	
-	@Override
-	public final void shutdown() {
-		this.shutdown( false );
-	}
+
+@RunWith( Suite.class )
+@Suite.SuiteClasses(
+		value = {
+			AllTestsReferences.class, AllTestsBDB.class,
+		// AllRawBerkeleyDBTests.class too time consuming to add here
+		} )
+public class AllTests {
+	// always empty
 }

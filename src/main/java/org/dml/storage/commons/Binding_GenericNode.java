@@ -3,6 +3,7 @@
  * Copyright (c) 2005-2011, AtKaaZ
  * All rights reserved.
  * this file is part of DemLinks
+ * File created on Aug 8, 2011 7:04:18 PM
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -31,19 +32,28 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.dml.storage;
+package org.dml.storage.commons;
+
+import com.sleepycat.bind.tuple.*;
+
 
 
 /**
- *
- */
-public interface TransactionGeneric {
+	 *
+	 */
+public abstract class Binding_GenericNode extends TupleBinding<NodeGeneric> {
 	
-	public void success();
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sleepycat.bind.tuple.TupleBinding#objectToEntry(java.lang.Object, com.sleepycat.bind.tuple.TupleOutput)
+	 */
+	@Override
+	public void objectToEntry( final NodeGeneric node, final TupleOutput output ) {
+		// assert Q.nn( node );no need, it will NPE below
+		// assert Q.nn( output );same
+		final long myLong = node.getId();
+		output.writeLong( myLong );
+	}
 	
-	
-	public void failure();
-	
-	
-	public void finished();
 }

@@ -1,11 +1,10 @@
 These are the things that are decided to be used, one way or another.
 Things that are depreciated or obsolete won't be here.
 
-TODO: update these
+TODO: update these, most are obsolete!
 
 1. using bdb native 
 	
-	 
 2. using DejaVu Sans Mono 14, in eclipse for editing (General->Appearance->Colors and Fonts)
 
 3. methods will usually return TRUE if already existed; false otherwise; but they will not fail, if they do they throw exception using RunTime.thro();

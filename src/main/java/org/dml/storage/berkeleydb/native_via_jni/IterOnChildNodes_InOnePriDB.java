@@ -33,8 +33,8 @@
  */
 package org.dml.storage.berkeleydb.native_via_jni;
 
-import org.dml.storage.*;
 import org.dml.storage.berkeleydb.commons.*;
+import org.dml.storage.commons.*;
 import org.q.*;
 
 import com.sleepycat.db.*;

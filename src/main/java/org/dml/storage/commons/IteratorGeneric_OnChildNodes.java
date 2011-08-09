@@ -3,6 +3,7 @@
  * Copyright (c) 2005-2011, AtKaaZ
  * All rights reserved.
  * this file is part of DemLinks
+ * File created on Aug 8, 2011 7:01:37 PM
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -31,39 +32,37 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.dml.storage;
+package org.dml.storage.commons;
 
 
 
-
-public interface Level2Generic
+/**
+ *
+ */
+public interface IteratorGeneric_OnChildNodes
+		extends TransactionGeneric
 {
 	
-	public boolean isVector( final NodeGeneric initialLong, final NodeGeneric childLong );
+	public NodeGeneric goFirst();
 	
 	
-	public void createNewVectorOrThrow( final NodeGeneric initialLong, final NodeGeneric childLong );
+	public NodeGeneric goPrev();
 	
 	
-	public boolean ensureVector( final NodeGeneric initialLong, final NodeGeneric childLong );
+	public NodeGeneric goNext();
 	
 	
-	public boolean removeVector( final NodeGeneric initialObject, final NodeGeneric childObject );
+	public NodeGeneric goTo( final NodeGeneric childNode );
 	
 	
-	public IteratorGeneric_OnChildNodes getIterator_on_Children_of( final NodeGeneric initialObject );
+	public int size();
 	
 	
-	public IteratorGeneric_OnChildNodes getIterator_on_Initials_of( final NodeGeneric ofChildObject );
+	public void delete();
 	
 	
-	public int countInitials( final NodeGeneric ofChildObject );
-	
-	
-	public int countChildren( final NodeGeneric ofInitialObject );
-	
-	
-	public NodeGeneric findCommonChildForInitials( final NodeGeneric initial1, final NodeGeneric initial2 );
-	
-	
+	/**
+	 * TODO: remove this maybe? because we must use a different way, ie. delete key instead of its data one by one
+	 */
+	public void deleteAll();
 }

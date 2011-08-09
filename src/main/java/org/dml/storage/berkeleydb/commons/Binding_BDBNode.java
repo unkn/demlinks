@@ -34,7 +34,7 @@
  */
 package org.dml.storage.berkeleydb.commons;
 
-import org.dml.storage.*;
+import org.dml.storage.commons.*;
 
 import com.sleepycat.bind.tuple.*;
 

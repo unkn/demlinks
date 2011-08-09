@@ -31,19 +31,39 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-import org.bdb.*;
-import org.junit.runner.*;
-import org.junit.runners.*;
-import org.references.*;
+package org.dml.storage.commons;
 
 
 
-@RunWith( Suite.class )
-@Suite.SuiteClasses(
-		value = {
-			AllTestsReferences.class, AllTestsBDB.class,
-		// AllRawBerkeleyDBTests.class too time consuming to add here
-		} )
-public class AllTests {
-	// always empty
+
+public interface Level2Generic
+{
+	
+	public boolean isVector( final NodeGeneric initialLong, final NodeGeneric childLong );
+	
+	
+	public void createNewVectorOrThrow( final NodeGeneric initialLong, final NodeGeneric childLong );
+	
+	
+	public boolean ensureVector( final NodeGeneric initialLong, final NodeGeneric childLong );
+	
+	
+	public boolean removeVector( final NodeGeneric initialObject, final NodeGeneric childObject );
+	
+	
+	public IteratorGeneric_OnChildNodes getIterator_on_Children_of( final NodeGeneric initialObject );
+	
+	
+	public IteratorGeneric_OnChildNodes getIterator_on_Initials_of( final NodeGeneric ofChildObject );
+	
+	
+	public int countInitials( final NodeGeneric ofChildObject );
+	
+	
+	public int countChildren( final NodeGeneric ofInitialObject );
+	
+	
+	public NodeGeneric findCommonChildForInitials( final NodeGeneric initial1, final NodeGeneric initial2 );
+	
+	
 }

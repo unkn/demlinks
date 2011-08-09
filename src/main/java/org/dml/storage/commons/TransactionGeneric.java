@@ -31,38 +31,19 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.dml.storage;
-
+package org.dml.storage.commons;
 
 
 /**
- * in-java representation for the underlying db-stored node
+ *
  */
-public interface NodeGeneric
-		extends Cloneable
-{
+public interface TransactionGeneric {
 	
-	public long getId();
+	public void success();
 	
 	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	@Override
-	public boolean equals( Object obj );
+	public void failure();
 	
 	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#hashCode()
-	 */
-	@Override
-	public int hashCode();
-	
-	
-	// public GenericNode clone() throws CloneNotSupportedException;
-	public NodeGeneric clone();// throws CloneNotSupportedException;
+	public void finished();
 }
