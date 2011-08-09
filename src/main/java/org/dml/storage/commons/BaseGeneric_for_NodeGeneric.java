@@ -41,29 +41,11 @@ import org.q.*;
 /**
  * multiple java instances of this can exist but for the same underlying node (aka long)<br>
  * they're to be compared via .equals()<br>
+ * node implementations should extend this<br>
  */
-public abstract class Base_NodeGeneric
+public abstract class BaseGeneric_for_NodeGeneric
 		implements NodeGeneric// , Cloneable
 {
-	
-	private final long	longNode;
-	
-	
-	/**
-	 * get new node instance for this (long) identifier<br>
-	 * but this instance is just a wrapper(for that long) inside java<br>
-	 * 
-	 * @param fromLong
-	 */
-	protected Base_NodeGeneric( final long fromLong ) {
-		longNode = fromLong;
-	}
-	
-	
-	@Override
-	public long getId() {
-		return longNode;
-	}
 	
 	
 	/*
@@ -93,7 +75,7 @@ public abstract class Base_NodeGeneric
 	@Override
 	public int hashCode() {
 		// Q.ni();
-		return (int)longNode;
+		return (int)getId();
 	}
 	
 	
@@ -103,12 +85,22 @@ public abstract class Base_NodeGeneric
 	 * @see java.lang.Object#clone()
 	 */
 	@Override
-	public Base_NodeGeneric clone() {
+	public BaseGeneric_for_NodeGeneric clone() {
 		try {
-			return (Base_NodeGeneric)super.clone();
+			return (BaseGeneric_for_NodeGeneric)super.clone();
 		} catch ( final CloneNotSupportedException e ) {
 			throw Q.bug( "not possible", e );
 		}
 	}
 	
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "[" + this.getClass().getSimpleName() + ":" + getId() + "]";
+	}
 }

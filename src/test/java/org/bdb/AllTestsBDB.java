@@ -41,8 +41,9 @@ import org.junit.runners.*;
 @RunWith( Suite.class )
 @Suite.SuiteClasses(
 		value = {
-			TestAssertsAreOn.class, TestBDBEnvironment.class, TestNodeName.class, DBTwoWayHashMap_Test.class, DBSetTest.class, TestSetOfNodes.class
+			TestBDBEnvironment.class, TestNodeName.class, DBTwoWayHashMap_Test.class, DBSetTest.class, TestSetOfNodes.class
 		} )
-public class AllTestsBDB {
+public class AllTestsBDB
+{
 	// always empty
 }

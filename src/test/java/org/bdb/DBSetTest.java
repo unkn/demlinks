@@ -37,7 +37,6 @@ package org.bdb;
 
 import static org.junit.Assert.*;
 
-import org.dml.storage.berkeleydb.commons.*;
 import org.dml.storage.berkeleydb.native_via_jni.*;
 import org.dml.storage.commons.*;
 import org.junit.*;
@@ -50,9 +49,9 @@ public class DBSetTest
 	private BDBSetOfNodes		o2m	= null;
 	// the following two should be random unique names not already in the dbase
 	// or else the tests may fail, that's ok the database is cleared before and after the tests!
-	private final NodeGeneric	_a	= NodeBDB.getBDBNodeInstance( 1l );
-	private final NodeGeneric	_b	= NodeBDB.getBDBNodeInstance( 2l );
-	private final NodeGeneric	_c	= NodeBDB.getBDBNodeInstance( 3l );
+	private NodeGeneric			_a;
+	private NodeGeneric			_b;
+	private NodeGeneric			_c;
 	private StorageBDBNative	env	= null;
 	
 	
@@ -63,6 +62,10 @@ public class DBSetTest
 		assert null != env;
 		
 		o2m = new BDBSetOfNodes( env, "one to many dbmap" );
+		
+		_a = env.createNewUniqueNode();
+		_b = env.createNewUniqueNode();
+		_c = env.createNewUniqueNode();
 	}
 	
 	

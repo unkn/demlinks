@@ -33,7 +33,6 @@
  */
 package org.dml.storage.berkeleydb.commons;
 
-import org.dml.storage.commons.*;
 
 
 
@@ -41,7 +40,7 @@ import org.dml.storage.commons.*;
 
  */
 public class NodeBDB
-		extends Base_NodeGeneric
+		extends BaseBDB_NodeGeneric
 {
 	
 	public static final Binding_BDBNode	binding	= new Binding_BDBNode();

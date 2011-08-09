@@ -3,6 +3,7 @@
  * Copyright (c) 2005-2011, AtKaaZ
  * All rights reserved.
  * this file is part of DemLinks
+ * File created on Aug 9, 2011 1:36:44 PM
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -31,22 +32,46 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.bdb;
+package org.dml.storage.berkeleydb.commons;
 
-import static org.junit.Assert.*;
-
-import org.junit.*;
+import org.dml.storage.commons.*;
 
 
 
-public class TestAssertsAreOn {
+/**
+ *
+ */
+public class BaseBDB_NodeGeneric
+		extends BaseGeneric_for_NodeGeneric
+{
 	
-	@Test
-	public void testIfAssertsAreEnabled() {
-		boolean b = false;
-		assert ( b = true ) == true;
-		if ( !b ) {
-			fail( "you must enable assertions ie. use vm args -ea" );
-		}
+	private final long	longNode;
+	
+	
+	/**
+	 * get new node instance for this (long) identifier<br>
+	 * but this instance is just a wrapper(for that long) inside java<br>
+	 * 
+	 * @param fromLong
+	 */
+	protected BaseBDB_NodeGeneric( final long fromLong ) {
+		longNode = fromLong;
+	}
+	
+	
+	@Override
+	public long getId() {
+		return longNode;
+	}
+	
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.dml.storage.commons.Base_NodeGeneric#clone()
+	 */
+	@Override
+	public BaseBDB_NodeGeneric clone() {
+		return (BaseBDB_NodeGeneric)super.clone();
 	}
 }

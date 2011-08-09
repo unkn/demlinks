@@ -1,5 +1,3 @@
-package all;
-
 /**
  * 
  * Copyright (c) 2005-2011, AtKaaZ
@@ -33,21 +31,22 @@ package all;
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-import org.bdb.*;
-import org.junit.runner.*;
-import org.junit.runners.*;
-import org.references.*;
+package all;
+
+import static org.junit.Assert.*;
+
+import org.junit.*;
 
 
 
-@RunWith( Suite.class )
-@Suite.SuiteClasses(
-		value = {
-			TestAssertsAreOn.class,// first!
-			AllTestsReferences.class, AllTestsBDB.class,
-		// AllRawBerkeleyDBTests.class too time consuming to add here
-		} )
-public class AllTests
-{
-	// always empty
+public class TestAssertsAreOn {
+	
+	@Test
+	public void testIfAssertsAreEnabled() {
+		boolean b = false;
+		assert ( b = true ) == true;
+		if ( !b ) {
+			fail( "you must enable assertions ie. use vm args -ea" );
+		}
+	}
 }
