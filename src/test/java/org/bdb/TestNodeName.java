@@ -37,6 +37,7 @@ package org.bdb;
 import static org.junit.Assert.*;
 
 import org.dml.storage.berkeleydb.commons.*;
+import org.dml.storage.berkeleydb.generics.*;
 import org.dml.storage.berkeleydb.native_via_jni.*;
 import org.junit.*;
 
