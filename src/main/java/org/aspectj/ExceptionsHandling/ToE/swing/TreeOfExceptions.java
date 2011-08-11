@@ -81,6 +81,7 @@ public final class TreeOfExceptions
 	private volatile boolean										isQPScheduledToRun				= false;
 	private volatile boolean										isQPRunning						= false;
 	private final static ReentrantLock								lockQP							= new ReentrantLock();
+	private final ReentrantLock										synchronizedReplacerLock		= new ReentrantLock();
 	// private final static ReentrantLock lockFirstTimeInit =
 	// new ReentrantLock();
 	
@@ -144,6 +145,7 @@ public final class TreeOfExceptions
 		final Boolean prev =
 		// TODO: see what other places need to use alternate reporting method esp. inside ie. WindowClosing
 			ThrowWrapper.useAlternateExceptionReportMethod.get();
+		assert !prev.booleanValue();
 		try {
 			ThrowWrapper.useAlternateExceptionReportMethod.set( A.BOOL_TRUE );
 			
@@ -175,39 +177,50 @@ public final class TreeOfExceptions
 	// }
 	
 	
-	private synchronized boolean alreadyExists( final Throwable exception ) {
-		// lockSerializedAccess.lock();
-		// try
-		// {
-		assert E.inEDTNow();
-		// (
-		// SwingUtilities.isEventDispatchThread() );
-		assert !( R.isRecursionDetectedForCurrentThread() );
-		
-		assert Q.nn( exception );
-		final NodeForTreeOfExceptions existingNode = new NodeForTreeOfExceptions( exception, StateOfAnException.INVALID_STATE );
-		// if ( null == existingNode )
-		// {
-		// return false;
-		// }
-		// else
-		// {
-		// existingNode=model.getUserObject(existingNode);
-		return treeSource.hasUserObject( existingNode );
-		// {
-		// Q.bug( "inconsistency between what the tree has and what the Node statics have. Maybe I removed a node "
-		// + "from tree and forgot to also remove it from Node statics, but the latter isn't necessary" );
-		// // investigate maybe need to remove this check OR need to return the value for hasUserObject when here
-		// // so far with our TreeOfExceptions this shouldn't ever happen because we don't remove exceptions from
-		// // this tree
-		// }
-		// return true;
-		// }
-		// }
-		// finally
-		// {
-		// // lockSerializedAccess.unlock();
-		// }
+	private boolean alreadyExists( final Throwable exception ) {
+		L.tryLock( synchronizedReplacerLock );
+		try {
+			// ====================
+			
+			
+			// lockSerializedAccess.lock();
+			// try
+			// {
+			assert E.inEDTNow();
+			// (
+			// SwingUtilities.isEventDispatchThread() );
+			assert !( R.isRecursionDetectedForCurrentThread() );
+			
+			assert Q.nn( exception );
+			final NodeForTreeOfExceptions existingNode =
+				new NodeForTreeOfExceptions( exception, StateOfAnException.INVALID_STATE );
+			// if ( null == existingNode )
+			// {
+			// return false;
+			// }
+			// else
+			// {
+			// existingNode=model.getUserObject(existingNode);
+			return treeSource.hasUserObject( existingNode );
+			// {
+			// Q.bug( "inconsistency between what the tree has and what the Node statics have. Maybe I removed a node "
+			// + "from tree and forgot to also remove it from Node statics, but the latter isn't necessary" );
+			// // investigate maybe need to remove this check OR need to return the value for hasUserObject when here
+			// // so far with our TreeOfExceptions this shouldn't ever happen because we don't remove exceptions from
+			// // this tree
+			// }
+			// return true;
+			// }
+			// }
+			// finally
+			// {
+			// // lockSerializedAccess.unlock();
+			// }
+			
+			// ====================
+		} finally {
+			synchronizedReplacerLock.unlock();
+		}
 	}
 	
 	
@@ -236,8 +249,10 @@ public final class TreeOfExceptions
 				// cannot mark this exception because it was never added to the tree, it was reported on console using alternate
 				// reporting method, therefore to avoid QP complaining that exception doesn't exist in tree, we ignore this
 				// markAs
+				Q.consolifyMark( existingException, state );
 				return;
 			}
+			assert !prev.booleanValue();
 			// boolean mustNotify =
 			// false;
 			// S.entry();
@@ -265,59 +280,68 @@ public final class TreeOfExceptions
 	}
 	
 	
-	private synchronized void repaint() {
-		// S.entry();
-		// // lockSerializedAccess.lock();
-		// try
-		// {
-		assert !( R.isRecursionDetectedForCurrentThread() );// aka current method called within
-		// itself = false
-		assert E.inEDTNow();
-		assert ( isVisible() );
-		assert Q.nn( jtree );
-		// we're doing only a repaint because we know tree struct didn't change as in add/remove
-		// but the state of some nodes did change ie. diff color
-		// if ( null == runnableRepaint )
-		// {
-		// runnableRepaint =
-		// new Runnable()
-		// {
-		//
-		// @SuppressWarnings( "synthetic-access" )
-		// @Override
-		// public
-		// void
-		// run()
-		// {
-		// // lockSerializedAccess.lock();
-		// // try
-		// // {
-		// ( SwingUtilities.isEventDispatchThread() );
-		jtree.repaint();
-		// }
-		// finally
-		// {
-		// lockSerializedAccess.unlock();
-		// }
-		// }
-		//
-		// };
-		// E.addToQueue( runnableRepaint );
-		// }
-		// }
-		// catch ( InvocationTargetException e )
-		// {
-		// Q.rethrow( e );
-		// }
-		// catch ( InterruptedException e )
-		// {
-		// Q.rethrow( e );
-		// }
-		// finally
-		// {
-		// // lockSerializedAccess.unlock();
-		// S.exit();
-		// }
+	private void repaint() {
+		L.tryLock( synchronizedReplacerLock );
+		try {
+			// ====================
+			
+			// S.entry();
+			// // lockSerializedAccess.lock();
+			// try
+			// {
+			assert !( R.isRecursionDetectedForCurrentThread() );// aka current method called within
+			// itself = false
+			assert E.inEDTNow();
+			assert ( isVisible() );
+			assert Q.nn( jtree );
+			// we're doing only a repaint because we know tree struct didn't change as in add/remove
+			// but the state of some nodes did change ie. diff color
+			// if ( null == runnableRepaint )
+			// {
+			// runnableRepaint =
+			// new Runnable()
+			// {
+			//
+			// @SuppressWarnings( "synthetic-access" )
+			// @Override
+			// public
+			// void
+			// run()
+			// {
+			// // lockSerializedAccess.lock();
+			// // try
+			// // {
+			// ( SwingUtilities.isEventDispatchThread() );
+			jtree.repaint();
+			// }
+			// finally
+			// {
+			// lockSerializedAccess.unlock();
+			// }
+			// }
+			//
+			// };
+			// E.addToQueue( runnableRepaint );
+			// }
+			// }
+			// catch ( InvocationTargetException e )
+			// {
+			// Q.rethrow( e );
+			// }
+			// catch ( InterruptedException e )
+			// {
+			// Q.rethrow( e );
+			// }
+			// finally
+			// {
+			// // lockSerializedAccess.unlock();
+			// S.exit();
+			// }
+			
+			// ====================
+		} finally {
+			synchronizedReplacerLock.unlock();
+		}
 	}
 	
 	
@@ -359,6 +383,7 @@ public final class TreeOfExceptions
 		final Boolean prev =
 		// just in case this is called outside of aspectj ie. in ExHandler
 			ThrowWrapper.useAlternateExceptionReportMethod.get();
+		assert !prev.booleanValue();
 		try {
 			ThrowWrapper.useAlternateExceptionReportMethod.set( A.BOOL_TRUE );
 			if ( null == singleton ) {
@@ -677,10 +702,10 @@ public final class TreeOfExceptions
 															@Override
 															public void run()// this is QP aka QueueProcessor
 															{
-																final boolean prevVal =
-																	ThrowWrapper.useAlternateExceptionReportMethod
-																		.get()
-																		.booleanValue();
+																final Boolean prevVal =
+																	ThrowWrapper.useAlternateExceptionReportMethod.get();
+																// .booleanValue();
+																assert !prevVal.booleanValue();
 																ThrowWrapper.useAlternateExceptionReportMethod
 																	.set( A.BOOL_TRUE );
 																try {
@@ -688,7 +713,7 @@ public final class TreeOfExceptions
 																	// "for fun" ) );
 																	// System.err.println( "in QP: prev="
 																	// + prevVal );
-																	assert !( prevVal );
+																	assert !( prevVal.booleanValue() );
 																	
 																	assert E.inEDTNow();
 																	assert !( R.isRecursionDetectedForCurrentThread() );
@@ -1049,7 +1074,7 @@ public final class TreeOfExceptions
 																	}
 																} finally {
 																	ThrowWrapper.useAlternateExceptionReportMethod
-																		.set( A.BOOL_FALSE );
+																		.set( prevVal );// A.BOOL_FALSE );
 																}
 																// }
 																// finally
@@ -1210,6 +1235,11 @@ public final class TreeOfExceptions
 			void addException( final Throwable unwrappedException ) {
 		final Boolean prev = ThrowWrapper.useAlternateExceptionReportMethod.get();
 		try {
+			if ( prev.booleanValue() ) {
+				Q.consolifyException( unwrappedException );
+				return;
+			}
+			assert !prev.booleanValue();
 			ThrowWrapper.useAlternateExceptionReportMethod.set( A.BOOL_TRUE );
 			// S.entry();
 			// // System.out.println( ( (Object)unwrappedException ).toString() );
@@ -1299,11 +1329,15 @@ public final class TreeOfExceptions
 	 * @param existingParent
 	 *            if null then root is assumed
 	 */
-	private synchronized NodeForTreeOfExceptions addNewExceptionUnderParent( final Throwable newChildException,
-																				final StateOfAnException itsState,
-																				final Throwable existingParent ) {
-		// lockSerializedAccess.lock();
+	private NodeForTreeOfExceptions addNewExceptionUnderParent( final Throwable newChildException,
+																final StateOfAnException itsState,
+																final Throwable existingParent ) {
+		L.tryLock( synchronizedReplacerLock );
 		try {
+			// ====================
+			
+			
+			// lockSerializedAccess.lock();
 			assert E.inEDTNow();
 			assert !( R.isRecursionDetectedForCurrentThread() );
 			assert Q.nn( newChildException );
@@ -1355,8 +1389,10 @@ public final class TreeOfExceptions
 			assert ( MethodReturnsForTree.SUCCESS_AND_DIDNT_ALREADY_EXIST == ret ) : Q.bug( "unexpected return: `" + ret + "`" );
 			// }
 			return newChildNode;
+			
+			// ====================
 		} finally {
-			// lockSerializedAccess.unlock();
+			synchronizedReplacerLock.unlock();
 		}
 	}
 	
@@ -1394,78 +1430,90 @@ public final class TreeOfExceptions
 	/**
 	 * 
 	 */
-	public synchronized// never synchronized, it will deadlock!
+	public// never synchronized, it will deadlock!
 			void notifyThatTreeStructureChangedToUpdateGUI() {
-		// S.entry();
-		// // lockSerializedAccess.lock();
-		// try
-		// {
-		assert E.inEDTNow();
-		assert !( R.isRecursionDetectedForCurrentThread() );// aka current method called within
-		// itself = false
-		// if ( null == nttsctuguiRun )
-		// {
-		// nttsctuguiRun =
-		// new Runnable()
-		// {
-		//
-		// @SuppressWarnings( "synthetic-access" )
-		// @Override
-		// public
-		// void
-		// run()
-		// {
-		// assert E.inEDTNow();
-		// ( SwingUtilities.isEventDispatchThread() );
-		assert Q.nn( model );
-		
-		
-		// jtree.clearSelection();
-		// if ( treeChanged )
-		// {
-		//
-		// // jtree.is
-		// // jtree.clearSelection();
-		//
-		// }
-		assert Q.nn( jtree );
-		final TreePath current = jtree.getSelectionPath();
-		// System.out.println( "Current selection: "
-		// + current );
-		model.notifyThatTreeStructureChanged();// this will clear the selection for sure
-		if ( null != current ) {
-			// System.out.println( jtree.isCollapsed( current )
-			// || jtree.isExpanded( current ) );
-			jtree.setSelectionPath( current );// restore whatever was selected
-			// jtree.isP
+		L.tryLock( synchronizedReplacerLock );
+		try {
+			// ====================
+			
+			
+			// S.entry();
+			// // lockSerializedAccess.lock();
+			// try
+			// {
+			assert E.inEDTNow();
+			assert !( R.isRecursionDetectedForCurrentThread() );// aka current method called within
+			// itself = false
+			// if ( null == nttsctuguiRun )
+			// {
+			// nttsctuguiRun =
+			// new Runnable()
+			// {
+			//
+			// @SuppressWarnings( "synthetic-access" )
+			// @Override
+			// public
+			// void
+			// run()
+			// {
+			// assert E.inEDTNow();
+			// ( SwingUtilities.isEventDispatchThread() );
+			assert Q.nn( model );
+			
+			
+			// jtree.clearSelection();
+			// if ( treeChanged )
+			// {
+			//
+			// // jtree.is
+			// // jtree.clearSelection();
+			//
+			// }
+			assert Q.nn( jtree );
+			final TreePath current = jtree.getSelectionPath();
+			// System.out.println( "Current selection: "
+			// + current );
+			model.notifyThatTreeStructureChanged();// this will clear the selection for sure
+			if ( null != current ) {
+				// System.out.println( jtree.isCollapsed( current )
+				// || jtree.isExpanded( current ) );
+				jtree.setSelectionPath( current );// restore whatever was selected
+				// jtree.isP
+			}
+			// if ( treeChanged )
+			// {
+			// assert Q.nn( current );
+			// assert Q.nn( jtree );
+			// TreePath current =
+			// jtree.getSelectionPath();
+			// if ( null != current )
+			// {
+			// // System.out.println( jtree.isCollapsed( current )
+			// // || jtree.isExpanded( current ) );
+			// jtree.setSelectionPath( current );
+			// // jtree.isP
+			// }
+			// }
+			// }
+			// };
+			// }
+			// assert Q.nn( nttsctuguiRun );
+			// EDT.addToQueue( nttsctuguiRun );
+			// SwingUtilities.invokeLater( nttsctuguiRun );
+			// }
+			// finally
+			// {
+			// // lockSerializedAccess.unlock();
+			// S.exit();
+			// }
+			// }
+			
+			
+			
+			// ====================
+		} finally {
+			synchronizedReplacerLock.unlock();
 		}
-		// if ( treeChanged )
-		// {
-		// assert Q.nn( current );
-		// assert Q.nn( jtree );
-		// TreePath current =
-		// jtree.getSelectionPath();
-		// if ( null != current )
-		// {
-		// // System.out.println( jtree.isCollapsed( current )
-		// // || jtree.isExpanded( current ) );
-		// jtree.setSelectionPath( current );
-		// // jtree.isP
-		// }
-		// }
-		// }
-		// };
-		// }
-		// assert Q.nn( nttsctuguiRun );
-		// EDT.addToQueue( nttsctuguiRun );
-		// SwingUtilities.invokeLater( nttsctuguiRun );
-		// }
-		// finally
-		// {
-		// // lockSerializedAccess.unlock();
-		// S.exit();
-		// }
-		// }
 	}
 	
 	
@@ -1522,6 +1570,7 @@ public final class TreeOfExceptions
 			public void run() {
 				// ( ThrowWrapper.useAlternateExceptionReportMethod.get().booleanValue() );
 				final Boolean prev = ThrowWrapper.useAlternateExceptionReportMethod.get();
+				assert !prev.booleanValue();
 				try {
 					ThrowWrapper.useAlternateExceptionReportMethod.set( A.BOOL_TRUE );
 					if ( removeSecBlkFromQueue ) {
@@ -2052,42 +2101,53 @@ public final class TreeOfExceptions
 	// null;
 	
 	
-	private synchronized void rebuildFilterTree() {
-		// S.entry();
-		// // lockSerializedAccess.lock();
-		// try
-		// {
-		assert !( R.isRecursionDetectedForCurrentThread() );// aka current method called within
-		// itself = false
-		// if ( null == rbFTrun )
-		// {
-		// rbFTrun =
-		// new Runnable()
-		// {
-		//
-		// @SuppressWarnings( "synthetic-access" )
-		// @Override
-		// public
-		// void
-		// run()
-		// {
-		assert E.inEDTNow();
-		// ( SwingUtilities.isEventDispatchThread() );
-		// filterTreeSource.clear();
-		assert ( filterTreeSource.size() == 0 );// root remained though!
-		internal_DeepClone( null );// aka root initially
-		// }
-		// };
-		//
-		// }
-		// assert Q.nn( rbFTrun );
-		// SwingUtilities.invokeLater( rbFTrun );
-		// }
-		// finally
-		// {
-		// // lockSerializedAccess.unlock();
-		// S.exit();
-		// }
+	private void rebuildFilterTree() {
+		L.tryLock( synchronizedReplacerLock );
+		try {
+			// ====================
+			
+			
+			// S.entry();
+			// // lockSerializedAccess.lock();
+			// try
+			// {
+			assert !( R.isRecursionDetectedForCurrentThread() );// aka current method called within
+			// itself = false
+			// if ( null == rbFTrun )
+			// {
+			// rbFTrun =
+			// new Runnable()
+			// {
+			//
+			// @SuppressWarnings( "synthetic-access" )
+			// @Override
+			// public
+			// void
+			// run()
+			// {
+			assert E.inEDTNow();
+			// ( SwingUtilities.isEventDispatchThread() );
+			// filterTreeSource.clear();
+			assert ( filterTreeSource.size() == 0 );// root remained though!
+			internal_DeepClone( null );// aka root initially
+			// }
+			// };
+			//
+			// }
+			// assert Q.nn( rbFTrun );
+			// SwingUtilities.invokeLater( rbFTrun );
+			// }
+			// finally
+			// {
+			// // lockSerializedAccess.unlock();
+			// S.exit();
+			// }
+			
+			
+			// ====================
+		} finally {
+			synchronizedReplacerLock.unlock();
+		}
 	}
 	
 	
@@ -2097,29 +2157,38 @@ public final class TreeOfExceptions
 	 * 
 	 * @param parentObject
 	 */
-	private synchronized void internal_DeepClone( final NodeForTreeOfExceptions parentObject ) {
-		// S.entry();
-		// // lockSerializedAccess.lock();
-		// try
-		// {
-		// System.err.println( "deepclone begins" );
-		assert E.inEDTNow();
-		final int childCount = treeSource.getChildCount0( parentObject );
-		int count = 0;
-		while ( count < childCount ) {
-			final NodeForTreeOfExceptions child = treeSource.getChildAtIndex( parentObject, count );
-			count++;
-			if ( addToFilterTree( child, parentObject, Position.LAST ) ) {
-				internal_DeepClone( child );
+	private void internal_DeepClone( final NodeForTreeOfExceptions parentObject ) {
+		L.tryLock( synchronizedReplacerLock );
+		try {
+			// ====================
+			
+			// S.entry();
+			// // lockSerializedAccess.lock();
+			// try
+			// {
+			// System.err.println( "deepclone begins" );
+			assert E.inEDTNow();
+			final int childCount = treeSource.getChildCount0( parentObject );
+			int count = 0;
+			while ( count < childCount ) {
+				final NodeForTreeOfExceptions child = treeSource.getChildAtIndex( parentObject, count );
+				count++;
+				if ( addToFilterTree( child, parentObject, Position.LAST ) ) {
+					internal_DeepClone( child );
+				}
 			}
+			// System.err.println( "deepclone ends" );
+			// }
+			// finally
+			// {
+			// // lockSerializedAccess.unlock();
+			// S.exit();
+			// }
+			
+			// ====================
+		} finally {
+			synchronizedReplacerLock.unlock();
 		}
-		// System.err.println( "deepclone ends" );
-		// }
-		// finally
-		// {
-		// // lockSerializedAccess.unlock();
-		// S.exit();
-		// }
 	}
 	
 	
@@ -2129,64 +2198,88 @@ public final class TreeOfExceptions
 	 * @param pos
 	 * @return true if added; false if not
 	 */
-	private synchronized boolean addToFilterTree( final NodeForTreeOfExceptions child, final NodeForTreeOfExceptions parent,
-													final Position pos ) {
-		// S.entry();
-		// // lockSerializedAccess.lock();
-		// try
-		// {
-		assert E.inEDTNow();
-		assert !( R.isRecursionDetectedForCurrentThread() );
-		
-		assert Q.nn( child );
-		if ( isValidForFilterTree( child ) ) {
-			// System.err.println( "Adding child:"
-			// + child
-			// + " in parent:"
-			// + parent );
-			// so we add it:
-			final MethodReturnsForTree tempRet = filterTreeSource.addChildInParentAtPos( child, parent, pos );
-			assert ( MethodReturnsForTree.SUCCESS_AND_DIDNT_ALREADY_EXIST == tempRet );
-			return true;
+	private boolean addToFilterTree( final NodeForTreeOfExceptions child, final NodeForTreeOfExceptions parent,
+										final Position pos ) {
+		L.tryLock( synchronizedReplacerLock );
+		try {
+			// ====================
+			
+			
+			// S.entry();
+			// // lockSerializedAccess.lock();
+			// try
+			// {
+			assert E.inEDTNow();
+			assert !( R.isRecursionDetectedForCurrentThread() );
+			
+			assert Q.nn( child );
+			if ( isValidForFilterTree( child ) ) {
+				// System.err.println( "Adding child:"
+				// + child
+				// + " in parent:"
+				// + parent );
+				// so we add it:
+				final MethodReturnsForTree tempRet = filterTreeSource.addChildInParentAtPos( child, parent, pos );
+				assert ( MethodReturnsForTree.SUCCESS_AND_DIDNT_ALREADY_EXIST == tempRet );
+				return true;
+			}
+			return false;
+			// }
+			// finally
+			// {
+			// // lockSerializedAccess.unlock();
+			// S.exit();
+			// }
+			
+			
+			
+			// ====================
+		} finally {
+			synchronizedReplacerLock.unlock();
 		}
-		return false;
-		// }
-		// finally
-		// {
-		// // lockSerializedAccess.unlock();
-		// S.exit();
-		// }
 	}
 	
 	
-	private synchronized boolean isValidForFilterTree( final NodeForTreeOfExceptions item ) {
-		// S.entry();
-		// // lockSerializedAccess.lock();
-		// try
-		// {
-		assert !( R.isRecursionDetectedForCurrentThread() );
-		assert E.inEDTNow();
-		// ( SwingUtilities.isEventDispatchThread() );can be in EDT or not, both can be
-		// XXX: try to not access these from anywhere other than EDT ie. mirror those in boolean vars instead! - done
-		assert Q.nn( item );
-		final StateOfAnException itemState = item.getState();
-		assert ( itemState != StateOfAnException.INVALID_STATE );
-		if ( boolExcludeHandled && ( itemState == StateOfAnException.HANDLED ) ) {
-			return false;
+	private boolean isValidForFilterTree( final NodeForTreeOfExceptions item ) {
+		L.tryLock( synchronizedReplacerLock );
+		try {
+			// ====================
+			
+			
+			// S.entry();
+			// // lockSerializedAccess.lock();
+			// try
+			// {
+			assert !( R.isRecursionDetectedForCurrentThread() );
+			assert E.inEDTNow();
+			// ( SwingUtilities.isEventDispatchThread() );can be in EDT or not, both can be
+			// XXX: try to not access these from anywhere other than EDT ie. mirror those in boolean vars instead! - done
+			assert Q.nn( item );
+			final StateOfAnException itemState = item.getState();
+			assert ( itemState != StateOfAnException.INVALID_STATE );
+			if ( boolExcludeHandled && ( itemState == StateOfAnException.HANDLED ) ) {
+				return false;
+			}
+			if ( boolExcludeInfo && ( itemState == StateOfAnException.INFO ) ) {
+				return false;
+			}
+			if ( boolExcludeWarn && ( itemState == StateOfAnException.WARNING ) ) {
+				return false;
+			}
+			return true;
+			// }
+			// finally
+			// {
+			// // lockSerializedAccess.unlock();
+			// S.exit();
+			// }
+			
+			
+			
+			// ====================
+		} finally {
+			synchronizedReplacerLock.unlock();
 		}
-		if ( boolExcludeInfo && ( itemState == StateOfAnException.INFO ) ) {
-			return false;
-		}
-		if ( boolExcludeWarn && ( itemState == StateOfAnException.WARNING ) ) {
-			return false;
-		}
-		return true;
-		// }
-		// finally
-		// {
-		// // lockSerializedAccess.unlock();
-		// S.exit();
-		// }
 	}
 	
 	
@@ -2196,6 +2289,7 @@ public final class TreeOfExceptions
 	public void popQueue() {
 		// System.err.println( "popQueue: started" );
 		// Boolean prev=ThrowWrapper.useAlternateExceptionReportMethod.set( A.BOOL_FALSE);
+		assert !ThrowWrapper.useAlternateExceptionReportMethod.get().booleanValue();
 		ThrowWrapper.useAlternateExceptionReportMethod.set( A.BOOL_TRUE );
 		// ( wasShutdownOnce );actually it could be it was never inited
 		// assert !( isVisible() );also it could fail to properly close it and the flag is still on visible

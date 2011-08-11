@@ -372,4 +372,22 @@ public abstract class Q
 			cause = cause.getCause();
 		}
 	}
+	
+	
+	/**
+	 * @param unwrappedException
+	 */
+	public static void consolifyException( final Throwable unwrappedException ) {
+		unwrappedException.printStackTrace();
+	}
+	
+	
+	/**
+	 * @param existingException
+	 * @param state
+	 */
+	public static void consolifyMark( final Throwable existingException, final StateOfAnException state ) {
+		System.err.println( "MARKED AS: " + state + " WHATex:" + existingException );
+		
+	}
 }
