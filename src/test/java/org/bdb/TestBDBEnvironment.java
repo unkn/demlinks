@@ -36,6 +36,7 @@ package org.bdb;
 
 import static org.junit.Assert.*;
 
+import org.dml.storage.berkeleydb.exceptions.*;
 import org.dml.storage.berkeleydb.generics.*;
 import org.junit.*;
 import org.q.*;
