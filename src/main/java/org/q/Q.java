@@ -35,6 +35,7 @@ package org.q;
 
 import java.lang.Thread.UncaughtExceptionHandler;
 
+import org.aspectj.ExceptionsHandling.ToE.*;
 import org.aspectj.ExceptionsHandling.ToE.swing.*;
 
 
@@ -45,12 +46,12 @@ import org.aspectj.ExceptionsHandling.ToE.swing.*;
 public abstract class Q
 {
 	
-	private static final boolean	showFullInfo			= false;
-	private static final boolean	infoEnabled				= false;
+	// private static final boolean showFullInfo = false;
+	// private static final boolean infoEnabled = false;
 	
 	// if true, note that some of them might get handled on top levels yet they will still remain reported on console
 	// this here is implemented for the case when you suspect a finally is overwriting the "real" exception thrown in try
-	private static final boolean	showAllThrownExceptions	= false;
+	// private static final boolean showAllThrownExceptions = false;
 	
 	static {
 		final UncaughtExceptionHandler eh = new ExHandlerForThoseThatAreNotWithinCallsIeMain();
@@ -191,6 +192,7 @@ public abstract class Q
 		// both params can be null
 		final WarningException we = new WarningException( msg, cause );
 		toTree( we );
+		markAsWarning( we );
 		// we.printStackTrace();
 	}
 	
@@ -210,15 +212,16 @@ public abstract class Q
 	 * @param cause
 	 */
 	private static void info( final String msg, final Throwable cause ) {
-		if ( infoEnabled ) {
-			if ( Q.showFullInfo ) {
-				final InfoException ie = new InfoException( msg, cause );
-				toTree( ie );
-				// .printStackTrace();
-			} else {
-				System.out.println( "INFO: " + msg + " ||| " + Thread.currentThread().getStackTrace()[3] );
-			}
-		}
+		// if ( infoEnabled ) {
+		// if ( Q.showFullInfo ) {
+		final InfoException ie = new InfoException( msg, cause );
+		toTree( ie );
+		markAsInfo( ie );
+		// .printStackTrace();
+		// } else {
+		// System.out.println( "INFO: " + msg + " ||| " + Thread.currentThread().getStackTrace()[3] );
+		// }
+		// }
 	}
 	
 	
@@ -346,5 +349,27 @@ public abstract class Q
 	public static void dumpStack() {
 		StackDumper.dumpStack();
 		// Thread.dumpStack();
+	}
+	
+	
+	private static void markAsWarning( final Throwable exception ) {
+		markAsAnything( exception, StateOfAnException.WARNING );
+	}
+	
+	
+	private static void markAsInfo( final Throwable exception ) {
+		markAsAnything( exception, StateOfAnException.INFO );
+	}
+	
+	
+	private static void markAsAnything( final Throwable exception, final StateOfAnException anything ) {
+		assert Q.nn( exception );
+		final Throwable unWrapped = exception;// getBareException( exception );
+		assert Q.nn( unWrapped );// else bug
+		Throwable cause = unWrapped;
+		while ( null != cause ) {
+			TreeOfExceptions.getTreeOfExceptions().markAs( cause, anything );
+			cause = cause.getCause();
+		}
 	}
 }
