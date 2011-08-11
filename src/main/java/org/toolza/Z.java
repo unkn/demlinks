@@ -61,6 +61,47 @@ public abstract class Z
 	}
 	
 	
+	/**
+	 * allows comparing two siblings of the same Base class<br>
+	 * ie. X->A and X->B A.equals(B) is allowed but will complain(throw) if B.equals(A) returns diff result<br>
+	 * 
+	 * @param o1
+	 * @param o2
+	 * @return
+	 */
+	public static boolean equalsSimple_enforceNotNull( final Object o1, final Object o2 ) {
+		assert Q.nn( o1 );
+		assert Q.nn( o2 );
+		if ( o1 == o2 ) {
+			return true;
+		}
+		if ( haveCompatibleClasses_canNotBeNull( o1, o2 ) ) {
+			final boolean ret1 = o1.equals( o2 );
+			if ( !areSameClass_canNotBeNull( o1, o2 ) ) {
+				final boolean ret2 = o2.equals( o1 );
+				assert !( ret1 ^ ret2 ) : Q.bug( "two incompatible .equals() defined for each of the object's classes: o1("
+					+ o1.getClass() + ") and o2(" + o2.getClass() + ")" );
+			}
+			return ret1;// == ret2
+		} else {// two diff instances of two diff subclasses of the same base class
+				// ie. X extends B and Y extends B so B->X and B->Y but instances of X and Y should return false
+				// when compared, usually inside HashMap<B> when they are keys
+				// but don't throw here
+				// can't throw here and then catch when testing TestThrows.java it will fail for some reason
+				// throw Q.badCall( "comparing incompatible objects based on their classes o1=" + o1.getClass() + ", o2="
+			// + o2.getClass() );
+			final boolean ret1 = o1.equals( o2 );// not reached
+			final boolean ret2 = o2.equals( o1 );
+			assert ret1 ^ ret2 : Q.bug( "one class's equals returned different result than the other class's equals"
+				+ "\n They have incompatible equals, both of their equals should return either true or false, "
+				+ "not one true and one false\n" + "participating classes: \n" + "1=`" + o1.getClass() + "`\n" + "2=`"
+				+ o2.getClass() + "`" );
+			// the links above of the classes shown on console won't direct to them, instead to debug breakpoints or wtw
+			return ret1;
+		}
+	}
+	
+	
 	public static boolean equalsWithCompatClasses_enforceNotNull( final Object o1, final Object o2 ) {
 		assert Q.nn( o1 );
 		assert Q.nn( o2 );

@@ -38,10 +38,13 @@ package org.q;
  *
  */
 @SuppressWarnings( "serial" )
-public class BadCallError extends Error {
+public class BadCallError
+		extends Error
+{
 	
 	public BadCallError( final String msg ) {
 		super( msg );
+		Q.toTree( this );
 	}
 	
 	
@@ -51,5 +54,6 @@ public class BadCallError extends Error {
 	 */
 	public BadCallError( final String msg, final Throwable cause ) {
 		super( msg, cause );
+		Q.toTree( this );
 	}
 }

@@ -159,7 +159,7 @@ public abstract class Q
 	 */
 	public static BadCallError badCall( final String msg ) {
 		final BadCallError ex = new BadCallError( msg );
-		toTree( ex );
+		Q.toTree( ex );
 		throw ex;
 	}
 	
@@ -400,7 +400,7 @@ public abstract class Q
 	 * @param state
 	 */
 	public static void consolifyMark( final Throwable existingException, final StateOfAnException state ) {
-		System.err.println( "MARKED AS: " + state + " WHATex:" + existingException );
+		System.err.println( "MARKED AS: " + state + " WHATex: " + existingException );
 		
 	}
 	

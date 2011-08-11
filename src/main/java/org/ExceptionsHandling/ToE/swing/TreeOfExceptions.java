@@ -777,7 +777,7 @@ public final class TreeOfExceptions
 																				// uwEx.printStackTrace();
 																				if ( alreadyExists( uwEx ) ) {
 																					Q
-																						.bug( "the exception we caught wasn't new, shouldn't happen; shouldn't already exist in tree. Must investigate! ex:"
+																						.warn( "the exception we caught wasn't new, shouldn't happen; shouldn't already exist in tree. Must investigate! ex:"
 																							+ uwEx );
 																				}
 																				// this will put the causes first in the

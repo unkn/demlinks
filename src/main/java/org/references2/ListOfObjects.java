@@ -87,7 +87,7 @@ public class ListOfObjects<THEOBJ>
 		if ( null == ref ) {
 			return false;// doesn't contain it
 		}
-		return Z.equalsWithCompatClasses_enforceNotNull( obj, ref.getObject() );
+		return Z.equalsSimple_enforceNotNull( obj, ref.getObject() );
 	}
 	
 	
@@ -122,12 +122,12 @@ public class ListOfObjects<THEOBJ>
 		ChainedReference<THEOBJ> parser = getLastRef();
 		if ( null != parser ) {
 			// check if it's last
-			if ( !Z.equalsWithCompatClasses_enforceNotNull( parser.getObject(), containingThisObject ) ) {
+			if ( !Z.equalsSimple_enforceNotNull( parser.getObject(), containingThisObject ) ) {
 				// it's not last then let's start parsing from first
 				parser = getFirstRef();// can be null if empty
 				// list
 				while ( null != parser ) {
-					if ( Z.equalsWithCompatClasses_enforceNotNull( containingThisObject, parser.getObject() ) ) {
+					if ( Z.equalsSimple_enforceNotNull( containingThisObject, parser.getObject() ) ) {
 						break;
 					}
 					parser = parser.getNext();
