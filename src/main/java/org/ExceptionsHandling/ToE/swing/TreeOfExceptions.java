@@ -1132,6 +1132,7 @@ public final class TreeOfExceptions
 				Runtime.getRuntime().addShutdownHook( new Thread( new Runnable()
 				{
 					
+					@SuppressWarnings( "synthetic-access" )
 					@Override
 					public void run() {
 						popQueue();
@@ -2342,7 +2343,7 @@ public final class TreeOfExceptions
 	/**
 	 * XXX:this is assumed to be called only in shutdown hook
 	 */
-	public void popQueue() {
+	private void popQueue() {
 		// System.err.println( "popQueue: started ; queue size=" + queueFIFO.size() );
 		// Boolean prev=ThrowWrapper.useAlternateExceptionReportMethod.set( A.BOOL_FALSE);
 		assert !( ThrowWrapper.useAlternateExceptionReportMethod.get().booleanValue() );
