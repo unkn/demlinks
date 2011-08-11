@@ -2343,7 +2343,7 @@ public final class TreeOfExceptions
 	 * XXX:this is assumed to be called only in shutdown hook
 	 */
 	public void popQueue() {
-		System.err.println( "popQueue: started ; queue size=" + queueFIFO.size() );
+		// System.err.println( "popQueue: started ; queue size=" + queueFIFO.size() );
 		// Boolean prev=ThrowWrapper.useAlternateExceptionReportMethod.set( A.BOOL_FALSE);
 		assert !( ThrowWrapper.useAlternateExceptionReportMethod.get().booleanValue() );
 		ThrowWrapper.useAlternateExceptionReportMethod.set( A.BOOL_TRUE );
