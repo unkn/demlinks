@@ -47,7 +47,7 @@ public abstract class Q
 {
 	
 	// private static final boolean showFullInfo = false;
-	// private static final boolean infoEnabled = false;
+	private static boolean	infoEnabled	= false;
 	
 	// if true, note that some of them might get handled on top levels yet they will still remain reported on console
 	// this here is implemented for the case when you suspect a finally is overwriting the "real" exception thrown in try
@@ -56,6 +56,11 @@ public abstract class Q
 	static {
 		final UncaughtExceptionHandler eh = new ExHandlerForThoseThatAreNotWithinCallsIeMain();
 		Thread.setDefaultUncaughtExceptionHandler( eh );
+	}
+	
+	
+	public static void enableInfoReporting( final boolean enable ) {
+		infoEnabled = enable;
 	}
 	
 	
@@ -218,16 +223,16 @@ public abstract class Q
 	 * @param cause
 	 */
 	private static void info( final String msg, final Throwable cause ) {
-		// if ( infoEnabled ) {
-		// if ( Q.showFullInfo ) {
-		final InfoException ie = new InfoException( msg, cause );
-		toTree( ie );
-		markAsInfo( ie );
-		// .printStackTrace();
-		// } else {
-		// System.out.println( "INFO: " + msg + " ||| " + Thread.currentThread().getStackTrace()[3] );
-		// }
-		// }
+		if ( infoEnabled ) {
+			// if ( Q.showFullInfo ) {
+			final InfoException ie = new InfoException( msg, cause );
+			toTree( ie );
+			markAsInfo( ie );
+			// .printStackTrace();
+			// } else {
+			// System.out.println( "INFO: " + msg + " ||| " + Thread.currentThread().getStackTrace()[3] );
+			// }
+		}
 	}
 	
 	

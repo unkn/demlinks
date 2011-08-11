@@ -37,6 +37,7 @@ import org.bdb.*;
 import org.dml.storage.berkeleydb.generics.*;
 import org.dml.storage.commons.*;
 import org.junit.*;
+import org.q.*;
 import org.toolza.*;
 
 
@@ -119,6 +120,7 @@ public class TestManyNodes
 				storage.makeVector( list, headElement );
 				System.out.println( "first time creating the relationships..." );
 				final int half = HOWMANY_RELATIONSHIPS_FOR_ONE / 2;
+				Q.enableInfoReporting( false );
 				t3.start();
 				int i = 0;
 				try {
@@ -140,11 +142,13 @@ public class TestManyNodes
 					System.out.println( i );
 				}
 				t3.stop();
+				Q.enableInfoReporting( true );
 				System.out.println( "just created " + A.number( half ) + " rels, took=" + t3.getDeltaPrintFriendly() );
 				showMem();
 				
 				
 				System.out.println( "creating more relationships..." );
+				Q.enableInfoReporting( false );
 				t3.start();
 				for ( i = 0; i < half; i++ ) {
 					storage.makeVector( storage.createNewUniqueNode(), tailElement );
@@ -159,6 +163,7 @@ public class TestManyNodes
 					}
 				}
 				t3.stop();
+				Q.enableInfoReporting( true );
 				System.out.println( "just created another bunch of " + A.number( half ) + " rels, took="
 					+ t3.getDeltaPrintFriendly() );
 				showMem();
