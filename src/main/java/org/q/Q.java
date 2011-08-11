@@ -47,7 +47,7 @@ public abstract class Q
 {
 	
 	// private static final boolean showFullInfo = false;
-	private static boolean	infoEnabled	= false;
+	private static boolean	infoEnabled	= true;
 	
 	// if true, note that some of them might get handled on top levels yet they will still remain reported on console
 	// this here is implemented for the case when you suspect a finally is overwriting the "real" exception thrown in try

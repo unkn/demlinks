@@ -35,12 +35,15 @@ package org.toolza;
 
 import java.io.*;
 
+import org.q.*;
+
 
 
 /**
  *
  */
-public abstract class F {
+public abstract class F
+{
 	
 	public static void showMem() {
 		System.out.println( "usedmem=" + ( Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory() ) );
@@ -55,7 +58,7 @@ public abstract class F {
 					delFileOrTree( child );
 				}
 			}
-			System.err.println( "deleting: `" + fileOrPath.getAbsolutePath() + "`" );
+			Q.info( "deleting: `" + fileOrPath.getAbsolutePath() + "`" );
 			final boolean ret = fileOrPath.delete();
 			assert ret : "failed to delete: `" + fileOrPath.getAbsolutePath() + "`";
 		}
