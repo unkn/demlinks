@@ -3,6 +3,7 @@
  * Copyright (c) 2005-2011, AtKaaZ
  * All rights reserved.
  * this file is part of DemLinks
+ * File created on Aug 11, 2011 8:31:20 PM
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -31,20 +32,22 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
-package org.aspectj.ExceptionsHandling.ToE;
+package org.ExceptionsHandling.ToE.swing;
 
 
 /**
  *
  */
-public class ToERoot
-		extends Throwable
+@SuppressWarnings( "serial" )
+public class AlmostSlippedException
+		extends RuntimeException
 {
 	
 	/**
-	 * 
+	 * @param ex
 	 */
-	private static final long	serialVersionUID	= 2864639433990630613L;
+	public AlmostSlippedException( final Throwable ex ) {
+		super( ex );
+	}
 	
 }

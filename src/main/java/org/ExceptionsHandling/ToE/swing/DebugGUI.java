@@ -32,7 +32,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.aspectj.ExceptionsHandling.ToE.swing;
+package org.ExceptionsHandling.ToE.swing;
 
 
 

@@ -32,54 +32,19 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.aspectj.ExceptionsHandling.ToE.swing;
-
-
-
-import java.awt.*;
-import java.util.*;
-
-import javax.swing.tree.*;
-
-import org.aspectj.ExceptionsHandling.ToE.*;
-import org.q.*;
-
+package org.ExceptionsHandling.ToE;
 
 
 /**
  *
  */
-public class CellRenderer
-		extends DefaultTreeCellRenderer
+public class ToERoot
+		extends Throwable
 {
 	
 	/**
 	 * 
 	 */
-	private static final long									serialVersionUID	= -7673503067257278439L;
+	private static final long	serialVersionUID	= 2864639433990630613L;
 	
-	protected final static HashMap<StateOfAnException, Color>	stateToColorMap		= new HashMap<StateOfAnException, Color>();
-	
-	
-	public CellRenderer() {
-		super();
-		if ( stateToColorMap.size() == 0 ) {// init once
-			assert stateToColorMap.size() == 0;
-			stateToColorMap.put( StateOfAnException.DEFAULT, Color.RED );
-			stateToColorMap.put( StateOfAnException.ROOT, Color.gray );
-			stateToColorMap.put( StateOfAnException.HANDLED, Color.gray );
-			stateToColorMap.put( StateOfAnException.CAUSE_WHICH_WAS_UNCAUGHT_BY_ASPECTJ, Color.blue );
-			stateToColorMap.put( StateOfAnException.INVALID_STATE, Color.YELLOW );
-			stateToColorMap.put( StateOfAnException.WARNING, new Color( 140, 40, 99 ) );
-			stateToColorMap.put( StateOfAnException.INFO, new Color( 0, 125, 0 ) );
-			if ( StateOfAnException.values().length != stateToColorMap.size() ) {
-				Q.bug( "you forgot to add the new value in StateOfAnException to this 1-to-1 map to color" );
-			}
-			// TODO: do a Q.bug("test") here to see reported line numbers in stacktrace be wrong due to aspectJ
-			// especially
-			// Q.bug( "test" );
-			// this one: at org.swing.TreeOfExceptions.addException(TreeOfExceptions.java:184) it's supposed to be
-			// line+1
-		}
-	}
 }

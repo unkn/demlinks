@@ -33,7 +33,7 @@
  */
 
 
-package org.aspectj.ExceptionsHandling.ToE.swing;
+package org.ExceptionsHandling.ToE.swing;
 
 
 /**

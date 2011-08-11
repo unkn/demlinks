@@ -32,7 +32,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.aspectj.ExceptionsHandling.ToE;
+
+package org.ExceptionsHandling.ToE;
 
 
 
@@ -44,53 +45,45 @@ import org.toolza.*;
 /**
  *
  */
-public class NodeForTreeOfCalls
+public class NodeForTreeOfExceptions
 {
 	
-	private final NodeForTreeOfExceptions	exception;
-	private final StackTraceElement			call;
+	// two nodes are equal if they sport the same exception compared with equals (which likely is == )
+	private final Throwable		exception;
+	// the state doesn't matter when comparing two nodes
+	private StateOfAnException	state;
 	
 	
-	public NodeForTreeOfCalls( final NodeForTreeOfExceptions exception1, final StackTraceElement call1 ) {
-		assert Q.nn( exception1 );
-		assert Q.nn( call1 );
-		exception = exception1;
-		call = call1;
-	}
+	// private static HashMap<Throwable, NodeForTreeOfExceptions> allInstances = new HashMap<Throwable,
+	// NodeForTreeOfExceptions>();
 	
 	
-	public synchronized NodeForTreeOfExceptions getExceptionNode() {
-		assert Q.nn( exception );
-		return exception;
+	public synchronized void setState( final StateOfAnException newState ) {
+		assert Q.nn( newState );
+		state = newState;
 	}
 	
 	
 	/**
-	 * @return state of the call
+	 * @return state of the exception
 	 */
 	public synchronized StateOfAnException getState() {
-		return getExceptionNode().getState();
+		return state;
 	}
 	
 	
-	public synchronized StackTraceElement getCall() {
-		assert Q.nn( call );
-		return call;
+	public NodeForTreeOfExceptions( final Throwable exception1, final StateOfAnException state1 ) {
+		assert Q.nn( exception1 );
+		assert Q.nn( state1 );
+		exception = exception1;
+		state = state1;
 	}
 	
 	
-	// private synchronized static
-	// String
-	// spaces(
-	// int within,
-	// String msg )
-	// {
-	// return String.format(
-	// "%-"
-	// + within
-	// + "s",
-	// msg );
-	// }
+	public synchronized Throwable getException() {
+		assert Q.nn( exception );
+		return exception;
+	}
 	
 	
 	/*
@@ -100,13 +93,21 @@ public class NodeForTreeOfCalls
 	 */
 	@Override
 	public synchronized String toString() {
-		final StackTraceElement call1 = getCall();
-		return A.spaces( 30, call1.getFileName() + ":" + call1.getLineNumber() ) + " /// "
-			+ A.spaces( 30, call1.getMethodName() ) + " /// " + A.spaces( 40, call1.getClassName() ) + " /// "
-			+ getExceptionNode();
-		// return getCall().toString();// getCall().getClass().toString();
-		// + " "
-		// + Integer.toHexString( exception.hashCode() );
+		final String className =
+			getException().getClass().getCanonicalName() + " /// " + Integer.toHexString( exception.hashCode() );
+		String msg = null;
+		if ( getException().getCause() == null ) {
+			msg = getException().getMessage();
+		}
+		if ( msg == null ) {
+			return className;
+		} else {
+			// return className
+			// + " /// \""
+			// + msg
+			// + "\"";
+			return msg + " /// \"" + className + "\"";
+		}
 	}
 	
 	
@@ -116,8 +117,18 @@ public class NodeForTreeOfCalls
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	@Override
-	public boolean equals( final Object obj ) {
-		return Z.equalsByReference_enforceNotNull( this, obj );
+	public boolean equals( final Object o ) {
+		assert Q.nn( o );
+		if ( !Z.areSameClass_canNotBeNull( this, o ) )
+		// if ( this.getClass() != o.getClass() )
+		{
+			// I know it could be subclass so I should've used instanceof but I want to know when subclass is used
+			Q.bug( "compared to different class of subclass of `this`" );
+		}
+		final NodeForTreeOfExceptions obj = (NodeForTreeOfExceptions)o;
+		return Z.equalsByReference_enforceNotNull( getException(), obj.getException() );
+		// getException().equals(
+		// obj.getException() );
 	}
 	
 	
@@ -128,6 +139,6 @@ public class NodeForTreeOfCalls
 	 */
 	@Override
 	public int hashCode() {
-		return super.hashCode();
+		return getException().hashCode();
 	}
 }

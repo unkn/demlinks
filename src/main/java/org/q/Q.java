@@ -35,8 +35,8 @@ package org.q;
 
 import java.lang.Thread.UncaughtExceptionHandler;
 
-import org.aspectj.ExceptionsHandling.ToE.*;
-import org.aspectj.ExceptionsHandling.ToE.swing.*;
+import org.ExceptionsHandling.ToE.*;
+import org.ExceptionsHandling.ToE.swing.*;
 
 
 
