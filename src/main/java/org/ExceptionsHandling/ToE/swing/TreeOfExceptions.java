@@ -1644,7 +1644,8 @@ public final class TreeOfExceptions
 							
 							@Override
 							public void valueChanged( final TreeSelectionEvent e ) {
-								// FIXME: see why is this triggered also after adding elements to tree
+								// FIXME: see why is this triggered also after adding elements to tree, until then using
+								// workaround via lastProcessedOne
 								
 								// System.out.println( "valueChanged=" + e );
 								// S.entry();
