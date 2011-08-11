@@ -3,6 +3,7 @@
  * Copyright (c) 2005-2011, AtKaaZ
  * All rights reserved.
  * this file is part of DemLinks
+ * File created on Aug 11, 2011 8:31:20 PM
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -31,32 +32,22 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.toolza;
-
-import java.text.*;
-
+package org.aspectj.ExceptionsHandling.ToE.swing;
 
 
 /**
  *
  */
-public abstract class A
+@SuppressWarnings( "serial" )
+public class AlmostSlippedException
+		extends RuntimeException
 {
 	
-	// these are to avoid boxing/unboxing sure you can use BOOLEAN.TRUE instead
-	public final static Boolean		BOOL_FALSE				= new Boolean( false );
-	public final static Boolean		BOOL_TRUE				= new Boolean( true );
-	
-	private static DecimalFormat	commaDelimitedFormatter	= new DecimalFormat( "###,###" );
-	
-	
-	public static String number( final double val ) {
-		return commaDelimitedFormatter.format( val );
-	}
-	
-	
-	public static String spaces( final int within, final String msg ) {
-		return String.format( "%-" + within + "s", msg );
+	/**
+	 * @param ex
+	 */
+	public AlmostSlippedException( final Throwable ex ) {
+		super( ex );
 	}
 	
 }

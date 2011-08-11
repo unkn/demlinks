@@ -33,6 +33,10 @@
  */
 package org.q;
 
+import java.lang.Thread.UncaughtExceptionHandler;
+
+import org.aspectj.ExceptionsHandling.ToE.swing.*;
+
 
 
 /**
@@ -48,6 +52,31 @@ public abstract class Q
 	// this here is implemented for the case when you suspect a finally is overwriting the "real" exception thrown in try
 	private static final boolean	showAllThrownExceptions	= false;
 	
+	static {
+		final UncaughtExceptionHandler eh = new ExHandlerForThoseThatAreNotWithinCallsIeMain();
+		Thread.setDefaultUncaughtExceptionHandler( eh );
+	}
+	
+	
+	/**
+	 * typical usage:<br>
+	 * throw Q.cantClone();<br>
+	 * use this in clone() methods<br>
+	 * 
+	 * @return
+	 * @throws CloneNotSupportedException
+	 */
+	public static CloneNotSupportedException cantClone() throws CloneNotSupportedException {
+		final CloneNotSupportedException cnse = new CloneNotSupportedException( "not implemented" );
+		toTree( cnse );
+		throw cnse;
+	}
+	
+	
+	public static void toTree( final Throwable t ) {
+		TreeOfExceptions.getTreeOfExceptions().addException( t );
+	}
+	
 	
 	public static BadCallError ni() {
 		throw Q.badCall( "not implemented" );
@@ -55,7 +84,9 @@ public abstract class Q
 	
 	
 	public static JUnitFailException fail() {
-		throw new JUnitFailException( "" );
+		final JUnitFailException jufe = new JUnitFailException( "" );
+		toTree( jufe );
+		throw jufe;
 	}
 	
 	
@@ -68,7 +99,9 @@ public abstract class Q
 	 */
 	public static boolean nn( final Object expectedNotNullObjectHere ) {
 		if ( null == expectedNotNullObjectHere ) {
-			throw new NullPointerException( "non-null assumption failed" );
+			final NullPointerException npe = new NullPointerException( "non-null assumption failed" );
+			toTree( npe );
+			throw npe;
 		} else {
 			return true;
 		}
@@ -82,17 +115,17 @@ public abstract class Q
 	public static RethrownException rethrow( final Throwable t ) {
 		assert null != t;
 		final RethrownException ex = new RethrownException( t );
-		showEx( ex );
+		toTree( ex );
 		throw ex;
 	}
 	
 	
-	private static void showEx( final Throwable ex ) {
-		if ( showAllThrownExceptions ) {
-			ex.printStackTrace();
-			// System.err.println( ex );
-		}
-	}
+	// private static void showEx( final Throwable ex ) {
+	// if ( showAllThrownExceptions ) {
+	// ex.printStackTrace();
+	// // System.err.println( ex );
+	// }
+	// }
 	
 	
 	public static BadCallError badCall() {
@@ -103,7 +136,7 @@ public abstract class Q
 	public static BadCallError badCall( final String msg, final Throwable cause ) {
 		assert null != cause : "cause shouldn't be null";
 		final BadCallError ex = new BadCallError( msg, cause );
-		showEx( ex );
+		toTree( ex );
 		throw ex;
 	}
 	
@@ -114,7 +147,7 @@ public abstract class Q
 	 */
 	public static BadCallError badCall( final String msg ) {
 		final BadCallError ex = new BadCallError( msg );
-		showEx( ex );
+		toTree( ex );
 		throw ex;
 	}
 	
@@ -135,7 +168,7 @@ public abstract class Q
 	
 	public static BugError bug( final String msg, final Throwable cause ) {
 		final BugError ex = new BugError( msg, cause );
-		showEx( ex );
+		toTree( ex );
 		throw ex;
 	}
 	
@@ -156,7 +189,9 @@ public abstract class Q
 	 */
 	public static void warn( final String msg, final Throwable cause ) {
 		// both params can be null
-		new WarningException( msg, cause ).printStackTrace();
+		final WarningException we = new WarningException( msg, cause );
+		toTree( we );
+		// we.printStackTrace();
 	}
 	
 	
@@ -177,7 +212,9 @@ public abstract class Q
 	private static void info( final String msg, final Throwable cause ) {
 		if ( infoEnabled ) {
 			if ( Q.showFullInfo ) {
-				new InfoException( msg, cause ).printStackTrace();
+				final InfoException ie = new InfoException( msg, cause );
+				toTree( ie );
+				// .printStackTrace();
 			} else {
 				System.out.println( "INFO: " + msg + " ||| " + Thread.currentThread().getStackTrace()[3] );
 			}
@@ -236,7 +273,7 @@ public abstract class Q
 	public static boolean thro( final Throwable cause ) {
 		assert null != cause;
 		final ManuallyThrownException ex = new ManuallyThrownException( cause );
-		showEx( ex );
+		toTree( ex );
 		throw ex;
 	}
 	

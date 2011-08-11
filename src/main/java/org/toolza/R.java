@@ -3,6 +3,7 @@
  * Copyright (c) 2005-2011, AtKaaZ
  * All rights reserved.
  * this file is part of DemLinks
+ * File created on Aug 11, 2011 8:03:01 PM
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -33,30 +34,20 @@
  */
 package org.toolza;
 
-import java.text.*;
+import org.tools.threadlocals.*;
 
 
 
 /**
  *
  */
-public abstract class A
+public class R
 {
 	
-	// these are to avoid boxing/unboxing sure you can use BOOLEAN.TRUE instead
-	public final static Boolean		BOOL_FALSE				= new Boolean( false );
-	public final static Boolean		BOOL_TRUE				= new Boolean( true );
-	
-	private static DecimalFormat	commaDelimitedFormatter	= new DecimalFormat( "###,###" );
+	private static final ThreadLocalBoolean	recursionDetectedForCurrentThread	= new ThreadLocalBoolean( false );
 	
 	
-	public static String number( final double val ) {
-		return commaDelimitedFormatter.format( val );
+	public static boolean isRecursionDetectedForCurrentThread() {
+		return recursionDetectedForCurrentThread.get().booleanValue();
 	}
-	
-	
-	public static String spaces( final int within, final String msg ) {
-		return String.format( "%-" + within + "s", msg );
-	}
-	
 }

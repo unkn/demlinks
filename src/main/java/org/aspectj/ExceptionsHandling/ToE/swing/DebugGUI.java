@@ -31,32 +31,59 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.toolza;
 
-import java.text.*;
+package org.aspectj.ExceptionsHandling.ToE.swing;
+
+
+
+import java.awt.*;
+
+import javax.swing.*;
+
+import org.q.*;
 
 
 
 /**
  *
  */
-public abstract class A
+public class DebugGUI
 {
 	
-	// these are to avoid boxing/unboxing sure you can use BOOLEAN.TRUE instead
-	public final static Boolean		BOOL_FALSE				= new Boolean( false );
-	public final static Boolean		BOOL_TRUE				= new Boolean( true );
-	
-	private static DecimalFormat	commaDelimitedFormatter	= new DecimalFormat( "###,###" );
+	private static JFrame		frameSingleton		= null;
+	private static JSplitPane	splitPaneSingleton	= null;
 	
 	
-	public static String number( final double val ) {
-		return commaDelimitedFormatter.format( val );
+	private DebugGUI() {
+		Q.badCall( "use getJFrame() instead" );
 	}
 	
 	
-	public static String spaces( final int within, final String msg ) {
-		return String.format( "%-" + within + "s", msg );
+	public static synchronized JFrame getDebugJFrame() {
+		if ( null == frameSingleton ) {
+			// JDesktopPane desktop = new JDesktopPane();
+			frameSingleton = new JFrame( "TreeOfExceptions and TreeOfCalls below" );
+			
+			frameSingleton.setDefaultCloseOperation( WindowConstants.DO_NOTHING_ON_CLOSE );// EXIT_ON_CLOSE );
+			final Dimension dim = new Dimension( 813, 476 );
+			frameSingleton.setSize( dim );
+			frameSingleton.setAlwaysOnTop( true );
+			final Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
+			frameSingleton.setLocation( screen.width - dim.width, screen.height - dim.height );
+			// desktop.add( frameSingleton );
+			// desktop.setL( frameSingleton, );
+		}
+		assert Q.nn( frameSingleton );
+		return frameSingleton;
 	}
 	
+	
+	public static synchronized JSplitPane getDebugSplitPane() {
+		if ( null == splitPaneSingleton ) {
+			splitPaneSingleton = new JSplitPane( JSplitPane.VERTICAL_SPLIT );
+			
+		}
+		assert Q.nn( splitPaneSingleton );
+		return splitPaneSingleton;
+	}
 }

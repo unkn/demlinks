@@ -2,12 +2,6 @@
 <classpath>
 	<classpathentry kind="src" path="src/main/java"/>
 	<classpathentry kind="src" path="src/test/java"/>
-	<classpathentry kind="src" path="dmljava/test0"/>
-	<classpathentry kind="src" path="dmljava/src0"/>
-	<classpathentry kind="src" path="src2"/>
-	<classpathentry kind="src" path="src1"/>
-	<classpathentry kind="src" path="test1"/>
-	<classpathentry kind="src" path="test2"/>
 	<classpathentry kind="src" path="src/benchmarks/java"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/junit/junit4.9b3/junit-4.9b3.jar" sourcepath="lib/junit/junit4.9b3"/>

@@ -159,7 +159,6 @@ public class L0Set_OfChildren
 	
 	@Override
 	protected Object clone() throws CloneNotSupportedException {
-		// FIXME: use Q.showEx for the case when this is thrown in try and overwritten in finally, to be seen on console
-		throw new CloneNotSupportedException( "not implemented" );
+		throw Q.cantClone();
 	}
 }

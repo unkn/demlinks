@@ -31,32 +31,27 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.toolza;
 
-import java.text.*;
-
+package org.aspectj.ExceptionsHandling.ToE;
 
 
 /**
  *
  */
-public abstract class A
-{
-	
-	// these are to avoid boxing/unboxing sure you can use BOOLEAN.TRUE instead
-	public final static Boolean		BOOL_FALSE				= new Boolean( false );
-	public final static Boolean		BOOL_TRUE				= new Boolean( true );
-	
-	private static DecimalFormat	commaDelimitedFormatter	= new DecimalFormat( "###,###" );
-	
-	
-	public static String number( final double val ) {
-		return commaDelimitedFormatter.format( val );
-	}
-	
-	
-	public static String spaces( final int within, final String msg ) {
-		return String.format( "%-" + within + "s", msg );
-	}
-	
+public enum StateOfAnException {
+		INVALID_STATE, // aka UNSET
+		// this one was thrown:
+		DEFAULT, // it was caught just like every exception ever thrown, it could be caught afterwards though
+		
+		// was once thrown but it is now marked as handled:
+		HANDLED, // marked as handled
+		
+		// unused , only for root
+		ROOT, // the dummy exception used as root for tree of exceptions
+		
+		// the following was `new`-ed by was never thrown AND it was used as a cause for another exception(which may have
+		// been thrown)
+		CAUSE_WHICH_WAS_UNCAUGHT_BY_ASPECTJ, // a cause which was thrown with ie. Q.thro(new Exception("this is cause"));
+		WARNING, // it's meant to be a warning not a real exception ie. just informative, doesn't stop prog. execution
+		INFO, // same as above, for info
 }

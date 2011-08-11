@@ -54,3 +54,9 @@ in each subclass and cast it to the current class on return
 why? we need to put a hook on when junit finished all tests, such that we disallow exit when something from swing is still 
 showing ie. a JFrame
 ------------------------------------------------------
+7. throw Q.cantClone();
+inside clone() methods that are not yet implemented, rather than raw throw new
+because throw Q.cantClone(); will add the exception in ToE
+------------------------------------------------------
+8. avoid `throw new X` instead try to make sure the exception are added to ToE first, either by manually adding them or 
+better yet, use Q.* methods

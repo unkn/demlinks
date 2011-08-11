@@ -379,10 +379,10 @@ public class Node {
 		assert Q.nn( posNode );
 		// some people are paranoid here :-"
 		if ( ( inWhichList != childrenList ) && ( inWhichList != parentsList ) ) {
-			throw new BadCallError( "invalid list specified" );
+			Q.badCall( "invalid list specified" );
 		}
 		if ( ( pos != Position.BEFORE ) && ( pos != Position.AFTER ) ) {
-			throw new BadCallError( "undefined location within this context" );
+			Q.badCall( "undefined location within this context" );
 		}
 		return inWhichList.insert( whatNewNode, pos, posNode );
 	}
@@ -459,7 +459,7 @@ public class Node {
 		Node parser = getFirstChild();
 		while ( null != parser ) {
 			if ( !removeChild( parser ) ) {
-				throw new BugError( "should always be true here" );
+				Q.bug( "should always be true here" );
 			}
 			parser = getFirstChild();
 			ret = true;// at least one child existed

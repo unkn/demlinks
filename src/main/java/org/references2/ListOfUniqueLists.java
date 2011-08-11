@@ -31,32 +31,17 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.toolza;
 
-import java.text.*;
+
+package org.references2;
 
 
 
 /**
- *
+ * 
  */
-public abstract class A
+public class ListOfUniqueLists
+		extends ListOfUniqueNonNullObjects<ListOfUniqueLists>
 {
-	
-	// these are to avoid boxing/unboxing sure you can use BOOLEAN.TRUE instead
-	public final static Boolean		BOOL_FALSE				= new Boolean( false );
-	public final static Boolean		BOOL_TRUE				= new Boolean( true );
-	
-	private static DecimalFormat	commaDelimitedFormatter	= new DecimalFormat( "###,###" );
-	
-	
-	public static String number( final double val ) {
-		return commaDelimitedFormatter.format( val );
-	}
-	
-	
-	public static String spaces( final int within, final String msg ) {
-		return String.format( "%-" + within + "s", msg );
-	}
-	
+	// empty
 }

@@ -31,32 +31,44 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.toolza;
 
-import java.text.*;
+package org.references2;
+
+import org.q.*;
 
 
 
 /**
  *
  */
-public abstract class A
-{
-	
-	// these are to avoid boxing/unboxing sure you can use BOOLEAN.TRUE instead
-	public final static Boolean		BOOL_FALSE				= new Boolean( false );
-	public final static Boolean		BOOL_TRUE				= new Boolean( true );
-	
-	private static DecimalFormat	commaDelimitedFormatter	= new DecimalFormat( "###,###" );
-	
-	
-	public static String number( final double val ) {
-		return commaDelimitedFormatter.format( val );
-	}
+public enum MethodReturnsForTree {
+		SUCCESS_BUT_ALREADY_EXISTED_WHERE_EXPECTED, // exists in that parent at the expected position
+		SUCCESS_AND_DIDNT_ALREADY_EXIST, // didn't exist anywhere
+		HALF_SUCCESS_BECAUSE_EXISTED_IN_A_DIFFERENT_PARENT,
+		HALF_SUCCESS_BECAUSE_EXISTED_IN_A_DIFFERENT_POSITION_IN_SAME_PARENT,
+		FAIL,
+		UNSET;
 	
 	
-	public static String spaces( final int within, final String msg ) {
-		return String.format( "%-" + within + "s", msg );
-	}
+	public boolean isSuccess( final MethodReturnsForTree mr ) {
+		switch ( mr ) {
+		case SUCCESS_BUT_ALREADY_EXISTED_WHERE_EXPECTED:
+		case SUCCESS_AND_DIDNT_ALREADY_EXIST:
+			return true;
+			// break;
+		case FAIL:
+			return false;
+		case HALF_SUCCESS_BECAUSE_EXISTED_IN_A_DIFFERENT_PARENT:
+			return false;
+		case UNSET:
+			Q.bug( "you forgot to set the right return type" );
+			return false;// not reached
+		default:
+			Q.bug( "you forgot to define newly added enums" );
+			return false;// unreachable
+			// break;
+		}
+	}// method
+	
 	
 }

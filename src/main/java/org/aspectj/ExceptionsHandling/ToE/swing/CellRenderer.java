@@ -31,32 +31,55 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.toolza;
 
-import java.text.*;
+package org.aspectj.ExceptionsHandling.ToE.swing;
+
+
+
+import java.awt.*;
+import java.util.*;
+
+import javax.swing.tree.*;
+
+import org.aspectj.ExceptionsHandling.ToE.*;
+import org.q.*;
 
 
 
 /**
  *
  */
-public abstract class A
+public class CellRenderer
+		extends DefaultTreeCellRenderer
 {
 	
-	// these are to avoid boxing/unboxing sure you can use BOOLEAN.TRUE instead
-	public final static Boolean		BOOL_FALSE				= new Boolean( false );
-	public final static Boolean		BOOL_TRUE				= new Boolean( true );
+	/**
+	 * 
+	 */
+	private static final long									serialVersionUID	= -7673503067257278439L;
 	
-	private static DecimalFormat	commaDelimitedFormatter	= new DecimalFormat( "###,###" );
+	protected final static HashMap<StateOfAnException, Color>	stateToColorMap		= new HashMap<StateOfAnException, Color>();
 	
 	
-	public static String number( final double val ) {
-		return commaDelimitedFormatter.format( val );
+	public CellRenderer() {
+		super();
+		if ( stateToColorMap.size() == 0 ) {// init once
+			assert stateToColorMap.size() == 0;
+			stateToColorMap.put( StateOfAnException.DEFAULT, Color.RED );
+			stateToColorMap.put( StateOfAnException.ROOT, Color.gray );
+			stateToColorMap.put( StateOfAnException.HANDLED, Color.gray );
+			stateToColorMap.put( StateOfAnException.CAUSE_WHICH_WAS_UNCAUGHT_BY_ASPECTJ, Color.blue );
+			stateToColorMap.put( StateOfAnException.INVALID_STATE, Color.YELLOW );
+			stateToColorMap.put( StateOfAnException.WARNING, new Color( 140, 40, 99 ) );
+			stateToColorMap.put( StateOfAnException.INFO, new Color( 0, 125, 0 ) );
+			if ( StateOfAnException.values().length != stateToColorMap.size() ) {
+				Q.bug( "you forgot to add the new value in StateOfAnException to this 1-to-1 map to color" );
+			}
+			// TODO: do a Q.bug("test") here to see reported line numbers in stacktrace be wrong due to aspectJ
+			// especially
+			// Q.bug( "test" );
+			// this one: at org.swing.TreeOfExceptions.addException(TreeOfExceptions.java:184) it's supposed to be
+			// line+1
+		}
 	}
-	
-	
-	public static String spaces( final int within, final String msg ) {
-		return String.format( "%-" + within + "s", msg );
-	}
-	
 }

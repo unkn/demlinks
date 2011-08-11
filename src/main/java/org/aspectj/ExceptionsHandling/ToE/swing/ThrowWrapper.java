@@ -31,32 +31,22 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.toolza;
 
-import java.text.*;
+
+package org.aspectj.ExceptionsHandling.ToE.swing;
+
+
+
+import org.tools.threadlocals.*;
 
 
 
 /**
- *
+ * placeholder for when aspectJ isn't enabled
  */
-public abstract class A
+public abstract class ThrowWrapper
 {
 	
-	// these are to avoid boxing/unboxing sure you can use BOOLEAN.TRUE instead
-	public final static Boolean		BOOL_FALSE				= new Boolean( false );
-	public final static Boolean		BOOL_TRUE				= new Boolean( true );
-	
-	private static DecimalFormat	commaDelimitedFormatter	= new DecimalFormat( "###,###" );
-	
-	
-	public static String number( final double val ) {
-		return commaDelimitedFormatter.format( val );
-	}
-	
-	
-	public static String spaces( final int within, final String msg ) {
-		return String.format( "%-" + within + "s", msg );
-	}
+	public static final ThreadLocalBoolean	useAlternateExceptionReportMethod	= new ThreadLocalBoolean( false );
 	
 }

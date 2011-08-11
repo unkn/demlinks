@@ -38,7 +38,7 @@ package org.JUnitCommons;
 
 import org.junit.*;
 import org.q.*;
-import org.references.*;
+import org.references2.*;
 import org.tools.swing.*;
 import org.toolza.*;
 
