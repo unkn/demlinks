@@ -52,7 +52,7 @@ public class DBTwoWayHashMap_Test
 	
 	@Before
 	public void setUp() {
-		env = Global.factory.getNewStorage( JUnitConstants.BDB_ENVIRONMENT_STORE_DIR, true );
+		env = GlobalBDB.factory.getNewStorage( JUnitConstants.BDB_ENVIRONMENT_STORE_DIR, true );
 		x = new BDBTwoWayHashMap_StringName2Node( env, "some 1-to-1 dbMap", StorageBDBGeneric.LOCK );
 	}
 	

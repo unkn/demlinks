@@ -58,7 +58,7 @@ public class DBSetTest
 	@Before
 	public void setUp() {
 		
-		env = Global.factory.getNewStorage( JUnitConstants.BDB_ENVIRONMENT_STORE_DIR, true );
+		env = GlobalBDB.factory.getNewStorage( JUnitConstants.BDB_ENVIRONMENT_STORE_DIR, true );
 		assert null != env;
 		
 		o2m = new BDB_SetOfNodes( env, "one to many dbmap", StorageBDBGeneric.LOCK );

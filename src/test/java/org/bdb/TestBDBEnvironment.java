@@ -49,7 +49,7 @@ public class TestBDBEnvironment
 	public void testUNG() {
 		StorageBDBGeneric env = null;
 		try {
-			env = Global.factory.getNewStorage( JUnitConstants.BDB_ENVIRONMENT_STORE_DIR, true );
+			env = GlobalBDB.factory.getNewStorage( JUnitConstants.BDB_ENVIRONMENT_STORE_DIR, true );
 			
 			final String sameName = "some name";
 			final int delta = +1;
@@ -109,9 +109,9 @@ public class TestBDBEnvironment
 		StorageBDBGeneric env3 = null;
 		StorageBDBGeneric env5 = null;
 		try {
-			env3 = Global.factory.getNewStorage( JUnitConstants.BDB_ENVIRONMENT_STORE_DIR, false );
+			env3 = GlobalBDB.factory.getNewStorage( JUnitConstants.BDB_ENVIRONMENT_STORE_DIR, false );
 			try {
-				env5 = Global.factory.getNewStorage( JUnitConstants.BDB_ENVIRONMENT_STORE_DIR, false );
+				env5 = GlobalBDB.factory.getNewStorage( JUnitConstants.BDB_ENVIRONMENT_STORE_DIR, false );
 				Q.fail();
 			} catch ( final Throwable t ) {
 				if ( Q.isBareException( t, BadCallError.class ) ) {

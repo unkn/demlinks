@@ -74,7 +74,7 @@ public class TestManyNodes
 	public void setUp() {
 		showMem();
 		
-		storage = Global.factory.getNewStorage( JUnitConstants.BDB_ENVIRONMENT_STORE_DIR, deleteBeforeInit );
+		storage = GlobalBDB.factory.getNewStorage( JUnitConstants.BDB_ENVIRONMENT_STORE_DIR, deleteBeforeInit );
 		System.out.println( storage.getClass() );
 		showMem();
 	}

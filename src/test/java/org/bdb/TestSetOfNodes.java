@@ -60,7 +60,7 @@ public class TestSetOfNodes
 	public void setUp() {
 		final Timer t = new Timer( Timer.TYPE.MILLIS );
 		t.start();
-		env = Global.factory.getNewStorage( JUnitConstants.BDB_ENVIRONMENT_STORE_DIR, true );
+		env = GlobalBDB.factory.getNewStorage( JUnitConstants.BDB_ENVIRONMENT_STORE_DIR, true );
 		setInitial = env.createNewUniqueNode();
 		set1 = new L0Set_OfChildren( env, setInitial );
 		t.stop();

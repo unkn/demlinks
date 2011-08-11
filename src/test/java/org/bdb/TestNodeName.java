@@ -49,7 +49,7 @@ public class TestNodeName
 	
 	@Before
 	public void setUp() {
-		env = Global.factory.getNewStorage( JUnitConstants.BDB_ENVIRONMENT_STORE_DIR, true );
+		env = GlobalBDB.factory.getNewStorage( JUnitConstants.BDB_ENVIRONMENT_STORE_DIR, true );
 	}
 	
 	
