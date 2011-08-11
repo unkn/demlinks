@@ -96,7 +96,7 @@ public class TestBDBEnvironment
 				Q.fail();
 			} catch ( final Throwable soe ) {
 				// right
-				if ( !Q.isBareException( soe, SequenceOverflow.class ) ) {
+				if ( !Q.isBareException( soe, SequenceOverflow_BDBException.class ) ) {
 					Q.rethrow( soe );
 				}
 			}
