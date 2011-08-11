@@ -33,6 +33,7 @@
  */
 package org.dml.storage.berkeleydb;
 
+import org.JUnitCommons.*;
 import org.bdb.*;
 import org.dml.storage.berkeleydb.generics.*;
 import org.dml.storage.commons.*;
@@ -46,6 +47,7 @@ import org.toolza.*;
  *
  */
 public class TestManyNodes
+		extends JUnitHooker
 {
 	
 	private final static String		END								= "END";
