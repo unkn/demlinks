@@ -35,9 +35,7 @@ package org.bdb;
 
 import static org.junit.Assert.*;
 
-import org.dml.storage.berkeleydb.commons.*;
 import org.dml.storage.berkeleydb.generics.*;
-import org.dml.storage.berkeleydb.native_via_jni.*;
 import org.dml.storage.commons.*;
 import org.junit.*;
 
@@ -49,13 +47,13 @@ public class DBTwoWayHashMap_Test
 	private BDBTwoWayHashMap_StringName2Node	x	= null;
 	private final String						_a	= "A";
 	private final NodeBDB						_b	= NodeBDB.getBDBNodeInstance( 2l );
-	private StorageBDBNative					env	= null;
+	private StorageBDBGeneric					env	= null;
 	
 	
 	@Before
 	public void setUp() {
-		env = new StorageBDBNative( JUnitConstants.BDB_ENVIRONMENT_STORE_DIR, true );
-		x = new BDBTwoWayHashMap_StringName2Node( env, "some 1-to-1 dbMap" );
+		env = Global.factory.getNewStorage( JUnitConstants.BDB_ENVIRONMENT_STORE_DIR, true );
+		x = new BDBTwoWayHashMap_StringName2Node( env, "some 1-to-1 dbMap", StorageBDBGeneric.LOCK );
 	}
 	
 	
@@ -97,7 +95,12 @@ public class DBTwoWayHashMap_Test
 		final TransactionGeneric txn = env.beginTransaction();
 		try {
 			final GenericBDBTwoWayMapOfNNU<Long, String> y =
-				new GenericBDBTwoWayMapOfNNU<Long, String>( env, "some 1-to-1 dbMap", Long.class, String.class );
+				new GenericBDBTwoWayMapOfNNU<Long, String>(
+					env,
+					"some 1-to-1 dbMap",
+					Long.class,
+					String.class,
+					StorageBDBGeneric.LOCK );
 			org.references.TestTwoWayHashMapOfNonNullUniques.testMany( y );
 			txn.success();
 		} finally {

@@ -36,8 +36,7 @@ package org.bdb;
 
 import static org.junit.Assert.*;
 
-import org.dml.storage.berkeleydb.commons.*;
-import org.dml.storage.berkeleydb.native_via_jni.*;
+import org.dml.storage.berkeleydb.generics.*;
 import org.junit.*;
 import org.q.*;
 
@@ -48,22 +47,22 @@ public class TestBDBEnvironment
 	
 	@Test
 	public void testUNG() {
-		StorageBDBNative env = null;
+		StorageBDBGeneric env = null;
 		try {
-			env = new StorageBDBNative( JUnitConstants.BDB_ENVIRONMENT_STORE_DIR, true );
+			env = Global.factory.getNewStorage( JUnitConstants.BDB_ENVIRONMENT_STORE_DIR, true );
 			
 			final String sameName = "some name";
 			final int delta = +1;
 			final long max = 10;
 			final long min = -201;
 			final long initialValue = -6;
-			final BDB_Named_UniqueNumberGenerator ung =
-				new BDB_Named_UniqueNumberGenerator( env, sameName, min, initialValue, max, false );
+			final Named_UniqueNumberGenerator ung =
+				new Named_UniqueNumberGenerator( env, sameName, min, initialValue, max, false );
 			long l1 = ung.getNextUniqueLong( delta );
 			
 			assertTrue( initialValue == l1 );
-			final BDB_Named_UniqueNumberGenerator ung2 =
-				new BDB_Named_UniqueNumberGenerator( env, sameName, min, initialValue, max, false );
+			final Named_UniqueNumberGenerator ung2 =
+				new Named_UniqueNumberGenerator( env, sameName, min, initialValue, max, false );
 			final long l2 = ung2.getNextUniqueLong( delta );
 			// System.out.println( ung + " / " + ung2 );
 			assertTrue( ung2 != ung );// they are same internally in BDB though.
@@ -107,12 +106,12 @@ public class TestBDBEnvironment
 				env.shutdown();
 			}
 		}
-		StorageBDBNative env3 = null;
-		StorageBDBNative env5 = null;
+		StorageBDBGeneric env3 = null;
+		StorageBDBGeneric env5 = null;
 		try {
-			env3 = new StorageBDBNative( JUnitConstants.BDB_ENVIRONMENT_STORE_DIR, false );
+			env3 = Global.factory.getNewStorage( JUnitConstants.BDB_ENVIRONMENT_STORE_DIR, false );
 			try {
-				env5 = new StorageBDBNative( JUnitConstants.BDB_ENVIRONMENT_STORE_DIR, false );
+				env5 = Global.factory.getNewStorage( JUnitConstants.BDB_ENVIRONMENT_STORE_DIR, false );
 				Q.fail();
 			} catch ( final Throwable t ) {
 				if ( Q.isBareException( t, BadCallError.class ) ) {

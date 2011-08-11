@@ -37,6 +37,7 @@ package org.bdb;
 
 import static org.junit.Assert.*;
 
+import org.dml.storage.berkeleydb.generics.*;
 import org.dml.storage.commons.*;
 import org.junit.*;
 
@@ -45,22 +46,22 @@ import org.junit.*;
 public class DBSetTest
 {
 	
-	private BDBSetOfNodes	o2m	= null;
+	private BDB_SetOfNodes		o2m	= null;
 	// the following two should be random unique names not already in the dbase
 	// or else the tests may fail, that's ok the database is cleared before and after the tests!
-	private NodeGeneric		_a;
-	private NodeGeneric		_b;
-	private NodeGeneric		_c;
-	private StorageGeneric	env	= null;
+	private NodeGeneric			_a;
+	private NodeGeneric			_b;
+	private NodeGeneric			_c;
+	private StorageBDBGeneric	env	= null;
 	
 	
 	@Before
 	public void setUp() {
 		
-		env = new StorageBDBNative( JUnitConstants.BDB_ENVIRONMENT_STORE_DIR, true );
+		env = Global.factory.getNewStorage( JUnitConstants.BDB_ENVIRONMENT_STORE_DIR, true );
 		assert null != env;
 		
-		o2m = new BDBSetOfNodes( env, "one to many dbmap" );
+		o2m = new BDB_SetOfNodes( env, "one to many dbmap", StorageBDBGeneric.LOCK );
 		
 		_a = env.createNewUniqueNode();
 		_b = env.createNewUniqueNode();
