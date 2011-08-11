@@ -48,7 +48,7 @@ public class TestManyAdditions
 		extends JUnitHooker
 {
 	
-	private static final int	MAX	= 10000;
+	private static final int	MAX	= 200;
 	
 	
 	public static void main( final String[] args ) {

@@ -81,6 +81,7 @@ public final class TreeOfExceptions
 	private volatile boolean										isQPScheduledToRun				= false;
 	private volatile boolean										isQPRunning						= false;
 	private final static ReentrantLock								lockQP							= new ReentrantLock();
+	private final Condition											condQueueNotFull				= lockQP.newCondition();
 	private final ReentrantLock										synchronizedReplacerLock		= new ReentrantLock();
 	// private final static ReentrantLock lockFirstTimeInit =
 	// new ReentrantLock();
@@ -702,7 +703,7 @@ public final class TreeOfExceptions
 															@Override
 															public void run()// this is QP aka QueueProcessor
 															{
-																System.out.println( "this is inside queue processor" );
+																// System.out.println( "this is inside queue processor" );
 																final Boolean prevVal =
 																	ThrowWrapper.useAlternateExceptionReportMethod.get();
 																// .booleanValue();
@@ -1013,6 +1014,7 @@ public final class TreeOfExceptions
 																			assert Q.nn( ret );// clearly
 																								// not
 																								// null
+																			condQueueNotFull.signal();
 																			if ( queueFIFO.remainingCapacity() >= ( queueCapacity / 2 ) ) {// if
 																																			// at
 																																			// least
@@ -1079,7 +1081,7 @@ public final class TreeOfExceptions
 																} finally {
 																	ThrowWrapper.useAlternateExceptionReportMethod
 																		.set( prevVal );// A.BOOL_FALSE );//
-																	System.out.println( "queue processor finished" );
+																	// System.out.println( "queue processor finished" );
 																}
 																// }
 																// finally
@@ -1107,18 +1109,18 @@ public final class TreeOfExceptions
 			void addThis_and_makeSureQueueProcessorWillRun( final QueuedItem thisQI ) {
 		assert Q.nn( thisQI );
 		
-		if ( queueFIFO.remainingCapacity() <= 0 ) {
-			try {
-				// FIXME: use lock Condition
-				System.out.println( "sleeping before add so it won't fail too soon, inEDT=" + E.inEDTNow() );
-				Thread.sleep( 1000 );// XXX: waiting for queue processor but not wait too much, it may be stuck forever
-			} catch ( final InterruptedException e ) {
-				throw Q.rethrow( e );
-			}
-		}
+		// if ( queueFIFO.remainingCapacity() <= 0 ) {
+		// try {
+		// // FIXME: use lock Condition
+		// System.out.println( "sleeping before add so it won't fail too soon, inEDT=" + E.inEDTNow() );
+		// Thread.sleep( 1000 );// XXX: waiting for queue processor but not wait too much, it may be stuck forever
+		// } catch ( final InterruptedException e ) {
+		// throw Q.rethrow( e );
+		// }
+		// }
 		lockQP.lock();
 		try {
-			if ( !alreadyAddedShutdownHook ) {
+			if ( !alreadyAddedShutdownHook ) {// TODO: maybe move this somewhere such that it's exec-d only once w/o IF-ing
 				alreadyAddedShutdownHook = true;
 				Runtime.getRuntime().addShutdownHook( new Thread( new Runnable()
 				{
@@ -1196,6 +1198,20 @@ public final class TreeOfExceptions
 			// }// else it's ok queue is not full yey
 			// }
 			
+			
+			while ( queueFIFO.remainingCapacity() <= 0 ) {// while full
+				boolean ret = false;// time elapsed
+				try {
+					ret = condQueueNotFull.await( 3000, TimeUnit.MILLISECONDS );
+				} catch ( final InterruptedException e ) {
+					// ignore
+					ret = true;// got interrupted, we pretend that queue isn't full
+				}
+				if ( !ret ) {
+					Q.bug( "time wasn't supposed to elapse waiting for queueFIFO to get not-full" );
+				}
+			}
+			
 			if ( queueFIFO.remainingCapacity() <= 0 ) {
 				try {
 					if ( thisQI.getType().equals( EnumQueueProcessorTypes.ADD_EXCEPTION ) ) {
@@ -1213,7 +1229,7 @@ public final class TreeOfExceptions
 			// true if this collection changed as a result of the call
 			final boolean ret = queueFIFO.add( thisQI );
 			assert ret;
-			System.out.println( "added to queue: " + thisQI );
+			// System.out.println( "added to queue: " + thisQI );
 			// ,
 			// 5,// 5 sec timeout
 			// TimeUnit.SECONDS ) );
@@ -1229,7 +1245,7 @@ public final class TreeOfExceptions
 				assert Q.nn( qpRun );
 				E.addToQueue( qpRun );// can't wait, it will deadlock on lockSA in two diff threads: EDT and ExHandler...
 				isQPScheduledToRun = true;
-				System.out.println( "scheduled queue processor to run" );
+				// System.out.println( "scheduled queue processor to run" );
 			}
 		} finally {
 			try {
@@ -1623,8 +1639,14 @@ public final class TreeOfExceptions
 						jtree.addTreeSelectionListener( new TreeSelectionListener()
 						{
 							
+							private NodeForTreeOfExceptions	lastProcessedOne	= null;
+							
+							
 							@Override
 							public void valueChanged( final TreeSelectionEvent e ) {
+								// FIXME: see why is this triggered also after adding elements to tree
+								
+								// System.out.println( "valueChanged=" + e );
 								// S.entry();
 								// // lockSerializedAccess.lock();
 								// try
@@ -1645,9 +1667,15 @@ public final class TreeOfExceptions
 											return;
 										}
 									}
+									if ( lastProcessedOne != null ) {
+										if ( Z.equalsWithExactSameClassTypes_enforceNotNull( lastProcessedOne, node ) ) {
+											return;// already processed/shown on console
+										}
+									}
+									lastProcessedOne = node;
 									final Throwable t = node.getException();
 									assert Q.nn( t );
-									System.err.println( "================================================" );
+									System.err.println( "=x===============================================" );
 									System.err.println( t.getClass().getName() );
 									System.err.println( t.getMessage() );
 									// if ( null != t )
@@ -1688,7 +1716,7 @@ public final class TreeOfExceptions
 										}
 									}
 									// }
-									System.err.println( "================================================" );
+									System.err.println( "===============================================x" );
 								}
 								// }
 								// finally
@@ -1734,7 +1762,7 @@ public final class TreeOfExceptions
 									if ( ( System.currentTimeMillis() - lastModif ) <= allowCloseAfter ) {
 										System.err
 											.println( "Cannot allow close yet, tree was modified recently "
-												+ "enough for you to poassibly miss a new addition, check tree and retry a bit later" );
+												+ "enough for you to possibly miss a new addition, check tree and retry a bit later" );
 										return;
 									}
 									assert isVisible() :
