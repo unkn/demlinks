@@ -118,6 +118,10 @@ public final class TreeOfExceptions
 	private boolean													filterTreeActive				= false;
 	// XXX: the following 2 checkboxes do not require mirroring bools since they are only querried inside EDT
 	private JCheckBox												filterOutJUnitFromExceptions	= null;
+	
+	// change // this // only // from // EDT:
+	private boolean													showExAgain						= false;
+	
 	// private JCheckBox filterOutAspectFromExceptions = null;
 	// checkboxes only accessible inside EDT
 	private JCheckBox												excludeInfo						= null;
@@ -1669,11 +1673,15 @@ public final class TreeOfExceptions
 										}
 									}
 									if ( lastProcessedOne != null ) {
-										if ( Z.equalsWithExactSameClassTypes_enforceNotNull( lastProcessedOne, node ) ) {
+										if ( ( !showExAgain )
+											&& ( Z.equalsWithExactSameClassTypes_enforceNotNull( lastProcessedOne, node ) ) ) {
 											return;// already processed/shown on console
 										}
 									}
 									lastProcessedOne = node;
+									if ( showExAgain ) {
+										showExAgain = false;
+									}
 									final Throwable t = node.getException();
 									assert Q.nn( t );
 									System.err.println( "=x===============================================" );
@@ -1870,7 +1878,7 @@ public final class TreeOfExceptions
 								// );
 								assert E.inEDTNow();
 								assert !( R.isRecursionDetectedForCurrentThread() );
-								
+								showExAgain = true;
 								final TreePath current = jtree.getSelectionPath();
 								jtree.clearSelection();
 								jtree.setSelectionPath( current );
