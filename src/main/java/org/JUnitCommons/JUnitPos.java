@@ -31,21 +31,16 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.references;
 
-import org.JUnitCommons.*;
-import org.junit.runner.*;
-import org.junit.runners.*;
+package org.JUnitCommons;
 
 
-
-@RunWith( Suite.class )
-@Suite.SuiteClasses(
-		value = {
-			TestTwoWayHashMapOfNonNullUniques.class,
-		} )
-public class AllTestsReferences
-		extends JUnitHooker
-{
-	// always empty
+/**
+ *
+ */
+public enum JUnitPos {
+		JUNIT_STARTS, // ie. topmost parent suite starts
+		TESTCLASS_STARTS, // and subclass or subsuite starts ie. before calling @Before or @Test, before any tests begin
+		JUNIT_ENDS, // ie. the topmost suite ended all subsuites and tests
+		TESTCLASS_ENDS, // a testclass or a subsuite ends ie. finished all tests
 }

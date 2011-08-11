@@ -48,4 +48,9 @@ simply because you may forget to assign the field and since the field isn't chec
 5. must override each .clone() when extending/implementing from NodeGeneric interface
 in each subclass and cast it to the current class on return
 ------------------------------------------------------
+6. make each junit class extend:
+	extends JUnitHooker
+	even the suite ones, especially those
+why? we need to put a hook on when junit finished all tests, such that we disallow exit when something from swing is still 
+showing ie. a JFrame
 ------------------------------------------------------

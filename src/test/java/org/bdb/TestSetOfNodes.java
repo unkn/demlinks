@@ -39,6 +39,7 @@ import static org.junit.Assert.*;
 
 import java.util.*;
 
+import org.JUnitCommons.*;
 import org.dml.storage.Level2.*;
 import org.dml.storage.berkeleydb.generics.*;
 import org.dml.storage.commons.*;
@@ -49,6 +50,7 @@ import org.toolza.Timer;
 
 
 public class TestSetOfNodes
+		extends JUnitHooker
 {
 	
 	private StorageBDBGeneric	env;

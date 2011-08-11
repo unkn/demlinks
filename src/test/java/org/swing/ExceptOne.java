@@ -31,21 +31,25 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.references;
+
+package org.swing;
+
+
 
 import org.JUnitCommons.*;
-import org.junit.runner.*;
-import org.junit.runners.*;
+import org.junit.*;
+import org.tools.swing.*;
 
 
 
-@RunWith( Suite.class )
-@Suite.SuiteClasses(
-		value = {
-			TestTwoWayHashMapOfNonNullUniques.class,
-		} )
-public class AllTestsReferences
+/**
+ */
+public class ExceptOne
 		extends JUnitHooker
 {
-	// always empty
+	
+	@Test
+	public void empty() {
+		Assert.assertFalse( E.inEDTNow() );
+	}
 }

@@ -31,21 +31,36 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.references;
 
-import org.JUnitCommons.*;
-import org.junit.runner.*;
-import org.junit.runners.*;
+package org.tools.threadlocals;
 
 
 
-@RunWith( Suite.class )
-@Suite.SuiteClasses(
-		value = {
-			TestTwoWayHashMapOfNonNullUniques.class,
-		} )
-public class AllTestsReferences
-		extends JUnitHooker
+import java.util.*;
+
+
+
+/**
+ * @param <K>
+ *            key
+ * @param <V>
+ *            value
+ * 
+ *            NOTE: do not rename classes starting with ThreadLocal* because they are set in RecursionDetector.aj aspect
+ *            as excluded from call tracing and stuff - else they infinite loop
+ */
+public class ThreadLocalHashMap<K, V>
+		extends ThreadLocal<HashMap<K, V>>
 {
-	// always empty
+	
+	public ThreadLocalHashMap() {
+		super();
+	}
+	
+	
+	@Override
+	protected synchronized HashMap<K, V> initialValue() {
+		return new HashMap<K, V>();
+	}
+	
 }

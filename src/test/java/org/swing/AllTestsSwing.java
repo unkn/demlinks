@@ -31,7 +31,11 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.references;
+
+
+package org.swing;
+
+
 
 import org.JUnitCommons.*;
 import org.junit.runner.*;
@@ -42,10 +46,11 @@ import org.junit.runners.*;
 @RunWith( Suite.class )
 @Suite.SuiteClasses(
 		value = {
-			TestTwoWayHashMapOfNonNullUniques.class,
+			ExceptOne.class,
+		
 		} )
-public class AllTestsReferences
+public class AllTestsSwing
 		extends JUnitHooker
 {
-	// always empty
+	// empty
 }

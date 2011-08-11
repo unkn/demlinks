@@ -31,21 +31,23 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.references;
 
-import org.JUnitCommons.*;
-import org.junit.runner.*;
-import org.junit.runners.*;
+package org.JUnitCommons;
 
 
-
-@RunWith( Suite.class )
-@Suite.SuiteClasses(
-		value = {
-			TestTwoWayHashMapOfNonNullUniques.class,
-		} )
-public class AllTestsReferences
-		extends JUnitHooker
+/**
+ *
+ */
+public abstract class JUnitTestClassStartsAdapter
+		extends JUnitBaseAdapter
 {
-	// always empty
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.JUnitCommons.JUnitEnds#JUnitEnds()
+	 */
+	@Override
+	public abstract void JUnitTestClassStarts();
+	
 }

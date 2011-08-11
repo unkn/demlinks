@@ -35,11 +35,14 @@ package all;
 
 import static org.junit.Assert.*;
 
+import org.JUnitCommons.*;
 import org.junit.*;
 
 
 
-public class TestAssertsAreOn {
+public class TestAssertsAreOn
+		extends JUnitHooker
+{
 	
 	@Test
 	public void testIfAssertsAreEnabled() {

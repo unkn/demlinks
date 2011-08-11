@@ -35,6 +35,7 @@ package org.bdb;
 
 import static org.junit.Assert.*;
 
+import org.JUnitCommons.*;
 import org.dml.storage.berkeleydb.generics.*;
 import org.dml.storage.commons.*;
 import org.junit.*;
@@ -42,6 +43,7 @@ import org.junit.*;
 
 
 public class DBTwoWayHashMap_Test
+		extends JUnitHooker
 {
 	
 	private BDBTwoWayHashMap_StringName2Node	x	= null;

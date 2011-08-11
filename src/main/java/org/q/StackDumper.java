@@ -3,6 +3,7 @@
  * Copyright (c) 2005-2011, AtKaaZ
  * All rights reserved.
  * this file is part of DemLinks
+ * File created on Aug 11, 2011 11:13:14 AM
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -31,21 +32,29 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.references;
-
-import org.JUnitCommons.*;
-import org.junit.runner.*;
-import org.junit.runners.*;
+package org.q;
 
 
 
-@RunWith( Suite.class )
-@Suite.SuiteClasses(
-		value = {
-			TestTwoWayHashMapOfNonNullUniques.class,
-		} )
-public class AllTestsReferences
-		extends JUnitHooker
+/**
+ *
+ */
+@SuppressWarnings( "serial" )
+public class StackDumper
+		extends RuntimeException
 {
-	// always empty
+	
+	public StackDumper() {
+		super( "Stack trace" );
+	}
+	
+	
+	public static void dumpStack() {
+		new StackDumper().printStackTrace();
+	}
+	
+	
+	public static StackTraceElement[] getStackHere() {
+		return new StackDumper().getStackTrace();
+	}
 }

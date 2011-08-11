@@ -31,21 +31,46 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.references;
 
-import org.JUnitCommons.*;
-import org.junit.runner.*;
-import org.junit.runners.*;
+package org.tools.swing;
 
 
 
-@RunWith( Suite.class )
-@Suite.SuiteClasses(
-		value = {
-			TestTwoWayHashMapOfNonNullUniques.class,
-		} )
-public class AllTestsReferences
-		extends JUnitHooker
+import java.lang.reflect.*;
+
+import javax.swing.*;
+
+import org.q.*;
+
+
+
+/**
+ *
+ */
+public class E
 {
-	// always empty
+	
+	public static void addToQueue( final Runnable r ) {
+		assert null != r;
+		SwingUtilities.invokeLater( r );
+	}
+	
+	
+	public static void addToQueueAndWait( final Runnable r ) {
+		assert null != r;
+		assert !inEDTNow();// otherwise wait indefinitely if inside EDT
+		try {
+			SwingUtilities.invokeAndWait( r );
+		} catch ( final InvocationTargetException e ) {
+			Q.rethrow( e );
+		} catch ( final InterruptedException e ) {
+			Q.rethrow( e );
+		}
+	}
+	
+	
+	public static boolean inEDTNow() {
+		return SwingUtilities.isEventDispatchThread();
+	}
+	
 }

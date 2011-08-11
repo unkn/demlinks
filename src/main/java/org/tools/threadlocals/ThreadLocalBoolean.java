@@ -31,21 +31,29 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.references;
-
-import org.JUnitCommons.*;
-import org.junit.runner.*;
-import org.junit.runners.*;
 
 
+package org.tools.threadlocals;
 
-@RunWith( Suite.class )
-@Suite.SuiteClasses(
-		value = {
-			TestTwoWayHashMapOfNonNullUniques.class,
-		} )
-public class AllTestsReferences
-		extends JUnitHooker
+public class ThreadLocalBoolean
+		extends ThreadLocal<Boolean>
 {
-	// always empty
+	
+	private final boolean	initialValue;
+	
+	
+	/**
+	 * constructor
+	 * 
+	 * @param initialValue1
+	 */
+	public ThreadLocalBoolean( final boolean initialValue1 ) {
+		initialValue = initialValue1;
+	}
+	
+	
+	@Override
+	protected synchronized Boolean initialValue() {
+		return new Boolean( initialValue );
+	}
 }

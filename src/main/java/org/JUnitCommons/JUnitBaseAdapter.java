@@ -31,21 +31,63 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.references;
 
-import org.JUnitCommons.*;
-import org.junit.runner.*;
-import org.junit.runners.*;
+package org.JUnitCommons;
 
 
 
-@RunWith( Suite.class )
-@Suite.SuiteClasses(
-		value = {
-			TestTwoWayHashMapOfNonNullUniques.class,
-		} )
-public class AllTestsReferences
-		extends JUnitHooker
+import org.q.*;
+
+
+
+/**
+ * to facilitate overriding only what's needed
+ */
+public abstract class JUnitBaseAdapter
 {
-	// always empty
+	
+	private void noreach() {
+		Q.bug( "this should not be reached" );
+	}
+	
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.JUnitCommons.JUnitListener#JUnitStarts()
+	 */
+	public void JUnitStarts() {
+		noreach();
+	}
+	
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.JUnitCommons.JUnitListener#JUnitEnds()
+	 */
+	public void JUnitEnds() {
+		noreach();
+	}
+	
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.JUnitCommons.JUnitListener#JUnitTestClassStarts()
+	 */
+	public void JUnitTestClassStarts() {
+		noreach();
+	}
+	
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.JUnitCommons.JUnitListener#JUnitTestClassEnds()
+	 */
+	public void JUnitTestClassEnds() {
+		noreach();
+	}
+	
 }

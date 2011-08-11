@@ -36,12 +36,14 @@ package org.bdb;
 
 import static org.junit.Assert.*;
 
+import org.JUnitCommons.*;
 import org.dml.storage.berkeleydb.generics.*;
 import org.junit.*;
 
 
 
 public class TestNodeName
+		extends JUnitHooker
 {
 	
 	private StorageBDBGeneric	env;

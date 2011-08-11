@@ -31,21 +31,42 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.references;
-
-import org.JUnitCommons.*;
-import org.junit.runner.*;
-import org.junit.runners.*;
 
 
+package org.tools.threadlocals;
 
-@RunWith( Suite.class )
-@Suite.SuiteClasses(
-		value = {
-			TestTwoWayHashMapOfNonNullUniques.class,
-		} )
-public class AllTestsReferences
-		extends JUnitHooker
+
+public class ThreadLocalInteger
+		extends ThreadLocal<Integer>
 {
-	// always empty
+	
+	private final int	initialValue;
+	
+	
+	/**
+	 * constructor
+	 * 
+	 * @param initialValue1
+	 */
+	public ThreadLocalInteger( final int initialValue1 ) {
+		initialValue = initialValue1;
+	}
+	
+	
+	@Override
+	protected synchronized Integer initialValue() {
+		return new Integer( initialValue );
+	}
+	
+	
+	public void increment() {
+		final Integer i = new Integer( get().intValue() + 1 );
+		set( i );
+	}
+	
+	
+	public void decrement() {
+		final Integer i = new Integer( get().intValue() - 1 );
+		set( i );
+	}
 }

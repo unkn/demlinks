@@ -37,6 +37,7 @@ package org.bdb;
 
 import static org.junit.Assert.*;
 
+import org.JUnitCommons.*;
 import org.dml.storage.berkeleydb.generics.*;
 import org.dml.storage.commons.*;
 import org.junit.*;
@@ -44,6 +45,7 @@ import org.junit.*;
 
 
 public class DBSetTest
+		extends JUnitHooker
 {
 	
 	private BDB_SetOfNodes		o2m	= null;

@@ -185,14 +185,6 @@ public abstract class Q
 	}
 	
 	
-	/**
-	 * show your position by dumping the StackTrace<br>
-	 */
-	public static void dumpStack() {
-		Thread.dumpStack();
-	}
-	
-	
 	
 	/**
 	 * use with `assert` before it<br>
@@ -287,4 +279,35 @@ public abstract class Q
 		return t;
 	}
 	
+	
+	// each thread has a different one
+	private static ThreadLocal<Throwable>	lastPostponed	= new ThreadLocal<Throwable>();
+	
+	
+	public static void postpone( final Throwable t ) {
+		if ( Q.lastPostponed.get() == null ) {
+			Q.lastPostponed.set( t );// set only the first one, ignore others until throwPostponedOnes()
+		}
+	}
+	
+	
+	/**
+	 * if there were any exceptions postponed with Q.postpone() it will Q.rethrow the first postponed one<br>
+	 */
+	public static void throwPostponedOnes() {
+		final Throwable last = Q.lastPostponed.get();
+		if ( last != null ) {
+			Q.lastPostponed.set( null );
+			Q.rethrow( last );
+		}
+	}
+	
+	
+	/**
+	 * show your position by dumping the StackTrace<br>
+	 */
+	public static void dumpStack() {
+		StackDumper.dumpStack();
+		// Thread.dumpStack();
+	}
 }

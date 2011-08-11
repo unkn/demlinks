@@ -44,6 +44,17 @@ import org.q.*;
 public abstract class Z
 {
 	
+	public static Class<?> getSuperClassOf( final Object o1 ) {
+		assert Q.nn( o1 );
+		// System.out.println( o1.getClass().getSuperclass()
+		// + " vs. "
+		// + thisClass );
+		final Class<?> ret = o1.getClass().getSuperclass();
+		assert null != ret;
+		return ret;
+	}
+	
+	
 	public static boolean equalsWithExactSameClassTypes_enforceNotNull( final Object o1, final Object o2 ) {
 		assert Z.areSameClass_canNotBeNull( o1, o2 );
 		return equalsWithCompatClasses_enforceNotNull( o1, o2 );

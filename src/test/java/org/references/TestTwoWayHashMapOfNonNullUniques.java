@@ -36,6 +36,7 @@ package org.references;
 
 import static org.junit.Assert.*;
 
+import org.JUnitCommons.*;
 import org.junit.*;
 import org.q.*;
 import org.toolza.*;
@@ -46,6 +47,7 @@ import org.toolza.*;
  *
  */
 public class TestTwoWayHashMapOfNonNullUniques
+		extends JUnitHooker
 {
 	
 	private class KeyA

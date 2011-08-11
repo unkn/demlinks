@@ -40,7 +40,12 @@ import java.text.*;
 /**
  *
  */
-public abstract class A {
+public abstract class A
+{
+	
+	// these are to avoid boxing/unboxing sure you can use BOOLEAN.TRUE instead
+	public final static Boolean		BOOL_FALSE				= new Boolean( false );
+	public final static Boolean		BOOL_TRUE				= new Boolean( true );
 	
 	private static DecimalFormat	commaDelimitedFormatter	= new DecimalFormat( "###,###" );
 	

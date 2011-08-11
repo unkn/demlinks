@@ -36,6 +36,7 @@ package org.bdb;
 
 import static org.junit.Assert.*;
 
+import org.JUnitCommons.*;
 import org.dml.storage.berkeleydb.exceptions.*;
 import org.dml.storage.berkeleydb.generics.*;
 import org.junit.*;
@@ -44,6 +45,7 @@ import org.q.*;
 
 
 public class TestBDBEnvironment
+		extends JUnitHooker
 {
 	
 	@Test

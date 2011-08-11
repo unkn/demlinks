@@ -33,10 +33,12 @@ package all;
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+import org.JUnitCommons.*;
 import org.bdb.*;
 import org.junit.runner.*;
 import org.junit.runners.*;
 import org.references.*;
+import org.swing.*;
 
 
 
@@ -44,10 +46,11 @@ import org.references.*;
 @Suite.SuiteClasses(
 		value = {
 			TestAssertsAreOn.class,// first!
-			AllTestsReferences.class, AllTestsBDB.class,
+			AllTestsSwing.class, AllTestsReferences.class, AllTestsBDB.class,
 		// AllRawBerkeleyDBTests.class too time consuming to add here
 		} )
 public class AllTests
+		extends JUnitHooker
 {
 	// always empty
 }

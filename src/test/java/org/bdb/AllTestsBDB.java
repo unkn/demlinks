@@ -33,6 +33,7 @@
  */
 package org.bdb;
 
+import org.JUnitCommons.*;
 import org.junit.runner.*;
 import org.junit.runners.*;
 
@@ -44,6 +45,7 @@ import org.junit.runners.*;
 			TestBDBEnvironment.class, TestNodeName.class, DBTwoWayHashMap_Test.class, DBSetTest.class, TestSetOfNodes.class
 		} )
 public class AllTestsBDB
+		extends JUnitHooker
 {
 	// always empty
 }
