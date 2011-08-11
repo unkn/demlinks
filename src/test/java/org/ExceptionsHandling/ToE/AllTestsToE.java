@@ -31,27 +31,26 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.q;
 
 
-/**
- *
- */
-@SuppressWarnings( "serial" )
-final class RethrownException
-		extends QException
+package org.ExceptionsHandling.ToE;
+
+
+
+import org.JUnitCommons.*;
+import org.junit.runner.*;
+import org.junit.runners.*;
+
+
+
+@RunWith( Suite.class )
+@Suite.SuiteClasses(
+		value = {
+			TestManyAdditions.class,
+		
+		} )
+public class AllTestsToE
+		extends JUnitHooker
 {
-	
-	public RethrownException( final Throwable t ) {
-		super( t );
-	}
-	
-	
-	/**
-	 * @param msg
-	 * @param t
-	 */
-	public RethrownException( final String msg, final Throwable t ) {
-		super( msg, t );
-	}
+	// empty
 }

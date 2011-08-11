@@ -383,7 +383,7 @@ public final class TreeOfExceptions
 		final Boolean prev =
 		// just in case this is called outside of aspectj ie. in ExHandler
 			ThrowWrapper.useAlternateExceptionReportMethod.get();
-		assert !prev.booleanValue();
+		// assert !prev.booleanValue();
 		try {
 			ThrowWrapper.useAlternateExceptionReportMethod.set( A.BOOL_TRUE );
 			if ( null == singleton ) {
@@ -702,6 +702,7 @@ public final class TreeOfExceptions
 															@Override
 															public void run()// this is QP aka QueueProcessor
 															{
+																System.out.println( "this is inside queue processor" );
 																final Boolean prevVal =
 																	ThrowWrapper.useAlternateExceptionReportMethod.get();
 																// .booleanValue();
@@ -1006,9 +1007,12 @@ public final class TreeOfExceptions
 																			// threw
 																			// then
 																			// this won't be reached
-																			assert Q.nn( queueFIFO.poll() );// clearly
-																											// not
-																											// null
+																			final QueuedItem ret = queueFIFO.poll();
+																			// System.out.println( "removed from queue:" + ret
+																			// );
+																			assert Q.nn( ret );// clearly
+																								// not
+																								// null
 																			if ( queueFIFO.remainingCapacity() >= ( queueCapacity / 2 ) ) {// if
 																																			// at
 																																			// least
@@ -1074,7 +1078,8 @@ public final class TreeOfExceptions
 																	}
 																} finally {
 																	ThrowWrapper.useAlternateExceptionReportMethod
-																		.set( prevVal );// A.BOOL_FALSE );
+																		.set( prevVal );// A.BOOL_FALSE );//
+																	System.out.println( "queue processor finished" );
 																}
 																// }
 																// finally
@@ -1102,6 +1107,15 @@ public final class TreeOfExceptions
 			void addThis_and_makeSureQueueProcessorWillRun( final QueuedItem thisQI ) {
 		assert Q.nn( thisQI );
 		
+		if ( queueFIFO.remainingCapacity() <= 0 ) {
+			try {
+				// FIXME: use lock Condition
+				System.out.println( "sleeping before add so it won't fail too soon, inEDT=" + E.inEDTNow() );
+				Thread.sleep( 1000 );// XXX: waiting for queue processor but not wait too much, it may be stuck forever
+			} catch ( final InterruptedException e ) {
+				throw Q.rethrow( e );
+			}
+		}
 		lockQP.lock();
 		try {
 			if ( !alreadyAddedShutdownHook ) {
@@ -1182,23 +1196,24 @@ public final class TreeOfExceptions
 			// }// else it's ok queue is not full yey
 			// }
 			
-			
 			if ( queueFIFO.remainingCapacity() <= 0 ) {
 				try {
 					if ( thisQI.getType().equals( EnumQueueProcessorTypes.ADD_EXCEPTION ) ) {
-						Q.rethrow( thisQI.getEx() );
+						Q.rethrow( "the exception that was meant to be in tree (is as cause):", thisQI.getEx() );
 					}
 				} finally {
-					Q
-						.bug( "queueFIFO is at full capacity! this should not happen, unless EDT added so many exceptions that were thrown inside it "
-							+ "that it filled the queue, considering that other threads were waiting if the queue was "
-							+ "less than half empty, this means EDT added at least half a queue of exceptions and filled it" );
+					Q.bug( "queueFIFO is at full capacity! this should not happen, unless(which is usually what is:)"
+						+ " EDT added so many exceptions that were thrown inside it "
+						+ "that it filled the queue, considering that other threads were waiting if the queue was "
+						+ "less than half empty, this means EDT added at least half a queue of exceptions and filled it\n"
+						+ "queueSize now=" + queueFIFO.size() );
 				}
 			}// else it's ok queue is not full yey
 			
 			// true if this collection changed as a result of the call
 			final boolean ret = queueFIFO.add( thisQI );
 			assert ret;
+			System.out.println( "added to queue: " + thisQI );
 			// ,
 			// 5,// 5 sec timeout
 			// TimeUnit.SECONDS ) );
@@ -1214,6 +1229,7 @@ public final class TreeOfExceptions
 				assert Q.nn( qpRun );
 				E.addToQueue( qpRun );// can't wait, it will deadlock on lockSA in two diff threads: EDT and ExHandler...
 				isQPScheduledToRun = true;
+				System.out.println( "scheduled queue processor to run" );
 			}
 		} finally {
 			try {
@@ -1236,7 +1252,7 @@ public final class TreeOfExceptions
 		final Boolean prev = ThrowWrapper.useAlternateExceptionReportMethod.get();
 		try {
 			if ( prev.booleanValue() ) {
-				Q.consolifyException( unwrappedException );
+				Q.insideToE_Exception_reportOnConsole( unwrappedException );
 				return;
 			}
 			assert !prev.booleanValue();
@@ -2287,9 +2303,9 @@ public final class TreeOfExceptions
 	 * XXX:this is assumed to be called only in shutdown hook
 	 */
 	public void popQueue() {
-		// System.err.println( "popQueue: started" );
+		System.err.println( "popQueue: started ; queue size=" + queueFIFO.size() );
 		// Boolean prev=ThrowWrapper.useAlternateExceptionReportMethod.set( A.BOOL_FALSE);
-		assert !ThrowWrapper.useAlternateExceptionReportMethod.get().booleanValue();
+		assert !( ThrowWrapper.useAlternateExceptionReportMethod.get().booleanValue() );
 		ThrowWrapper.useAlternateExceptionReportMethod.set( A.BOOL_TRUE );
 		// ( wasShutdownOnce );actually it could be it was never inited
 		// assert !( isVisible() );also it could fail to properly close it and the flag is still on visible

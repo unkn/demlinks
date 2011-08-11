@@ -109,15 +109,21 @@ public abstract class Q
 	}
 	
 	
-	/**
-	 * @param t
-	 * @return RethrownException
-	 */
-	public static RethrownException rethrow( final Throwable t ) {
+	public static RethrownException rethrow( final String msg, final Throwable t ) {
 		assert null != t;
-		final RethrownException ex = new RethrownException( t );
+		final RethrownException ex = new RethrownException( msg, t );
 		toTree( ex );
 		throw ex;
+	}
+	
+	
+	/**
+	 * @param cause
+	 * @return RethrownException
+	 */
+	public static RethrownException rethrow( final Throwable cause ) {
+		assert Q.nn( cause );
+		throw rethrow( cause.toString(), cause );
 	}
 	
 	
@@ -377,8 +383,10 @@ public abstract class Q
 	/**
 	 * @param unwrappedException
 	 */
-	public static void consolifyException( final Throwable unwrappedException ) {
+	public static void insideToE_Exception_reportOnConsole( final Throwable unwrappedException ) {
+		System.err.println( "@@@@@@@@@@@@@@@@@@@@@@@@ exception inside ToE: " + Thread.currentThread().getName() );
 		unwrappedException.printStackTrace();
+		System.err.println( "@@@@@@@@@@@@@@@@@@@@@@@@@@@end" );
 	}
 	
 	
@@ -390,4 +398,20 @@ public abstract class Q
 		System.err.println( "MARKED AS: " + state + " WHATex:" + existingException );
 		
 	}
+	
+	
+	// /**
+	// * @param booleanValue
+	// * @return
+	// */
+	// public static boolean assumedFalse( final boolean booleanValue ) {
+	// if ( booleanValue ) {
+	// // is true instead
+	// // FIXME: use proper exception
+	// final NullPointerException npe = new NullPointerException( "false assumption failed" );
+	// toTree( npe );
+	// throw npe;
+	// }
+	// return true;
+	// }
 }
