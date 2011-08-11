@@ -61,7 +61,7 @@ public class TestManyNodes
 	private NodeGeneric				middleElement;
 	private NodeGeneric				headElement;
 	private NodeGeneric				tailElement;
-	private StorageGeneric			env;
+	private StorageGeneric			storage;
 	
 	
 	private static void showMem() {
@@ -74,8 +74,8 @@ public class TestManyNodes
 	public void setUp() {
 		showMem();
 		
-		env = Global.factory.getNewStorage( JUnitConstants.BDB_ENVIRONMENT_STORE_DIR, deleteBeforeInit );
-		System.out.println( env.getClass() );
+		storage = Global.factory.getNewStorage( JUnitConstants.BDB_ENVIRONMENT_STORE_DIR, deleteBeforeInit );
+		System.out.println( storage.getClass() );
 		showMem();
 	}
 	
@@ -83,8 +83,8 @@ public class TestManyNodes
 	@After
 	public void tearDown() {
 		showMem();
-		if ( null != env ) {
-			env.shutdown( false );// no need to be in finally, it's already on shutdownhook
+		if ( null != storage ) {
+			storage.shutdown( false );// no need to be in finally, it's already on shutdownhook
 		}
 		showMem();
 		Runtime.getRuntime().gc();
@@ -102,37 +102,37 @@ public class TestManyNodes
 	
 	private void init() {
 		showMem();
-		TransactionGeneric txn = env.beginTransaction();
+		TransactionGeneric txn = storage.beginTransaction();
 		try {
-			list = env.getNode( ROOT_LIST );
-			middleElement = env.getNode( MIDDLE );
-			headElement = env.getNode( START );
-			tailElement = env.getNode( END );
+			list = storage.getNode( ROOT_LIST );
+			middleElement = storage.getNode( MIDDLE );
+			headElement = storage.getNode( START );
+			tailElement = storage.getNode( END );
 			if ( null == list ) {
 				assert null == middleElement;
-				System.out.println( env.getClass() );
+				System.out.println( storage.getClass() );
 				
-				list = env.createOrGetNode( ROOT_LIST );
-				tailElement = env.createOrGetNode( END );
-				headElement = env.createOrGetNode( START );
-				middleElement = env.createOrGetNode( MIDDLE );
-				env.makeVector( list, headElement );
+				list = storage.createOrGetNode( ROOT_LIST );
+				tailElement = storage.createOrGetNode( END );
+				headElement = storage.createOrGetNode( START );
+				middleElement = storage.createOrGetNode( MIDDLE );
+				storage.makeVector( list, headElement );
 				System.out.println( "first time creating the relationships..." );
 				final int half = HOWMANY_RELATIONSHIPS_FOR_ONE / 2;
 				t3.start();
 				int i = 0;
 				try {
 					for ( i = 0; i < half; i++ ) {
-						env.makeVector( list, env.createNewUniqueNode() );
+						storage.makeVector( list, storage.createNewUniqueNode() );
 						if ( ( i % HOWMANY_PER_TRANSACTION ) == 0 ) {
 							txn.success();
 							txn.finished();
-							txn = env.beginTransaction();
+							txn = storage.beginTransaction();
 							System.out.println( "new txn at " + i );
 						}
 						
 						if ( i == ( half / 2 ) ) {
-							env.makeVector( list, middleElement );
+							storage.makeVector( list, middleElement );
 						}
 					}// for
 					
@@ -147,15 +147,15 @@ public class TestManyNodes
 				System.out.println( "creating more relationships..." );
 				t3.start();
 				for ( i = 0; i < half; i++ ) {
-					env.makeVector( env.createNewUniqueNode(), tailElement );
+					storage.makeVector( storage.createNewUniqueNode(), tailElement );
 					if ( ( i % HOWMANY_PER_TRANSACTION ) == 0 ) {
 						txn.success();
 						txn.finished();
-						txn = env.beginTransaction();
+						txn = storage.beginTransaction();
 					}
 					
 					if ( i == ( half / 2 ) ) {
-						env.makeVector( list, tailElement );
+						storage.makeVector( list, tailElement );
 					}
 				}
 				t3.stop();
@@ -356,9 +356,9 @@ public class TestManyNodes
 	 */
 	private void run() {
 		showMem();
-		final TransactionGeneric t = env.beginTransaction();
+		final TransactionGeneric t = storage.beginTransaction();
 		try {
-			System.out.println( "run for `" + env.getClass() + "`" );
+			System.out.println( "run for `" + storage.getClass() + "`" );
 			System.out.println( "trying isVector():" );
 			int repeat = 10;
 			do {
@@ -381,13 +381,13 @@ public class TestManyNodes
 	
 	private void goFind2( final NodeGeneric initialNode, final NodeGeneric childNode ) {
 		t3.start();
-		final boolean ret = env.isVector( initialNode, childNode );
+		final boolean ret = storage.isVector( initialNode, childNode );
 		assert ret;
 		t3.stop();
 		System.out.printf(
 			"%10s -> %10s %10s%n",
-			env.getName( initialNode ),
-			env.getName( childNode ),
+			storage.getName( initialNode ),
+			storage.getName( childNode ),
 			t3.getDeltaPrintFriendly() );
 	}
 	
