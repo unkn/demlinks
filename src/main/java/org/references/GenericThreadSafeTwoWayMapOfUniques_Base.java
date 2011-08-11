@@ -51,7 +51,9 @@ import org.q.*;
  * @param <DATA>
  * 
  */
-public abstract class GenericThreadSafeTwoWayMapOfUniques_Base<KEY, DATA> implements GenericTwoWayMapOfUniques<KEY, DATA> {
+public abstract class GenericThreadSafeTwoWayMapOfUniques_Base<KEY, DATA>
+		implements GenericTwoWayMapOfUniques<KEY, DATA>
+{
 	
 	// fixed(now synchronized the main methods): if overridden internal methods are allowed to be synchronized then while
 	// waiting on the lock, the other thread
@@ -229,11 +231,11 @@ public abstract class GenericThreadSafeTwoWayMapOfUniques_Base<KEY, DATA> implem
 	 * @see org.references.TwoWayMapOfUniques#size()
 	 */
 	@Override
-	public final synchronized int size() {
+	public final synchronized long size() {
 		assertInvariants();
 		return internalForOverride_size();
 	}
 	
 	
-	protected abstract int internalForOverride_size();
+	protected abstract long internalForOverride_size();
 }

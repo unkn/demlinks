@@ -44,7 +44,8 @@ package org.references;
  *            same
  * 
  */
-public interface GenericTwoWayMapOfUniques<KEY, DATA> {
+public interface GenericTwoWayMapOfUniques<KEY, DATA>
+{
 	
 	/**
 	 * @param data
@@ -72,7 +73,7 @@ public interface GenericTwoWayMapOfUniques<KEY, DATA> {
 	public boolean isEmpty();
 	
 	
-	public int size();
+	public long size();
 	
 	
 	/**

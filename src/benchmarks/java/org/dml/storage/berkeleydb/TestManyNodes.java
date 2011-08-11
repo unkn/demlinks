@@ -91,7 +91,7 @@ public class TestManyNodes
 		if ( !je ) {
 			env = new StorageBDBNative( JUnitConstants.BDB_ENVIRONMENT_STORE_DIR, deleteBeforeInit );
 		} else {
-			env = new StorageBDBJE( JUnitConstants.BDB_ENVIRONMENT_STORE_DIR, deleteBeforeInit );
+			env = new StorageBDB( JUnitConstants.BDB_ENVIRONMENT_STORE_DIR, deleteBeforeInit );
 		}
 		
 		// System.out.println( "java.class.path now = " + System.getProperties().getProperty( "java.class.path", null ) );

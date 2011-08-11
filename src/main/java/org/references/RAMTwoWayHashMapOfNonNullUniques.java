@@ -57,7 +57,9 @@ import org.toolza.*;
  *            unique & never null
  * 
  */
-public class RAMTwoWayHashMapOfNonNullUniques<KEY, DATA> extends GenericThreadSafeTwoWayMapOfUniques_Base<KEY, DATA> {
+public class RAMTwoWayHashMapOfNonNullUniques<KEY, DATA>
+		extends GenericThreadSafeTwoWayMapOfUniques_Base<KEY, DATA>
+{
 	
 	private final HashMap<KEY, DATA>	mapKeyData	= new HashMap<KEY, DATA>();
 	private final HashMap<DATA, KEY>	mapDataKey	= new HashMap<DATA, KEY>();
@@ -169,7 +171,7 @@ public class RAMTwoWayHashMapOfNonNullUniques<KEY, DATA> extends GenericThreadSa
 	
 	
 	@Override
-	protected int internalForOverride_size() {
+	protected long internalForOverride_size() {
 		final int size = mapKeyData.size();
 		assert mapDataKey.size() == size;
 		return size;
