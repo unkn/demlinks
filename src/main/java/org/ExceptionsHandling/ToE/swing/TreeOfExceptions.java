@@ -67,6 +67,9 @@ import org.toolza.*;
 public final class TreeOfExceptions
 {
 	
+	// if the queu is full for this amount of time, it's assumed it deadlocked and will `throw`
+	private static final int										QUEUEFULL_TIMEOUT_MILLIS		= 3000;
+	
 	// this value should be max expected concurrent threads * 2 for it's assumed worst case scenario that they all want to add
 	// an exception and they're waiting on the lock, so if at least half of the queue is empty then they are all allowed to do
 	// so before returning back to QP which will continue to process the queue
@@ -1206,7 +1209,7 @@ public final class TreeOfExceptions
 			while ( queueFIFO.remainingCapacity() <= 0 ) {// while full
 				boolean ret = false;// time elapsed
 				try {
-					ret = condQueueNotFull.await( 3000, TimeUnit.MILLISECONDS );
+					ret = condQueueNotFull.await( QUEUEFULL_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS );
 				} catch ( final InterruptedException e ) {
 					// ignore
 					ret = true;// got interrupted, we pretend that queue isn't full
