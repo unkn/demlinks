@@ -45,9 +45,11 @@ import org.toolza.*;
 /**
  *
  */
-public class TestTwoWayHashMapOfNonNullUniques {
+public class TestTwoWayHashMapOfNonNullUniques
+{
 	
-	private class KeyA {
+	private class KeyA
+	{
 		
 		private final int	field;
 		
@@ -144,7 +146,7 @@ public class TestTwoWayHashMapOfNonNullUniques {
 			final boolean ret = hm.ensureExists( new Long( i ), String.valueOf( i ) );
 			assertFalse( ret );
 		}
-		final int s = hm.size();
+		final long s = hm.size();
 		assertTrue( "" + s, s == n );
 		assertTrue( "" + s, s == hm.size() );// on second call
 		for ( long i = 0; i < n; i++ ) {
