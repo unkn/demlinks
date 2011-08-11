@@ -34,8 +34,7 @@
 package org.dml.storage.berkeleydb;
 
 import org.bdb.*;
-import org.dml.storage.berkeleydb.java_edition.*;
-import org.dml.storage.berkeleydb.native_via_jni.*;
+import org.dml.storage.berkeleydb.generics.*;
 import org.dml.storage.commons.*;
 import org.junit.*;
 import org.toolza.*;
@@ -74,27 +73,8 @@ public class TestManyNodes
 	@Before
 	public void setUp() {
 		showMem();
-		// System.out.println( "java.class.path now = " + System.getProperties().getProperty( "java.class.path", null ) );
-		final boolean je;
-		final String cp = System.getProperties().getProperty( "java.class.path", null );
-		final int bdbjni = cp.indexOf( "db.jar" );
-		assert -1 != bdbjni : "you're not using berkleydb native via jni";
-		final int bdbje = cp.indexOf( "je-4.1.10.jar" );
-		assert -1 != bdbje : "you're not using berkleydb java edition? or likely you forgot to update the jar name inhere"
-			+ " if you switched to a newer version and thus jarname changed";
-		if ( bdbje < bdbjni ) {
-			je = true;
-		} else {
-			je = false;
-		}
 		
-		if ( !je ) {
-			env = new StorageBDBNative( JUnitConstants.BDB_ENVIRONMENT_STORE_DIR, deleteBeforeInit );
-		} else {
-			env = new StorageBDB( JUnitConstants.BDB_ENVIRONMENT_STORE_DIR, deleteBeforeInit );
-		}
-		
-		// System.out.println( "java.class.path now = " + System.getProperties().getProperty( "java.class.path", null ) );
+		env = Global.factory.getNewStorage( JUnitConstants.BDB_ENVIRONMENT_STORE_DIR, deleteBeforeInit );
 		System.out.println( env.getClass() );
 		showMem();
 	}
