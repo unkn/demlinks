@@ -119,6 +119,7 @@ public class TestTwoWayHashMapOfNonNullUniques
 			Q.fail();
 		} catch ( final BadCallError bce ) {
 			// good
+			Q.markAsHandled( bce );
 		}
 		assertTrue( hm.size() == 1 );
 		
@@ -164,15 +165,17 @@ public class TestTwoWayHashMapOfNonNullUniques
 		try {
 			hm.discard();
 			Q.fail();
-		} catch ( final BadCallError ae ) {
+		} catch ( final BadCallError bce ) {
 			// good
+			Q.markAsHandled( bce );
 		}
 		
 		try {
 			hm.getData( new Long( 1 ) );
 			Q.fail();
-		} catch ( final BadCallError ae ) {
+		} catch ( final BadCallError bce ) {
 			// good
+			Q.markAsHandled( bce );
 		}
 	}
 }

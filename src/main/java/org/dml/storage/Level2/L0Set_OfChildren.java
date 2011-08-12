@@ -35,6 +35,7 @@ package org.dml.storage.Level2;
 
 import org.dml.storage.commons.*;
 import org.q.*;
+import org.toolza.*;
 
 
 
@@ -143,11 +144,13 @@ public class L0Set_OfChildren
 		if ( null == obj ) {
 			return false;
 		}
+		if ( this == obj ) {
+			return true;
+		}
 		
-		assert Q.assumeSameFamilyClasses( this, obj );
+		assert Z.haveCompatibleClasses_canNotBeNull( this, obj );
 		
-		// if they are equal, they must not be different classes
-		return Q.returnParamButIfTrueAssertSameClass( ( (L0Set_OfChildren)obj )._selfNode.equals( _selfNode ), this, obj );
+		return Z.equalsWithExactSameClassTypes_enforceNotNull( ( (L0Set_OfChildren)obj )._selfNode, _selfNode );
 	}
 	
 	

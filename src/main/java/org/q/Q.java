@@ -37,6 +37,7 @@ import java.lang.Thread.UncaughtExceptionHandler;
 
 import org.ExceptionsHandling.ToE.*;
 import org.ExceptionsHandling.ToE.swing.*;
+import org.toolza.*;
 
 
 
@@ -148,7 +149,7 @@ public abstract class Q
 	public static BadCallError badCall( final String msg, final Throwable cause ) {
 		assert null != cause : "cause shouldn't be null";
 		final BadCallError ex = new BadCallError( msg, cause );
-		toTree( ex );
+		// toTree( ex );
 		throw ex;
 	}
 	
@@ -159,7 +160,7 @@ public abstract class Q
 	 */
 	public static BadCallError badCall( final String msg ) {
 		final BadCallError ex = new BadCallError( msg );
-		Q.toTree( ex );
+		// Q.toTree( ex );
 		throw ex;
 	}
 	
@@ -237,39 +238,37 @@ public abstract class Q
 	
 	
 	
-	/**
-	 * use with `assert` before it<br>
-	 * 
-	 * @param _this
-	 * @param sameOrSubclassObjectHere
-	 * @return
-	 */
-	public static boolean assumeSameFamilyClasses( final Object _this, final Object sameOrSubclassObjectHere ) {
-		assert null != _this;
-		assert null != sameOrSubclassObjectHere;
-		if ( _this.getClass().isAssignableFrom( sameOrSubclassObjectHere.getClass() ) ) {
-			// if (is obj's class same or subclass of this's class)
-			// if ( ( obj instanceof Pointer_ToChild ) ) {// means !(this class and all its subclasses)
-			return true;
-		}
-		throw Q.badCall( "you're comparing two very different class types!(obj.class==" + sameOrSubclassObjectHere.getClass()
-			+ " the object to compare should be same/subclass of this.class" );
-	}
+	// /**
+	// * use with `assert` before it<br>
+	// *
+	// * @param one
+	// * @param two
+	// * @return true if one is same or subclass of two; OR if two is same or subclass of one
+	// */
+	// public static boolean assumeSameFamilyClasses( final Object one, final Object two ) {
+	// if ( Z.haveCompatibleClasses_canNotBeNull( one, two ) ) {
+	// return true;
+	// }
+	// throw Q.badCall( "you're comparing two very different class types!\n" + "participating classes:\n" + "first ==`"
+	// + one.getClass() + "`" + "\nsecond ==`" + two.getClass() + "`" );
+	// }
 	
 	
 	public static boolean assumeSameExactClassElseThrow( final Object _this, final Object sameClassObjectHere ) {
-		assert null != _this;
-		assert null != sameClassObjectHere;
-		if ( sameClassObjectHere.getClass() == _this.getClass() ) {
+		if ( Z.areSameClass_canNotBeNull( _this, sameClassObjectHere ) ) {
 			return true;
 		}
-		throw Q.badCall( "the two objects are equals but different classes; " + "for these classes this is not valid!"
-			+ "obj.class==" + sameClassObjectHere.getClass() );
+		// assert null != _this;
+		// assert null != sameClassObjectHere;
+		// if ( sameClassObjectHere.getClass().equals( _this.getClass() ) ) {
+		// return true;
+		// }
+		throw Q.badCall( "their classes aren't the same as expected!\n" + "participating classes:\n" + "first ==`"
+			+ _this.getClass() + "`" + "\nsecond ==`" + sameClassObjectHere.getClass() + "`" );
 	}
 	
 	
-	
-	public static boolean returnParamButIfTrueAssertSameClass( final boolean param, final Object _this,
+	public static boolean returnParamButIfTrueAssertSameClass0( final boolean param, final Object _this,
 																final Object sameClassObjectHere ) {
 		if ( param ) {
 			assumeSameExactClassElseThrow( _this, sameClassObjectHere );
@@ -360,6 +359,11 @@ public abstract class Q
 	public static void dumpStack() {
 		StackDumper.dumpStack();
 		// Thread.dumpStack();
+	}
+	
+	
+	public static void markAsHandled( final Throwable exception ) {
+		markAsAnything( exception, StateOfAnException.HANDLED );
 	}
 	
 	

@@ -112,14 +112,9 @@ public class L0Pointer_ToChild
 			return true;
 		}
 		
-		assert Q.assumeSameFamilyClasses( this, obj );
 		assert Z.haveCompatibleClasses_canNotBeNull( this, obj );
 		
-		// if they are equal, they must not be different classes
-		return Q.returnParamButIfTrueAssertSameClass(
-			( (L0Pointer_ToChild)obj ).setOf1Element.equals( setOf1Element ),
-			this,
-			obj );
+		return Z.equalsWithExactSameClassTypes_enforceNotNull( ( (L0Pointer_ToChild)obj ).setOf1Element, setOf1Element );
 	}
 	
 	

@@ -92,7 +92,7 @@ public abstract class Z
 			// + o2.getClass() );
 			final boolean ret1 = o1.equals( o2 );// not reached
 			final boolean ret2 = o2.equals( o1 );
-			assert ret1 ^ ret2 : Q.bug( "one class's equals returned different result than the other class's equals"
+			assert !( ret1 ^ ret2 ) : Q.bug( "one class's equals returned different result than the other class's equals"
 				+ "\n They have incompatible equals, both of their equals should return either true or false, "
 				+ "not one true and one false\n" + "participating classes: \n" + "1=`" + o1.getClass() + "`\n" + "2=`"
 				+ o2.getClass() + "`" );

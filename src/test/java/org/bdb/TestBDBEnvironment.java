@@ -76,6 +76,7 @@ public class TestBDBEnvironment
 				fail( "should've thrown" );// FIXME: i forgot why this is bad; and throw null; is better
 			} catch ( final BadCallError bce ) {
 				// this is right
+				Q.markAsHandled( bce );
 			}
 			
 			final long expected = ( initialValue + ( 1 * delta ) );
@@ -99,7 +100,9 @@ public class TestBDBEnvironment
 				Q.fail();
 			} catch ( final Throwable soe ) {
 				// right
-				if ( !Q.isBareException( soe, SequenceOverflow_BDBException.class ) ) {
+				if ( Q.isBareException( soe, SequenceOverflow_BDBException.class ) ) {
+					Q.markAsHandled( soe );
+				} else {
 					Q.rethrow( soe );
 				}
 			}
@@ -118,6 +121,7 @@ public class TestBDBEnvironment
 				Q.fail();
 			} catch ( final Throwable t ) {
 				if ( Q.isBareException( t, BadCallError.class ) ) {
+					Q.markAsHandled( t );
 				} else {
 					Q.rethrow( t );
 				}
@@ -130,6 +134,5 @@ public class TestBDBEnvironment
 		}
 		assertTrue( null == env5 );
 	}
-	
 	
 }

@@ -777,8 +777,8 @@ public final class TreeOfExceptions
 																				// uwEx.printStackTrace();
 																				if ( alreadyExists( uwEx ) ) {
 																					Q
-																						.warn( "the exception we caught wasn't new, shouldn't happen; shouldn't already exist in tree. Must investigate! ex:"
-																							+ uwEx );
+																						.bug( "you attempted to add an exception that already existed in ToE (aka was added before already)\n"
+																							+ "this is the exception:" + uwEx );
 																				}
 																				// this will put the causes first in the
 																				// list, so the
@@ -1206,28 +1206,30 @@ public final class TreeOfExceptions
 			// }// else it's ok queue is not full yey
 			// }
 			
-			
+			// boolean notTimeElapsed = false;// time elapsed
 			while ( queueFIFO.remainingCapacity() <= 0 ) {// while full
-				boolean ret = false;// time elapsed
 				try {
-					ret = condQueueNotFull.await( QUEUEFULL_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS );
+					// notTimeElapsed =
+					condQueueNotFull.await( QUEUEFULL_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS );
 				} catch ( final InterruptedException e ) {
 					// ignore
-					ret = true;// got interrupted, we pretend that queue isn't full
-				}
-				if ( !ret ) {
-					Q.bug( "time wasn't supposed to elapse waiting for queueFIFO to get not-full" );
+					Q.warn( "waiting for queue to get full got interrupted: ", e );
+					return;
+					// notTimeElapsed = true;// got interrupted, we pretend that queue isn't full
 				}
 			}
 			
 			if ( queueFIFO.remainingCapacity() <= 0 ) {
+				// if ( !notTimeElapsed ) {
+				// Q.bug( "timeout waiting for queueFIFO to get not-full, and it's still full!" );
+				// }
 				try {
 					if ( thisQI.getType().equals( EnumQueueProcessorTypes.ADD_EXCEPTION ) ) {
 						Q.rethrow( "the exception that was meant to be in tree (is as cause):", thisQI.getEx() );
 					}
 				} finally {
-					Q.bug( "queueFIFO is at full capacity! this should not happen, unless(which is usually what is:)"
-						+ " EDT added so many exceptions that were thrown inside it "
+					Q.bug( "queueFIFO is at full capacity(and waited for it to get non-full but timedout)"
+						+ "! this should not happen, unless" + " EDT added so many exceptions that were thrown inside it "
 						+ "that it filled the queue, considering that other threads were waiting if the queue was "
 						+ "less than half empty, this means EDT added at least half a queue of exceptions and filled it\n"
 						+ "queueSize now=" + queueFIFO.size() );

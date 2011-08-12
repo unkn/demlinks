@@ -213,6 +213,7 @@ public class TestSetOfNodes
 			Q.fail();
 		} catch ( final BadCallError bce ) {
 			// good
+			Q.markAsHandled( bce );
 		}
 		
 		try {
@@ -220,6 +221,7 @@ public class TestSetOfNodes
 			Q.fail();
 		} catch ( final BadCallError bce ) {
 			// good
+			Q.markAsHandled( bce );
 		}
 		
 		final L0DomainSet_OfChildren dsot3 = new L0DomainSet_OfChildren( env, dsot.getSelf(), dsot.getDomain() );
@@ -239,6 +241,7 @@ public class TestSetOfNodes
 			Q.fail();
 		} catch ( final BadCallError bce ) {
 			// good
+			Q.markAsHandled( bce );
 		}
 		
 		dsot.hashCode();
@@ -362,8 +365,9 @@ public class TestSetOfNodes
 			// can't compare a super with the subclass
 			dsos.equals( set1 );// actually calls DomainSet_OfChildren.equals
 			Q.fail();
-		} catch ( final BadCallError ae ) {
+		} catch ( final BadCallError bce ) {
 			// the way
+			Q.markAsHandled( bce );
 		}
 	}
 	
@@ -397,8 +401,9 @@ public class TestSetOfNodes
 		try {
 			dptr.getPointeeChild();// detects that pointee is not in domain!
 			Q.fail();
-		} catch ( final AssertionError ae ) {
+		} catch ( final AssertionError ae ) {// FIXME: AssertionError is way too generic
 			// it detected!
+			Q.markAsHandled( ae );
 		}
 		
 		try {
@@ -426,6 +431,7 @@ public class TestSetOfNodes
 			Q.fail();// bad
 		} catch ( final BadCallError bce ) {
 			// good
+			Q.markAsHandled( bce );
 		}
 		
 		assertTrue( hm.size() == 1 );
