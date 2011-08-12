@@ -107,7 +107,7 @@ public class ListOfUniqueNonNullObjects<E>
 		
 		ref = super.addLast( obj );
 		assert null != ref;
-		assert Z.equalsWithExactSameClassTypes_enforceNotNull( ref, getRef( obj ) );
+		assert Z.equals_enforceExactSameClassTypesAndNotNull( ref, getRef( obj ) );
 		return false;// didn't exist
 	}
 	

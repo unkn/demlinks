@@ -208,21 +208,9 @@ public class TestSetOfNodes
 		}
 		final L0Set_OfChildren sot3 = new L0Set_OfChildren( env, dsotInitial );
 		assertTrue( sot3.getSelf().equals( dsot.getSelf() ) );
-		try {
-			sot3.equals( dsot );
-			Q.fail();
-		} catch ( final BadCallError bce ) {
-			// good
-			Q.markAsHandled( bce );
-		}
+		assertFalse( sot3.equals( dsot ) );
 		
-		try {
-			dsot.equals( sot3 );
-			Q.fail();
-		} catch ( final BadCallError bce ) {
-			// good
-			Q.markAsHandled( bce );
-		}
+		assertFalse( dsot.equals( sot3 ) );
 		
 		final L0DomainSet_OfChildren dsot3 = new L0DomainSet_OfChildren( env, dsot.getSelf(), dsot.getDomain() );
 		final L0Set_OfChildren dsot4 = new L0DomainSet_OfChildren( env, dsot.getSelf(), dsot.getDomain() );
@@ -361,14 +349,9 @@ public class TestSetOfNodes
 		assertTrue( dsos.getSelf().equals( sos2.getSelf() ) );
 		assertTrue( dsos.size() == 1 );
 		
-		try {
-			// can't compare a super with the subclass
-			dsos.equals( set1 );// actually calls DomainSet_OfChildren.equals
-			Q.fail();
-		} catch ( final BadCallError bce ) {
-			// the way
-			Q.markAsHandled( bce );
-		}
+		// can compare a super with the subclass will return false tho
+		assertFalse( dsos.equals( set1 ) );// actually calls DomainSet_OfChildren.equals
+		assertFalse( set1.equals( dsos ) );
 	}
 	
 	
@@ -403,22 +386,12 @@ public class TestSetOfNodes
 			Q.fail();
 		} catch ( final AssertionError ae ) {// FIXME: AssertionError is way too generic
 			// it detected!
-			Q.markAsHandled( ae );
+			// Q.markAsHandled( ae ); oh i see here, since it's an assert thrown, is not added in tree
 		}
 		
-		try {
-			dptr.equals( ptr );
-			Q.fail();
-		} catch ( final BadCallError bce ) {
-			// good
-		}
-		
-		try {
-			ptr.equals( dptr );
-			Q.fail();
-		} catch ( final BadCallError bce ) {
-			// good
-		}
+		// XXX: yes comparing different types but HashMap does this all the time so we're allowing it w/o throws
+		assertFalse( dptr.equals( ptr ) );
+		assertFalse( ptr.equals( dptr ) );
 		
 		dptr.hashCode();
 		final HashSet<L0Pointer_ToChild> hm = new HashSet<L0Pointer_ToChild>();
@@ -426,22 +399,11 @@ public class TestSetOfNodes
 		assertTrue( dptr.getSelf().equals( ptr.getSelf() ) );
 		
 		assert dptr.getSelf().equals( ptr.getSelf() );
-		try {
-			hm.add( ptr );
-			Q.fail();// bad
-		} catch ( final BadCallError bce ) {
-			// good
-			Q.markAsHandled( bce );
-		}
+		assertTrue( hm.add( ptr ) );
 		
-		assertTrue( hm.size() == 1 );
+		assertTrue( hm.size() == 2 );
 		assertTrue( hm.contains( dptr ) );
-		try {
-			hm.contains( ptr );
-			Q.fail();// bad
-		} catch ( final BadCallError bce ) {
-			// good
-		}
+		assertTrue( hm.contains( ptr ) );
 		// assertFalse( hm.add( ptr2 ) );
 		// // assertTrue( hm.contains( ptr ) );
 		// assertTrue( hm.contains( ptr2 ) );

@@ -111,10 +111,11 @@ public class L0Pointer_ToChild
 		if ( this == obj ) {
 			return true;
 		}
+		if ( !Z.areSameClass_canNotBeNull( this, obj ) ) {
+			return false;
+		}
 		
-		assert Z.haveCompatibleClasses_canNotBeNull( this, obj );
-		
-		return Z.equalsWithExactSameClassTypes_enforceNotNull( ( (L0Pointer_ToChild)obj ).setOf1Element, setOf1Element );
+		return Z.equals_enforceExactSameClassTypesAndNotNull( ( (L0Pointer_ToChild)obj ).setOf1Element, setOf1Element );
 	}
 	
 	

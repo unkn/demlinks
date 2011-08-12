@@ -462,7 +462,7 @@ public class TreeOfNonNullUniques<USEROBJECT>
 		final ListOfUniqueLists parentList = getListForUserObject( existingParent );
 		assert !parentList.containsObject( childList );// it cannot containt it, if root already is
 		final ListOfUniqueLists rootList1 = getRootList();
-		assert !Z.equalsWithExactSameClassTypes_enforceNotNull( rootList1, parentList );
+		assert !Z.equals_enforceExactSameClassTypesAndNotNull( rootList1, parentList );
 		// txbegin
 		assert rootList1.containsObject( childList );
 		assert !parentList.containsObject( childList );

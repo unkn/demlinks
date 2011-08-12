@@ -147,10 +147,12 @@ public class L0Set_OfChildren
 		if ( this == obj ) {
 			return true;
 		}
+		if ( !Z.areSameClass_canNotBeNull( this, obj ) ) {
+			return false;
+		}
+		// assert Z.haveCompatibleClasses_canNotBeNull( this, obj );
 		
-		assert Z.haveCompatibleClasses_canNotBeNull( this, obj );
-		
-		return Z.equalsWithExactSameClassTypes_enforceNotNull( ( (L0Set_OfChildren)obj )._selfNode, _selfNode );
+		return Z.equals_enforceExactSameClassTypesAndNotNull( ( (L0Set_OfChildren)obj )._selfNode, _selfNode );
 	}
 	
 	

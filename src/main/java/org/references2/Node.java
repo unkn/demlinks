@@ -86,7 +86,7 @@ public class Node// FIXME: rename this
 	private boolean assumedSameTree( final Node node ) {
 		assert null != node;
 		// compare by contents heh I mean, via this.equals()
-		if ( !Z.equalsWithExactSameClassTypes_enforceNotNull( getTree(), node.getTree() ) ) {
+		if ( !Z.equals_enforceExactSameClassTypesAndNotNull( getTree(), node.getTree() ) ) {
 			Q.badCall( "parent node is part of a different tree" );
 		}
 		return true;
@@ -111,7 +111,7 @@ public class Node// FIXME: rename this
 		assert null != child;
 		assert null != pos;
 		assert assumedSameTree( child );
-		return Z.equalsWithExactSameClassTypes_enforceNotNull( getChildrenList().getObjectAt( pos ), child );
+		return Z.equals_enforceExactSameClassTypesAndNotNull( getChildrenList().getObjectAt( pos ), child );
 	}
 	
 	
@@ -124,11 +124,11 @@ public class Node// FIXME: rename this
 		assert null != childNode;
 		assert null != pos;
 		assert assumedSameTree( childNode );
-		if ( Z.equalsWithExactSameClassTypes_enforceNotNull( this, childNode ) ) {
+		if ( Z.equals_enforceExactSameClassTypesAndNotNull( this, childNode ) ) {
 			Q.badCall( "parent and child are the same, but this is not allowed!" );
 		}
 		if ( getChildrenList().containsObject( childNode ) ) {
-			if ( !Z.equalsWithExactSameClassTypes_enforceNotNull( getChildrenList().getObjectAt( pos ), childNode ) ) {
+			if ( !Z.equals_enforceExactSameClassTypesAndNotNull( getChildrenList().getObjectAt( pos ), childNode ) ) {
 				Q.badCall( "object already exists but not in the same place" );
 			} else {
 				Q.badCall( "object already exists in parent in exactly the same place" );

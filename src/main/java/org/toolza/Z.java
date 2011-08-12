@@ -55,7 +55,7 @@ public abstract class Z
 	}
 	
 	
-	public static boolean equalsWithExactSameClassTypes_enforceNotNull( final Object o1, final Object o2 ) {
+	public static boolean equals_enforceExactSameClassTypesAndNotNull( final Object o1, final Object o2 ) {
 		assert Z.areSameClass_canNotBeNull( o1, o2 );
 		return equalsWithCompatClasses_enforceNotNull( o1, o2 );
 	}

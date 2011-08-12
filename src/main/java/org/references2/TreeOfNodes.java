@@ -84,7 +84,7 @@ public class TreeOfNodes
 	private boolean assumedSameTree( final Node node ) {
 		assert null != node;
 		// compare by contents heh I mean, via this.equals()
-		if ( !Z.equalsWithExactSameClassTypes_enforceNotNull( this, node.getTree() ) ) {
+		if ( !Z.equals_enforceExactSameClassTypesAndNotNull( this, node.getTree() ) ) {
 			Q.badCall( "parent node is part of a different tree" );
 		}
 		return true;

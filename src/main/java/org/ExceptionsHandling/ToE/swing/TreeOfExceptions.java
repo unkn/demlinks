@@ -1680,7 +1680,7 @@ public final class TreeOfExceptions
 									}
 									if ( lastProcessedOne != null ) {
 										if ( ( !showExAgain )
-											&& ( Z.equalsWithExactSameClassTypes_enforceNotNull( lastProcessedOne, node ) ) ) {
+											&& ( Z.equals_enforceExactSameClassTypesAndNotNull( lastProcessedOne, node ) ) ) {
 											return;// already processed/shown on console
 										}
 									}
