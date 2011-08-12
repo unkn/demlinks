@@ -393,8 +393,10 @@ public class TestSetOfNodes
 		final NodeGeneric ptrInitial = env.createNewUniqueNode();
 		assertNotNull( ptrInitial );
 		final L0Pointer_ToChild ptr = new L0Pointer_ToChild( env, ptrInitial );
-		assertTrue( ptr.getSelf().equals( ptrInitial ) );
 		assertTrue( ptr.getSelf() != ptrInitial );
+		System.out.println( ptr.getSelf().getClass() );
+		System.out.println( ptrInitial.getClass() );
+		assertTrue( ptr.getSelf().equals( ptrInitial ) );
 		assertNull( ptr.getPointeeChild() );
 		
 		final NodeGeneric newL = env.createNewUniqueNode();

@@ -35,7 +35,6 @@ package org.dml.storage.Level2;
 
 import org.dml.storage.commons.*;
 import org.q.*;
-import org.toolza.*;
 
 
 
@@ -46,18 +45,22 @@ import org.toolza.*;
  * I don't give a floop<br>
  */
 public class L0Pointer_ToChild
+		extends EpicBase
 {
 	
-	private final L0Set_OfChildren	setOf1Element;
-	
-	
 	public L0Pointer_ToChild( final StorageGeneric env1, final NodeGeneric selfNode ) {
-		setOf1Element = new L0Set_OfChildren( env1, selfNode );
+		super( env1, new L0Set_OfChildren( env1, selfNode ) );
 	}
 	
 	
-	public NodeGeneric getSelf() {
-		return setOf1Element.getSelf();
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.dml.storage.Level2.EpicBase#getSelf()
+	 */
+	@Override
+	public L0Set_OfChildren getSelf() {
+		return (L0Set_OfChildren)super.getSelf();
 	}
 	
 	
@@ -66,13 +69,14 @@ public class L0Pointer_ToChild
 	 *            can be null
 	 */
 	public void setPointee( final NodeGeneric toWhatChildNode ) {
-		setOf1Element.clearAll();// removes prev if any
-		assert setOf1Element.isEmpty();
+		assert isValidChild( toWhatChildNode );
+		getSelf().clearAll();// removes prev if any
+		assert getSelf().isEmpty();
 		
 		if ( null != toWhatChildNode ) {
-			final boolean result = setOf1Element.ensureIsAddedToSet( toWhatChildNode );
-			assert !result : Q.bug( "should not have existed!" );
-			assert setOf1Element.size() == 1;
+			final boolean existed = getSelf().ensureIsAddedToSet( toWhatChildNode );
+			assert !existed : Q.bug( "should not have existed!" );
+			assert getSelf().size() == 1;
 		}
 	}
 	
@@ -81,7 +85,7 @@ public class L0Pointer_ToChild
 	 * @return null if none
 	 */
 	public NodeGeneric getPointeeChild() {
-		final int size = setOf1Element.size();
+		final int size = getSelf().size();
 		assert ( size == 0 ) || ( size == 1 ) : Q.bug( "inconsistency fail, this pointer `" + getSelf()
 			+ "` must point to 0 or 1 children only" );
 		if ( size == 0 ) {
@@ -89,10 +93,11 @@ public class L0Pointer_ToChild
 		}
 		
 		// get first one (should be only one)
-		final IteratorGeneric_OnChildNodes iter = setOf1Element.getIterator();
+		final IteratorGeneric_OnChildNodes iter = getSelf().getIterator();
 		try {
 			final NodeGeneric termNode = iter.goFirst();
 			iter.success();
+			assert isValidChild( termNode ) : "something else must've changed our pointee and made this inconsistent with our domain";
 			return termNode;
 		} finally {
 			iter.finished();
@@ -103,24 +108,14 @@ public class L0Pointer_ToChild
 	}
 	
 	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.dml.storage.Level2.EpicBase#isValidChild(org.dml.storage.commons.NodeGeneric)
+	 */
 	@Override
-	public boolean equals( final Object obj ) {
-		if ( null == obj ) {
-			return false;
-		}
-		if ( this == obj ) {
-			return true;
-		}
-		if ( !Z.areSameClass_canNotBeNull( this, obj ) ) {
-			return false;
-		}
-		
-		return Z.equals_enforceExactSameClassTypesAndNotNull( ( (L0Pointer_ToChild)obj ).setOf1Element, setOf1Element );
+	public boolean isValidChild( final NodeGeneric node ) {
+		return true;
 	}
 	
-	
-	@Override
-	public int hashCode() {
-		return setOf1Element.hashCode();
-	}
 }

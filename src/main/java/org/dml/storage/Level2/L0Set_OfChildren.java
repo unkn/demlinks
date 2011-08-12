@@ -75,15 +75,6 @@ public class L0Set_OfChildren
 	}
 	
 	
-	/**
-	 * @return it's int(not long) because cursor.count() returns int! bdb limitation i guess
-	 */
-	@Override
-	public int size() {
-		return getStorage().countChildren( getSelf() );
-	}
-	
-	
 	
 	public boolean remove( final NodeGeneric node ) {
 		assert isValidChild( node );

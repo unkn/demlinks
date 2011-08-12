@@ -35,6 +35,7 @@ package org.dml.storage.Level2;
 
 import org.dml.storage.commons.*;
 import org.q.*;
+import org.toolza.*;
 
 
 
@@ -68,25 +69,12 @@ public class L0DomainPointer_ToChild
 	 *            null or a longIdent
 	 * @return true if valid for this
 	 */
+	@Override
 	public boolean isValidChild( final NodeGeneric childNode ) {
-		return ( ( null == childNode ) || ( ( !_domainNode.equals( childNode ) ) && ( env.isVector(
-			_domainNode,
-			childNode ) ) ) );
-	}
-	
-	
-	@Override
-	public void setPointee( final NodeGeneric toWhatChildNode ) {
-		assert isValidChild( toWhatChildNode );
-		super.setPointee( toWhatChildNode );
-	}
-	
-	
-	@Override
-	public NodeGeneric getPointeeChild() {
-		final NodeGeneric child = super.getPointeeChild();
-		assert isValidChild( child ) : "something else must've changed our pointee and made this inconsistent with our domain";
-		return child;
+		// valid if one of:
+		// 1. is null
+		// 2. not be the same as the domain && is child of domain
+		return ( ( null == childNode ) || ( ( !getDomain().equals( childNode ) ) && ( env.isVector( getDomain(), childNode ) ) ) );
 	}
 	
 	
@@ -95,15 +83,19 @@ public class L0DomainPointer_ToChild
 	}
 	
 	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.dml.storage.Level2.EpicBase#equalsOverride(org.dml.storage.Level2.EpicBase)
+	 */
 	@Override
-	public boolean equals( final Object obj ) {
-		if ( super.equals( obj ) ) {
-			assert obj.getClass() == this.getClass();// redundant
-			assert _domainNode.equals( ( (L0DomainPointer_ToChild)obj )._domainNode ) : Q
-				.badCall( "same self but different domains, user did a boobo somewhere" );
-			return true;
-		} else {
+	protected boolean equalsOverride( final EpicBase obj ) {
+		if ( !super.equalsOverride( obj ) ) {
 			return false;
 		}
+		assert obj.getClass() == this.getClass();// redundant
+		assert Z.equals_enforceExactSameClassTypesAndNotNull( getDomain(), ( (L0DomainPointer_ToChild)obj ).getDomain() ) : Q
+			.badCall( "same self but different domains, user did a boobo somewhere" );
+		return true;
 	}
 }

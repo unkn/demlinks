@@ -59,7 +59,7 @@ public abstract class EpicBase
 	}
 	
 	
-	public StorageGeneric getStorage() {
+	public final StorageGeneric getStorage() {
 		return storage;
 	}
 	
@@ -69,7 +69,12 @@ public abstract class EpicBase
 	}
 	
 	
-	public abstract int size();
+	/**
+	 * @return it's int(not long) because cursor.count() returns int! bdb limitation i guess
+	 */
+	public int size() {
+		return getStorage().countChildren( getSelf() );
+	}
 	
 	
 	public final boolean isEmpty() {

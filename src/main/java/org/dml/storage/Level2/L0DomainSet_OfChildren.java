@@ -35,6 +35,7 @@ package org.dml.storage.Level2;
 
 import org.dml.storage.commons.*;
 import org.q.*;
+import org.toolza.*;
 
 
 
@@ -102,7 +103,7 @@ public class L0DomainSet_OfChildren
 		assert obj.getClass() == this.getClass();
 		// assert obj instanceof DomainSet_OfChildren :
 		// "user is comparing to a super instance, as oppose to same or subclass";
-		assert _domainNode.equals( ( (L0DomainSet_OfChildren)obj )._domainNode ) : Q
+		assert Z.equals_enforceExactSameClassTypesAndNotNull( _domainNode, ( (L0DomainSet_OfChildren)obj )._domainNode ) : Q
 			.badCall( "same self but different domains, user did a boobo somewhere" );
 		return true;
 	}
