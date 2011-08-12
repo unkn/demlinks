@@ -208,9 +208,9 @@ public class TestSetOfNodes
 		}
 		final L0Set_OfChildren sot3 = new L0Set_OfChildren( env, dsotInitial );
 		assertTrue( sot3.getSelf().equals( dsot.getSelf() ) );
-		assertFalse( sot3.equals( dsot ) );
-		
-		assertFalse( dsot.equals( sot3 ) );
+		// assertFalse( sot3.equals( dsot ) );
+		// already used testEquals for this
+		// assertFalse( dsot.equals( sot3 ) );
 		
 		final L0DomainSet_OfChildren dsot3 = new L0DomainSet_OfChildren( env, dsot.getSelf(), dsot.getDomain() );
 		final L0Set_OfChildren dsot4 = new L0DomainSet_OfChildren( env, dsot.getSelf(), dsot.getDomain() );
