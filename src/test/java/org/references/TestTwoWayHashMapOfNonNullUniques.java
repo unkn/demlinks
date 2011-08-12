@@ -37,6 +37,7 @@ package org.references;
 import static org.junit.Assert.*;
 
 import org.JUnitCommons.*;
+import org.dml.storage.berkeleydb.generics.*;
 import org.junit.*;
 import org.q.*;
 import org.toolza.*;
@@ -158,8 +159,12 @@ public class TestTwoWayHashMapOfNonNullUniques
 		}
 		assertTrue( hm.size() == n );
 		assertFalse( hm.isEmpty() );
-		hm.removeAll();
-		assertTrue( hm.isEmpty() );
+		
+		if ( !GlobalBDB.isJE ) {// didn't implement this for JE yet
+			hm.removeAll();
+			assertTrue( hm.isEmpty() );
+		}
+		
 		hm.discard();
 		
 		try {
