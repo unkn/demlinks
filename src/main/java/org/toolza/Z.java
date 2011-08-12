@@ -193,6 +193,19 @@ public abstract class Z
 	}
 	
 	
+	public static boolean isDescendatOfClass_canNotBeNull( final Class<?> givenBaseSuperClass,
+															final Object objToBeChecked_SameOrSubClass ) {
+		assert Q.nn( givenBaseSuperClass );
+		assert Q.nn( objToBeChecked_SameOrSubClass );
+		return givenBaseSuperClass.isAssignableFrom( objToBeChecked_SameOrSubClass.getClass() );
+	}
+	
+	
+	// public static <T> boolean areDescendatsOfClass_canNotBeNull( final Class<T> base, final T o1, final T o2 ) {
+	// return false;
+	// }
+	
+	
 	/**
 	 * compares by reference<br>
 	 * doesn't allow comparing to `null`<br>

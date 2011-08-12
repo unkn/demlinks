@@ -396,7 +396,8 @@ public class TestSetOfNodes
 		assertTrue( ptr.getSelf() != ptrInitial );
 		System.out.println( ptr.getSelf().getClass() );
 		System.out.println( ptrInitial.getClass() );
-		assertTrue( ptr.getSelf().equals( ptrInitial ) );
+		final boolean ret = ptr.getSelf().equals( ptrInitial );
+		assertTrue( ret );
 		assertNull( ptr.getPointeeChild() );
 		
 		final NodeGeneric newL = env.createNewUniqueNode();

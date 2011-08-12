@@ -95,7 +95,12 @@ public abstract class EpicBase
 			return true;
 		}
 		if ( !Z.haveCompatibleClasses_canNotBeNull( this, obj ) ) {
-			return false;// silently allowing comparison when different type of classes ie. Interger and String
+			if ( !Z.isDescendatOfClass_canNotBeNull( NodeGeneric.class, obj ) ) {
+				throw Q.bug( "totally incompat classes for\n" + this.getClass() + "\n" + obj.getClass() );
+			}
+			
+			return Z.equalsWithCompatClasses_allowsNull( getSelf(), obj );
+			// obsolete comment?: silently allowing comparison when different type of classes ie. Interger and String
 		}
 		// so if we're here they've compatible classes
 		// if not same class, but compatible we'll check if using the same self - cause that's a bad usage scenario
@@ -137,7 +142,10 @@ public abstract class EpicBase
 	public EpicBase clone() {// throws CloneNotSupportedException {
 		// throw Q.cantClone();
 		try {
-			return (EpicBase)super.clone();
+			final EpicBase c = (EpicBase)super.clone();
+			assert c != this;
+			assert c.equals( this );
+			return c;
 		} catch ( final CloneNotSupportedException e ) {
 			throw Q.cantClone( e );
 		}
