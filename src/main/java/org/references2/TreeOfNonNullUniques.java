@@ -450,7 +450,7 @@ public class TreeOfNonNullUniques<USEROBJECT>
 		assert !Z.equalsWithCompatClasses_allowsNull( getRootUserObject(), existingParent ) : Q
 			.badCall( "you passed root as parent" );
 		// }
-		assert !Z.equalsWithCompatClasses_enforceNotNull( existingChild, existingParent ) : Q
+		assert !Z.equals_enforceCompatibleClassesAndNotNull( existingChild, existingParent ) : Q
 			.badCall( "cannot have the same object as both parent and child to itself!" );
 		// }
 		

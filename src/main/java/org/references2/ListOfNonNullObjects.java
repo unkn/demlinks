@@ -248,7 +248,7 @@ public class ListOfNonNullObjects<WHICHOBJ>
 		assert null != posRef;
 		final ChainedReference<WHICHOBJ> existentRef = getRefAt( pos, posRef );
 		if ( null != existentRef ) {
-			if ( Z.equalsWithCompatClasses_enforceNotNull( existentRef.getObject(), newObj ) ) {
+			if ( Z.equals_enforceCompatibleClassesAndNotNull( existentRef.getObject(), newObj ) ) {
 				return true;// already exists at that expected position
 			}
 		} else {

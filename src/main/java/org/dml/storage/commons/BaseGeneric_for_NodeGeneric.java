@@ -89,7 +89,8 @@ public abstract class BaseGeneric_for_NodeGeneric
 		try {
 			return (BaseGeneric_for_NodeGeneric)super.clone();
 		} catch ( final CloneNotSupportedException e ) {
-			throw Q.bug( "not possible", e );
+			throw Q.cantClone( e );
+			// throw Q.bug( "not possible", e );
 		}
 	}
 	

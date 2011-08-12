@@ -3,6 +3,7 @@
  * Copyright (c) 2005-2011, AtKaaZ
  * All rights reserved.
  * this file is part of DemLinks
+ * File created on Aug 12, 2011 3:01:55 AM
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -33,36 +34,34 @@
  */
 package org.dml.storage.commons;
 
+import org.q.*;
+
 
 
 /**
- * in-java representation for the underlying db-stored node
+ *
  */
-public interface NodeGeneric
-		extends Cloneable
+@SuppressWarnings( "serial" )
+public class UncheckedCloneNotSupportedException
+		extends RuntimeException
 {
 	
-	public long getId();
-	
-	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#equals(java.lang.Object)
+	/**
+	 * @param string
 	 */
-	@Override
-	public boolean equals( Object obj );
+	public UncheckedCloneNotSupportedException( final String string ) {
+		super( string );
+		Q.toTree( this );
+	}
 	
 	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#hashCode()
+	/**
+	 * @param cause
+	 * @param string
 	 */
-	@Override
-	public int hashCode();
+	public UncheckedCloneNotSupportedException( final String string, final CloneNotSupportedException cause ) {
+		super( string, cause );
+		Q.toTree( this );
+	}
 	
-	
-	// public GenericNode clone() throws CloneNotSupportedException;
-	public NodeGeneric clone(); // throws UncheckedCloneNotSupportedException;
 }

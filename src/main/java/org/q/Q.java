@@ -37,6 +37,7 @@ import java.lang.Thread.UncaughtExceptionHandler;
 
 import org.ExceptionsHandling.ToE.*;
 import org.ExceptionsHandling.ToE.swing.*;
+import org.dml.storage.commons.*;
 import org.toolza.*;
 
 
@@ -71,11 +72,29 @@ public abstract class Q
 	 * use this in clone() methods<br>
 	 * 
 	 * @return
-	 * @throws CloneNotSupportedException
 	 */
-	public static CloneNotSupportedException cantClone() throws CloneNotSupportedException {
-		final CloneNotSupportedException cnse = new CloneNotSupportedException( "not implemented" );
-		toTree( cnse );
+	public static UncheckedCloneNotSupportedException cantClone() {
+		final UncheckedCloneNotSupportedException cnse = new UncheckedCloneNotSupportedException( "clone() not implemented" );
+		// toTree( cnse );
+		throw cnse;
+	}
+	
+	
+	/**
+	 * usage:<br>
+	 * <code>try {<br>
+			super.clone();<br>
+		} catch ( final CloneNotSupportedException e ) {<br>
+			throw Q.cantClone( e );<br>
+		}<br>
+		</code>
+	 * 
+	 * @param e
+	 * @return
+	 */
+	public static UncheckedCloneNotSupportedException cantClone( final CloneNotSupportedException e ) {
+		final UncheckedCloneNotSupportedException cnse = new UncheckedCloneNotSupportedException( "clone() not implemented", e );
+		// toTree( cnse );
 		throw cnse;
 	}
 	
@@ -407,6 +426,7 @@ public abstract class Q
 		System.err.println( "MARKED AS: " + state + " WHATex: " + existingException );
 		
 	}
+	
 	
 	
 	// /**

@@ -34,8 +34,6 @@
 package org.dml.storage.Level2;
 
 import org.dml.storage.commons.*;
-import org.q.*;
-import org.toolza.*;
 
 
 
@@ -45,30 +43,19 @@ import org.toolza.*;
  * allows self to be added to set, ie. circular allower<br>
  */
 public class L0Set_OfChildren
+		extends EpicBase
 {
-	
-	protected final StorageGeneric	env;
-	private final NodeGeneric		_selfNode;
-	
 	
 	/**
 	 * set may already exist ie. have children<br>
 	 * 
-	 * @param env1
+	 * @param store
 	 * @param selfNode
 	 *            non-null<br>
 	 *            will be cloned(for now)<br>
 	 */
-	public L0Set_OfChildren( final StorageGeneric env1, final NodeGeneric selfNode ) {
-		assert null != env1;
-		assert null != selfNode;
-		env = env1;
-		_selfNode = selfNode.clone();// this is cloned for hitting bug with `==` in later code
-	}
-	
-	
-	public NodeGeneric getSelf() {
-		return _selfNode;
+	public L0Set_OfChildren( final StorageGeneric store, final NodeGeneric selfNode ) {
+		super( store, selfNode );
 	}
 	
 	
@@ -78,35 +65,33 @@ public class L0Set_OfChildren
 	 */
 	public boolean ensureIsAddedToSet( final NodeGeneric node ) {
 		assert isValidChild( node );
-		return env.ensureVector( _selfNode, node );
+		return getStorage().ensureVector( getSelf(), node );
 	}
 	
 	
 	public boolean contains( final NodeGeneric longIdent ) {
 		// assert this.isValidChild( longIdent ); no
-		return env.isVector( _selfNode, longIdent );
+		return getStorage().isVector( getSelf(), longIdent );
 	}
 	
 	
 	/**
 	 * @return it's int(not long) because cursor.count() returns int! bdb limitation i guess
 	 */
+	@Override
 	public int size() {
-		return env.countChildren( _selfNode );
+		return getStorage().countChildren( getSelf() );
 	}
 	
-	
-	public boolean isEmpty() {
-		return 0 == size();
-	}
 	
 	
 	public boolean remove( final NodeGeneric node ) {
 		assert isValidChild( node );
-		return env.removeVector( _selfNode, node );
+		return getStorage().removeVector( getSelf(), node );
 	}
 	
 	
+	@Override
 	public boolean isValidChild( final NodeGeneric node ) {
 		return ( null != node );// allowing add self to set //&& ( !self.equals( longIdent ) );
 	}
@@ -118,7 +103,7 @@ public class L0Set_OfChildren
 	 * @return
 	 */
 	public IteratorGeneric_OnChildNodes getIterator() {
-		return env.getIterator_on_Children_of( _selfNode );
+		return getStorage().getIterator_on_Children_of( getSelf() );
 	}
 	
 	
@@ -138,32 +123,4 @@ public class L0Set_OfChildren
 	}
 	
 	
-	@Override
-	public boolean equals( final Object obj ) {
-		// this will work if SubClass.equals calls super.equals
-		if ( null == obj ) {
-			return false;
-		}
-		if ( this == obj ) {
-			return true;
-		}
-		if ( !Z.areSameClass_canNotBeNull( this, obj ) ) {
-			return false;
-		}
-		// assert Z.haveCompatibleClasses_canNotBeNull( this, obj );
-		
-		return Z.equals_enforceExactSameClassTypesAndNotNull( ( (L0Set_OfChildren)obj )._selfNode, _selfNode );
-	}
-	
-	
-	@Override
-	public int hashCode() {
-		return _selfNode.hashCode();
-	}
-	
-	
-	@Override
-	protected Object clone() throws CloneNotSupportedException {
-		throw Q.cantClone();
-	}
 }

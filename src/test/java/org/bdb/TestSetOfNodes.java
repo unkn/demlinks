@@ -53,7 +53,7 @@ public class TestSetOfNodes
 		extends JUnitHooker
 {
 	
-	private StorageBDBGeneric	env;
+	private StorageGeneric		env;
 	private L0Set_OfChildren	set1;
 	private NodeGeneric			setInitial;
 	
@@ -348,10 +348,43 @@ public class TestSetOfNodes
 		dsos = new L0DomainSet_OfChildren( env, sos2.getSelf(), domain );
 		assertTrue( dsos.getSelf().equals( sos2.getSelf() ) );
 		assertTrue( dsos.size() == 1 );
+	}
+	
+	
+	@Test
+	public void testEquals() {
+		final NodeGeneric domain = env.createNewUniqueNode();
+		final NodeGeneric self1 = env.createNewUniqueNode();
+		final L0DomainSet_OfChildren dsos = new L0DomainSet_OfChildren( env, self1, domain );
+		final L0Set_OfChildren sos = new L0Set_OfChildren( env, self1 );
+		// two diff class types using the same self, is detected when equals is performed:
+		try {
+			dsos.equals( sos );
+			Q.fail();
+		} catch ( final BadCallError bce ) {
+			Q.markAsHandled( bce );
+		}
 		
-		// can compare a super with the subclass will return false tho
-		assertFalse( dsos.equals( set1 ) );// actually calls DomainSet_OfChildren.equals
-		assertFalse( set1.equals( dsos ) );
+		try {
+			assertFalse( sos.equals( dsos ) );
+			Q.fail();
+		} catch ( final BadCallError bce ) {
+			Q.markAsHandled( bce );
+		}
+		
+		// ==============
+		// now comparing two diff class types with diff self, will return fail w/o complaining
+		// only if same self it would complain, because can use only one self for one type of class ie. Pointer and Set can't be
+		// using same self; because their constraints would clash
+		final NodeGeneric n2 = env.createNewUniqueNode();
+		final L0DomainSet_OfChildren x = new L0DomainSet_OfChildren( env, n2, domain );
+		assertFalse( x.equals( set1 ) );
+		assertFalse( set1.equals( x ) );
+		// =========== now comparing same class type with same self it's ok, two instances can use same self as long as they're
+		// of the same type ie. both Set or both Pointer; as opposed to one Set and one Pointer
+		final L0DomainSet_OfChildren x2 = new L0DomainSet_OfChildren( env, n2, domain );
+		assertTrue( x2.equals( x ) );
+		assertTrue( x.equals( x2 ) );
 	}
 	
 	

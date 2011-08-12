@@ -41,7 +41,7 @@ import org.q.*;
 /**
  * domain is enforced only if asserts are enabled and only for java calls ie. in java environment<br>
  * does not allow domain or self to be added to set<br>
- * does not check for integrity if domainset already exists when constructed<br>
+ * does not check for integrity if domainSet already exists when constructed<br>
  * does not allow: self to equal domain<br>
  */
 public class L0DomainSet_OfChildren
@@ -80,7 +80,7 @@ public class L0DomainSet_OfChildren
 	
 	
 	public boolean isInDomain( final NodeGeneric childNode ) {
-		return ( ( !_domainNode.equals( childNode ) ) && ( env.isVector( _domainNode, childNode ) ) );
+		return ( ( !_domainNode.equals( childNode ) ) && ( getStorage().isVector( _domainNode, childNode ) ) );
 	}
 	
 	
@@ -89,24 +89,21 @@ public class L0DomainSet_OfChildren
 	}
 	
 	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.dml.storage.Level2.L0Set_OfChildren#overriddenEquals(org.dml.storage.Level2.EpicEquals)
+	 */
 	@Override
-	public boolean equals( final Object obj ) {
-		// Q.badCall( "not yet implemented, tho below code is good" );
-		if ( super.equals( obj ) ) {
-			assert obj.getClass() == this.getClass();
-			// assert obj instanceof DomainSet_OfChildren :
-			// "user is comparing to a super instance, as oppose to same or subclass";
-			assert _domainNode.equals( ( (L0DomainSet_OfChildren)obj )._domainNode ) : Q
-				.badCall( "same self but different domains, user did a boobo somewhere" );
-			return true;
-		} else {
+	protected boolean equalsOverride( final EpicBase obj ) {
+		if ( !super.equalsOverride( obj ) ) {
 			return false;
 		}
-	}
-	
-	
-	@Override
-	protected Object clone() throws CloneNotSupportedException {
-		throw Q.cantClone();
+		assert obj.getClass() == this.getClass();
+		// assert obj instanceof DomainSet_OfChildren :
+		// "user is comparing to a super instance, as oppose to same or subclass";
+		assert _domainNode.equals( ( (L0DomainSet_OfChildren)obj )._domainNode ) : Q
+			.badCall( "same self but different domains, user did a boobo somewhere" );
+		return true;
 	}
 }
