@@ -34,8 +34,6 @@
  */
 package org.dml.storage.commons;
 
-import org.q.*;
-
 
 
 /**
@@ -43,28 +41,53 @@ import org.q.*;
  * they're to be compared via .equals()<br>
  * node implementations should extend this<br>
  */
-public abstract class BaseGeneric_for_NodeGeneric
-		implements NodeGeneric// , Cloneable
+public abstract class NodeGenericImpl
+		extends NodeGenericCommon
+// implements NodeGenericC// , Cloneable
 {
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.dml.storage.commons.NodeGeneric#getSelfImpl()
+	 */
+	@Override
+	public final NodeGenericImpl getSelfImpl() {
+		return this;
+	}
 	
 	
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see java.lang.Object#equals(java.lang.Object)
+	 * @see org.dml.storage.commons.NodeGenericCommon#getSelf()
 	 */
 	@Override
-	public boolean equals( final Object obj ) {
-		// XXX: this is not really good when BerkEnv is allowed to have multiple instances, ie. same long could be from 2 diff
-		// berkeleydb environments; but for now we know BerkEnv can have only one instance so when comparing any 2 nodes will
-		// always be from same berkeley environment! tho in the m.i. case we'd have to store the BerkEnv instance too...;
-		if ( null == obj ) {
-			return false;
-		}
-		Q.assumeSameExactClassElseThrow( this, obj );
-		final NodeGeneric n = (NodeGeneric)obj;
-		return getId() == n.getId();
+	public final NodeGeneric getSelf() {
+		return this;// would always return itself for Node implementations
 	}
+	
+	
+	// /*
+	// * (non-Javadoc)
+	// *
+	// * @see java.lang.Object#equals(java.lang.Object)
+	// */
+	// @Override
+	// public boolean equals( final Object obj ) {
+	// // XXX: this is not really good when BerkEnv is allowed to have multiple instances, ie. same long could be from 2 diff
+	// // berkeleydb environments; but for now we know BerkEnv can have only one instance so when comparing any 2 nodes will
+	// // always be from same berkeley environment! tho in the m.i. case we'd have to store the BerkEnv instance too...;
+	// if ( null == obj ) {
+	// return false;
+	// }
+	// if ( this == obj ) {
+	// return true;
+	// }
+	// Q.assumeSameExactClassElseThrow( this, obj );
+	// final NodeGeneric n = (NodeGeneric)obj;
+	// return getId() == n.getId();
+	// }
 	
 	
 	/*
@@ -79,20 +102,20 @@ public abstract class BaseGeneric_for_NodeGeneric
 	}
 	
 	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#clone()
-	 */
-	@Override
-	public BaseGeneric_for_NodeGeneric clone() {
-		try {
-			return (BaseGeneric_for_NodeGeneric)super.clone();
-		} catch ( final CloneNotSupportedException e ) {
-			throw Q.cantClone( e );
-			// throw Q.bug( "not possible", e );
-		}
-	}
+	// /*
+	// * (non-Javadoc)
+	// *
+	// * @see java.lang.Object#clone()
+	// */
+	// @Override
+	// public NodeGenericImpl clone() {
+	// // try {
+	// return (NodeGenericImpl)super.clone();
+	// // } catch ( final CloneNotSupportedException e ) {
+	// // throw Q.cantClone( e );
+	// // // throw Q.bug( "not possible", e );
+	// // }
+	// }
 	
 	
 	/*

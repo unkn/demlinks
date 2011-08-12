@@ -102,6 +102,28 @@ public abstract class Z
 	}
 	
 	
+	public static boolean equals_enforceSameBaseClassAndNotNull( final Object o1, final Object o2,
+																	final Class<?> baseClassEnforced ) {
+		assert Q.nn( o1 );
+		assert Q.nn( o2 );
+		if ( o1 == o2 ) {
+			return true;
+		}
+		assert isDescendatOfClass_throwIfAnyNull( o1, baseClassEnforced ) : o1.getClass() + " is not descendant of "
+			+ baseClassEnforced;
+		assert isDescendatOfClass_throwIfAnyNull( o2, baseClassEnforced ) : o2.getClass() + " is not descendant of "
+			+ baseClassEnforced;
+		
+		final boolean ret1 = o1.equals( o2 );
+		if ( !areSameClass_canNotBeNull( o1, o2 ) ) {
+			final boolean ret2 = o2.equals( o1 );
+			assert !( ret1 ^ ret2 ) : Q.bug( "two incompatible .equals() defined for each of the object's classes: o1("
+				+ o1.getClass() + ") and o2(" + o2.getClass() + ")" );
+		}
+		return ret1;// == ret2
+	}
+	
+	
 	public static boolean equals_enforceCompatibleClassesAndNotNull( final Object o1, final Object o2 ) {
 		assert Q.nn( o1 );
 		assert Q.nn( o2 );
@@ -193,8 +215,8 @@ public abstract class Z
 	}
 	
 	
-	public static boolean isDescendatOfClass_canNotBeNull( final Class<?> givenBaseSuperClass,
-															final Object objToBeChecked_SameOrSubClass ) {
+	public static boolean isDescendatOfClass_throwIfAnyNull( final Object objToBeChecked_SameOrSubClass,
+															final Class<?> givenBaseSuperClass ) {
 		assert Q.nn( givenBaseSuperClass );
 		assert Q.nn( objToBeChecked_SameOrSubClass );
 		return givenBaseSuperClass.isAssignableFrom( objToBeChecked_SameOrSubClass.getClass() );

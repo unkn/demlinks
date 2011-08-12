@@ -394,6 +394,7 @@ public class TestSetOfNodes
 		assertNotNull( ptrInitial );
 		final L0Pointer_ToChild ptr = new L0Pointer_ToChild( env, ptrInitial );
 		assertTrue( ptr.getSelf() != ptrInitial );
+		System.out.println( ptr.getSelfImpl().getClass() );
 		System.out.println( ptr.getSelf().getClass() );
 		System.out.println( ptrInitial.getClass() );
 		final boolean ret = ptr.getSelf().equals( ptrInitial );

@@ -45,7 +45,7 @@ import org.q.*;
  * I don't give a floop<br>
  */
 public class L0Pointer_ToChild
-		extends EpicBase
+		extends NodeGenericExtensions
 {
 	
 	public L0Pointer_ToChild( final StorageGeneric env1, final NodeGeneric selfNode ) {

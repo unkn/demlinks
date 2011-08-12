@@ -96,7 +96,7 @@ public class L0DomainSet_OfChildren
 	 * @see org.dml.storage.Level2.L0Set_OfChildren#overriddenEquals(org.dml.storage.Level2.EpicEquals)
 	 */
 	@Override
-	protected boolean equalsOverride( final EpicBase obj ) {
+	protected boolean equalsOverride( final NodeGenericCommon obj ) {
 		if ( !super.equalsOverride( obj ) ) {
 			return false;
 		}

@@ -43,7 +43,7 @@ import org.dml.storage.commons.*;
  * allows self to be added to set, ie. circular allower<br>
  */
 public class L0Set_OfChildren
-		extends EpicBase
+		extends NodeGenericExtensions
 {
 	
 	/**

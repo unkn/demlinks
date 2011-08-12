@@ -89,7 +89,7 @@ public class L0DomainPointer_ToChild
 	 * @see org.dml.storage.Level2.EpicBase#equalsOverride(org.dml.storage.Level2.EpicBase)
 	 */
 	@Override
-	protected boolean equalsOverride( final EpicBase obj ) {
+	protected boolean equalsOverride( final NodeGenericCommon obj ) {
 		if ( !super.equalsOverride( obj ) ) {
 			return false;
 		}
