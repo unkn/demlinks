@@ -49,7 +49,11 @@ public abstract class NodeGenericExtensions
 {
 	
 	private final StorageGeneric	storage;
+	
+	// self can be either an extension or an implementation
 	private final NodeGeneric		_selfNode;
+	
+	// this can be only implementation:
 	private final NodeGenericImpl	_selfNodeImpl;
 	
 	
@@ -73,7 +77,7 @@ public abstract class NodeGenericExtensions
 	}
 	
 	
-	private static NodeGenericImpl getSelfImpl( final NodeGeneric from ) {
+	public static NodeGenericImpl getSelfImpl( final NodeGeneric from ) {
 		NodeGeneric parser = from;
 		// if ( parser instanceof EpicBase ) {
 		// parser = ( (EpicBase)parser ).getSelfImpl();//this uses lot of stack
@@ -126,6 +130,7 @@ public abstract class NodeGenericExtensions
 		Q.assumeSameExactClassElseThrow( this, obj );
 		// XXX: this detects if same self is used in more than 1 type, which indicated bad usage! user's fault
 		
+		// FIXME: should eventually use .equals() on storages here
 		if ( !Z.equals_enforceExactSameClassTypesAndNotNull( obj.getStorage(), getStorage() ) ) {
 			return false;
 		}

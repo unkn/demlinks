@@ -357,6 +357,19 @@ public class TestSetOfNodes
 		final NodeGeneric self1 = env.createNewUniqueNode();
 		final L0DomainSet_OfChildren dsos = new L0DomainSet_OfChildren( env, self1, domain );
 		final L0Set_OfChildren sos = new L0Set_OfChildren( env, self1 );
+		
+		assertFalse( domain.equals( dsos ) );
+		assertFalse( dsos.equals( domain ) );
+		
+		assertFalse( sos.equals( domain ) );
+		assertFalse( domain.equals( sos ) );
+		
+		assertTrue( sos.equals( self1 ) );
+		assertTrue( self1.equals( sos ) );
+		
+		assertTrue( dsos.equals( self1 ) );
+		assertTrue( self1.equals( dsos ) );
+		
 		// two diff class types using the same self, is detected when equals is performed:
 		try {
 			dsos.equals( sos );
