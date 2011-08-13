@@ -393,6 +393,7 @@ public class TestSetOfNodes
 		final NodeGeneric ptrInitial = env.createNewUniqueNode();
 		assertNotNull( ptrInitial );
 		final L0Pointer_ToChild ptr = new L0Pointer_ToChild( env, ptrInitial );
+		assertFalse( env.isVector( ptr, ptrInitial ) );
 		assertTrue( ptr.getSelf() != ptrInitial );
 		System.out.println( ptr.getSelfImpl().getClass() );
 		System.out.println( ptr.getSelf().getClass() );
@@ -427,8 +428,19 @@ public class TestSetOfNodes
 		}
 		
 		// XXX: yes comparing different types but HashMap does this all the time so we're allowing it w/o throws
-		assertFalse( dptr.equals( ptr ) );
-		assertFalse( ptr.equals( dptr ) );
+		// XXX: but in this case, we throw because! they are using the same self, which will induce a bug later
+		try {
+			dptr.equals( ptr );
+			Q.fail();
+		} catch ( final BadCallError bce ) {
+			Q.markAsHandled( bce );
+		}
+		try {
+			ptr.equals( dptr );
+			Q.fail();
+		} catch ( final BadCallError bce ) {
+			Q.markAsHandled( bce );
+		}
 		
 		dptr.hashCode();
 		final HashSet<L0Pointer_ToChild> hm = new HashSet<L0Pointer_ToChild>();
@@ -464,7 +476,7 @@ public class TestSetOfNodes
 		assertNull( dptr.getPointeeChild() );
 		
 		try {
-			nndptr.getPointeeChild();
+			System.out.println( nndptr.getPointeeChild() );
 			Q.fail();
 		} catch ( final AssertionError ae ) {
 			// good

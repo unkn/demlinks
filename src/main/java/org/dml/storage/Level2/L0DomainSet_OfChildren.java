@@ -100,7 +100,8 @@ public class L0DomainSet_OfChildren
 		if ( !super.equalsOverride( obj ) ) {
 			return false;
 		}
-		assert obj.getClass() == this.getClass();
+		Q.assumeSameExactClassElseThrow( this, obj );
+		// assert obj.getClass() == this.getClass();
 		// assert obj instanceof DomainSet_OfChildren :
 		// "user is comparing to a super instance, as oppose to same or subclass";
 		assert Z.equals_enforceExactSameClassTypesAndNotNull( _domainNode, ( (L0DomainSet_OfChildren)obj )._domainNode ) : Q

@@ -35,6 +35,7 @@
 package org.dml.storage.Level2;
 
 import org.dml.storage.commons.*;
+import org.q.*;
 import org.toolza.*;
 
 
@@ -113,20 +114,29 @@ public abstract class NodeGenericExtensions
 	 * @see org.dml.storage.commons.NodeGenericCommon#equalsOverride(org.dml.storage.commons.NodeGenericCommon)
 	 */
 	@Override
-	protected boolean equalsOverride( final NodeGenericCommon obj ) {
-		final NodeGenericExtensions o = (NodeGenericExtensions)obj;
-		if ( !Z.equals_enforceExactSameClassTypesAndNotNull( o.storage, storage ) ) {
-			return false;// silently allowing comparison when different storages... ie. BDBJE and BDBJNI or BDBJE and RAMStorage
-			// or even two diff instances of BDBJE which do not .equals() according to their own .equals()
+	protected boolean equalsOverride( final NodeGenericCommon o ) {
+		final NodeGenericExtensions obj = (NodeGenericExtensions)o;// this will always be of this type if we're here
+		
+		final boolean sameSelf = Z.equals_enforceSameBaseClassAndNotNull( obj.getSelf(), getSelf(), NodeGenericCommon.class );
+		if ( !sameSelf ) {
+			return false;
 		}
-		return super.equalsOverride( o );
+		// if they are different classes they are not equal, due to not same type
+		// ie. a Pointer and a Set
+		Q.assumeSameExactClassElseThrow( this, obj );
+		// XXX: this detects if same self is used in more than 1 type, which indicated bad usage! user's fault
+		
+		if ( !Z.equals_enforceExactSameClassTypesAndNotNull( obj.getStorage(), getStorage() ) ) {
+			return false;
+		}
+		
+		return true;
 	}
-	
 	
 	
 	@Override
 	public int hashCode() {
-		return storage.hashCode() + _selfNode.hashCode();
+		return getStorage().hashCode() + _selfNode.hashCode();
 	}
 	
 	

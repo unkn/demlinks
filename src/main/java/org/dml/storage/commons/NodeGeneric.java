@@ -42,6 +42,9 @@ public interface NodeGeneric
 		extends Cloneable
 {
 	
+	public abstract NodeGeneric getSelf();
+	
+	
 	public NodeGenericImpl getSelfImpl();
 	
 	

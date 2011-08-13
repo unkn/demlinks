@@ -88,23 +88,22 @@ public class L0Pointer_ToChild
 		final int size = getSelf().size();
 		assert ( size == 0 ) || ( size == 1 ) : Q.bug( "inconsistency fail, this pointer `" + getSelf()
 			+ "` must point to 0 or 1 children only" );
-		if ( size == 0 ) {
-			return null;
+		NodeGeneric termNode = null;
+		if ( size > 0 ) {
+			// get first one (should be only one)
+			final IteratorGeneric_OnChildNodes iter = getSelf().getIterator();
+			try {
+				termNode = iter.goFirst();
+				iter.success();
+				
+			} finally {
+				iter.finished();
+				// FIXME: I'd use finally but if goFirst and close both throw, only the last throw will be seen ie. overwriting
+				// this might not be avoidable, unless finished never throws? or bringing back aspectj hooked throws *puke*
+			}
 		}
-		
-		// get first one (should be only one)
-		final IteratorGeneric_OnChildNodes iter = getSelf().getIterator();
-		try {
-			final NodeGeneric termNode = iter.goFirst();
-			iter.success();
-			assert isValidChild( termNode ) : "something else must've changed our pointee and made this inconsistent with our domain";
-			return termNode;
-		} finally {
-			iter.finished();
-			// FIXME: I'd use finally but if goFirst and close both throw, only the last throw will be seen ie. overwriting
-			// this might not be avoidable, unless finished never throws? or bringing back aspectj hooked throws *puke*
-		}
-		
+		assert isValidChild( termNode ) : "something else must've changed our pointee and made this inconsistent with our domain";
+		return termNode;
 	}
 	
 	

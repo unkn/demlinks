@@ -34,11 +34,11 @@
  */
 package org.dml.storage.commons;
 
+import org.q.*;
+
 
 
 /**
- * multiple java instances of this can exist but for the same underlying node (aka long)<br>
- * they're to be compared via .equals()<br>
  * node implementations should extend this<br>
  */
 public abstract class NodeGenericImpl
@@ -53,6 +53,9 @@ public abstract class NodeGenericImpl
 	 */
 	@Override
 	public final NodeGenericImpl getSelfImpl() {
+		// this didn't work due to interface being used(so it remains final here!): not final method, so to allow subclasses to
+		// cast internally; we don't
+		// want callers to have to cast every time!
 		return this;
 	}
 	
@@ -65,6 +68,20 @@ public abstract class NodeGenericImpl
 	@Override
 	public final NodeGeneric getSelf() {
 		return this;// would always return itself for Node implementations
+	}
+	
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.dml.storage.commons.NodeGenericCommon#equalsOverride(org.dml.storage.commons.NodeGenericCommon)
+	 */
+	@Override
+	protected boolean equalsOverride( final NodeGenericCommon o ) {
+		Q.assumeSameExactClassElseThrow( this, o );
+		// assert Z.areSameClass_canNotBeNull( this, o ) : "we were expecting same classes\n" + "Participating classes:\n"
+		// + this.getClass() + "\n" + o.getClass();
+		return getId() == o.getId();
 	}
 	
 	
