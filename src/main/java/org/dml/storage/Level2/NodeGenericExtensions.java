@@ -130,7 +130,8 @@ public abstract class NodeGenericExtensions
 		Q.assumeSameExactClassElseThrow( this, obj );
 		// XXX: this detects if same self is used in more than 1 type, which indicated bad usage! user's fault
 		
-		// FIXME: should eventually use .equals() on storages here
+		// it already is: should eventually use .equals() on storages here
+		// it just is the case that they're the same ref so .equals() doesn't get called on these
 		if ( !Z.equals_enforceExactSameClassTypesAndNotNull( obj.getStorage(), getStorage() ) ) {
 			return false;
 		}
