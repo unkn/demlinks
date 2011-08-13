@@ -8,4 +8,4 @@ TODO:
 
 - check all asserts in the new source file and make sure they don't preceed methods which should always be called
 
-- need to know when junit tests are done while using JUnitHooker
+//- need to know when junit tests are done while using JUnitHooker

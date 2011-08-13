@@ -569,10 +569,10 @@ public class JUnitHooker
 		assert level > 0 : Q.bug( "this should never happen!" );
 		try {
 			if ( level == 1 ) {
-				// System.out.println( "JUnit ends" );
+				// System.err.println( "JUnit ends" );
 				invokeForAllListeners( JUnitPos.JUNIT_ENDS );
 			} else {
-				// System.out.println( "JUnit: subclass-test ends" );
+				// System.err.println( "JUnit: subclass-test ends (level == " + level + " )" );
 				invokeForAllListeners( JUnitPos.TESTCLASS_ENDS );
 			}
 		} finally {

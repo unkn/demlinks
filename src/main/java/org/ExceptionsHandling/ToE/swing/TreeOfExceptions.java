@@ -51,6 +51,7 @@ import org.q.*;
 import org.references2.*;
 import org.tools.swing.*;
 import org.toolza.*;
+import org.toolza.Timer;
 
 
 
@@ -130,6 +131,8 @@ public final class TreeOfExceptions
 	private JCheckBox												excludeInfo						= null;
 	private JCheckBox												excludeWarn						= null;
 	private JCheckBox												excludeHandled					= null;
+	private final Timer												timer							= new Timer(
+																										Timer.TYPE.MILLIS );
 	// defaults for these checkboxes, these are the mirroring bools for the checkboxes, so they can be queried outside EDT:
 	private boolean													boolExcludeInfo					= true;
 	private boolean													boolExcludeWarn					= false;
@@ -1589,6 +1592,10 @@ public final class TreeOfExceptions
 		
 		// }
 		// }
+		if ( JUnitHooker.isInsideJUnit() ) {
+			System.err.println( "JUnit/ToE: starting timer" );
+			timer.start();
+		}
 		
 		rootNode1 = new NodeForTreeOfExceptions( new ToERoot(), StateOfAnException.ROOT );
 		treeSource = new TreeOfNonNullUniques<NodeForTreeOfExceptions>( rootNode1 );
@@ -2033,11 +2040,21 @@ public final class TreeOfExceptions
 								// before we exit this current method due to the held lock that both methods
 								// are
 								// using
+								// JUnitHooker.addJUnitListener( new JUnitStartsAdapter(){
+								//
+								// @Override
+								// public void JUnitStarts() {
+								// timer.
+								// }
+								//
+								// } );
 								JUnitHooker.addJUnitListener( new JUnitEndsAdapter()
 								{
 									
 									@Override
 									public void JUnitEnds() {
+										timer.stop();
+										System.err.println( "JUnit: all tests completed, took: " + timer );
 										// S.entry();
 										lockTVC.lock();
 										try {

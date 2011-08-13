@@ -37,7 +37,8 @@ import org.q.*;
 
 
 
-public class Timer {
+public class Timer
+{
 	
 	public enum TYPE {
 			MILLIS,
@@ -115,5 +116,16 @@ public class Timer {
 	
 	public String getTypeRepresentation() {
 		return type.toString();
+	}
+	
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return getDeltaPrintFriendly();
 	}
 }
