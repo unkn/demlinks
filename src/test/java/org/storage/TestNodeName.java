@@ -37,8 +37,6 @@ package org.storage;
 import static org.junit.Assert.*;
 
 import org.JUnitCommons.*;
-import org.bdb.*;
-import org.dml.storage.berkeleydb.generics.*;
 import org.dml.storage.commons.*;
 import org.junit.*;
 
@@ -53,6 +51,7 @@ public class TestNodeName
 	
 	@Before
 	public void setUp() {
+		// FIXME: X12 must use another way, more generic to ask which storage to use/init
 		env = GlobalBDB.factory.getNewStorage( JUnitConstants.ENVIRONMENT_STORE_DIR, true );
 	}
 	

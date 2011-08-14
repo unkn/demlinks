@@ -40,9 +40,7 @@ import static org.junit.Assert.*;
 import java.util.*;
 
 import org.JUnitCommons.*;
-import org.bdb.*;
 import org.dml.storage.Level2.*;
-import org.dml.storage.berkeleydb.generics.*;
 import org.dml.storage.commons.*;
 import org.junit.*;
 import org.q.*;
@@ -63,6 +61,7 @@ public class TestSetOfNodes
 	public void setUp() {
 		final Timer t = new Timer( Timer.TYPE.MILLIS );
 		t.start();
+		// FIXME: X12 must use another way, more generic to ask which storage to use/init
 		env = GlobalBDB.factory.getNewStorage( JUnitConstants.ENVIRONMENT_STORE_DIR, true );
 		setInitial = env.createNewUniqueNode();
 		set1 = new L0Set_OfChildren( env, setInitial );
