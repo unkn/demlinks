@@ -34,6 +34,7 @@
 package org.dml.storage.berkeleydb;
 
 import org.JUnitCommons.*;
+import org.dml.storage.berkeleydb.generics.*;
 import org.dml.storage.commons.*;
 import org.junit.*;
 import org.q.*;
@@ -76,7 +77,8 @@ public class TestManyNodes
 	public void setUp() {
 		showMem();
 		// FIXME: X12 must use another way, more generic to ask which storage to use/init
-		storage = GlobalBDB.factory.getNewStorage( JUnitConstants.ENVIRONMENT_STORE_DIR, deleteBeforeInit );
+		storage =
+			StorageBDBGeneric.getBDBStorage( BDBStorageSubType.JE, JUnitConstants.ENVIRONMENT_STORE_DIR, deleteBeforeInit );
 		System.out.println( storage.getClass() );
 		showMem();
 	}

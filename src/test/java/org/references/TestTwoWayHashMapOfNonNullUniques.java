@@ -160,10 +160,10 @@ public class TestTwoWayHashMapOfNonNullUniques
 		assertFalse( hm.isEmpty() );
 		
 		// FIXME: X12 must find a way to not use this directly, rather be more generic; asking which storage is used
-		if ( !GlobalBDB.isJE ) {// didn't implement this for JE yet
-			hm.removeAll();
-			assertTrue( hm.isEmpty() );
-		}
+		// if ( !GlobalBDB.isJE ) {// didn't implement this for JE yet
+		hm.removeAll();
+		assertTrue( hm.isEmpty() );
+		// }
 		
 		hm.discard();
 		
