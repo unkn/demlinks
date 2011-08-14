@@ -38,6 +38,7 @@ import static org.junit.Assert.*;
 
 import org.JUnitCommons.*;
 import org.dml.storage.berkeleydb.generics.*;
+import org.dml.storage.commons.*;
 import org.junit.*;
 
 
@@ -46,7 +47,7 @@ public class TestNodeName
 		extends JUnitHooker
 {
 	
-	private StorageBDBGeneric	env;
+	private StorageGeneric	env;
 	
 	
 	@Before
@@ -65,11 +66,11 @@ public class TestNodeName
 	
 	@Test
 	public void test1() {
-		final NodeBDB lNew = env.createNewUniqueNode();
+		final NodeGeneric lNew = env.createNewUniqueNode();
 		assertNotNull( lNew );
 		assertFalse( lNew.equals( env.createNewUniqueNode() ) );
 		final String strId = "boo";
-		final NodeBDB longId = env.createOrGetNode( strId );
+		final NodeGeneric longId = env.createOrGetNode( strId );
 		assertNotNull( longId );
 		assertTrue( longId.equals( env.createOrGetNode( strId ) ) );
 		

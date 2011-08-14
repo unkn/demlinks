@@ -39,6 +39,7 @@ import static org.junit.Assert.*;
 import org.JUnitCommons.*;
 import org.dml.storage.berkeleydb.exceptions.*;
 import org.dml.storage.berkeleydb.generics.*;
+import org.dml.storage.commons.*;
 import org.junit.*;
 import org.q.*;
 
@@ -112,8 +113,8 @@ public class TestBDBEnvironment
 				env.shutdown();
 			}
 		}
-		StorageBDBGeneric env3 = null;
-		StorageBDBGeneric env5 = null;
+		StorageGeneric env3 = null;
+		StorageGeneric env5 = null;
 		try {
 			env3 = GlobalBDB.factory.getNewStorage( JUnitConstants.BDB_ENVIRONMENT_STORE_DIR, false );
 			try {
