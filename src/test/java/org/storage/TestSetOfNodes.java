@@ -31,7 +31,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.bdb;
+package org.storage;
 
 
 
@@ -40,6 +40,7 @@ import static org.junit.Assert.*;
 import java.util.*;
 
 import org.JUnitCommons.*;
+import org.bdb.*;
 import org.dml.storage.Level2.*;
 import org.dml.storage.berkeleydb.generics.*;
 import org.dml.storage.commons.*;
@@ -62,7 +63,7 @@ public class TestSetOfNodes
 	public void setUp() {
 		final Timer t = new Timer( Timer.TYPE.MILLIS );
 		t.start();
-		env = GlobalBDB.factory.getNewStorage( JUnitConstants.BDB_ENVIRONMENT_STORE_DIR, true );
+		env = GlobalBDB.factory.getNewStorage( JUnitConstants.ENVIRONMENT_STORE_DIR, true );
 		setInitial = env.createNewUniqueNode();
 		set1 = new L0Set_OfChildren( env, setInitial );
 		t.stop();

@@ -31,21 +31,17 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.bdb;
-
-import org.JUnitCommons.*;
-import org.junit.runner.*;
-import org.junit.runners.*;
+package org.storage;
 
 
 
-@RunWith( Suite.class )
-@Suite.SuiteClasses(
-		value = {
-			TestBDBEnvironment.class, TestNodeName.class, DBTwoWayHashMap_Test.class, DBSetTest.class, TestSetOfNodes.class
-		} )
-public class AllTestsBDB
-		extends JUnitHooker
-{
-	// always empty
+import java.io.*;
+
+
+
+public abstract class JUnitConstants {
+	
+	public final static String	ENVIRONMENT_STORE_DIR	= "." + File.separator + "bin" + File.separator + "JUnit.tempDb"
+													+ File.separator;
+	
 }

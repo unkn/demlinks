@@ -31,40 +31,34 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.bdb;
+package org.storage;
+
 
 import static org.junit.Assert.*;
 
 import org.JUnitCommons.*;
+import org.bdb.*;
 import org.dml.storage.berkeleydb.generics.*;
 import org.dml.storage.commons.*;
 import org.junit.*;
 
 
 
-public class DBTwoWayHashMap_Test
+public class TestNodeName
 		extends JUnitHooker
 {
 	
-	private BDBTwoWayHashMap_StringName2Node	x	= null;
-	private final String						_a	= "A";
-	private final NodeBDB						_b	= NodeBDB.getBDBNodeInstance( 2l );
-	private StorageBDBGeneric					env	= null;
+	private StorageGeneric	env;
 	
 	
 	@Before
 	public void setUp() {
-		env = GlobalBDB.factory.getNewStorage( JUnitConstants.BDB_ENVIRONMENT_STORE_DIR, true );
-		x = new BDBTwoWayHashMap_StringName2Node( env, "some 1-to-1 dbMap", StorageBDBGeneric.LOCK );
+		env = GlobalBDB.factory.getNewStorage( JUnitConstants.ENVIRONMENT_STORE_DIR, true );
 	}
 	
 	
 	@After
 	public void tearDown() {
-		if ( null != x ) {
-			x.discard();
-		}
-		
 		if ( null != env ) {
 			env.shutdown( true );
 		}
@@ -72,42 +66,15 @@ public class DBTwoWayHashMap_Test
 	
 	
 	@Test
-	public void linkTest() {
-		final TransactionGeneric txn = env.beginTransaction();
-		try {
-			assertFalse( x.ensureExists( _a, _b ) );
-			assertTrue( x.getName( _b ).equals( _a ) );
-			assertTrue( x.getNode( _a ).equals( _b ) );
-			// different objects, same content
-			assertTrue( x.getName( _b ) != x.getName( _b ) );
-			
-			assertTrue( _a != x.getName( _b ) );
-			assertTrue( _b != x.getNode( _a ) );
-			assertTrue( _b.equals( x.getNode( x.getName( _b ) ) ) );
-			assertTrue( x.ensureExists( _a, _b ) );
-			txn.success();
-		} finally {
-			txn.finished();
-		}
-	}
-	
-	
-	@Test
-	public void testMany() {
-		final TransactionGeneric txn = env.beginTransaction();
-		try {
-			final GenericBDBTwoWayMapOfNNU<Long, String> y =
-				new GenericBDBTwoWayMapOfNNU<Long, String>(
-					env,
-					"some 1-to-1 dbMap",
-					Long.class,
-					String.class,
-					StorageBDBGeneric.LOCK );
-			org.references.TestTwoWayHashMapOfNonNullUniques.testMany( y );
-			txn.success();
-		} finally {
-			txn.finished();
-		}
+	public void test1() {
+		final NodeGeneric lNew = env.createNewUniqueNode();
+		assertNotNull( lNew );
+		assertFalse( lNew.equals( env.createNewUniqueNode() ) );
+		final String strId = "boo";
+		final NodeGeneric longId = env.createOrGetNode( strId );
+		assertNotNull( longId );
+		assertTrue( longId.equals( env.createOrGetNode( strId ) ) );
+		
 	}
 	
 }

@@ -34,10 +34,10 @@ package all;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 import org.JUnitCommons.*;
-import org.bdb.*;
 import org.junit.runner.*;
 import org.junit.runners.*;
 import org.references.*;
+import org.storage.*;
 import org.swing.*;
 
 
@@ -46,7 +46,7 @@ import org.swing.*;
 @Suite.SuiteClasses(
 		value = {
 			TestAssertsAreOn.class,// first!
-			AllTestsSwing.class, AllTestsReferences.class, AllTestsBDB.class,
+			AllTestsSwing.class, AllTestsReferences.class, AllTestsStorage.class,
 		// AllRawBerkeleyDBTests.class too time consuming to add here
 		} )
 public class AllTests
