@@ -37,6 +37,7 @@ package org.storage;
 import static org.junit.Assert.*;
 
 import org.JUnitCommons.*;
+import org.dml.storage.berkeleydb.commons.*;
 import org.dml.storage.berkeleydb.generics.*;
 import org.dml.storage.commons.*;
 import org.junit.*;
