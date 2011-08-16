@@ -1593,7 +1593,8 @@ public final class TreeOfExceptions
 		// }
 		// }
 		if ( JUnitHooker.isInsideJUnit() ) {
-			System.err.println( "JUnit/ToE: starting timer" );
+			System.err.println( "JUnit/ToE: starting timer (which happens only when ToE is about to become visible" );
+			// so this means, it can happen a few seconds after junit tests actually started
 			timer.start();
 		}
 		
@@ -2054,7 +2055,8 @@ public final class TreeOfExceptions
 									@Override
 									public void JUnitEnds() {
 										timer.stop();
-										System.err.println( "JUnit: all tests completed, took: " + timer );
+										System.err.println( "JUnit: all tests completed, took(since timer was started): "
+											+ timer );
 										// S.entry();
 										lockTVC.lock();
 										try {
