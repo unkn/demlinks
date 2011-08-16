@@ -114,12 +114,15 @@ public class TestManyNodes
 	
 	private void exec( final StorageType type, final BDBStorageSubType subType ) {
 		et.start();
-		setUp( type, subType );
-		init();
-		run();
-		tearDown();
-		et.stop();
-		System.out.println( "The above " + type + " " + subType + " took: " + et );
+		try {
+			setUp( type, subType );
+			init();
+			run();
+		} finally {
+			tearDown();
+			et.stop();
+			System.out.println( "The above " + type + " " + subType + " took: " + et );
+		}
 	}
 	
 	

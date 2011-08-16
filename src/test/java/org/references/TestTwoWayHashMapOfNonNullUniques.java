@@ -37,6 +37,8 @@ package org.references;
 import static org.junit.Assert.*;
 
 import org.JUnitCommons.*;
+import org.dml.storage.berkeleydb.commons.*;
+import org.dml.storage.berkeleydb.generics.*;
 import org.junit.*;
 import org.q.*;
 import org.toolza.*;
@@ -159,11 +161,26 @@ public class TestTwoWayHashMapOfNonNullUniques
 		assertTrue( hm.size() == n );
 		assertFalse( hm.isEmpty() );
 		
-		// FIXME: X12 must find a way to not use this directly, rather be more generic; asking which storage is used
 		// if ( !GlobalBDB.isJE ) {// didn't implement this for JE yet
-		hm.removeAll();
-		assertTrue( hm.isEmpty() );
-		// }
+		// System.out.println( hm.getClass() );
+		boolean skip = false;
+		if ( hm.getClass().equals( GenericBDBTwoWayMapOfNNU.class ) ) {
+			@SuppressWarnings( "rawtypes" )
+			final GenericBDBTwoWayMapOfNNU m = (GenericBDBTwoWayMapOfNNU)hm;
+			final StorageBDBGeneric stor = m.getStorage();
+			final BDBStorageSubType st = stor.getSubType();
+			if ( st.equals( BDBStorageSubType.JE ) ) {
+				skip = true;
+			}
+			// if ( st.getFactory().getClass().getSimpleName().equals( "StorageBDB_Factory_BDBJE" ) ) {
+			//
+			// }
+			// System.out.println( st.getFactory().getClass().getSimpleName() );
+		}
+		if ( !skip ) {
+			hm.removeAll();
+			assertTrue( hm.isEmpty() );
+		}
 		
 		hm.discard();
 		

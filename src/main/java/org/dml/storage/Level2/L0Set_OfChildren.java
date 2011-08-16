@@ -56,6 +56,9 @@ public class L0Set_OfChildren
 	 */
 	public L0Set_OfChildren( final StorageGeneric store, final NodeGeneric selfNode ) {
 		super( store, selfNode );
+		System.err.println( this.getClass() + " " + selfNode.getClass() );
+		// boolean b = L0Set_OfChildren.class.equals( this.getClass() );
+		// assert (b)||(!)&&(getSelf().equals( getSelfImpl()));
 	}
 	
 	

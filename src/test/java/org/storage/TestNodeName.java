@@ -37,7 +37,6 @@ package org.storage;
 import static org.junit.Assert.*;
 
 import org.JUnitCommons.*;
-import org.dml.storage.berkeleydb.commons.*;
 import org.dml.storage.berkeleydb.generics.*;
 import org.dml.storage.commons.*;
 import org.junit.*;
@@ -48,33 +47,45 @@ public class TestNodeName
 		extends JUnitHooker
 {
 	
-	private StorageGeneric	env;
+	private StorageGeneric	storage;
 	
 	
-	@Before
-	public void setUp() {
-		// FIXME: X12 must use another way, more generic to ask which storage to use/init
-		env = StorageBDBGeneric.getBDBStorage( BDBStorageSubType.JE, JUnitConstants.ENVIRONMENT_STORE_DIR, true );
+	public void setUp( final StorageType type, final BDBStorageSubType subType ) {
+		final StorageConfig cfg = new StorageConfig();
+		cfg.setBDBType( subType );
+		cfg.setHomeDir( JUnitConstants.ENVIRONMENT_STORE_DIR );
+		cfg.setDeleteBefore( true );
+		storage = StorageFactory.getStorage( type, cfg );
+		// env = StorageBDBGeneric.getBDBStorage( BDBStorageSubType.JE, JUnitConstants.ENVIRONMENT_STORE_DIR, true );
 	}
 	
 	
-	@After
 	public void tearDown() {
-		if ( null != env ) {
-			env.shutdown( true );
+		if ( null != storage ) {
+			storage.shutdown( true );
 		}
 	}
 	
 	
 	@Test
+	public void test1_run() {
+		try {
+			setUp( StorageType.BDB, BDBStorageSubType.JE );
+			test1();
+		} finally {
+			tearDown();
+		}
+	}
+	
+	
 	public void test1() {
-		final NodeGeneric lNew = env.createNewUniqueNode();
+		final NodeGeneric lNew = storage.createNewUniqueNode();
 		assertNotNull( lNew );
-		assertFalse( lNew.equals( env.createNewUniqueNode() ) );
+		assertFalse( lNew.equals( storage.createNewUniqueNode() ) );
 		final String strId = "boo";
-		final NodeGeneric longId = env.createOrGetNode( strId );
+		final NodeGeneric longId = storage.createOrGetNode( strId );
 		assertNotNull( longId );
-		assertTrue( longId.equals( env.createOrGetNode( strId ) ) );
+		assertTrue( longId.equals( storage.createOrGetNode( strId ) ) );
 		
 	}
 	
