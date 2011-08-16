@@ -34,7 +34,6 @@
  */
 package org.dml.storage.commons;
 
-import org.dml.storage.bdb.*;
 import org.dml.storage.berkeleydb.commons.*;
 import org.q.*;
 
@@ -49,8 +48,7 @@ public abstract class StorageFactory
 	public static StorageGeneric getStorage( final StorageType type, final StorageConfig cfg ) {
 		switch ( type ) {
 		case BDB:
-			final StorageBDBConfig bdbCfg = (StorageBDBConfig)cfg;
-			return StorageBDBGeneric.getBDBStorage( bdbCfg );
+			return StorageBDBGeneric.getBDBStorage( cfg );
 		}// switch
 		throw Q.bug( "cannot be reached, compiler will err first" );
 	}

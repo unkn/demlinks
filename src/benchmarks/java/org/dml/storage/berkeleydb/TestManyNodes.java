@@ -34,7 +34,6 @@
 package org.dml.storage.berkeleydb;
 
 import org.JUnitCommons.*;
-import org.dml.storage.berkeleydb.commons.*;
 import org.dml.storage.berkeleydb.generics.*;
 import org.dml.storage.commons.*;
 import org.junit.*;
@@ -74,19 +73,19 @@ public class TestManyNodes
 	}
 	
 	
-	@Before
-	public void setUp() {
+	private void setUp( final StorageType type, final BDBStorageSubType subType ) {
 		showMem();
-		// FIXME: X12 must use another way, more generic to ask which storage to use/init
-		storage =
-			StorageBDBGeneric.getBDBStorage( BDBStorageSubType.JE, JUnitConstants.ENVIRONMENT_STORE_DIR, deleteBeforeInit );
+		final StorageConfig cfg = new StorageConfig();
+		cfg.setBDBType( subType );
+		cfg.setHomeDir( JUnitConstants.ENVIRONMENT_STORE_DIR );
+		cfg.setDeleteBefore( deleteBeforeInit );
+		storage = StorageFactory.getStorage( type, cfg );
 		System.out.println( storage.getClass() );
 		showMem();
 	}
 	
 	
-	@After
-	public void tearDown() {
+	private void tearDown() {
 		showMem();
 		if ( null != storage ) {
 			storage.shutdown( false );// no need to be in finally, it's already on shutdownhook
@@ -99,9 +98,28 @@ public class TestManyNodes
 	
 	
 	@Test
-	public void go() {
+	public void goBDBJE() {
+		exec( StorageType.BDB, BDBStorageSubType.JE );
+	}
+	
+	
+	@Test
+	public void goBDBJNI() {
+		exec( StorageType.BDB, BDBStorageSubType.JNI );
+	}
+	
+	
+	private final Timer	et	= new Timer( Timer.TYPE.MILLIS );
+	
+	
+	private void exec( final StorageType type, final BDBStorageSubType subType ) {
+		et.start();
+		setUp( type, subType );
 		init();
 		run();
+		tearDown();
+		et.stop();
+		System.out.println( "The above " + type + " " + subType + " took: " + et );
 	}
 	
 	

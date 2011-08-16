@@ -34,11 +34,65 @@
  */
 package org.dml.storage.commons;
 
+import org.dml.storage.berkeleydb.generics.*;
+import org.q.*;
+
+
 
 /**
  *
  */
-public interface StorageConfig
+public class StorageConfig
 {
 	
+	private BDBStorageSubType	subtype;
+	private String				envHome;
+	private boolean				deleteBefore;
+	
+	
+	public StorageConfig() {
+	}
+	
+	
+	public void setBDBType( final BDBStorageSubType type ) {
+		// assert Q.nn( type );
+		subtype = type;
+	}
+	
+	
+	private boolean isValidHome( final String home ) {
+		if ( ( null == home ) || ( home.isEmpty() ) ) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+	
+	
+	public void setHomeDir( final String home ) {
+		assert isValidHome( home );
+		envHome = home;
+	}
+	
+	
+	public void setDeleteBefore( final boolean yn ) {
+		deleteBefore = yn;
+	}
+	
+	
+	public String getHomeDir() {
+		assert isValidHome( envHome ) : "home wasn't set";
+		return envHome;
+	}
+	
+	
+	public boolean getDeleteBefore() {
+		return deleteBefore;
+	}
+	
+	
+	public BDBStorageSubType getBDBType() {
+		assert Q.nn( subtype );
+		return subtype;
+	}
 }
