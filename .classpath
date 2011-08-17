@@ -4,7 +4,7 @@
 	<classpathentry kind="src" path="src/test/java"/>
 	<classpathentry kind="src" path="src/benchmarks/java"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="lib/junit/junit4.9b4/junit-4.9b4.jar" sourcepath="lib/junit/junit4.9b4"/>
+	<classpathentry kind="lib" path="lib/junit/junit4.9b4/junit-4.9b4.jar" sourcepath="lib/junit/junit4.9b4/junit-4.9b4-src.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/dml-bdb"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
