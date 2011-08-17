@@ -40,6 +40,7 @@ import static org.junit.Assert.*;
 import java.util.*;
 
 import org.dml.storage.Level2.*;
+import org.dml.storage.berkeleydb.generics.*;
 import org.dml.storage.commons.*;
 import org.junit.*;
 import org.q.*;
@@ -47,9 +48,19 @@ import org.toolza.Timer;
 
 
 
-public abstract class TestBase_for_SetOfNodes
-		extends TestBase_for_Storage
+public class TestSetOfNodes
+		extends BaseTest_for_Storage
 {
+	
+	
+	/**
+	 * @param type1
+	 * @param subType1
+	 */
+	public TestSetOfNodes( final StorageType type1, final BDBStorageSubType subType1 ) {
+		super( type1, subType1 );
+	}
+	
 	
 	private L0Set_OfChildren	set1;
 	private NodeGeneric			setInitial;
@@ -62,13 +73,13 @@ public abstract class TestBase_for_SetOfNodes
 	 */
 	@Override
 	public void overridden_setUp() {
-		setStore();
+		// setStore();
 		setInitial = storage.createNewUniqueNode();
 		set1 = new L0Set_OfChildren( storage, setInitial );
 	}
 	
 	
-	public abstract void setStore();
+	// public abstract void setStore();
 	
 	
 	/*
@@ -78,6 +89,7 @@ public abstract class TestBase_for_SetOfNodes
 	 */
 	@Override
 	public void overridden_tearDown() {
+		// empty
 	}
 	
 	

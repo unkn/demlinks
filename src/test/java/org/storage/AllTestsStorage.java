@@ -42,7 +42,7 @@ import org.junit.runners.*;
 @RunWith( Suite.class )
 @Suite.SuiteClasses(
 		value = {
-			TestNodeName_JE.class, TestNodeName_JNI.class, TestSetOfNodes_JE.class, TestSetOfNodes_JNI.class
+			TestNodeName.class, TestSetOfNodes.class
 		} )
 public class AllTestsStorage
 		extends JUnitHooker

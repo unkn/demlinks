@@ -34,30 +34,58 @@
  */
 package org.storage;
 
+import java.util.*;
+
 import org.JUnitCommons.*;
 import org.dml.storage.berkeleydb.generics.*;
 import org.dml.storage.commons.*;
 import org.junit.*;
+import org.junit.runner.*;
+import org.junit.runners.*;
+import org.junit.runners.Parameterized.Parameters;
 import org.q.*;
-import org.toolza.*;
+import org.toolza.Timer;
 
 
 
 /**
  *
  */
-public abstract class TestBase_for_Storage
+@RunWith( Parameterized.class )
+public abstract class BaseTest_for_Storage
 		extends JUnitHooker
 {
 	
-	public StorageGeneric	storage;
-	private final Timer		t	= new Timer( Timer.TYPE.MILLIS );
+	@Parameters
+	public static List<Object[]> data() {
+		return Arrays.asList( new Object[][] {
+			// XXX: add all possible storage types here, so they can be tested
+			{
+				StorageType.BDB, BDBStorageSubType.JE
+			}, {
+				StorageType.BDB, BDBStorageSubType.JNI
+			}
+		} );
+	}
+	
+	private final StorageType		type;
+	private final BDBStorageSubType	subType;
+	public StorageGeneric			storage;
+	private final Timer				t	= new Timer( Timer.TYPE.MILLIS );
+	
+	
+	public BaseTest_for_Storage( final StorageType type1, final BDBStorageSubType subType1 ) {
+		type = type1;
+		subType = subType1;
+	}
+	
 	
 	
 	@Before
-	public void setUp() {
+	public final void setUp() {
 		t.start();
 		try {
+			setUpStorage( type, subType );
 			overridden_setUp();
 			assert Q.nn( storage );
 		} finally {
@@ -67,18 +95,18 @@ public abstract class TestBase_for_Storage
 	}
 	
 	
-	public void setUpStorage( final StorageType type, final BDBStorageSubType subType ) {
+	private void setUpStorage( final StorageType type1, final BDBStorageSubType subType1 ) {
 		final StorageConfig cfg = new StorageConfig();
-		cfg.setBDBType( subType );
+		cfg.setBDBType( subType1 );
 		cfg.setHomeDir( JUnitConstants.ENVIRONMENT_STORE_DIR );
 		cfg.setDeleteBefore( true );
-		storage = StorageFactory.getStorage( type, cfg );
+		storage = StorageFactory.getStorage( type1, cfg );
 		// env = StorageBDBGeneric.getBDBStorage( BDBStorageSubType.JE, JUnitConstants.ENVIRONMENT_STORE_DIR, true );
 	}
 	
 	
 	@After
-	public void tearDown() {
+	public final void tearDown() {
 		t.start();
 		try {
 			overridden_tearDown();
@@ -92,8 +120,10 @@ public abstract class TestBase_for_Storage
 	}
 	
 	
-	public abstract void overridden_tearDown();
+	public void overridden_tearDown() {
+	}
 	
 	
-	public abstract void overridden_setUp();
+	public void overridden_setUp() {
+	}
 }

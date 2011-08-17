@@ -3,7 +3,6 @@
  * Copyright (c) 2005-2011, AtKaaZ
  * All rights reserved.
  * this file is part of DemLinks
- * File created on Aug 17, 2011 2:15:53 AM
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -34,26 +33,39 @@
  */
 package org.storage;
 
+
+import static org.junit.Assert.*;
+
 import org.dml.storage.berkeleydb.generics.*;
 import org.dml.storage.commons.*;
+import org.junit.*;
 
 
 
-/**
- *
- */
-public class TestSetOfNodes_JE
-		extends TestBase_for_SetOfNodes
+public class TestNodeName
+		extends BaseTest_for_Storage
 {
 	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.storage.TestBase_for_SetOfNodes#setStore()
+	
+	/**
+	 * @param type1
+	 * @param subType1
 	 */
-	@Override
-	public void setStore() {
-		setUpStorage( StorageType.BDB, BDBStorageSubType.JE );
+	public TestNodeName( final StorageType type1, final BDBStorageSubType subType1 ) {
+		super( type1, subType1 );
+	}
+	
+	
+	@Test
+	public void test1() {
+		final NodeGeneric lNew = storage.createNewUniqueNode();
+		assertNotNull( lNew );
+		assertFalse( lNew.equals( storage.createNewUniqueNode() ) );
+		final String strId = "boo";
+		final NodeGeneric longId = storage.createOrGetNode( strId );
+		assertNotNull( longId );
+		assertTrue( longId.equals( storage.createOrGetNode( strId ) ) );
+		
 	}
 	
 }
