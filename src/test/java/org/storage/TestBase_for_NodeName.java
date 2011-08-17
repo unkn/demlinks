@@ -33,19 +33,29 @@
  */
 package org.storage;
 
-import org.JUnitCommons.*;
-import org.junit.runner.*;
-import org.junit.runners.*;
+
+import static org.junit.Assert.*;
+
+import org.dml.storage.commons.*;
+import org.junit.*;
 
 
 
-@RunWith( Suite.class )
-@Suite.SuiteClasses(
-		value = {
-			TestNodeName_JE.class, TestNodeName_JNI.class, TestSetOfNodes_JE.class, TestSetOfNodes_JNI.class
-		} )
-public class AllTestsStorage
-		extends JUnitHooker
+public abstract class TestBase_for_NodeName
+		extends TestBase_for_Storage
 {
-	// always empty
+	
+	
+	@Test
+	public void test1() {
+		final NodeGeneric lNew = storage.createNewUniqueNode();
+		assertNotNull( lNew );
+		assertFalse( lNew.equals( storage.createNewUniqueNode() ) );
+		final String strId = "boo";
+		final NodeGeneric longId = storage.createOrGetNode( strId );
+		assertNotNull( longId );
+		assertTrue( longId.equals( storage.createOrGetNode( strId ) ) );
+		
+	}
+	
 }

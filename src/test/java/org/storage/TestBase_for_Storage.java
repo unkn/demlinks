@@ -3,6 +3,7 @@
  * Copyright (c) 2005-2011, AtKaaZ
  * All rights reserved.
  * this file is part of DemLinks
+ * File created on Aug 17, 2011 2:01:06 AM
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -33,24 +34,40 @@
  */
 package org.storage;
 
-
-import static org.junit.Assert.*;
-
 import org.JUnitCommons.*;
 import org.dml.storage.berkeleydb.generics.*;
 import org.dml.storage.commons.*;
 import org.junit.*;
+import org.q.*;
+import org.toolza.*;
 
 
 
-public class TestNodeName
+/**
+ *
+ */
+public abstract class TestBase_for_Storage
 		extends JUnitHooker
 {
 	
-	private StorageGeneric	storage;
+	public StorageGeneric	storage;
+	private final Timer		t	= new Timer( Timer.TYPE.MILLIS );
 	
 	
-	public void setUp( final StorageType type, final BDBStorageSubType subType ) {
+	@Before
+	public void setUp() {
+		t.start();
+		try {
+			overridden_setUp();
+			assert Q.nn( storage );
+		} finally {
+			t.stop();
+			System.out.println( "setUp: " + t );
+		}
+	}
+	
+	
+	public void setUpStorage( final StorageType type, final BDBStorageSubType subType ) {
 		final StorageConfig cfg = new StorageConfig();
 		cfg.setBDBType( subType );
 		cfg.setHomeDir( JUnitConstants.ENVIRONMENT_STORE_DIR );
@@ -60,33 +77,23 @@ public class TestNodeName
 	}
 	
 	
+	@After
 	public void tearDown() {
-		if ( null != storage ) {
-			storage.shutdown( true );
-		}
-	}
-	
-	
-	@Test
-	public void test1_run() {
+		t.start();
 		try {
-			setUp( StorageType.BDB, BDBStorageSubType.JE );
-			test1();
+			overridden_tearDown();
+			if ( null != storage ) {
+				storage.shutdown( true );
+			}
 		} finally {
-			tearDown();
+			t.stop();
+			System.out.println( "tearDown: " + t );
 		}
 	}
 	
 	
-	public void test1() {
-		final NodeGeneric lNew = storage.createNewUniqueNode();
-		assertNotNull( lNew );
-		assertFalse( lNew.equals( storage.createNewUniqueNode() ) );
-		final String strId = "boo";
-		final NodeGeneric longId = storage.createOrGetNode( strId );
-		assertNotNull( longId );
-		assertTrue( longId.equals( storage.createOrGetNode( strId ) ) );
-		
-	}
+	public abstract void overridden_tearDown();
 	
+	
+	public abstract void overridden_setUp();
 }

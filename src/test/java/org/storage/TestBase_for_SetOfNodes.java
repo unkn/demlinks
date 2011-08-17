@@ -39,10 +39,7 @@ import static org.junit.Assert.*;
 
 import java.util.*;
 
-import org.JUnitCommons.*;
 import org.dml.storage.Level2.*;
-import org.dml.storage.berkeleydb.commons.*;
-import org.dml.storage.berkeleydb.generics.*;
 import org.dml.storage.commons.*;
 import org.junit.*;
 import org.q.*;
@@ -50,37 +47,37 @@ import org.toolza.Timer;
 
 
 
-public class TestSetOfNodes
-		extends JUnitHooker
+public abstract class TestBase_for_SetOfNodes
+		extends TestBase_for_Storage
 {
 	
-	private StorageGeneric		env;
 	private L0Set_OfChildren	set1;
 	private NodeGeneric			setInitial;
 	
 	
-	@Before
-	public void setUp() {
-		final Timer t = new Timer( Timer.TYPE.MILLIS );
-		t.start();
-		// FIXME: X12 must use another way, more generic to ask which storage to use/init
-		env = StorageBDBGeneric.getBDBStorage( BDBStorageSubType.JE, JUnitConstants.ENVIRONMENT_STORE_DIR, true );
-		setInitial = env.createNewUniqueNode();
-		set1 = new L0Set_OfChildren( env, setInitial );
-		t.stop();
-		System.out.println( "setUp: " + t.getDeltaPrintFriendly() );
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.storage.TestBase_for_Storage#overridden_setUp()
+	 */
+	@Override
+	public void overridden_setUp() {
+		setStore();
+		setInitial = storage.createNewUniqueNode();
+		set1 = new L0Set_OfChildren( storage, setInitial );
 	}
 	
 	
-	@After
-	public void tearDown() {
-		final Timer t = new Timer( Timer.TYPE.MILLIS );
-		t.start();
-		if ( null != env ) {
-			env.shutdown( true );
-		}
-		t.stop();
-		System.out.println( "tearDown: " + t.getDeltaPrintFriendly() );
+	public abstract void setStore();
+	
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.storage.TestBase_for_Storage#overridden_tearDown()
+	 */
+	@Override
+	public void overridden_tearDown() {
 	}
 	
 	
@@ -90,7 +87,7 @@ public class TestSetOfNodes
 		t.start();
 		assertTrue( set1.size() == 0 );
 		
-		final NodeGeneric one = env.createNewUniqueNode();
+		final NodeGeneric one = storage.createNewUniqueNode();
 		assertNotNull( one );
 		assertFalse( set1.ensureIsAddedToSet( one ) );
 		assertTrue( set1.size() == 1 );
@@ -107,17 +104,17 @@ public class TestSetOfNodes
 		assertFalse( set1.contains( setInitial ) );
 		
 		final int startSize = set1.size();
-		final NodeGeneric two = env.createNewUniqueNode();
+		final NodeGeneric two = storage.createNewUniqueNode();
 		assertNotNull( two );
 		assertTrue( two != one );
 		assertFalse( set1.ensureIsAddedToSet( two ) );
 		assertTrue( set1.size() == ( startSize + 1 ) );
-		assertTrue( env.isVector( set1.getSelf(), two ) );
+		assertTrue( storage.isVector( set1.getSelf(), two ) );
 		
-		final NodeGeneric three = env.createNewUniqueNode();
+		final NodeGeneric three = storage.createNewUniqueNode();
 		assertNotNull( three );
 		assertFalse( set1.ensureIsAddedToSet( three ) );
-		assertTrue( env.isVector( set1.getSelf(), three ) );
+		assertTrue( storage.isVector( set1.getSelf(), three ) );
 		assertTrue( set1.size() == ( startSize + 2 ) );
 		
 		final IteratorGeneric_OnChildNodes iter = set1.getIterator();
@@ -146,7 +143,7 @@ public class TestSetOfNodes
 		while ( now != null ) {
 			now = iter.goNext();
 		}
-		assertTrue( env.isVector( setInitial, two ) );
+		assertTrue( storage.isVector( setInitial, two ) );
 		// InitialInitialInitial: remove while iter is still active will fail, due to lock!
 		// threw = false;
 		// try {
@@ -162,7 +159,7 @@ public class TestSetOfNodes
 		// iter.goTo( two );
 		// iter.delete();
 		// iter.close();
-		assertFalse( env.isVector( setInitial, two ) );
+		assertFalse( storage.isVector( setInitial, two ) );
 		assertTrue( iter.size() == 2 );
 		assertTrue( set1.size() == 2 );
 		// assertTrue( this.set1.remove( two ) );
@@ -189,40 +186,41 @@ public class TestSetOfNodes
 		
 		assertTrue( iter2.size() == 2 );
 		assertTrue( now.equals( three ) );
-		assertTrue( env.isVector( set1.getSelf(), three ) );
+		assertTrue( storage.isVector( set1.getSelf(), three ) );
 		assertTrue( iter2.size() == 2 );
 		iter2.delete();// delete after count() !
-		assertFalse( env.isVector( set1.getSelf(), three ) );
+		assertFalse( storage.isVector( set1.getSelf(), three ) );
 		assertTrue( iter2.size() == 1 );
 		
 		iter2.success();
 		iter2.finished();
-		assertFalse( env.isVector( set1.getSelf(), three ) );
+		assertFalse( storage.isVector( set1.getSelf(), three ) );
 		
-		final NodeGeneric dsotInitial = env.createNewUniqueNode();
-		final L0DomainSet_OfChildren dsot = new L0DomainSet_OfChildren( env, dsotInitial, setInitial );
+		final NodeGeneric dsotInitial = storage.createNewUniqueNode();
+		final L0DomainSet_OfChildren dsot = new L0DomainSet_OfChildren( storage, dsotInitial, setInitial );
 		assertTrue( set1.getSelf().equals( setInitial ) );
 		try {
-			final L0DomainSet_OfChildren adsot = new L0DomainSet_OfChildren( env, set1.getSelf(), setInitial );
+			final L0DomainSet_OfChildren adsot = new L0DomainSet_OfChildren( storage, set1.getSelf(), setInitial );
 			Q.fail();
 		} catch ( final AssertionError ae ) {
 			// good
 		}
-		final L0Set_OfChildren sot3 = new L0Set_OfChildren( env, dsotInitial );
+		final L0Set_OfChildren sot3 = new L0Set_OfChildren( storage, dsotInitial );
 		assertTrue( sot3.getSelf().equals( dsot.getSelf() ) );
 		// assertFalse( sot3.equals( dsot ) );
 		// already used testEquals for this
 		// assertFalse( dsot.equals( sot3 ) );
 		
-		final L0DomainSet_OfChildren dsot3 = new L0DomainSet_OfChildren( env, dsot.getSelf(), dsot.getDomain() );
-		final L0Set_OfChildren dsot4 = new L0DomainSet_OfChildren( env, dsot.getSelf(), dsot.getDomain() );
+		final L0DomainSet_OfChildren dsot3 = new L0DomainSet_OfChildren( storage, dsot.getSelf(), dsot.getDomain() );
+		final L0Set_OfChildren dsot4 = new L0DomainSet_OfChildren( storage, dsot.getSelf(), dsot.getDomain() );
 		assertTrue( dsot != dsot4 );
 		assertTrue( dsot3 != dsot4 );
 		assertTrue( dsot3 != dsot );
 		assertTrue( dsot.equals( dsot3 ) );
 		assertTrue( dsot.equals( dsot4 ) );
 		assertTrue( dsot4.equals( dsot ) );
-		final L0DomainSet_OfChildren dsot5 = new L0DomainSet_OfChildren( env, dsot.getSelf(), env.createNewUniqueNode() );
+		final L0DomainSet_OfChildren dsot5 =
+			new L0DomainSet_OfChildren( storage, dsot.getSelf(), storage.createNewUniqueNode() );
 		try {
 			// same set but different domains?, which reminds me
 			// XXX:we should not be able to `new` same set with two different domains; thing is we only detect this here when
@@ -261,7 +259,7 @@ public class TestSetOfNodes
 		
 		assertFalse( dsot.contains( three ) );
 		assertFalse( set1.contains( three ) );
-		assertFalse( env.isVector( set1.getSelf(), three ) );
+		assertFalse( storage.isVector( set1.getSelf(), three ) );
 		try {
 			dsot.ensureIsAddedToSet( three );// it's not in domain
 			Q.fail();// asserts disabled?
@@ -322,13 +320,13 @@ public class TestSetOfNodes
 	
 	@Test
 	public void testAlreadyExisting() {
-		final NodeGeneric l1 = env.createNewUniqueNode();
+		final NodeGeneric l1 = storage.createNewUniqueNode();
 		assertNotNull( l1 );
-		final L0Set_OfChildren sos = new L0Set_OfChildren( env, set1.getSelf() );
+		final L0Set_OfChildren sos = new L0Set_OfChildren( storage, set1.getSelf() );
 		assertFalse( set1.ensureIsAddedToSet( l1 ) );
 		assertTrue( set1.size() == 1 );
 		assertTrue( sos.size() == 1 );
-		final L0Set_OfChildren sos2 = new L0Set_OfChildren( env, set1.getSelf() );
+		final L0Set_OfChildren sos2 = new L0Set_OfChildren( storage, set1.getSelf() );
 		assertTrue( sos2.size() == 1 );
 		
 		assertTrue( sos.equals( sos2 ) );
@@ -341,13 +339,13 @@ public class TestSetOfNodes
 		assertTrue( sos2 != set1 );
 		assertTrue( sos != sos2 );
 		
-		final NodeGeneric domain = env.createNewUniqueNode();
+		final NodeGeneric domain = storage.createNewUniqueNode();
 		L0Set_OfChildren dsos;
 		// doesn't check integrity, thus not throws here:
-		dsos = new L0DomainSet_OfChildren( env, sos2.getSelf(), domain );
+		dsos = new L0DomainSet_OfChildren( storage, sos2.getSelf(), domain );
 		
-		assertFalse( env.ensureVector( domain, l1 ) );
-		dsos = new L0DomainSet_OfChildren( env, sos2.getSelf(), domain );
+		assertFalse( storage.ensureVector( domain, l1 ) );
+		dsos = new L0DomainSet_OfChildren( storage, sos2.getSelf(), domain );
 		assertTrue( dsos.getSelf().equals( sos2.getSelf() ) );
 		assertTrue( dsos.size() == 1 );
 	}
@@ -355,10 +353,10 @@ public class TestSetOfNodes
 	
 	@Test
 	public void testEquals() {
-		final NodeGeneric domain = env.createNewUniqueNode();
-		final NodeGeneric self1 = env.createNewUniqueNode();
-		final L0DomainSet_OfChildren dsos = new L0DomainSet_OfChildren( env, self1, domain );
-		final L0Set_OfChildren sos = new L0Set_OfChildren( env, self1 );
+		final NodeGeneric domain = storage.createNewUniqueNode();
+		final NodeGeneric self1 = storage.createNewUniqueNode();
+		final L0DomainSet_OfChildren dsos = new L0DomainSet_OfChildren( storage, self1, domain );
+		final L0Set_OfChildren sos = new L0Set_OfChildren( storage, self1 );
 		
 		assertFalse( domain.equals( dsos ) );
 		assertFalse( dsos.equals( domain ) );
@@ -391,13 +389,13 @@ public class TestSetOfNodes
 		// now comparing two diff class types with diff self, will return fail w/o complaining
 		// only if same self it would complain, because can use only one self for one type of class ie. Pointer and Set can't be
 		// using same self; because their constraints would clash
-		final NodeGeneric n2 = env.createNewUniqueNode();
-		final L0DomainSet_OfChildren x = new L0DomainSet_OfChildren( env, n2, domain );
+		final NodeGeneric n2 = storage.createNewUniqueNode();
+		final L0DomainSet_OfChildren x = new L0DomainSet_OfChildren( storage, n2, domain );
 		assertFalse( x.equals( set1 ) );
 		assertFalse( set1.equals( x ) );
 		// =========== now comparing same class type with same self it's ok, two instances can use same self as long as they're
 		// of the same type ie. both Set or both Pointer; as opposed to one Set and one Pointer
-		final L0DomainSet_OfChildren x2 = new L0DomainSet_OfChildren( env, n2, domain );
+		final L0DomainSet_OfChildren x2 = new L0DomainSet_OfChildren( storage, n2, domain );
 		assertTrue( x2.equals( x ) );
 		assertTrue( x.equals( x2 ) );
 	}
@@ -405,10 +403,10 @@ public class TestSetOfNodes
 	
 	@Test
 	public void testPointer() {
-		final NodeGeneric ptrInitial = env.createNewUniqueNode();
+		final NodeGeneric ptrInitial = storage.createNewUniqueNode();
 		assertNotNull( ptrInitial );
-		final L0Pointer_ToChild ptr = new L0Pointer_ToChild( env, ptrInitial );
-		assertFalse( env.isVector( ptr, ptrInitial ) );
+		final L0Pointer_ToChild ptr = new L0Pointer_ToChild( storage, ptrInitial );
+		assertFalse( storage.isVector( ptr, ptrInitial ) );
 		assertTrue( ptr.getSelf() != ptrInitial );
 		System.out.println( ptr.getSelfImpl().getClass() );
 		System.out.println( ptr.getSelf().getClass() );
@@ -417,12 +415,12 @@ public class TestSetOfNodes
 		assertTrue( ret );
 		assertNull( ptr.getPointeeChild() );
 		
-		final NodeGeneric newL = env.createNewUniqueNode();
+		final NodeGeneric newL = storage.createNewUniqueNode();
 		assertNotNull( newL );
-		assertFalse( env.ensureVector( ptrInitial, newL ) );
+		assertFalse( storage.ensureVector( ptrInitial, newL ) );
 		
 		// this isn't valid because it's using the same self as ptr
-		final L0Pointer_ToChild ptr2 = new L0Pointer_ToChild( env, ptrInitial );
+		final L0Pointer_ToChild ptr2 = new L0Pointer_ToChild( storage, ptrInitial );
 		assertNotNull( ptr2.getPointeeChild() );
 		assertTrue( ptr2.getPointeeChild().equals( newL ) );
 		assertTrue( ptr2.getPointeeChild() != newL );
@@ -432,7 +430,7 @@ public class TestSetOfNodes
 		assertTrue( ptr.equals( ptr2 ) );
 		
 		// this is not valid, since it uses same self as ptr2
-		final L0DomainPointer_ToChild dptr = new L0DomainPointer_ToChild( env, ptr2.getSelf(), set1.getSelf() );
+		final L0DomainPointer_ToChild dptr = new L0DomainPointer_ToChild( storage, ptr2.getSelf(), set1.getSelf() );
 		
 		try {
 			dptr.getPointeeChild();// detects that pointee is not in domain!
@@ -480,7 +478,7 @@ public class TestSetOfNodes
 		assertTrue( dptr.getPointeeChild().equals( newL ) );
 		
 		final L0NonNullDomainPointer_ToChild nndptr =
-			new L0NonNullDomainPointer_ToChild( env, dptr.getSelf(), dptr.getDomain() );
+			new L0NonNullDomainPointer_ToChild( storage, dptr.getSelf(), dptr.getDomain() );
 		
 		assertTrue( newL.equals( nndptr.getPointeeChild() ) );
 		assertTrue( newL != nndptr.getPointeeChild() );
@@ -498,7 +496,7 @@ public class TestSetOfNodes
 		}
 		
 		final L0NonNullDomainPointer_ToChild nndptr2 =
-			new L0NonNullDomainPointer_ToChild( env, dptr.getSelf(), dptr.getDomain() );
+			new L0NonNullDomainPointer_ToChild( storage, dptr.getSelf(), dptr.getDomain() );
 		try {
 			nndptr2.getPointeeChild();
 			Q.fail();

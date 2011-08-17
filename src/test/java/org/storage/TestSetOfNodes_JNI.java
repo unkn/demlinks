@@ -3,6 +3,7 @@
  * Copyright (c) 2005-2011, AtKaaZ
  * All rights reserved.
  * this file is part of DemLinks
+ * File created on Aug 17, 2011 2:15:53 AM
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -33,19 +34,26 @@
  */
 package org.storage;
 
-import org.JUnitCommons.*;
-import org.junit.runner.*;
-import org.junit.runners.*;
+import org.dml.storage.berkeleydb.generics.*;
+import org.dml.storage.commons.*;
 
 
 
-@RunWith( Suite.class )
-@Suite.SuiteClasses(
-		value = {
-			TestNodeName_JE.class, TestNodeName_JNI.class, TestSetOfNodes_JE.class, TestSetOfNodes_JNI.class
-		} )
-public class AllTestsStorage
-		extends JUnitHooker
+/**
+ *
+ */
+public class TestSetOfNodes_JNI
+		extends TestBase_for_SetOfNodes
 {
-	// always empty
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.storage.TestBase_for_SetOfNodes#setStore()
+	 */
+	@Override
+	public void setStore() {
+		setUpStorage( StorageType.BDB, BDBStorageSubType.JNI );
+	}
+	
 }
