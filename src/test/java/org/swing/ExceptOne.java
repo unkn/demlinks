@@ -37,7 +37,8 @@ package org.swing;
 
 
 import org.JUnitCommons.*;
-import org.junit.*;
+import org.testng.*;
+import org.testng.annotations.*;
 import org.tools.swing.*;
 
 
@@ -50,6 +51,6 @@ public class ExceptOne
 	
 	@Test
 	public void empty() {
-		Assert.assertFalse( E.inEDTNow() );
+		AssertJUnit.assertFalse( E.inEDTNow() );
 	}
 }
