@@ -82,6 +82,10 @@ public abstract class NodeGenericImpl
 		// assert Z.areSameClass_canNotBeNull( this, o ) : "we were expecting same classes\n" + "Participating classes:\n"
 		// + this.getClass() + "\n" + o.getClass();
 		return getId() == o.getId();
+		// FIXME: actually two nodes from two different storages are not equals even if their IDs are
+		// XXX: this is not really good when BerkEnv is allowed to have multiple instances, ie. same long could be from 2 diff
+		// berkeleydb environments; but for now we know BerkEnv can have only one instance so when comparing any 2 nodes will
+		// always be from same berkeley environment! tho in the m.i. case we'd have to store the BerkEnv instance too...;
 	}
 	
 	
@@ -92,9 +96,7 @@ public abstract class NodeGenericImpl
 	// */
 	// @Override
 	// public boolean equals( final Object obj ) {
-	// // XXX: this is not really good when BerkEnv is allowed to have multiple instances, ie. same long could be from 2 diff
-	// // berkeleydb environments; but for now we know BerkEnv can have only one instance so when comparing any 2 nodes will
-	// // always be from same berkeley environment! tho in the m.i. case we'd have to store the BerkEnv instance too...;
+	
 	// if ( null == obj ) {
 	// return false;
 	// }

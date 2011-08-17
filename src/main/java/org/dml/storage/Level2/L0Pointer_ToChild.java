@@ -39,7 +39,7 @@ import org.q.*;
 
 
 /**
- * a pointer is an initial that points to one or none child<br>
+ * a pointer is an parent that points to one or none child<br>
  * can even point to self, no constrains ffs<br>
  * this can be modified in other places by other methods and we don't check for integrity, ie. it can become a set of children,
  * I don't give a floop<br>

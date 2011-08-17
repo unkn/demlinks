@@ -79,7 +79,7 @@ public class L0HashMap_OfLongs
 		try {
 			NodeGeneric cur = iter.goFirst();
 			while ( null != cur ) {
-				if ( env.countInitials( cur ) <= 0 ) {
+				if ( env.countParents( cur ) <= 0 ) {
 					throw Q.badCall( "dangling value (long=" + cur + ", its stringId=" + env.getName( cur )
 						+ ") doesn't have a key assoc. with it" );
 				}
@@ -93,20 +93,20 @@ public class L0HashMap_OfLongs
 	}
 	
 	
-	public NodeGeneric getValue_akaChild( final NodeGeneric forKey_akaInitialNode ) {
-		assert null != forKey_akaInitialNode;
-		return env.findCommonChildForInitials( _selfNode, forKey_akaInitialNode );
+	public NodeGeneric getValue_akaChild( final NodeGeneric forKey_akaParentNode ) {
+		assert null != forKey_akaParentNode;
+		return env.findCommonChildForParents( _selfNode, forKey_akaParentNode );
 	}
 	
 	
 	/**
-	 * @param initialNode
+	 * @param parentNode
 	 * @param childNode
 	 * @return true if already existed!
 	 */
-	public boolean put( final NodeGeneric initialNode, final NodeGeneric childNode ) {
+	public boolean put( final NodeGeneric parentNode, final NodeGeneric childNode ) {
 		final boolean ret1 = selfAsSet.ensureIsAddedToSet( childNode );// env.ensureVector( self, childLong );
-		final boolean ret2 = env.ensureVector( initialNode, childNode );
+		final boolean ret2 = env.ensureVector( parentNode, childNode );
 		assert ret1 ^ ret2 : Q.badCall( "both should've been either false or true; but they differed!" );
 		return ret1;
 	}
@@ -115,11 +115,11 @@ public class L0HashMap_OfLongs
 	/**
 	 * it will throw if any already existed<br>
 	 * 
-	 * @param initialNode
+	 * @param parentNode
 	 * @param childNode
 	 */
-	public void putAsNewOrThrow( final NodeGeneric initialNode, final NodeGeneric childNode ) {
-		final boolean ret = put( initialNode, childNode );
+	public void putAsNewOrThrow( final NodeGeneric parentNode, final NodeGeneric childNode ) {
+		final boolean ret = put( parentNode, childNode );
 		if ( ret ) {
 			Q.badCall( "already existed!" );
 		}

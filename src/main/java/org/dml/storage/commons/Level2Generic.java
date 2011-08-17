@@ -35,35 +35,34 @@ package org.dml.storage.commons;
 
 
 
-
 public interface Level2Generic
 {
 	
-	public boolean isVector( final NodeGeneric initialLong, final NodeGeneric childLong );
+	public boolean isVector( final NodeGeneric parentLong, final NodeGeneric childLong );
 	
 	
-	public void createNewVectorOrThrow( final NodeGeneric initialLong, final NodeGeneric childLong );
+	public void createNewVectorOrThrow( final NodeGeneric parentLong, final NodeGeneric childLong );
 	
 	
-	public boolean ensureVector( final NodeGeneric initialLong, final NodeGeneric childLong );
+	public boolean ensureVector( final NodeGeneric parentLong, final NodeGeneric childLong );
 	
 	
-	public boolean removeVector( final NodeGeneric initialObject, final NodeGeneric childObject );
+	public boolean removeVector( final NodeGeneric parentObject, final NodeGeneric childObject );
 	
 	
-	public IteratorGeneric_OnChildNodes getIterator_on_Children_of( final NodeGeneric initialObject );
+	public IteratorGeneric_OnChildNodes getIterator_on_Children_of( final NodeGeneric parentObject );
 	
 	
-	public IteratorGeneric_OnChildNodes getIterator_on_Initials_of( final NodeGeneric ofChildObject );
+	public IteratorGeneric_OnChildNodes getIterator_on_Parents_of( final NodeGeneric ofChildObject );
 	
 	
-	public int countInitials( final NodeGeneric ofChildObject );
+	public int countParents( final NodeGeneric ofChildObject );
 	
 	
-	public int countChildren( final NodeGeneric ofInitialObject );
+	public int countChildren( final NodeGeneric ofParentObject );
 	
 	
-	public NodeGeneric findCommonChildForInitials( final NodeGeneric initial1, final NodeGeneric initial2 );
+	public NodeGeneric findCommonChildForParents( final NodeGeneric parent1, final NodeGeneric parent2 );
 	
 	
 }

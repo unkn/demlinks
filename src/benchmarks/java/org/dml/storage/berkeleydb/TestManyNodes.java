@@ -409,14 +409,14 @@ public class TestManyNodes
 	private final Timer	t3	= new Timer( Timer.TYPE.MILLIS );
 	
 	
-	private void goFind2( final NodeGeneric initialNode, final NodeGeneric childNode ) {
+	private void goFind2( final NodeGeneric parentNode, final NodeGeneric childNode ) {
 		t3.start();
-		final boolean ret = storage.isVector( initialNode, childNode );
+		final boolean ret = storage.isVector( parentNode, childNode );
 		assert ret;
 		t3.stop();
 		System.out.printf(
 			"%10s -> %10s %10s%n",
-			storage.getName( initialNode ),
+			storage.getName( parentNode ),
 			storage.getName( childNode ),
 			t3.getDeltaPrintFriendly() );
 	}

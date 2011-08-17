@@ -71,34 +71,34 @@ public interface StorageGeneric
 	
 	// =============== Level 2: tuple of nodes
 	
-	public void makeVector( final NodeGeneric initialNode, final NodeGeneric childNode );
+	public void makeVector( final NodeGeneric parentNode, final NodeGeneric childNode );
 	
 	
-	public boolean ensureVector( final NodeGeneric initialNode, final NodeGeneric childNode );
+	public boolean ensureVector( final NodeGeneric parentNode, final NodeGeneric childNode );
 	
 	
 	/**
-	 * is? initialNode->childNode<br>
-	 * but childNode->initialNode is a different thing<br>
+	 * is? parentNode->childNode<br>
+	 * but childNode->parentNode is a different thing<br>
 	 * 
-	 * @param initialNode
+	 * @param parentNode
 	 * @param childNode
 	 * @return
 	 */
-	public boolean isVector( final NodeGeneric initialNode, final NodeGeneric childNode );
+	public boolean isVector( final NodeGeneric parentNode, final NodeGeneric childNode );
 	
 	
 	
-	public IteratorGeneric_OnChildNodes getIterator_on_Initials_of( final NodeGeneric childNode );
+	public IteratorGeneric_OnChildNodes getIterator_on_Parents_of( final NodeGeneric childNode );
 	
 	
-	public IteratorGeneric_OnChildNodes getIterator_on_Children_of( final NodeGeneric initialNode );
+	public IteratorGeneric_OnChildNodes getIterator_on_Children_of( final NodeGeneric parentNode );
 	
 	
-	public int countInitials( final NodeGeneric ofChildNode );
+	public int countParents( final NodeGeneric ofChildNode );
 	
 	
-	public int countChildren( final NodeGeneric ofInitialNode );
+	public int countChildren( final NodeGeneric ofParentNode );
 	
 	
 	/**
@@ -106,12 +106,12 @@ public interface StorageGeneric
 	 * B->X<br>
 	 * find X<br>
 	 * 
-	 * @param initialNode1
-	 * @param initialNode2
+	 * @param parentNode1
+	 * @param parentNode2
 	 * @return X
 	 */
-	public NodeGeneric findCommonChildForInitials( final NodeGeneric initialNode1, final NodeGeneric initialNode2 );
+	public NodeGeneric findCommonChildForParents( final NodeGeneric parentNode1, final NodeGeneric parentNode2 );
 	
 	
-	public boolean removeVector( final NodeGeneric initialNode, final NodeGeneric childNode );
+	public boolean removeVector( final NodeGeneric parentNode, final NodeGeneric childNode );
 }

@@ -63,7 +63,7 @@ public class TestSetOfNodes
 	
 	
 	private L0Set_OfChildren	set1;
-	private NodeGeneric			setInitial;
+	private NodeGeneric			setParent;
 	
 	
 	/*
@@ -73,8 +73,8 @@ public class TestSetOfNodes
 	 */
 	@Override
 	public void overridden_setUp() {
-		setInitial = storage.createNewUniqueNode();
-		set1 = new L0Set_OfChildren( storage, setInitial );
+		setParent = storage.createNewUniqueNode();
+		set1 = new L0Set_OfChildren( storage, setParent );
 	}
 	
 	
@@ -90,15 +90,15 @@ public class TestSetOfNodes
 		assertTrue( set1.size() == 1 );
 		assertTrue( set1.ensureIsAddedToSet( one ) );
 		
-		assertTrue( setInitial.equals( set1.getSelf() ) );
-		assertTrue( setInitial != set1.getSelf() );// they diff due to clone
+		assertTrue( setParent.equals( set1.getSelf() ) );
+		assertTrue( setParent != set1.getSelf() );// they diff due to clone
 		
-		assertFalse( set1.contains( setInitial ) );// didn't already exit
-		final boolean ret = set1.ensureIsAddedToSet( setInitial );// add itself to set ie. circular IS allowed
+		assertFalse( set1.contains( setParent ) );// didn't already exit
+		final boolean ret = set1.ensureIsAddedToSet( setParent );// add itself to set ie. circular IS allowed
 		assertFalse( ret );// didn't already exit
-		assertTrue( set1.contains( setInitial ) );
-		assertTrue( set1.remove( setInitial ) );
-		assertFalse( set1.contains( setInitial ) );
+		assertTrue( set1.contains( setParent ) );
+		assertTrue( set1.remove( setParent ) );
+		assertFalse( set1.contains( setParent ) );
 		
 		final int startSize = set1.size();
 		final NodeGeneric two = storage.createNewUniqueNode();
@@ -140,8 +140,8 @@ public class TestSetOfNodes
 		while ( now != null ) {
 			now = iter.goNext();
 		}
-		assertTrue( storage.isVector( setInitial, two ) );
-		// InitialInitialInitial: remove while iter is still active will fail, due to lock!
+		assertTrue( storage.isVector( setParent, two ) );
+		// XXX: remove while iter is still active will fail, due to lock!
 		// threw = false;
 		// try {
 		set1.remove( two );
@@ -156,7 +156,7 @@ public class TestSetOfNodes
 		// iter.goTo( two );
 		// iter.delete();
 		// iter.close();
-		assertFalse( storage.isVector( setInitial, two ) );
+		assertFalse( storage.isVector( setParent, two ) );
 		assertTrue( iter.size() == 2 );
 		assertTrue( set1.size() == 2 );
 		// assertTrue( this.set1.remove( two ) );
@@ -193,16 +193,16 @@ public class TestSetOfNodes
 		iter2.finished();
 		assertFalse( storage.isVector( set1.getSelf(), three ) );
 		
-		final NodeGeneric dsotInitial = storage.createNewUniqueNode();
-		final L0DomainSet_OfChildren dsot = new L0DomainSet_OfChildren( storage, dsotInitial, setInitial );
-		assertTrue( set1.getSelf().equals( setInitial ) );
+		final NodeGeneric dsotParent = storage.createNewUniqueNode();
+		final L0DomainSet_OfChildren dsot = new L0DomainSet_OfChildren( storage, dsotParent, setParent );
+		assertTrue( set1.getSelf().equals( setParent ) );
 		try {
-			final L0DomainSet_OfChildren adsot = new L0DomainSet_OfChildren( storage, set1.getSelf(), setInitial );
+			final L0DomainSet_OfChildren adsot = new L0DomainSet_OfChildren( storage, set1.getSelf(), setParent );
 			Q.fail();
 		} catch ( final AssertionError ae ) {
 			// good
 		}
-		final L0Set_OfChildren sot3 = new L0Set_OfChildren( storage, dsotInitial );
+		final L0Set_OfChildren sot3 = new L0Set_OfChildren( storage, dsotParent );
 		assertTrue( sot3.getSelf().equals( dsot.getSelf() ) );
 		// assertFalse( sot3.equals( dsot ) );
 		// already used testEquals for this
@@ -246,10 +246,10 @@ public class TestSetOfNodes
 		assertTrue( dsot3.equals( dsot ) );
 		assertTrue( hm.size() == 2 );
 		
-		assertTrue( dsot.getSelf().equals( dsotInitial ) );
-		assertTrue( dsot.getSelf() != dsotInitial );// diff due to cloned
-		assertTrue( dsot.getDomain() != setInitial );// diff due to cloned
-		assertTrue( dsot.getDomain().equals( setInitial ) );
+		assertTrue( dsot.getSelf().equals( dsotParent ) );
+		assertTrue( dsot.getSelf() != dsotParent );// diff due to cloned
+		assertTrue( dsot.getDomain() != setParent );// diff due to cloned
+		assertTrue( dsot.getDomain().equals( setParent ) );
 		
 		assertFalse( dsot.ensureIsAddedToSet( one ) );
 		assertTrue( dsot.contains( one ) );
@@ -288,7 +288,7 @@ public class TestSetOfNodes
 		}
 		assertFalse( dsot.contains( dsot.getSelf() ) );
 		
-		assertFalse( set1.ensureIsAddedToSet( dsotInitial ) );
+		assertFalse( set1.ensureIsAddedToSet( dsotParent ) );
 		
 		// can add self, if self is in domain! YES now
 		assertFalse( dsot.ensureIsAddedToSet( dsot.getSelf() ) );
@@ -400,24 +400,24 @@ public class TestSetOfNodes
 	
 	@Test
 	public void testPointer() {
-		final NodeGeneric ptrInitial = storage.createNewUniqueNode();
-		assertNotNull( ptrInitial );
-		final L0Pointer_ToChild ptr = new L0Pointer_ToChild( storage, ptrInitial );
-		assertFalse( storage.isVector( ptr, ptrInitial ) );
-		assertTrue( ptr.getSelf() != ptrInitial );
+		final NodeGeneric ptrParent = storage.createNewUniqueNode();
+		assertNotNull( ptrParent );
+		final L0Pointer_ToChild ptr = new L0Pointer_ToChild( storage, ptrParent );
+		assertFalse( storage.isVector( ptr, ptrParent ) );
+		assertTrue( ptr.getSelf() != ptrParent );
 		System.out.println( ptr.getSelfImpl().getClass() );
 		System.out.println( ptr.getSelf().getClass() );
-		System.out.println( ptrInitial.getClass() );
-		final boolean ret = ptr.getSelf().equals( ptrInitial );
+		System.out.println( ptrParent.getClass() );
+		final boolean ret = ptr.getSelf().equals( ptrParent );
 		assertTrue( ret );
 		assertNull( ptr.getPointeeChild() );
 		
 		final NodeGeneric newL = storage.createNewUniqueNode();
 		assertNotNull( newL );
-		assertFalse( storage.ensureVector( ptrInitial, newL ) );
+		assertFalse( storage.ensureVector( ptrParent, newL ) );
 		
 		// this isn't valid because it's using the same self as ptr
-		final L0Pointer_ToChild ptr2 = new L0Pointer_ToChild( storage, ptrInitial );
+		final L0Pointer_ToChild ptr2 = new L0Pointer_ToChild( storage, ptrParent );
 		assertNotNull( ptr2.getPointeeChild() );
 		assertTrue( ptr2.getPointeeChild().equals( newL ) );
 		assertTrue( ptr2.getPointeeChild() != newL );
