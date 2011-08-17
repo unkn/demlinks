@@ -33,19 +33,37 @@
  */
 package org.references;
 
-import org.JUnitCommons.*;
-import org.junit.runner.*;
-import org.junit.runners.*;
+import java.util.*;
+
+import org.testng.*;
+import org.testng.xml.*;
 
 
 
-@RunWith( Suite.class )
-@Suite.SuiteClasses(
-		value = {
-			TestTwoWayHashMapOfNonNullUniques.class,
-		} )
+// @RunWith( Suite.class )
+// @Suite.SuiteClasses(
+// value = {
+// TestTwoWayHashMapOfNonNullUniques.class,
+// } )
 public class AllTestsReferences
-		extends JUnitHooker
+// extends JUnitHooker
 {
+	
 	// always empty
+	public static void main( final String[] args ) {
+		final XmlSuite suite = new XmlSuite();
+		suite.setName( "TmpSuite" );
+		
+		final XmlTest test = new XmlTest( suite );
+		test.setName( "TmpTest" );
+		final List<XmlClass> classes = new ArrayList<XmlClass>();
+		classes.add( new XmlClass( NewTest.class ) );
+		test.setXmlClasses( classes );
+		
+		final List<XmlSuite> suites = new ArrayList<XmlSuite>();
+		suites.add( suite );
+		final TestNG tng = new TestNG();
+		tng.setXmlSuites( suites );
+		tng.run();
+	}
 }

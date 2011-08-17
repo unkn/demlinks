@@ -34,13 +34,13 @@
  */
 package org.references;
 
-import static org.junit.Assert.*;
+import static org.testng.AssertJUnit.*;
 
-import org.JUnitCommons.*;
 import org.dml.storage.berkeleydb.commons.*;
 import org.dml.storage.berkeleydb.generics.*;
-import org.junit.*;
 import org.q.*;
+import org.testng.*;
+import org.testng.annotations.*;
 import org.toolza.*;
 
 
@@ -48,9 +48,11 @@ import org.toolza.*;
 /**
  *
  */
+@Test
 public class TestTwoWayHashMapOfNonNullUniques
-		extends JUnitHooker
+// extends JUnitHooker
 {
+	
 	
 	private class KeyA
 	{
@@ -92,7 +94,6 @@ public class TestTwoWayHashMapOfNonNullUniques
 	}
 	
 	
-	@Test
 	public void testDiffInstancesWhichEquals_AndSomeOfZ() {
 		// using two different instances which are equal via .equals()
 		
@@ -118,7 +119,7 @@ public class TestTwoWayHashMapOfNonNullUniques
 		
 		try {
 			hm.ensureExists( key2, two );
-			Q.fail();
+			Assert.fail();
 		} catch ( final BadCallError bce ) {
 			// good
 			Q.markAsHandled( bce );
@@ -135,13 +136,14 @@ public class TestTwoWayHashMapOfNonNullUniques
 	}
 	
 	
-	@Test
 	public void testMany() {
 		final RAMTwoWayHashMapOfNonNullUniques<Long, String> hm = new RAMTwoWayHashMapOfNonNullUniques<Long, String>();
 		testMany( hm );
 	}
 	
 	
+	@Test(
+			enabled = false )
 	public static void testMany( final GenericTwoWayMapOfUniques<Long, String> hm ) {
 		// doing it: we likely want to make this test for any instance not just RAM hash map...
 		final long n = 1000;
@@ -186,7 +188,7 @@ public class TestTwoWayHashMapOfNonNullUniques
 		
 		try {
 			hm.discard();
-			Q.fail();
+			Assert.fail();
 		} catch ( final BadCallError bce ) {
 			// good
 			Q.markAsHandled( bce );
@@ -194,7 +196,7 @@ public class TestTwoWayHashMapOfNonNullUniques
 		
 		try {
 			hm.getData( new Long( 1 ) );
-			Q.fail();
+			Assert.fail();
 		} catch ( final BadCallError bce ) {
 			// good
 			Q.markAsHandled( bce );
