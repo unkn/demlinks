@@ -34,47 +34,18 @@
 package org.references;
 
 import org.JUnitCommons.*;
+import org.junit.runner.*;
+import org.junit.runners.*;
 
 
 
-// @RunWith( Suite.class )
-// @Suite.SuiteClasses(
-// value = {
-// TestTwoWayHashMapOfNonNullUniques.class,
-// } )
+@RunWith( Suite.class )
+@Suite.SuiteClasses(
+		value = {
+			TestTwoWayHashMapOfNonNullUniques.class,
+		} )
 public class AllTestsReferences
 		extends JUnitHooker
 {
-	
-	// public static void main( final String[] args ) {
-	// // // final TestListenerAdapter tla = new TestListenerAdapter();
-	// // final TestNG testng = new TestNG();
-	// // testng.setTestClasses( new Class[] {
-	// // TestTwoWayHashMapOfNonNullUniques.class
-	// // } );
-	// // // testng.addListener( tla );
-	// // testng.run();
-	//
-	//
-	// // final XmlSuite suite = new XmlSuite();
-	// // suite.setName( "TmpSuite" );
-	// //
-	// // final XmlTest test = new XmlTest( suite );
-	// // test.setName( "TmpTest" );
-	// // final List<XmlClass> classes = new ArrayList<XmlClass>();
-	// // classes.add( new XmlClass( TestTwoWayHashMapOfNonNullUniques.class ) );
-	// // test.setXmlClasses( classes );
-	// //
-	// // // And then you can pass this XmlSuite to TestNG:
-	// //
-	// // final List<XmlSuite> suites = new ArrayList<XmlSuite>();
-	// // suites.add( suite );
-	// // final TestNG tng = new TestNG();
-	// // tng.setXmlSuites( suites );
-	// // tng.run();
-	//
-	// }
-	
-	
 	// always empty
 }

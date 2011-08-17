@@ -34,12 +34,13 @@
  */
 package org.references;
 
+import static org.junit.Assert.*;
+
 import org.JUnitCommons.*;
 import org.dml.storage.berkeleydb.commons.*;
 import org.dml.storage.berkeleydb.generics.*;
+import org.junit.*;
 import org.q.*;
-import org.testng.*;
-import org.testng.annotations.*;
 import org.toolza.*;
 
 
@@ -47,7 +48,6 @@ import org.toolza.*;
 /**
  *
  */
-@Test
 public class TestTwoWayHashMapOfNonNullUniques
 		extends JUnitHooker
 {
@@ -92,74 +92,74 @@ public class TestTwoWayHashMapOfNonNullUniques
 	}
 	
 	
+	@Test
 	public void testDiffInstancesWhichEquals_AndSomeOfZ() {
 		// using two different instances which are equal via .equals()
 		
 		final KeyA key1 = new KeyA( 10 );
 		final KeyA key2 = new KeyA( 10 );
-		AssertJUnit.assertTrue( key1 != key2 );
-		AssertJUnit.assertTrue( key1.equals( key2 ) );
-		AssertJUnit.assertTrue( Z.equalsWithCompatClasses_allowsNull( key1, key2 ) );
-		AssertJUnit.assertFalse( Z.equalsByReference_enforceNotNull( key1, key2 ) );
-		AssertJUnit.assertTrue( Z.areSameClass_canNotBeNull( key1, key2 ) );
+		assertTrue( key1 != key2 );
+		assertTrue( key1.equals( key2 ) );
+		assertTrue( Z.equalsWithCompatClasses_allowsNull( key1, key2 ) );
+		assertFalse( Z.equalsByReference_enforceNotNull( key1, key2 ) );
+		assertTrue( Z.areSameClass_canNotBeNull( key1, key2 ) );
 		
 		final RAMTwoWayHashMapOfNonNullUniques<KeyA, String> hm = new RAMTwoWayHashMapOfNonNullUniques<KeyA, String>();
 		final String one = "one";
 		final String two = "two";
-		AssertJUnit.assertTrue( hm.isEmpty() );
-		AssertJUnit.assertTrue( hm.size() == 0 );
+		assertTrue( hm.isEmpty() );
+		assertTrue( hm.size() == 0 );
 		
-		AssertJUnit.assertFalse( hm.ensureExists( key1, one ) );
-		AssertJUnit.assertTrue( hm.size() == 1 );
+		assertFalse( hm.ensureExists( key1, one ) );
+		assertTrue( hm.size() == 1 );
 		
-		AssertJUnit.assertTrue( hm.ensureExists( key1, one ) );
-		AssertJUnit.assertTrue( hm.size() == 1 );
+		assertTrue( hm.ensureExists( key1, one ) );
+		assertTrue( hm.size() == 1 );
 		
 		try {
 			hm.ensureExists( key2, two );
-			AssertJUnit.fail();
+			Q.fail();
 		} catch ( final BadCallError bce ) {
 			// good
 			Q.markAsHandled( bce );
 		}
-		AssertJUnit.assertTrue( hm.size() == 1 );
+		assertTrue( hm.size() == 1 );
 		
-		AssertJUnit.assertTrue( Z.equalsByReference_enforceNotNull( hm.getData( key1 ), one ) );
-		AssertJUnit.assertTrue( Z.equalsByReference_enforceNotNull( hm.getData( key2 ), one ) );
+		assertTrue( Z.equalsByReference_enforceNotNull( hm.getData( key1 ), one ) );
+		assertTrue( Z.equalsByReference_enforceNotNull( hm.getData( key2 ), one ) );
 		
-		AssertJUnit.assertTrue( hm.removeByKey( key2 ) );
-		AssertJUnit.assertTrue( hm.isEmpty() );
+		assertTrue( hm.removeByKey( key2 ) );
+		assertTrue( hm.isEmpty() );
 		
-		AssertJUnit.assertTrue( Z.equalsWithCompatClasses_allowsNull( null, null ) );
+		assertTrue( Z.equalsWithCompatClasses_allowsNull( null, null ) );
 	}
 	
 	
+	@Test
 	public void testMany() {
 		final RAMTwoWayHashMapOfNonNullUniques<Long, String> hm = new RAMTwoWayHashMapOfNonNullUniques<Long, String>();
 		testMany( hm );
 	}
 	
 	
-	@Test(
-			enabled = false )
 	public static void testMany( final GenericTwoWayMapOfUniques<Long, String> hm ) {
 		// doing it: we likely want to make this test for any instance not just RAM hash map...
 		final long n = 1000;
 		
-		AssertJUnit.assertTrue( hm.isEmpty() );
+		assertTrue( hm.isEmpty() );
 		for ( long i = 0; i < n; i++ ) {
 			final boolean ret = hm.ensureExists( new Long( i ), String.valueOf( i ) );
-			AssertJUnit.assertFalse( ret );
+			assertFalse( ret );
 		}
 		final long s = hm.size();
-		AssertJUnit.assertTrue( "" + s, s == n );
-		AssertJUnit.assertTrue( "" + s, s == hm.size() );// on second call
+		assertTrue( "" + s, s == n );
+		assertTrue( "" + s, s == hm.size() );// on second call
 		for ( long i = 0; i < n; i++ ) {
 			final boolean ret = hm.ensureExists( new Long( i ), String.valueOf( i ) );
-			AssertJUnit.assertTrue( ret );
+			assertTrue( ret );
 		}
-		AssertJUnit.assertTrue( hm.size() == n );
-		AssertJUnit.assertFalse( hm.isEmpty() );
+		assertTrue( hm.size() == n );
+		assertFalse( hm.isEmpty() );
 		
 		// if ( !GlobalBDB.isJE ) {// didn't implement this for JE yet
 		// System.out.println( hm.getClass() );
@@ -179,14 +179,14 @@ public class TestTwoWayHashMapOfNonNullUniques
 		}
 		if ( !skip ) {
 			hm.removeAll();
-			AssertJUnit.assertTrue( hm.isEmpty() );
+			assertTrue( hm.isEmpty() );
 		}
 		
 		hm.discard();
 		
 		try {
 			hm.discard();
-			AssertJUnit.fail();
+			Q.fail();
 		} catch ( final BadCallError bce ) {
 			// good
 			Q.markAsHandled( bce );
@@ -194,7 +194,7 @@ public class TestTwoWayHashMapOfNonNullUniques
 		
 		try {
 			hm.getData( new Long( 1 ) );
-			AssertJUnit.fail();
+			Q.fail();
 		} catch ( final BadCallError bce ) {
 			// good
 			Q.markAsHandled( bce );

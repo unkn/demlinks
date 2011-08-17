@@ -36,9 +36,9 @@ package org.JUnitCommons;
 
 
 
+import org.junit.*;
 import org.q.*;
 import org.references2.*;
-import org.testng.annotations.*;
 import org.tools.swing.*;
 import org.toolza.*;
 
@@ -541,7 +541,7 @@ public class JUnitHooker
 	// }
 	
 	
-	@BeforeSuite
+	@BeforeClass
 	public static synchronized final void beforeSuite()// `this method`
 	{
 		// Q.assumedFalse( R.recursionDetectedForCurrentThread.get().booleanValue() );
@@ -563,7 +563,7 @@ public class JUnitHooker
 	}
 	
 	
-	@AfterSuite
+	@AfterClass
 	public static synchronized final void afterSuite() {
 		// Q.assumedFalse( R.recursionDetectedForCurrentThread.get().booleanValue() );
 		assert level > 0 : Q.bug( "this should never happen!" );
