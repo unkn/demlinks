@@ -73,23 +73,8 @@ public class TestSetOfNodes
 	 */
 	@Override
 	public void overridden_setUp() {
-		// setStore();
 		setInitial = storage.createNewUniqueNode();
 		set1 = new L0Set_OfChildren( storage, setInitial );
-	}
-	
-	
-	// public abstract void setStore();
-	
-	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.storage.TestBase_for_Storage#overridden_tearDown()
-	 */
-	@Override
-	public void overridden_tearDown() {
-		// empty
 	}
 	
 	
