@@ -36,7 +36,6 @@ package org.dml.storage.Level2;
 
 import org.dml.storage.commons.*;
 import org.q.*;
-import org.references.*;
 import org.toolza.*;
 
 
@@ -49,34 +48,34 @@ public abstract class NodeGenericExtensions
 // implements NodeGeneric
 {
 	
-	private final static RAMTwoWayHashMapOfNonNullUniques<NodeGenericExtensions, NodeGenericImpl>	extensionInstances;
-	static {
-		// just don't want this assignment(=) to shift all the fields far to the right due to lame'o'indentation
-		// that's why it's in a static block
-		extensionInstances = new RAMTwoWayHashMapOfNonNullUniques<NodeGenericExtensions, NodeGenericImpl>();
-	}
-	
-	
-	protected synchronized static NodeGenericExtensions getExtensionInstanceForNodeImpl( final NodeGenericImpl nodeImpl ) {
-		assert Q.nn( nodeImpl );
-		NodeGenericExtensions existingInstance = extensionInstances.getKey( nodeImpl );
-		if ( null != existingInstance ) {
-			// returning a clone just to make sure we catch any == bugs or similars
-			existingInstance = existingInstance.clone();
-		}
-		return existingInstance;
-	}
-	
-	
-	protected synchronized static void putExtensionInstanceForNodeImpl( final NodeGenericExtensions newInstance,
-																		final NodeGenericImpl impl ) {
-		assert Q.nn( newInstance );
-		assert Q.nn( impl );
-		assert null == getExtensionInstanceForNodeImpl( impl );
-		final boolean existed = extensionInstances.ensureExists( newInstance, impl );
-		assert !existed;
-		assert Z.equals_enforceExactSameClassTypesAndNotNull( getExtensionInstanceForNodeImpl( impl ), newInstance );
-	}
+	// private final static RAMTwoWayHashMapOfNonNullUniques<NodeGenericExtensions, NodeGenericImpl> extensionInstances;
+	// static {
+	// // just don't want this assignment(=) to shift all the fields far to the right due to lame'o'indentation
+	// // that's why it's in a static block
+	// extensionInstances = new RAMTwoWayHashMapOfNonNullUniques<NodeGenericExtensions, NodeGenericImpl>();
+	// }
+	//
+	//
+	// protected synchronized static NodeGenericExtensions getExtensionInstanceForNodeImpl( final NodeGenericImpl nodeImpl ) {
+	// assert Q.nn( nodeImpl );
+	// NodeGenericExtensions existingInstance = extensionInstances.getKey( nodeImpl );
+	// if ( null != existingInstance ) {
+	// // returning a clone just to make sure we catch any == bugs or similars
+	// existingInstance = existingInstance.clone();
+	// }
+	// return existingInstance;
+	// }
+	//
+	//
+	// protected synchronized static void putExtensionInstanceForNodeImpl( final NodeGenericExtensions newInstance,
+	// final NodeGenericImpl impl ) {
+	// assert Q.nn( newInstance );
+	// assert Q.nn( impl );
+	// assert null == getExtensionInstanceForNodeImpl( impl );
+	// final boolean existed = extensionInstances.ensureExists( newInstance, impl );
+	// assert !existed;
+	// assert Z.equals_enforceExactSameClassTypesAndNotNull( getExtensionInstanceForNodeImpl( impl ), newInstance );
+	// }
 	
 	// private final StorageGeneric storage;
 	
@@ -87,7 +86,12 @@ public abstract class NodeGenericExtensions
 	private final NodeGenericImpl	_selfNodeImpl;
 	
 	
+	/**
+	 * @param store
+	 * @param selfNode
+	 */
 	public NodeGenericExtensions( final StorageGeneric store, final NodeGeneric selfNode ) {
+		// XXX1309: constructor param order should be same; see other XXX1309
 		super( store );
 		assert null != store;
 		assert null != selfNode;

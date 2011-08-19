@@ -404,8 +404,7 @@ public class TestSetOfNodes
 	public void testPointer() {
 		final NodeGeneric ptrParent = storage.createNewUniqueNode();
 		assertNotNull( ptrParent );
-		final Extension_Pointer_ToChild ptr =
-			(Extension_Pointer_ToChild)fact.createNewExtensionInstance( ExtensionTypes.Pointer, ptrParent );
+		final IExtension_Pointer ptr = (IExtension_Pointer)fact.createNewExtensionInstance( ExtensionTypes.Pointer, ptrParent );
 		assertFalse( storage.isVector( ptr, ptrParent ) );
 		assertTrue( ptr.getSelf() != ptrParent );
 		System.out.println( ptr.getSelfImpl().getClass() );
@@ -427,8 +426,8 @@ public class TestSetOfNodes
 		}
 		
 		// this is valid even if it's using the same self as ptr because it's same extension type
-		final Extension_Pointer_ToChild ptr2 =
-			(Extension_Pointer_ToChild)fact.getExistingExtensionInstance( ExtensionTypes.Pointer, ptrParent );
+		final IExtension_Pointer ptr2 =
+			(IExtension_Pointer)fact.getExistingExtensionInstance( ExtensionTypes.Pointer, ptrParent );
 		assertNotNull( ptr2.getPointeeChild() );
 		assertTrue( ptr2.getPointeeChild().equals( newL ) );
 		assertTrue( ptr2.getPointeeChild() != newL );
@@ -465,7 +464,7 @@ public class TestSetOfNodes
 		}
 		
 		dptr.hashCode();
-		final HashSet<Extension_Pointer_ToChild> hm = new HashSet<Extension_Pointer_ToChild>();
+		final HashSet<IExtension_Pointer> hm = new HashSet<IExtension_Pointer>();
 		assertTrue( hm.add( dptr ) );
 		assertTrue( dptr.getSelf().equals( ptr.getSelf() ) );
 		

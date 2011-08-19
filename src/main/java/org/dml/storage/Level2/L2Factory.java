@@ -97,34 +97,59 @@ public class L2Factory
 	}
 	
 	
+	/**
+	 * @param type
+	 * @param node
+	 * @param extras
+	 *            ie. domain node or other extra params for the constructors;<br>
+	 *            or null if none, or rather unspecified<br>
+	 * @return
+	 */
 	private NodeGenericExtensions getExtensionInstance( final ExtensionTypes type, final NodeGeneric node,
 														final Object... extras ) {
+		assert Q.nn( node );
 		final Class<? extends NodeGenericExtensions> cls = getClassForType( type );
-		Constructor<? extends NodeGenericExtensions> constructor = null;
+		// Constructor<? extends NodeGenericExtensions> constructor = null;
 		try {
-			System.out.println( "constructors for `" + cls + "` == " + cls.getDeclaredConstructors().length );
+			// System.out.println( "constructors for `" + cls + "` == " + cls.getDeclaredConstructors().length );
+			final Constructor<?>[] ctors = cls.getDeclaredConstructors();
+			assert 1 == ctors.length : "more than 1 declared constructors for class `" + cls + "`;" + "this is unexpected";
 			// org.dml.storage.Level2.Extension_Pointer_ToChild
-			constructor = cls.getDeclaredConstructor( StorageGeneric.class, NodeGeneric.class );
+			// constructor = cls.getDeclaredConstructor( StorageGeneric.class, NodeGeneric.class );
+			final Constructor<?> constructor = ctors[0];
 			assert Q.nn( constructor );
-			final NodeGenericExtensions inst = constructor.newInstance( getStorage(), node );
+			int howMany = 2;
+			if ( null != extras ) {
+				howMany += extras.length;
+			}
+			final Object[] params = new Object[howMany];
+			// XXX1309: constructor param order should be same; see other XXX1309
+			params[0] = getStorage();
+			params[1] = node;
+			if ( null != extras ) {
+				for ( int i = 2; i < params.length; i++ ) {
+					params[i] = extras[i - 2];
+				}
+			}
+			final NodeGenericExtensions inst = (NodeGenericExtensions)constructor.newInstance( params );
 			assert Q.nn( inst );
 			return inst;
-		} catch ( NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
-				| IllegalArgumentException | InvocationTargetException e ) {
+		} catch ( SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException
+				| InvocationTargetException e ) {
 			throw Q.rethrow( e );
 		}
 	}
 	
 	
-	public synchronized NodeGenericExtensions
-			createNewExtensionInstance( final ExtensionTypes type, final NodeGeneric selfNode ) {
+	public synchronized NodeGenericExtensions createNewExtensionInstance( final ExtensionTypes type,
+																			final NodeGeneric selfNode, final Object... extras ) {
 		assert Q.nn( selfNode );
 		final NodeGenericImpl impl = selfNode.getSelfImpl();
 		final NodeGenericExtensions existingInstance = getExtensionInstanceForNodeImpl( impl );
 		if ( null != existingInstance ) {
 			Q.badCall( "already existed, cannot exclusively create!" );
 		}
-		final NodeGenericExtensions newInstance = getExtensionInstance( type, selfNode );
+		final NodeGenericExtensions newInstance = getExtensionInstance( type, selfNode, extras );
 		putExtensionInstanceForNodeImpl( newInstance, impl );
 		assert Z.equals_enforceExactSameClassTypesAndNotNull( getExtensionInstanceForNodeImpl( impl ), newInstance );
 		return newInstance;
@@ -190,11 +215,11 @@ public class L2Factory
 	
 	
 	public synchronized NodeGenericExtensions getOrCreateExtensionInstance( final ExtensionTypes type,
-																			final NodeGeneric selfNode ) {
+																			final NodeGeneric selfNode, final Object... extras ) {
 		assert Q.nn( selfNode );
 		NodeGenericExtensions existingInstance = internal_get_Extension( type, selfNode );
 		if ( null == existingInstance ) {
-			existingInstance = createNewExtensionInstance( type, selfNode );
+			existingInstance = createNewExtensionInstance( type, selfNode, extras );
 			assert Q.nn( existingInstance );
 		}
 		return existingInstance;
