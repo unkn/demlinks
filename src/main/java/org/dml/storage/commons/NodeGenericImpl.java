@@ -34,6 +34,7 @@
  */
 package org.dml.storage.commons;
 
+import org.dml.storage.berkeleydb.commons.*;
 import org.q.*;
 
 
@@ -45,6 +46,14 @@ public abstract class NodeGenericImpl
 		extends NodeGenericCommon
 // implements NodeGenericC// , Cloneable
 {
+	
+	/**
+	 * @param stor
+	 */
+	public NodeGenericImpl( final StorageBDBGeneric stor ) {
+		super( stor );
+	}
+	
 	
 	/*
 	 * (non-Javadoc)

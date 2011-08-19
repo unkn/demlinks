@@ -33,14 +33,31 @@
  */
 package org.dml.storage.commons;
 
+import org.q.*;
+
+
 
 /**
  *
  */
-public abstract class Base_StorageGeneric implements StorageGeneric {
+public abstract class Base_StorageGeneric
+		implements StorageGeneric
+{
 	
 	@Override
 	public final void shutdown() {
 		this.shutdown( false );
+	}
+	
+	
+	@Override
+	public boolean equals( final Object obj ) {
+		throw Q.ni();
+	}
+	
+	
+	@Override
+	public int hashCode() {
+		return super.hashCode();
 	}
 }

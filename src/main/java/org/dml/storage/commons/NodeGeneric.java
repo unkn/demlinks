@@ -51,6 +51,9 @@ public interface NodeGeneric
 	public long getId();
 	
 	
+	public StorageGeneric getStorage();
+	
+	
 	/*
 	 * (non-Javadoc)
 	 * 

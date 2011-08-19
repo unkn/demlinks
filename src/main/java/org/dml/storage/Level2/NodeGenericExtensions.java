@@ -48,7 +48,7 @@ public abstract class NodeGenericExtensions
 // implements NodeGeneric
 {
 	
-	private final StorageGeneric	storage;
+	// private final StorageGeneric storage;
 	
 	// self can be either an extension or an implementation
 	private final NodeGeneric		_selfNode;
@@ -58,17 +58,18 @@ public abstract class NodeGenericExtensions
 	
 	
 	public NodeGenericExtensions( final StorageGeneric store, final NodeGeneric selfNode ) {
+		super( store );
 		assert null != store;
 		assert null != selfNode;
-		storage = store;
+		// storage = store;
 		_selfNode = selfNode.clone();// this is cloned for hitting bug with `==` in later code
 		_selfNodeImpl = getSelfImpl( selfNode );
 	}
 	
 	
-	public final StorageGeneric getStorage() {
-		return storage;
-	}
+	// public final StorageGeneric getStorage() {
+	// return storage;
+	// }
 	
 	
 	@Override

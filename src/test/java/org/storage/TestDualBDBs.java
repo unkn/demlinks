@@ -33,19 +33,51 @@
  */
 package org.storage;
 
+
+
+import static org.junit.Assert.*;
+
 import org.JUnitCommons.*;
-import org.junit.runner.*;
-import org.junit.runners.*;
+import org.dml.storage.berkeleydb.generics.*;
+import org.dml.storage.commons.*;
+import org.junit.*;
 
 
 
-@RunWith( Suite.class )
-@Suite.SuiteClasses(
-		value = {
-			TestNodeName.class, TestSetOfNodes.class, TestDualBDBs.class
-		} )
-public class AllTestsStorage
+public class TestDualBDBs
 		extends JUnitHooker
 {
-	// always empty
+	
+	
+	private StorageGeneric	jeStorage;
+	private StorageGeneric	jniStorage;
+	
+	
+	
+	@Before
+	public void setUp() {
+		jeStorage = BaseTest_for_Storage.setUpStorage( StorageType.BDB, BDBStorageSubType.JE );
+		jniStorage = BaseTest_for_Storage.setUpStorage( StorageType.BDB, BDBStorageSubType.JNI );
+	}
+	
+	
+	@After
+	public void tearDown() {
+		if ( null != jeStorage ) {
+			jeStorage.shutdown();
+		}
+		if ( null != jniStorage ) {
+			jniStorage.shutdown();
+		}
+	}
+	
+	
+	@Test
+	public void nodeEqualsFromTwoDiffStorages() {
+		final NodeGeneric jeNode = jeStorage.createNewUniqueNode();
+		final NodeGeneric jniNode = jniStorage.createNewUniqueNode();
+		assertTrue( jeNode.getId() == jniNode.getId() );
+		assertFalse( jeNode.equals( jniNode ) );
+		assertFalse( jniNode.equals( jeNode ) );
+	}
 }

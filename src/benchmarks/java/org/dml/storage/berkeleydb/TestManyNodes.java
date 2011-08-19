@@ -77,7 +77,7 @@ public class TestManyNodes
 		showMem();
 		final StorageConfig cfg = new StorageConfig();
 		cfg.setBDBType( subType );
-		cfg.setHomeDir( JUnitConstants.ENVIRONMENT_STORE_DIR );
+		cfg.setHomeDir( JUnitConstants.ENVIRONMENT_STORE_DIR + subType );
 		cfg.setDeleteBefore( deleteBeforeInit );
 		storage = StorageFactory.getStorage( type, cfg );
 		System.out.println( storage.getClass() );

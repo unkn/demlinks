@@ -47,6 +47,24 @@ public abstract class NodeGenericCommon
 		implements NodeGeneric
 {
 	
+	private final StorageGeneric	storage;
+	
+	
+	/**
+	 * @param stor
+	 */
+	public NodeGenericCommon( final StorageGeneric stor ) {
+		storage = stor;
+		assert Q.nn( storage );
+	}
+	
+	
+	@Override
+	public final StorageGeneric getStorage() {
+		return storage;
+	}
+	
+	
 	@Override
 	public final boolean equals( final Object obj ) {
 		// this will work if SubClass.equals calls super.equals
@@ -68,6 +86,11 @@ public abstract class NodeGenericCommon
 			return false;
 		}
 		
+		final NodeGenericCommon ngc = (NodeGenericCommon)obj;
+		// fixed I think: maybe below equals may need some relaxing for class types
+		if ( !Z.equalsSimple_enforceNotNull( getStorage(), ngc.getStorage() ) ) {
+			return false;// different storages means different nodes
+		}
 		// if (this.getClass().equals( NodeGenericImpl.class )) &&(obj.getClass().equals( NodeGenericImpl.class ))) {
 		//
 		// }

@@ -85,7 +85,7 @@ public abstract class BaseTest_for_Storage
 	public final void setUp() {
 		t.start();
 		try {
-			setUpStorage( type, subType );
+			storage = setUpStorage( type, subType );
 			overridden_setUp();
 			assert Q.nn( storage );
 		} finally {
@@ -95,12 +95,12 @@ public abstract class BaseTest_for_Storage
 	}
 	
 	
-	private void setUpStorage( final StorageType type1, final BDBStorageSubType subType1 ) {
+	public static StorageGeneric setUpStorage( final StorageType type1, final BDBStorageSubType subType1 ) {
 		final StorageConfig cfg = new StorageConfig();
 		cfg.setBDBType( subType1 );
-		cfg.setHomeDir( JUnitConstants.ENVIRONMENT_STORE_DIR );
+		cfg.setHomeDir( JUnitConstants.ENVIRONMENT_STORE_DIR + type1 + "_" + subType1 );
 		cfg.setDeleteBefore( true );
-		storage = StorageFactory.getStorage( type1, cfg );
+		return StorageFactory.getStorage( type1, cfg );
 		// env = StorageBDBGeneric.getBDBStorage( BDBStorageSubType.JE, JUnitConstants.ENVIRONMENT_STORE_DIR, true );
 	}
 	
