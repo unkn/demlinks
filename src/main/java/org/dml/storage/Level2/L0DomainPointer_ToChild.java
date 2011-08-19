@@ -44,7 +44,7 @@ import org.toolza.*;
  * pointee must be child of domain<br>
  */
 public class L0DomainPointer_ToChild
-		extends L0Pointer_ToChild
+		extends Extension_Pointer_ToChild
 {
 	
 	private final NodeGeneric		_domainNode;

@@ -109,9 +109,9 @@ public abstract class Z
 		if ( o1 == o2 ) {
 			return true;
 		}
-		assert isDescendatOfClass_throwIfNull( o1, baseClassEnforced ) : o1.getClass() + " is not descendant of "
+		assert isSameOrDescendantOfClass_throwIfNull( o1, baseClassEnforced ) : o1.getClass() + " is not descendant of "
 			+ baseClassEnforced;
-		assert isDescendatOfClass_throwIfNull( o2, baseClassEnforced ) : o2.getClass() + " is not descendant of "
+		assert isSameOrDescendantOfClass_throwIfNull( o2, baseClassEnforced ) : o2.getClass() + " is not descendant of "
 			+ baseClassEnforced;
 		
 		final boolean ret1 = o1.equals( o2 );
@@ -215,8 +215,8 @@ public abstract class Z
 	}
 	
 	
-	public static boolean isDescendatOfClass_throwIfNull( final Object objToBeChecked_SameOrSubClass,
-															final Class<?> givenBaseSuperClass ) {
+	public static boolean isSameOrDescendantOfClass_throwIfNull( final Object objToBeChecked_SameOrSubClass,
+																	final Class<?> givenBaseSuperClass ) {
 		assert Q.nn( givenBaseSuperClass );
 		assert Q.nn( objToBeChecked_SameOrSubClass );
 		return givenBaseSuperClass.isAssignableFrom( objToBeChecked_SameOrSubClass.getClass() );

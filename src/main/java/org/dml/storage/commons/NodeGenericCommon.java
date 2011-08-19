@@ -75,8 +75,8 @@ public abstract class NodeGenericCommon
 			return true;
 		}
 		
-		if ( !Z.isDescendatOfClass_throwIfNull( obj, NodeGenericCommon.class ) ) {
-			if ( !Z.isDescendatOfClass_throwIfNull( obj, NodeGeneric.class ) ) {
+		if ( !Z.isSameOrDescendantOfClass_throwIfNull( obj, NodeGenericCommon.class ) ) {
+			if ( !Z.isSameOrDescendantOfClass_throwIfNull( obj, NodeGeneric.class ) ) {
 				throw Q.bug( "totally incompat classes for:\n " + this.getClass() + "\n " + obj.getClass() );
 			}
 			// silently allowing comparison when different NodeGeneric implementations
@@ -95,8 +95,8 @@ public abstract class NodeGenericCommon
 		//
 		// }
 		
-		final boolean isImpl1 = Z.isDescendatOfClass_throwIfNull( this, NodeGenericImpl.class );
-		final boolean isImpl2 = Z.isDescendatOfClass_throwIfNull( obj, NodeGenericImpl.class );
+		final boolean isImpl1 = Z.isSameOrDescendantOfClass_throwIfNull( this, NodeGenericImpl.class );
+		final boolean isImpl2 = Z.isSameOrDescendantOfClass_throwIfNull( obj, NodeGenericImpl.class );
 		if ( ( isImpl1 ) && ( isImpl2 ) ) {
 			// they are both implementations, we compare their IDs then
 			final NodeGenericImpl impl = (NodeGenericImpl)obj;
@@ -120,8 +120,8 @@ public abstract class NodeGenericCommon
 			}// else neither of them is that kind of descendant
 		}
 		// so they must then both be descendants of extensions:
-		assert Z.isDescendatOfClass_throwIfNull( this, NodeGenericExtensions.class );
-		assert Z.isDescendatOfClass_throwIfNull( obj, NodeGenericExtensions.class );
+		assert Z.isSameOrDescendantOfClass_throwIfNull( this, NodeGenericExtensions.class );
+		assert Z.isSameOrDescendantOfClass_throwIfNull( obj, NodeGenericExtensions.class );
 		final NodeGenericExtensions o = (NodeGenericExtensions)obj;
 		// assert Z.areSameClass_canNotBeNull( o1, o2 )
 		// if ( !Z.haveCompatibleClasses_canNotBeNull( this, obj ) ) {

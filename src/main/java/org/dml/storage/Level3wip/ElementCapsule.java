@@ -43,9 +43,9 @@ public class ElementCapsule {
 	private final FooEnv					env;
 	private final Long						self;
 	private final L0HashMap_OfLongs	selfAsHashMap;
-	private L0Pointer_ToChild		ptr2Prev;
-	private L0Pointer_ToChild		ptr2Element;
-	private L0Pointer_ToChild		ptr2Next;
+	private Extension_Pointer_ToChild		ptr2Prev;
+	private Extension_Pointer_ToChild		ptr2Element;
+	private Extension_Pointer_ToChild		ptr2Next;
 	
 	
 	public static ElementCapsule getExisting( final FooEnv env1, final Long self1 ) {
@@ -88,18 +88,18 @@ public class ElementCapsule {
 		
 		final Long ptr2Prev_long = selfAsHashMap.getValue_akaChild( env.allPtrToPrevForElementCapsules_LongID );
 		assert null != ptr2Prev_long;
-		ptr2Prev = new L0Pointer_ToChild( env, ptr2Prev_long );
+		ptr2Prev = new Extension_Pointer_ToChild( env, ptr2Prev_long );
 		// at this point it can be non-null, since we don't know if we just created it or it already exited!
 		// this can be null, if if the only capsule in the list (ie. both first and last; aka head/tail)
 		
 		final Long ptr2Next_long = selfAsHashMap.getValue_akaChild( env.allPtrToNextForElementCapsules_LongID );
 		assert null != ptr2Next_long;
-		ptr2Next = new L0Pointer_ToChild( env, ptr2Next_long );
+		ptr2Next = new Extension_Pointer_ToChild( env, ptr2Next_long );
 		// this can be null, if if the only capsule in the list (ie. both first and last; aka head/tail)
 		
 		final Long ptr2Element_long = selfAsHashMap.getValue_akaChild( env.allPtrToElementForElementCapsules_LongID );
 		assert null != ptr2Element_long;
-		ptr2Element = new L0Pointer_ToChild( env, ptr2Element_long );
+		ptr2Element = new Extension_Pointer_ToChild( env, ptr2Element_long );
 		// assert null != getElement_neverNull() : "the existing capsule must point to an element, it can't be null(yet it is)";
 		getElement_neverNull();
 	}

@@ -402,7 +402,7 @@ public class TestSetOfNodes
 	public void testPointer() {
 		final NodeGeneric ptrParent = storage.createNewUniqueNode();
 		assertNotNull( ptrParent );
-		final L0Pointer_ToChild ptr = new L0Pointer_ToChild( storage, ptrParent );
+		final Extension_Pointer_ToChild ptr = Extension_Pointer_ToChild.createExclusively_PointerToChild( storage, ptrParent );
 		assertFalse( storage.isVector( ptr, ptrParent ) );
 		assertTrue( ptr.getSelf() != ptrParent );
 		System.out.println( ptr.getSelfImpl().getClass() );
@@ -416,8 +416,15 @@ public class TestSetOfNodes
 		assertNotNull( newL );
 		assertFalse( storage.ensureVector( ptrParent, newL ) );
 		
-		// this isn't valid because it's using the same self as ptr
-		final L0Pointer_ToChild ptr2 = new L0Pointer_ToChild( storage, ptrParent );
+		try {
+			Extension_Pointer_ToChild.createExclusively_PointerToChild( storage, ptrParent );
+			Q.fail();
+		} catch ( final BadCallError bce ) {
+			Q.markAsHandled( bce );
+		}
+		
+		// this is valid even if it's using the same self as ptr because it's same extension type
+		final Extension_Pointer_ToChild ptr2 = Extension_Pointer_ToChild.getExclusively_PointerToChild( storage, ptrParent );
 		assertNotNull( ptr2.getPointeeChild() );
 		assertTrue( ptr2.getPointeeChild().equals( newL ) );
 		assertTrue( ptr2.getPointeeChild() != newL );
@@ -453,7 +460,7 @@ public class TestSetOfNodes
 		}
 		
 		dptr.hashCode();
-		final HashSet<L0Pointer_ToChild> hm = new HashSet<L0Pointer_ToChild>();
+		final HashSet<Extension_Pointer_ToChild> hm = new HashSet<Extension_Pointer_ToChild>();
 		assertTrue( hm.add( dptr ) );
 		assertTrue( dptr.getSelf().equals( ptr.getSelf() ) );
 		

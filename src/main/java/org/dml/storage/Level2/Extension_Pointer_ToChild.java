@@ -35,6 +35,7 @@ package org.dml.storage.Level2;
 
 import org.dml.storage.commons.*;
 import org.q.*;
+import org.toolza.*;
 
 
 
@@ -44,12 +45,89 @@ import org.q.*;
  * this can be modified in other places by other methods and we don't check for integrity, ie. it can become a set of children,
  * I don't give a floop<br>
  */
-public class L0Pointer_ToChild
+public class Extension_Pointer_ToChild
 		extends NodeGenericExtensions
 {
 	
-	public L0Pointer_ToChild( final StorageGeneric env1, final NodeGeneric selfNode ) {
-		super( env1, new L0Set_OfChildren( env1, selfNode ) );
+	public synchronized static Extension_Pointer_ToChild createExclusively_PointerToChild( final StorageGeneric storage,
+																							final NodeGeneric selfNode ) {
+		assert Q.nn( storage );
+		assert Q.nn( selfNode );
+		final NodeGenericImpl impl = selfNode.getSelfImpl();
+		// assert isNoExtensionAllocatedForNodeImpl( impl );
+		final NodeGenericExtensions existingInstance = getExtensionInstanceForNodeImpl( impl );
+		if ( null != existingInstance ) {
+			Q.badCall( "already existed, cannot exclusively create!" );
+		}
+		final Extension_Pointer_ToChild newInstance = new Extension_Pointer_ToChild( storage, selfNode );
+		putExtensionInstanceForNodeImpl( newInstance, impl );
+		assert Z.equals_enforceExactSameClassTypesAndNotNull( getExtensionInstanceForNodeImpl( impl ), newInstance );
+		return newInstance;
+	}
+	
+	
+	public synchronized static Extension_Pointer_ToChild getExclusively_PointerToChild( final StorageGeneric storage,
+																						final NodeGeneric selfNode ) {
+		assert Q.nn( storage );
+		assert Q.nn( selfNode );
+		final Extension_Pointer_ToChild existingInstance =
+			internal_get_Extension( storage, selfNode, Extension_Pointer_ToChild.class );
+		if ( null == existingInstance ) {
+			throw Q.badCall( "cannot exclusively get, it didn't already exist!" );
+		} else {
+			return existingInstance;
+		}
+	}
+	
+	
+	@SuppressWarnings( "unchecked" )
+	protected synchronized static <T extends NodeGenericExtensions> T
+			internal_get_Extension( final StorageGeneric storage, final NodeGeneric selfNode,
+									final Class<T> expectedExtensionClass ) {
+		assert Q.nn( storage );
+		assert Q.nn( selfNode );
+		final NodeGenericImpl impl = selfNode.getSelfImpl();
+		final NodeGenericExtensions existingInstance = getExtensionInstanceForNodeImpl( impl );
+		if ( null != existingInstance ) {
+			assert Z.isSameOrDescendantOfClass_throwIfNull( existingInstance, expectedExtensionClass ) : "this node `"
+				+ selfNode
+				+ "` "
+				+ "was used for a different Extension namely for `"
+				+ existingInstance
+				+ "`\n"
+				+ "thus you cannot use this same node for a different extension type - because this would be a bad usage: a node "
+				+ "is supposed to represent only one of these extensions ie. can't be a pointer and a set at the same time because"
+				+ "treating it as a set would most likely violate pointer constrains ie. by adding more than 1 children";
+			return (T)existingInstance;
+		} else {
+			return null;
+		}
+	}
+	
+	
+	public synchronized static Extension_Pointer_ToChild getOrCreate_PointerToChild( final StorageGeneric storage,
+																						final NodeGeneric selfNode ) {
+		assert Q.nn( storage );
+		assert Q.nn( selfNode );
+		Extension_Pointer_ToChild existingInstance =
+			internal_get_Extension( storage, selfNode, Extension_Pointer_ToChild.class );
+		if ( null == existingInstance ) {
+			existingInstance = createExclusively_PointerToChild( storage, selfNode );
+			assert Q.nn( existingInstance );
+		}
+		return existingInstance;
+	}
+	
+	
+	/**
+	 * constructor, supposed to be accessible only by subclasses
+	 * 
+	 * @param storage
+	 * @param selfNode
+	 *            can be an Implementation or an Extension(which is based upon an implementation, ofc)
+	 */
+	protected Extension_Pointer_ToChild( final StorageGeneric storage, final NodeGeneric selfNode ) {
+		super( storage, new L0Set_OfChildren( storage, selfNode ) );
 	}
 	
 	
