@@ -102,11 +102,11 @@ public class L2Factory
 		final Class<? extends NodeGenericExtensions> cls = getClassForType( type );
 		Constructor<? extends NodeGenericExtensions> constructor = null;
 		try {
-			System.out.println( "constructors for `" + cls + "` == " + cls.getConstructors().length );
+			System.out.println( "constructors for `" + cls + "` == " + cls.getDeclaredConstructors().length );
 			// org.dml.storage.Level2.Extension_Pointer_ToChild
-			constructor = cls.getConstructor( StorageGeneric.class, NodeGeneric.class );
+			constructor = cls.getDeclaredConstructor( StorageGeneric.class, NodeGeneric.class );
 			assert Q.nn( constructor );
-			final NodeGenericExtensions inst = constructor.newInstance( getStorage(), node, extras );
+			final NodeGenericExtensions inst = constructor.newInstance( getStorage(), node );
 			assert Q.nn( inst );
 			return inst;
 		} catch ( NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
