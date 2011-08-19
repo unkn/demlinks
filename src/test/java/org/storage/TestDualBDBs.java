@@ -38,6 +38,7 @@ package org.storage;
 import static org.junit.Assert.*;
 
 import org.JUnitCommons.*;
+import org.dml.storage.berkeleydb.commons.*;
 import org.dml.storage.berkeleydb.generics.*;
 import org.dml.storage.commons.*;
 import org.junit.*;
@@ -79,5 +80,25 @@ public class TestDualBDBs
 		assertTrue( jeNode.getId() == jniNode.getId() );
 		assertFalse( jeNode.equals( jniNode ) );
 		assertFalse( jniNode.equals( jeNode ) );
+		
+		final NodeBDB jeNodeSecondInst = NodeBDB.getBDBNodeInstance( (StorageBDBGeneric)jeStorage, jeNode.getId() );
+		assertTrue( jeNode.getId() == jeNodeSecondInst.getId() );
+		assertTrue( jeNode.equals( jeNodeSecondInst ) );
+		assertTrue( jeNodeSecondInst.equals( jeNode ) );
+		
+		assertTrue( jeNodeSecondInst.getId() == jniNode.getId() );
+		assertFalse( jeNodeSecondInst.equals( jniNode ) );
+		assertFalse( jniNode.equals( jeNodeSecondInst ) );
+		
+		final NodeBDB jeNodeDifferent = NodeBDB.getBDBNodeInstance( (StorageBDBGeneric)jeStorage, jniNode.getId() + 1 );
+		
+		assertFalse( jeNode.getId() == jeNodeDifferent.getId() );
+		assertFalse( jeNode.equals( jeNodeDifferent ) );
+		assertFalse( jeNodeDifferent.equals( jeNode ) );
+		
+		assertFalse( jeNodeDifferent.getId() == jniNode.getId() );
+		assertFalse( jeNodeDifferent.equals( jniNode ) );
+		assertFalse( jniNode.equals( jeNodeDifferent ) );
+		
 	}
 }
