@@ -441,7 +441,8 @@ public class TestSetOfNodes
 			Q.fail();
 		} catch ( final AssertionError ae ) {// FIXME: AssertionError is way too generic
 			// it detected!
-			// Q.markAsHandled( ae ); oh i see here, since it's an assert thrown, is not added in tree
+			// Q.markAsHandled( ae ); oh i see here, since it's an assert thrown, is not added in tree especially since not
+			// using aspectj to hook each method call to catch any thrown exceptions (such as those from an `assert`)
 		}
 		
 		// XXX: yes comparing different types but HashMap does this all the time so we're allowing it w/o throws
