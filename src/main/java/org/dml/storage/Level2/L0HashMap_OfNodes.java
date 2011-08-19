@@ -57,33 +57,33 @@ import org.q.*;
  * thing is, doing this in transactions will cause deadlocks like crazy, ie. parsing from 1..n in 1 thread and parsing from n..1
  * in another; locking is no good, some sort of multiversioning like git would be preferred
  */
-public class L0HashMap_OfLongs
+public class L0HashMap_OfNodes
 {
 	
-	private final StorageGeneric	env;
+	private final StorageGeneric	storage;
 	private final NodeGeneric		_selfNode;
 	
 	
 	private final L0Set_OfChildren	selfAsSet;
 	
 	
-	public L0HashMap_OfLongs( final StorageGeneric env1, final NodeGeneric selfNode ) {
-		assert null != env1;
+	public L0HashMap_OfNodes( final StorageGeneric stor, final NodeGeneric selfNode ) {
+		assert null != stor;
 		assert null != selfNode;
-		env = env1;
+		storage = stor;
 		_selfNode = selfNode.clone();// this is cloned for hitting bug with `==` in later code
-		selfAsSet = new L0Set_OfChildren( env, _selfNode );
+		selfAsSet = new L0Set_OfChildren( storage, _selfNode );
 		
 		// checking to make sure all values have (at least) one key
 		final IteratorGeneric_OnChildNodes iter = selfAsSet.getIterator();
 		try {
-			NodeGeneric cur = iter.goFirst();
-			while ( null != cur ) {
-				if ( env.countParents( cur ) <= 0 ) {
-					throw Q.badCall( "dangling value (long=" + cur + ", its stringId=" + env.getName( cur )
+			NodeGeneric curNode = iter.goFirst();
+			while ( null != curNode ) {
+				if ( storage.countParents( curNode ) <= 0 ) {
+					throw Q.badCall( "dangling value (node=" + curNode + ", its name=" + storage.getName( curNode )
 						+ ") doesn't have a key assoc. with it" );
 				}
-				cur = iter.goNext();
+				curNode = iter.goNext();
 			}
 			
 			iter.success();
@@ -95,7 +95,7 @@ public class L0HashMap_OfLongs
 	
 	public NodeGeneric getValue_akaChild( final NodeGeneric forKey_akaParentNode ) {
 		assert null != forKey_akaParentNode;
-		return env.findCommonChildForParents( _selfNode, forKey_akaParentNode );
+		return storage.findCommonChildForParents( _selfNode, forKey_akaParentNode );
 	}
 	
 	
@@ -106,7 +106,7 @@ public class L0HashMap_OfLongs
 	 */
 	public boolean put( final NodeGeneric parentNode, final NodeGeneric childNode ) {
 		final boolean ret1 = selfAsSet.ensureIsAddedToSet( childNode );// env.ensureVector( self, childLong );
-		final boolean ret2 = env.ensureVector( parentNode, childNode );
+		final boolean ret2 = storage.ensureVector( parentNode, childNode );
 		assert ret1 ^ ret2 : Q.badCall( "both should've been either false or true; but they differed!" );
 		return ret1;
 	}

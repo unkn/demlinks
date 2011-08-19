@@ -49,7 +49,7 @@ public class ListOrderedOfLongsWithFastFind implements OrderedList {
 	
 	protected final FooEnv					env;
 	private final Long						self;
-	private final L0HashMap_OfLongs	selfAsHashMap;
+	private final L0HashMap_OfNodes	selfAsHashMap;
 	private final ListOrderedOfLongs		orderedList;
 	private final L0Set_OfChildren	ffSet;			// fast find set
 															
@@ -60,7 +60,7 @@ public class ListOrderedOfLongsWithFastFind implements OrderedList {
 		assert null != longIdentSelf;
 		env = env1;
 		self = new Long( longIdentSelf.longValue() );// this is cloned for hitting bug with `==` in later code
-		selfAsHashMap = new L0HashMap_OfLongs( env, self );
+		selfAsHashMap = new L0HashMap_OfNodes( env, self );
 		
 		// env.allLOOLWFF_Set->self
 		if ( env.allLOOLWFF_Set.contains( self ) ) {

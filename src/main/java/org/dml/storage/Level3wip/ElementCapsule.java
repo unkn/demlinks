@@ -42,7 +42,7 @@ public class ElementCapsule {
 	
 	private final FooEnv					env;
 	private final Long						self;
-	private final L0HashMap_OfLongs	selfAsHashMap;
+	private final L0HashMap_OfNodes	selfAsHashMap;
 	private Extension_Pointer_ToChild		ptr2Prev;
 	private Extension_Pointer_ToChild		ptr2Element;
 	private Extension_Pointer_ToChild		ptr2Next;
@@ -118,7 +118,7 @@ public class ElementCapsule {
 		env = env1;
 		self = self1;
 		
-		selfAsHashMap = new L0HashMap_OfLongs( env, self );
+		selfAsHashMap = new L0HashMap_OfNodes( env, self );
 	}
 	
 	

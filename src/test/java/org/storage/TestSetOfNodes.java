@@ -64,6 +64,7 @@ public class TestSetOfNodes
 	
 	private L0Set_OfChildren	set1;
 	private NodeGeneric			setParent;
+	private L2Factory			fact;
 	
 	
 	/*
@@ -73,6 +74,7 @@ public class TestSetOfNodes
 	 */
 	@Override
 	public void overridden_setUp() {
+		fact = new L2Factory( storage );
 		setParent = storage.createNewUniqueNode();
 		set1 = new L0Set_OfChildren( storage, setParent );
 	}
@@ -402,7 +404,8 @@ public class TestSetOfNodes
 	public void testPointer() {
 		final NodeGeneric ptrParent = storage.createNewUniqueNode();
 		assertNotNull( ptrParent );
-		final Extension_Pointer_ToChild ptr = Extension_Pointer_ToChild.createExclusively_PointerToChild( storage, ptrParent );
+		final Extension_Pointer_ToChild ptr =
+			(Extension_Pointer_ToChild)fact.createNewExtensionInstance( ExtensionTypes.Pointer, ptrParent );
 		assertFalse( storage.isVector( ptr, ptrParent ) );
 		assertTrue( ptr.getSelf() != ptrParent );
 		System.out.println( ptr.getSelfImpl().getClass() );
@@ -417,14 +420,15 @@ public class TestSetOfNodes
 		assertFalse( storage.ensureVector( ptrParent, newL ) );
 		
 		try {
-			Extension_Pointer_ToChild.createExclusively_PointerToChild( storage, ptrParent );
+			fact.createNewExtensionInstance( ExtensionTypes.Pointer, ptrParent );
 			Q.fail();
 		} catch ( final BadCallError bce ) {
 			Q.markAsHandled( bce );
 		}
 		
 		// this is valid even if it's using the same self as ptr because it's same extension type
-		final Extension_Pointer_ToChild ptr2 = Extension_Pointer_ToChild.getExclusively_PointerToChild( storage, ptrParent );
+		final Extension_Pointer_ToChild ptr2 =
+			(Extension_Pointer_ToChild)fact.getExistingExtensionInstance( ExtensionTypes.Pointer, ptrParent );
 		assertNotNull( ptr2.getPointeeChild() );
 		assertTrue( ptr2.getPointeeChild().equals( newL ) );
 		assertTrue( ptr2.getPointeeChild() != newL );

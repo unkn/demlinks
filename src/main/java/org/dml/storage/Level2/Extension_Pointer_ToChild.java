@@ -49,7 +49,7 @@ public class Extension_Pointer_ToChild
 		extends NodeGenericExtensions
 {
 	
-	public synchronized static Extension_Pointer_ToChild createExclusively_PointerToChild( final StorageGeneric storage,
+	public synchronized static Extension_Pointer_ToChild createNew_PointerToChild( final StorageGeneric storage,
 																							final NodeGeneric selfNode ) {
 		assert Q.nn( storage );
 		assert Q.nn( selfNode );
@@ -66,7 +66,7 @@ public class Extension_Pointer_ToChild
 	}
 	
 	
-	public synchronized static Extension_Pointer_ToChild getExclusively_PointerToChild( final StorageGeneric storage,
+	public synchronized static Extension_Pointer_ToChild getExisting_PointerToChild( final StorageGeneric storage,
 																						final NodeGeneric selfNode ) {
 		assert Q.nn( storage );
 		assert Q.nn( selfNode );
@@ -112,7 +112,7 @@ public class Extension_Pointer_ToChild
 		Extension_Pointer_ToChild existingInstance =
 			internal_get_Extension( storage, selfNode, Extension_Pointer_ToChild.class );
 		if ( null == existingInstance ) {
-			existingInstance = createExclusively_PointerToChild( storage, selfNode );
+			existingInstance = createNew_PointerToChild( storage, selfNode );
 			assert Q.nn( existingInstance );
 		}
 		return existingInstance;

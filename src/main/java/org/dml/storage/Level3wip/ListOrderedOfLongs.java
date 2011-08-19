@@ -41,7 +41,7 @@ public class ListOrderedOfLongs implements OrderedList {
 	
 	protected final FooEnv					env;
 	private final Long						self;
-	private final L0HashMap_OfLongs	selfAsHashMap;
+	private final L0HashMap_OfNodes	selfAsHashMap;
 	
 	
 	// private ElementCapsule ecHead = null;
@@ -52,7 +52,7 @@ public class ListOrderedOfLongs implements OrderedList {
 		assert null != longIdentSelf;
 		env = env1;
 		self = new Long( longIdentSelf.longValue() );// this is cloned for hitting bug with `==` in later code
-		selfAsHashMap = new L0HashMap_OfLongs( env, self );
+		selfAsHashMap = new L0HashMap_OfNodes( env, self );
 		env.allLOOL_Set.ensureIsAddedToSet( self );
 		// if (!env.allLOOL_Set.contains( self )) {
 		// env.allLOOL_Set.addToSet( longIdent )
