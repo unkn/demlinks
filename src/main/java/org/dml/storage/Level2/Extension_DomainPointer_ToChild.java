@@ -40,55 +40,53 @@ import org.toolza.*;
 
 
 /**
- * domain is enforced only if asserts are enabled and only for java calls ie. in java environment<br>
- * does not allow domain or self to be added to set<br>
- * does not check for integrity if domainSet already exists when constructed<br>
- * does not allow: self to equal domain<br>
+ * allows unset aka null<br>
+ * pointee must be child of domain<br>
  */
-public class L0DomainSet_OfChildren
-		extends Extension_Set_OfChildren
-		implements IExtension_DomainSet
+public class Extension_DomainPointer_ToChild
+		extends Extension_Pointer_ToChild
+		implements IExtension_DomainPointer
 {
 	
 	private final NodeGeneric	_domainNode;
 	
 	
-	/**
-	 * @param env1
-	 * @param selfNode
-	 * @param domainNode
-	 */
-	public L0DomainSet_OfChildren( final StorageGeneric env1, final NodeGeneric selfNode, final NodeGeneric domainNode ) {
-		super( env1, selfNode );
+	protected Extension_DomainPointer_ToChild( final StorageGeneric storage, final NodeGeneric selfNode,
+			final NodeGeneric domainNode ) {
+		super( storage, selfNode );
 		assert null != domainNode;
-		assert !selfNode.equals( domainNode );
-		_domainNode = domainNode.clone();// cloned to catch `==` bugs somewhere (do use .equals)
+		assert !Z.equals_enforceExactSameClassTypesAndNotNull( selfNode, domainNode );
+		_domainNode = domainNode.clone();
+		assert Z.equals_enforceExactSameClassTypesAndNotNull( getDomain(), domainNode );
+		// XXX: don't check if existing child is valid because it will not work in constructor, need static get
 	}
 	
 	
-	/*
-	 * (non-Javadoc)
+	/**
+	 * null allowed<br>
+	 * and child must be part of domain<br>
 	 * 
-	 * @see org.simpler.SetOfChildren#isValidChild(java.lang.Long)
+	 * @param childNode
+	 *            null or a longIdent
+	 * @return true if valid for this
 	 */
 	@Override
 	public boolean isValidChild( final NodeGeneric childNode ) {
-		if ( ( super.isValidChild( childNode ) ) && ( isInDomain( childNode ) ) ) {
-			return true;
-		} else {
-			return false;
-		}
+		// valid if one of:
+		// 1. is null
+		// 2. not be the same as the domain && is child of domain
+		return ( ( null == childNode ) || ( ( !getDomain().equals( childNode ) ) && ( isInDomain( childNode ) ) ) );
 	}
 	
 	
 	@Override
 	public boolean isInDomain( final NodeGeneric childNode ) {
-		return ( ( !_domainNode.equals( childNode ) ) && ( getStorage().isVector( _domainNode, childNode ) ) );
+		return ( ( !getDomain().equals( childNode ) ) && ( getStorage().isVector( getDomain(), childNode ) ) );
 	}
 	
 	
 	@Override
-	public NodeGeneric getDomain() {
+	public final NodeGeneric getDomain() {
 		return _domainNode;
 	}
 	
@@ -96,18 +94,16 @@ public class L0DomainSet_OfChildren
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.dml.storage.Level2.L0Set_OfChildren#overriddenEquals(org.dml.storage.Level2.EpicEquals)
+	 * @see org.dml.storage.Level2.EpicBase#equalsOverride(org.dml.storage.Level2.EpicBase)
 	 */
 	@Override
 	protected boolean equalsOverride( final NodeGenericCommon obj ) {
 		if ( !super.equalsOverride( obj ) ) {
 			return false;
 		}
-		Q.assumeSameExactClassElseThrow( this, obj );
-		// assert obj.getClass() == this.getClass();
-		// assert obj instanceof DomainSet_OfChildren :
-		// "user is comparing to a super instance, as oppose to same or subclass";
-		assert Z.equals_enforceExactSameClassTypesAndNotNull( _domainNode, ( (L0DomainSet_OfChildren)obj )._domainNode ) : Q
+		assert obj.getClass() == this.getClass();// redundant
+		assert Z
+			.equals_enforceExactSameClassTypesAndNotNull( getDomain(), ( (Extension_DomainPointer_ToChild)obj ).getDomain() ) : Q
 			.badCall( "same self but different domains, user did a boobo somewhere" );
 		return true;
 	}

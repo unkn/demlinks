@@ -115,6 +115,7 @@ public abstract class NodeGenericExtensions
 	
 	@Override
 	public NodeGenericImpl getSelfImpl() {
+		assertIsStillValid();
 		return _selfNodeImpl;
 	}
 	
@@ -134,6 +135,7 @@ public abstract class NodeGenericExtensions
 	
 	@Override
 	public NodeGeneric getSelf() {
+		assertIsStillValid();
 		return _selfNode;// would return the based-upon Node
 	}
 	
@@ -142,11 +144,13 @@ public abstract class NodeGenericExtensions
 	 * @return it's int(not long) because cursor.count() returns int! bdb limitation i guess
 	 */
 	public int size() {
+		// assertIsStillValid();
 		return getStorage().countChildren( getSelf() );
 	}
 	
 	
 	public final boolean isEmpty() {
+		// assertIsStillValid();
 		return 0 == size();
 	}
 	
@@ -161,6 +165,7 @@ public abstract class NodeGenericExtensions
 	 */
 	@Override
 	protected boolean equalsOverride( final NodeGenericCommon o ) {
+		// assertIsStillValid();
 		final NodeGenericExtensions obj = (NodeGenericExtensions)o;// this will always be of this type if we're here
 		
 		final boolean sameSelf = Z.equals_enforceSameBaseClassAndNotNull( obj.getSelf(), getSelf(), NodeGenericCommon.class );
@@ -184,6 +189,7 @@ public abstract class NodeGenericExtensions
 	
 	@Override
 	public int hashCode() {
+		// assertIsStillValid();
 		return getStorage().hashCode() + _selfNode.hashCode();
 	}
 	
@@ -195,6 +201,7 @@ public abstract class NodeGenericExtensions
 	 */
 	@Override
 	public long getId() {
+		// assertIsStillValid();
 		return getSelf().getId();
 	}
 	
@@ -206,6 +213,7 @@ public abstract class NodeGenericExtensions
 	 */
 	@Override
 	public NodeGenericExtensions clone() {
+		// assertIsStillValid();
 		return (NodeGenericExtensions)super.clone();
 	}
 }

@@ -41,13 +41,13 @@ import org.dml.storage.commons.*;
  * the pointer always points to something (from domain) thus it is never null aka pointing to nothing<br>
  * in this regard it is non-null!
  */
-public class L0NonNullDomainPointer_ToChild
-		extends L0DomainPointer_ToChild
+public class Extension_NonNullDomainPointer_ToChild
+		extends Extension_DomainPointer_ToChild
 {
 	
 	
-	public L0NonNullDomainPointer_ToChild( final StorageGeneric env1, final NodeGeneric selfNode, final NodeGeneric domainNode ) {
-		super( env1, selfNode, domainNode );
+	public Extension_NonNullDomainPointer_ToChild( final StorageGeneric storage, final NodeGeneric selfNode, final NodeGeneric domainNode ) {
+		super( storage, selfNode, domainNode );
 		// XXX: do NOT check for integrity, ie. don't check if child is not null and in domain!
 	}
 	

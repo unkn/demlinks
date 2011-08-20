@@ -74,8 +74,8 @@ public abstract class NodeGenericCommon
 	
 	
 	@Override
-	public final boolean isStillValid() {
-		return valid;
+	public boolean isStillValid() {
+		return valid && storage.isStillValid();
 	}
 	
 	
@@ -87,12 +87,14 @@ public abstract class NodeGenericCommon
 	
 	@Override
 	public final StorageGeneric getStorage() {
+		assertIsStillValid();
 		return storage;
 	}
 	
 	
 	@Override
 	public final boolean equals( final Object obj ) {
+		assertIsStillValid();
 		// this will work if SubClass.equals calls super.equals
 		if ( null == obj ) {
 			return false;
@@ -195,6 +197,7 @@ public abstract class NodeGenericCommon
 	 */
 	@Override
 	public int hashCode() {
+		assertIsStillValid();
 		return super.hashCode();
 	}
 	
@@ -202,6 +205,7 @@ public abstract class NodeGenericCommon
 	@Override
 	public NodeGenericCommon clone() {// throws CloneNotSupportedException {
 		// throw Q.cantClone();
+		assertIsStillValid();
 		try {
 			final NodeGenericCommon c = (NodeGenericCommon)super.clone();
 			assert c != this;

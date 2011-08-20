@@ -223,15 +223,18 @@ public class L2Factory
 	private static Class<? extends NodeGenericExtensions> getClassForType( final ExtensionTypes type ) {
 		switch ( type ) {
 		case DomainPointer:
-			return L0DomainPointer_ToChild.class;
+			return Extension_DomainPointer_ToChild.class;
+		case DomainPointer_NonNull:
+			return Extension_NonNullDomainPointer_ToChild.class;
 		case DomainSet:
-			return L0DomainSet_OfChildren.class;
+			return Extension_DomainSet_OfChildren.class;
 			// case HashMap:
 			// return L0HashMap_OfNodes.class;
 		case Pointer:
 			return Extension_Pointer_ToChild.class;
 		case Set:
 			return Extension_Set_OfChildren.class;
+			
 		}
 		throw Q.bug( "not reached due to eclipse compiler letting us know that we missed a case;"
 			+ "or you forgot to add a return above" );

@@ -55,6 +55,9 @@ public interface IteratorGeneric_OnChildNodes
 	public NodeGeneric goTo( final NodeGeneric childNode );
 	
 	
+	public NodeGeneric getCurrent();
+	
+	
 	public int size();
 	
 	

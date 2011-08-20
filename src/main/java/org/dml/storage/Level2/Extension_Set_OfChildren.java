@@ -63,12 +63,23 @@ public class Extension_Set_OfChildren
 	}
 	
 	
+	// /* (non-Javadoc)
+	// * @see org.dml.storage.commons.NodeGenericCommon#isStillValid()
+	// */
+	// @Override
+	// public boolean isStillValid() {
+	// boolean ret1 = super.isStillValid();
+	// ret2=
+	// return ret1&& ret2;
+	// }
+	
 	/**
 	 * @param node
 	 * @return true if already existed
 	 */
 	@Override
 	public boolean ensureIsAddedToSet( final NodeGeneric node ) {
+		assertIsStillValid();
 		assert isValidChild( node );
 		return getStorage().ensureVector( getSelf(), node );
 	}
@@ -76,6 +87,7 @@ public class Extension_Set_OfChildren
 	
 	@Override
 	public boolean contains( final NodeGeneric node ) {
+		// assertIsStillValid();
 		// assert this.isValidChild( longIdent ); no
 		return getStorage().isVector( getSelf(), node );
 	}
@@ -84,6 +96,7 @@ public class Extension_Set_OfChildren
 	
 	@Override
 	public boolean remove( final NodeGeneric node ) {
+		assertIsStillValid();
 		assert isValidChild( node );
 		return getStorage().removeVector( getSelf(), node );
 	}
@@ -102,12 +115,14 @@ public class Extension_Set_OfChildren
 	 */
 	@Override
 	public IteratorGeneric_OnChildNodes getIterator() {
+		// assertIsStillValid();
 		return getStorage().getIterator_on_Children_of( getSelf() );
 	}
 	
 	
 	@Override
 	public void clearAll() {
+		// assertIsStillValid();
 		// Q.ni();
 		// TODO: implement this in another way, ie. by deleting that key? because deleting all its children kind of does that
 		// exact thing, but slower, yes?

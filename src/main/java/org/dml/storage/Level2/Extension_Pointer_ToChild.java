@@ -135,6 +135,23 @@ public class Extension_Pointer_ToChild
 	/*
 	 * (non-Javadoc)
 	 * 
+	 * @see org.dml.storage.commons.NodeGenericCommon#isStillValid()
+	 */
+	@Override
+	public boolean isStillValid() {
+		final boolean ret = super.isStillValid() && isValidChild( internal_GetPointeeChild() );
+		final int size = getSelf().size();
+		final boolean ret2 = ( size == 0 ) || ( size == 1 );
+		if ( !ret2 ) {
+			Q.bug( "inconsistency fail, this pointer `" + getSelf() + "` must point to 0 or 1 children only" );
+		}
+		return ret && ret2;
+	}
+	
+	
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.dml.storage.Level2.EpicBase#getSelf()
 	 */
 	@Override
@@ -149,6 +166,7 @@ public class Extension_Pointer_ToChild
 	 */
 	@Override
 	public void setPointee( final NodeGeneric toWhatChildNode ) {
+		assertIsStillValid();
 		assert isValidChild( toWhatChildNode );
 		getSelf().clearAll();// removes prev if any
 		assert getSelf().isEmpty();
@@ -166,24 +184,27 @@ public class Extension_Pointer_ToChild
 	 */
 	@Override
 	public NodeGeneric getPointeeChild() {
-		final int size = getSelf().size();
-		assert ( size == 0 ) || ( size == 1 ) : Q.bug( "inconsistency fail, this pointer `" + getSelf()
-			+ "` must point to 0 or 1 children only" );
+		assertIsStillValid();
+		final NodeGeneric childNode = internal_GetPointeeChild();
+		assert isValidChild( childNode ) : "something else must've changed our pointee and made this inconsistent with our domain";
+		return childNode;
+	}
+	
+	
+	private NodeGeneric internal_GetPointeeChild() {
 		NodeGeneric termNode = null;
-		if ( size > 0 ) {
-			// get first one (should be only one)
-			final IteratorGeneric_OnChildNodes iter = getSelf().getIterator();
-			try {
-				termNode = iter.goFirst();
-				iter.success();
-				
-			} finally {
-				iter.finished();
-				// FIXME: I'd use finally but if goFirst and close both throw, only the last throw will be seen ie. overwriting
-				// this might not be avoidable, unless finished never throws? or bringing back aspectj hooked throws *puke*
-			}
+		// get first one (should be only one)
+		final IteratorGeneric_OnChildNodes iter = getSelf().getIterator();
+		try {
+			termNode = iter.goFirst();
+			iter.success();
+			
+		} finally {
+			iter.finished();
+			// FIXME: I'd use finally but if goFirst and finished both throw, only the last throw will be seen ie. overwriting
+			// this might not be avoidable, unless finished never throws? or bringing back aspectj hooked throws *puke*
 		}
-		assert isValidChild( termNode ) : "something else must've changed our pointee and made this inconsistent with our domain";
+		
 		return termNode;
 	}
 	

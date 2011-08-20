@@ -41,7 +41,9 @@ package org.dml.storage.Level2;
 public enum ExtensionTypes {
 		Pointer,
 		DomainPointer,
+		DomainPointer_NonNull,
 		Set,
 		DomainSet,
+	
 	// HashMap
 }
