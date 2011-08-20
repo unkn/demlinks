@@ -197,10 +197,10 @@ public class TestSetOfNodes
 		assertFalse( storage.isVector( set1.getSelf(), three ) );
 		
 		final NodeGeneric dsotParent = storage.createNewUniqueNode();
-		final Extension_DomainSet_OfChildren dsot = new Extension_DomainSet_OfChildren( storage, dsotParent, setParent );
+		final Extension_DomainSet_OfChildren dsot = new Extension_DomainSet_OfChildren( dsotParent, setParent );
 		assertTrue( set1.getSelf().equals( setParent ) );
 		try {
-			final Extension_DomainSet_OfChildren adsot = new Extension_DomainSet_OfChildren( storage, set1.getSelf(), setParent );
+			final Extension_DomainSet_OfChildren adsot = new Extension_DomainSet_OfChildren( set1.getSelf(), setParent );
 			Q.fail();
 		} catch ( final AssertionError ae ) {
 			// good
@@ -211,8 +211,8 @@ public class TestSetOfNodes
 		// already used testEquals for this
 		// assertFalse( dsot.equals( sot3 ) );
 		
-		final Extension_DomainSet_OfChildren dsot3 = new Extension_DomainSet_OfChildren( storage, dsot.getSelf(), dsot.getDomain() );
-		final Extension_Set_OfChildren dsot4 = new Extension_DomainSet_OfChildren( storage, dsot.getSelf(), dsot.getDomain() );
+		final Extension_DomainSet_OfChildren dsot3 = new Extension_DomainSet_OfChildren( dsot.getSelf(), dsot.getDomain() );
+		final Extension_Set_OfChildren dsot4 = new Extension_DomainSet_OfChildren( dsot.getSelf(), dsot.getDomain() );
 		assertTrue( dsot != dsot4 );
 		assertTrue( dsot3 != dsot4 );
 		assertTrue( dsot3 != dsot );
@@ -220,7 +220,7 @@ public class TestSetOfNodes
 		assertTrue( dsot.equals( dsot4 ) );
 		assertTrue( dsot4.equals( dsot ) );
 		final Extension_DomainSet_OfChildren dsot5 =
-			new Extension_DomainSet_OfChildren( storage, dsot.getSelf(), storage.createNewUniqueNode() );
+			new Extension_DomainSet_OfChildren( dsot.getSelf(), storage.createNewUniqueNode() );
 		try {
 			// same set but different domains?, which reminds me
 			// XXX:we should not be able to `new` same set with two different domains; thing is we only detect this here when
@@ -351,10 +351,10 @@ public class TestSetOfNodes
 		final NodeGeneric domain = storage.createNewUniqueNode();
 		Extension_Set_OfChildren dsos;
 		// doesn't check integrity, thus not throws here:
-		dsos = new Extension_DomainSet_OfChildren( storage, sos2.getSelf(), domain );
+		dsos = new Extension_DomainSet_OfChildren( sos2.getSelf(), domain );
 		
 		assertFalse( storage.ensureVector( domain, l1 ) );
-		dsos = new Extension_DomainSet_OfChildren( storage, sos2.getSelf(), domain );
+		dsos = new Extension_DomainSet_OfChildren( sos2.getSelf(), domain );
 		assertTrue( dsos.getSelf().equals( sos2.getSelf() ) );
 		assertTrue( dsos.size() == 1 );
 	}
@@ -364,7 +364,7 @@ public class TestSetOfNodes
 	public void testEquals() {
 		final NodeGeneric domain = storage.createNewUniqueNode();
 		final NodeGeneric self1 = storage.createNewUniqueNode();
-		final Extension_DomainSet_OfChildren dsos = new Extension_DomainSet_OfChildren( storage, self1, domain );
+		final Extension_DomainSet_OfChildren dsos = new Extension_DomainSet_OfChildren( self1, domain );
 		final IExtension_Set sos = (IExtension_Set)fact.createNewExtensionInstance( ExtensionTypes.Set, self1 );
 		
 		assertFalse( domain.equals( dsos ) );
@@ -399,12 +399,12 @@ public class TestSetOfNodes
 		// only if same self it would complain, because can use only one self for one type of class ie. Pointer and Set can't be
 		// using same self; because their constraints would clash
 		final NodeGeneric n2 = storage.createNewUniqueNode();
-		final Extension_DomainSet_OfChildren x = new Extension_DomainSet_OfChildren( storage, n2, domain );
+		final Extension_DomainSet_OfChildren x = new Extension_DomainSet_OfChildren( n2, domain );
 		assertFalse( x.equals( set1 ) );
 		assertFalse( set1.equals( x ) );
 		// =========== now comparing same class type with same self it's ok, two instances can use same self as long as they're
 		// of the same type ie. both Set or both Pointer; as opposed to one Set and one Pointer
-		final Extension_DomainSet_OfChildren x2 = new Extension_DomainSet_OfChildren( storage, n2, domain );
+		final Extension_DomainSet_OfChildren x2 = new Extension_DomainSet_OfChildren( n2, domain );
 		assertTrue( x2.equals( x ) );
 		assertTrue( x.equals( x2 ) );
 	}
@@ -522,7 +522,7 @@ public class TestSetOfNodes
 		assertTrue( dptr.getPointeeChild().equals( newL ) );
 		
 		final Extension_NonNullDomainPointer_ToChild nndptr =
-			new Extension_NonNullDomainPointer_ToChild( storage, dptr.getSelf(), dptr.getDomain() );
+			new Extension_NonNullDomainPointer_ToChild( dptr.getSelf(), dptr.getDomain() );
 		
 		assertTrue( newL.equals( nndptr.getPointeeChild() ) );
 		assertTrue( newL != nndptr.getPointeeChild() );
@@ -540,7 +540,7 @@ public class TestSetOfNodes
 		}
 		
 		final Extension_NonNullDomainPointer_ToChild nndptr2 =
-			new Extension_NonNullDomainPointer_ToChild( storage, dptr.getSelf(), dptr.getDomain() );
+			new Extension_NonNullDomainPointer_ToChild( dptr.getSelf(), dptr.getDomain() );
 		try {
 			nndptr2.getPointeeChild();
 			Q.fail();

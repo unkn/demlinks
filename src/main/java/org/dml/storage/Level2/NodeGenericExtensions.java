@@ -90,10 +90,10 @@ public abstract class NodeGenericExtensions
 	 * @param store
 	 * @param selfNode
 	 */
-	public NodeGenericExtensions( final StorageGeneric store, final NodeGeneric selfNode ) {
+	public NodeGenericExtensions( final NodeGeneric selfNode ) {
 		// XXX1309: constructor param order should be same; see other XXX1309
-		super( store );
-		assert null != store;
+		super( selfNode.getStorage() );
+		// assert null != store;
 		assert null != selfNode;
 		// storage = store;
 		_selfNode = selfNode.clone();// this is cloned for hitting bug with `==` in later code

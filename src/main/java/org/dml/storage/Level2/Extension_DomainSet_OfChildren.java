@@ -58,8 +58,8 @@ public class Extension_DomainSet_OfChildren
 	 * @param selfNode
 	 * @param domainNode
 	 */
-	public Extension_DomainSet_OfChildren( final StorageGeneric env1, final NodeGeneric selfNode, final NodeGeneric domainNode ) {
-		super( env1, selfNode );
+	public Extension_DomainSet_OfChildren( final NodeGeneric selfNode, final NodeGeneric domainNode ) {
+		super( selfNode );
 		assert null != domainNode;
 		assert !Z.equals_enforceExactSameClassTypesAndNotNull( selfNode, domainNode );
 		_domainNode = domainNode.clone();// cloned to catch `==` bugs somewhere (do use .equals)

@@ -46,8 +46,8 @@ public class Extension_NonNullDomainPointer_ToChild
 {
 	
 	
-	public Extension_NonNullDomainPointer_ToChild( final StorageGeneric storage, final NodeGeneric selfNode, final NodeGeneric domainNode ) {
-		super( storage, selfNode, domainNode );
+	public Extension_NonNullDomainPointer_ToChild( final NodeGeneric selfNode, final NodeGeneric domainNode ) {
+		super( selfNode, domainNode );
 		// XXX: do NOT check for integrity, ie. don't check if child is not null and in domain!
 	}
 	

@@ -126,8 +126,8 @@ public class Extension_Pointer_ToChild
 	 * @param selfNode
 	 *            can be an Implementation or an Extension(which is based upon an implementation, ofc)
 	 */
-	protected Extension_Pointer_ToChild( final StorageGeneric storage, final NodeGeneric selfNode ) {
-		super( storage, new Extension_Set_OfChildren( storage, selfNode ) );
+	protected Extension_Pointer_ToChild( final NodeGeneric selfNode ) {
+		super( new Extension_Set_OfChildren( selfNode ) );
 		// XXX1309: constructor param order should be same; see other XXX1309
 	}
 	

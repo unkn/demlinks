@@ -51,9 +51,8 @@ public class Extension_DomainPointer_ToChild
 	private final NodeGeneric	_domainNode;
 	
 	
-	protected Extension_DomainPointer_ToChild( final StorageGeneric storage, final NodeGeneric selfNode,
-			final NodeGeneric domainNode ) {
-		super( storage, selfNode );
+	protected Extension_DomainPointer_ToChild( final NodeGeneric selfNode, final NodeGeneric domainNode ) {
+		super( selfNode );
 		assert null != domainNode;
 		assert !Z.equals_enforceExactSameClassTypesAndNotNull( selfNode, domainNode );
 		_domainNode = domainNode.clone();

@@ -55,8 +55,8 @@ public class Extension_Set_OfChildren
 	 *            non-null<br>
 	 *            will be cloned(for now)<br>
 	 */
-	protected Extension_Set_OfChildren( final StorageGeneric store, final NodeGeneric selfNode ) {
-		super( store, selfNode );
+	protected Extension_Set_OfChildren( final NodeGeneric selfNode ) {
+		super( selfNode );
 		// System.err.println( this.getClass() + " " + selfNode.getClass() );
 		// boolean b = L0Set_OfChildren.class.equals( this.getClass() );
 		// assert (b)||(!)&&(getSelf().equals( getSelfImpl()));
