@@ -52,6 +52,7 @@ public abstract class NodeGenericCommon
 	private final StorageHookImplementation	storageHook	= new StorageHookImplementationAdapter()
 														{
 															
+															@SuppressWarnings( "synthetic-access" )
 															@Override
 															public void onBeforeShutdown( final boolean inShutdownHook ) {
 																valid = false;
@@ -75,15 +76,8 @@ public abstract class NodeGenericCommon
 	
 	@Override
 	public boolean isStillValid() {
-		if ( valid ) {
-			// don't call getStorage() it will infini-loop
-			assert internal_getStorage().isStillValid() : "concurrency can cause this, `valid` is still true although "
-				+ "the storage was shutdown; but only if shutdown and this call were executed in different threads";
-			// XXX: eventually transform/move this assert into the return here
-			return true;
-		} else {
-			return false;
-		}
+		return valid && internal_getStorage().isStillValid();
+		// concurrency may make the above 2 values different, although they should be equal
 	}
 	
 	
