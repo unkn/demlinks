@@ -81,12 +81,14 @@ public class Extension_DomainPointer_ToChild
 	
 	@Override
 	public boolean isInDomain( final NodeGeneric childNode ) {
+		// assertIsStillValid();
 		return ( ( !getDomain().equals( childNode ) ) && ( getStorage().isVector( getDomain(), childNode ) ) );
 	}
 	
 	
 	@Override
 	public final NodeGeneric getDomain() {
+		assertIsStillValid();
 		return _domainNode;
 	}
 	

@@ -75,7 +75,15 @@ public abstract class NodeGenericCommon
 	
 	@Override
 	public boolean isStillValid() {
-		return valid && storage.isStillValid();
+		if ( valid ) {
+			// don't call getStorage() it will infini-loop
+			assert internal_getStorage().isStillValid() : "concurrency can cause this, `valid` is still true although "
+				+ "the storage was shutdown; but only if shutdown and this call were executed in different threads";
+			// XXX: eventually transform/move this assert into the return here
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	
@@ -85,10 +93,15 @@ public abstract class NodeGenericCommon
 	}
 	
 	
+	protected final StorageGeneric internal_getStorage() {
+		return storage;
+	}
+	
+	
 	@Override
 	public final StorageGeneric getStorage() {
 		assertIsStillValid();
-		return storage;
+		return internal_getStorage();
 	}
 	
 	
@@ -116,7 +129,7 @@ public abstract class NodeGenericCommon
 		
 		final NodeGenericCommon ngc = (NodeGenericCommon)obj;
 		// fixed I think: maybe below equals may need some relaxing for class types
-		if ( !Z.equalsSimple_enforceNotNull( getStorage(), ngc.getStorage() ) ) {
+		if ( !Z.equalsSimple_enforceNotNull( internal_getStorage(), ngc.getStorage() ) ) {
 			return false;// different storages means different nodes
 		}
 		// if (this.getClass().equals( NodeGenericImpl.class )) &&(obj.getClass().equals( NodeGenericImpl.class ))) {
