@@ -3,6 +3,7 @@
  * Copyright (c) 2005-2011, AtKaaZ
  * All rights reserved.
  * this file is part of DemLinks
+ * File created on Aug 20, 2011 3:45:39 AM
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -34,50 +35,19 @@
 package org.dml.storage.commons;
 
 
-
 /**
- * in-java representation for the underlying db-stored node
+ *
  */
-public interface NodeGeneric
-		extends Cloneable
+public interface StorageHookImplementation
 {
 	
-	public abstract NodeGeneric getSelf();
-	
-	
-	public NodeGenericImpl getSelfImpl();
-	
-	
-	public long getId();
-	
-	
-	public StorageGeneric getStorage();
-	
-	
-	public boolean isStillValid();
-	
-	
-	public void assertIsStillValid();
-	
-	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#equals(java.lang.Object)
+	/**
+	 * @param inShutdownHook
+	 *            true means we're in program's shutdown hook, so this is good to know in order to avoid doing some unnecessary
+	 *            cleanups just in the case of normal shutdown and program still living
 	 */
-	@Override
-	public boolean equals( Object obj );
+	public void onBeforeShutdown( boolean inShutdownHook );
 	
 	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#hashCode()
-	 */
-	@Override
-	public int hashCode();
-	
-	
-	// public GenericNode clone() throws CloneNotSupportedException;
-	public NodeGeneric clone(); // throws UncheckedCloneNotSupportedException;
+	public void onAfterShutdown( boolean inShutdownHook );
 }

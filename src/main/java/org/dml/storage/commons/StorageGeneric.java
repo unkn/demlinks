@@ -49,6 +49,15 @@ public interface StorageGeneric
 	public void shutdown( boolean delete );
 	
 	
+	public void addHook( StorageHookImplementation code );
+	
+	
+	public boolean isStillValid();
+	
+	
+	public void assertIsStillValid();
+	
+	
 	// =============== Level 1: name and node
 	/**
 	 * @param forNode

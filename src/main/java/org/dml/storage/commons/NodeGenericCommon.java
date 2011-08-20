@@ -47,7 +47,16 @@ public abstract class NodeGenericCommon
 		implements NodeGeneric
 {
 	
-	private final StorageGeneric	storage;
+	private boolean							valid		= true;
+	private final StorageGeneric			storage;
+	private final StorageHookImplementation	storageHook	= new StorageHookImplementationAdapter()
+														{
+															
+															@Override
+															public void onBeforeShutdown( final boolean inShutdownHook ) {
+																valid = false;
+															}
+														};
 	
 	
 	/**
@@ -55,7 +64,24 @@ public abstract class NodeGenericCommon
 	 */
 	public NodeGenericCommon( final StorageGeneric stor ) {
 		storage = stor;
-		assert Q.nn( storage );
+		assert Q.nn( getStorage() );
+		assertIsStillValid();
+		getStorage().addHook( storageHook );
+		
+		// it may have been shutdown by parallel thread before hook was added so valid is still true
+		valid = storage.isStillValid();
+	}
+	
+	
+	@Override
+	public final boolean isStillValid() {
+		return valid;
+	}
+	
+	
+	@Override
+	public final void assertIsStillValid() {
+		assert isStillValid();
 	}
 	
 	

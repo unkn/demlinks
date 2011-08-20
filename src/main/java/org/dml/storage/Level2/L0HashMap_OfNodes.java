@@ -64,7 +64,7 @@ public class L0HashMap_OfNodes
 	private final NodeGeneric		_selfNode;
 	
 	
-	private final L0Set_OfChildren	selfAsSet;
+	private final Extension_Set_OfChildren	selfAsSet;
 	
 	
 	public L0HashMap_OfNodes( final StorageGeneric stor, final NodeGeneric selfNode ) {
@@ -72,7 +72,7 @@ public class L0HashMap_OfNodes
 		assert null != selfNode;
 		storage = stor;
 		_selfNode = selfNode.clone();// this is cloned for hitting bug with `==` in later code
-		selfAsSet = new L0Set_OfChildren( storage, _selfNode );
+		selfAsSet = new Extension_Set_OfChildren( storage, _selfNode );
 		
 		// checking to make sure all values have (at least) one key
 		final IteratorGeneric_OnChildNodes iter = selfAsSet.getIterator();

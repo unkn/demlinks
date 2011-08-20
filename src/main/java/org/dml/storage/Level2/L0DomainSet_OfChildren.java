@@ -46,7 +46,8 @@ import org.toolza.*;
  * does not allow: self to equal domain<br>
  */
 public class L0DomainSet_OfChildren
-		extends L0Set_OfChildren
+		extends Extension_Set_OfChildren
+		implements IExtension_DomainSet
 {
 	
 	private final NodeGeneric	_domainNode;
@@ -80,11 +81,13 @@ public class L0DomainSet_OfChildren
 	}
 	
 	
+	@Override
 	public boolean isInDomain( final NodeGeneric childNode ) {
 		return ( ( !_domainNode.equals( childNode ) ) && ( getStorage().isVector( _domainNode, childNode ) ) );
 	}
 	
 	
+	@Override
 	public NodeGeneric getDomain() {
 		return _domainNode;
 	}

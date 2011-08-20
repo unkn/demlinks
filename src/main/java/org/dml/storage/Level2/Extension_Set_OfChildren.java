@@ -42,8 +42,9 @@ import org.dml.storage.commons.*;
  * to act as null but that's on a higher level<br>
  * allows self to be added to set, ie. circular allower<br>
  */
-public class L0Set_OfChildren
+public class Extension_Set_OfChildren
 		extends NodeGenericExtensions
+		implements IExtension_Set
 {
 	
 	/**
@@ -54,9 +55,9 @@ public class L0Set_OfChildren
 	 *            non-null<br>
 	 *            will be cloned(for now)<br>
 	 */
-	public L0Set_OfChildren( final StorageGeneric store, final NodeGeneric selfNode ) {
+	protected Extension_Set_OfChildren( final StorageGeneric store, final NodeGeneric selfNode ) {
 		super( store, selfNode );
-		System.err.println( this.getClass() + " " + selfNode.getClass() );
+		// System.err.println( this.getClass() + " " + selfNode.getClass() );
 		// boolean b = L0Set_OfChildren.class.equals( this.getClass() );
 		// assert (b)||(!)&&(getSelf().equals( getSelfImpl()));
 	}
@@ -66,19 +67,22 @@ public class L0Set_OfChildren
 	 * @param node
 	 * @return true if already existed
 	 */
+	@Override
 	public boolean ensureIsAddedToSet( final NodeGeneric node ) {
 		assert isValidChild( node );
 		return getStorage().ensureVector( getSelf(), node );
 	}
 	
 	
-	public boolean contains( final NodeGeneric longIdent ) {
+	@Override
+	public boolean contains( final NodeGeneric node ) {
 		// assert this.isValidChild( longIdent ); no
-		return getStorage().isVector( getSelf(), longIdent );
+		return getStorage().isVector( getSelf(), node );
 	}
 	
 	
 	
+	@Override
 	public boolean remove( final NodeGeneric node ) {
 		assert isValidChild( node );
 		return getStorage().removeVector( getSelf(), node );
@@ -96,11 +100,13 @@ public class L0Set_OfChildren
 	 * 
 	 * @return
 	 */
+	@Override
 	public IteratorGeneric_OnChildNodes getIterator() {
 		return getStorage().getIterator_on_Children_of( getSelf() );
 	}
 	
 	
+	@Override
 	public void clearAll() {
 		// Q.ni();
 		// TODO: implement this in another way, ie. by deleting that key? because deleting all its children kind of does that

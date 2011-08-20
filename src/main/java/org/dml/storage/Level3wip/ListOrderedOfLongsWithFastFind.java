@@ -51,7 +51,7 @@ public class ListOrderedOfLongsWithFastFind implements OrderedList {
 	private final Long						self;
 	private final L0HashMap_OfNodes	selfAsHashMap;
 	private final ListOrderedOfLongs		orderedList;
-	private final L0Set_OfChildren	ffSet;			// fast find set
+	private final Extension_Set_OfChildren	ffSet;			// fast find set
 															
 															
 															
@@ -90,7 +90,7 @@ public class ListOrderedOfLongsWithFastFind implements OrderedList {
 		// env.allSetsOfLOOLWWF_LongID->ffSet
 		final Long ffSelf = selfAsHashMap.getValue_akaChild( env.allSetsOfLOOLWWF_LongID );
 		assert null != ffSelf;
-		ffSet = new L0Set_OfChildren( env, ffSelf );
+		ffSet = new Extension_Set_OfChildren( env, ffSelf );
 	}
 	
 	

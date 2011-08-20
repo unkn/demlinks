@@ -3,6 +3,7 @@
  * Copyright (c) 2005-2011, AtKaaZ
  * All rights reserved.
  * this file is part of DemLinks
+ * File created on Aug 20, 2011 3:14:10 AM
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -31,53 +32,36 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.dml.storage.commons;
+package org.dml.storage.Level2;
+
+import org.dml.storage.commons.*;
 
 
 
 /**
- * in-java representation for the underlying db-stored node
+ *
  */
-public interface NodeGeneric
-		extends Cloneable
+public interface IExtension_Set
+		extends NodeGeneric
 {
 	
-	public abstract NodeGeneric getSelf();
+	public boolean ensureIsAddedToSet( final NodeGeneric node );
 	
 	
-	public NodeGenericImpl getSelfImpl();
+	public boolean contains( final NodeGeneric node );
 	
 	
-	public long getId();
+	public boolean remove( final NodeGeneric node );
 	
 	
-	public StorageGeneric getStorage();
+	public IteratorGeneric_OnChildNodes getIterator();
 	
 	
-	public boolean isStillValid();
+	public void clearAll();
 	
 	
-	public void assertIsStillValid();
+	public int size();
 	
 	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	@Override
-	public boolean equals( Object obj );
-	
-	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#hashCode()
-	 */
-	@Override
-	public int hashCode();
-	
-	
-	// public GenericNode clone() throws CloneNotSupportedException;
-	public NodeGeneric clone(); // throws UncheckedCloneNotSupportedException;
+	public boolean isEmpty();
 }

@@ -44,6 +44,7 @@ import org.dml.storage.berkeleydb.generics.*;
 import org.dml.storage.commons.*;
 import org.junit.*;
 import org.q.*;
+import org.toolza.*;
 import org.toolza.Timer;
 
 
@@ -62,9 +63,9 @@ public class TestSetOfNodes
 	}
 	
 	
-	private L0Set_OfChildren	set1;
-	private NodeGeneric			setParent;
-	private L2Factory			fact;
+	private IExtension_Set	set1;
+	private NodeGeneric		setParent;
+	private L2Factory		fact;
 	
 	
 	/*
@@ -76,7 +77,7 @@ public class TestSetOfNodes
 	public void overridden_setUp() {
 		fact = new L2Factory( storage );
 		setParent = storage.createNewUniqueNode();
-		set1 = new L0Set_OfChildren( storage, setParent );
+		set1 = (IExtension_Set)fact.createNewExtensionInstance( ExtensionTypes.Set, setParent );
 	}
 	
 	
@@ -204,14 +205,14 @@ public class TestSetOfNodes
 		} catch ( final AssertionError ae ) {
 			// good
 		}
-		final L0Set_OfChildren sot3 = new L0Set_OfChildren( storage, dsotParent );
+		final IExtension_Set sot3 = (IExtension_Set)fact.createNewExtensionInstance( ExtensionTypes.Set, dsotParent );
 		assertTrue( sot3.getSelf().equals( dsot.getSelf() ) );
 		// assertFalse( sot3.equals( dsot ) );
 		// already used testEquals for this
 		// assertFalse( dsot.equals( sot3 ) );
 		
 		final L0DomainSet_OfChildren dsot3 = new L0DomainSet_OfChildren( storage, dsot.getSelf(), dsot.getDomain() );
-		final L0Set_OfChildren dsot4 = new L0DomainSet_OfChildren( storage, dsot.getSelf(), dsot.getDomain() );
+		final Extension_Set_OfChildren dsot4 = new L0DomainSet_OfChildren( storage, dsot.getSelf(), dsot.getDomain() );
 		assertTrue( dsot != dsot4 );
 		assertTrue( dsot3 != dsot4 );
 		assertTrue( dsot3 != dsot );
@@ -232,7 +233,7 @@ public class TestSetOfNodes
 		}
 		
 		dsot.hashCode();
-		final HashSet<L0Set_OfChildren> hm = new HashSet<L0Set_OfChildren>();
+		final HashSet<IExtension_Set> hm = new HashSet<IExtension_Set>();
 		assertTrue( hm.add( dsot ) );
 		assertTrue( hm.add( set1 ) );
 		assertTrue( hm.size() == 2 );
@@ -321,11 +322,20 @@ public class TestSetOfNodes
 	public void testAlreadyExisting() {
 		final NodeGeneric l1 = storage.createNewUniqueNode();
 		assertNotNull( l1 );
-		final L0Set_OfChildren sos = new L0Set_OfChildren( storage, set1.getSelf() );
+		
+		try {
+			fact.createNewExtensionInstance( ExtensionTypes.Set, set1.getSelf() );
+			Q.fail();
+		} catch ( final BadCallError bce ) {
+			Q.markAsHandled( bce );
+		}
+		
+		final IExtension_Set sos = (IExtension_Set)fact.getExistingExtensionInstance( ExtensionTypes.Set, set1.getSelf() );
 		assertFalse( set1.ensureIsAddedToSet( l1 ) );
 		assertTrue( set1.size() == 1 );
 		assertTrue( sos.size() == 1 );
-		final L0Set_OfChildren sos2 = new L0Set_OfChildren( storage, set1.getSelf() );
+		
+		final IExtension_Set sos2 = (IExtension_Set)fact.getExistingExtensionInstance( ExtensionTypes.Set, set1.getSelf() );
 		assertTrue( sos2.size() == 1 );
 		
 		assertTrue( sos.equals( sos2 ) );
@@ -339,7 +349,7 @@ public class TestSetOfNodes
 		assertTrue( sos != sos2 );
 		
 		final NodeGeneric domain = storage.createNewUniqueNode();
-		L0Set_OfChildren dsos;
+		Extension_Set_OfChildren dsos;
 		// doesn't check integrity, thus not throws here:
 		dsos = new L0DomainSet_OfChildren( storage, sos2.getSelf(), domain );
 		
@@ -355,7 +365,7 @@ public class TestSetOfNodes
 		final NodeGeneric domain = storage.createNewUniqueNode();
 		final NodeGeneric self1 = storage.createNewUniqueNode();
 		final L0DomainSet_OfChildren dsos = new L0DomainSet_OfChildren( storage, self1, domain );
-		final L0Set_OfChildren sos = new L0Set_OfChildren( storage, self1 );
+		final IExtension_Set sos = (IExtension_Set)fact.createNewExtensionInstance( ExtensionTypes.Set, self1 );
 		
 		assertFalse( domain.equals( dsos ) );
 		assertFalse( dsos.equals( domain ) );
@@ -428,6 +438,11 @@ public class TestSetOfNodes
 		// this is valid even if it's using the same self as ptr because it's same extension type
 		final IExtension_Pointer ptr2 =
 			(IExtension_Pointer)fact.getExistingExtensionInstance( ExtensionTypes.Pointer, ptrParent );
+		final IExtension_Pointer ptr2retry =
+			(IExtension_Pointer)fact.getOrCreateExtensionInstance( ExtensionTypes.Pointer, ptrParent );
+		
+		assertTrue( Z.equals_enforceExactSameClassTypesAndNotNull( ptr2retry, ptr2 ) );
+		
 		assertNotNull( ptr2.getPointeeChild() );
 		assertTrue( ptr2.getPointeeChild().equals( newL ) );
 		assertTrue( ptr2.getPointeeChild() != newL );
@@ -437,7 +452,28 @@ public class TestSetOfNodes
 		assertTrue( ptr.equals( ptr2 ) );
 		
 		// this is not valid, since it uses same self as ptr2
-		final L0DomainPointer_ToChild dptr = new L0DomainPointer_ToChild( storage, ptr2.getSelf(), set1.getSelf() );
+		IExtension_DomainPointer dptr = null;
+		try {
+			dptr = (IExtension_DomainPointer)fact.getExistingExtensionInstance( ExtensionTypes.DomainPointer, ptr2.getSelf() );
+			// ,
+			// set1.getSelf() );
+			Q.fail();
+		} catch ( final BadCallError bce ) {
+			Q.markAsHandled( bce );
+		}
+		
+		try {
+			dptr =
+				(IExtension_DomainPointer)fact.getOrCreateExtensionInstance(
+					ExtensionTypes.DomainPointer,
+					ptr2.getSelf(),
+					set1.getSelf() );
+			Q.fail();
+		} catch ( final BadCallError bce ) {
+			Q.markAsHandled( bce );
+		}
+		
+		assert Q.nn( dptr );
 		
 		try {
 			dptr.getPointeeChild();// detects that pointee is not in domain!

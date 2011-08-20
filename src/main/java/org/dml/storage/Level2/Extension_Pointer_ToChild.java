@@ -127,7 +127,7 @@ public class Extension_Pointer_ToChild
 	 *            can be an Implementation or an Extension(which is based upon an implementation, ofc)
 	 */
 	protected Extension_Pointer_ToChild( final StorageGeneric storage, final NodeGeneric selfNode ) {
-		super( storage, new L0Set_OfChildren( storage, selfNode ) );
+		super( storage, new Extension_Set_OfChildren( storage, selfNode ) );
 		// XXX1309: constructor param order should be same; see other XXX1309
 	}
 	
@@ -138,8 +138,8 @@ public class Extension_Pointer_ToChild
 	 * @see org.dml.storage.Level2.EpicBase#getSelf()
 	 */
 	@Override
-	public L0Set_OfChildren getSelf() {
-		return (L0Set_OfChildren)super.getSelf();
+	public Extension_Set_OfChildren getSelf() {
+		return (Extension_Set_OfChildren)super.getSelf();
 	}
 	
 	

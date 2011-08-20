@@ -98,6 +98,13 @@ public abstract class NodeGenericExtensions
 		// storage = store;
 		_selfNode = selfNode.clone();// this is cloned for hitting bug with `==` in later code
 		_selfNodeImpl = getSelfImpl( selfNode );
+		
+		assert Z.equalsSimple_enforceNotNull( getSelf().getStorage(), getSelfImpl().getStorage() ) : Q
+			.bug( "impossible, the passed node's storage was different than the implementation it's based upon, "
+				+ "meaning the passed node was flawed from before reaching this call" );
+		
+		assert Z.equalsSimple_enforceNotNull( getStorage(), getSelfImpl().getStorage() ) : Q
+			.badCall( "the node was from a different storage" );
 	}
 	
 	

@@ -3,6 +3,7 @@
  * Copyright (c) 2005-2011, AtKaaZ
  * All rights reserved.
  * this file is part of DemLinks
+ * File created on Aug 20, 2011 3:46:53 AM
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -34,50 +35,32 @@
 package org.dml.storage.commons;
 
 
-
 /**
- * in-java representation for the underlying db-stored node
+ *
  */
-public interface NodeGeneric
-		extends Cloneable
+public class StorageHookImplementationAdapter
+		implements StorageHookImplementation
 {
 	
-	public abstract NodeGeneric getSelf();
-	
-	
-	public NodeGenericImpl getSelfImpl();
-	
-	
-	public long getId();
-	
-	
-	public StorageGeneric getStorage();
-	
-	
-	public boolean isStillValid();
-	
-	
-	public void assertIsStillValid();
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.dml.storage.commons.StorageHookImplementation#onShutdown(boolean)
+	 */
+	@Override
+	public void onBeforeShutdown( final boolean inShutdownHook ) {
+		// empty
+	}
 	
 	
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see java.lang.Object#equals(java.lang.Object)
+	 * @see org.dml.storage.commons.StorageHookImplementation#onAfterShutdown(boolean)
 	 */
 	@Override
-	public boolean equals( Object obj );
+	public void onAfterShutdown( final boolean inShutdownHook ) {
+		// empty
+	}
 	
-	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#hashCode()
-	 */
-	@Override
-	public int hashCode();
-	
-	
-	// public GenericNode clone() throws CloneNotSupportedException;
-	public NodeGeneric clone(); // throws UncheckedCloneNotSupportedException;
 }

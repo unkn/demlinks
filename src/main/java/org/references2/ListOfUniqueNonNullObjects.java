@@ -98,7 +98,8 @@ public class ListOfUniqueNonNullObjects<E>
 		ChainedReference<E> ref = getRef( obj );
 		if ( null != ref ) {
 			// already exists, not added/moved
-			assert ( getLastRef() == ref ) : Q.badCall( "existed but in a different place than expected, ie. wasn't Last" );
+			assert ( getLastRef().equals( ref ) ) : Q
+				.badCall( "existed but in a different place than expected, ie. wasn't Last" );
 			// if ( getLastRef() != ref ) {
 			// }
 			return true;

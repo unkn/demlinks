@@ -353,6 +353,11 @@ public abstract class Q
 	private static ThreadLocal<Throwable>	lastPostponed	= new ThreadLocal<Throwable>();
 	
 	
+	/**
+	 * will remember only the first one
+	 * 
+	 * @param t
+	 */
 	public static void postpone( final Throwable t ) {
 		if ( Q.lastPostponed.get() == null ) {
 			Q.lastPostponed.set( t );// set only the first one, ignore others until throwPostponedOnes()

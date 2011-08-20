@@ -50,12 +50,26 @@ public class L2Factory
 {
 	
 	private final StorageGeneric																	storage;
-	
+	private final static StorageHookImplementation													storageHook;
 	private final static RAMTwoWayHashMapOfNonNullUniques<NodeGenericExtensions, NodeGenericImpl>	extensionInstances;
 	static {
 		// just don't want this assignment(=) to shift the end part too far to the right due to lame'o'indentation
 		// that's why it's in a static block
 		extensionInstances = new RAMTwoWayHashMapOfNonNullUniques<NodeGenericExtensions, NodeGenericImpl>();
+		
+		storageHook = new StorageHookImplementationAdapter()
+		{
+			
+			@SuppressWarnings( "synthetic-access" )
+			@Override
+			public void onBeforeShutdown( final boolean inShutdownHook ) {
+				if ( !inShutdownHook ) {
+					// : remove all nodes or extensions that are using this storage (getStorage() one)
+					// Q.ni();
+					extensionInstances.removeAll();
+				}
+			}
+		};
 	}
 	
 	
@@ -89,10 +103,13 @@ public class L2Factory
 	public L2Factory( final StorageGeneric stor ) {
 		storage = stor;
 		assert Q.nn( getStorage() );
+		// getStorage().assertIsStillValid();
+		getStorage().addHook( storageHook );// before creating new instance
 	}
 	
 	
 	public final StorageGeneric getStorage() {
+		storage.assertIsStillValid();// TODO: must call this wherever we use storage params :/
 		return storage;
 	}
 	
@@ -131,6 +148,12 @@ public class L2Factory
 					params[i] = extras[i - 2];
 				}
 			}
+			
+			assert Z.equalsSimple_enforceNotNull( node.getStorage(), params[0] ) : Q
+				.badCall( "the node was from a different storage, bad call" );
+			
+			// problem here is that in multiple threads, one thread can shutdown the storage while I'm about to new instance
+			// here and thus concurrency will break something
 			final NodeGenericExtensions inst = (NodeGenericExtensions)constructor.newInstance( params );
 			assert Q.nn( inst );
 			return inst;
@@ -176,15 +199,16 @@ public class L2Factory
 		final NodeGenericImpl impl = selfNode.getSelfImpl();
 		final NodeGenericExtensions existingInstance = getExtensionInstanceForNodeImpl( impl );
 		if ( null != existingInstance ) {
-			assert Z.isSameOrDescendantOfClass_throwIfNull( existingInstance, expectedExtensionClass ) : "this node `"
-				+ selfNode
-				+ "` "
-				+ "was used for a different Extension namely for `"
-				+ existingInstance
-				+ "`\n"
-				+ "thus you cannot use this same node for a different extension type - because this would be a bad usage: a node "
-				+ "is supposed to represent only one of these extensions ie. can't be a pointer and a set at the same time because"
-				+ "treating it as a set would most likely violate pointer constrains ie. by adding more than 1 children";
+			assert Z.isSameOrDescendantOfClass_throwIfNull( existingInstance, expectedExtensionClass ) : Q
+				.badCall( "this node `"
+					+ selfNode
+					+ "` "
+					+ "was used for a different Extension namely for `"
+					+ existingInstance
+					+ "`\n"
+					+ "thus you cannot use this same node for a different extension type - because this would be a bad usage: a node "
+					+ "is supposed to represent only one of these extensions ie. can't be a pointer and a set at the same time because"
+					+ "treating it as a set would most likely violate pointer constrains ie. by adding more than 1 children" );
 			return existingInstance;
 		} else {
 			return null;
@@ -207,7 +231,7 @@ public class L2Factory
 		case Pointer:
 			return Extension_Pointer_ToChild.class;
 		case Set:
-			return L0Set_OfChildren.class;
+			return Extension_Set_OfChildren.class;
 		}
 		throw Q.bug( "not reached due to eclipse compiler letting us know that we missed a case;"
 			+ "or you forgot to add a return above" );
@@ -221,6 +245,30 @@ public class L2Factory
 		if ( null == existingInstance ) {
 			existingInstance = createNewExtensionInstance( type, selfNode, extras );
 			assert Q.nn( existingInstance );
+		} else {
+			// TODO: check if extras are as expected: the same
+			// or not, seems to adhoc to implement
+			System.err.println( "been here..........................." );
+			final Class<? extends NodeGenericExtensions> cls = existingInstance.getClass();
+			// if ( existingInstance instanceof IExtension_AnyDomain ) {
+			// System.out.println( "`````````````````````````````````````````````lkhkl``````````````````````" );
+			// }
+			// if ( cls == IExtension_AnyDomain.class ) {
+			// System.err.println( "`````````````````````````````````````````````lkhkl``````````````````````" );
+			// }
+			// if ( cls.isAssignableFrom( IExtension_AnyDomain.class ) ) {
+			if ( IExtension_AnyDomain.class.isAssignableFrom( cls ) ) {
+				System.err.println( "`````````````````````````````````````````````lkhkl``````````````````````" + cls );
+				// } else {
+				// System.err.println( cls );
+				// }
+				// if ( ( cls == L0DomainPointer_ToChild.class ) || ( cls == L0DomainSet_OfChildren.class ) ) {
+				final IExtension_AnyDomain domType = (IExtension_AnyDomain)existingInstance;
+				assert Q.nn( extras );
+				assert extras.length == 1;// it's the node representing the domain
+				assert Z.isSameOrDescendantOfClass_throwIfNull( extras[0], NodeGeneric.class );
+				assert Z.equals_enforceExactSameClassTypesAndNotNull( domType.getDomain(), extras[0] );
+			}
 		}
 		return existingInstance;
 	}

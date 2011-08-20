@@ -3,6 +3,7 @@
  * Copyright (c) 2005-2011, AtKaaZ
  * All rights reserved.
  * this file is part of DemLinks
+ * File created on Aug 20, 2011 8:46:53 AM
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -31,53 +32,20 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.dml.storage.commons;
+package org.dml.storage.Level2;
+
+import org.dml.storage.commons.*;
 
 
 
 /**
- * in-java representation for the underlying db-stored node
+ *
  */
-public interface NodeGeneric
-		extends Cloneable
+public interface IExtension_AnyDomain
 {
 	
-	public abstract NodeGeneric getSelf();
+	public boolean isInDomain( final NodeGeneric childNode );
 	
 	
-	public NodeGenericImpl getSelfImpl();
-	
-	
-	public long getId();
-	
-	
-	public StorageGeneric getStorage();
-	
-	
-	public boolean isStillValid();
-	
-	
-	public void assertIsStillValid();
-	
-	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	@Override
-	public boolean equals( Object obj );
-	
-	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#hashCode()
-	 */
-	@Override
-	public int hashCode();
-	
-	
-	// public GenericNode clone() throws CloneNotSupportedException;
-	public NodeGeneric clone(); // throws UncheckedCloneNotSupportedException;
+	public NodeGeneric getDomain();
 }

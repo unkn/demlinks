@@ -45,16 +45,15 @@ import org.toolza.*;
  */
 public class L0DomainPointer_ToChild
 		extends Extension_Pointer_ToChild
+		implements IExtension_DomainPointer
 {
 	
-	private final NodeGeneric		_domainNode;
-	private final StorageGeneric	env;
+	private final NodeGeneric	_domainNode;
 	
 	
-	public L0DomainPointer_ToChild( final StorageGeneric env1, final NodeGeneric selfNode, final NodeGeneric domainNode ) {
-		super( env1, selfNode );
-		assert null != env1;
-		env = env1;
+	protected L0DomainPointer_ToChild( final StorageGeneric storage, final NodeGeneric selfNode, final NodeGeneric domainNode ) {
+		super( storage, selfNode );
+		assert null != storage;
 		assert null != domainNode;
 		_domainNode = domainNode.clone();
 		// XXX: don't check if existing child is valid because it will not work in constructor, need static get
@@ -74,10 +73,17 @@ public class L0DomainPointer_ToChild
 		// valid if one of:
 		// 1. is null
 		// 2. not be the same as the domain && is child of domain
-		return ( ( null == childNode ) || ( ( !getDomain().equals( childNode ) ) && ( env.isVector( getDomain(), childNode ) ) ) );
+		return ( ( null == childNode ) || ( ( !getDomain().equals( childNode ) ) && ( isInDomain( childNode ) ) ) );
 	}
 	
 	
+	@Override
+	public boolean isInDomain( final NodeGeneric childNode ) {
+		return ( ( !_domainNode.equals( childNode ) ) && ( getStorage().isVector( _domainNode, childNode ) ) );
+	}
+	
+	
+	@Override
 	public NodeGeneric getDomain() {
 		return _domainNode;
 	}
