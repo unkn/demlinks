@@ -22,6 +22,8 @@ so use this:
 	} catch ( final AssertionError e ) {
 	}
 
+also when you catch exceptions that were manually thrown instead of thrown due to an assertion error (via `assert` keyword)
+you can use Q.markAsHandledl(e); in the catch block, this will show it nicely in ToE
 
 ------------------------------------------------------
 2. // XXX: maybe reuse? instead of new-ing all the time 
