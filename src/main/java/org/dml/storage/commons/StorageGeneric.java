@@ -49,7 +49,7 @@ public interface StorageGeneric
 	public void shutdown( boolean delete );
 	
 	
-	public void addHook( StorageHook code );
+	public void addListener( StorageHook code );
 	
 	
 	public boolean isStillValid();

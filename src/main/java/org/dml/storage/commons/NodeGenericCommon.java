@@ -36,6 +36,7 @@ package org.dml.storage.commons;
 
 import org.dml.storage.Level2.*;
 import org.q.*;
+import org.references2.*;
 import org.toolza.*;
 
 
@@ -47,17 +48,30 @@ public abstract class NodeGenericCommon
 		implements NodeGeneric
 {
 	
-	private boolean							valid		= true;
-	private final StorageGeneric			storage;
-	private final StorageHook	storageHook	= new StorageHookImplementationAdapter()
-														{
-															
-															@SuppressWarnings( "synthetic-access" )
-															@Override
-															public void onBeforeShutdown( final boolean inShutdownHook ) {
-																valid = false;
-															}
-														};
+	private boolean										valid					= true;
+	private final StorageGeneric						storage;
+	private final StorageHook							storageHook				= new StorageHookImplementationAdapter()
+																				{
+																					
+																					@SuppressWarnings( "synthetic-access" )
+																					@Override
+																					public
+																							void
+																							onBeforeShutdown(	final boolean inShutdownHook ) {
+																						callNodeListenersFor( NodeHookTypes.ON_BEFORE_INVALID );
+																						setNodeIsInvalid();
+																					}
+																				};
+	// private final NodeHook ownHook=new NodeHook()
+	// {
+	//
+	// @Override
+	// public void onNoLongerValid() {
+	// setInvalid();
+	// }
+	// };
+	
+	private final ListOfUniqueNonNullObjects<NodeHook>	allListenersOnThisNode	= new ListOfUniqueNonNullObjects<NodeHook>();
 	
 	
 	/**
@@ -67,10 +81,54 @@ public abstract class NodeGenericCommon
 		storage = stor;
 		assert Q.nn( getStorage() );
 		assertIsStillValid();
-		getStorage().addHook( storageHook );
+		getStorage().addListener( storageHook );
 		
 		// it may have been shutdown by parallel thread before hook was added so valid is still true
 		valid = storage.isStillValid();
+	}
+	
+	
+	private void setNodeIsInvalid() {
+		// callNodeListenersFor( NodeHookTypes.ON_BEFORE_INVALID );
+		assert valid : "was already invalid";
+		valid = false;
+	}
+	
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.dml.storage.commons.NodeGeneric#addHook(org.dml.storage.commons.NodeHook)
+	 */
+	@Override
+	public void addNodeListener( final NodeHook hook ) {
+		assert Q.nn( hook );
+		synchronized ( allListenersOnThisNode ) {
+			final boolean existed = allListenersOnThisNode.addLastQ( hook );
+			assert !existed : "hook already existed before";
+		}
+	}
+	
+	
+	private void callNodeListenersFor( final NodeHookTypes hookType, @SuppressWarnings( "unused" )
+	final Object... params ) {
+		// assertIsStillValid(); we don't want this
+		synchronized ( allListenersOnThisNode ) {
+			NodeHook cur = allListenersOnThisNode.getObjectAt( Position.FIRST );
+			while ( null != cur ) {
+				try {
+					switch ( hookType ) {
+					case ON_BEFORE_INVALID:
+						cur.onBeforeNoLongerValid();
+						break;
+					}
+				} catch ( final Throwable t ) {
+					Q.postpone( t );
+				}
+				cur = allListenersOnThisNode.getObjectAt( Position.AFTER, cur );
+			}
+			Q.throwPostponedOnes();
+		}
 	}
 	
 	

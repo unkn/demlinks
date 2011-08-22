@@ -50,7 +50,7 @@ public class L2Factory
 {
 	
 	private final StorageGeneric																	storage;
-	private final static StorageHook													storageHook;
+	private final static StorageHook																storageHook;
 	private final static RAMTwoWayHashMapOfNonNullUniques<NodeGenericExtensions, NodeGenericImpl>	extensionInstances;
 	static {
 		// just don't want this assignment(=) to shift the end part too far to the right due to lame'o'indentation
@@ -66,6 +66,9 @@ public class L2Factory
 				if ( !inShutdownHook ) {
 					// : remove all nodes or extensions that are using this storage (getStorage() one)
 					// Q.ni();
+					// XXX: nodes are already notified when storage is shutdown by the storage itself, just as we are here
+					// thus we don't need to notify the nodes that they are invalid, nor we can do so (method not implemented in
+					// Node)
 					extensionInstances.removeAll();
 				}
 			}
@@ -104,7 +107,9 @@ public class L2Factory
 		storage = stor;
 		assert Q.nn( getStorage() );
 		// getStorage().assertIsStillValid();
-		getStorage().addHook( storageHook );// before creating new instance
+		getStorage().addListener( storageHook );// before creating new instance
+		// XXX: it's better to put hook on storage rather than on each node, since we're not allowing nodes from different
+		// storages
 	}
 	
 	
