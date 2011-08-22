@@ -38,7 +38,7 @@ package org.dml.storage.commons;
 /**
  *
  */
-public interface StorageHookImplementation
+public interface StorageHook
 {
 	
 	/**

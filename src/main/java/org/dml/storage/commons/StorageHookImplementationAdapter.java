@@ -39,7 +39,7 @@ package org.dml.storage.commons;
  *
  */
 public class StorageHookImplementationAdapter
-		implements StorageHookImplementation
+		implements StorageHook
 {
 	
 	/*

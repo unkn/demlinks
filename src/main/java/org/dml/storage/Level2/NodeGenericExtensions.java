@@ -87,7 +87,6 @@ public abstract class NodeGenericExtensions
 	
 	
 	/**
-	 * @param store
 	 * @param selfNode
 	 */
 	public NodeGenericExtensions( final NodeGeneric selfNode ) {

@@ -49,7 +49,7 @@ public abstract class NodeGenericCommon
 	
 	private boolean							valid		= true;
 	private final StorageGeneric			storage;
-	private final StorageHookImplementation	storageHook	= new StorageHookImplementationAdapter()
+	private final StorageHook	storageHook	= new StorageHookImplementationAdapter()
 														{
 															
 															@SuppressWarnings( "synthetic-access" )

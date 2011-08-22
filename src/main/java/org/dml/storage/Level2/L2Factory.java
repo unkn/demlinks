@@ -50,7 +50,7 @@ public class L2Factory
 {
 	
 	private final StorageGeneric																	storage;
-	private final static StorageHookImplementation													storageHook;
+	private final static StorageHook													storageHook;
 	private final static RAMTwoWayHashMapOfNonNullUniques<NodeGenericExtensions, NodeGenericImpl>	extensionInstances;
 	static {
 		// just don't want this assignment(=) to shift the end part too far to the right due to lame'o'indentation

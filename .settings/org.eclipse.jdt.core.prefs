@@ -1,4 +1,4 @@
-#Thu Aug 11 13:20:27 CEST 2011
+#Mon Aug 22 07:01:09 CEST 2011
 eclipse.preferences.version=1
 org.eclipse.jdt.core.builder.cleanOutputFolder=clean
 org.eclipse.jdt.core.builder.duplicateResourceTask=warning
@@ -114,8 +114,8 @@ org.eclipse.jdt.core.compiler.problem.unusedWarningToken=warning
 org.eclipse.jdt.core.compiler.problem.varargsArgumentNeedCast=error
 org.eclipse.jdt.core.compiler.source=1.7
 org.eclipse.jdt.core.compiler.taskCaseSensitive=disabled
-org.eclipse.jdt.core.compiler.taskPriorities=NORMAL,HIGH,NORMAL
-org.eclipse.jdt.core.compiler.taskTags=TODO,FIXME,XXX
+org.eclipse.jdt.core.compiler.taskPriorities=NORMAL,HIGH,NORMAL,LOW
+org.eclipse.jdt.core.compiler.taskTags=TODO,FIXME,XXX,XXX1309
 org.eclipse.jdt.core.formatter.align_type_members_on_columns=true
 org.eclipse.jdt.core.formatter.alignment_for_arguments_in_allocation_expression=52
 org.eclipse.jdt.core.formatter.alignment_for_arguments_in_annotation=17
