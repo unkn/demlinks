@@ -91,6 +91,7 @@ public abstract class NodeGenericExtensions
 	 */
 	public NodeGenericExtensions( final NodeGeneric selfNode ) {
 		// XXX1309: constructor param order should be same; see other XXX1309
+		
 		super( selfNode.getStorage() );
 		// assert null != store;
 		assert null != selfNode;

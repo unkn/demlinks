@@ -35,6 +35,7 @@
 package org.dml.storage.Level2;
 
 import java.lang.reflect.*;
+import java.util.concurrent.locks.*;
 
 import org.dml.storage.commons.*;
 import org.q.*;
@@ -49,14 +50,57 @@ import org.toolza.*;
 public class L2Factory
 {
 	
-	private final StorageGeneric																	storage;
-	private final static StorageHook																storageHook;
-	private final static RAMTwoWayHashMapOfNonNullUniques<NodeGenericExtensions, NodeGenericImpl>	extensionInstances;
-	static {
-		// just don't want this assignment(=) to shift the end part too far to the right due to lame'o'indentation
-		// that's why it's in a static block
+	private final StorageGeneric															storage;
+	private final StorageHook																storageHook;
+	private final RAMTwoWayHashMapOfNonNullUniques<NodeGenericExtensions, NodeGenericImpl>	extensionInstances;
+	private final ReentrantLock																rl		= new ReentrantLock();
+	private boolean																			valid	= true;
+	
+	
+	protected NodeGenericExtensions internal_getExtensionInstanceForNodeImpl( final NodeGenericImpl nodeImpl ) {
+		// assertStillValid();
+		assert Q.nn( nodeImpl );
+		L.tryLock( rl );
+		try {
+			NodeGenericExtensions existingInstance = extensionInstances.getKey( nodeImpl );
+			if ( null != existingInstance ) {
+				// returning a clone just to make sure we catch any == bugs or similars
+				existingInstance = existingInstance.clone();
+			}
+			return existingInstance;
+		} finally {
+			rl.unlock();
+		}
+	}
+	
+	
+	protected void
+			internal_putExtensionInstanceForNodeImpl( final NodeGenericExtensions newInstance, final NodeGenericImpl impl ) {
+		// assertStillValid();
+		assert Q.nn( newInstance );
+		assert Q.nn( impl );
+		L.tryLock( rl );
+		try {
+			assert null == internal_getExtensionInstanceForNodeImpl( impl );
+			final boolean existed = extensionInstances.ensureExists( newInstance, impl );
+			assert !existed;
+			assert Z
+				.equals_enforceExactSameClassTypesAndNotNull( internal_getExtensionInstanceForNodeImpl( impl ), newInstance );
+		} finally {
+			rl.unlock();
+		}
+	}
+	
+	
+	/**
+	 * constructor
+	 * 
+	 * @param stor
+	 */
+	public L2Factory( final StorageGeneric stor ) {
+		storage = stor;
+		assert Q.nn( getStorage() );
 		extensionInstances = new RAMTwoWayHashMapOfNonNullUniques<NodeGenericExtensions, NodeGenericImpl>();
-		
 		storageHook = new StorageHookImplementationAdapter()
 		{
 			
@@ -70,42 +114,11 @@ public class L2Factory
 					// thus we don't need to notify the nodes that they are invalid, nor we can do so (method not implemented in
 					// Node)
 					extensionInstances.removeAll();
+					valid = false;
 				}
 			}
 		};
-	}
-	
-	
-	protected synchronized static NodeGenericExtensions getExtensionInstanceForNodeImpl( final NodeGenericImpl nodeImpl ) {
-		assert Q.nn( nodeImpl );
-		NodeGenericExtensions existingInstance = extensionInstances.getKey( nodeImpl );
-		if ( null != existingInstance ) {
-			// returning a clone just to make sure we catch any == bugs or similars
-			existingInstance = existingInstance.clone();
-		}
-		return existingInstance;
-	}
-	
-	
-	protected synchronized static void putExtensionInstanceForNodeImpl( final NodeGenericExtensions newInstance,
-																		final NodeGenericImpl impl ) {
-		assert Q.nn( newInstance );
-		assert Q.nn( impl );
-		assert null == getExtensionInstanceForNodeImpl( impl );
-		final boolean existed = extensionInstances.ensureExists( newInstance, impl );
-		assert !existed;
-		assert Z.equals_enforceExactSameClassTypesAndNotNull( getExtensionInstanceForNodeImpl( impl ), newInstance );
-	}
-	
-	
-	/**
-	 * constructor
-	 * 
-	 * @param stor
-	 */
-	public L2Factory( final StorageGeneric stor ) {
-		storage = stor;
-		assert Q.nn( getStorage() );
+		
 		// getStorage().assertIsStillValid();
 		getStorage().addListener( storageHook );// before creating new instance
 		// XXX: it's better to put hook on storage rather than on each node, since we're not allowing nodes from different
@@ -113,7 +126,23 @@ public class L2Factory
 	}
 	
 	
+	public final boolean isStillValid() {
+		return valid;
+	}
+	
+	
+	public final void assertStillValid() {
+		assert isStillValid();
+	}
+	
+	
 	public final StorageGeneric getStorage() {
+		assertStillValid();
+		return internal_getStorage();
+	}
+	
+	
+	public final StorageGeneric internal_getStorage() {
 		storage.assertIsStillValid();// TODO: must call this wherever we use storage params :/
 		return storage;
 	}
@@ -127,9 +156,13 @@ public class L2Factory
 	 *            or null if none, or rather unspecified<br>
 	 * @return
 	 */
-	private NodeGenericExtensions getExtensionInstance( final ExtensionTypes type, final NodeGeneric node,
-														final Object... extras ) {
+	private NodeGenericExtensions internal_getExtensionInstance( final ExtensionTypes type, final NodeGeneric node,
+																	final Object... extras ) {
 		assert Q.nn( node );
+		
+		assert Z.equalsSimple_enforceNotNull( node.getStorage(), getStorage() ) : Q
+			.badCall( "the node was from a different storage, bad call" );
+		
 		final Class<? extends NodeGenericExtensions> cls = getClassForType( type );
 		// Constructor<? extends NodeGenericExtensions> constructor = null;
 		try {
@@ -140,22 +173,21 @@ public class L2Factory
 			// constructor = cls.getDeclaredConstructor( StorageGeneric.class, NodeGeneric.class );
 			final Constructor<?> constructor = ctors[0];
 			assert Q.nn( constructor );
-			int howMany = 2;
+			int howMany = 1;
 			if ( null != extras ) {
 				howMany += extras.length;
 			}
 			final Object[] params = new Object[howMany];
 			// XXX1309: constructor param order should be same; see other XXX1309
-			params[0] = getStorage();
-			params[1] = node;
+			// params[0] = getStorage();
+			params[0] = node;
 			if ( null != extras ) {
-				for ( int i = 2; i < params.length; i++ ) {
-					params[i] = extras[i - 2];
+				for ( int i = howMany; i < params.length; i++ ) {
+					params[i] = extras[i - howMany];
 				}
 			}
 			
-			assert Z.equalsSimple_enforceNotNull( node.getStorage(), params[0] ) : Q
-				.badCall( "the node was from a different storage, bad call" );
+			
 			
 			// problem here is that in multiple threads, one thread can shutdown the storage while I'm about to new instance
 			// here and thus concurrency will break something
@@ -169,29 +201,45 @@ public class L2Factory
 	}
 	
 	
-	public synchronized NodeGenericExtensions createNewExtensionInstance( final ExtensionTypes type,
-																			final NodeGeneric selfNode, final Object... extras ) {
-		assert Q.nn( selfNode );
-		final NodeGenericImpl impl = selfNode.getSelfImpl();
-		final NodeGenericExtensions existingInstance = getExtensionInstanceForNodeImpl( impl );
-		if ( null != existingInstance ) {
-			Q.badCall( "already existed, cannot exclusively create!" );
+	public NodeGenericExtensions createNewExtensionInstance( final ExtensionTypes type, final NodeGeneric selfNode,
+																final Object... extras ) {
+		assertStillValid();
+		L.tryLock( rl );
+		try {
+			assertStillValid();
+			
+			assert Q.nn( selfNode );
+			
+			final NodeGenericImpl impl = selfNode.getSelfImpl();
+			final NodeGenericExtensions existingInstance = internal_getExtensionInstanceForNodeImpl( impl );
+			if ( null != existingInstance ) {
+				Q.badCall( "already existed, cannot exclusively create!" );
+			}
+			final NodeGenericExtensions newInstance = internal_getExtensionInstance( type, selfNode, extras );
+			internal_putExtensionInstanceForNodeImpl( newInstance, impl );
+			assert Z
+				.equals_enforceExactSameClassTypesAndNotNull( internal_getExtensionInstanceForNodeImpl( impl ), newInstance );
+			return newInstance;
+		} finally {
+			rl.unlock();
 		}
-		final NodeGenericExtensions newInstance = getExtensionInstance( type, selfNode, extras );
-		putExtensionInstanceForNodeImpl( newInstance, impl );
-		assert Z.equals_enforceExactSameClassTypesAndNotNull( getExtensionInstanceForNodeImpl( impl ), newInstance );
-		return newInstance;
 	}
 	
 	
-	public synchronized NodeGenericExtensions getExistingExtensionInstance( final ExtensionTypes type,
-																			final NodeGeneric selfNode ) {
-		assert Q.nn( selfNode );
-		final NodeGenericExtensions existingInstance = internal_get_Extension( type, selfNode );
-		if ( null == existingInstance ) {
-			throw Q.badCall( "cannot exclusively get, it didn't already exist!" );
-		} else {
-			return existingInstance;
+	public NodeGenericExtensions getExistingExtensionInstance( final ExtensionTypes type, final NodeGeneric selfNode ) {
+		assertStillValid();
+		L.tryLock( rl );
+		try {
+			assertStillValid();
+			assert Q.nn( selfNode );
+			final NodeGenericExtensions existingInstance = internal_get_Extension( type, selfNode );
+			if ( null == existingInstance ) {
+				throw Q.badCall( "cannot exclusively get, it didn't already exist!" );
+			} else {
+				return existingInstance;
+			}
+		} finally {
+			rl.unlock();
 		}
 	}
 	
@@ -202,7 +250,7 @@ public class L2Factory
 		assert Q.nn( selfNode );
 		final Class<? extends NodeGenericExtensions> expectedExtensionClass = getClassForType( type );
 		final NodeGenericImpl impl = selfNode.getSelfImpl();
-		final NodeGenericExtensions existingInstance = getExtensionInstanceForNodeImpl( impl );
+		final NodeGenericExtensions existingInstance = internal_getExtensionInstanceForNodeImpl( impl );
 		if ( null != existingInstance ) {
 			assert Z.isSameOrDescendantOfClass_throwIfNull( existingInstance, expectedExtensionClass ) : Q
 				.badCall( "this node `"

@@ -140,6 +140,9 @@ public class Extension_Pointer_ToChild
 	@Override
 	public boolean isStillValid() {
 		final boolean ret = super.isStillValid() && isValidChild( internal_GetPointeeChild() );
+		// if ( !ret ) {
+		// return false;
+		// }
 		final int size = getSelf().size();
 		final boolean ret2 = ( size == 0 ) || ( size == 1 );
 		if ( !ret2 ) {
@@ -198,7 +201,6 @@ public class Extension_Pointer_ToChild
 		try {
 			termNode = iter.goFirst();
 			iter.success();
-			
 		} finally {
 			iter.finished();
 			// FIXME: I'd use finally but if goFirst and finished both throw, only the last throw will be seen ie. overwriting

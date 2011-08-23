@@ -124,7 +124,7 @@ public class ListOfNonNullObjects<WHICHOBJ>
 			obj = super.getObjectAt( pos );
 		} catch ( final Throwable nsee ) {
 			if ( Q.isBareException( nsee, NoSuchElementException.class ) ) {
-				// Q.markAsHandled( nsee );
+				Q.markAsHandled( nsee );
 				return null;
 			} else {
 				Q.rethrow( nsee );

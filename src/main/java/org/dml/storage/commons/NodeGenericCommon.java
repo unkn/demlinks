@@ -84,7 +84,7 @@ public abstract class NodeGenericCommon
 		getStorage().addListener( storageHook );
 		
 		// it may have been shutdown by parallel thread before hook was added so valid is still true
-		valid = storage.isStillValid();
+		// valid = storage.isStillValid();
 	}
 	
 	
@@ -134,18 +134,20 @@ public abstract class NodeGenericCommon
 	
 	@Override
 	public boolean isStillValid() {
-		return valid && internal_getStorage().isStillValid();
+		return valid;// && internal_getStorage().isStillValid();
 		// concurrency may make the above 2 values different, although they should be equal
 	}
 	
 	
 	@Override
 	public final void assertIsStillValid() {
-		assert isStillValid();
+		assert isStillValid() : Q.badCall( "you attempted to use this `" + this.getClass()
+			+ "` instance while it wasn't valid anylonger" );;
 	}
 	
 	
 	protected final StorageGeneric internal_getStorage() {
+		storage.assertIsStillValid();
 		return storage;
 	}
 	
