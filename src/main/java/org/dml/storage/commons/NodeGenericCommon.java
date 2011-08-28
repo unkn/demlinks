@@ -142,7 +142,7 @@ public abstract class NodeGenericCommon
 	@Override
 	public final void assertIsStillValid() {
 		assert isStillValid() : Q.badCall( "you attempted to use this `" + this.getClass()
-			+ "` instance while it wasn't valid anylonger" );;
+			+ "` instance while it wasn't valid anylonger" );
 	}
 	
 	
