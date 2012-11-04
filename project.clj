@@ -42,6 +42,7 @@
   :jvm-opts ["-Xmx1g" "-ea"]
   
   ;;project JVM
+  ;;wonder how this works on *nix boxes
   :java-cmd "c:\\program files\\java\\jdk1.7.0_09\\bin\\java.exe"
   
   ;;required lein version
