@@ -1,0 +1,13 @@
+reasons for coding style:
+
+1. symbol names:
+	not going to use:
+some-weird-multi-word-symbol
+	but instead
+some_weird_multi_word_symbol
+
+	because the latter can be double cliked (in eclipse/ccw) to be fully selected
+	instead of the former getting only one of those words selected.
+
+2. fail-fast system
+
