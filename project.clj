@@ -2,17 +2,71 @@
   :description "FIXME: write description"
   :url "http://example.com/FIXME"
   :license {:name "Eclipse Public License"
-            :url "http://www.eclipse.org/legal/epl-v10.html"}
+            :url "http://www.eclipse.org/legal/epl-v10.html"
+            :distribution :repo
+            :comments "same as Clojure"
+            }
   :dependencies [
                  [org.clojure/clojure "1.5.0-beta1"]
                  [com.datomic/datomic-free "0.8.3591"]
                  [midje "1.4.0"]
                  ]
   
+  ;; Emit warnings on all reflection calls.
   :warn-on-reflection true
   
+  ;; Set this in order to only use the :repositories you list below.
+;  :omit-default-repositories true
+  
+  ;; Override location of the local maven repository. Relative to project root.
+;  :local-repo "local-m2"
+  
+  ;; If you'd rather use a different directory structure, you can set these.
+  ;; Paths that contain "inputs" are vectors, "outputs" are strings.
+  :source-paths ["src" "src/main/clojure"]
+  :java-source-paths ["src/main/java"] ; Java source is stored separately.
+  :test-paths ["test" "src/test/clojure"]
+  :resource-paths ["src/main/resource"] ; non-code files included
+  
+  :native-path "src/native"        ; where to extract native dependencies  
+  :compile-path "target/classes"   ; for .class files
+  :target-path "target/"           ; where to place the project's jar file
+;  :jar-name "sample.jar"           ; name of the jar produced by 'lein jar'
+;  :uberjar-name "sample-standalone.jar" ; as above for uberjar
+  
+  ;; Options to pass to java compiler for java source,
+  ;; exactly the same as command line arguments to javac
+  :javac-options ["-target" "1.7" "-source" "1.7" "-Xlint:-options" "-g:source,lines" "-encoding" "utf8"]
+  
+  ;; You can set JVM-level options here.
+  :jvm-opts ["-Xmx1g" "-ea"]
+  
+  :java-cmd "c:\\program files\\java\\jdk1.7.0_09\\bin\\java.exe"
+  
+  :min-lein-version "2.0.0"
+  
+  ;; Leave the contents of :source-paths out of jars (for AOT projects)
+  :omit-source false
+  
+  
+    ;; Control the context in which your project code is evaluated.
+  ;; Defaults to :subprocess, but can also be :leiningen (for plugins)
+  ;; or :classloader (experimental) to avoid starting a subprocess.
+  :eval-in :subprocess
+    
+  ;; Enable bootclasspath optimization. This improves boot time but interferes
+  ;; with using things like pomegranate at runtime and using Clojure 1.2.
+  :bootclasspath true
+    
   :plugins [
             [lein-midje "2.0.0-SNAPSHOT"]
             ]
+  
+  :repl-options [
+                 :init (println "here we are in" *ns*)
+                 ;; If nREPL takes too long to load it may timeout,
+                 :timeout 10000
+                 :caught clj-stacktrace.repl/pst+
+                 ] 
   
   )
