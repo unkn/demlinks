@@ -41,8 +41,10 @@
   ;; You can set JVM-level options here.
   :jvm-opts ["-Xmx1g" "-ea"]
   
+  ;;project JVM
   :java-cmd "c:\\program files\\java\\jdk1.7.0_09\\bin\\java.exe"
   
+  ;;required lein version
   :min-lein-version "2.0.0"
   
   ;; Leave the contents of :source-paths out of jars (for AOT projects)
