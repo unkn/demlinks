@@ -1,11 +1,2 @@
 TODO:
 
-- update things in txt, see what's no longer relevant
-- try to "fix" bdb-native locking per page rather than per record, and see if this is really a stopper when doing nested txns
-
-- see if methods from Q like assumeSameFamilyClasses are dups of Z.'s methods and merge them in Z
-
-
-- check all asserts in the new source file and make sure they don't preceed methods which should always be called
-
-//- need to know when junit tests are done while using JUnitHooker
