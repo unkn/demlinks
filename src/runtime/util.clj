@@ -23,7 +23,7 @@
   `(try 
      (let [qsym# (quote ~zsym)]
            (if (not (symbol? qsym#)) ;ie. #() or (list 1 2 3)
-             (throw (RuntimeException. "do not pass a form - symbol expected")) 
+             (throw (new RuntimeException "do not pass a form - symbol expected")) 
              ;else it's a symbol ie. def (special), defn (macro), somesymbol (symbol), someundefinedsymbol (symbol)
              (let [thevar# (resolve qsym#)] 
                (if (nil? thevar#) 
@@ -43,7 +43,7 @@
                )
              )
            )
-     (catch ClassCastException cce# (throw (Exception. (str "a" cce#))))
+     (catch ClassCastException cce# (throw (new Exception (str "a" cce#))))
      )
   )
            
@@ -89,7 +89,7 @@ ie. does ,(eval (quote a)) which is same as just  ,a"
     ~sym-or-var
     (if (symbol? qsym#)
       (var ~sym-or-var)
-      (throw (RuntimeException. (str "you should pass a symbol or a var not `" qsym# "`")))
+      (throw (new RuntimeException (str "you should pass a symbol or a var not `" qsym# "`")))
       )
     )
   ))

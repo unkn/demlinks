@@ -17,7 +17,7 @@
 
 (declare transform-flatfiles-to-symlinks)
 
-(def repo-path (java.io.File. "s:\\workspace2012\\emacs-live\\"))
+(def repo-path (new java.io.File "s:\\workspace2012\\emacs-live\\"))
 
 (def branch "master")
 
@@ -106,7 +106,7 @@
          ^String full-path (.getAbsolutePath ffull)
          ^File fparent-folder (.getParentFile ffull)
          ^String parent-folder (.getParent ffull)
-         ^File ffull-sym-path (File. parent-folder the-real-file-or-dir)
+         ^File ffull-sym-path (new File parent-folder the-real-file-or-dir)
          ^String sym-to (.getAbsolutePath ffull-sym-path)
          isFile? (.isFile ffull-sym-path)
          isDir? (.isDirectory ffull-sym-path)
@@ -114,7 +114,7 @@
     (cond isFile?
           (do 
             (println "making a symlink to a file" full-path " -> " sym-to)
-            (throw (Exception. "not implemented"))
+            (throw (new Exception "not implemented"))
             )
           
           isDir?
@@ -225,7 +225,7 @@ which contains this line(basically without newlines):
           rel-symlink (get_all_symlinks_from_repo repo-path)
           ]
     (let [;TODO: move this as :let inside doseq
-          ^java.io.File abs-symlink (java.io.File. (str repo-path (java.io.File/separator) rel-symlink))
+          ^java.io.File abs-symlink (new java.io.File (str repo-path (java.io.File/separator) rel-symlink))
           ]
       (if (.isFile abs-symlink);when core.symlinks=false  all symlinks are just files after checkout
         (transform-flatfile-to-symlink abs-symlink)

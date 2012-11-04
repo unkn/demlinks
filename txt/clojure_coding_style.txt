@@ -11,3 +11,11 @@ some_weird_multi_word_symbol
 
 2. fail-fast system
 
+3. new-ing java classes should be:
+(new ClassName ctor_params)
+	instead of 
+(ClassName. ctor_params)
+
+	because it's clearer!
+	
+	
