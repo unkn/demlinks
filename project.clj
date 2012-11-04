@@ -8,7 +8,7 @@
             }
   :dependencies [
                  [org.clojure/clojure "1.5.0-beta1"]
-                 [com.datomic/datomic-free "0.8.3591"]
+                 [com.datomic/datomic-free "0.8.3595"]
                  [midje "1.4.0"]
                  ]
   
