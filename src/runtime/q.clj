@@ -55,5 +55,62 @@ got (re)loaded and/or compiled
   `'~(-> &form meta :line)
   )
  
+(defmacro assumedTrue
+  "will throw if any of the passed expressions evaluate to false or nil"
+  [& _] ;allows 0 or more params, but 0 params will throw and allow you to see the original line number
+  `(do 
+     (let [myname# '~(first &form) ;aka the name of this macro 
+           allp# '~(rest &form) ;all parameters passed to this macro
+           ]
+       (cond (<= (count allp#) 0)
+         (throw 
+           (AssertionError. 
+             (str "you passed no parameters to `" myname# "`")
+             )
+           )
+         )
+       (loop [allparams# allp#]
+         (let [
+               exactform# (first allparams#)
+               evalled# (eval exactform#)
+               ]
+           ;(prn "all params:" '~(rest &form))
+           (prn "exactform#:" exactform#)
+           (prn "evalled:" evalled# "rest count:" (count allparams#))
+           ;(prn "third:" evalled#)
+           ;true)
+           ;(prn "aT:" (quote ~x) f# eva#)
+           (when-not evalled#
+             (do
+               (throw 
+                 (AssertionError. 
+                   (str 
+                   myname# " failed "
+                   exactform#
+                   " was "
+                   evalled#
+                   )
+                   )
+                 )
+               )
+             )
+           (cond (<= (count allparams#) 1);aka no more
+             true
+             :else
+             (do 
+               (prn "COUNT:" (count allparams#) "rest:" (rest allparams#))
+               ( recur (rest allparams#))
+               )
+             )
+           )
+         )
+       )
+     )
+  ) ;macro end
+
+;TODO: make tests for this macro
+;(assumedTrue 1 2 3 (> 2 1) (= :a :a) (= 1 2))
+;(assumedTrue)
+
 
 (show_state)
