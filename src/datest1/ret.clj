@@ -13,34 +13,68 @@
     )
 
 (defmacro assumedTrue
-  [x & all]
+  "will throw if any of the passed expressions evaluate to false or nil"
+  [& all]
   `(do 
-;   (let [f# ~x eva# (eval f#)]
-     (prn '~(rest &form))
-  true)
-;      (prn f# eva#)
-;      (when-not eva#
-;        (do
-;          (throw 
-;            (AssertionError. 
-;              (str 
-;                "assumedTrue failed " ;
+     (let [myname# '~(first &form) allp# '~(rest &form)]
+       (cond (<= (count allp#) 0)
+         (throw 
+            (AssertionError. 
+              (str "you passed no parameters to `" myname# "`"
+                   )
+              )
+            )
+         )
+     (loop [allparams# allp#]
+   (let [
+         ;f# ~x eva# (eval f#) 
+         ;allparams# '~(rest &form) 
+         exactform# (first allparams#)
+         evalled# (eval exactform#)
+         ]
+     ;(prn "all params:" '~(rest &form))
+     (prn "exactform#:" exactform#)
+     (prn "evalled:" evalled# "rest count:" (count allparams#))
+     ;(prn "third:" evalled#)
+     ;true)
+      ;(prn "aT:" (quote ~x) f# eva#)
+      (when-not evalled#
+        (do
+          (throw 
+            (AssertionError. 
+              (str 
+                myname# " failed "
+                exactform#
+                " was "
+                evalled#
 ;                (prn-str 
-;                  f# 
-;                  "was" 
-;                  eva#)
-;                )
-;              )
-;            )
-;          )
-;        )
-;      (if ~(empty? all)
-;        true
-;        false
-;        (assumedTrue ~(first all) ~(rest all))
-;        )
-;     )
+;                  exactform#
+;                  "is" 
+;                  evalled#)
+                )
+              )
+            )
+          )
+        )
+;      ~(prn "teh:" all)
+;      true
+
+      (cond (<= (count allparams#) 1);aka no more ;~@(empty? all)
+        true
+        :else
+        (do 
+          (prn "COUNT:" (count allparams#) "rest:" (rest allparams#))
+          ( recur (rest allparams#))
+          ;'(assumedTrue (rest allparams#))
+          )
+        )
+     )
   )
+)))
+
+;TODO: make tests for this macro
+;(assumedTrue 1 2 3 (> 2 1) (= :a :a) (= 1 2))
+;(assumedTrue)
 
 ;(println *file*)
 
@@ -52,6 +86,7 @@
 (defn comparator_AZ_order [key1 key2]
   {:pre [ (assumedTrue (keyword? key1) (keyword? key2)) ]
    } 
+  (prn "comparatorAZ:" key1 key2 (keyword? key1) (keyword? key2)) 
   (compare key1 key2)
   )
 
@@ -83,6 +118,7 @@ ie. KEY_lines_count --> :lines_count"}
 (defn 
   ^:private
 add_new_key [quoted_key_name thekey]
+  ( println "add_new_key: " quoted_key_name thekey)
   (swap! -allkeys 
          assoc2
          quoted_key_name thekey
