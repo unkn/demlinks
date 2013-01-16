@@ -8,7 +8,7 @@
             }
   :dependencies [
                  [org.clojure/clojure "1.5.0-beta1"]
-                 [com.datomic/datomic-free "0.8.3595"]
+                 [com.datomic/datomic-free "0.8.3731"]
                  [midje "1.4.0"]
                  ]
   
@@ -23,12 +23,12 @@
   
   ;; If you'd rather use a different directory structure, you can set these.
   ;; Paths that contain "inputs" are vectors, "outputs" are strings.
-  :source-paths ["src" "src/main/clojure"]
-  :java-source-paths ["src/main/java"] ; Java source is stored separately.
-  :test-paths ["test" "src/test/clojure"]
-  :resource-paths ["src/main/resource"] ; non-code files included
-  
-  :native-path "src/native"        ; where to extract native dependencies  
+  ;this seems to have no effect in eclipse+ccw
+;  :source-paths ["src" "src/main/clojure"]
+;  :java-source-paths ["src/main/java"] ; Java source is stored separately.
+;  :test-paths ["test" "src/test/clojure"]
+;  :resource-paths ["src/main/resource"] ; non-code files included
+;  :native-path "src/native"        ; where to extract native dependencies  
   :compile-path "target/classes"   ; for .class files
   :target-path "target/"           ; where to place the project's jar file
 ;  :jar-name "sample.jar"           ; name of the jar produced by 'lein jar'
