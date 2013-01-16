@@ -58,29 +58,33 @@ got (re)loaded and/or compiled
 (defmacro assumedTrue
   "will throw if any of the passed expressions evaluate to false or nil"
   [& _] ;allows 0 or more params, but 0 params will throw and allow you to see the original line number
+  ;(pri "` lexical env: `" ~a)
   `(do 
      (let [myname# '~(first &form) ;aka the name of this macro 
-           allp# '~(rest &form) ;all parameters passed to this macro
+           allPassedForms# '~(rest &form) ;all parameters passed to this macro
            ]
-       (cond (<= (count allp#) 0)
+       (cond (<= (count allPassedForms#) 0)
          (throw 
            (AssertionError. 
              (str "you passed no parameters to `" myname# "`")
              )
            )
          )
-       (loop [allparams# allp#]
+       (loop [allparams# allPassedForms#]
+         ( do
+           
          (let [
                exactform# (first allparams#)
-               evalled# (eval exactform#)
+               evaluatedForm# (eval exactform#)
                ]
+           
            ;(prn "all params:" '~(rest &form))
            (prn "exactform#:" exactform#)
-           (prn "evalled:" evalled# "rest count:" (count allparams#))
-           ;(prn "third:" evalled#)
+           (prn "evalled:" evaluatedForm# "rest count:" (count allparams#))
+           ;(prn "third:" evaluatedForm#)
            ;true)
            ;(prn "aT:" (quote ~x) f# eva#)
-           (when-not evalled#
+           (when-not evaluatedForm#
              (do
                (throw 
                  (AssertionError. 
@@ -88,7 +92,7 @@ got (re)loaded and/or compiled
                    myname# " failed "
                    exactform#
                    " was "
-                   evalled#
+                   evaluatedForm#
                    )
                    )
                  )
@@ -103,7 +107,7 @@ got (re)loaded and/or compiled
                )
              )
            )
-         )
+         ))
        )
      )
   ) ;macro end
@@ -112,5 +116,19 @@ got (re)loaded and/or compiled
 ;(assumedTrue 1 2 3 (> 2 1) (= :a :a) (= 1 2))
 ;(assumedTrue)
 
+;(assert nil "msg")
+;(defn somef_ [a] (assumedTrue (= 3 a)))
+
+;thanks to gfredericks for this macro:
+(defmacro asserts [& forms] (cons 'do (for [f forms] (list `assert f))))
+
+
+;(asserts 1 2 3 nil )
+;(defn somef_ [a] (println ( macroexpand-1 '(asserts (= 1 1) (>= a 2) (= 3 a)))))
+(defn somef_ [a] {:pre [(= 3 a) (= 4 a)]} 1)
+
+;(somef_ 3)
+;(somef_ 2)
 
 (show_state)
+

@@ -7,7 +7,7 @@
             :comments "same as Clojure"
             }
   :dependencies [
-                 [org.clojure/clojure "1.5.0-beta1"]
+                 [org.clojure/clojure "1.5.0-RC2"]
                  [com.datomic/datomic-free "0.8.3731"]
                  [midje "1.4.0"]
                  ]
@@ -66,7 +66,7 @@
             ]
   
   :repl-options [
-                 :init (println "here we are in" *ns*)
+                 :init (do (require 'clojure.repl) (println "here we are in" *ns*))
                  ;; If nREPL takes too long to load it may timeout,
                  :timeout 10000
                  :caught clj-stacktrace.repl/pst+
