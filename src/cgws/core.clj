@@ -15,6 +15,8 @@
 
 ;;TODO: give meaningful names to the let variables
 
+(def xmxm java.io.File)
+
 (declare transform-flatfiles-to-symlinks)
 
 (def repo-path (new java.io.File "s:\\workspace2012\\emacs-live\\"))
@@ -200,7 +202,7 @@ which contains this line(basically without newlines):
 
 (defn transform-flatfile-to-symlink [flat-file]
   (let [
-        ^File ffull (.getAbsoluteFile (clojure.java.io/as-file flat-file))
+        ^xmxm ffull (.getAbsoluteFile (clojure.java.io/as-file flat-file))
         ^String full-path (.getAbsolutePath ffull)
         zmap (parse-flatfile-wannabe-symlink full-path)
         ;TODO: handle case when symlink is invalid
@@ -225,7 +227,7 @@ which contains this line(basically without newlines):
           rel-symlink (get_all_symlinks_from_repo repo-path)
           ]
     (let [;TODO: move this as :let inside doseq
-          ^java.io.File abs-symlink (new java.io.File (str repo-path (java.io.File/separator) rel-symlink))
+          ^xmxm abs-symlink (new xmxm (str repo-path (java.io.File/separator) rel-symlink))
           ]
       (if (.isFile abs-symlink);when core.symlinks=false  all symlinks are just files after checkout
         (transform-flatfile-to-symlink abs-symlink)
