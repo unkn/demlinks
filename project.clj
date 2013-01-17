@@ -9,7 +9,8 @@
   :dependencies [
                  [org.clojure/clojure "1.5.0-RC2"]
                  [com.datomic/datomic-free "0.8.3731"]
-                 [midje "1.4.0"]
+                 [midje "1.5-alpha7"]
+                 [org.clojure/tools.trace "0.7.5"]
                  ]
   
   ;; Emit warnings on all reflection calls.
@@ -62,7 +63,7 @@
   :bootclasspath true
     
   :plugins [
-            [lein-midje "2.0.0-SNAPSHOT"]
+            [lein-midje "3.0-alpha3"]
             ]
   
   :repl-options [

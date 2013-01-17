@@ -11,7 +11,7 @@
 (ns datest1.core-test
   (:use clojure.test)
   (:use [midje.sweet])
-  (:use datest1.util :reload-all)
+  (:use runtime.util :reload-all)
   )
 
 ;(fact (+ 2 2) => 5)
@@ -36,7 +36,10 @@
     )
   )
 
-(fact "something" (encast connrandomeseehtihtdahd210euowkjas) => (throws clojure.lang.Compiler$CompilerException))  
+(fact "something" 
+      (encast connrandomeseehtihtdahd210euowkjas) 
+      => (throws clojure.lang.Compiler$CompilerException)
+      )  
 
 (a-test)
 (a-test2)

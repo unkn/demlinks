@@ -13,6 +13,8 @@
 
 (defn ax [] (println 1))
 
+(def ^:dynamic *assumptions* (or *assert* true))
+
 (defn moo [] (get {:a 1} :a :not-found)
   )
 
@@ -55,62 +57,47 @@ got (re)loaded and/or compiled
   `'~(-> &form meta :line)
   )
  
-(defmacro assumedTrue
-  "will throw if any of the passed expressions evaluate to false or nil"
-  [& _] ;allows 0 or more params, but 0 params will throw and allow you to see the original line number
-  ;(pri "` lexical env: `" ~a)
-  `(do 
-     (let [myname# '~(first &form) ;aka the name of this macro 
-           allPassedForms# '~(rest &form) ;all parameters passed to this macro
-           ]
-       (cond (<= (count allPassedForms#) 0)
-         (throw 
-           (AssertionError. 
-             (str "you passed no parameters to `" myname# "`")
-             )
+
+(defmacro assumedTrue1
+"will throw if the passed expressions evaluates to false or nil"
+  [x]
+  (when *assumptions*
+    `(do
+       (let [evaled# ~x
+             form# '~x
+             self# '~(first &form)]
+         (prn evaled# form#)
+         (cond evaled#
+           true
+           :else
+           (throw (new AssertionError (str self# " failed: " (pr-str form#) " was " (pr-str evaled#))))
            )
          )
-       (loop [allparams# allPassedForms#]
-         ( do
-           
-         (let [
-               exactform# (first allparams#)
-               evaluatedForm# (eval exactform#)
-               ]
-           
-           ;(prn "all params:" '~(rest &form))
-           (prn "exactform#:" exactform#)
-           (prn "evalled:" evaluatedForm# "rest count:" (count allparams#))
-           ;(prn "third:" evaluatedForm#)
-           ;true)
-           ;(prn "aT:" (quote ~x) f# eva#)
-           (when-not evaluatedForm#
-             (do
-               (throw 
-                 (AssertionError. 
-                   (str 
-                   myname# " failed "
-                   exactform#
-                   " was "
-                   evaluatedForm#
-                   )
-                   )
-                 )
-               )
-             )
-           (cond (<= (count allparams#) 1);aka no more
-             true
-             :else
-             (do 
-               (prn "COUNT:" (count allparams#) "rest:" (rest allparams#))
-               ( recur (rest allparams#))
-               )
-             )
-           )
-         ))
        )
-     )
-  ) ;macro end
+    )
+  )
+
+(defmacro assumedTrue
+"will throw when the first of the passed expressions evaluates to false or nil"
+  [& allPassedForms]
+    (when *assumptions*
+      (cond (empty? allPassedForms)
+        (throw  (new AssertionError
+                     (let [selfName# (first &form) lineNo# (meta &form)]
+                       (str "you didn't pass any parameters to macro `"
+                            selfName#
+                            "` form begins at line: "
+                            lineNo# 
+                            )
+                       )
+                     )
+                )
+        :else
+        (cons 'do (for [oneForm allPassedForms] (list `assumedTrue1 oneForm)))
+        )
+      )
+    )
+
 
 ;TODO: make tests for this macro
 ;(assumedTrue 1 2 3 (> 2 1) (= :a :a) (= 1 2))
@@ -119,16 +106,31 @@ got (re)loaded and/or compiled
 ;(assert nil "msg")
 ;(defn somef_ [a] (assumedTrue (= 3 a)))
 
-;thanks to gfredericks for this macro:
-(defmacro asserts [& forms] (cons 'do (for [f forms] (list `assert f))))
 
+;(use 'clojure.tools.trace)
+;(assert1 (= 1 2))
+;(defn somef_ [a] {:pre [
+;                        (assumedTrue1 (= 3 a))
+;                        (assumedTrue1 (> 4 a))
+;                        ]}
+;  1)
 
-;(asserts 1 2 3 nil )
-;(defn somef_ [a] (println ( macroexpand-1 '(asserts (= 1 1) (>= a 2) (= 3 a)))))
-(defn somef_ [a] {:pre [(= 3 a) (= 4 a)]} 1)
+;(defn somother [a] (assert (> a 5)))
 
+;(defn somef_ [a] {:pre [
+;                        (somother a) 
+;                        (asserts (= 3 a) (> 4 a))
+;                        ]}
+;  1)
+
+;(assumedTrue nil)
+;(assumedTrue #(println "boo")) ;obv. returns non-nil function
+;(assumedTrue (#(println "boo"))) ;returns nil
 ;(somef_ 3)
-;(somef_ 2)
+;(somef_ 4)
+
+;(runtime.q/assumedTrue1)
+;(asserts (= 1 1) (= 1 2))
 
 (show_state)
 
