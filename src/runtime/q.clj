@@ -92,7 +92,7 @@ got (re)loaded and/or compiled
                        )
                      )
                 )
-        :else
+        :else ;thanks to gfredericks for this line:
         (cons 'do (for [oneForm allPassedForms] (list `assumedTrue1 oneForm)))
         )
       )
