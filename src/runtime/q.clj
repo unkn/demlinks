@@ -57,7 +57,7 @@ got (re)loaded and/or compiled
   `'~(-> &form meta :line)
   )
  
-
+;inspired from (source assert)
 (defmacro assumedTrue1
 "will throw if the passed expressions evaluates to false or nil"
   [x]
