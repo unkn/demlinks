@@ -21,10 +21,9 @@
 
 
 (defn comparator_AZ_order [key1 key2]
-  {:pre [ (q/assumedTrue (keyword? key1) (keyword? key2)) ]
-   } 
-  (prn "comparatorAZ:" key1 key2 (keyword? key1) (keyword? key2)) 
-  (compare key1 key2)
+  ;{:pre [ (q/assumedTrue (keyword? key1) (keyword? key2)) ]} 
+  ;(prn "comparatorAZ:" key1 key2 (keyword? key1) (keyword? key2)) 
+  (compare (str key1) (str key2))
   )
 
 (def 

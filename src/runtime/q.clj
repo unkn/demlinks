@@ -61,12 +61,12 @@ got (re)loaded and/or compiled
 (defmacro assumedTrue1
 "will throw if the passed expressions evaluates to false or nil"
   [x]
-  (when *assumptions*
+  (cond *assumptions*
     `(do
        (let [evaled# ~x
              form# '~x
              self# '~(first &form)]
-         (prn evaled# form#)
+         ;(prn evaled# form#)
          (cond evaled#
            true
            :else
@@ -74,13 +74,15 @@ got (re)loaded and/or compiled
            )
          )
        )
+    :else
+    `true
     )
   )
 
 (defmacro assumedTrue
 "will throw when the first of the passed expressions evaluates to false or nil"
   [& allPassedForms]
-    (when *assumptions*
+    (cond *assumptions*
       (cond (empty? allPassedForms)
         (throw  (new AssertionError
                      (let [selfName# (first &form) lineNo# (meta &form)]
@@ -92,9 +94,19 @@ got (re)loaded and/or compiled
                        )
                      )
                 )
-        :else ;thanks to gfredericks for this line:
-        (cons 'do (for [oneForm allPassedForms] (list `assumedTrue1 oneForm)))
+        :else ;thanks to gfredericks for inspiration of this now modified line:
+        (cons 'do (conj 
+                    (vec 
+                      (for [oneForm allPassedForms] 
+                        (list `assumedTrue1 oneForm)
+                        )
+                      )
+                    'true
+                    )
+              )
         )
+      :else
+      `true
       )
     )
 
