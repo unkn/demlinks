@@ -1,3 +1,5 @@
+(comment ;well midje loads this for some reason
+  
 (ns failedStuffAndThusUnused.macros)
 ;;here lay all the stuff which I wanted to do and use but I failed
 ;;either because I failed to implement them, or their implementation cannot be used
@@ -116,3 +118,8 @@ which would mainly happen when you defmacro thesamesymbol more than once
 ;(def xmxm java.io.File);well this blows
 ;and use it like ^xmxm or ^{:tag xmxm} => fail!
 
+
+
+
+
+);comment, have this be last line!

@@ -138,7 +138,10 @@
 (def xs (let [rnd (java.util.Random.)] 
   (long-array (repeatedly howmany #(.nextLong rnd)))))
 
+
+(comment 
+;commented out due to midje executing this
 (dotimes [i 10]
   (let [ys (long-array xs)]
     (time (last (qsort ys)))))
-
+)

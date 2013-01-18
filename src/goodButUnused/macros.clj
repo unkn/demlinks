@@ -1,3 +1,5 @@
+(comment ;well midje loads this for some reason
+  
 (ns goodButUnused.macros)
 ;;here lay all the stuff that are good but I'm not using them
 ;;either because I modified them into a better-suited-for-me version
@@ -67,3 +69,6 @@
         )
       )
     )
+
+
+);comment, have this be last line!
