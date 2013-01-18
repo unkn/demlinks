@@ -15,8 +15,6 @@
 
 ;;TODO: give meaningful names to the let variables
 
-;(def xmxm java.io.File);well this blows
-
 (declare transform-flatfiles-to-symlinks)
 
 (def repo-path (new java.io.File "s:\\workspace2012\\emacs-live\\"))

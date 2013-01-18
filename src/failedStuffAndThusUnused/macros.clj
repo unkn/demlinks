@@ -112,3 +112,7 @@ which would mainly happen when you defmacro thesamesymbol more than once
 (defn somef_ [a] (assumedTrue (= 3 a)))
 ;(somef_ 3)
 ;(somef_ 4)
+
+;(def xmxm java.io.File);well this blows
+;and use it like ^xmxm or ^{:tag xmxm} => fail!
+
