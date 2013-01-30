@@ -144,5 +144,15 @@ got (re)loaded and/or compiled
 ;(runtime.q/assumedTrue1)
 ;(asserts (= 1 1) (= 1 2))
 
+(defn pst-soe
+  "show last 100 stacktraceelements when stackoverflow occurred"
+  ([]
+    (pst-soe 100)
+  )
+  ([^long num]
+    (dorun (map #(println (.toString %)) (take-last num (.getStackTrace *e ))))
+    )
+)
+
 (show_state)
 

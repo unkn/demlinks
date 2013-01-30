@@ -8,9 +8,10 @@
             }
   :dependencies [
                  [org.clojure/clojure "1.5.0-RC2"]
-                 [com.datomic/datomic-free "0.8.3731"]
+                 [com.datomic/datomic-free "0.8.3767"]
                  [midje "1.5-alpha7"]
                  [org.clojure/tools.trace "0.7.5"]
+                 [prismatic/plumbing "0.0.2-SNAPSHOT"]
                  ]
   
   ;; Emit warnings on all reflection calls.

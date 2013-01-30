@@ -12,7 +12,6 @@
   (:refer-clojure :exclude [get])
     )
 
-
 ;(println *file*)
 
 (defn get [key ret_object]

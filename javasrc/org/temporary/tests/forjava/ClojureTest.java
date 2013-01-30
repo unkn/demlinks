@@ -45,7 +45,7 @@ public class ClojureTest
 {
 	
 	final static Namespace	NS_clojure_core	= RT.CLOJURE_NS;
-	final static String		clojure_core	= RT.CLOJURE_NS.getName().getName();
+	final static String		clojure_core	= NS_clojure_core.getName().getName();
 	final static boolean	replaceRoot		= true;
 	
 	
@@ -56,13 +56,21 @@ public class ClojureTest
 		final Symbol sym_wor = Symbol.intern( "*warn-on-reflection*" );
 		Var.intern( NS_clojure_core, sym_wor, RT.T, replaceRoot );
 		
+		final Symbol sym_ourNS = Symbol.intern( "nsrandom.test" );
+		// final Namespace ourNS = Namespace.findOrCreate( sym_ourNS );
 		
+		final Var in_ns = RT.var( "clojure.core", "in-ns" );
+		final Var refer = RT.var( "clojure.core", "refer" );
+		// in_ns.invoke( sym_ourNS );
+		// refer.invoke( NS_clojure_core.getName() );
 		// RT.var( RT.CLOJURE_NS.toString(), "something" );
 		
 		final Var prn = Var.find( Symbol.intern( clojure_core, "println" ) );
 		final Symbol cver = Symbol.intern( clojure_core, "*clojure-version*" );
 		final Var v = Var.find( cver );
 		prn.invoke( "the value:", v.deref(), "\nthe var:", v, "\nthe symbol:", cver );// thanks bbloom for deref()
+		// prn.invoke( "current namespace:", Var.find( Symbol.intern( NS_clojure_core.getMapping( "*ns*") ) ).deref() );
+		prn.invoke( "current namespace:", RT.CURRENT_NS.deref() );
 		// output:
 		// the value: {:major 1, :minor 5, :incremental 0, :qualifier RC2}
 		// the var: #'clojure.core/*clojure-version*
