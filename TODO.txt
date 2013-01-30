@@ -1,3 +1,0 @@
-TODO:
-
-* integrate something like quil or jme3 with datomic and clojure (preferably jme3 or 3D something)

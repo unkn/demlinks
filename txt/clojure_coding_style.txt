@@ -10,6 +10,9 @@ some_weird_multi_word_symbol
 	instead of the former getting only one of those words selected.
 
 2. fail-fast system
+basically, test for (both at compile time and runtime)errors and fail as soon as they're encountered
+ this should propagate the exception but most importantly I'd catch bugs as soon as they occur 
+ rather than later in different piece of code 
 
 3. new-ing java classes should be:
 (new ClassName ctor_params)

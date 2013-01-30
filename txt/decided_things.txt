@@ -1,7 +1,7 @@
 These are the things that are decided to be used, one way or another.
 Things that are depreciated or obsolete won't be here.
 
-TODO: update these, most are obsolete!
+TODO: FIXME: update these, most are obsolete! 30 jan 2013
 
 1. using bdb native 
 	

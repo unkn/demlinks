@@ -1,3 +1,5 @@
+FIXME: this is old stuff, doesn't currently apply! 30 Jan 2013
+ 
 * get http://msysgit.googlecode.com/files/Git-1.7.3.1-preview20101002.exe
 from http://code.google.com/p/msysgit/downloads/list
 use it to get all the source code:(read-only) [this url is not for developers]

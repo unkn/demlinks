@@ -1,0 +1,23 @@
+TODO:
+
+* integrate something like quil or jme3 with datomic and clojure (preferably jme3 or 3D something)
+
+  possibly start with 2D ? then evolve to 3D?
+  but just in case something fails with 3D it should fall back to 2D and if something fails with 2D should fall 
+   back to swing and if swing fails should fallback to console or something, but the point is, if an exception or a bunch
+   need to be shown/reported, they should be reported in this order on the thing that is still "alive" while the thing on 
+   top of it clearly failed. However the thing here is, some exception may be reported on ie. 2D but then after like under 
+   1 sec the 2D may fail and that exception is lost(imagine 2D screen would close upon fail) and the swing part would report
+   the reason why 2D failed, but not the reason why 3D failed(which was reported in 2D), so must find a way to maybe carry
+   over the exceptions to the lower level even though they might've been displayed on the higher level, however, we don't
+   want the exceptions to be duplicated on all lower levels(swing+console in this case) while the 
+   higher level(2D in this case) is still "alive".
+  So it would be really good to can upgrade some instance of a class(or something) from console, to swing, to 2D, to 3D
+   such that if any of the latter upgrades fail, it would fall back to previous.(I remember I couldn't do it in java)
+   
+  
+  
+  
+* whenever is worth it, try using travis http://travis-ci.org/ to automate building demlinks
+	check this: https://travis-ci.org/technomancy/leiningen
+	
