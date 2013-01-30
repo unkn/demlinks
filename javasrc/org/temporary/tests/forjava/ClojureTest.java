@@ -1,6 +1,6 @@
 /**
  * 
- * Copyright (c) 2005-2011, AtKaaZ
+ * Copyright (c) 2005-2013, AtKaaZ
  * All rights reserved.
  * this file is part of DemLinks
  * File created on Jan 18, 2013 4:54:44 AM
