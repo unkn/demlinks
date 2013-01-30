@@ -1,0 +1,3 @@
+
+https://en.wikipedia.org/wiki/Abstraction_principle_%28computer_programming%29
+https://en.wikipedia.org/wiki/Fail-fast
