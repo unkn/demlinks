@@ -16,8 +16,25 @@ TODO:
    such that if any of the latter upgrades fail, it would fall back to previous.(I remember I couldn't do it in java)
    
   
-  
+* using datomic eventually, but maybe it's not a bad idea to use some text-base database, such that maybe we can use it
+to store lists such as this TODO list, so they're easily uploadable on github as opposed to being in a different place, for 
+example, I'd use trello for this, but it's in a different place than github (even tho there is some automation that can be
+done between the two). So maybe start small(er) and have something simple like in swing lists and moving things around and
+have them persist on some text files that are playing nice with git ie. one element per line.
+ Actually if I think about it here, starting from a flat-file database and upgrading (at runtime obviously) to a db like 
+datomic, while supporting fails so that for example, I start by adding some stuff to flat-file db then datomic stuff gets 
+inited and all that stuff I added should also be added to datomic db so that each would be independent, hmm, and if datomic
+crashes, then all that was added to datomic would be added to the flat-text file... but in fact this would be different than
+the point above (the prev star * with the exceptions), because I'd literally have to duplicate(replicate) all writes to both
+flat-file and datomic, in order to be sure this fall-back would work okay in case something excepts in my datomic code 
+implementation.
   
 * whenever is worth it, try using travis http://travis-ci.org/ to automate building demlinks
 	check this: https://travis-ci.org/technomancy/leiningen
 	
+	
+* investigate how to use this idea of watchers on refs in clojure to be able to do something like dependencies early on
+
+* check out this Date and defmethod thing here: http://briancarper.net/blog/456/
+
+
