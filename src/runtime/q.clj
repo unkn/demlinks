@@ -57,20 +57,42 @@ got (re)loaded and/or compiled
   `'~(-> &form meta :line)
   )
  
+
+
 ;inspired from (source assert)
-(defmacro assumedTrue1
-"will throw if the passed expressions evaluates to false or nil"
-  [x]
+(defmacro assumedPred1
+"
+will throw if the passed expression does not satisfy predicate
+ie. if pred is true? and (true? x) is false or nil it will throw
+"
+  [pred x]
   (cond *assumptions*
     `(do
-       (let [evaled# ~x
+       (let [pred# ~pred
+             predQuote# (quote ~pred)
+             evaled# ~x
              form# '~x
-             self# '~(first &form)]
-         ;(prn evaled# form#)
-         (cond evaled#
+             self# '~(first &form)
+             yield# (pred# evaled#)]
+         (cond yield#
            true
            :else
-           (throw (new AssertionError (str self# " failed: " (pr-str form#) " was " (pr-str evaled#))))
+           (throw 
+             (new AssertionError 
+                  (str self# 
+                       " failed, the following wasn't truthy: `(" 
+                       predQuote# 
+                       " "
+                       (pr-str form#) 
+                       ")` was `("
+                       predQuote#
+                       " "
+                       (pr-str evaled#)
+                       ")` which yielded `"
+                       yield# "`"
+                       )
+                  )
+             )
            )
          )
        )
@@ -79,17 +101,17 @@ got (re)loaded and/or compiled
     )
   )
 
-(defmacro assumedTrue
+(defmacro assumedPred
 "will throw when the first of the passed expressions evaluates to false or nil"
-  [& allPassedForms]
+  [pred & allPassedForms]
     (cond *assumptions*
       (cond (empty? allPassedForms)
         (throw  (new AssertionError
                      (let [selfName# (first &form) lineNo# (meta &form)]
-                       (str "you didn't pass any parameters to macro `"
+                       (str "you didn't enough parameters to macro `"
                             selfName#
-                            "` form begins at line: "
-                            lineNo# 
+                            "` form begins at line: `"
+                            lineNo# "`. You passed: " &form 
                             )
                        )
                      )
@@ -98,7 +120,7 @@ got (re)loaded and/or compiled
         (cons 'do (conj 
                     (vec 
                       (for [oneForm allPassedForms] 
-                        (list `assumedTrue1 oneForm)
+                        (list `assumedPred1 pred oneForm)
                         )
                       )
                     'true
@@ -109,6 +131,78 @@ got (re)loaded and/or compiled
       `true
       )
     )
+
+(defmacro throwIfNil 
+"
+to be used inside macros, 
+pass &form as first param,
+pass rest as second param , rest is [ & rest ] in macro's definition
+"
+  [caller & param]
+  `(let [caller# ~caller params# ~@param ] 
+     ;(println caller# "e" params#)
+     (cond (or (nil? params#) (empty? params#))
+       (throw  
+         (new AssertionError
+              (let [
+                    selfName# 
+                    ;'~(first &form)
+                    (first caller#)
+                    
+                    lineNo# 
+                    ;'~(meta &form)
+                    (meta caller#)
+                    ]
+                (str "you didn't pass any parameters to macro `"
+                     selfName#
+                  "` form begins at line: "
+                  lineNo# 
+                  )
+                )
+              )
+         )
+       )
+     )
+  )
+
+(defn truthy? [x] (and (not (nil? x)) (not (false? x))) )
+
+(defmacro assumedTruthy
+  [ & allPassedForms ]
+  (throwIfNil &form allPassedForms)
+  `(assumedPred truthy? ~@allPassedForms)
+  )
+
+(defmacro assumedTrue
+  [ & allPassedForms ]
+  (throwIfNil &form allPassedForms)
+  `(assumedPred true? ~@allPassedForms)
+  )
+
+(defmacro assumedFalse
+  [ & allPassedForms ]
+  ;(prn allPassedForms)
+  (throwIfNil &form allPassedForms)
+  ;(defn a [] allPassedForms)
+  `(assumedPred false? ~@allPassedForms)
+  )
+
+; (assumedFalse)
+;(assumedFalse undefinesymbolehad98230jd0q3iw)
+
+(defmacro assumedNil
+  [ & allPassedForms ]
+  (throwIfNil &form allPassedForms)
+  `(assumedPred nil? ~@allPassedForms)
+  )
+
+(defn notnil? [x] (not (nil? x)) )
+
+(defmacro assumedNotNil
+  [ & allPassedForms ]
+  (throwIfNil &form allPassedForms)
+  `(assumedPred notnil? ~@allPassedForms)
+  )
 
 
 ;TODO: make tests for this macro

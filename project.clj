@@ -7,11 +7,11 @@
             :comments "same as Clojure"
             }
   :dependencies [
-                 [org.clojure/clojure "1.5.0-RC2"]
+                 [org.clojure/clojure "1.5.0-RC4"]
                  [com.datomic/datomic-free "0.8.3767"]
                  [midje "1.5-alpha7"]
                  [org.clojure/tools.trace "0.7.5"]
-                 [prismatic/plumbing "0.0.2-SNAPSHOT"]
+                 [prismatic/plumbing "0.0.1"]
                  ]
   
   ;; Emit warnings on all reflection calls.

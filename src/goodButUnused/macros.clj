@@ -80,4 +80,59 @@
     )
 
 
+;good but not generic enough: (replaced by assumedPred)
+
+;inspired from (source assert)
+(defmacro assumedTrue1
+"will throw if the passed expressions evaluates to false or nil"
+  [x]
+  (cond *assumptions*
+    `(do
+       (let [evaled# ~x
+             form# '~x
+             self# '~(first &form)]
+         ;(prn evaled# form#)
+         (cond evaled#
+           true
+           :else
+           (throw (new AssertionError (str self# " failed: " (pr-str form#) " was " (pr-str evaled#))))
+           )
+         )
+       )
+    :else
+    `true
+    )
+  )
+
+(defmacro assumedTrue
+"will throw when the first of the passed expressions evaluates to false or nil"
+  [& allPassedForms]
+    (cond *assumptions*
+      (cond (empty? allPassedForms)
+        (throw  (new AssertionError
+                     (let [selfName# (first &form) lineNo# (meta &form)]
+                       (str "you didn't pass any parameters to macro `"
+                            selfName#
+                            "` form begins at line: "
+                            lineNo# 
+                            )
+                       )
+                     )
+                )
+        :else ;thanks to gfredericks for inspiration of this now modified line:
+        (cons 'do (conj 
+                    (vec 
+                      (for [oneForm allPassedForms] 
+                        (list `assumedTrue1 oneForm)
+                        )
+                      )
+                    'true
+                    )
+              )
+        )
+      :else
+      `true
+      )
+    )
+
 );comment, have this be last line!
