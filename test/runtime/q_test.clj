@@ -39,9 +39,9 @@
 ;  ;(let [f0rm ])
 ;  )
 
-(deftest t1_assumedTrue
-  (is (true? (assumedTrue (= 1 1))))
-  (is (true? (assumedTrue (= 1 1) (= 2 2))))
+;(deftest t1_assumedTrue
+;  (is (true? (assumedTrue (= 1 1))))
+;  (is (true? (assumedTrue (= 1 1) (= 2 2))))
 
 
 ;(fact "assumedTrue returns true" 
@@ -49,15 +49,15 @@
 ;      (assumedTrue (= 1 1) (= 2 2)) => true
 ;      )
 
-(is (thrown? exceptionThrownBy_assumedTrue (assumedTrue (= 1 2)) )) 
-(is (thrown? exceptionThrownBy_assumedTrue (assumedTrue (= 1 1) (= 2 1)) ))
+;(is (thrown? exceptionThrownBy_assumedTrue (assumedTrue (= 1 2)) )) 
+;(is (thrown? exceptionThrownBy_assumedTrue (assumedTrue (= 1 1) (= 2 1)) ))
 
 ;(fact "assumedTrue throws when first encountered expr. is false" 
 ;      (assumedTrue (= 1 2)) => (throws exceptionThrownBy_assumedTrue) 
 ;      (assumedTrue (= 1 1) (= 2 1)) => (throws exceptionThrownBy_assumedTrue)
 ;      )
 
-)
+;)
 
 ;(fact "assumedTrue doesn't evaluate more than once" 
 ;      (assumedTrue (= 1 2)) => (throws exceptionThrownBy_assumedTrue) 

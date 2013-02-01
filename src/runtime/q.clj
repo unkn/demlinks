@@ -8,8 +8,10 @@
 ; You must not remove this notice, or any other, from this software.
 
 
-(ns runtime.q)
+(ns runtime.q
+  (:use runtime.testengine) 
 ;(:use [runtime.q :as q] :reload-all)
+  )
 
 ;(defn ax [] (println 1))
 
@@ -58,7 +60,37 @@ got (re)loaded and/or compiled
   )
  
 
+(defmacro thro
+"
+(thro RuntimeException \"concatenaed \" \"message\")
+"
+  [ex & restt]
+  ;(class? java.lang.String)
+  `(do 
+     (when-not 
+       (and
+         (instance? java.lang.Class ~ex)
+         (contains? 
+           (supers ~ex) 
+           java.lang.Throwable
+           )
+         )
+       (throw 
+         (new RuntimeException 
+              (str "you must pass a class to `" '~(first &form)
+                   "` at " '~(meta &form)
+                   )
+              )
+         )
+       )
+     (throw (new ~ex (str ~@restt)))
+     )
+  )
 
+;(thro 2)
+
+(def exceptionThrownBy_assumedPred AssertionError)
+;(defn exceptionThrownBy_assumedPred_fn [] exceptionThrownBy_assumedPred)
 ;inspired from (source assert)
 (defmacro assumedPred1
 "
@@ -77,22 +109,20 @@ ie. if pred is true? and (true? x) is false or nil it will throw
          (cond yield#
            true
            :else
-           (throw 
-             (new AssertionError 
-                  (str self# 
-                       " failed, the following wasn't truthy: `(" 
-                       predQuote# 
-                       " "
-                       (pr-str form#) 
-                       ")` was `("
-                       predQuote#
-                       " "
+           (thro exceptionThrownBy_assumedPred 
+                 (str self# 
+                      " failed, the following wasn't truthy: `(" 
+                      predQuote# 
+                      " "
+                      (pr-str form#) 
+                      ")` was `("
+                      predQuote#
+                      " "
                        (pr-str evaled#)
                        ")` which yielded `"
                        yield# "`"
                        )
-                  )
-             )
+                 )
            )
          )
        )
@@ -174,6 +204,8 @@ ie. (defmacro something [param1 p2 & restparams] ... throwIfNil &form restparams
   `(assumedPred truthy? ~@allPassedForms)
   )
 
+(def exceptionThrownBy_assumedTrue exceptionThrownBy_assumedPred)
+
 (with-test
   (defmacro assumedTrue
     [ & allPassedForms ]
@@ -182,6 +214,8 @@ ie. (defmacro something [param1 p2 & restparams] ... throwIfNil &form restparams
     )
   (is (true? (assumedTrue (= 1 1))))
   (is (true? (assumedTrue (= 1 1) (= 2 2))))
+  (is (thrown? exceptionThrownBy_assumedTrue (assumedTrue (= 1 2)) )) 
+  (is (thrown? exceptionThrownBy_assumedTrue (assumedTrue (= 1 1) (= 2 1)) ))
 )
 
 (defmacro assumedFalse

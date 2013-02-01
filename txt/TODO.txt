@@ -1,5 +1,7 @@
 TODO:
 
+* must make a clojure editor (in jme3/3d or quil/2d) 'cause eclipse+ccw is not good enough, tho obviously what I wanna do here with demlinks will serve as editor anyway.
+
 * integrate something like quil or jme3 with datomic and clojure (preferably jme3 or 3D something)
 
   possibly start with 2D ? then evolve to 3D?
