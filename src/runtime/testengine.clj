@@ -6,18 +6,12 @@
   [cls & restt]
   (list 
     `is 
-    (let [tocls (eval cls)
-          a 'thrown?] 
-;      (apply 
-;        #
-`(
-           ;list 
-           ~a 
-           ~tocls
-
-        ~@restt
-        )
-;        )
+    (let [tocls (eval cls)] 
+      `(
+         ~'thrown? ;thanks Anderkent for unquote-quote here
+         ~tocls
+         ~@restt
+         )
       )
     )
   )
