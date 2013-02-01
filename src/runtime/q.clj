@@ -11,7 +11,7 @@
 (ns runtime.q)
 ;(:use [runtime.q :as q] :reload-all)
 
-(defn ax [] (println 1))
+;(defn ax [] (println 1))
 
 (def ^:dynamic *assumptions* (or *assert* true))
 
@@ -110,7 +110,7 @@ ie. if pred is true? and (true? x) is false or nil it will throw
                      (let [selfName# (first &form) lineNo# (meta &form)]
                        (str "you didn't enough parameters to macro `"
                             selfName#
-                            "` form begins at line: `"
+                            "` The form begins at line: `"
                             lineNo# "`. You passed: " &form 
                             )
                        )
@@ -137,6 +137,7 @@ ie. if pred is true? and (true? x) is false or nil it will throw
 to be used inside macros, 
 pass &form as first param,
 pass rest as second param , rest is [ & rest ] in macro's definition
+ie. (defmacro something [param1 p2 & restparams] ... throwIfNil &form restparams)
 "
   [caller & param]
   `(let [caller# ~caller params# ~@param ] 
@@ -173,17 +174,20 @@ pass rest as second param , rest is [ & rest ] in macro's definition
   `(assumedPred truthy? ~@allPassedForms)
   )
 
-(defmacro assumedTrue
-  [ & allPassedForms ]
-  (throwIfNil &form allPassedForms)
-  `(assumedPred true? ~@allPassedForms)
-  )
+(with-test
+  (defmacro assumedTrue
+    [ & allPassedForms ]
+    (throwIfNil &form allPassedForms)
+    `(assumedPred true? ~@allPassedForms)
+    )
+  (is (true? (assumedTrue (= 1 1))))
+  (is (true? (assumedTrue (= 1 1) (= 2 2))))
+)
 
 (defmacro assumedFalse
   [ & allPassedForms ]
   ;(prn allPassedForms)
   (throwIfNil &form allPassedForms)
-  ;(defn a [] allPassedForms)
   `(assumedPred false? ~@allPassedForms)
   )
 

@@ -8,13 +8,24 @@
 ; You must not remove this notice, or any other, from this software.
 
 (ns runtime.util-test
-  (:use [midje.sweet])
+  ;(:use [midje.sweet])
+  (:use clojure.test)
   ;(:use runtime.q :reload-all)
   (:use runtime.util :reload-all)
   )
 
-(fact "something" 
-      (encast connrandomeseehtihtdahd210euowkjas) 
-      => (throws clojure.lang.Compiler$CompilerException)
-      ) 
+;(fact "something" 
+;      (encast connrandomeseehtihtdahd210euowkjas) 
+;      => (throws clojure.lang.Compiler$CompilerException)
+;      ) 
 
+(deftest t1
+  
+(is (thrown? ArithmeticException (/ 1 0)))
+
+(is (thrown? clojure.lang.Compiler$CompilerException
+             (encast connrandomeseehtihtdahd210euowkjas)))
+
+)
+
+(run-tests)

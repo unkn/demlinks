@@ -1,5 +1,5 @@
-(defproject demlinks "0.1.0-SNAPSHOT"
-  :description "FIXME: write description"
+(defproject demlinks "0.0.1-SNAPSHOT"
+  :description "FIXME: [planning] write description"
   :url "http://example.com/FIXME"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"
@@ -9,7 +9,7 @@
   :dependencies [
                  [org.clojure/clojure "1.5.0-RC4"]
                  [com.datomic/datomic-free "0.8.3767"]
-                 [midje "1.5-alpha7"]
+                 ;[midje "1.5-alpha7"];don't wanna use this because it compiles all .clj files even if it doesn't need to
                  [org.clojure/tools.trace "0.7.5"]
                  [prismatic/plumbing "0.0.1"]
                  ]
@@ -64,7 +64,7 @@
   :bootclasspath true
     
   :plugins [
-            [lein-midje "3.0-alpha3"]
+            ;[lein-midje "3.0-alpha3"];don't wanna use this because it compiles all .clj files even if it doesn't need to
             ]
   
   :repl-options [

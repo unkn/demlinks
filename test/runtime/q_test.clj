@@ -8,7 +8,8 @@
 ; You must not remove this notice, or any other, from this software.
 
 (ns runtime.q_test
-  (:use [midje.sweet])
+;  (:use [midje.sweet])
+  (:use clojure.test)
   (:use runtime.q :reload-all)
   ;(:use runtime.util :reload-all)
   )
@@ -18,20 +19,50 @@
 
 (binding [*assert* true *assumptions* true] ;TODO: try all combinations of these set, to true/false/nil
 
-(fact "assumedTrue returns true" 
-      (assumedTrue (= 1 1)) => truthy
-      (assumedTrue (= 1 1) (= 2 2)) => truthy
-      )
+;  (clojure.test/is 
+;    (thrown? ;exceptionThrownBy_assumedTrue
+;      clojure.lang.Compiler$CompilerException 
+;    (assumedTrue)))
+  
+;  (fact ""
+;        (assumedTrue) => throws exceptionThrownBy_assumedTrue)
+;        )
 
-(fact "assumedTrue throws when first encountered expr. is false" 
-      (assumedTrue (= 1 2)) => (throws exceptionThrownBy_assumedTrue) 
-      (assumedTrue (= 1 1) (= 2 1)) => (throws exceptionThrownBy_assumedTrue)
-      )
+;(def =>)
+;(def throws 'thrown?)
+;(def provided)
+;
+;(defmacro fact
+;  [descr & checks]
+;  (is (= java.lang.String (class descr)))
+;  `(println ~@checks)
+;  ;(let [f0rm ])
+;  )
 
-(fact "assumedTrue doesn't evaluate more than once" 
-      (assumedTrue (= 1 2)) => (throws exceptionThrownBy_assumedTrue) 
-      (assumedTrue (= 1 1) (= 2 1)) => (throws exceptionThrownBy_assumedTrue)
-      )
+(deftest t1_assumedTrue
+  (is (true? (assumedTrue (= 1 1))))
+  (is (true? (assumedTrue (= 1 1) (= 2 2))))
+
+
+;(fact "assumedTrue returns true" 
+;      (assumedTrue (= 1 1)) => true
+;      (assumedTrue (= 1 1) (= 2 2)) => true
+;      )
+
+(is (thrown? exceptionThrownBy_assumedTrue (assumedTrue (= 1 2)) )) 
+(is (thrown? exceptionThrownBy_assumedTrue (assumedTrue (= 1 1) (= 2 1)) ))
+
+;(fact "assumedTrue throws when first encountered expr. is false" 
+;      (assumedTrue (= 1 2)) => (throws exceptionThrownBy_assumedTrue) 
+;      (assumedTrue (= 1 1) (= 2 1)) => (throws exceptionThrownBy_assumedTrue)
+;      )
+
+)
+
+;(fact "assumedTrue doesn't evaluate more than once" 
+;      (assumedTrue (= 1 2)) => (throws exceptionThrownBy_assumedTrue) 
+;      (assumedTrue (= 1 1) (= 2 1)) => (throws exceptionThrownBy_assumedTrue)
+;      )
 
 ;(def oneAtom (atom false))
 ;(defn scInit [] (reset! oneAtom false))
