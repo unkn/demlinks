@@ -10,7 +10,7 @@
 
 (ns runtime.q
   ;(:use runtime.testengine :reload-all)
-  (:refer clojure.test :exclude [deftest is])
+  (:refer clojure.test );can actually avoid this due to new definition of defalias; :exclude [deftest is])
   (:require flatland.useful.ns)
   ;(:use clojure.tools.trace) 
   ;(:use runtime.clazzez :reload-all) 
@@ -20,15 +20,34 @@
 (defmacro defalias 
   [dst src]
   `(do 
-     (ns-unalias *ns* '~dst)
+     (ns-unmap *ns* '~dst) ;this should help with REPL while reloading, to avoid some error when already defined due to :use when :exclude didn't contain the newly defined one
      (flatland.useful.ns/defalias ~dst ~src)
      )
+  )
+
+(deftest test_defalias ;this test doesn't seem to actually work as I'd wanted
+  (try
+    (let [
+          a (defalias pr clojure.core/pr) ;before
+          expect (eval '(var runtime.q/pr))
+          ]
+      (is (= a expect ))
+      )
+    (catch Throwable e 
+      (do
+        (ns-unmap *ns* pr) ;after
+        (throw e)
+        )
+      )
+    )
   )
 
 ;(def deftest clojure.test/deftest)
 ;(ns-unalias *ns* is)
 (defalias deftest clojure.test/deftest)
 (defalias is clojure.test/is)
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;(defn ax [] (println 1))
