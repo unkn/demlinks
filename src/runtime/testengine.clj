@@ -3,6 +3,10 @@
   (:refer clojure.test :exclude [deftest is])
   ;(:use flatland.useful.ns); :only defalias)
   (:require flatland.useful.ns); :only defalias)
+  (:use [runtime.clazzez :as c] :reload)
+  ;(:require runtime.q)
+  ;(:refer runtime.q :only [getAsClass])
+  ;(:use [runtime.q :as q]); :reload)
   ;(:refer clojure.test :only [deftest])
   )
 
@@ -39,17 +43,11 @@
 
 
 
-(deftest test_getAsClass
-  (is (= java.lang.RuntimeException (getAsClass a)))
-  (is (= java.lang.RuntimeException (getAsClass RuntimeException)))
-  (is (= java.lang.RuntimeException (getAsClass java.lang.RuntimeException)))
-  (isnot (= 'java.lang.RuntimeException (getAsClass a)))
-  )
 
 (defmacro isthrown?
     [cls & restt]
     (let [tocls 
-          (getAsClass cls)
+          (c/getAsClass cls)
           ;(symbol (str (eval cls)))
           ;tocls2 (read-string (str "(quote " (eval cls) ")")) 
           ;_ (prn tocls2)

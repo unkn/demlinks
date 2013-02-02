@@ -11,6 +11,7 @@
 (ns runtime.q
   (:use runtime.testengine :reload-all) 
   (:use clojure.tools.trace) 
+  (:use runtime.clazzez :reload-all) 
 ;(:use [runtime.q :as q] :reload-all)
   )
 
@@ -60,35 +61,7 @@ got (re)loaded and/or compiled
   `'~(-> &form meta :line)
   )
  
-(defmacro getAsClass 
-"
-=> (getAsClass a)
-java.lang.RuntimeException
-=> (getAsClass RuntimeException)
-java.lang.RuntimeException
-=> (getAsClass 'RuntimeException)
-java.lang.RuntimeException
-"
-  [sym]
-  `(let [cls# (eval ~sym)] 
-     (cond (class? cls#)
-       cls#
-       :else
-       (throw 
-         (new AssertionError 
-              (str "you must pass a class to `" '~(first &form)
-                   "` at " '~(meta &form)
-                   )
-              )
-         )
-       )
-     )
-  )
 
-(defmacro newClass
-  [cls & restt]
-  ...
-  )
 
 (defmacro thro
 "

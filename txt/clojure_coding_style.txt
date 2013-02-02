@@ -56,4 +56,5 @@ well actually this was worked-aroung by:
   )
 ///////////////////
   
-   
+6. use as less namespaces as you can, to avoid having to go thru hoops when cyclic deps happen
+
