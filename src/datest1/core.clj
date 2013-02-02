@@ -9,7 +9,7 @@
 
 (ns datest1.core
   (:use [datomic.api :only (q db) :as d])
-  (:use [runtime.util :as u] :reload-all)
+  (:use [runtime.q :as q] :reload-all)
 ;  (:require [clojure.pprint :as pprint])
   )
 
@@ -50,4 +50,6 @@
 
 (println (sym-info conn)) ; :bound
 
+
+(q/show_state)
 

@@ -33,10 +33,11 @@
           ]
       (is (= a expect ))
       )
-    (catch Throwable e 
+    (catch Throwable e (throw e)) 
+    (finally ;Throwable e 
       (do
-        (ns-unmap *ns* pr) ;after
-        (throw e)
+        (ns-unmap *ns* 'pr) ;after
+        ;(throw e)
         )
       )
     )
@@ -450,5 +451,147 @@ ie. (defmacro something [param1 p2 & restparams] ... throwIfNil &form restparams
     )
 )
 
+
+(defmacro sym-state [zsym] ;;FIXME:
+  ;there are like 6 cases:
+  ;1. zsym is undefined symbol, returns :undefined
+  ;2. zsym is defined but unbound var, returns :unbound
+  ;3. zsym is defined and bound, returns :bound
+  ;4. zsym is an expression ie. #() or (list 1 2 3), throws exception
+  ;5. zsym is a special symbol ie. def   test this via (special-symbol? 'def) , returns :special
+  ;6. zsym is a macro ie. defn, returns :macro
+  `(try 
+     (let [qsym# (quote ~zsym)]
+           (if (not (symbol? qsym#)) ;ie. #() or (list 1 2 3)
+             (throw (new RuntimeException "do not pass a form - symbol expected")) 
+             ;else it's a symbol ie. def (special), defn (macro), somesymbol (symbol), someundefinedsymbol (symbol)
+             (let [thevar# (resolve qsym#)] 
+               (if (nil? thevar#) 
+                 (if (special-symbol? qsym#)
+                   :special
+                   :undefined
+                   )
+                 (if (bound? thevar#)
+;                   [:bound qsym#]
+                   (if (macro-var? thevar#)
+                     :macro
+                     :bound
+                     )
+                   :unbound
+                   ) 
+                 )
+               )
+             )
+           )
+     (catch ClassCastException cce# (throw (new Exception (str "a" cce#))))
+     )
+  )
+
+
+(deftest a-test
+  (testing "FIXME:, I fail."
+;               (is (= 0 1))
+;           (sym-status +)
+;           (sym-status #())
+;           (sym-status connrandomeseehtihtdahd210euowkjas)
+    )
+)
+
+(defmacro encast 
+  "used to wrap around possibly undefined symbols,
+so that referencing them like this at compile time
+will not cause exception but instead the exception
+will happen only when the code containing 
+the undefined symbol is reached/executed
+
+ie. does ,(eval (quote a)) which is same as just  ,a"
+  [zsym]
+  
+;  (let [lexically-exists? (get &env zsym) resolvable? (resolve zsym) ]
+;    (if (or lexically-exists? resolvable?)
+;      zsym
+;      (throw (Exception. "C"))
+;      )
+;    `(let [qsym# (quote ~zsym)] 
+;       (try ;I'll just let the exception fall through
+         `(eval (quote ~zsym))
+;         (catch Throwable t#
+;           (throw (RuntimeException. (str "Symbol undefined `" qsym# "`" t#))) ;TODO: make ex-info
+;           )
+;         )
+;       )
+)
+
+
+
+(deftest a-test2  
+  (testing "encast"
+;           (is (= 0 1))
+           (encast true)
+           (encast false)
+           (encast nil)
+           (encast (println 1)) ;FIXME: check so that it doesn't get executed(evaluated) more than 1 time
+           (is (thrown? ArithmeticException (/ 1 0)))
+           (is (thrown? clojure.lang.Compiler$CompilerException
+                        (encast connrandomeseehtihtdahd210euowkjas)))
+    )
+  )
+
+
+(defmacro sym-info [zsym]
+  `(let [ss# (sym-state ~zsym)] 
+     (if (not= :bound ss#)
+       {:state ss# :value nil} 
+       {:state ss# :value (encast ~zsym)}
+       )
+     )
+  )
+
+
+(defmacro get-as-var [sym-or-var]
+  `(let [qsym# (quote sym-or-var)]
+   (if (var? ~sym-or-var)
+    ~sym-or-var
+    (if (symbol? qsym#)
+      (var ~sym-or-var)
+      (throw (new RuntimeException (str "you should pass a symbol or a var not `" qsym# "`")))
+      )
+    )
+  ))
+
+;TODO: handle all other cases
+(defmacro macro? [zsym]
+  `(macro-var? (var ~zsym))
+  )
+
+(defmacro macro-var? [zvar]
+  `(boolean (:macro (meta ~zvar)))
+  )
+
+
+(comment
+(defn sym-info2 [zsym]
+  (try
+  (let [ss (sym-state zsym)]
+    (if (= :bound ss)
+      :bound
+      :nil
+      )
+    )
+  (catch Throwable rte (pr rte)) ;;cannot ever catch CompilerException in this case for "Unable to resolve symbol"
+  )
+  )
+);comment
+
+
+(defn gotests
+  []
+  (binding [*assert* true *assumptions* true]
+    (run-tests)
+    )
+  )
+
+;(q/show_state)
+;(q/here)
 (show_state)
 
