@@ -9,11 +9,27 @@
 
 
 (ns runtime.q
-  (:use runtime.testengine :reload-all) 
-  (:use clojure.tools.trace) 
-  (:use runtime.clazzez :reload-all) 
+  ;(:use runtime.testengine :reload-all)
+  (:refer clojure.test :exclude [deftest is])
+  (:require flatland.useful.ns)
+  ;(:use clojure.tools.trace) 
+  ;(:use runtime.clazzez :reload-all) 
 ;(:use [runtime.q :as q] :reload-all)
   )
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;these should be kinda first:
+(defmacro defalias 
+  [dst src]
+  `(do 
+     (ns-unalias *ns* '~dst)
+     (flatland.useful.ns/defalias ~dst ~src)
+     )
+  )
+
+;(def deftest clojure.test/deftest)
+;(ns-unalias *ns* is)
+(defalias deftest clojure.test/deftest)
+(defalias is clojure.test/is)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;(defn ax [] (println 1))
 
@@ -61,6 +77,122 @@ got (re)loaded and/or compiled
   `'~(-> &form meta :line)
   )
  
+
+
+
+(def ^:private a java.lang.RuntimeException)
+(defn ^:private b [] (throw (java.lang.RuntimeException. "1"))) 
+
+
+(defmacro isnot
+  [formm & msg]
+  `(is (not ~formm) ~@msg)
+  )
+
+(deftest test_isnot
+  (isnot false)
+  (isnot false "msg")
+  (isnot (= 1 2))
+  (isnot (= 1 2) "msg2")
+  (is (isnot false))
+  (is (isnot false "msg3"))
+  (is (isnot false "msg3") "msg4")
+  )
+
+(defmacro getAsClass 
+"
+=> (getAsClass a)
+java.lang.RuntimeException
+=> (getAsClass RuntimeException)
+java.lang.RuntimeException
+=> (getAsClass 'RuntimeException)
+java.lang.RuntimeException
+"
+  [sym]
+  `(let [cls# (eval ~sym)] 
+     (cond (class? cls#)
+       cls#
+       :else
+       (throw 
+         (new AssertionError 
+              (str "you must pass a class to `" '~(first &form)
+                   "` at " '~(meta &form)
+                   )
+              )
+         )
+       )
+     )
+  )
+
+(deftest test_getAsClass
+  (is (= java.lang.RuntimeException (getAsClass a)))
+  (is (= java.lang.RuntimeException (getAsClass RuntimeException)))
+  (is (= java.lang.RuntimeException (getAsClass java.lang.RuntimeException)))
+  (isnot (= 'java.lang.RuntimeException (getAsClass a)))
+  )
+
+(defmacro newClass
+"
+you can pass a symbol
+ie.
+(def a java.lang.RuntimeException)
+(newClass a \"whatever\")
+
+which would fail if you do it with just new:
+(new a \"whatever)
+"
+  [cls & restt]
+  (let [asCls (getAsClass cls)]
+    `(new ~asCls ~@restt)
+    )
+  )
+
+
+
+
+
+
+(defmacro isthrown?
+    [cls & restt]
+    (let [tocls 
+          (getAsClass cls)
+          ;(symbol (str (eval cls)))
+          ;tocls2 (read-string (str "(quote " (eval cls) ")")) 
+          ;_ (prn tocls2)
+          ;(class tocls)
+          ]
+      `(is 
+         (
+           ~'thrown? ;thanks Anderkent for unquote-quote here
+           ~tocls
+           ~@restt
+           )
+         )
+      )
+    )
+;XXX: with-test is bad when modifying the defined func/macro and 
+;it fails on reload (ctrl+alt+L) the old version will be used in 
+;tests and never reloaded unless repl restart
+(deftest test_isthrown?
+  (is (thrown? java.lang.RuntimeException (b)))
+  (isthrown? a (b))
+  ;FIXME: if ever, the following will fail due to symbol vs class  apparently 
+  ;as detected by Anderkent, exact test case here: https://gist.github.com/4691902
+  (isnot (=
+        (macroexpand-1 
+          '(isthrown? a (throw (java.lang.RuntimeException. "1")))
+          )
+        '(clojure.test/is (thrown? java.lang.RuntimeException (throw (java.lang.RuntimeException. "1"))))
+        ))
+  
+  )
+
+
+;(macroexpand-1 
+;  '(isthrown? a (throw (RuntimeException. "1")))
+;)
+;=
+;(clojure.test/is (thrown? java.lang.RuntimeException (throw (RuntimeException. "1"))))
 
 
 (defmacro thro
@@ -227,8 +359,8 @@ ie. (defmacro something [param1 p2 & restparams] ... throwIfNil &form restparams
     (is (true? (assumedTrue (= 1 1))))
    ; )
   (is (true? (assumedTrue (= 1 1) (= 2 2))))
-  (is (thrown? exceptionThrownBy_assumedTrue (assumedTrue (= 1 2)) )) 
-  (is (thrown? exceptionThrownBy_assumedTrue (assumedTrue (= 1 1) (= 2 1)) ))
+  (isthrown? exceptionThrownBy_assumedTrue (assumedTrue (= 1 2)) ) 
+  (isthrown? exceptionThrownBy_assumedTrue (assumedTrue (= 1 1) (= 2 1)) )
 )
 
 (defmacro assumedFalse
