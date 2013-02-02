@@ -9,7 +9,8 @@
 
 
 (ns runtime.q
-  (:use runtime.testengine) 
+  (:use runtime.testengine :reload-all) 
+  (:use clojure.tools.trace) 
 ;(:use [runtime.q :as q] :reload-all)
   )
 
@@ -59,6 +60,35 @@ got (re)loaded and/or compiled
   `'~(-> &form meta :line)
   )
  
+(defmacro getAsClass 
+"
+=> (getAsClass a)
+java.lang.RuntimeException
+=> (getAsClass RuntimeException)
+java.lang.RuntimeException
+=> (getAsClass 'RuntimeException)
+java.lang.RuntimeException
+"
+  [sym]
+  `(let [cls# (eval ~sym)] 
+     (cond (class? cls#)
+       cls#
+       :else
+       (throw 
+         (new AssertionError 
+              (str "you must pass a class to `" '~(first &form)
+                   "` at " '~(meta &form)
+                   )
+              )
+         )
+       )
+     )
+  )
+
+(defmacro newClass
+  [cls & restt]
+  ...
+  )
 
 (defmacro thro
 "
@@ -83,8 +113,15 @@ got (re)loaded and/or compiled
               )
          )
        )
-     (throw (new ~ex (str ~@restt)))
+     ;(let [cls# (getAsClass ~ex)]
+       (throw (newClass ~ex (str ~@restt)))
+      ; )
      )
+  )
+
+(def ^:private rte java.lang.RuntimeException)
+(deftest test_thro
+  (isthrown? java.lang.RuntimeException (thro rte))
   )
 
 ;(thro 2)
@@ -206,13 +243,16 @@ ie. (defmacro something [param1 p2 & restparams] ... throwIfNil &form restparams
 
 (def exceptionThrownBy_assumedTrue exceptionThrownBy_assumedPred)
 
-(with-test
+;(with-test
   (defmacro assumedTrue
     [ & allPassedForms ]
     (throwIfNil &form allPassedForms)
     `(assumedPred true? ~@allPassedForms)
     )
-  (is (true? (assumedTrue (= 1 1))))
+(deftest test_assumedTrue
+  ;XXX: (trace-forms or trace not working with this when it throws 
+    (is (true? (assumedTrue (= 1 1))))
+   ; )
   (is (true? (assumedTrue (= 1 1) (= 2 2))))
   (is (thrown? exceptionThrownBy_assumedTrue (assumedTrue (= 1 2)) )) 
   (is (thrown? exceptionThrownBy_assumedTrue (assumedTrue (= 1 1) (= 2 1)) ))

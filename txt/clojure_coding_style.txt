@@ -1,3 +1,6 @@
+Legend:
+/////////////////// = commented out block
+
 reasons for coding style:
 
 1. symbol names:
@@ -22,3 +25,35 @@ basically, test for (both at compile time and runtime)errors and fail as soon as
 	because it's clearer!
 	
 	
+4. don't use with-test
+;XXX: with-test is bad when modifying the defined func/macro and 
+;it fails on reload (ctrl+alt+L) the old version will be used in 
+;tests and never reloaded unless repl restart
+so basically, split the def and deftest so they're siblings
+
+///////////////////
+5. defalias will require repl restart or a command to remove the current alias
+ie.
+(ns runtime.testengine
+  (:refer clojure.test :exclude [deftest is])
+  (:use flatland.useful.ns); :only defalias)
+  )
+
+(defalias deftest clojure.test/deftest)
+(defalias is clojure.test/is)
+
+imagine you had to add "is" only after you ran the above code with only "deftest"
+you'll get some error like:
+IllegalStateException is already refers to: #'clojure.test/is in namespace: runtime.testengine  clojure.lang.Namespace.warnOrFailOnReplace (Namespace.java:88)
+
+well actually this was worked-aroung by:
+(defmacro defalias 
+  [dst src]
+  `(do 
+     (ns-unalias *ns* '~dst)
+     (flatland.useful.ns/defalias ~dst ~src)
+     )
+  )
+///////////////////
+  
+   

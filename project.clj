@@ -12,6 +12,7 @@
                  ;[midje "1.5-alpha7"];don't wanna use this because it compiles all .clj files even if it doesn't need to
                  [org.clojure/tools.trace "0.7.5"]
                  [prismatic/plumbing "0.0.1"]
+                 [org.flatland/useful "0.9.0"];for defalias, atm.
                  ]
   
   ;; Emit warnings on all reflection calls.
