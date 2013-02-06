@@ -10,7 +10,7 @@
 
 (ns runtime.q
   ;(:use runtime.testengine :reload-all)
-  (:refer clojure.test );can actually avoid the following due to new definition of defalias; :exclude [deftest is])
+  (:refer clojure.test );:exclude [deftest is])
   (:require flatland.useful.ns)
   ;(:use clojure.tools.trace) 
   ;(:use runtime.clazzez :reload-all) 
@@ -56,7 +56,7 @@
 (defalias is clojure.test/is)
 ;(defalias deftest clojure.test/deftest)
 (redefmacro deftest [& all]
-  `(binding [*assert* true *assumptions* true] ;TODO: try all combinations of these set, to true/false/nil
+  `(binding [*assert* true *runTimeAssumptions* true] ;TODO: try all combinations of these set, to true/false/nil
      ;FIXME: this binding has no effect at runtime, so what do we do with this? do we move it to runtime so it has effect?
      (clojure.test/deftest ~@all)
      )
@@ -68,12 +68,113 @@
 ;(defn ax [] (println 1))
 
 ;FIXME: problem when setting this to false by default here, because all the tests here would then need to have binding it to true and they currently don't
-(def ^:dynamic *assumptions*;XXX: this only affects compiletime, has no effect at runtime
+(def ^:dynamic *compileTimeAssumptions*;XXX: this only affects compiletime, has no effect at runtime
   ;false)
-  (or *assert* true))
+  (or *assert* true)); use `whenAssumptionsCompiled` instead
+
+(def ^:dynamic *runTimeAssumptions*
+  ;false)
+  (or *assert* *compileTimeAssumptions* true))
+
+(def whatAssumptionsReturnWhenTrue true)
+
+(defmacro getAsClass 
+"
+=> (getAsClass a)
+java.lang.RuntimeException
+=> (getAsClass RuntimeException)
+java.lang.RuntimeException
+=> (getAsClass 'RuntimeException)
+java.lang.RuntimeException
+"
+  [sym]
+  `(let [cls# (eval ~sym)] 
+     (cond (class? cls#)
+       cls#
+       :else
+       (throw 
+         (new AssertionError 
+              (str "you must pass a class to `" '~(first &form)
+                   "` at " '~(meta &form)
+                   )
+              )
+         )
+       )
+     )
+  )
+
+(defmacro newClass
+"
+you can pass a symbol
+ie.
+(def a java.lang.RuntimeException)
+(newClass a \"whatever\")
+
+which would fail if you do it with just new:
+(new a \"whatever)
+"
+  [cls & restt]
+  (let [asCls (getAsClass cls)]
+    `(new ~asCls ~@restt)
+    )
+  )
+
+(defmacro thro
+"
+(thro RuntimeException \"concatenated \" \"message\")
+"
+  [ex & restt]
+  ;(class? java.lang.String)
+  `(do 
+     (when-not 
+       (and
+         (instance? java.lang.Class ~ex)
+         (contains? 
+           (supers ~ex) 
+           java.lang.Throwable
+           )
+         )
+       (throw 
+         (new RuntimeException 
+              (str "you must pass a class to `" '~(first &form)
+                   "` at " '~(meta &form)
+                   )
+              )
+         )
+       )
+     ;(let [cls# (getAsClass ~ex)]
+       (throw (newClass ~ex (str ~@restt)))
+      ; )
+     )
+  )
+
+(defmacro priv_whenAssumptions_Execute [dynVar & executeForms]
+  (when dynVar
+    (cond (empty? executeForms)
+      (thro AssertionError "you didn't pass any forms to " &form)
+      :else
+      `(do ~@executeForms)
+      )
+    )
+  )
+
+(defmacro whenAssumptionsCompiled [& executeForms]
+  `(priv_whenAssumptions_Execute *compileTimeAssumptions* ~@executeForms)
+  )
+
+(defmacro whenAssumptionsEnabledAtRuntime [& executeForms]
+  `(priv_whenAssumptions_Execute *runTimeAssumptions* ~@executeForms)
+  )
+
+(defmacro whenAssumptions_Execute [& executeForms]
+  (when (and *compileTimeAssumptions* *runTimeAssumptions*)
+    `(do ~@executeForms)
+    )
+  )
+
 
 (deftest atest
-  (is (= nil (println *assumptions*)))
+  (is (= nil (println *compileTimeAssumptions* *runTimeAssumptions*)))
   )
 
 (defn moo [] (get {:a 1} :a :not-found)
@@ -140,30 +241,7 @@ got (re)loaded and/or compiled
   (is (isnot false "msg3") "msg4")
   )
 
-(defmacro getAsClass 
-"
-=> (getAsClass a)
-java.lang.RuntimeException
-=> (getAsClass RuntimeException)
-java.lang.RuntimeException
-=> (getAsClass 'RuntimeException)
-java.lang.RuntimeException
-"
-  [sym]
-  `(let [cls# (eval ~sym)] 
-     (cond (class? cls#)
-       cls#
-       :else
-       (throw 
-         (new AssertionError 
-              (str "you must pass a class to `" '~(first &form)
-                   "` at " '~(meta &form)
-                   )
-              )
-         )
-       )
-     )
-  )
+
 
 (deftest test_getAsClass
   (is (= java.lang.RuntimeException (getAsClass a)))
@@ -172,21 +250,7 @@ java.lang.RuntimeException
   (isnot (= 'java.lang.RuntimeException (getAsClass a)))
   )
 
-(defmacro newClass
-"
-you can pass a symbol
-ie.
-(def a java.lang.RuntimeException)
-(newClass a \"whatever\")
 
-which would fail if you do it with just new:
-(new a \"whatever)
-"
-  [cls & restt]
-  (let [asCls (getAsClass cls)]
-    `(new ~asCls ~@restt)
-    )
-  )
 
 
 
@@ -236,34 +300,7 @@ which would fail if you do it with just new:
 ;(clojure.test/is (thrown? java.lang.RuntimeException (throw (RuntimeException. "1"))))
 
 
-(defmacro thro
-"
-(thro RuntimeException \"concatenaed \" \"message\")
-"
-  [ex & restt]
-  ;(class? java.lang.String)
-  `(do 
-     (when-not 
-       (and
-         (instance? java.lang.Class ~ex)
-         (contains? 
-           (supers ~ex) 
-           java.lang.Throwable
-           )
-         )
-       (throw 
-         (new RuntimeException 
-              (str "you must pass a class to `" '~(first &form)
-                   "` at " '~(meta &form)
-                   )
-              )
-         )
-       )
-     ;(let [cls# (getAsClass ~ex)]
-       (throw (newClass ~ex (str ~@restt)))
-      ; )
-     )
-  )
+
 
 (def ^:private rte java.lang.RuntimeException)
 (deftest test_thro
@@ -271,6 +308,18 @@ which would fail if you do it with just new:
   )
 
 ;(thro 2)
+
+(defmacro assumptionBlock [form]
+  (cond *compileTimeAssumptions*
+    `(cond *runTimeAssumptions*
+       ~form
+       :else
+       whatAssumptionsReturnWhenTrue
+       )
+    :else
+    whatAssumptionsReturnWhenTrue
+    )
+  )
 
 (def exceptionThrownBy_assumedPred AssertionError)
 ;(defn exceptionThrownBy_assumedPred_fn [] exceptionThrownBy_assumedPred)
@@ -281,7 +330,7 @@ will throw if the passed expression does not satisfy predicate
 ie. if pred is true? and (true? x) is false or nil it will throw
 "
   [pred x]
-  (cond *assumptions*
+  (assumptionBlock
     `(do
        (let [pred# ~pred
              predQuote# (quote ~pred)
@@ -290,7 +339,7 @@ ie. if pred is true? and (true? x) is false or nil it will throw
              self# '~(first &form)
              yield# (pred# evaled#)]
          (cond yield#
-           true
+           whatAssumptionsReturnWhenTrue
            :else
            (thro exceptionThrownBy_assumedPred 
                  (str self# 
@@ -309,15 +358,13 @@ ie. if pred is true? and (true? x) is false or nil it will throw
            )
          )
        )
-    :else
-    `true
     )
   )
 
 (defmacro assumedPred
 "will throw when the first of the passed expressions evaluates to false or nil"
   [pred & allPassedForms]
-    (cond *assumptions*
+    (assumptionBlock
       (cond (empty? allPassedForms)
         (throw  (new AssertionError
                      (let [selfName# (first &form) lineNo# (meta &form)]
@@ -336,12 +383,10 @@ ie. if pred is true? and (true? x) is false or nil it will throw
                         (list `assumedPred1 pred oneForm)
                         )
                       )
-                    'true
+                    'whatAssumptionsReturnWhenTrue
                     )
               )
         )
-      :else
-      `true
       )
     )
 
@@ -396,16 +441,25 @@ ie. (defmacro something [param1 p2 & restparams] ... throwIfNil &form restparams
     `(assumedPred true? ~@allPassedForms)
     )
 
-(def truthyInputValueFor_assumedTrue true)
-(defn sc1 [] truthyInputValueFor_assumedTrue)
+;(defn sc1 [] whatAssumptionsReturnWhenTrue)
+
+(defn assumptionCorrect?
+"
+return true if assumption is correct
+"
+  [form]
+  `(= whatAssumptionsReturnWhenTrue ~form)
+  )
 
 (deftest test_assumedTrue
   ;XXX: (trace-forms or trace not working with this when it throws 
-    (is (true? (assumedTrue (= 1 1))))
+    (is (assumptionCorrect? (assumedTrue (= 1 1))))
    ; )
-  (is (true? (assumedTrue (= 1 1) (= 2 2))))
-  (isthrown? exceptionThrownBy_assumedTrue (assumedTrue (= 1 2)) )
-  (isthrown? exceptionThrownBy_assumedTrue (assumedTrue (= 1 1) (= 2 1)) )
+  (is (assumptionCorrect? (assumedTrue (= 1 1) (= 2 2))))
+  (whenAssumptions_Execute
+    (isthrown? exceptionThrownBy_assumedTrue (assumedTrue (= 1 2)) )
+    (isthrown? exceptionThrownBy_assumedTrue (assumedTrue (= 1 1) (= 2 1)) )
+    )
 )
 
 (defmacro assumedFalse
@@ -611,7 +665,7 @@ ie. does ,(eval (quote a)) which is same as just  ,a"
 
 (defn gotests
   []
-  (binding [*assert* true *assumptions* true]
+  (binding [*assert* true *runTimeAssumptions* true]
     (run-tests)
     )
   )

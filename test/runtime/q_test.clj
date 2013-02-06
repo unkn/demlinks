@@ -15,10 +15,14 @@
   )
 
 ;(def exceptionThrownBy_assumedTrue AssertionError)
-;(def truthyInputValueFor_assumedTrue true)
+;(def whatAssumptionsReturnWhenTrue true)
 
-;(binding [*assert* true *assumptions* true] ;TODO: try all combinations of these set, to true/false/nil
-
+(binding [
+          *assert* true 
+          ;*compileTimeAssumptions* true 
+          ;*runTimeAssumptions* true
+          ] ;TODO: try all combinations of these set, to true/false/nil
+  ;(use 'runtime.q :reload-all)
 ;  (clojure.test/is 
 ;    (thrown? ;exceptionThrownBy_assumedTrue
 ;      clojure.lang.Compiler$CompilerException 
@@ -66,7 +70,16 @@
 
 ;(def oneAtom (atom false))
 ;(defn scInit [] (reset! oneAtom false))
-;(defn sc1 [] truthyInputValueFor_assumedTrue)
+
+(def times (atom 0))
+
+(defn sc1 [] 
+  whatAssumptionsReturnWhenTrue)
+
+(deftest t1
+  (isthrown? exceptionThrownBy_assumedTrue (assumedTrue (= 1 2) (sc1)))
+  (is (@times 1))
+  )
 
 (fact "assumedTrue uses short circuiting"
       (assumedTrue (= 1 2) (sc1)) => (throws exceptionThrownBy_assumedTrue)
@@ -77,25 +90,25 @@
 (fact "assumedTrue uses short circuiting2"
       (assumedTrue (= 1 1) (sc1)) => true
       (provided 
-        (sc1) => truthyInputValueFor_assumedTrue :times 1)
+        (sc1) => whatAssumptionsReturnWhenTrue :times 1)
       )
 
 (fact "assumedTrue uses short circuiting3"
       (assumedTrue (= 1 1) (sc1) (= 1 2)) => (throws exceptionThrownBy_assumedTrue)
       (provided 
-        (sc1) => truthyInputValueFor_assumedTrue :times 1)
+        (sc1) => whatAssumptionsReturnWhenTrue :times 1)
       )
 
 (fact "assumedTrue uses short circuiting4"
       (assumedTrue (= 1 1) (sc1) (= 1 1)) => true
       (provided 
-        (sc1) => truthyInputValueFor_assumedTrue :times 1)
+        (sc1) => whatAssumptionsReturnWhenTrue :times 1)
       )
 
 (fact "assumedTrue uses short circuiting5"
       (assumedTrue (sc1)) => true
       (provided 
-        (sc1) => truthyInputValueFor_assumedTrue :times 1)
+        (sc1) => whatAssumptionsReturnWhenTrue :times 1)
       )
 
 (fact "assumedTrue uses short circuiting6"
@@ -106,4 +119,4 @@
 
 
 
-;);binding
+);binding
