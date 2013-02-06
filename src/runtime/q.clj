@@ -149,7 +149,7 @@ which would fail if you do it with just new:
   (and *compileTimeAssumptions* *runTimeAssumptions*)
   )
 
-(defmacro whenAssumptions_Execute [& executeForms]
+#_(defmacro whenAssumptions_Execute [& executeForms]
   (when (assumptionsEnabled?)
     `(do ~@executeForms)
     )
@@ -439,7 +439,7 @@ return true if assumption is correct
     (is (assumptionCorrect? (assumedTrue (= 1 1))))
    ; )
   (is (assumptionCorrect? (assumedTrue (= 1 1) (= 2 2))))
-  (whenAssumptions_Execute
+  (when (assumptionsEnabled?)
     (isthrown? exceptionThrownBy_assumedTrue (assumedTrue (= 1 2)) )
     (isthrown? exceptionThrownBy_assumedTrue (assumedTrue (= 1 1) (= 2 1)) )
     )

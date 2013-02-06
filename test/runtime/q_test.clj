@@ -109,7 +109,7 @@
 
 (deftest test_sc1
   (testing "throw and shortcircuiting"
-    (whenAssumptions_Execute
+    (when (assumptionsEnabled?)
       (times? 0
         (isthrown? exceptionThrownBy_assumedTrue (assumedTrue (= 1 2) (sc1)))
         )
@@ -120,7 +120,7 @@
     (is (assumptionCorrect? (assumedTrue (= 1 1) (sc1))))
     )
   
-  (whenAssumptions_Execute
+  (when (assumptionsEnabled?)
     (times? 1
       (isthrown? exceptionThrownBy_assumedTrue (assumedTrue (= 1 1) (sc1) (= 1 2)))
       )
@@ -134,7 +134,7 @@
     (is (assumptionCorrect? (assumedTrue (sc1))))
     )
 
-  (whenAssumptions_Execute
+  (when (assumptionsEnabled?)
     (times? 0
       (isthrown? exceptionThrownBy_assumedTrue (assumedTrue (= 1 2) (sc1) (= 1 1)))
       )
