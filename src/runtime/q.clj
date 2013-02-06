@@ -60,10 +60,10 @@
   `(clojure.test/is ~@all)
   )
 ;(defalias deftest clojure.test/deftest)
-(defmacro deftest [& all]
+#_(defmacro deftest [& all]
   `(clojure.test/deftest ~@all)
   )
-#_(redefmacro deftest [& all]
+(redefmacro deftest [& all]
   `(binding [*assert* true *runTimeAssumptions* true] ;TODO: try all combinations of these set, to true/false/nil
      ;FIXME: this binding has no effect at runtime, so what do we do with this? do we move it to runtime so it has effect?
      (clojure.test/deftest ~@all)
