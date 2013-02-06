@@ -14,6 +14,7 @@
                  [prismatic/plumbing "0.0.1"]
                  ;[org.flatland/useful "0.9.0"];for defalias, atm., nomore due to ns reload and ns-unmap-like behaviour causing IllegalStateException deftest already refers to: #'runtime.q/deftest in namespace: runtime.q_test  clojure.lang.Namespace.warnOrFailOnReplace (Namespace.java:88)
                  [quil "1.6.0"]
+                 [robert/hooke "1.3.0"]
                  ]
   
   ;; Emit warnings on all reflection calls.

@@ -10,7 +10,7 @@
 
 (ns runtime.q
   ;(:use runtime.testengine :reload-all)
-  (:refer clojure.test :exclude [deftest is])
+  (:refer clojure.test :exclude [deftest is testing])
   ;(:require flatland.useful.ns)
   ;(:use clojure.tools.trace) 
   ;(:use runtime.clazzez :reload-all) 
@@ -33,9 +33,12 @@
 ;(ns-unmap *ns* 'deftest)
 (defmacro deftest [& all]
   `(binding [*assert* true *runTimeAssumptions* true] ;TODO: try all combinations of these set, to true/false/nil
-     ;FIXME: this binding has no effect at runtime, so what do we do with this? do we move it to runtime so it has effect?
      (clojure.test/deftest ~@all)
      )
+  )
+
+(defmacro testing [& all]
+  `(clojure.test/testing ~@all)
   )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -142,15 +145,19 @@ which would fail if you do it with just new:
   `(priv_whenAssumptions_Execute *runTimeAssumptions* ~@executeForms)
   )
 
+(defn assumptionsEnabled? []
+  (and *compileTimeAssumptions* *runTimeAssumptions*)
+  )
+
 (defmacro whenAssumptions_Execute [& executeForms]
-  (when (and *compileTimeAssumptions* *runTimeAssumptions*)
+  (when (assumptionsEnabled?)
     `(do ~@executeForms)
     )
   )
 
 
-(deftest atest
-  (is (= nil (println *compileTimeAssumptions* *runTimeAssumptions*)))
+#_(deftest atest
+  (is (= nil (println 2 *compileTimeAssumptions* *runTimeAssumptions*)))
   )
 
 (defn moo [] (get {:a 1} :a :not-found)

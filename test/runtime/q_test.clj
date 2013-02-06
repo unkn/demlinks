@@ -8,9 +8,10 @@
 ; You must not remove this notice, or any other, from this software.
 
 (ns runtime.q_test
-;  (:use [midje.sweet])
+  ;  (:use [midje.sweet])
   ;(:use clojure.test)
   (:use runtime.q :reload-all)
+  (:use robert.hooke)
   ;(:use runtime.util :reload-all)
   )
 
@@ -19,8 +20,8 @@
 
 ;(binding [
 ;          *assert* true
-          ;*compileTimeAssumptions* true 
-          ;*runTimeAssumptions* true
+          ;*compileTimeAssumptions* false 
+          ;*runTimeAssumptions* false
 ;          ] ;TODO: try all combinations of these set, to true/false/nil
   ;(use 'runtime.q :reload-all)
 ;  (clojure.test/is 
@@ -71,47 +72,72 @@
 ;(def oneAtom (atom false))
 ;(defn scInit [] (reset! oneAtom false))
 
-(def times (atom -1))
+(def initialTimes 0)
+(def unInitializedTimes 0)
 
-(defn sc1 [] 
+(def times (atom unInitializedTimes))
+
+(defn te [f & arg]
   (swap! times inc)
+  (apply f arg)
+  )
+
+(defn sc1 []
   whatAssumptionsReturnWhenTrue)
 
+(add-hook #'sc1 #'te)
+
+(defn resetTimes []
+  (reset! times initialTimes)
+  )
+
+(defmacro times? [expectedTimes & forms]
+  `(do 
+    (resetTimes)
+    (do ~@forms)
+    (is (= ~expectedTimes @times))
+    )
+  )
+
+;(defn sc1 [] 
+;  (swap! times inc)
+;  whatAssumptionsReturnWhenTrue)
+
+(defn oneOrZero []
+  (cond (assumptionsEnabled?) 1 :else 0)
+  )
+
 (deftest test_sc1
-  (reset! times 0)
-  (whenAssumptions_Execute
-    (isthrown? exceptionThrownBy_assumedTrue (assumedTrue (= 1 2) (sc1)))
-    (is (= @times 0))
+  (testing "throw and shortcircuiting"
+    (whenAssumptions_Execute
+      (times? 0
+        (isthrown? exceptionThrownBy_assumedTrue (assumedTrue (= 1 2) (sc1)))
+        )
+      )
     )
   
-  (reset! times 0)
-  (is (assumptionCorrect? (assumedTrue (= 1 1) (sc1))))
-  (whenAssumptions_Execute
-    (is (= @times 1))
+  (times? (oneOrZero)
+    (is (assumptionCorrect? (assumedTrue (= 1 1) (sc1))))
     )
   
-  (reset! times 0)
   (whenAssumptions_Execute
-    (isthrown? exceptionThrownBy_assumedTrue (assumedTrue (= 1 1) (sc1) (= 1 2)))
-    (is (= @times 1))
+    (times? 1
+      (isthrown? exceptionThrownBy_assumedTrue (assumedTrue (= 1 1) (sc1) (= 1 2)))
+      )
     )
   
-  (reset! times 0)
-  (is (assumptionCorrect? (assumedTrue (= 1 1) (sc1) (= 1 1))))
-  (whenAssumptions_Execute
-    (is (= @times 1))
+  (times? (oneOrZero)
+    (is (assumptionCorrect? (assumedTrue (= 1 1) (sc1) (= 1 1))))
     )
 
-  (reset! times 0)
-  (is (assumptionCorrect? (assumedTrue (sc1))))
-  (whenAssumptions_Execute
-    (is (= @times 1))
+  (times? (oneOrZero)
+    (is (assumptionCorrect? (assumedTrue (sc1))))
     )
 
-  (reset! times 0)
   (whenAssumptions_Execute
-    (isthrown? exceptionThrownBy_assumedTrue (assumedTrue (= 1 2) (sc1) (= 1 1)))
-    (is (= @times 0))
+    (times? 0
+      (isthrown? exceptionThrownBy_assumedTrue (assumedTrue (= 1 2) (sc1) (= 1 1)))
+      )
     )
   
   );test
