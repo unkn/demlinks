@@ -10,7 +10,7 @@
 
 (ns runtime.q
   ;(:use runtime.testengine :reload-all)
-  (:refer clojure.test );:exclude [deftest is])
+  (:refer clojure.test :exclude [deftest is])
   (:require flatland.useful.ns)
   ;(:use clojure.tools.trace) 
   ;(:use runtime.clazzez :reload-all) 
@@ -54,9 +54,15 @@
   )
 
 ;(def deftest clojure.test/deftest)
-;(ns-unalias *ns* is)
-(defalias is clojure.test/is)
+;(ns-unmap *ns* 'is)
+;(defalias is clojure.test/is)
+(defmacro is [& all]
+  `(clojure.test/is ~@all)
+  )
 ;(defalias deftest clojure.test/deftest)
+(defmacro deftest [& all]
+  `(clojure.test/deftest ~@all)
+  )
 #_(redefmacro deftest [& all]
   `(binding [*assert* true *runTimeAssumptions* true] ;TODO: try all combinations of these set, to true/false/nil
      ;FIXME: this binding has no effect at runtime, so what do we do with this? do we move it to runtime so it has effect?
