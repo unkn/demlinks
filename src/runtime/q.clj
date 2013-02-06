@@ -46,7 +46,7 @@
 
 (defmacro redefmacro [name & restt]
   `(do
-     (ns-unmap *ns* '~name)
+     ;(ns-unmap *ns* '~name)
      ;(println *ns*)
      ;(ns-unmap (find-ns 'runtime.q) '~name)
      (defmacro ~name ~@restt)
