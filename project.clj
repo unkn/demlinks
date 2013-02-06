@@ -13,6 +13,7 @@
                  [org.clojure/tools.trace "0.7.5"]
                  [prismatic/plumbing "0.0.1"]
                  [org.flatland/useful "0.9.0"];for defalias, atm.
+                 [quil "1.6.0"]
                  ]
   
   ;; Emit warnings on all reflection calls.

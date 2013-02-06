@@ -9,13 +9,13 @@
 
 (ns runtime.q_test
 ;  (:use [midje.sweet])
-  (:use clojure.test)
+  ;(:use clojure.test)
   (:use runtime.q :reload-all)
   ;(:use runtime.util :reload-all)
   )
 
-(def exceptionThrownBy_assumedTrue AssertionError)
-(def truthyInputValueFor_assumedTrue true)
+;(def exceptionThrownBy_assumedTrue AssertionError)
+;(def truthyInputValueFor_assumedTrue true)
 
 (binding [*assert* true *assumptions* true] ;TODO: try all combinations of these set, to true/false/nil
 
@@ -66,7 +66,7 @@
 
 ;(def oneAtom (atom false))
 ;(defn scInit [] (reset! oneAtom false))
-(defn sc1 [] truthyInputValueFor_assumedTrue)
+;(defn sc1 [] truthyInputValueFor_assumedTrue)
 
 (fact "assumedTrue uses short circuiting"
       (assumedTrue (= 1 2) (sc1)) => (throws exceptionThrownBy_assumedTrue)

@@ -12,6 +12,9 @@
 (is (not (nil? false)))
 (is (not (nil? true)))
 (is (not (nil? 0)))
+(is (not (nil? "")))
+(is (not (nil? '())))
+(is (not (nil? (list))))
 
 (is (not (false? false?)))
 (is (not (false? true)))

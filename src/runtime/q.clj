@@ -10,7 +10,7 @@
 
 (ns runtime.q
   ;(:use runtime.testengine :reload-all)
-  (:refer clojure.test );can actually avoid this due to new definition of defalias; :exclude [deftest is])
+  (:refer clojure.test );can actually avoid the following due to new definition of defalias; :exclude [deftest is])
   (:require flatland.useful.ns)
   ;(:use clojure.tools.trace) 
   ;(:use runtime.clazzez :reload-all) 
@@ -53,6 +53,7 @@
 
 ;(defn ax [] (println 1))
 
+;FIXME: problem when setting this to false by default here, because all the tests here would then need to have binding it to true and they currently don't
 (def ^:dynamic *assumptions* (or *assert* true))
 
 (defn moo [] (get {:a 1} :a :not-found)
@@ -374,12 +375,16 @@ ie. (defmacro something [param1 p2 & restparams] ... throwIfNil &form restparams
     (throwIfNil &form allPassedForms)
     `(assumedPred true? ~@allPassedForms)
     )
+
+(def truthyInputValueFor_assumedTrue true)
+(defn sc1 [] truthyInputValueFor_assumedTrue)
+
 (deftest test_assumedTrue
   ;XXX: (trace-forms or trace not working with this when it throws 
     (is (true? (assumedTrue (= 1 1))))
    ; )
   (is (true? (assumedTrue (= 1 1) (= 2 2))))
-  (isthrown? exceptionThrownBy_assumedTrue (assumedTrue (= 1 2)) ) 
+  (isthrown? exceptionThrownBy_assumedTrue (assumedTrue (= 1 2)) )
   (isthrown? exceptionThrownBy_assumedTrue (assumedTrue (= 1 1) (= 2 1)) )
 )
 
@@ -594,4 +599,4 @@ ie. does ,(eval (quote a)) which is same as just  ,a"
 ;(q/show_state)
 ;(q/here)
 (show_state)
-
+(gotests)

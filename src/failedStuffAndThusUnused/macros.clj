@@ -7,7 +7,7 @@
 ; the terms of this license.
 ; You must not remove this notice, or any other, from this software.
 
-(comment ;well midje loads this for some reason
+;(comment ;well midje loads this for some reason
   
 (ns failedStuffAndThusUnused.macros)
 ;;here lay all the stuff which I wanted to do and use but I failed
@@ -131,4 +131,4 @@ which would mainly happen when you defmacro thesamesymbol more than once
 
 
 
-);comment, have this be last line!
+;);comment, have this be last line!
