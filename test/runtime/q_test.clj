@@ -73,7 +73,7 @@
 ;(defn scInit [] (reset! oneAtom false))
 
 (def initialTimes 0)
-(def unInitializedTimes 0)
+(def unInitializedTimes -1)
 
 (def times (atom unInitializedTimes))
 
