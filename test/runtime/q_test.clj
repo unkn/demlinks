@@ -17,7 +17,7 @@
 ;(def exceptionThrownBy_assumedTrue AssertionError)
 ;(def whatAssumptionsReturnWhenTrue true)
 
-(binding [
+#_(binding [
           *assert* true 
           ;*compileTimeAssumptions* true 
           ;*runTimeAssumptions* true
