@@ -502,7 +502,12 @@ return true if assumption is correct
     (pst-soe 100)
   )
   ([^long num]
-    (dorun (map #(println (.toString %)) (take-last num (.getStackTrace *e ))))
+    (dorun 
+      (map 
+        (fn [^String s] (println (.toString s)))
+        (take-last num (.getStackTrace ^Throwable *e))
+        )
+      )
     )
 )
 

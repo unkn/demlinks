@@ -7,7 +7,7 @@
 ; the terms of this license.
 ; You must not remove this notice, or any other, from this software.
 
-(comment ;well midje loads this for some reason
+;(comment ;well midje loads this for some reason
   
 (ns goodButUnused.macros)
 ;;here lay all the stuff that are good but I'm not using them
@@ -135,4 +135,4 @@
       )
     )
 
-);comment, have this be last line!
+;);comment, have this be last line!

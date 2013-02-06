@@ -17,11 +17,11 @@
 ;(def exceptionThrownBy_assumedTrue AssertionError)
 ;(def whatAssumptionsReturnWhenTrue true)
 
-#_(binding [
-          *assert* true 
+;(binding [
+;          *assert* true
           ;*compileTimeAssumptions* true 
           ;*runTimeAssumptions* true
-          ] ;TODO: try all combinations of these set, to true/false/nil
+;          ] ;TODO: try all combinations of these set, to true/false/nil
   ;(use 'runtime.q :reload-all)
 ;  (clojure.test/is 
 ;    (thrown? ;exceptionThrownBy_assumedTrue
@@ -71,52 +71,87 @@
 ;(def oneAtom (atom false))
 ;(defn scInit [] (reset! oneAtom false))
 
-(def times (atom 0))
+(def times (atom -1))
 
 (defn sc1 [] 
+  (swap! times inc)
   whatAssumptionsReturnWhenTrue)
 
-(deftest t1
-  (isthrown? exceptionThrownBy_assumedTrue (assumedTrue (= 1 2) (sc1)))
-  (is (@times 1))
-  )
+(deftest test_sc1
+  (reset! times 0)
+  (whenAssumptions_Execute
+    (isthrown? exceptionThrownBy_assumedTrue (assumedTrue (= 1 2) (sc1)))
+    (is (= @times 0))
+    )
+  
+  (reset! times 0)
+  (is (assumptionCorrect? (assumedTrue (= 1 1) (sc1))))
+  (whenAssumptions_Execute
+    (is (= @times 1))
+    )
+  
+  (reset! times 0)
+  (whenAssumptions_Execute
+    (isthrown? exceptionThrownBy_assumedTrue (assumedTrue (= 1 1) (sc1) (= 1 2)))
+    (is (= @times 1))
+    )
+  
+  (reset! times 0)
+  (is (assumptionCorrect? (assumedTrue (= 1 1) (sc1) (= 1 1))))
+  (whenAssumptions_Execute
+    (is (= @times 1))
+    )
 
-(fact "assumedTrue uses short circuiting"
-      (assumedTrue (= 1 2) (sc1)) => (throws exceptionThrownBy_assumedTrue)
-      (provided 
-        (sc1) => nil :times 0)
-      )
+  (reset! times 0)
+  (is (assumptionCorrect? (assumedTrue (sc1))))
+  (whenAssumptions_Execute
+    (is (= @times 1))
+    )
 
-(fact "assumedTrue uses short circuiting2"
-      (assumedTrue (= 1 1) (sc1)) => true
-      (provided 
-        (sc1) => whatAssumptionsReturnWhenTrue :times 1)
-      )
+  (reset! times 0)
+  (whenAssumptions_Execute
+    (isthrown? exceptionThrownBy_assumedTrue (assumedTrue (= 1 2) (sc1) (= 1 1)))
+    (is (= @times 0))
+    )
+  
+  );test
 
-(fact "assumedTrue uses short circuiting3"
-      (assumedTrue (= 1 1) (sc1) (= 1 2)) => (throws exceptionThrownBy_assumedTrue)
-      (provided 
-        (sc1) => whatAssumptionsReturnWhenTrue :times 1)
-      )
+;(fact "assumedTrue uses short circuiting"
+;      (assumedTrue (= 1 2) (sc1)) => (throws exceptionThrownBy_assumedTrue)
+;      (provided 
+;        (sc1) => nil :times 0)
+;      )
+;
+;(fact "assumedTrue uses short circuiting2"
+;      (assumedTrue (= 1 1) (sc1)) => true
+;      (provided 
+;        (sc1) => whatAssumptionsReturnWhenTrue :times 1)
+;      )
+;
+;(fact "assumedTrue uses short circuiting3"
+;      (assumedTrue (= 1 1) (sc1) (= 1 2)) => (throws exceptionThrownBy_assumedTrue)
+;      (provided 
+;        (sc1) => whatAssumptionsReturnWhenTrue :times 1)
+;      )
+;
+;(fact "assumedTrue uses short circuiting4"
+;      (assumedTrue (= 1 1) (sc1) (= 1 1)) => true
+;      (provided 
+;        (sc1) => whatAssumptionsReturnWhenTrue :times 1)
+;      )
+;
+;(fact "assumedTrue uses short circuiting5"
+;      (assumedTrue (sc1)) => true
+;      (provided 
+;        (sc1) => whatAssumptionsReturnWhenTrue :times 1)
+;      )
+;
+;(fact "assumedTrue uses short circuiting6"
+;      (assumedTrue (= 1 2) (sc1) (= 1 1)) => (throws exceptionThrownBy_assumedTrue)
+;      (provided 
+;        (sc1) => nil :times 0)
+;      )
 
-(fact "assumedTrue uses short circuiting4"
-      (assumedTrue (= 1 1) (sc1) (= 1 1)) => true
-      (provided 
-        (sc1) => whatAssumptionsReturnWhenTrue :times 1)
-      )
+(gotests)
 
-(fact "assumedTrue uses short circuiting5"
-      (assumedTrue (sc1)) => true
-      (provided 
-        (sc1) => whatAssumptionsReturnWhenTrue :times 1)
-      )
-
-(fact "assumedTrue uses short circuiting6"
-      (assumedTrue (= 1 2) (sc1) (= 1 1)) => (throws exceptionThrownBy_assumedTrue)
-      (provided 
-        (sc1) => nil :times 0)
-      )
-
-
-
-);binding
+;);binding
