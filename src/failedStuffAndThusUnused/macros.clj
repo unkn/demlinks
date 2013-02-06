@@ -169,5 +169,13 @@ if you're defalias-ing `deftest` and `is`, for example.
      )
   )
 
+(defmacro redefmacro [name & restt]
+  `(do
+     (ns-unmap *ns* '~name); this is evil with reloading namespaces
+     ;(println *ns*)
+     ;(ns-unmap (find-ns 'runtime.q) '~name)
+     (defmacro ~name ~@restt)
+     )
+  )
 
 ;);comment, have this be last line!

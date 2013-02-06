@@ -18,14 +18,7 @@
   )
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;these should be kinda first:
 
-#_(defmacro redefmacro [name & restt]
-  `(do
-     (ns-unmap *ns* '~name)
-     ;(println *ns*)
-     ;(ns-unmap (find-ns 'runtime.q) '~name)
-     (defmacro ~name ~@restt)
-     )
-  )
+
 
 ;(def deftest clojure.test/deftest)
 ;(ns-unmap *ns* 'is)
