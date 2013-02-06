@@ -128,7 +128,46 @@ which would mainly happen when you defmacro thesamesymbol more than once
 ;and use it like ^xmxm or ^{:tag xmxm} => fail!
 
 
+(defmacro defalias 
+  [dst src]
+  `(do 
+     (ns-unmap *ns* '~dst) ;this should help with REPL while reloading, to avoid some error when already defined due to :use when :exclude didn't contain the newly defined one
+     ;ns-unmap is bad when reloading the namespace which uses this namespace, causes:
+     ;IllegalStateException deftest already refers to: #'runtime.q/deftest in namespace: runtime.q_test  clojure.lang.Namespace.warnOrFailOnReplace (Namespace.java:88)
+     (flatland.useful.ns/defalias ~dst ~src)
+     )
+  )
 
+(deftest test_defalias ;this test doesn't seem to actually work as I'd wanted
+  (try
+    (let [
+          a (defalias pr clojure.core/pr) ;before
+          expect (eval '(var runtime.q/pr))
+          ]
+      (is (= a expect ))
+      )
+    (catch Throwable e (throw e)) 
+    (finally ;Throwable e 
+      (do
+        (ns-unmap *ns* 'pr) ;after
+        ;(throw e)
+        )
+      )
+    )
+  )
+
+
+(defmacro defalias
+"
+remember to add this to your (ns ...):
+(:refer clojure.test :exclude [deftest is])
+if you're defalias-ing `deftest` and `is`, for example.
+"
+  [src dest]
+  `(defmacro ~dest [& ~'all2]
+     `(~src ~@all2) ;this is some retarded shiet - failed
+     )
+  )
 
 
 ;);comment, have this be last line!

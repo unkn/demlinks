@@ -58,3 +58,22 @@ well actually this was worked-aroung by:
   
 6. use as less namespaces as you can, to avoid having to go thru hoops when cyclic deps happen
 
+7. cannot use
+(:refer clojure.test )
+then 
+(ns-unmap *ns* 'deftest)
+(defmacro deftest [& all]
+
+and from another namespace have 
+(:use runtime.q :reload-all)
+because it gives:
+IllegalStateException deftest already refers to: #'runtime.q/deftest in namespace: runtime.q_test  clojure.lang.Namespace.warnOrFailOnReplace (Namespace.java:88)
+
+so, have to use:
+(:refer clojure.test :exclude [deftest is])
+without ns-unmap
+(defmacro deftest [& all]
+and from another namespace have 
+(:use runtime.q :reload-all)
+just as before, will work on any number of reloads of this namespace (ctrl+alt+L)
+

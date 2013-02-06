@@ -11,42 +11,16 @@
 (ns runtime.q
   ;(:use runtime.testengine :reload-all)
   (:refer clojure.test :exclude [deftest is])
-  (:require flatland.useful.ns)
+  ;(:require flatland.useful.ns)
   ;(:use clojure.tools.trace) 
   ;(:use runtime.clazzez :reload-all) 
 ;(:use [runtime.q :as q] :reload-all)
   )
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;these should be kinda first:
-(defmacro defalias 
-  [dst src]
-  `(do 
-     (ns-unmap *ns* '~dst) ;this should help with REPL while reloading, to avoid some error when already defined due to :use when :exclude didn't contain the newly defined one
-     (flatland.useful.ns/defalias ~dst ~src)
-     )
-  )
 
-#_(deftest test_defalias ;this test doesn't seem to actually work as I'd wanted
-  (try
-    (let [
-          a (defalias pr clojure.core/pr) ;before
-          expect (eval '(var runtime.q/pr))
-          ]
-      (is (= a expect ))
-      )
-    (catch Throwable e (throw e)) 
-    (finally ;Throwable e 
-      (do
-        (ns-unmap *ns* 'pr) ;after
-        ;(throw e)
-        )
-      )
-    )
-  )
-
-
-(defmacro redefmacro [name & restt]
+#_(defmacro redefmacro [name & restt]
   `(do
-     ;(ns-unmap *ns* '~name)
+     (ns-unmap *ns* '~name)
      ;(println *ns*)
      ;(ns-unmap (find-ns 'runtime.q) '~name)
      (defmacro ~name ~@restt)
@@ -63,7 +37,8 @@
 #_(defmacro deftest [& all]
   `(clojure.test/deftest ~@all)
   )
-(redefmacro deftest [& all]
+;(ns-unmap *ns* 'deftest)
+(defmacro deftest [& all]
   `(binding [*assert* true *runTimeAssumptions* true] ;TODO: try all combinations of these set, to true/false/nil
      ;FIXME: this binding has no effect at runtime, so what do we do with this? do we move it to runtime so it has effect?
      (clojure.test/deftest ~@all)
