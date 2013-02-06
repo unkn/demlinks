@@ -43,18 +43,38 @@
     )
   )
 
+
+(defmacro redefmacro [name & restt]
+  `(do
+     (ns-unmap *ns* '~name)
+     (defmacro ~name ~@restt)
+     )
+  )
+
 ;(def deftest clojure.test/deftest)
 ;(ns-unalias *ns* is)
-(defalias deftest clojure.test/deftest)
 (defalias is clojure.test/is)
-
+;(defalias deftest clojure.test/deftest)
+(redefmacro deftest [& all]
+  `(binding [*assert* true *assumptions* true] ;TODO: try all combinations of these set, to true/false/nil
+     ;FIXME: this binding has no effect at runtime, so what do we do with this? do we move it to runtime so it has effect?
+     (clojure.test/deftest ~@all)
+     )
+  )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 
 ;(defn ax [] (println 1))
 
 ;FIXME: problem when setting this to false by default here, because all the tests here would then need to have binding it to true and they currently don't
-(def ^:dynamic *assumptions* (or *assert* true))
+(def ^:dynamic *assumptions*;XXX: this only affects compiletime, has no effect at runtime
+  ;false)
+  (or *assert* true))
+
+(deftest atest
+  (is (= nil (println *assumptions*)))
+  )
 
 (defn moo [] (get {:a 1} :a :not-found)
   )

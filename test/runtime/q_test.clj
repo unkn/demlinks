@@ -17,7 +17,7 @@
 ;(def exceptionThrownBy_assumedTrue AssertionError)
 ;(def truthyInputValueFor_assumedTrue true)
 
-(binding [*assert* true *assumptions* true] ;TODO: try all combinations of these set, to true/false/nil
+;(binding [*assert* true *assumptions* true] ;TODO: try all combinations of these set, to true/false/nil
 
 ;  (clojure.test/is 
 ;    (thrown? ;exceptionThrownBy_assumedTrue
@@ -106,4 +106,4 @@
 
 
 
-);binding
+;);binding
