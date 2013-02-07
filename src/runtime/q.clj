@@ -536,6 +536,8 @@ true
   ;4. zsym is an expression ie. #() or (list 1 2 3), throws exception
   ;5. zsym is a special symbol ie. def   test this via (special-symbol? 'def) , returns :special
   ;6. zsym is a macro ie. defn, returns :macro
+  ;7. FIXME: handle this: (#(sym-state %) prn2) ;CompilerException java.lang.RuntimeException: Unable to resolve symbol: prn2 in this context, compiling:(NO_SOURCE_PATH:1:1) 
+
   `(try 
      (let [qsym# (quote ~zsym)]
            (if (not (symbol? qsym#)) ;ie. #() or (list 1 2 3)
@@ -630,12 +632,51 @@ ie. does ,(eval (quote a)) which is same as just  ,a"
   nil
   )
 
-(defn attachTimes [varfunc]
-  {:pre [(assumedTrue (var? varfunc) )] }
-  (add-hook varfunc #'incTimes_hook)
+(defmacro get-as-var
+"
+=> (get-as-var #'prn)
+#'clojure.core/prn
+=> (get-as-var prn)
+#'clojure.core/prn
+
+=> (var prn)
+#'clojure.core/prn
+=> (var #'prn)
+CompilerException java.lang.ClassCastException: clojure.lang.Cons cannot be cast to clojure.lang.Symbol, compiling:(NO_SOURCE_PATH:1:1) 
+
+"
+  [sym-or-var]
+  `(let [qsym# (quote sym-or-var)
+         ;moo2# ~sym-or-var
+         ;xxx# (println (var-get moo2#))
+         ]
+    (if (var? ~sym-or-var)
+      ~sym-or-var
+      (if (symbol? qsym#)
+        (encast 
+          (var ~sym-or-var)
+          )
+        (throw 
+          (new RuntimeException 
+            (str "you should pass a symbol or a var not `" qsym# "`")
+            )
+          )
+        )
+      )
+    )
   )
 
-(attachTimes #'dummy1)
+(defmacro xx [x]
+  (prn x)
+  )
+
+(defmacro attachTimes [func]
+  {:pre [(assumedTrue (or (symbol? func) (var? func) ))]}
+  (list `add-hook (list `get-as-var func) (var incTimes_hook))
+  )
+;both work
+;(attachTimes #'dummy1)
+(attachTimes dummy1)
 
 
 (deftest a-test2  
@@ -657,28 +698,14 @@ ie. does ,(eval (quote a)) which is same as just  ,a"
 (defmacro sym-info [zsym]
   `(let [ss# (sym-state ~zsym)] 
      (if (not= :bound ss#)
-       {:state ss# :value nil} 
+       {:state ss# :value ~zsym};nil} ; works: ~zsym};not-works: (encast ~zsym) -> when (#(sym-info %) prn) , CompilerException java.lang.RuntimeException: Unable to resolve symbol: p1__5531# in this context, compiling:(NO_SOURCE_PATH:1:1) 
        {:state ss# :value (encast ~zsym)}
        )
      )
   )
 
 
-(defmacro get-as-var [sym-or-var]
-  `(let [qsym# (quote sym-or-var)]
-    (if (var? ~sym-or-var)
-      ~sym-or-var
-      (if (symbol? qsym#)
-        (encast (var ~sym-or-var))
-        (throw 
-          (new RuntimeException 
-            (str "you should pass a symbol or a var not `" qsym# "`")
-            )
-          )
-        )
-      )
-    )
-  )
+
 
 #_(defmacro get-as-var [sym-or-var]
   `(let [qsym# (quote sym-or-var)]
