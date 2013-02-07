@@ -15,8 +15,11 @@
   ;(:require flatland.useful.ns)
   ;(:use clojure.tools.trace) 
   ;(:use runtime.clazzez :reload-all) 
-;(:use [runtime.q :as q] :reload-all)
+  ;(:use [runtime.q :as q] :reload-all)
+  (:use [runtime.q.exceptions :as qex] :reload-all)
   )
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;these should be kinda first:
 
 
