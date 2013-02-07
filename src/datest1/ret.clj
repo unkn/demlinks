@@ -17,7 +17,7 @@
 
 (ns-unmap *ns* 'get)
 (defn get [key ret_object]
-  (println key ret_object)
+  (println "get:" key ret_object)
   ;(clojure.core/get key ret_object)
   )
 
@@ -42,6 +42,8 @@ the key is paradoxically not the keyword
   )
 
 
+(def exceptionThrownWhenNonSymbolPassedAsKey
+  AssertionError)
 
 (defmacro defkey [keyname thekey]
   {:pre [ (q/assumedTrue (keyword? thekey)) ]
@@ -49,7 +51,17 @@ the key is paradoxically not the keyword
    }
   (prn "current: " -allkeys)
   (prn "passed : " keyname thekey)
-  `(add_new_key (quote ~keyname) ~thekey)
+  (let [eva (eval keyname)
+        _ (binding [*exceptionThrownBy_assumedPred* exceptionThrownWhenNonSymbolPassedAsKey]
+            (assumedTrue (symbol? eva))
+            )
+        sym (symbol eva)]
+    ;(println sym)
+    `(do
+       (add_new_key (quote ~keyname) ~thekey)
+       (def ~sym ~thekey)
+       )
+    )
   )
 
 (def exceptionThrownWhenKeyAlreadyDefined
@@ -92,11 +104,16 @@ add_new_key [quoted_key_name thekey]
 (defkey 'a :a)
 (defkey 'b :b)
 
+#_(deftest test_nonsymbolkey ;this happens at compile time
+  (isthrown? q/exceptionThrownBy_assumedPred (defkey 1 :b))
+  )
+
 (deftest test_alreadyexisting
   (isthrown? exceptionThrownWhenKeyAlreadyDefined (defkey 'a :a))
   (isthrown? exceptionThrownWhenKeyAlreadyDefined (defkey 'a :c))
   )
 
+(show_state)
 (gotests)
 
-(show_state)
+

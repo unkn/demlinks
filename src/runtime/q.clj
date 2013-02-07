@@ -308,8 +308,8 @@ got (re)loaded and/or compiled
     )
   )
 
-(def exceptionThrownBy_assumedPred AssertionError)
-;(defn exceptionThrownBy_assumedPred_fn [] exceptionThrownBy_assumedPred)
+(def ^{:dynamic true} *exceptionThrownBy_assumedPred* AssertionError)
+;(defn *exceptionThrownBy_assumedPred*_fn [] *exceptionThrownBy_assumedPred*)
 ;inspired from (source assert)
 (defmacro assumedPred1
 "
@@ -328,7 +328,7 @@ ie. if pred is true? and (true? x) is false or nil it will throw
          (cond yield#
            whatAssumptionsReturnWhenTrue
            :else
-           (thro exceptionThrownBy_assumedPred 
+           (thro *exceptionThrownBy_assumedPred* 
                  (str self# 
                       " failed, the following wasn't truthy: `(" 
                       predQuote# 
@@ -355,7 +355,7 @@ ie. if pred is true? and (true? x) is false or nil it will throw
       (cond (empty? allPassedForms)
         (throw  (new AssertionError
                      (let [selfName# (first &form) lineNo# (meta &form)]
-                       (str "you didn't enough parameters to macro `"
+                       (str "you didn't pass enough parameters to macro `"
                             selfName#
                             "` The form begins at line: `"
                             lineNo# "`. You passed: " &form 
@@ -419,7 +419,8 @@ ie. (defmacro something [param1 p2 & restparams] ... throwIfNil &form restparams
   `(assumedPred truthy? ~@allPassedForms)
   )
 
-(def exceptionThrownBy_assumedTrue exceptionThrownBy_assumedPred)
+(def ;^{:dynamic true} 
+  exceptionThrownBy_assumedTrue *exceptionThrownBy_assumedPred*)
 
 ;(with-test
   (defmacro assumedTrue
