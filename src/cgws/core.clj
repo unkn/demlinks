@@ -28,7 +28,7 @@
            ))
   (println "passed args:" args)
   (time (transform-flatfiles-to-symlinks repo-path))
-(ret/get :key {:map 1})
+(ret/getIfExists :key {:map 1})
   )
 
 

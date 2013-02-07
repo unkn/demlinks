@@ -15,12 +15,49 @@
 
 (println *file*)
 
-(ns-unmap *ns* 'get)
-(defn get [key ret_object]
-  (println "get:" key ret_object)
-  ;(clojure.core/get key ret_object)
+;(ns-unmap *ns* 'get)
+(defn getIfExists
+"
+nil is not exists,
+[key val] if exists
+"
+  [key ret_object]
+  {:pre [ (assumedTrue (map? ret_object)) ] }
+  ;(println "get:" key ret_object)
+  (find ret_object key)
+  #_(cond (not (contains? ret_object key))
+    (thro RuntimeException "a")
+    :else
+    (clojure.core/get ret_object key)
+    )
   )
 
+(def exceptionThrownWhenKeyDoesNotExist
+  RuntimeException
+  )
+
+(defn getExisting
+  [key ret_object]
+  {:pre [ (assumedTrue (map? ret_object)) ] }
+  (let [existing (getIfExists key ret_object)]
+    (cond (nil? existing)
+      (thro exceptionThrownWhenKeyDoesNotExist "key `" key 
+        "` doesn't exist in map `" ret_object "`")
+      :else
+      existing 
+      )
+    )
+  )
+
+(deftest test_get1
+  (is (= [:a 1] (getExisting :a {:a 1})))
+  (is (= [:a nil] (getExisting :a {:a nil})))
+  (is (= [:a 1] (getIfExists :a {:a 1})))
+  (is (= [:a nil] (getIfExists :a {:a nil})))
+  (is (nil? (getIfExists :b {:a nil})))
+  (isthrown? exceptionThrownWhenKeyDoesNotExist 
+    (getExisting :b {:a nil}))
+  )
 
 (defn- comparator_AZ_order [key1 key2]
   ;{:pre [ (q/assumedTrue (keyword? key1) (keyword? key2)) ]} 
