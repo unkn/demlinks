@@ -32,7 +32,7 @@
 ie. KEY_lines_count --> :lines_count"} 
 -allkeys
   (atom (sorted-map-by comparator_AZ_order)
-        :validator #(do (println %&) 1)
+        :validator #(do (println %&) 1 2 3)
         )
   )
 

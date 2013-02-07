@@ -11,6 +11,7 @@
 (ns runtime.q
   ;(:use runtime.testengine :reload-all)
   (:refer clojure.test :exclude [deftest is testing])
+  (:use robert.hooke)
   ;(:require flatland.useful.ns)
   ;(:use clojure.tools.trace) 
   ;(:use runtime.clazzez :reload-all) 
@@ -446,6 +447,14 @@ return true if assumption is correct
 )
 
 (defmacro assumedFalse
+"
+throws if any of the passed params evals to non-\"false?\"
+btw:
+=> (false? nil)
+false
+=> (false? false)
+true
+"
   [ & allPassedForms ]
   ;(prn allPassedForms)
   (throwIfNil &form allPassedForms)
@@ -590,6 +599,44 @@ ie. does ,(eval (quote a)) which is same as just  ,a"
 )
 
 
+(def initialTimes 0)
+(def unInitializedTimes -1)
+
+(def times (atom unInitializedTimes))
+
+(defn incTimes []
+  (swap! times inc)
+  )
+
+(defn incTimes_hook [f & arg]
+  (incTimes)
+  (apply f arg)
+  )
+
+(defn resetTimes []
+  (reset! times initialTimes)
+  )
+
+(defmacro times? [expectedTimes & forms]
+  `(do 
+    (resetTimes)
+    (do ~@forms)
+    (is (= ~expectedTimes @times))
+    )
+  )
+
+
+(defn- dummy1 []
+  nil
+  )
+
+(defn attachTimes [varfunc]
+  {:pre [(assumedTrue (var? varfunc) )] }
+  (add-hook varfunc #'incTimes_hook)
+  )
+
+(attachTimes #'dummy1)
+
 
 (deftest a-test2  
   (testing "encast"
@@ -597,7 +644,9 @@ ie. does ,(eval (quote a)) which is same as just  ,a"
            (encast true)
            (encast false)
            (encast nil)
-           (encast (println 1)) ;FIXME: check so that it doesn't get executed(evaluated) more than 1 time
+           (times? 1 
+             (encast (dummy1))
+             )
            (is (thrown? ArithmeticException (/ 1 0)))
            (is (thrown? clojure.lang.Compiler$CompilerException
                         (encast connrandomeseehtihtdahd210euowkjas)))
@@ -616,6 +665,22 @@ ie. does ,(eval (quote a)) which is same as just  ,a"
 
 
 (defmacro get-as-var [sym-or-var]
+  `(let [qsym# (quote sym-or-var)]
+    (if (var? ~sym-or-var)
+      ~sym-or-var
+      (if (symbol? qsym#)
+        (encast (var ~sym-or-var))
+        (throw 
+          (new RuntimeException 
+            (str "you should pass a symbol or a var not `" qsym# "`")
+            )
+          )
+        )
+      )
+    )
+  )
+
+#_(defmacro get-as-var [sym-or-var]
   `(let [qsym# (quote sym-or-var)]
    (if (var? ~sym-or-var)
     ~sym-or-var

@@ -72,32 +72,14 @@
 ;(def oneAtom (atom false))
 ;(defn scInit [] (reset! oneAtom false))
 
-(def initialTimes 0)
-(def unInitializedTimes -1)
-
-(def times (atom unInitializedTimes))
-
-(defn te [f & arg]
-  (swap! times inc)
-  (apply f arg)
-  )
 
 (defn sc1 []
   whatAssumptionsReturnWhenTrue)
 
-(add-hook #'sc1 #'te)
+(add-hook #'sc1 #'incTimes_hook)
+;(remove-hook #'sc1 #'incTimes_hook)
 
-(defn resetTimes []
-  (reset! times initialTimes)
-  )
 
-(defmacro times? [expectedTimes & forms]
-  `(do 
-    (resetTimes)
-    (do ~@forms)
-    (is (= ~expectedTimes @times))
-    )
-  )
 
 ;(defn sc1 [] 
 ;  (swap! times inc)
