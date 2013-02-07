@@ -666,17 +666,32 @@ CompilerException java.lang.ClassCastException: clojure.lang.Cons cannot be cast
     )
   )
 
-(defmacro xx [x]
-  (prn x)
-  )
+;(defmacro xx [func]
+;  (println func (var? func) (symbol? func) (var? (eval func)))
+;  )
+;=> (xx #'dummy1)
+;(var dummy1) false false true
+;nil
+;=> (xx dummy1)
+;dummy1 false true false
+;nil
+
 
 (defmacro attachTimes [func]
-  {:pre [(assumedTrue (or (symbol? func) (var? func) ))]}
+  {:pre [(assumedTrue (or (symbol? func) (var? func) (var? (eval func)) ) )]}
   (list `add-hook (list `get-as-var func) (var incTimes_hook))
   )
 ;both work
-;(attachTimes #'dummy1)
+(attachTimes #'dummy1)
 (attachTimes dummy1)
+
+(deftest test_addhook_on_same_var
+  (testing "add-hook called more than once on the same var, still has effect only once"
+    (times? 1
+      (dummy1)
+      )
+    )
+  )
 
 
 (deftest a-test2  
