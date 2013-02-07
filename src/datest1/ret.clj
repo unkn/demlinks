@@ -52,15 +52,24 @@ the key is paradoxically not the keyword
   `(add_new_key (quote ~keyname) ~thekey)
   )
 
+(def exceptionThrownWhenKeyAlreadyDefined
+  RuntimeException
+  )
+
 (defn-
   assoc2
   [zmap key val]
   (cond (clojure.core/get zmap key)
     ;XXX: yep this check has to be inside the swap! or else we can't use atom
-    (throw
-      (new Exception;TODO: make BugError exception or similar
-        (str "already defined/exists key:`" key "` val:`" val "` in map `" zmap "`")
-        )
+    (q/thro exceptionThrownWhenKeyAlreadyDefined
+    ;(throw
+     ; (new RuntimeException;TODO: make BugError exception or similar
+        ;(str 
+    "already defined/exists key:`" key 
+    "` val:`" val 
+    "` in map `" zmap "`"
+          ;)
+        ;)
       )
     :else ;it's nil aka not already existing, so
     (assoc zmap key val)
@@ -82,5 +91,12 @@ add_new_key [quoted_key_name thekey]
 
 (defkey 'a :a)
 (defkey 'b :b)
-(defkey 'a :c)
 
+(deftest test_alreadyexisting
+  (isthrown? exceptionThrownWhenKeyAlreadyDefined (defkey 'a :a))
+  (isthrown? exceptionThrownWhenKeyAlreadyDefined (defkey 'a :c))
+  )
+
+(gotests)
+
+(show_state)
