@@ -1,10 +1,10 @@
 ;FIXME: epic failing here
-(ns runtime.exceptions.BugError
+(ns runtime.exceptions
   ;(:import java.lang.Error)
-  ;)
+  )
 
-  (:gen-class
-    ;:name runtime.exceptions.BugError
+  (gen-class
+    :name runtime.exceptions.BugError
     :extends [java.lang.RuntimeException]
     :implements [clojure.lang.IDeref]
     ;:constructors {[] []}
@@ -20,7 +20,6 @@
     )
   ;:methods [[setLocation [String] void]
   ;          [getLocation [] String]])
-  )
 
 (import 'runtime.exceptions.BugError)
 
