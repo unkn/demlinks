@@ -761,6 +761,11 @@ CompilerException java.lang.ClassCastException: clojure.lang.Cons cannot be cast
   )
 );comment
 
+(def exception_NotImplemented RuntimeException);FIXME: make a class here
+
+(defn ni [& all]
+  (thro exception_NotImplemented "NotImplementedException: " all);we can leave it as list, it's much more visible
+  )
 
 (defn gotests
   []

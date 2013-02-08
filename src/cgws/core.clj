@@ -10,7 +10,9 @@
 ;change(?) git windows symlinks
 (ns cgws.core
   (:import java.io.File)
+  (:import java.io.BufferedReader)
   (:require [datest1.ret :as ret] :reload-all)
+  (:require [runtime.q :as q] :reload-all)
   )
 
 ;;TODO: give meaningful names to the let variables
@@ -35,6 +37,7 @@
 ;(System/getenv)
 
 (defn start-process
+  "env or workdir can be nil to signify inherit from parent process"
   ;  .waitFor
   [^String cmd 
    ^{:tag "[Ljava.lang.String;"} env ;array of String 
@@ -45,8 +48,7 @@
     )
   )
 
-(defn exec-cmd
-  "env or workdir can be nil to signify inherit from parent process"
+(defn getBufferedInputFromProcess
   [
    ^Process process]
   (let [
@@ -58,7 +60,7 @@
   )
 
 (defn shellify [command workdir]
-  (exec-cmd (start-process command nil workdir))
+  (getBufferedInputFromProcess (start-process command nil workdir))
   )
 
 
@@ -71,22 +73,22 @@
   "returns a list of all symlinks inside the specified git repository 
    as relative paths to the provided repo-path"
   [repo-path]
-  (with-open [input (shellify gitlstree_cmd repo-path)]
+  (with-open [^BufferedReader input (shellify gitlstree_cmd repo-path)]
     (let [lazylines (line-seq input)
           ]
       (disj 
         (set
           (map #(
                   let [ss (clojure.string/split ^String % #"\s")
-                       filemode (first ss)
+                       ^String filemode (first ss)
                        ]
                   (if (.equals filemode symlink-filemode)
                     (last ss)
                     nil
                     )
                   )
-               lazylines
-               )
+            lazylines
+            )
           )
         nil)
       )
@@ -114,15 +116,16 @@
     (cond isFile?
           (do 
             (println "making a symlink to a file" full-path " -> " sym-to)
-            (throw (new Exception "not implemented"))
+            (q/ni)
             )
           
           isDir?
           (let [
-                deleted? (println ".delete" ffull)]
+                deleted? (println ".delete" ffull);FIXME: actually delete here
+                ]
             (if (not deleted?)
               (println "cannot delete:" ffull)
-              (let [process (start-process 
+              (let [^Process process (start-process 
                               (str "cmd.exe /c mklink /d \"" full-path "\" \"" sym-to "\"") 
                               nil 
                               fparent-folder
