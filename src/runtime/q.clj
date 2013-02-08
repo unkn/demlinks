@@ -10,7 +10,9 @@
 
 (ns runtime.q
   ;(:use runtime.testengine :reload-all)
+  (:refer-clojure :exclude [sorted?])
   (:refer clojure.test :exclude [deftest is testing])
+  (:refer-clojure :exclude [sorted?])
   (:use robert.hooke)
   (:refer-clojure :exclude [sorted?])
   ;(:require flatland.useful.ns)
