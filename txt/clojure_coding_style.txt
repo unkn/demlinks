@@ -11,6 +11,9 @@ some_weird_multi_word_symbol
 
 	because the latter can be double cliked (in eclipse/ccw) to be fully selected
 	instead of the former getting only one of those words selected.
+	
+hmm this seems better than camelcase because Ctrl+leftarrow will stop at _
+while with camelcase it will skip entire identifier but maybe we want it to stop at each word in camelcase
 
 2. fail-fast system
 basically, test for (both at compile time and runtime)errors and fail as soon as they're encountered

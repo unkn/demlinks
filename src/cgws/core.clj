@@ -11,7 +11,7 @@
 (ns cgws.core
   (:import java.io.File)
   (:import java.io.BufferedReader)
-  (:require [datest1.ret :as ret] :reload-all)
+  (:require [datest1.ret :as r] :reload-all)
   (:require [runtime.q :as q] :reload-all)
   )
 
@@ -30,7 +30,7 @@
            ))
   (println "passed args:" args)
   (time (transform_flatfiles_to_symlinks repo-path))
-(ret/getIfExists :key {:map 1})
+;(r/getIfExists :key {:map 1})
   )
 
 
@@ -152,15 +152,15 @@
     );let
   );defn
 
-(def KEY_LinesCount :LinesCount)
-(def KEY_PointsTo :PointsTo)
+(r/defkey :LinesCount)
+(r/defkey :PointsTo)
 
 (defn parse-flatfile-wannabe-symlink 
-  "ie. parses a file like this:
+"
+ie. parses a file like this:
 s:\\workspace2012\\emacs-live\\packs\\dev\\lang-pack\\lib\\actionscript-mode
 which contains this line(basically without newlines):
 ../vendor/submodules/actionscript-mode
-
 "
   [flat_file_symlink]
   (with-open [rdr (clojure.java.io/reader flat_file_symlink)]
@@ -172,7 +172,7 @@ which contains this line(basically without newlines):
           ^String pointsTo (first allLines)
           ]
       {:valid? (and (= 1 howManyLines) (empty? pointsTo))
-       :flatfile flat_file_symlink 
+       :flatfile flat_file_symlink
        KEY_LinesCount howManyLines
        :non_empty_lines_count howManyNonEmptyLines
        KEY_PointsTo pointsTo

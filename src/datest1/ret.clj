@@ -9,20 +9,69 @@
 
 (ns ^{:doc "random text2 namespace meta test, need repl restart if changed" :author "whatever"} 
   datest1.ret
-  (:refer-clojure :exclude [get])
   (:use [runtime.q :as q] :reload-all)
+  (:refer-clojure :exclude [sorted?])
+  ;(:use [clojure.core :as c])
+  (:use clojure.tools.trace)
   )
 
 (println *file*)
 
+
+(defn comparator_AZ_order [key1 key2]
+  ;{:pre [ (q/assumedTrue (keyword? key1) (keyword? key2)) ]} 
+  {:pre [ 
+         (q/assumedFalse (nil? key1) (nil? key2))
+         
+         ;will fail when comparing keywords with symbols
+         ;should always be symbol with symbol OR keywords with keywords
+         ;so the bug is at the caller
+         (or
+           (and (symbol? key1) (symbol? key2))
+           (and (keyword? key1) (keyword? key2) )
+           )
+         ]}
+  ;(prn "comparatorAZ:" key1 key2 (keyword? key1) (keyword? key2))
+           ;(q/assumedTrue 
+  ;)
+  (compare (str key1) (str key2))
+  )
+
+
+(def
+  ^{:private true
+    :doc "keeps a 1-to-1 map between symbol name and keyword
+ie. KEY_lines_count --> :lines_count
+the key is paradoxically not the keyword
+"}
+-allSymbolsToKeys
+  (ref (sorted-map-by comparator_AZ_order)
+        :validator #(do 
+                      (println "setting ref to value:" %&) 
+                      (q/sortedMap? %)
+                      )
+        )
+  )
+
+(def
+  ^{:doc "one to one mapping from keyword to symbol"}
+-allKeysToSymbols
+  (ref (sorted-map-by comparator_AZ_order)
+    :validator #(q/sortedMap? %)
+    )
+  )
+
 ;(ns-unmap *ns* 'get)
-(defn getIfExists
+(defn getKeyIfExists
 "
 nil is not exists,
 [key val] if exists
 "
-  [key ret_object]
-  {:pre [ (assumedTrue (map? ret_object)) ] }
+  ([key]
+    (getKeyIfExists @-allSymbolsToKeys key)
+    )
+  ([ret_object key]
+  {:pre [ (assumedTrue (map? ret_object) ) ] }
   ;(println "get:" key ret_object)
   (find ret_object key)
   #_(cond (not (contains? ret_object key))
@@ -31,15 +80,19 @@ nil is not exists,
     (clojure.core/get ret_object key)
     )
   )
+  )
 
 (def exceptionThrownWhenKeyDoesNotExist
   RuntimeException
   )
 
-(defn getExisting
-  [key ret_object]
+(defn getExistingKey
+  ([key]
+    (getExistingKey @-allSymbolsToKeys key)
+    )
+  ([ret_object key ]
   {:pre [ (assumedTrue (map? ret_object)) ] }
-  (let [existing (getIfExists key ret_object)]
+  (let [existing (getKeyIfExists ret_object key)]
     (cond (nil? existing)
       (thro exceptionThrownWhenKeyDoesNotExist "key `" key 
         "` doesn't exist in map `" ret_object "`")
@@ -48,74 +101,72 @@ nil is not exists,
       )
     )
   )
+  )
 
 (deftest test_get1
-  (is (= [:a 1] (getExisting :a {:a 1})))
-  (is (= [:a nil] (getExisting :a {:a nil})))
-  (is (= [:a 1] (getIfExists :a {:a 1})))
-  (is (= [:a nil] (getIfExists :a {:a nil})))
-  (is (nil? (getIfExists :b {:a nil})))
+  (is (= [:a 1] (getExistingKey {:a 1} :a )))
+  (is (= [:a nil] (getExistingKey {:a nil} :a )))
+  (is (= [:a 1] (getKeyIfExists {:a 1} :a )))
+  (is (= [:a nil] (getKeyIfExists {:a nil} :a )))
+  (is (nil? (getKeyIfExists {:a nil} :b )))
   (isthrown? exceptionThrownWhenKeyDoesNotExist 
-    (getExisting :b {:a nil}))
+    (getExistingKey {:a nil} :b ))
   )
 
-(defn- comparator_AZ_order [key1 key2]
-  ;{:pre [ (q/assumedTrue (keyword? key1) (keyword? key2)) ]} 
-  {:pre [ (q/assumedFalse (nil? key1) (nil? key2)) ]}
-  ;(prn "comparatorAZ:" key1 key2 (keyword? key1) (keyword? key2)) 
-  (compare (str key1) (str key2))
-  )
 
-(def 
-  ^{:private true
-    :doc "keeps map between symbol name and keyword
-ie. KEY_lines_count --> :lines_count
-the key is paradoxically not the keyword
-"} 
--allkeys
-  (atom (sorted-map-by comparator_AZ_order)
-        :validator #(do (println %&) 1 2 3)
-        )
-  )
 
 
 (def exceptionThrownWhenNonSymbolPassedAsKey
   AssertionError)
 
-(defmacro defkey [keyname thekey]
-  {:pre [ (q/assumedTrue (keyword? thekey)) ]
-   ;:post [ (do (prn "after : " -allkeys ) true) ]
+(defmacro defsym2key [symbolKeyName thekey]
+  {:pre [
+         (q/assumedTrue (keyword? thekey))
+         (binding [*exceptionThrownBy_assumedPred* exceptionThrownWhenNonSymbolPassedAsKey]
+           (q/assumedTrue (symbol? symbolKeyName))
+           )
+         ]
    }
-  (prn "current: " -allkeys)
-  (prn "passed : " keyname thekey)
-  (let [eva (eval keyname)
-        _ (binding [*exceptionThrownBy_assumedPred* exceptionThrownWhenNonSymbolPassedAsKey]
-            (assumedTrue (symbol? eva))
-            )
-        sym (symbol eva)]
-    ;(println sym)
+  (prn "current: " -allSymbolsToKeys -allKeysToSymbols)
+  (prn "passed : " symbolKeyName thekey)
+  `(do
+     (add_new_key (quote ~symbolKeyName) ~thekey)
+     (def ~symbolKeyName ~thekey)
+     )
+  )
+
+(defmacro defkey
+  [thekey]
+  {:pre [(q/assumedTrue (keyword? thekey)) ]}
+  (let [
+        nskey (namespace thekey)
+        prens1 (when nskey (str nskey "_"))
+        prens2 (when nskey (str nskey "/"))
+        namekey (name thekey)
+        prefix "KEY_"
+        newsym (symbol (str prefix prens1 namekey))
+        newkey (keyword (str prefix prens2 namekey))
+        ]
     `(do
-       (add_new_key (quote ~keyname) ~thekey)
-       (def ~sym ~thekey)
+       (defsym2key ~newsym ~newkey)
        )
     )
   )
 
 (def exceptionThrownWhenKeyAlreadyDefined
-  RuntimeException
+  RuntimeException ;TODO: make BugError exception or similar
   )
 
 (defn-
   assoc2
   [zmap key val]
-  (cond (clojure.core/get zmap key)
+  (let [existing (find zmap key)]
+  (cond existing
     ;XXX: yep this check has to be inside the swap! or else we can't use atom
     (q/thro exceptionThrownWhenKeyAlreadyDefined
-    ;(throw
-     ; (new RuntimeException;TODO: make BugError exception or similar
-        ;(str 
     "already defined/exists key:`" key 
-    "` val:`" val 
+    "` as `" existing 
+    "` you wanted to set val: `" val 
     "` in map `" zmap "`"
           ;)
         ;)
@@ -124,30 +175,51 @@ the key is paradoxically not the keyword
     (assoc zmap key val)
     )
   )
+  )
 
-(defn 
-  ^:private
+(defn
+  ^:public;rivate
 add_new_key [quoted_key_name thekey]
   (println "add_new_key: " quoted_key_name thekey)
-  (swap! -allkeys
-    assoc2
-    quoted_key_name thekey
+  (dosync
+    (ref-set -allSymbolsToKeys
+      (assoc2 @-allSymbolsToKeys quoted_key_name thekey)
+      )
+    (ref-set -allKeysToSymbols
+      (assoc2 @-allKeysToSymbols thekey quoted_key_name)
+      )
+    #_(swap! -allSymbolsToKeys
+        assoc2
+        quoted_key_name thekey
+        )
     )
-  (println "after add_new_key: " -allkeys)
+  (println "after add_new_key: " -allSymbolsToKeys  -allKeysToSymbols)
   )
 
 
 
-(defkey 'a :a)
-(defkey 'b :b)
+(defsym2key a :a)
+(defsym2key b :b)
+(defsym2key randomsymbo12892712391 :randomkey1)
 
 #_(deftest test_nonsymbolkey ;this happens at compile time
-  (isthrown? q/exceptionThrownBy_assumedPred (defkey 1 :b))
+  (isthrown? q/exceptionThrownBy_assumedPred (defsym2key 1 :b))
   )
 
 (deftest test_alreadyexisting
-  (isthrown? exceptionThrownWhenKeyAlreadyDefined (defkey 'a :a))
-  (isthrown? exceptionThrownWhenKeyAlreadyDefined (defkey 'a :c))
+  (isthrown? exceptionThrownWhenKeyAlreadyDefined (defsym2key a :a))
+  (isthrown? exceptionThrownWhenKeyAlreadyDefined (defsym2key a :c))
+  (isthrown? exceptionThrownWhenKeyAlreadyDefined (defsym2key b :c))
+  (isthrown? exceptionThrownWhenKeyAlreadyDefined (defsym2key c :a))
+  
+  (defkey :a)
+  (isthrown? exceptionThrownWhenKeyAlreadyDefined (defkey :a))
+  )
+
+#_(deftest test_somegetkey
+  (is (= randomsymbo12892712391 
+        (getKeyIfExists randomsymbo12892712391) 
+        (getExistingKey randomsymbo12892712391)))
   )
 
 (show_state)

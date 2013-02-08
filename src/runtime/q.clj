@@ -12,6 +12,7 @@
   ;(:use runtime.testengine :reload-all)
   (:refer clojure.test :exclude [deftest is testing])
   (:use robert.hooke)
+  (:refer-clojure :exclude [sorted?])
   ;(:require flatland.useful.ns)
   ;(:use clojure.tools.trace) 
   ;(:use runtime.clazzez :reload-all) 
@@ -772,6 +773,17 @@ CompilerException java.lang.ClassCastException: clojure.lang.Cons cannot be cast
   (binding [*assert* true *runTimeAssumptions* true]
     (run-tests)
     )
+  )
+
+;(ns-unmap *ns* 'sorted?)
+(defn sorted?
+  [coll]
+  {:pre [(assumedTrue (coll? coll))]}
+  (clojure.core/sorted? coll)
+  )
+
+(defn sortedMap? [param]
+  (and (map? param) (sorted? param))
   )
 
 ;(q/show_state)
