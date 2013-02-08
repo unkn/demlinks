@@ -135,4 +135,29 @@
       )
     )
 
-;);comment, have this be last line!
+
+(defmacro defkey ;this is actually useless cause if I change the key the sym also changes which is exactly what I wanted to prevent in the first place
+  [thekey]
+  {:pre [(q/assumedTrue (keyword? thekey)) ]}
+  (let [
+        nskey (namespace thekey)
+        prens1 (when nskey (str nskey "_"))
+        prens2 (when nskey (str nskey "/"))
+        namekey (name thekey)
+        prefix "KEY_"
+        newsym (symbol (str prefix prens1 namekey))
+        newkey (keyword (str prefix prens2 namekey))
+        ]
+    `(do
+       (defSym2Key ~newsym ~newkey)
+       )
+    )
+  )
+
+(deftest test_alreadyexisting
+  (defkey :a)
+  (isthrown? exceptionThrownWhenKeyAlreadyDefined (defkey :a))
+  )
+
+
+

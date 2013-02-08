@@ -119,7 +119,7 @@ nil is not exists,
 (def exceptionThrownWhenNonSymbolPassedAsKey
   AssertionError)
 
-(defmacro defsym2key [symbolKeyName thekey]
+(defmacro defSym2Key [symbolKeyName thekey]
   {:pre [
          (q/assumedTrue (keyword? thekey))
          (binding [*exceptionThrownBy_assumedPred* exceptionThrownWhenNonSymbolPassedAsKey]
@@ -131,27 +131,10 @@ nil is not exists,
   (prn "passed : " symbolKeyName thekey)
   `(do
      (add_new_key (quote ~symbolKeyName) ~thekey)
-     (def ~symbolKeyName ~thekey)
+     (def ~symbolKeyName ~thekey);we also def this so it's avail.in ccw code completion once ran
      )
   )
 
-(defmacro defkey
-  [thekey]
-  {:pre [(q/assumedTrue (keyword? thekey)) ]}
-  (let [
-        nskey (namespace thekey)
-        prens1 (when nskey (str nskey "_"))
-        prens2 (when nskey (str nskey "/"))
-        namekey (name thekey)
-        prefix "KEY_"
-        newsym (symbol (str prefix prens1 namekey))
-        newkey (keyword (str prefix prens2 namekey))
-        ]
-    `(do
-       (defsym2key ~newsym ~newkey)
-       )
-    )
-  )
 
 (def exceptionThrownWhenKeyAlreadyDefined
   RuntimeException ;TODO: make BugError exception or similar
@@ -198,19 +181,19 @@ add_new_key [quoted_key_name thekey]
 
 
 
-(defsym2key a :a)
-(defsym2key b :b)
-(defsym2key randomsymbo12892712391 :randomkey1)
+(defSym2Key a :a)
+(defSym2Key b :b)
+(defSym2Key randomsymbo12892712391 :randomkey1)
 
 #_(deftest test_nonsymbolkey ;this happens at compile time
-  (isthrown? q/exceptionThrownBy_assumedPred (defsym2key 1 :b))
+  (isthrown? q/exceptionThrownBy_assumedPred (defSym2Key 1 :b))
   )
 
 (deftest test_alreadyexisting
-  (isthrown? exceptionThrownWhenKeyAlreadyDefined (defsym2key a :a))
-  (isthrown? exceptionThrownWhenKeyAlreadyDefined (defsym2key a :c))
-  (isthrown? exceptionThrownWhenKeyAlreadyDefined (defsym2key b :c))
-  (isthrown? exceptionThrownWhenKeyAlreadyDefined (defsym2key c :a))
+  (isthrown? exceptionThrownWhenKeyAlreadyDefined (defSym2Key a :a))
+  (isthrown? exceptionThrownWhenKeyAlreadyDefined (defSym2Key a :c))
+  (isthrown? exceptionThrownWhenKeyAlreadyDefined (defSym2Key b :c))
+  (isthrown? exceptionThrownWhenKeyAlreadyDefined (defSym2Key c :a))
   
   (defkey :a)
   (isthrown? exceptionThrownWhenKeyAlreadyDefined (defkey :a))

@@ -152,8 +152,8 @@
     );let
   );defn
 
-(r/defkey :LinesCount)
-(r/defkey :PointsTo)
+(r/defSym2Key KEY_LinesCount :LinesCount)
+(r/defSym2Key KEY_PointsTo :PointsTo)
 
 (defn parse-flatfile-wannabe-symlink 
 "
