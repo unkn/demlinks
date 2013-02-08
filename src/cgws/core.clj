@@ -7,7 +7,7 @@
 ; the terms of this license.
 ; You must not remove this notice, or any other, from this software.
 
-;change(?) git windows symlinks
+;change(?) git-windows symlinks
 (ns cgws.core
   (:import java.io.File)
   (:import java.io.BufferedReader)
@@ -17,7 +17,7 @@
 
 ;;TODO: give meaningful names to the let variables
 
-(declare transform-flatfiles-to-symlinks)
+(declare transform_flatfiles_to_symlinks)
 
 (def repo-path (new java.io.File "s:\\workspace2012\\emacs-live\\"))
 
@@ -29,7 +29,7 @@
            "But this is meant only for windows because git doesn't know how to do that in windows."
            ))
   (println "passed args:" args)
-  (time (transform-flatfiles-to-symlinks repo-path))
+  (time (transform_flatfiles_to_symlinks repo-path))
 (ret/getIfExists :key {:map 1})
   )
 
@@ -40,7 +40,7 @@
   "env or workdir can be nil to signify inherit from parent process"
   ;  .waitFor
   [^String cmd 
-   ^{:tag "[Ljava.lang.String;"} env ;array of String 
+   ^{:tag "[Ljava.lang.String;"} env ;clojure type hint for java's array of String 
    ^File workdir]
   (let [^Runtime rt (Runtime/getRuntime)
         ^Process process (.exec rt cmd env workdir)]
@@ -69,24 +69,26 @@
 
 (def symlink-filemode "120000")
 
-(defn get_all_symlinks_from_repo 
+(defn get_all_symlinks_from_repo
   "returns a list of all symlinks inside the specified git repository 
    as relative paths to the provided repo-path"
   [repo-path]
   (with-open [^BufferedReader input (shellify gitlstree_cmd repo-path)]
     (let [lazylines (line-seq input)
           ]
-      (disj 
+      (disj ;remove nils from result
         (set
-          (map #(
-                  let [ss (clojure.string/split ^String % #"\s")
+          (map (fn [aline]
+                 (let [
+                       ss (clojure.string/split ^String aline	 #"\s")
                        ^String filemode (first ss)
                        ]
-                  (if (.equals filemode symlink-filemode)
-                    (last ss)
-                    nil
-                    )
-                  )
+                   (if (.equals filemode symlink-filemode)
+                     (last ss)
+                     nil
+                     )
+                   )
+                 )
             lazylines
             )
           )
@@ -150,8 +152,8 @@
     );let
   );defn
 
-(def KEY_lines_count :lines_count)
-(def KEY_points_to :points_to)
+(def KEY_LinesCount :LinesCount)
+(def KEY_PointsTo :PointsTo)
 
 (defn parse-flatfile-wannabe-symlink 
   "ie. parses a file like this:
@@ -163,26 +165,26 @@ which contains this line(basically without newlines):
   [flat_file_symlink]
   (with-open [rdr (clojure.java.io/reader flat_file_symlink)]
     (let [
-          all_lines (line-seq rdr)
-          all_non_empty_lines (filter #(not (empty? %)) all_lines)
-          how_many_lines (count all_lines)
-          how_many_nonEmpty_lines (count all_non_empty_lines)
-          ^String points_to (first all_lines)
+          allLines (line-seq rdr)
+          allNonEmptyLines (filter #(not (empty? %)) allLines)
+          howManyLines (count allLines)
+          howManyNonEmptyLines (count allNonEmptyLines)
+          ^String pointsTo (first allLines)
           ]
-      {:valid? (and (= 1 how_many_lines) (empty? points_to))
+      {:valid? (and (= 1 howManyLines) (empty? pointsTo))
        :flatfile flat_file_symlink 
-       KEY_lines_count how_many_lines
-       :non_empty_lines_count how_many_nonEmpty_lines
-       KEY_points_to points_to
+       KEY_LinesCount howManyLines
+       :non_empty_lines_count howManyNonEmptyLines
+       KEY_PointsTo pointsTo
        }
       )
     )
   )
 
-(defn get_lines_count [parsed_ff]
+(defn getLinesCount [parsed_ff]
   {:pre [(map? parsed_ff)]
    }
-  (let [found (find parsed_ff KEY_lines_count)
+  (let [found (find parsed_ff KEY_LinesCount)
         _ (assert found "you tried to access a 'field' that didn't exist, you should've checked before!")
         ;ie. non nil, it's [key value] vector
         ]
@@ -193,7 +195,7 @@ which contains this line(basically without newlines):
 (defn get_points_to [parsed_ff]
   {:pre [(map? parsed_ff)]
    }
-  (let [found (find parsed_ff KEY_points_to)
+  (let [found (find parsed_ff KEY_PointsTo)
         _ (assert found "you tried to access a 'field' that didn't exist, you should've checked before!")
         ;ie. non nil, it's [key value] vector
         ]
@@ -201,13 +203,13 @@ which contains this line(basically without newlines):
     )
   )
 
-(defn transform-flatfile-to-symlink [flat-file]
+(defn transform_flatfile_to_symlink [flat-file]
   (let [
         ^{:tag java.io.File} ffull (.getAbsoluteFile (clojure.java.io/as-file flat-file))
         ^String full-path (.getAbsolutePath ffull)
         zmap (parse-flatfile-wannabe-symlink full-path)
         ;TODO: handle case when symlink is invalid
-        how-many-lines (get_lines_count zmap)
+        how-many-lines (getLinesCount zmap)
         ^String sym-to (get_points_to zmap)
         ]
     
@@ -221,25 +223,22 @@ which contains this line(basically without newlines):
   )
   
   
-(defn transform-flatfiles-to-symlinks [repo-path]
+(defn transform_flatfiles_to_symlinks [repo-path]
   (println "Transform begins...")
   (doseq [
           ; the flat file which is supposed to be a symlink to the location which is specified inside its contents
-          rel-symlink (get_all_symlinks_from_repo repo-path)
+          rel_symlink (get_all_symlinks_from_repo repo-path)
+          
+          ^{:tag java.io.File} abs_symlink (new java.io.File (str repo-path (java.io.File/separator) rel_symlink))
           ]
-    (let [;TODO: move this as :let inside doseq
-          ^{:tag java.io.File} abs-symlink (new java.io.File (str repo-path (java.io.File/separator) rel-symlink))
-          ]
-      (if (.isFile abs-symlink);when core.symlinks=false  all symlinks are just files after checkout
-        (transform-flatfile-to-symlink abs-symlink)
-        (println (str "ignoring " 
-                      (if (.isDirectory abs-symlink) 
-                        "directory"
-                        "unknown-type(not dir not file)";this requires changing this code to handle this new type
-                        )
-                      ": " abs-symlink))
-        )
-      
+    (if (.isFile abs_symlink);when core.symlinks=false  all symlinks are just files after checkout
+      (transform_flatfile_to_symlink abs_symlink)
+      (println (str "ignoring " 
+                 (if (.isDirectory abs_symlink) 
+                   "directory"
+                   "unknown-type(not dir not file)";XXX: this requires changing this code to handle this new type
+                   )
+                 ": " abs_symlink))
       )
     )
   (println "Transform ends...")
