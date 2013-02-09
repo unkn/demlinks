@@ -243,9 +243,11 @@ which contains this line(basically without newlines):
           ;x (println "a")
           ;_ (println repo-path);XXX: wtf, if I comment out this line, it throws below?!
           ;^{:tag java.io.File} 
+          ]
+    (let [
           ^java.io.File abs_symlink 
             (q/newClass fileClass
-            ;(new java.io.File 
+              ;(new java.io.File 
               (str 
                 (.toString 
                   (.getAbsolutePath repo-path);IllegalArgumentException Don't know how to create ISeq from: java.io.File
@@ -253,17 +255,18 @@ which contains this line(basically without newlines):
                 *separator* 
                 rel_symlink)
             )
-          ]
-    (cond (.isFile abs_symlink);when core.symlinks=false  all symlinks are just files after checkout
-      (transform_flatfile_to_symlink abs_symlink)
-      :else
-      (println (str "ignoring " 
-                 (cond (.isDirectory abs_symlink) 
-                   "directory"
-                   :else
-                   "unknown-type(not dir not file)";XXX: this requires changing this code to handle this new type
-                   )
-                 ": " abs_symlink))
+            ]
+      (cond (.isFile abs_symlink);when core.symlinks=false  all symlinks are just files after checkout
+        (transform_flatfile_to_symlink abs_symlink)
+        :else
+        (println (str "ignoring " 
+                   (cond (.isDirectory abs_symlink) 
+                     "directory"
+                     :else
+                     "unknown-type(not dir not file)";XXX: this requires changing this code to handle this new type
+                     )
+                   ": " abs_symlink))
+        )
       )
     )
   (println "Transform ends...")

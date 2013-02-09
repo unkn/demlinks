@@ -311,6 +311,12 @@ got (re)loaded and/or compiled
     )
   )
 
+
+(defn someeval [& all]
+  (map identity all)
+  (map constantly all)
+  )
+
 (def ^{:dynamic true} *exceptionThrownBy_assumedPred* AssertionError)
 ;(defn *exceptionThrownBy_assumedPred*_fn [] *exceptionThrownBy_assumedPred*)
 ;inspired from (source assert)
@@ -324,11 +330,29 @@ ie. if pred is true? and (true? x) is false or nil it will throw
     (let [failMsgIfAny 
           (when-not (empty? restOfFailMsg)
             ;thanks to alex_baranosky for the following form (originally here https://www.refheap.com/paste/11118 )
-            (apply str 
-              (concat ["\n"
-                       "The fail msg is:\n`\n"] 
-                restOfFailMsg 
-                ["\n`"]))
+            ;(eval
+            ;(let [evalled 
+                  ;(map eval restOfFailMsg) CompilerException java.lang.UnsupportedOperationException: Can't eval locals, compiling:(datest1/ret.clj:263:11) 
+                ;  (apply someeval restOfFailMsg)
+               ;   ]
+;            (do
+;              (prn 
+;                (concat ['list "\n"
+;                         "The fail msg is:\n`\n"] 
+;                  ;evalled
+;                  restOfFailMsg
+;                  ["\n`"])
+;                )
+              
+              (list `apply `str
+                (concat ['list "\n"
+                         "The fail msg is:\n`\n"] 
+                  ;evalled
+                  restOfFailMsg
+                  ["\n`"])
+                )
+;              )
+              ;)
             )
           ]
       `(do
