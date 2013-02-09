@@ -48,7 +48,7 @@ the key is paradoxically not the keyword
 -allSymbolsToKeys
   (ref (sorted-map-by comparator_AZ_order)
         :validator #(do 
-                      (println "setting ref " '-allSymbolsToKeys "to value:" %) 
+                      ;(println "setting ref " '-allSymbolsToKeys "to value:" %) 
                       (q/sortedMap? %)
                       )
         )
@@ -60,7 +60,7 @@ the key is paradoxically not the keyword
   (ref (sorted-map-by comparator_AZ_order)
     ;:validator #(q/sortedMap? %)
     :validator #(do 
-                      (println "setting ref " '-allKeysToSymbols "to value:" %) 
+                      ;(println "setting ref " '-allKeysToSymbols "to value:" %) 
                       (q/sortedMap? %)
                       )
     )
