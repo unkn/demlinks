@@ -62,7 +62,13 @@ the key is paradoxically not the keyword
     )
   )
 
-
+(defn -cleanMaps []
+  (dosync
+    (ref-set -allKeysToSymbols (empty @-allKeysToSymbols))
+    (ref-set -allSymbolsToKeys (empty @-allSymbolsToKeys))
+    )
+  nil
+  )
 
 (def exceptionThrownWhenKeyDoesNotExist
   RuntimeException
@@ -196,20 +202,20 @@ returns a vector [key val]
   assoc2
   [zmap key val]
   (let [existing (find zmap key)]
-  (cond existing
-    ;XXX: yep this check has to be inside the swap! or else we can't use atom
-    (q/thro exceptionThrownWhenKeyAlreadyDefined
-    "already defined/exists key:`" key 
-    "` as `" existing 
-    "` you wanted to set val: `" val 
-    "` in map `" zmap "`"
-          ;)
+    (cond existing
+      ;XXX: yep this check has to be inside the swap! or else we can't use atom
+      (q/thro exceptionThrownWhenKeyAlreadyDefined
+        "already defined/exists key:`" key 
+        "` as `" existing 
+        "` you wanted to set val: `" val 
+        "` in map `" zmap "`"
         ;)
+        ;)
+        )
+      :else ;it's nil aka not already existing, so
+      (assoc zmap key val)
       )
-    :else ;it's nil aka not already existing, so
-    (assoc zmap key val)
     )
-  )
   )
 
 (defn
@@ -284,4 +290,5 @@ add_new_key [quoted_key_name thekey]
 (show_state)
 (gotests)
 
-
+;last line: (but this means, (run-tests) will fail
+(-cleanMaps)
