@@ -15,12 +15,15 @@
         m  (/ (sum identity xs) n)
         m2 (/ (sum #(* % %) xs) n) 
         v  (- m2 (* m m))
-        ^{:tag java.io.File} ffull (.getAbsoluteFile (clojure.java.io/as-file "flat-file"))
+;        ^{:tag java.io.File} ;hmm this doesn't need a type hint but the graph one does
+        ff (clojure.java.io/as-file "flat-file")
+        ffull (.getAbsoluteFile ff)
         ]
     {:n n   ; count   
      :m m   ; mean 
      :m2 m2 ; mean-square
      :v v   ; variance
+     :ffull ffull
      }))
 
 (def stats-graph
@@ -55,6 +58,7 @@
 
 ;(println (.getAbsoluteFile ff))
 (println (:ffull (stats-eager {:xs [1 2 3 6]})))
+(println (:ffull (stats {:xs [1 2]})))
 
 (def extended-stats  
   (graph/eager-compile 
