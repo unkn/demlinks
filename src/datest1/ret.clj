@@ -73,13 +73,13 @@ the key is paradoxically not the keyword
 (def exceptionThrownWhenMalformedInputPassed
   AssertionError)
 
-(defn getKeyIfExists
+(defn getVectorKeyIfExists
 "
 you may pass: symbol or keyword
 ie.
-(getKeyIfExists a) where a evals to :a or 'a
-(getKeyIfExists 'a)
-(getKeyIfExists :a)
+(getVectorKeyIfExists a) where a evals to :a or 'a
+(getVectorKeyIfExists 'a)
+(getVectorKeyIfExists :a)
 returns:
 nil if not exists,
 [key val] if exists, where key is the same as what you passed evaluated to
@@ -95,7 +95,7 @@ nil if not exists,
               key "` whatever you passed evaluated to this before the call")
             )
           ]
-      (getKeyIfExists whichMap key)
+      (getVectorKeyIfExists whichMap key)
       )
     )
   ([ret_object key]
@@ -112,8 +112,10 @@ nil if not exists,
   )
 
 
-
-(defn getExistingKey
+(defn getExistingKeyVec
+"
+returns a vector [key val]
+" 
   ([key]
     (let [whichMap
           (cond
@@ -125,11 +127,11 @@ nil if not exists,
               key "` whatever you passed evaluated to this before the call")
             )
           ]
-      (getExistingKey whichMap key)
+      (getExistingKeyVec whichMap key)
       )
     )
   ([ret_object key]
-    (let [existing (getKeyIfExists ret_object key)]
+    (let [existing (getVectorKeyIfExists ret_object key)]
       (cond (nil? existing)
         (thro exceptionThrownWhenKeyDoesNotExist "key `" key 
           "` doesn't exist in map `" ret_object "`")
@@ -140,16 +142,26 @@ nil if not exists,
     )
   )
 
-
+(defn getExistingKey
+  [key]
+  (let [[k v] (getExistingKeyVec key)
+        ]
+    (cond (keyword? k)
+      k
+      :else
+      v
+      )
+    )
+  )
 
 (deftest test_get1
-  (is (= [:a 1] (getExistingKey {:a 1} :a )))
-  (is (= [:a nil] (getExistingKey {:a nil} :a )))
-  (is (= [:a 1] (getKeyIfExists {:a 1} :a )))
-  (is (= [:a nil] (getKeyIfExists {:a nil} :a )))
-  (is (nil? (getKeyIfExists {:a nil} :b )))
+  (is (= [:a 1] (getExistingKeyVec {:a 1} :a )))
+  (is (= [:a nil] (getExistingKeyVec {:a nil} :a )))
+  (is (= [:a 1] (getVectorKeyIfExists {:a 1} :a )))
+  (is (= [:a nil] (getVectorKeyIfExists {:a nil} :a )))
+  (is (nil? (getVectorKeyIfExists {:a nil} :b )))
   (isthrown? exceptionThrownWhenKeyDoesNotExist 
-    (getExistingKey {:a nil} :b ))
+    (getExistingKeyVec {:a nil} :b ))
   )
 
 
@@ -239,18 +251,18 @@ add_new_key [quoted_key_name thekey]
 
 (deftest test_somegetkey
   (is (= [randomsymbo12892712391 'randomsymbo12892712391] 
-        (getKeyIfExists randomsymbo12892712391) 
-        (getExistingKey randomsymbo12892712391)))
+        (getVectorKeyIfExists randomsymbo12892712391) 
+        (getExistingKeyVec randomsymbo12892712391)))
   
   (is (= ['randomsymbo12892712391 randomsymbo12892712391] 
-        (getKeyIfExists 'randomsymbo12892712391) 
-        (getExistingKey 'randomsymbo12892712391)))
+        (getVectorKeyIfExists 'randomsymbo12892712391) 
+        (getExistingKeyVec 'randomsymbo12892712391)))
   (isthrown? exceptionThrownWhenMalformedInputPassed 
-        (getKeyIfExists 1) )
-  (isthrown? exceptionThrownWhenMalformedInputPassed (getExistingKey 1))
+        (getVectorKeyIfExists 1) )
+  (isthrown? exceptionThrownWhenMalformedInputPassed (getExistingKeyVec 1))
   
   (isthrown? exceptionThrownWhenKeyDoesNotExist
-    (getExistingKey (gensym 'inexistentsymbol))
+    (getExistingKeyVec (gensym 'inexistentsymbol))
     )
   )
 
@@ -260,7 +272,7 @@ add_new_key [quoted_key_name thekey]
    }
   (let [found (find returnedMap keywordField);ie. non nil, it's a [key value] vector
         ;_ (assumedTrue found)
-        _ (assumedTrue [found 
+        _ (assumedNotNil [found 
                         "you tried to access field `" keywordField 
                         "` that didn't exist in map `" returnedMap
                         "`, you should've checked before!"])
