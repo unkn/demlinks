@@ -1,4 +1,4 @@
-(ns random.clojure.learning._max_key
+(ns random.learning.clojure._max_key
   (:use clojure.test)
   )
 

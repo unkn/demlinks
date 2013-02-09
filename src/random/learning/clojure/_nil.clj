@@ -1,4 +1,4 @@
-(ns random.clojure.learning.-nil
+(ns random.learning.clojure.-nil
   (:use clojure.test)
   )
 

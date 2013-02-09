@@ -258,7 +258,7 @@ add_new_key [quoted_key_name thekey]
 (defn getRetField [returnedMap keywordField]
   {:pre [(map? returnedMap)]
    }
-  (let [found (find returnedMap keywordField);ie. non nil, it's [key value] vector
+  (let [found (find returnedMap keywordField);ie. non nil, it's a [key value] vector
         ;_ (assumedTrue found)
         _ (assumedTrue [found "you tried to access field `" keywordField 
             "` that didn't exist in map `" returnedMap
