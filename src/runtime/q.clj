@@ -417,16 +417,16 @@ each expression can be just a form ie. (= 1 2) or a vector like this:
                     (vec 
                       (for [oneForm allPassedForms]
                         (do 
-                          (println "oneFormOrig" oneForm)
+                          ;(println "oneFormOrig" oneForm)
                           (apply list `assumedPred1 pred 
                             (cond (not (vector? oneForm))
                               (do
-                                (println "oneFormNowVec" (vector oneForm))
+                                ;(println "oneFormNowVec" (vector oneForm))
                                 (vector oneForm)
                                 )
                               :else 
                               (do
-                                (println "oneFormAlready" (vector oneForm))
+                                ;(println "oneFormAlready" (vector oneForm))
                                 oneForm)
                               )
                             )

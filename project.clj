@@ -7,7 +7,7 @@
             :comments "same as Clojure"
             }
   :dependencies [
-                 [org.clojure/clojure "1.5.0-RC4"]
+                 [org.clojure/clojure "1.5.0-beta13"]
                  [com.datomic/datomic-free "0.8.3767"]
                  ;[midje "1.5-alpha7"];don't wanna use this because it compiles all .clj files even if it doesn't need to
                  [org.clojure/tools.trace "0.7.5"]

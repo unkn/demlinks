@@ -80,3 +80,8 @@ and from another namespace have
 (:use runtime.q :reload-all)
 just as before, will work on any number of reloads of this namespace (ctrl+alt+L)
 
+
+8. avoid using pr-str or with-out-str and stuff like that that redirects output due to side effects of lazy stuff mixing in 
+the output.
+details here: https://groups.google.com/d/msg/clojure/PncPDhO2_sg/YIE_LWoKPNYJ
+

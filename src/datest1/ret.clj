@@ -17,7 +17,7 @@
   )
 
 (println *file*)
-
+;TODO: maybe move all tests into test folder ? because lein test only executes those
 
 (defn comparator_AZ_order [key1 key2]
   ;{:pre [ (q/assumedTrue (keyword? key1) (keyword? key2)) ]} 
@@ -48,7 +48,7 @@ the key is paradoxically not the keyword
 -allSymbolsToKeys
   (ref (sorted-map-by comparator_AZ_order)
         :validator #(do 
-                      (println "setting ref to value:" %&) 
+                      (println "setting ref " '-allSymbolsToKeys "to value:" %) 
                       (q/sortedMap? %)
                       )
         )
@@ -58,7 +58,11 @@ the key is paradoxically not the keyword
   ^{:doc "one to one mapping from keyword to symbol"}
 -allKeysToSymbols
   (ref (sorted-map-by comparator_AZ_order)
-    :validator #(q/sortedMap? %)
+    ;:validator #(q/sortedMap? %)
+    :validator #(do 
+                      (println "setting ref " '-allKeysToSymbols "to value:" %) 
+                      (q/sortedMap? %)
+                      )
     )
   )
 
@@ -105,15 +109,15 @@ nil if not exists,
       )
     )
   ([ret_object key]
-    (println @-allSymbolsToKeys @-allKeysToSymbols)
-    (println ret_object
+    ;(println @-allSymbolsToKeys @-allKeysToSymbols)
+    #_(println ret_object
       (q/sortedMap? ret_object)
       (map? ret_object)
       (clojure.core/sorted? ret_object))
-    (do
-       (println key ret_object)
+    ;(do
+       ;(println key ret_object)
        (find ret_object key)
-       )
+       ;)
     )
   )
 
@@ -184,8 +188,8 @@ returns a vector [key val]
            )
          ]
    }
-  (prn "current: " -allSymbolsToKeys -allKeysToSymbols)
-  (prn "passed : " symbolKeyName thekey)
+  ;(prn "current: " -allSymbolsToKeys -allKeysToSymbols)
+  ;(prn "passed : " symbolKeyName thekey)
   `(do
      (add_new_key (quote ~symbolKeyName) ~thekey)
      (def ~symbolKeyName ~thekey);we also def this so it's avail.in ccw code completion once ran
@@ -221,7 +225,7 @@ returns a vector [key val]
 (defn
   ^:public;rivate
 add_new_key [quoted_key_name thekey]
-  (println "add_new_key: " quoted_key_name thekey)
+  ;(println "add_new_key: " quoted_key_name thekey)
   (dosync
     (ref-set -allSymbolsToKeys
       (assoc2 @-allSymbolsToKeys quoted_key_name thekey)
@@ -234,7 +238,7 @@ add_new_key [quoted_key_name thekey]
         quoted_key_name thekey
         )
     )
-  (println "after add_new_key: " -allSymbolsToKeys  -allKeysToSymbols)
+  ;(println "after add_new_key: " -allSymbolsToKeys  -allKeysToSymbols)
   )
 
 
