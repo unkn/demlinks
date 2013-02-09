@@ -44,7 +44,12 @@
            "But this is meant only for windows because git doesn't know how to do that in windows."
            ))
   (println "passed args:" args)
-  (time (transform_flatfiles_to_symlinks repo-path repoBranch))
+  (time 
+    (dorun 
+      (map println 
+        (transform_flatfiles_to_symlinks repo-path repoBranch))
+      )
+    )
 ;(r/getIfExists :key {:map 1})
   )
 
@@ -239,7 +244,9 @@ which contains this line(basically without newlines):
   
 (defn transform_flatfiles_to_symlinks [repo-path branch]
   (println "Transform begins...")
-  (doseq [
+  (let [ret (doall 
+              (remove nil? 
+                (for [
           ; the flat file which is supposed to be a symlink to the location which is specified inside its contents
           rel_symlink (get_all_symlinks_from_repo repo-path branch)
           ;_ (println (str (.toString (.getAbsolutePath repo-path)) *separator* rel_symlink));repo-path rel_symlink)
@@ -262,17 +269,38 @@ which contains this line(basically without newlines):
       (cond (.isFile abs_symlink);when core.symlinks=false  all symlinks are just files after checkout
         (transform_flatfile_to_symlink abs_symlink)
         :else
-        (println (str "ignoring " 
-                   (cond (.isDirectory abs_symlink) 
+        (let [
+              dir? (.isDirectory abs_symlink)
+              ftype (cond dir?
+                      :directory
+                      :else
+                      :unknown-type ;XXX: this requires changing this code to handle this new type
+                      )
+              ret2 (sorted-map 
+                     :ignored ftype
+                     :what abs_symlink
+                     )
+              ]
+          
+          (println (str "ignoring " 
+                   (cond dir? 
                      "directory"
                      :else
-                     "unknown-type(not dir not file)";XXX: this requires changing this code to handle this new type
+                     "unknown-type(not dir not file)"
                      )
                    ": " abs_symlink))
+          
+          ret2
+          )
         )
       )
     )
-  (println "Transform ends...")
+                )
+              )
+        ]
+    (println "Transform ends...")
+    ret
+    )
   )
 
 

@@ -599,7 +599,7 @@ true
 ;(runtime.q/assumedTrue1)
 ;(asserts (= 1 1) (= 1 2))
 
-(defn pst-soe
+(defn pst-soe ;to test, do this at REPL: ```````'1  ;it should stack overflow
   "show last 100 stacktraceelements when stackoverflow occurred"
   ([]
     (pst-soe 100)
