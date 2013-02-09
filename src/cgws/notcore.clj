@@ -8,6 +8,7 @@
 ; You must not remove this notice, or any other, from this software.
 
 ;change(?) git-windows symlinks
+;tested to work on windows7 64bit, make sure you set repo-path below
 (ns cgws.notcore
   (:import java.io.File)
   (:import java.io.BufferedReader)
@@ -139,7 +140,9 @@
           
           isDir?
           (let [
-                deleted? (println ".delete" ffull);FIXME: actually delete here
+                deleted? ;true;
+                (q/delete-file ffull true)
+                ;(println ".delete" ffull);FIXME: actually delete here
                 ]
             (cond (not deleted?)
               (println "cannot delete:" ffull)

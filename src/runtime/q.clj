@@ -882,6 +882,21 @@ CompilerException java.lang.ClassCastException: clojure.lang.Cons cannot be cast
   (and (map? param) (sorted? param))
   )
 
+(defn delete-file
+"
+an implementation that returns the true/false status
+which clojure.java.io/delete-file doesn't do(tested in 1.5.0-RC14)
+"
+  [f & [silently]]
+  (let [ret (.delete (clojure.java.io/file f))]
+    (cond (or ret silently)
+      ret
+      :else
+      (throw (java.io.IOException. (str "Couldn't delete " f)))
+      )
+    )
+  )
+
 ;(q/show_state)
 ;(q/here)
 (show_state)
