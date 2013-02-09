@@ -260,9 +260,9 @@ add_new_key [quoted_key_name thekey]
    }
   (let [found (find returnedMap keywordField);ie. non nil, it's [key value] vector
         ;_ (assumedTrue found)
-        _ (assert found (str "you tried to access field `" keywordField 
+        _ (assumedTrue [found "you tried to access field `" keywordField 
             "` that didn't exist in map `" returnedMap
-            "`, you should've checked before!"))
+            "`, you should've checked before!"])
         ]
     (second found)
     )

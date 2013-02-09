@@ -319,40 +319,57 @@ got (re)loaded and/or compiled
 will throw if the passed expression does not satisfy predicate
 ie. if pred is true? and (true? x) is false or nil it will throw
 "
-  [pred x]
+  [pred x & restOfFailMsg]
   (assumptionBlock
-    `(do
-       (let [pred# ~pred
-             predQuote# (quote ~pred)
-             evaled# ~x
-             form# '~x
-             self# '~(first &form)
-             yield# (pred# evaled#)]
-         (cond yield#
-           whatAssumptionsReturnWhenTrue
-           :else
-           (thro *exceptionThrownBy_assumedPred* 
-                 (str self# 
-                      " failed, the following wasn't truthy: `(" 
+    (let [failMsgIfAny 
+          (when-not (empty? restOfFailMsg)
+            ;thanks to alex_baranosky for the following form (originally here https://www.refheap.com/paste/11118 )
+            (apply str 
+              (concat ["\n"
+                       "The fail msg is:\n`\n"] 
+                restOfFailMsg 
+                ["\n`"]))
+            )
+          ]
+      `(do
+         (let [pred# ~pred
+               predQuote# (quote ~pred)
+               evaled# ~x
+               form# '~x
+               self# '~(first &form)
+               yield# (pred# evaled#)]
+           (cond yield#
+             whatAssumptionsReturnWhenTrue
+             :else
+             (thro *exceptionThrownBy_assumedPred* 
+               (str self# 
+                 " failed, the following wasn't truthy: `(" 
                       predQuote# 
                       " "
                       (pr-str form#) 
                       ")` was `("
                       predQuote#
                       " "
-                       (pr-str evaled#)
-                       ")` which yielded `"
-                       yield# "`"
-                       )
-                 )
+                      (pr-str evaled#)
+                      ")` which yielded `"
+                      yield# "`"
+                      ~failMsgIfAny
+                      "\n"
+                      )
+               )
+             )
            )
-         )
-       )
+         );do
+      );let
     )
   )
 
 (defmacro assumedPred
-"will throw when the first of the passed expressions evaluates to false or nil"
+"will throw when the first of the passed expressions evaluates to false or nil
+each expression can be just a form ie. (= 1 2) or a vector like this:
+[(= 1 2) \"concatenated\" \"msg\" \"when fails\"]
+[(= 1 2)] ;msg ommited, it's equivalent to just (= 1 2)
+";TODO: above
   [pred & allPassedForms]
     (assumptionBlock
       (cond (empty? allPassedForms)
@@ -369,8 +386,22 @@ ie. if pred is true? and (true? x) is false or nil it will throw
         :else ;thanks to gfredericks for inspiration of this now modified line:
         (cons 'do (conj 
                     (vec 
-                      (for [oneForm allPassedForms] 
-                        (list `assumedPred1 pred oneForm)
+                      (for [oneForm allPassedForms]
+                        (do 
+                          (println "oneFormOrig" oneForm)
+                          (apply list `assumedPred1 pred 
+                            (cond (not (vector? oneForm))
+                              (do
+                                (println "oneFormNowVec" (vector oneForm))
+                                (vector oneForm)
+                                )
+                              :else 
+                              (do
+                                (println "oneFormAlready" (vector oneForm))
+                                oneForm)
+                              )
+                            )
+                          )
                         )
                       )
                     'whatAssumptionsReturnWhenTrue
@@ -379,6 +410,17 @@ ie. if pred is true? and (true? x) is false or nil it will throw
         )
       )
     )
+
+(deftest test_vecParams
+  (is (= true (assumedPred true? true [true] [true "msghere" " a" "b"])))
+  ;TODO: make these tests better:
+  (isthrown? *exceptionThrownBy_assumedPred* 
+    (assumedPred true? false [true] [true "msghere" " a" "b"]))
+  (isthrown? *exceptionThrownBy_assumedPred* 
+    (assumedPred true? true [false] [true "msghere" " a" "b"]))
+  (isthrown? *exceptionThrownBy_assumedPred* 
+    (assumedPred true? true [true] [false "msghere" " a" "b"]))
+  )
 
 (defmacro throwIfNil 
 "
@@ -402,7 +444,7 @@ ie. (defmacro something [param1 p2 & restparams] ... throwIfNil &form restparams
                     ;'~(meta &form)
                     (meta caller#)
                     ]
-                (str "you didn't pass any parameters to macro `"
+                (str "you didn't pass any parameters to `"
                      selfName#
                   "` form begins at line: "
                   lineNo# 
@@ -432,6 +474,15 @@ ie. (defmacro something [param1 p2 & restparams] ... throwIfNil &form restparams
     `(assumedPred true? ~@allPassedForms)
     )
 
+;(defmacro att
+;    [& allPassedForms ]
+;  ;(throwIfNil &form allPassedForms)
+;  (throwIfNil &form (first allPassedForms))
+;  `(assumedPred true? x ~@allPassedForms)
+;  )
+;
+;(att)
+  
 ;(defn sc1 [] whatAssumptionsReturnWhenTrue)
 
 (defn assumptionCorrect?
