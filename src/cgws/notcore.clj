@@ -8,7 +8,7 @@
 ; You must not remove this notice, or any other, from this software.
 
 ;change(?) git-windows symlinks
-(ns cgws.core
+(ns cgws.notcore
   (:import java.io.File)
   (:import java.io.BufferedReader)
   (:require [datest1.ret :as r] :reload-all)
@@ -17,11 +17,25 @@
 
 ;;TODO: give meaningful names to the let variables
 
+(def fileClass java.io.File)
+(def ^:dynamic *separator* java.io.File/separator)
+
+(def ^java.io.File repo-path 
+  (q/newClass fileClass 
+    (str
+      "s:" 
+      *separator* 
+      "workspace2013"
+      *separator*
+      "emacs-live"
+      *separator*
+      )
+    )
+  )
+
+(def ^String repoBranch "master")
+
 (declare transform_flatfiles_to_symlinks)
-
-(def repo-path (new java.io.File "s:\\workspace2012\\emacs-live\\"))
-
-(def branch "master")
 
 (defn -main [& args] 
   (comment (println "this is meant to transform git checkout symlinks(which are just flat files due to core.symlinks=false)\n"
@@ -29,7 +43,7 @@
            "But this is meant only for windows because git doesn't know how to do that in windows."
            ))
   (println "passed args:" args)
-  (time (transform_flatfiles_to_symlinks repo-path))
+  (time (transform_flatfiles_to_symlinks repo-path repoBranch))
 ;(r/getIfExists :key {:map 1})
   )
 
@@ -65,15 +79,16 @@
 
 
 
-(def gitlstree_cmd (str "git ls-tree -r" " \"" branch "\""));branch must be quoted since it can contain at least "&"
+(defn gitlstree_cmd [branch]
+  (str "git ls-tree -r" " \"" branch "\"")) ;branch must be quoted since it can contain at least "&"
 
 (def symlink-filemode "120000")
 
 (defn get_all_symlinks_from_repo
   "returns a list of all symlinks inside the specified git repository 
    as relative paths to the provided repo-path"
-  [repo-path]
-  (with-open [^BufferedReader input (shellify gitlstree_cmd repo-path)]
+  [repo-path branch]
+  (with-open [^BufferedReader input (shellify (gitlstree_cmd branch) repo-path)]
     (let [lazylines (line-seq input)
           ]
       (disj ;remove nils from result
@@ -83,8 +98,9 @@
                        ss (clojure.string/split ^String aline	 #"\s")
                        ^String filemode (first ss)
                        ]
-                   (if (.equals filemode symlink-filemode)
+                   (cond (.equals filemode symlink-filemode)
                      (last ss)
+                     :else
                      nil
                      )
                    )
@@ -125,8 +141,9 @@
           (let [
                 deleted? (println ".delete" ffull);FIXME: actually delete here
                 ]
-            (if (not deleted?)
+            (cond (not deleted?)
               (println "cannot delete:" ffull)
+              :else
               (let [^Process process (start-process 
                               (str "cmd.exe /c mklink /d \"" full-path "\" \"" sym-to "\"") 
                               nil 
@@ -137,8 +154,9 @@
                     what (str "a symlink to a folder: " full-path " -> " sym-to)
                     ]
                 
-                (if (= 0 exitcode)
+                (cond (= 0 exitcode)
                   (println "made" what)
+                  :else
                   (println "failed to make" what)
                   )
                 )
@@ -193,6 +211,8 @@ which contains this line(basically without newlines):
   (r/getRetField parsed_ff KEY_PointsTo)
   )
 
+
+
 (defn transform_flatfile_to_symlink [flat-file]
   (let [
         ^{:tag java.io.File} ffull (.getAbsoluteFile (clojure.java.io/as-file flat-file))
@@ -203,29 +223,38 @@ which contains this line(basically without newlines):
         ^String sym-to (getPointsTo zmap)
         ]
     
-    (if (not= 1 howManyLines)
+    (cond (not= 1 howManyLines)
       (println "ignoring unexpected symlink format(or probably already" 
                ;FIXME: handle this better somehow ie. symlink to a symlink
                "a symlink to a file and now seeing file's contents): " full-path)
+      :else
       (make-symlink ffull sym-to)
       )
     )
   )
   
   
-(defn transform_flatfiles_to_symlinks [repo-path]
+(defn transform_flatfiles_to_symlinks [repo-path branch]
   (println "Transform begins...")
   (doseq [
           ; the flat file which is supposed to be a symlink to the location which is specified inside its contents
-          rel_symlink (get_all_symlinks_from_repo repo-path)
-          
-          ^{:tag java.io.File} abs_symlink (new java.io.File (str repo-path (java.io.File/separator) rel_symlink))
+          rel_symlink (get_all_symlinks_from_repo repo-path branch)
+          ;_ (println (str (.toString (.getAbsolutePath repo-path)) *separator* rel_symlink));repo-path rel_symlink)
+          x (println "a");XXX: wtf, if I comment out this line, it throws?
+          ;^{:tag java.io.File} 
+          ^java.io.File abs_symlink 
+            (q/newClass fileClass
+            ;(new java.io.File 
+              (str (.toString (.getAbsolutePath repo-path)) *separator* rel_symlink)
+            )
           ]
-    (if (.isFile abs_symlink);when core.symlinks=false  all symlinks are just files after checkout
+    (cond (.isFile abs_symlink);when core.symlinks=false  all symlinks are just files after checkout
       (transform_flatfile_to_symlink abs_symlink)
+      :else
       (println (str "ignoring " 
-                 (if (.isDirectory abs_symlink) 
+                 (cond (.isDirectory abs_symlink) 
                    "directory"
+                   :else
                    "unknown-type(not dir not file)";XXX: this requires changing this code to handle this new type
                    )
                  ": " abs_symlink))

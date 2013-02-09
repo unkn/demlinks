@@ -178,48 +178,7 @@ if you're defalias-ing `deftest` and `is`, for example.
      )
   )
 
-;(ns-unmap *ns* 'get)
-(defn getKeyIfExists
-"
-nil is not exists,
-[key val] if exists
-"
-  ([key]
-    (getKeyIfExists @-allSymbolsToKeys key)
-    )
-  ([ret_object key]
-  {:pre [ (assumedTrue (q/sortedMap? ret_object) ) ] }
-  ;(println "get:" key ret_object)
-  (find ret_object key)
-  #_(cond (not (contains? ret_object key))
-    (thro RuntimeException "a")
-    :else
-    (clojure.core/get ret_object key)
-    )
-  )
-  )
 
-(defn getExistingKey
-"
-you can pass a symbol or a keyword
-the (same)keyword is returned, after checked 
-that the symbol and the keyword are indeed 1-to-1 mapped to eachother
-"
-  ([key]
-    (getExistingKey @-allSymbolsToKeys key)
-    )
-  ([ret_object key ]
-  {:pre [ (assumedTrue (q/sortedMap? ret_object)) ] }
-  (let [existing (getKeyIfExists ret_object key)]
-    (cond (nil? existing)
-      (thro exceptionThrownWhenKeyDoesNotExist "key `" key 
-        "` doesn't exist in map `" ret_object "`")
-      :else
-      existing 
-      )
-    )
-  )
-  )
 
 (defmacro getKeyIfExists;TODO: see if we make this defn
 "

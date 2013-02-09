@@ -578,12 +578,12 @@ true
   ([^long num]
     (dorun 
       (map 
-        (fn [^String s] (println (.toString s)))
+        (fn [^java.lang.StackTraceElement s] (println (.toString s)))
         (take-last num (.getStackTrace ^Throwable *e))
         )
       )
     )
-)
+  )
 
 
 (defmacro sym-state [zsym] ;;FIXME:
