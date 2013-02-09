@@ -426,7 +426,7 @@ ie. (defmacro something [param1 p2 & restparams] ... throwIfNil &form restparams
   exceptionThrownBy_assumedTrue *exceptionThrownBy_assumedPred*)
 
 ;(with-test
-  (defmacro assumedTrue
+  (defmacro assumedTrue;TODO: make it test only first form and rest be err msg without need to (str ..)
     [ & allPassedForms ]
     (throwIfNil &form allPassedForms)
     `(assumedPred true? ~@allPassedForms)
@@ -589,6 +589,8 @@ will not cause exception but instead the exception
 will happen only when the code containing 
 the undefined symbol is reached/executed
 
+Pass a symbol, not a form
+
 ie. does ,(eval (quote a)) which is same as just  ,a"
   [zsym]
   
@@ -599,7 +601,14 @@ ie. does ,(eval (quote a)) which is same as just  ,a"
 ;      )
 ;    `(let [qsym# (quote ~zsym)] 
 ;       (try ;I'll just let the exception fall through
-         `(eval (quote ~zsym))
+;`(do 
+`(let [q# (quote ~zsym)
+       a# (eval q#)]
+   ;(println "zzzz " q# a#)
+   a#;
+   )
+     ;(eval (quote ~zsym))
+;   )
 ;         (catch Throwable t#
 ;           (throw (RuntimeException. (str "Symbol undefined `" qsym# "`" t#))) ;TODO: make ex-info
 ;           )
@@ -711,8 +720,13 @@ CompilerException java.lang.ClassCastException: clojure.lang.Cons cannot be cast
              (encast (dummy1))
              )
            (is (thrown? ArithmeticException (/ 1 0)))
-           (is (thrown? clojure.lang.Compiler$CompilerException
-                        (encast connrandomeseehtihtdahd210euowkjas)))
+           (let [undefinedsymbol (gensym 'connrandomeseehtihtdahd210euowkjas)]
+             (println undefinedsymbol)
+             (is (thrown? clojure.lang.Compiler$CompilerException
+                   (encast undefinedsymbol)))
+             )
+           #_(is (thrown? clojure.lang.Compiler$CompilerException
+                 (gensym 'connrandomeseehtihtdahd210euowkjas)))
     )
   )
 

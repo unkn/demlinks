@@ -154,6 +154,9 @@
 
 (r/defSym2Key KEY_LinesCount :LinesCount)
 (r/defSym2Key KEY_PointsTo :PointsTo)
+(r/defSym2Key KEY_NonEmptyLinesCount :non_empty_lines_count)
+(r/defSym2Key KEY_FlatFile :flatfile)
+(r/defSym2Key KEY_isValid :valid?)
 
 (defn parse-flatfile-wannabe-symlink 
 "
@@ -171,36 +174,23 @@ which contains this line(basically without newlines):
           howManyNonEmptyLines (count allNonEmptyLines)
           ^String pointsTo (first allLines)
           ]
-      {:valid? (and (= 1 howManyLines) (empty? pointsTo))
-       :flatfile flat_file_symlink
-       KEY_LinesCount howManyLines
-       :non_empty_lines_count howManyNonEmptyLines
-       KEY_PointsTo pointsTo
+      {
+       (r/getExistingKey KEY_isValid) (and (= 1 howManyLines) (empty? pointsTo))
+       (r/getExistingKey KEY_FlatFile) flat_file_symlink
+       (r/getExistingKey KEY_LinesCount) howManyLines
+       (r/getExistingKey KEY_NonEmptyLinesCount) howManyNonEmptyLines
+       (r/getExistingKey KEY_PointsTo) pointsTo
        }
       )
     )
   )
 
 (defn getLinesCount [parsed_ff]
-  {:pre [(map? parsed_ff)]
-   }
-  (let [found (find parsed_ff KEY_LinesCount)
-        _ (assert found "you tried to access a 'field' that didn't exist, you should've checked before!")
-        ;ie. non nil, it's [key value] vector
-        ]
-    (second found)
-    )
+  (r/getRetField parsed_ff KEY_LinesCount)
   )
 
-(defn get_points_to [parsed_ff]
-  {:pre [(map? parsed_ff)]
-   }
-  (let [found (find parsed_ff KEY_PointsTo)
-        _ (assert found "you tried to access a 'field' that didn't exist, you should've checked before!")
-        ;ie. non nil, it's [key value] vector
-        ]
-    (second found)
-    )
+(defn getPointsTo [parsed_ff]
+  (r/getRetField parsed_ff KEY_PointsTo)
   )
 
 (defn transform_flatfile_to_symlink [flat-file]
@@ -209,11 +199,11 @@ which contains this line(basically without newlines):
         ^String full-path (.getAbsolutePath ffull)
         zmap (parse-flatfile-wannabe-symlink full-path)
         ;TODO: handle case when symlink is invalid
-        how-many-lines (getLinesCount zmap)
-        ^String sym-to (get_points_to zmap)
+        howManyLines (getLinesCount zmap)
+        ^String sym-to (getPointsTo zmap)
         ]
     
-    (if (not= 1 how-many-lines)
+    (if (not= 1 howManyLines)
       (println "ignoring unexpected symlink format(or probably already" 
                ;FIXME: handle this better somehow ie. symlink to a symlink
                "a symlink to a file and now seeing file's contents): " full-path)

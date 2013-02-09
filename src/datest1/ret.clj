@@ -62,109 +62,85 @@ the key is paradoxically not the keyword
     )
   )
 
-;(ns-unmap *ns* 'get)
-#_(defn getKeyIfExists
-"
-nil is not exists,
-[key val] if exists
-"
-  ([key]
-    (getKeyIfExists @-allSymbolsToKeys key)
-    )
-  ([ret_object key]
-  {:pre [ (assumedTrue (q/sortedMap? ret_object) ) ] }
-  ;(println "get:" key ret_object)
-  (find ret_object key)
-  #_(cond (not (contains? ret_object key))
-    (thro RuntimeException "a")
-    :else
-    (clojure.core/get ret_object key)
-    )
-  )
-  )
+
 
 (def exceptionThrownWhenKeyDoesNotExist
   RuntimeException
   )
 
-#_(defn getExistingKey
+
+
+(def exceptionThrownWhenMalformedInputPassed
+  AssertionError)
+
+(defn getKeyIfExists
 "
-you can pass a symbol or a keyword
-the (same)keyword is returned, after checked 
-that the symbol and the keyword are indeed 1-to-1 mapped to eachother
+you may pass: symbol or keyword
+ie.
+(getKeyIfExists a) where a evals to :a or 'a
+(getKeyIfExists 'a)
+(getKeyIfExists :a)
+returns:
+nil if not exists,
+[key val] if exists, where key is the same as what you passed evaluated to
 "
   ([key]
-    (getExistingKey @-allSymbolsToKeys key)
+    (let [whichMap
+          (cond
+            (symbol? key) @-allSymbolsToKeys
+            (keyword? key) @-allKeysToSymbols
+            :else
+            (thro exceptionThrownWhenMalformedInputPassed
+              "must pass a symbol or keyword or form, but not what you passed aka `"
+              key "` whatever you passed evaluated to this before the call")
+            )
+          ]
+      (getKeyIfExists whichMap key)
+      )
     )
-  ([ret_object key ]
-  {:pre [ (assumedTrue (q/sortedMap? ret_object)) ] }
-  (let [existing (getKeyIfExists ret_object key)]
-    (cond (nil? existing)
-      (thro exceptionThrownWhenKeyDoesNotExist "key `" key 
-        "` doesn't exist in map `" ret_object "`")
-      :else
-      existing 
+  ([ret_object key]
+    (println @-allSymbolsToKeys @-allKeysToSymbols)
+    (println ret_object
+      (q/sortedMap? ret_object)
+      (map? ret_object)
+      (clojure.core/sorted? ret_object))
+    (do
+       (println key ret_object)
+       (find ret_object key)
+       )
+    )
+  )
+
+
+
+(defn getExistingKey
+  ([key]
+    (let [whichMap
+          (cond
+            (symbol? key) @-allSymbolsToKeys
+            (keyword? key) @-allKeysToSymbols
+            :else
+            (thro exceptionThrownWhenMalformedInputPassed
+              "must pass a symbol or keyword or form, but not what you passed aka `"
+              key "` whatever you passed evaluated to this before the call")
+            )
+          ]
+      (getExistingKey whichMap key)
+      )
+    )
+  ([ret_object key]
+    (let [existing (getKeyIfExists ret_object key)]
+      (cond (nil? existing)
+        (thro exceptionThrownWhenKeyDoesNotExist "key `" key 
+          "` doesn't exist in map `" ret_object "`")
+        :else
+        existing
+        )
       )
     )
   )
-  )
-
-(defmacro getKeyIfExists
-"
-nil is not exists,
-[key val] if exists
-"
-  ([key]
-    ;`(do
-       (let [whichMap
-             (cond
-               (symbol? key) @-allSymbolsToKeys
-               (keyword? key) @-allKeysToSymbols
-               :else
-               ;FIXME: allow a form if it evals to a symbol or keyword
-               `(thro AssertionError 
-                  "must pass a symbol or keyword not `" key "`")
-               )
-             ]
-         `(getKeyIfExists ~whichMap ~key)
-         )
-       ;)
-    )
-  ([ret_object key]
-    ;`(do
-    (println @-allSymbolsToKeys @-allKeysToSymbols)
-    (println ret_object 
-      (q/sortedMap? ret_object) 
-      (map? ret_object) 
-      (clojure.core/sorted? ret_object))
-    ;{:pre [ (assumedTrue (q/sortedMap? ret_object) ) ] }
-    `(do
-       (println ~key '~key (symbol? ~key) ~ret_object);ouchies subtle bug here? where I actually don't want the keys(which are symbols to get evaluated to keywords)
-       (find ~ret_object ~key)
-       )
-    )
-    ;)
-  )
 
 
-
-(defmacro getExistingKey
-  ([key]
-    `(getExistingKey @-allSymbolsToKeys ~key)
-    )
-  ([ret_object key]
-    `(do
-       (let [existing# (getKeyIfExists ~ret_object ~key)]
-         (cond (nil? existing#)
-           (thro exceptionThrownWhenKeyDoesNotExist "key `" ~key 
-             "` doesn't exist in map `" ~ret_object "`")
-           :else
-           existing#
-           )
-         )
-       )
-    )
-  )
 
 (deftest test_get1
   (is (= [:a 1] (getExistingKey {:a 1} :a )))
@@ -195,6 +171,7 @@ nil is not exists,
   `(do
      (add_new_key (quote ~symbolKeyName) ~thekey)
      (def ~symbolKeyName ~thekey);we also def this so it's avail.in ccw code completion once ran
+     ;also if def-ed we could use functions instead of macros for the get calls
      )
   )
 
@@ -261,9 +238,34 @@ add_new_key [quoted_key_name thekey]
   )
 
 (deftest test_somegetkey
-  (is (= randomsymbo12892712391 
+  (is (= [randomsymbo12892712391 'randomsymbo12892712391] 
         (getKeyIfExists randomsymbo12892712391) 
         (getExistingKey randomsymbo12892712391)))
+  
+  (is (= ['randomsymbo12892712391 randomsymbo12892712391] 
+        (getKeyIfExists 'randomsymbo12892712391) 
+        (getExistingKey 'randomsymbo12892712391)))
+  (isthrown? exceptionThrownWhenMalformedInputPassed 
+        (getKeyIfExists 1) )
+  (isthrown? exceptionThrownWhenMalformedInputPassed (getExistingKey 1))
+  
+  (isthrown? exceptionThrownWhenKeyDoesNotExist
+    (getExistingKey (gensym 'inexistentsymbol))
+    )
+  )
+
+
+(defn getRetField [returnedMap keywordField]
+  {:pre [(map? returnedMap)]
+   }
+  (let [found (find returnedMap keywordField);ie. non nil, it's [key value] vector
+        ;_ (assumedTrue found)
+        _ (assert found (str "you tried to access field `" keywordField 
+            "` that didn't exist in map `" returnedMap
+            "`, you should've checked before!"))
+        ]
+    (second found)
+    )
   )
 
 (show_state)
