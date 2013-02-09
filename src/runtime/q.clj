@@ -11,7 +11,7 @@
 (ns runtime.q
   ;(:use runtime.testengine :reload-all)
   (:refer-clojure :exclude [sorted?])
-  (:refer clojure.test :exclude [deftest is testing])
+  (:refer clojure.test :exclude [deftest is testing use-fixtures])
   (:refer-clojure :exclude [sorted?])
   (:use robert.hooke)
   (:refer-clojure :exclude [sorted?])
@@ -33,6 +33,11 @@
 (defmacro is [& all]
   `(clojure.test/is ~@all)
   )
+
+(defmacro use-fixtures [& all]
+  `(clojure.test/use-fixtures ~@all)
+  )
+
 ;(defalias deftest clojure.test/deftest)
 #_(defmacro deftest [& all]
   `(clojure.test/deftest ~@all)

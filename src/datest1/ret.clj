@@ -238,10 +238,13 @@ add_new_key [quoted_key_name thekey]
   )
 
 
+(defn beforeTests []
+  (defSym2Key a :a)
+  (defSym2Key b :b)
+  (defSym2Key randomsymbo12892712391 :randomkey1)
+  )
 
-(defSym2Key a :a)
-(defSym2Key b :b)
-(defSym2Key randomsymbo12892712391 :randomkey1)
+
 
 #_(deftest test_nonsymbolkey ;this happens at compile time
   (isthrown? q/exceptionThrownBy_assumedPred (defSym2Key 1 :b))
@@ -287,8 +290,25 @@ add_new_key [quoted_key_name thekey]
     )
   )
 
+(defn afterTests []
+  (-cleanMaps)
+  )
+
+(defn testsFixture [testsHere]
+  (try
+    (do
+      (beforeTests)
+      (testsHere)
+      )
+    (finally 
+      (afterTests)
+      )
+    )
+  )
+
+(use-fixtures :once testsFixture)
+
 (show_state)
 (gotests)
 
 ;last line: (but this means, (run-tests) will fail
-(-cleanMaps)
