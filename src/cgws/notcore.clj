@@ -240,12 +240,18 @@ which contains this line(basically without newlines):
           ; the flat file which is supposed to be a symlink to the location which is specified inside its contents
           rel_symlink (get_all_symlinks_from_repo repo-path branch)
           ;_ (println (str (.toString (.getAbsolutePath repo-path)) *separator* rel_symlink));repo-path rel_symlink)
-          x (println "a");XXX: wtf, if I comment out this line, it throws?
+          ;x (println "a")
+          ;_ (println repo-path);XXX: wtf, if I comment out this line, it throws below?!
           ;^{:tag java.io.File} 
           ^java.io.File abs_symlink 
             (q/newClass fileClass
             ;(new java.io.File 
-              (str (.toString (.getAbsolutePath repo-path)) *separator* rel_symlink)
+              (str 
+                (.toString 
+                  (.getAbsolutePath repo-path);IllegalArgumentException Don't know how to create ISeq from: java.io.File
+                  ) 
+                *separator* 
+                rel_symlink)
             )
           ]
     (cond (.isFile abs_symlink);when core.symlinks=false  all symlinks are just files after checkout
