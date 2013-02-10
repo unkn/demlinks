@@ -886,6 +886,14 @@ CompilerException java.lang.ClassCastException: clojure.lang.Cons cannot be cast
 "
 an implementation that returns the true/false status
 which clojure.java.io/delete-file doesn't do(tested in 1.5.0-RC14)
+thanks to Sean Corfield, I'm made aware that
+(clojure.java.io/delete-file \"file\" :not-deleted)
+can be used to return :not-deleted when failed, however I still don't agree with this
+optimization-based-implementation, so I still want to get true/false from this, even though
+I could make a new function on top of the original delete-file function, because the original
+does have it's use, ie. it allows me to return whatever value i want(except false/nil) when deletion fails,
+tho doesn't allow me to return whatever I want when it succeeds, let's just say that
+I wouldn't wanna implement it like that ever (not consciously anyway).
 "
   [f & [silently]]
   (let [ret (.delete (clojure.java.io/file f))]
