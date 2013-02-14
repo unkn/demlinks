@@ -235,6 +235,8 @@ CompilerException java.lang.RuntimeException: Unable to resolve symbol: toUpperC
      )
   )
 
+
+
 (defmacro priv_whenAssumptions_Execute [dynVar & executeForms]
   (when dynVar
     (cond (empty? executeForms)
@@ -385,6 +387,18 @@ got (re)loaded and/or compiled
   )
 
 
+(def ^:private rte java.lang.RuntimeException)
+(def ^:private rte2 (newClass rte "12"))
+
+(deftest test_thro1
+  (isthrown? java.lang.RuntimeException (thro rte))
+  (isthrown? rte (thro rte))
+  (isthrown? rte (thro rte2))
+  ;FIXME: won't work: (isthrown? rte2 (thro rte2));due to compiletime/runtime macro crap; let's just say I wanna transcend this level of programming and get up there into a graph-like based system in 3D, asap ffs!
+  (isthrown? java.lang.RuntimeException (thro java.lang.RuntimeException))
+  (isthrown? rte (thro java.lang.RuntimeException))
+  )
+  
 ;(macroexpand-1 
 ;  '(isthrown? a (throw (RuntimeException. "1")))
 ;)
@@ -394,10 +408,7 @@ got (re)loaded and/or compiled
 
 
 
-(def ^:private rte java.lang.RuntimeException)
-(deftest test_thro
-  (isthrown? java.lang.RuntimeException (thro rte))
-  )
+
 
 ;(thro 2)
 
@@ -1024,7 +1035,7 @@ returns: java.io.File
   [& [in-path prefix suffix]]
   ;(delay 
     (try
-      (let [uniqueFile (getUniqueFile)
+      (let [uniqueFile (getUniqueFile in-path prefix suffix)
             ]
         (assumedTrue (.exists uniqueFile) (.isFile uniqueFile))
         (assumedFalse (.isDirectory uniqueFile))
@@ -1036,7 +1047,7 @@ returns: java.io.File
         )
       (catch Throwable t 
         (do 
-          (rethro t)
+          (throw t);(rethro t)
           )
         )
       )
