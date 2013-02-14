@@ -87,9 +87,14 @@ java.lang.RuntimeException
        :else
        (throw ;XXX: don't use thro here, they'll recur
          (new AssertionError 
-              (str "you must pass a class to `" '~(first &form)
-                   "` at " '~(meta &form)
-                   )
+              (str "you must pass a class(ie. not an instance) to `"
+                '~(first &form)
+                "` at "
+                '~(meta &form)
+                " form was: `"
+                '~&form
+                "`" 
+                )
               )
          )
        )
@@ -178,60 +183,48 @@ CompilerException java.lang.RuntimeException: Unable to resolve symbol: toUpperC
   )
 
 
-(do
- (clojure.core/cond
-  (clojure.core/and
-   (clojure.core/instance? java.lang.Class t)
-   (clojure.core/contains?
-    (clojure.core/supers t)
-    java.lang.Throwable))
-  (throw (runtime.q/newClass t (clojure.core/str)))
-  (clojure.core/instance? java.lang.Throwable t)
-  (throw t)
-  :else
-  (throw
-   (new
-    java.lang.RuntimeException
-    (clojure.core/str
-     "you must pass a class2 to `"
-     'thro
-     "` at "
-     '{:line 1, :column 40})))))
-
+;FIXME: => (let [x rte] (thro x)) ;CompilerException java.lang.UnsupportedOperationException: Can't eval locals, compiling:(NO_SOURCE_PATH:1:14) 
 (defmacro thro
 "
 (thro RuntimeException \"concatenated \" \"message\")
 "
   [ex & restt]
   ;(class? java.lang.String)
-  `(do 
+  (let [
+        eex (eval ex)
+        ;_ (prn eex)
+        ;_ (prn (class eex))
+        ]
      (cond
        
        ;if passed a class or symbol resolving to a class
        (and
-         (instance? java.lang.Class ~ex)
+         (instance? java.lang.Class eex)
          (contains? 
-           (supers ~ex) 
+           (supers eex) 
            java.lang.Throwable
            )
          )
        ;then
-       (throw (newClass ~ex (str ~@restt)))
+       `(throw (newClass ~ex (str ~@restt)))
        
        ;if passed an instance of an exception
-       (instance? java.lang.Throwable ~ex)
+       (instance? java.lang.Throwable eex)
        ;then throw it as it is
-       (throw ~ex)
+       `(throw ~ex)
        
        ;none of the above
        :else
-       (throw 
+       `(throw 
          (new RuntimeException 
               (str 
                 "you must pass a class/instance to `"
                 '~(first &form)
                 "` at "
                 '~(meta &form)
+                " form was: `"
+                '~&form
+                "`" 
                 )
               )
          )
@@ -1043,7 +1036,7 @@ returns: java.io.File
         )
       (catch Throwable t 
         (do 
-          (throw t)
+          (rethro t)
           )
         )
       )
