@@ -1,5 +1,8 @@
 (ns random.learning.clojure.usetheoverridexns
+  (:refer-clojure :exclude [sorted?])
   (:use random.learning.clojure.overridex)
+  (:refer-clojure :exclude [sorted?])
+  ;(:require [random.learning.clojure.overridex])
   )
 
 (and 
