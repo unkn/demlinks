@@ -7,14 +7,16 @@
             :comments "same as Clojure"
             }
   :dependencies [
-                 [org.clojure/clojure "1.5.0-RC14"]
-                 [com.datomic/datomic-free "0.8.3767"]
+                 [org.clojure/clojure "1.5.0-RC16"]
+                 [com.datomic/datomic-free "0.8.3789"] ;database
                  ;[midje "1.5-alpha7"];don't wanna use this because it compiles all .clj files even if it doesn't need to
                  [org.clojure/tools.trace "0.7.5"]
                  [prismatic/plumbing "0.0.1"]
                  ;[org.flatland/useful "0.9.0"];for defalias, atm., nomore due to ns reload and ns-unmap-like behaviour causing IllegalStateException deftest already refers to: #'runtime.q/deftest in namespace: runtime.q_test  clojure.lang.Namespace.warnOrFailOnReplace (Namespace.java:88)
-                 [quil "1.6.0"]
-                 [robert/hooke "1.3.0"]
+                 [quil "1.6.0"] ;2D/3D drawing
+                 [robert/hooke "1.3.0"] ;hook functions
+                 [clojurewerkz/titanium "1.0.0-alpha1"] ;graphdb
+                 [com.taoensso/timbre "1.5.2"] ;logging/profiling, https://github.com/ptaoussanis/timbre
                  ]
   
   ;; Emit warnings on all reflection calls.

@@ -15,6 +15,8 @@
   (:refer-clojure :exclude [sorted?])
   (:use robert.hooke)
   (:refer-clojure :exclude [sorted?])
+  (:use [taoensso.timbre :as timbre 
+         :only (trace debug info warn error fatal spy)])
   ;(:require flatland.useful.ns)
   ;(:use clojure.tools.trace) 
   ;(:use runtime.clazzez :reload-all) 
@@ -83,7 +85,7 @@ java.lang.RuntimeException
      (cond (class? cls#)
        cls#
        :else
-       (throw 
+       (throw ;XXX: don't use thro here, they'll recur
          (new AssertionError 
               (str "you must pass a class to `" '~(first &form)
                    "` at " '~(meta &form)
@@ -109,6 +111,68 @@ which would fail if you do it with just new:
     `(new ~asCls ~@restt)
     )
   )
+
+(defmacro call-method [inst m & args]
+"
+=> (def someInst \"somestringinstance\")
+#'runtime.q/someInst
+=> (call-method someInst 'toUpperCase)
+\"SOMESTRINGINSTANCE\"
+=> (call-method someInst \"toUpperCase\")
+\"SOMESTRINGINSTANCE\"
+=> (call-method someInst toUpperCase)
+CompilerException java.lang.RuntimeException: Unable to resolve symbol: toUpperCase in this context, compiling:(NO_SOURCE_PATH:1:1)
+=> (def four (* 2 2))
+#'runtime.q/four
+=> (call-method someInst 'substring (+ 1 1) four)
+\"me\"
+=> (call-method someInst \"substring\" (+ 1 1) four)
+\"me\"
+=> (call-method \"abcde\" (quote substring) 2 four)
+\"cd\"
+" 
+  `(. ~inst ~(symbol (eval m)) ~@args)
+  )
+
+
+(defn call-fn ;by Meikel Brandmeyer (kotarak) https://groups.google.com/d/msg/clojure/YJNRnGXLr2I/h4t9-oDbMUcJ
+"
+=> (def f (call-fn \"java.lang.String\" \"substring\" \"startpos\" \"endpos\"))
+#'runtime.q/f
+=> (f \"abcdef\" 2 4)
+\"cd\"
+=> (f (str \"123\" \"45\") (+ 1 1) 4)
+\"34\"
+" 
+  [& args]
+  {:arglists ([cls method & args])}
+  (let [o (gensym)
+        [cls method & args] (map symbol args)]
+    (eval
+      `(fn [~o ~@args]
+         (. ~(with-meta o {:tag cls})
+            (~method ~@args))))))
+
+;You can also do away with the argument names. You just need the number of arguments.
+(defn call-fn ;by Meikel Brandmeyer (kotarak)
+"
+(def f (call-fn \"java.io.File\" \"renameTo\" 1))
+
+=> (f \"abcdef\" 2 4)
+\"cd\"
+=> (f (str \"123\" \"45\") (+ 1 1) 4)
+\"34\"
+" 
+  [class method n-args]
+  (let [o    (gensym)
+        args (repeatedly n-args gensym)
+        [class method] (map symbol [class method])]
+    (eval
+      `(fn [~o ~@args]
+         (. ~(with-meta o {:tag class})
+            (~method ~@args))))))
+
+
 
 (defmacro thro
 "
@@ -243,6 +307,7 @@ got (re)loaded and/or compiled
   (is (= java.lang.RuntimeException (getAsClass RuntimeException)))
   (is (= java.lang.RuntimeException (getAsClass java.lang.RuntimeException)))
   (isnot (= 'java.lang.RuntimeException (getAsClass a)))
+  (is (= (eval 'java.lang.RuntimeException) (getAsClass a)))
   )
 
 
@@ -276,7 +341,7 @@ got (re)loaded and/or compiled
 (deftest test_isthrown?
   (is (thrown? java.lang.RuntimeException (b)))
   (isthrown? a (b))
-  ;FIXME: if ever, the following will fail due to symbol vs class  apparently 
+  ;seems fixed: if ever, the following will fail due to symbol vs class  apparently 
   ;as detected by Anderkent, exact test case here: https://gist.github.com/4691902
   (isnot (=
         (macroexpand-1 
@@ -317,7 +382,7 @@ got (re)loaded and/or compiled
   )
 
 
-(defn someeval [& all]
+#_(defn someeval [& all]
   (map identity all)
   (map constantly all)
   )
@@ -905,6 +970,49 @@ I wouldn't wanna implement it like that ever (not consciously anyway).
     )
   )
 
+
+(def ^:dynamic *separator* java.io.File/separator)
+
+(defn getUniqueFile 
+"
+pass nil to in-path  if the default temporary-file directory is to be used
+ The default temporary-file directory is specified by the system property java.io.tmpdir
+ aka (System/getProperty \"java.io.tmpdir\")
+returns: java.io.File
+"
+[& [in-path prefix suffix]]
+  (java.io.File/createTempFile
+    (or prefix "unq")
+    suffix ; may be nil, in which case the suffix ".tmp" will be used
+    (clojure.java.io/as-file in-path)
+    )
+  )
+
+(defn getUniqueFolder
+  [& [in-path prefix suffix]]
+  ;(delay 
+    (do
+      (let [uniqueFile (getUniqueFile)
+            ]
+        (assumedTrue (.exists uniqueFile) (.isFile uniqueFile))
+        (assumedFalse (.isDirectory uniqueFile))
+        (delete-file uniqueFile false)
+        (assumedFalse (.exists uniqueFile))
+        (.mkdir uniqueFile)
+        (assumedTrue (.exists uniqueFile) (.isDirectory uniqueFile))
+        uniqueFile
+        )
+      )
+   ; )
+  )
+
+(deftest test_asfile
+  (let [x (newClass java.io.File "s")
+        y (clojure.java.io/as-file x)
+        ]
+    (is (= x y))
+    )
+  )
 ;(q/show_state)
 ;(q/here)
 (show_state)

@@ -19,7 +19,6 @@
 ;;TODO: give meaningful names to the let variables
 
 (def fileClass java.io.File)
-(def ^:dynamic *separator* java.io.File/separator)
 
 (def ^java.io.File repo-path 
   (q/newClass fileClass 
