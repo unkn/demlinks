@@ -172,7 +172,31 @@ CompilerException java.lang.RuntimeException: Unable to resolve symbol: toUpperC
          (. ~(with-meta o {:tag class})
             (~method ~@args))))))
 
+(defmacro rethro
+  [ex]
+  `(thro ~ex)
+  )
 
+
+(do
+ (clojure.core/cond
+  (clojure.core/and
+   (clojure.core/instance? java.lang.Class t)
+   (clojure.core/contains?
+    (clojure.core/supers t)
+    java.lang.Throwable))
+  (throw (runtime.q/newClass t (clojure.core/str)))
+  (clojure.core/instance? java.lang.Throwable t)
+  (throw t)
+  :else
+  (throw
+   (new
+    java.lang.RuntimeException
+    (clojure.core/str
+     "you must pass a class2 to `"
+     'thro
+     "` at "
+     '{:line 1, :column 40})))))
 
 (defmacro thro
 "
@@ -181,7 +205,9 @@ CompilerException java.lang.RuntimeException: Unable to resolve symbol: toUpperC
   [ex & restt]
   ;(class? java.lang.String)
   `(do 
-     (when-not 
+     (cond
+       
+       ;if passed a class or symbol resolving to a class
        (and
          (instance? java.lang.Class ~ex)
          (contains? 
@@ -189,16 +215,29 @@ CompilerException java.lang.RuntimeException: Unable to resolve symbol: toUpperC
            java.lang.Throwable
            )
          )
+       ;then
+       (throw (newClass ~ex (str ~@restt)))
+       
+       ;if passed an instance of an exception
+       (instance? java.lang.Throwable ~ex)
+       ;then throw it as it is
+       (throw ~ex)
+       
+       ;none of the above
+       :else
        (throw 
          (new RuntimeException 
-              (str "you must pass a class to `" '~(first &form)
-                   "` at " '~(meta &form)
-                   )
+              (str 
+                "you must pass a class/instance to `"
+                '~(first &form)
+                "` at "
+                '~(meta &form)
+                )
               )
          )
        )
      ;(let [cls# (getAsClass ~ex)]
-       (throw (newClass ~ex (str ~@restt)))
+       
       ; )
      )
   )
@@ -991,7 +1030,7 @@ returns: java.io.File
 (defn getUniqueFolder
   [& [in-path prefix suffix]]
   ;(delay 
-    (do
+    (try
       (let [uniqueFile (getUniqueFile)
             ]
         (assumedTrue (.exists uniqueFile) (.isFile uniqueFile))
@@ -1001,6 +1040,11 @@ returns: java.io.File
         (.mkdir uniqueFile)
         (assumedTrue (.exists uniqueFile) (.isDirectory uniqueFile))
         uniqueFile
+        )
+      (catch Throwable t 
+        (do 
+          (throw t)
+          )
         )
       )
    ; )
