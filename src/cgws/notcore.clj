@@ -16,6 +16,12 @@
   (:require [runtime.q :as q] :reload-all)
   )
 
+(set! 
+  *warn-on-reflection*
+  true)
+
+(def ^:dynamic *separator* java.io.File/separator)
+
 ;;TODO: give meaningful names to the let variables
 
 (def fileClass java.io.File)
@@ -241,7 +247,10 @@ which contains this line(basically without newlines):
   )
   
   
-(defn transform_flatfiles_to_symlinks [repo-path branch]
+(defn transform_flatfiles_to_symlinks 
+  [^java.io.File repo-path
+   ^java.lang.String branch]
+  
   (println "Transform begins...")
   (let [ret (doall 
               (remove nil? 

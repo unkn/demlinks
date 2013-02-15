@@ -24,7 +24,9 @@
   ;(:use [runtime.q.exceptions :as qex] :reload-all)
   )
 
-
+(set! 
+  *warn-on-reflection*
+  true)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;these should be kinda first:
 
 
@@ -71,7 +73,29 @@
 
 (def whatAssumptionsReturnWhenTrue true)
 
-(defmacro getAsClass 
+(def exceptionThrownWhenNotAClass AssertionError)
+
+(defn getAsClass [sym]
+  (cond 
+    (class? sym)
+    sym
+    :else
+    (throw 
+      (eval 
+        (list 'new 
+          ;AssertionError ;
+          exceptionThrownWhenNotAClass
+          (str 
+            "you didn't pass a class, you passed `"
+            sym
+            "`"
+            )
+          )
+        )
+      )
+    )
+  )
+#_(defmacro getAsClass 
 "
 => (getAsClass a)
 java.lang.RuntimeException
@@ -101,6 +125,7 @@ java.lang.RuntimeException
      )
   )
 
+
 (defmacro newClass
 "
 you can pass a symbol
@@ -111,10 +136,10 @@ ie.
 which would fail if you do it with just new:
 (new a \"whatever)
 "
-  [cls & restt]
-  (let [asCls (getAsClass cls)]
-    `(new ~asCls ~@restt)
-    )
+[cls & restt]
+;unblinded by Aaron Cohen here: https://groups.google.com/d/msg/clojure/1AJ7cShhhWg/QE7JVcmIyb4J
+;which basically means I should use eval at runtime not at compile time as I was doing so far
+  `(eval (list 'new (getAsClass ~cls) ~@restt))
   )
 
 (defmacro call-method [inst m & args]
@@ -199,7 +224,8 @@ CompilerException java.lang.RuntimeException: Unable to resolve symbol: toUpperC
        
        ;if passed a class or symbol resolving to a class
        (and
-         (instance? java.lang.Class eex)
+         ;(instance? java.lang.Class eex)
+         (class? eex)
          (contains? 
            (supers eex) 
            java.lang.Throwable
@@ -354,7 +380,7 @@ got (re)loaded and/or compiled
 (defmacro isthrown?
     [cls & restt]
     (let [tocls 
-          (getAsClass cls)
+          (getAsClass (eval cls))
           ;(symbol (str (eval cls)))
           ;tocls2 (read-string (str "(quote " (eval cls) ")")) 
           ;_ (prn tocls2)
@@ -369,6 +395,13 @@ got (re)loaded and/or compiled
          )
       )
     )
+
+(deftest test_getAsClass2
+  (isthrown? exceptionThrownWhenNotAClass (getAsClass 'a))
+  (isthrown? exceptionThrownWhenNotAClass (getAsClass 123))
+  )
+
+
 ;XXX: with-test is bad when modifying the defined func/macro and 
 ;it fails on reload (ctrl+alt+L) the old version will be used in 
 ;tests and never reloaded unless repl restart
@@ -1014,7 +1047,6 @@ I wouldn't wanna implement it like that ever (not consciously anyway).
   )
 
 
-(def ^:dynamic *separator* java.io.File/separator)
 
 (defn getUniqueFile 
 "
@@ -1035,7 +1067,7 @@ returns: java.io.File
   [& [in-path prefix suffix]]
   ;(delay 
     (try
-      (let [uniqueFile (getUniqueFile in-path prefix suffix)
+      (let [^java.io.File uniqueFile (getUniqueFile in-path prefix suffix)
             ]
         (assumedTrue (.exists uniqueFile) (.isFile uniqueFile))
         (assumedFalse (.isDirectory uniqueFile))
@@ -1047,7 +1079,8 @@ returns: java.io.File
         )
       (catch Throwable t 
         (do 
-          (throw t);(rethro t)
+          (throw t);
+          ;(rethro t) ;CompilerException java.lang.UnsupportedOperationException: Can't eval locals, compiling:(runtime\q.clj:1070:11) 
           )
         )
       )

@@ -16,6 +16,10 @@
   ;(:use clojure.tools.trace)
   )
 
+(set! 
+  *warn-on-reflection*
+  true)
+
 (println *file*)
 ;TODO: maybe move all tests into test folder ? because lein test only executes those
 
