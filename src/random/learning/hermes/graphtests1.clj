@@ -17,6 +17,9 @@
             [hermes.vertex :as v])
   )
 
+(set! 
+  *warn-on-reflection*
+  true)
 
 (defn beforeTests []
   ;(g/open (q/))

@@ -95,35 +95,7 @@
       )
     )
   )
-#_(defmacro getAsClass 
-"
-=> (getAsClass a)
-java.lang.RuntimeException
-=> (getAsClass RuntimeException)
-java.lang.RuntimeException
-=> (getAsClass 'RuntimeException)
-java.lang.RuntimeException
-"
-  [sym]
-  `(let [cls# (eval ~sym)] 
-     (cond (class? cls#)
-       cls#
-       :else
-       (throw ;XXX: don't use thro here, they'll recur
-         (new AssertionError 
-              (str "you must pass a class(ie. not an instance) to `"
-                '~(first &form)
-                "` at "
-                '~(meta &form)
-                " form was: `"
-                '~&form
-                "`" 
-                )
-              )
-         )
-       )
-     )
-  )
+
 
 
 (defmacro newInstanceOfClass
@@ -233,59 +205,6 @@ CompilerException java.lang.RuntimeException: Unable to resolve symbol: toUpperC
               )
          )
     )
-  )
-
-;FIXME: => (let [x rte] (thro x)) ;CompilerException java.lang.UnsupportedOperationException: Can't eval locals, compiling:(NO_SOURCE_PATH:1:14) 
-#_(defmacro thro
-"
-(thro RuntimeException \"concatenated \" \"message\")
-"
-  [ex & restt]
-  ;(class? java.lang.String)
-  (let [
-        eex (eval ex)
-        ;_ (prn eex)
-        ;_ (prn (class eex))
-        ]
-     (cond
-       
-       ;if passed a class or symbol resolving to a class
-       (and
-         ;(instance? java.lang.Class eex)
-         (class? eex)
-         (contains? 
-           (supers eex) 
-           java.lang.Throwable
-           )
-         )
-       ;then
-       `(throw (newInstanceOfClass ~ex (str ~@restt)))
-       
-       ;if passed an instance of an exception
-       (instance? java.lang.Throwable eex)
-       ;then throw it as it is
-       `(throw ~ex)
-       
-       ;none of the above
-       :else
-       `(throw 
-         (new RuntimeException 
-              (str 
-                "you must pass a class/instance to `"
-                '~(first &form)
-                "` at "
-                '~(meta &form)
-                " form was: `"
-                '~&form
-                "`" 
-                )
-              )
-         )
-       )
-     ;(let [cls# (getAsClass ~ex)]
-       
-      ; )
-     )
   )
 
 
@@ -835,41 +754,13 @@ true
   )
 
 
-;TODO: make tests for this macro
-;(assumedTrue 1 2 3 (> 2 1) (= :a :a) (= 1 2))
-;(assumedTrue)
-
-;(assert nil "msg")
-;(defn somef_ [a] (assumedTrue (= 3 a)))
-
-
-;(use 'clojure.tools.trace)
-;(assert1 (= 1 2))
-;(defn somef_ [a] {:pre [
-;                        (assumedTrue1 (= 3 a))
-;                        (assumedTrue1 (> 4 a))
-;                        ]}
-;  1)
-
-;(defn somother [a] (assert (> a 5)))
-
-;(defn somef_ [a] {:pre [
-;                        (somother a) 
-;                        (asserts (= 3 a) (> 4 a))
-;                        ]}
-;  1)
-
-;(assumedTrue nil)
-;(assumedTrue #(println "boo")) ;obv. returns non-nil function
-;(assumedTrue (#(println "boo"))) ;returns nil
-;(somef_ 3)
-;(somef_ 4)
-
-;(runtime.q/assumedTrue1)
-;(asserts (= 1 1) (= 1 2))
 
 (defn pst-soe ;to test, do this at REPL: ```````'1  ;it should stack overflow
-  "show last 100 stacktraceelements when stackoverflow occurred"
+"show last 100 stacktraceelements when stackoverflow occurred
+you should've already passed the following jvm arg:
+-XX:MaxJavaStackTraceDepth=-1
+else it won't remember the full trace only last 1024 elements? or was it 1000 forgot
+"
   ([]
     (pst-soe 100)
   )
@@ -892,7 +783,10 @@ true
   ;4. zsym is an expression ie. #() or (list 1 2 3), throws exception
   ;5. zsym is a special symbol ie. def   test this via (special-symbol? 'def) , returns :special
   ;6. zsym is a macro ie. defn, returns :macro
-  ;7. FIXME: handle this: (#(sym-state %) prn2) ;CompilerException java.lang.RuntimeException: Unable to resolve symbol: prn2 in this context, compiling:(NO_SOURCE_PATH:1:1) 
+  ;7. FIXME: handle this: (#(sym-state %) prn2) ;CompilerException java.lang.RuntimeException: Unable to resolve symbol: prn2 in this context, compiling:(NO_SOURCE_PATH:1:1)
+  ;8. alsoFIXME: (#(sym-state %) prn) returns :undefined while (sym-state prn) return :bound
+;9. => (let [a 1] (sym-state a)) ;returns :bound
+  ;10. fix: (let [defn 1] (sym-state defn)) ; returns :macro
 
   `(try 
      (let [qsym# (quote ~zsym)]
@@ -912,12 +806,13 @@ true
                      :bound
                      )
                    :unbound
-                   ) 
+                   )
                  )
                )
              )
            )
-     (catch ClassCastException cce# (throw (new Exception (str "a" cce#))))
+     (catch ClassCastException cce# 
+       (rethro cce#))
      )
   )
 

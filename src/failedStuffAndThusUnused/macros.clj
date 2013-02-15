@@ -248,4 +248,88 @@ nil is not exists,
     )
   )
 
+(defmacro getAsClass 
+"
+=> (getAsClass a)
+java.lang.RuntimeException
+=> (getAsClass RuntimeException)
+java.lang.RuntimeException
+=> (getAsClass 'RuntimeException)
+java.lang.RuntimeException
+"
+  [sym]
+  `(let [cls# (eval ~sym)] 
+     (cond (class? cls#)
+       cls#
+       :else
+       (throw ;XXX: don't use thro here, they'll recur
+         (new AssertionError 
+              (str "you must pass a class(ie. not an instance) to `"
+                '~(first &form)
+                "` at "
+                '~(meta &form)
+                " form was: `"
+                '~&form
+                "`" 
+                )
+              )
+         )
+       )
+     )
+  )
+
+
+;FIXME: => (let [x rte] (thro x)) ;CompilerException java.lang.UnsupportedOperationException: Can't eval locals, compiling:(NO_SOURCE_PATH:1:14) 
+(defmacro thro
+"
+(thro RuntimeException \"concatenated \" \"message\")
+"
+  [ex & restt]
+  ;(class? java.lang.String)
+  (let [
+        eex (eval ex)
+        ;_ (prn eex)
+        ;_ (prn (class eex))
+        ]
+     (cond
+       
+       ;if passed a class or symbol resolving to a class
+       (and
+         ;(instance? java.lang.Class eex)
+         (class? eex)
+         (contains? 
+           (supers eex) 
+           java.lang.Throwable
+           )
+         )
+       ;then
+       `(throw (newInstanceOfClass ~ex (str ~@restt)))
+       
+       ;if passed an instance of an exception
+       (instance? java.lang.Throwable eex)
+       ;then throw it as it is
+       `(throw ~ex)
+       
+       ;none of the above
+       :else
+       `(throw 
+         (new RuntimeException 
+              (str 
+                "you must pass a class/instance to `"
+                '~(first &form)
+                "` at "
+                '~(meta &form)
+                " form was: `"
+                '~&form
+                "`" 
+                )
+              )
+         )
+       )
+     ;(let [cls# (getAsClass ~ex)]
+       
+      ; )
+     )
+  )
+
 ;);comment, have this be last line!
