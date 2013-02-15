@@ -126,12 +126,12 @@ java.lang.RuntimeException
   )
 
 
-(defmacro newClass
+(defmacro newInstanceOfClass
 "
 you can pass a symbol
 ie.
 (def a java.lang.RuntimeException)
-(newClass a \"whatever\")
+(newInstanceOfClass a \"whatever\")
 
 which would fail if you do it with just new:
 (new a \"whatever)
@@ -208,8 +208,35 @@ CompilerException java.lang.RuntimeException: Unable to resolve symbol: toUpperC
   )
 
 
+(defn thro [ex & restt] 
+  (cond
+    (and
+      (class? ex)
+      (contains? 
+        (supers ex)
+        java.lang.Throwable
+        )
+      )
+    (throw (newInstanceOfClass ex (str restt)))
+    
+    (instance? java.lang.Throwable ex)
+    (throw ex)
+    
+    :else 
+    (throw 
+         (new RuntimeException ;exception thrown when invalid params passed to thro
+              (str 
+                "you must pass a class/instance, you passed `"
+                ex " " restt
+                "`" 
+                )
+              )
+         )
+    )
+  )
+
 ;FIXME: => (let [x rte] (thro x)) ;CompilerException java.lang.UnsupportedOperationException: Can't eval locals, compiling:(NO_SOURCE_PATH:1:14) 
-(defmacro thro
+#_(defmacro thro
 "
 (thro RuntimeException \"concatenated \" \"message\")
 "
@@ -232,7 +259,7 @@ CompilerException java.lang.RuntimeException: Unable to resolve symbol: toUpperC
            )
          )
        ;then
-       `(throw (newClass ~ex (str ~@restt)))
+       `(throw (newInstanceOfClass ~ex (str ~@restt)))
        
        ;if passed an instance of an exception
        (instance? java.lang.Throwable eex)
@@ -368,6 +395,22 @@ got (re)loaded and/or compiled
   (is (= java.lang.RuntimeException (getAsClass java.lang.RuntimeException)))
   (isnot (= 'java.lang.RuntimeException (getAsClass a)))
   (is (= (eval 'java.lang.RuntimeException) (getAsClass a)))
+  (is (apply = 
+        (let [a# rte
+              zzz rte
+              b# java.lang.RuntimeException
+              yyy java.lang.RuntimeException]
+          (list
+            rte
+            java.lang.RuntimeException
+            (getAsClass a#)
+            (getAsClass b#)
+            (getAsClass zzz)
+            (getAsClass yyy)
+            )
+          )
+        )
+    )
   )
 
 
@@ -421,17 +464,101 @@ got (re)loaded and/or compiled
 
 
 (def ^:private rte java.lang.RuntimeException)
-(def ^:private rte2 (newClass rte "12"))
+(def ^:private rte2 (newInstanceOfClass rte "12"))
 
 (deftest test_thro1
   (isthrown? java.lang.RuntimeException (thro rte))
   (isthrown? rte (thro rte))
+  (isthrown? rte (thro rte "msg"))
   (isthrown? rte (thro rte2))
   ;FIXME: won't work: (isthrown? rte2 (thro rte2));due to compiletime/runtime macro crap; let's just say I wanna transcend this level of programming and get up there into a graph-like based system in 3D, asap ffs!
   (isthrown? java.lang.RuntimeException (thro java.lang.RuntimeException))
   (isthrown? rte (thro java.lang.RuntimeException))
+  
+  (isthrown? rte 
+    (let [a# rte] 
+      (thro a#)
+      )
+    )
+  
+  (isthrown? java.lang.RuntimeException 
+    (let [a# rte] 
+      (thro a#)
+      )
+    )
+  
+  (isthrown? java.lang.RuntimeException 
+    (let [a# java.lang.RuntimeException] 
+      (thro a#)
+      )
+    )
+  
+  (isthrown? rte
+    (let [a# java.lang.RuntimeException] 
+      (thro a#)
+      )
+    )
+  
+  (isthrown? rte
+    (let [a# rte2] 
+      (thro a#)
+      )
+    )
+  
+  (isthrown? rte
+    (let [a# (newInstanceOfClass rte (str "1" "2"))] 
+      (thro a#)
+      )
+    )
+ 
   )
   
+
+(deftest test_newClass1
+  (is 
+    (instance? java.lang.RuntimeException
+      (newInstanceOfClass java.lang.RuntimeException))
+    )
+  (is 
+    (instance? java.lang.RuntimeException
+      (newInstanceOfClass rte))
+    )
+  (is 
+    (instance? rte
+      (newInstanceOfClass java.lang.RuntimeException))
+    )
+  
+  (is 
+    (instance? rte
+      (newInstanceOfClass rte))
+    )
+  
+  (= rte 
+    (class (newInstanceOfClass rte)))
+  
+  (= java.lang.RuntimeException
+    (class (newInstanceOfClass rte)))
+  
+  (= java.lang.RuntimeException
+    (class (newInstanceOfClass java.lang.RuntimeException)))
+  
+  (is (apply = 
+        (let [a# rte
+              zzz rte
+              b# java.lang.RuntimeException
+              yyy java.lang.RuntimeException]
+          (list
+            rte
+            java.lang.RuntimeException
+            (class (newInstanceOfClass a#))
+            (class (newInstanceOfClass b#))
+            (class (newInstanceOfClass zzz))
+            (class (newInstanceOfClass yyy))
+            )
+          )
+        )
+    )
+  )
 ;(macroexpand-1 
 ;  '(isthrown? a (throw (RuntimeException. "1")))
 ;)
@@ -1088,7 +1215,7 @@ returns: java.io.File
   )
 
 (deftest test_asfile
-  (let [x (newClass java.io.File "s")
+  (let [x (newInstanceOfClass java.io.File "s")
         y (clojure.java.io/as-file x)
         ]
     (is (= x y))

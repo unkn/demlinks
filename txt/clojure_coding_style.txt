@@ -85,3 +85,13 @@ just as before, will work on any number of reloads of this namespace (ctrl+alt+L
 the output.
 details here: https://groups.google.com/d/msg/clojure/PncPDhO2_sg/YIE_LWoKPNYJ
 
+9. should always use gensym-ed symbols in let[] because some macros may be badly defined 
+and could be using already (globaly)defined symbols with the same name as in the let,
+so to be sure that doesn't happen ie.:
+(isthrown? rte
+    (let [a# (newInstanceOfClass rte (str "1" "2"))] 
+      (thro a#)
+      )
+    )
+    
+
