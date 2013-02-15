@@ -1,6 +1,9 @@
 ;not bad, but ccw functionality lost: switching to this namespace(on load and on demand)
 (clojure.core/in-ns 'random.learning.clojure.usetheoverridexns)
 (clojure.core/require '[clojure.core :as cc])
+(clojure.core/defmacro ns [])
+(clojure.core/println "nsnow1" clojure.core/*ns*)
+(ns random.learning.clojure.usetheoverridexns);comment this out to work, but ccw support is off for this namespace
 
 ;  (:refer-clojure :exclude [sorted?])
   (cc/use '[random.learning.clojure.overridex])
@@ -8,7 +11,7 @@
   ;(:require [random.learning.clojure.overridex])
   ;)
 
-(cc/println clojure.core/*ns*)
+(cc/println "nsnow2" clojure.core/*ns*)
 ;the following only works if pasted in REPL, cause ccw seems to be loading clojure.core after executing this file
 #_(clojure.core/map 
   #(clojure.core/ns-unmap clojure.core/*ns* %)

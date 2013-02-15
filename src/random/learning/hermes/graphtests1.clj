@@ -8,6 +8,7 @@
 ; You must not remove this notice, or any other, from this software.
 
 ;thanks to ChongLi which triggered the "in-ns" in me by simply being there, listening.
+;but I can't use in-ns because ccw won't see it as a namespace
 
 (ns random.learning.hermes.graphtests1
   (:use [runtime.q :as q] :reload-all)

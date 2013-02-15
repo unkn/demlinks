@@ -7,3 +7,5 @@
   {:pre [ (coll? coll)]}
   (clojure.core/sorted? coll)
   )
+
+
