@@ -18,6 +18,7 @@
                  [clojurewerkz/titanium "1.0.0-alpha1"] ;graphdb
                  [com.taoensso/timbre "1.5.2"] ;logging/profiling, https://github.com/ptaoussanis/timbre
                  ;[slingshot "0.10.3"] ;for exceptions try/catch
+                 [hermes "0.2.6"]
                  ]
   
   ;; Emit warnings on all reflection calls.

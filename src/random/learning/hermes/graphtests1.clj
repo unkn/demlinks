@@ -7,12 +7,18 @@
 ; the terms of this license.
 ; You must not remove this notice, or any other, from this software.
 
+;thanks to ChongLi which triggered the "in-ns" in me by simply being there, listening.
+
 (ns random.learning.hermes.graphtests1
   (:use [runtime.q :as q] :reload-all)
+  (:require [hermes.core :as g]
+            [hermes.type :as t]
+            [hermes.vertex :as v])
   )
 
 
 (defn beforeTests []
+  ;(g/open (q/))
   )
 
 (defn afterTests []
