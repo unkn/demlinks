@@ -388,6 +388,9 @@ got (re)loaded and/or compiled
   )
 
 
+(def ^:private rte java.lang.RuntimeException)
+(def ^:private rte2 (newInstanceOfClass rte "12"))
+
 
 (deftest test_getAsClass
   (is (= java.lang.RuntimeException (getAsClass a)))
@@ -463,8 +466,6 @@ got (re)loaded and/or compiled
   )
 
 
-(def ^:private rte java.lang.RuntimeException)
-(def ^:private rte2 (newInstanceOfClass rte "12"))
 
 (deftest test_thro1
   (isthrown? java.lang.RuntimeException (thro rte))
