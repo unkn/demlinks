@@ -12,17 +12,19 @@
   ;(:use runtime.testengine :reload-all)
   (:refer-clojure :exclude [sorted?])
   (:refer clojure.test :exclude [deftest is testing use-fixtures])
-  (:refer-clojure :exclude [sorted?])
-  (:use robert.hooke)
-  (:refer-clojure :exclude [sorted?])
-  (:use [taoensso.timbre :as timbre 
+  ;(:refer-clojure :exclude [sorted?])
+  (:require [robert.hooke :as rh])
+  ;(:refer-clojure :exclude [sorted?])
+  (:require [taoensso.timbre :as timbre 
          :only (trace debug info warn error fatal spy)])
   ;(:require flatland.useful.ns)
   ;(:use clojure.tools.trace) 
   ;(:use runtime.clazzez :reload-all) 
   ;(:use [runtime.q :as q] :reload-all)
   ;(:use [runtime.q.exceptions :as qex] :reload-all)
+  (:refer-clojure :exclude [sorted?])
   )
+;FIXME: ccw, still getting this warning: WARNING: sorted? already refers to: #'clojure.core/sorted? in namespace: runtime.q, being replaced by: #'runtime.q/sorted?
 
 (set! 
   *warn-on-reflection*
@@ -189,7 +191,7 @@ CompilerException java.lang.RuntimeException: Unable to resolve symbol: toUpperC
         java.lang.Throwable
         )
       )
-    (throw (newInstanceOfClass ex (str restt)))
+    (throw (newInstanceOfClass ex (apply str restt)))
     
     (instance? java.lang.Throwable ex)
     (throw ex)
@@ -197,12 +199,12 @@ CompilerException java.lang.RuntimeException: Unable to resolve symbol: toUpperC
     :else 
     (throw 
          (new RuntimeException ;exception thrown when invalid params passed to thro
-              (str 
+              (str
                 "you must pass a class/instance, you passed `"
-                ex " " restt
-                "`" 
+                ex " " (clojure.string/join " " restt)
+                "`"
                 )
-              )
+           )
          )
     )
   )
@@ -621,7 +623,7 @@ each expression can be just a form ie. (= 1 2) or a vector like this:
                           )
                         )
                       )
-                    'whatAssumptionsReturnWhenTrue
+                    `whatAssumptionsReturnWhenTrue
                     )
               )
         )
@@ -939,14 +941,14 @@ CompilerException java.lang.ClassCastException: clojure.lang.Cons cannot be cast
 
 (defmacro attachTimes [func]
   {:pre [(assumedTrue (or (symbol? func) (var? func) (var? (eval func)) ) )]}
-  (list `add-hook (list `get-as-var func) (var incTimes_hook))
+  (list `rh/add-hook (list `get-as-var func) (var incTimes_hook))
   )
 ;both work
 (attachTimes #'dummy1)
 (attachTimes dummy1)
 
 (deftest test_addhook_on_same_var
-  (testing "add-hook called more than once on the same var, still has effect only once"
+  (testing "rh/add-hook called more than once on the same var, still has effect only once"
     (times? 1
       (dummy1)
       )
@@ -1060,7 +1062,9 @@ tho doesn't allow me to return whatever I want when it succeeds, let's just say 
 I wouldn't wanna implement it like that ever (not consciously anyway).
 "
   [f & [silently]]
-  (let [ret (.delete (clojure.java.io/file f))]
+  (let [ret (.delete (clojure.java.io/as-file f))
+        _ (timbre/debug (str "deleted=`" ret "` file/folder `" f "`"))
+        ]
     (cond (or ret silently)
       ret
       :else
@@ -1069,7 +1073,23 @@ I wouldn't wanna implement it like that ever (not consciously anyway).
     )
   )
 
-
+(defn deleteFolderRecursively
+  "input: file or string"
+  [folderToDelete & [silent]]
+  (let [^java.io.File fdir (clojure.java.io/as-file folderToDelete)
+        everyFileAtThisLevel (map #(clojure.java.io/file fdir %)
+                               (seq (.list fdir)))
+        ]
+    (doseq [^java.io.File eachFD everyFileAtThisLevel]
+      (cond (.isDirectory eachFD)
+        (deleteFolderRecursively eachFD silent)
+        :else
+        (delete-file eachFD silent)
+        )
+      )
+    (delete-file fdir silent)
+    )
+  )
 
 (defn getUniqueFile 
 "
@@ -1096,7 +1116,7 @@ returns: java.io.File
         (assumedFalse (.isDirectory uniqueFile))
         (delete-file uniqueFile false)
         (assumedFalse (.exists uniqueFile))
-        (.mkdir uniqueFile)
+        (.mkdirs uniqueFile);XXX: just in case %tmp% folder/parents don't exit
         (assumedTrue (.exists uniqueFile) (.isDirectory uniqueFile))
         uniqueFile
         )

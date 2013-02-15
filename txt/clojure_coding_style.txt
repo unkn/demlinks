@@ -95,3 +95,10 @@ so to be sure that doesn't happen ie.:
     )
     
 
+10. seems to me to be a good idea to use :require in the ns form when
+including some namespace AND to put the tests for that namespace in 
+a different namespace, just in case some macros play bad with symbols
+expecting them to be in current namespace rather than in the namespace
+where they are defined.
+
+
