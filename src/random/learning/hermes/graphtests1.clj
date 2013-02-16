@@ -23,9 +23,6 @@
   *warn-on-reflection*
   true)
 
-(def conf {:storage {:backend "berkeleydb"
-                     :hostname "127.0.0.1"}})
-
 (defn beforeTests [aVar graphVar]
   (var-set aVar (q/getUniqueFolder))
   (let [^java.io.File fdir @aVar]
@@ -58,6 +55,7 @@
   )
 
 (defn testsFixture [testsHere]
+  ;XXX: tests better cannot be run on parallel or stuff will fail
   (with-local-vars [avar1 nil avar2 nil];(q/getUniqueFolder)] 
     (try
       (do
