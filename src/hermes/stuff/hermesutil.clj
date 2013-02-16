@@ -33,9 +33,7 @@
 (defn
   open
   [& params]
-  {:pre [(assumedNonNilGraph [params 
-                              "if you wanted to open in memory graph, don't pass nil"]
-           )
+  {:pre [
          (assumeNotLeakedGraph)
          ] 
    :post [(assumeNotLeakedGraph)]
