@@ -16,6 +16,7 @@
   (:import java.io.BufferedReader)
   (:require [datest1.ret :as r] :reload-all)
   (:require [runtime.q :as q] :reload-all)
+  (:require [runtime.futils :as f] :reload-all)
   )
 
 (set! 
@@ -153,7 +154,7 @@
           isDir?
           (let [
                 deleted? ;true;
-                (q/delete-file ffull true)
+                (f/delete-file ffull true)
                 ;(println ".delete" ffull);FIXME: actually delete here
                 ]
             (cond (not deleted?)

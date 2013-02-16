@@ -15,7 +15,7 @@
             [hermes.type :as t]
             [hermes.vertex :as v])
   (:require [hermes.stuff.hermesutil :as h])
-  
+  (:require [runtime.futils :as f] :reload-all)
   (:require [taoensso.timbre :as timbre 
          :only (trace debug info warn error fatal spy)])
   )
@@ -25,7 +25,7 @@
   true)
 
 (defn beforeTests [aVar graphVar]
-  (var-set aVar (q/getUniqueFolder))
+  (var-set aVar (f/getUniqueFolder))
   (let [^java.io.File fdir @aVar]
     (q/assumedNotNil fdir)
     (timbre/info "using temporary folder: `\n" fdir "\n`")
@@ -48,7 +48,7 @@
   (q/assumedNotNil @aVar)
   (q/assumedTrue
     [
-     (q/deleteFolderRecursively @aVar true)
+     (f/deleteFolderRecursively @aVar true)
      "failed to delete temporary folder: `"
      @aVar
      "`"
@@ -73,7 +73,7 @@
 (q/use-fixtures :once testsFixture)
 
 
-;the following test taken from hermes.persistent.core-test
+;the following test taken from hermes.persistent.core-test (it may be slightly modified by now) anyway credit goes to those people from here: https://github.com/gameclosure/hermes
 (q/deftest test-dueling-transactions
   (q/testing "Without retries"
     (g/transact!

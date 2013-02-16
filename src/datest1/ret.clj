@@ -164,7 +164,7 @@ returns a vector [key val]
   [key]
   (let [[k v] (getExistingKeyVec key)
         ]
-    (assertFalse 
+    (q/assumedFalse 
       [(and (keyword? k) (keyword? v))
        "they are both keywords, so we don't know which ones is the real key"
        " : " k " " v
