@@ -246,8 +246,15 @@ CompilerException java.lang.RuntimeException: Unable to resolve symbol: toUpperC
 (defn moo [] (get {:a 1} :a :not-found)
   )
 
+(defn currentLogLevel []
+  (:current-level @timbre/config)
+  )
+
+
 (defmacro pri [& all]
-  `(print (str ~@all))
+  `(cond (timbre/sufficient-level? :info)
+     (print (str ~@all));too ugly to use timbre logging here
+     )
   )
 
 (defmacro priln [& all]
