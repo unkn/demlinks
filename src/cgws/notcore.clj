@@ -8,7 +8,9 @@
 ; You must not remove this notice, or any other, from this software.
 
 ;change(?) git-windows symlinks
-;tested to work on windows7 64bit, make sure you set repo-path below
+;tested to work on windows7 64bit on the emacs-live repo, 
+;make sure you set repo-path below
+
 (ns cgws.notcore
   (:import java.io.File)
   (:import java.io.BufferedReader)
@@ -27,7 +29,7 @@
 (def fileClass java.io.File)
 
 (def ^java.io.File repo-path 
-  (q/newClass fileClass 
+  (q/newInstanceOfClass fileClass 
     (str
       "s:" 
       *separator* 
@@ -264,7 +266,7 @@ which contains this line(basically without newlines):
                       ]
                   (let [
                         ^java.io.File abs_symlink 
-                        (q/newClass fileClass
+                        (q/newInstanceOfClass fileClass
                           ;(new java.io.File 
                           (str 
                             (.toString 

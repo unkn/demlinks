@@ -10,11 +10,15 @@
 (ns ^{:doc "random text2 namespace meta test, need repl restart if changed" :author "whatever"} 
   datest1.ret
   (:refer-clojure :exclude [sorted?])
-  (:use [runtime.q :as q] :reload-all)
+  (:require [runtime.q :as q] :reload-all)
   (:refer-clojure :exclude [sorted?])
   ;(:use [clojure.core :as c])
   ;(:use clojure.tools.trace)
   )
+;thanks to ChongLi which triggered the "in-ns" in me by simply being there, listening.
+;but I can't use in-ns because ccw won't see it as a namespace
+;so, so far I'll be using what Raynes suggested :require
+;even if that means I'll have to qualify like crazy
 
 (set! 
   *warn-on-reflection*
@@ -104,7 +108,7 @@ nil if not exists,
             (symbol? key) @-allSymbolsToKeys
             (keyword? key) @-allKeysToSymbols
             :else
-            (thro exceptionThrownWhenMalformedInputPassed
+            (q/thro exceptionThrownWhenMalformedInputPassed
               "must pass a symbol or keyword or form, but not what you passed aka `"
               key "` whatever you passed evaluated to this before the call")
             )
@@ -136,7 +140,7 @@ returns a vector [key val]
             (symbol? key) @-allSymbolsToKeys
             (keyword? key) @-allKeysToSymbols
             :else
-            (thro exceptionThrownWhenMalformedInputPassed
+            (q/thro exceptionThrownWhenMalformedInputPassed
               "must pass a symbol or keyword or form, but not what you passed aka `"
               key "` whatever you passed evaluated to this before the call")
             )
@@ -147,7 +151,7 @@ returns a vector [key val]
   ([ret_object key]
     (let [existing (getVectorKeyIfExists ret_object key)]
       (cond (nil? existing)
-        (thro exceptionThrownWhenKeyDoesNotExist "key `" key 
+        (q/thro exceptionThrownWhenKeyDoesNotExist "key `" key 
           "` doesn't exist in map `" ret_object "`")
         :else
         existing
@@ -168,13 +172,13 @@ returns a vector [key val]
     )
   )
 
-(deftest test_get1
-  (is (= [:a 1] (getExistingKeyVec {:a 1} :a )))
-  (is (= [:a nil] (getExistingKeyVec {:a nil} :a )))
-  (is (= [:a 1] (getVectorKeyIfExists {:a 1} :a )))
-  (is (= [:a nil] (getVectorKeyIfExists {:a nil} :a )))
-  (is (nil? (getVectorKeyIfExists {:a nil} :b )))
-  (isthrown? exceptionThrownWhenKeyDoesNotExist 
+(q/deftest test_get1
+  (q/is (= [:a 1] (getExistingKeyVec {:a 1} :a )))
+  (q/is (= [:a nil] (getExistingKeyVec {:a nil} :a )))
+  (q/is (= [:a 1] (getVectorKeyIfExists {:a 1} :a )))
+  (q/is (= [:a nil] (getVectorKeyIfExists {:a nil} :a )))
+  (q/is (nil? (getVectorKeyIfExists {:a nil} :b )))
+  (q/isthrown? exceptionThrownWhenKeyDoesNotExist 
     (getExistingKeyVec {:a nil} :b ))
   )
 
@@ -187,7 +191,7 @@ returns a vector [key val]
 (defmacro defSym2Key [symbolKeyName thekey]
   {:pre [
          (q/assumedTrue (keyword? thekey))
-         (binding [*exceptionThrownBy_assumedPred* exceptionThrownWhenNonSymbolPassedAsKey]
+         (binding [q/*exceptionThrownBy_assumedPred* exceptionThrownWhenNonSymbolPassedAsKey]
            (q/assumedTrue (symbol? symbolKeyName))
            )
          ]
@@ -254,31 +258,31 @@ add_new_key [quoted_key_name thekey]
 
 
 
-#_(deftest test_nonsymbolkey ;this happens at compile time
-  (isthrown? q/exceptionThrownBy_assumedPred (defSym2Key 1 :b))
+#_(q/deftest test_nonsymbolkey ;this happens at compile time
+  (q/isthrown? q/exceptionThrownBy_assumedPred (defSym2Key 1 :b))
   )
 
-(deftest test_alreadyexisting
-  (isthrown? exceptionThrownWhenKeyAlreadyDefined (defSym2Key a :a))
-  (isthrown? exceptionThrownWhenKeyAlreadyDefined (defSym2Key a :c))
-  (isthrown? exceptionThrownWhenKeyAlreadyDefined (defSym2Key b :c))
-  (isthrown? exceptionThrownWhenKeyAlreadyDefined (defSym2Key c :a))
+(q/deftest test_alreadyexisting
+  (q/isthrown? exceptionThrownWhenKeyAlreadyDefined (defSym2Key a :a))
+  (q/isthrown? exceptionThrownWhenKeyAlreadyDefined (defSym2Key a :c))
+  (q/isthrown? exceptionThrownWhenKeyAlreadyDefined (defSym2Key b :c))
+  (q/isthrown? exceptionThrownWhenKeyAlreadyDefined (defSym2Key c :a))
   
   )
 
-(deftest test_somegetkey
-  (is (= [randomsymbo12892712391 'randomsymbo12892712391] 
+(q/deftest test_somegetkey
+  (q/is (= [randomsymbo12892712391 'randomsymbo12892712391] 
         (getVectorKeyIfExists randomsymbo12892712391) 
         (getExistingKeyVec randomsymbo12892712391)))
   
-  (is (= ['randomsymbo12892712391 randomsymbo12892712391] 
+  (q/is (= ['randomsymbo12892712391 randomsymbo12892712391] 
         (getVectorKeyIfExists 'randomsymbo12892712391) 
         (getExistingKeyVec 'randomsymbo12892712391)))
-  (isthrown? exceptionThrownWhenMalformedInputPassed 
+  (q/isthrown? exceptionThrownWhenMalformedInputPassed 
         (getVectorKeyIfExists 1) )
-  (isthrown? exceptionThrownWhenMalformedInputPassed (getExistingKeyVec 1))
+  (q/isthrown? exceptionThrownWhenMalformedInputPassed (getExistingKeyVec 1))
   
-  (isthrown? exceptionThrownWhenKeyDoesNotExist
+  (q/isthrown? exceptionThrownWhenKeyDoesNotExist
     (getExistingKeyVec (gensym 'inexistentsymbol))
     )
   )
@@ -289,7 +293,7 @@ add_new_key [quoted_key_name thekey]
    }
   (let [found (find returnedMap keywordField);ie. non nil, it's a [key value] vector
         ;_ (assumedTrue found)
-        _ (assumedNotNil [found 
+        _ (q/assumedNotNil [found 
                         "you tried to access field `" keywordField 
                         "` that didn't exist in map `" returnedMap
                         "`, you should've checked before!"])
@@ -314,9 +318,9 @@ add_new_key [quoted_key_name thekey]
     )
   )
 
-(use-fixtures :once testsFixture)
+(q/use-fixtures :once testsFixture)
 
-(show_state)
-(gotests)
+(q/show_state)
+(q/gotests)
 
 ;last line: (but this means, (run-tests) will fail
