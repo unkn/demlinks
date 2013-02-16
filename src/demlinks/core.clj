@@ -13,3 +13,38 @@
   "I don't do a whole lot."
   [x]
   (println x "Hello, World!"))
+
+
+;so let me see what I want here, in terms of graphs
+(defprotocol someGraph
+  (openPersistent [pathOrConf] "opens the specified graph with persistent storage ie. not in-memory")
+  (openInMemory [] "opens an in-memory graph")
+  (close [graph] "safely shutdown the graph")
+  (isOpen? [graph] "true is open")
+  )
+
+
+(extend-protocol someGraph
+  java.lang.String
+  (open
+    [^String strpath]
+    (println strpath)
+    )
+  
+  java.io.File
+  (open
+    [^java.io.File fpath]
+    (println fpath)
+    )
+  
+;  nil
+;  (open
+;    [nill]
+;    (println nill)
+;    )
+  )
+
+(openPersistent "a")
+(openPersistent (clojure.java.io/as-file "a"))
+(open nil)
+(openInMemory nil) ;this won't work
