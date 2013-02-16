@@ -13,6 +13,7 @@
   (:refer clojure.test :exclude [deftest is testing use-fixtures])
   ;(:refer-clojure :exclude [sorted?])
   (:require [robert.hooke :as rh])
+  (:require [datest1.ret :as r])
   ;(:refer-clojure :exclude [sorted?])
   (:require [taoensso.timbre :as timbre 
          :only (trace debug info warn error fatal spy)])
@@ -1054,6 +1055,9 @@ CompilerException java.lang.ClassCastException: clojure.lang.Cons cannot be cast
   (and (map? param) (sorted? param))
   )
 
+(r/defSym2Key KEY_FileIsDirectory :Directory)
+(r/defSym2Key KEY_FileIsFile :File)
+
 (defn delete-file
 "
 an implementation that returns the true/false status
@@ -1068,13 +1072,38 @@ tho doesn't allow me to return whatever I want when it succeeds, let's just say 
 I wouldn't wanna implement it like that ever (not consciously anyway).
 "
   [f & [silently]]
-  (let [ret (.delete (clojure.java.io/as-file f))
-        _ (timbre/debug (str "deleted=`" ret "` file/folder `" f "`"))
+  (let [
+        ff (clojure.java.io/as-file f)
+        typee (typeOfFile ff)
+        ;(getExistingKeyVec (r/getExistingKey KEY_FileIsDirectory))
+        ret (.delete ff)
+        _ (timbre/debug (str "deleted=`" ret "` " typee " `" f "`"))
         ]
     (cond (or ret silently)
       ret
       :else
       (throw (java.io.IOException. (str "Couldn't delete " f)))
+      )
+    )
+  )
+
+(defn isDir? [file]
+  (let [^java.io.File ffile (clojure.java.io/as-file file)]
+    (.isDirectory ffile)
+    )
+  )
+
+(defn isFile? [file]
+  (let [^java.io.File ffile (clojure.java.io/as-file file)]
+    (.isFile ffile)
+    )
+  )
+
+(defn typeOfFile [file]
+  (let [^java.io.File ffile (clojure.java.io/as-file file)]
+    (cond
+      (isDir? ffile) {(r/getExistingKey KEY_FileIsDirectory) ffile}
+      (isFile? ffile) {(r/getExistingKey KEY_FileIsFile) ffile}
       )
     )
   )

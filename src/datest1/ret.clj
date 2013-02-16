@@ -164,10 +164,34 @@ returns a vector [key val]
   [key]
   (let [[k v] (getExistingKeyVec key)
         ]
+    (assertFalse 
+      [(and (keyword? k) (keyword? v))
+       "they are both keywords, so we don't know which ones is the real key"
+       " : " k " " v
+       ]
+      )
     (cond (keyword? k)
       k
       :else
       v
+      )
+    )
+  )
+
+#_(defn getExistingKeySValue
+  [key]
+  (let [[k v] (getExistingKeyVec key)
+        ]
+    (assertFalse 
+      [(and (keyword? k) (keyword? v))
+       "they are both keywords, so we don't know which ones is the real key"
+       " : " k " " v
+       ]
+      )
+    (cond (keyword? k)
+      v
+      :else
+      k
       )
     )
   )
@@ -180,6 +204,7 @@ returns a vector [key val]
   (q/is (nil? (getVectorKeyIfExists {:a nil} :b )))
   (q/isthrown? exceptionThrownWhenKeyDoesNotExist 
     (getExistingKeyVec {:a nil} :b ))
+  ;(q/is (= 5 (getExistingKeySValue {:a 5})))
   )
 
 
