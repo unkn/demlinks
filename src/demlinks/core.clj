@@ -7,7 +7,10 @@
 ; the terms of this license.
 ; You must not remove this notice, or any other, from this software.
 
-(ns demlinks.core)
+(ns demlinks.core
+  (:require [taoensso.timbre :as timbre 
+         :only (trace debug info warn error fatal spy)])
+  )
 
 (defn foo
   "I don't do a whole lot."
@@ -16,35 +19,36 @@
 
 
 ;so let me see what I want here, in terms of graphs
-(defprotocol someGraph
-  (openPersistent [pathOrConf] "opens the specified graph with persistent storage ie. not in-memory")
-  (openInMemory [] "opens an in-memory graph")
-  (close [graph] "safely shutdown the graph")
-  (isOpen? [graph] "true is open")
+(defn 
+  openPersistent
+  "opens the specified graph with persistent storage ie. not in-memory"
+  [pathOrConf]
+  (timbre/info "persistent graph open")
   )
 
-
-(extend-protocol someGraph
-  java.lang.String
-  (open
-    [^String strpath]
-    (println strpath)
-    )
-  
-  java.io.File
-  (open
-    [^java.io.File fpath]
-    (println fpath)
-    )
-  
-;  nil
-;  (open
-;    [nill]
-;    (println nill)
-;    )
+(defn 
+  openInMemory
+  "opens an in-memory graph"
+  []
+  (timbre/info "in memory graph open")
   )
+
+(defn 
+  close 
+  "safely shutdown the graph"
+  [graph] 
+  (timbre/info "graph down")
+  )
+  
+(defn 
+  isOpen? 
+  "true if open"
+  [graph]
+  
+  )
+
 
 (openPersistent "a")
 (openPersistent (clojure.java.io/as-file "a"))
-(open nil)
-(openInMemory nil) ;this won't work
+(openPersistent nil)
+(openInMemory)
