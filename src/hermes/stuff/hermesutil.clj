@@ -28,7 +28,8 @@
   []
   (q/assumedNil [
                g/*graph*
-               "something bad happened and the graph leaked to *graph* ie. it's non-nil now"] )
+               "something bad happened and the graph leaked to *graph* 
+ie. it's non-nil now; so you could've just used hermes functions and that's why"] )
   )
 
 (defn pacifyGlobalGraphVarRoot
@@ -36,25 +37,44 @@
   (alter-var-root #'g/*graph* (constantly nil))
   )
 
+(defmacro hermesCall [ & forms ]
+  (q/assumedFalse [
+                   (empty? forms)
+                   "you must pass something"
+                   ])
+  `(let [
+        _# (assumeNotLeakedGraph)
+        ret# ~@forms
+        _# (pacifyGlobalGraphVarRoot)
+        _# (assumeNotLeakedGraph)
+        ]
+    ret#
+    )
+  )
+
 
 (defn
   open
   [& params]
-  {:pre [
+  #_{:pre [
          (assumeNotLeakedGraph)
          ] 
    :post [(assumeNotLeakedGraph)]
    }
-  
-  ;(with-bindings {#'g/*graph* nil}
-    ;(assumeNotLeakedGraph)
-    (let [ret (apply g/open params);XXX: (g/open params) would pass nil if no params on call
-          _ (pacifyGlobalGraphVarRoot)
-          ]
-      ;g/*graph*
-      ret
-      )
-   ; )
+  (hermesCall
+    (apply g/open params);XXX: (g/open params) would pass nil if no params on call
+    )
+;  {:pre [
+;         (assumeNotLeakedGraph)
+;         ] 
+;   :post [(assumeNotLeakedGraph)]
+;   }
+;  
+;  (let [ret 
+;        _ (pacifyGlobalGraphVarRoot)
+;        ]
+;    ret
+;    )
   )
 
 #_(defn x []
