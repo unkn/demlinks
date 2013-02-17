@@ -8,7 +8,6 @@
 ; You must not remove this notice, or any other, from this software.
 
 (ns runtime.q
-  ;(:use runtime.testengine :reload-all)
   (:refer-clojure :exclude [sorted?])
   (:refer clojure.test :exclude [deftest is testing use-fixtures])
   ;(:refer-clojure :exclude [sorted?])

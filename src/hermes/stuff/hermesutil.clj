@@ -4,7 +4,7 @@
             [hermes.type :as t]
             [hermes.vertex :as v])
   (:require [datest1.ret :as r])
-  (:import  
+  (:import 
     (com.thinkaurelius.titan.graphdb.database   StandardTitanGraph)
     (com.thinkaurelius.titan.graphdb.vertices   PersistStandardTitanVertex)
     (com.tinkerpop.blueprints Graph)

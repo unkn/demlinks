@@ -62,7 +62,7 @@
           )
         
         )
-      );do
+      )
 
     ;none of the above:
     (q/thro "unexpected *conf* value=`" *conf* "`")
