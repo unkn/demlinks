@@ -47,7 +47,7 @@
   )
 
 
-(def
+(defonce
   ^{:private true
     :doc "keeps a 1-to-1 map between symbol name and keyword
 ie. KEY_lines_count --> :lines_count
@@ -62,7 +62,7 @@ the key is paradoxically not the keyword
         )
   )
 
-(def
+(defonce
   ^{:doc "one to one mapping from keyword to symbol"}
 -allKeysToSymbols
   (ref (sorted-map-by comparator_AZ_order)
@@ -328,7 +328,7 @@ add_new_key [quoted_key_name thekey]
   )
 
 (defn afterTests []
-  ;(-cleanMaps)
+  (-cleanMaps);XXX: kinda depends when u're running the tests for this ns, if prior any other tests that use thing ns then should be ok, else it would lose those ns-es' bindings and likely cause them to fail
   )
 
 (defn testsFixture [testsHere]
