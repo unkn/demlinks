@@ -1,8 +1,6 @@
 (ns runtime.futils
   (:require [runtime.q :as q] :reload-all)
   (:require [datest1.ret :as r] :reload-all)
-  (:require [taoensso.timbre :as timbre 
-         :only (trace debug info warn error fatal spy)])
   )
 
 (r/defSym2Key KEY_FileIsDirectory :Directory)
@@ -49,7 +47,7 @@ I wouldn't wanna implement it like that ever (not consciously anyway).
         ff (clojure.java.io/as-file f)
         typee (typeOfFile ff)
         ret (.delete ff)
-        _ (timbre/debug (str "deleted=`" ret "` " typee))
+        _ (q/log :debug (str "deleted=`" ret "` " typee))
         ]
     (cond (or ret silently)
       ret

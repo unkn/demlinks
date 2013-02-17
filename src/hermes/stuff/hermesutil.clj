@@ -111,5 +111,10 @@
 (q/showLocation)
 (defn x []
   (q/showLocation)
+  (q/showHere 0 :info 121122 "some")
+  (q/log :info "something")
+  (q/logShift 1 :info "the call position of our function")
+  (q/logCaller :info "the call position of our function")
   )
+
 (x)

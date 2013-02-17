@@ -8,8 +8,7 @@
 ; You must not remove this notice, or any other, from this software.
 
 (ns demlinks.core
-  (:require [taoensso.timbre :as timbre 
-         :only (trace debug info warn error fatal spy)])
+  (:require [runtime.q :as q] :reload-all)
   )
 
 (defn foo
@@ -23,21 +22,21 @@
   openPersistent
   "opens the specified graph with persistent storage ie. not in-memory"
   [pathOrConf]
-  (timbre/info "persistent graph open")
+  (q/log :info "persistent graph open")
   )
 
 (defn 
   openInMemory
   "opens an in-memory graph"
   []
-  (timbre/info "in memory graph open")
+  (q/log :info  "in memory graph open")
   )
 
 (defn 
   close 
   "safely shutdown the graph"
   [graph] 
-  (timbre/info "graph down")
+  (q/log :info  "graph down")
   )
   
 (defn 

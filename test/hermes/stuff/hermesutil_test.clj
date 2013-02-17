@@ -16,8 +16,6 @@
             [hermes.vertex :as v])
   (:require [hermes.stuff.hermesutil :as h])
   (:require [runtime.futils :as f] :reload-all)
-  (:require [taoensso.timbre :as timbre 
-         :only (trace debug info warn error fatal spy)])
   (:import  
     (com.thinkaurelius.titan.graphdb.database   StandardTitanGraph)
     (com.thinkaurelius.titan.graphdb.vertices   PersistStandardTitanVertex)
@@ -33,7 +31,7 @@
   (var-set aVar (f/getUniqueFolder))
   (let [^java.io.File fdir @aVar]
     (q/assumedNotNil fdir)
-    (timbre/info "using temporary folder: `\n" fdir "\n`")
+    (q/info "using temporary folder: `\n" fdir "\n`")
     
     ;not explicit that we're using bdb:
     ;(g/open (.getAbsolutePath fdir))

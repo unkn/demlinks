@@ -15,7 +15,7 @@
   (:require [robert.hooke :as rh])
   ;(:require [datest1.ret :as r])
   ;(:refer-clojure :exclude [sorted?])
-  (:require [taoensso.timbre :as timbre 
+  (:require [taoensso.timbre :as timbre ;this should be used only in this namespace here, ever
          :only (trace debug info warn error fatal spy)])
   ;(:require flatland.useful.ns)
   ;(:use clojure.tools.trace) 
@@ -247,13 +247,20 @@ CompilerException java.lang.RuntimeException: Unable to resolve symbol: toUpperC
 (defn moo [] (get {:a 1} :a :not-found)
   )
 
-(defn currentLogLevel []
+(defn logLevelCurrent []
   (:current-level @timbre/config)
   )
 
+(defn logLevelSet [level]
+  (timbre/set-level! level)
+  )
+
+(defn logLevelSufficient? [level]
+  (timbre/sufficient-level? level)
+  )
 
 (defmacro pri [& all]
-  `(cond (timbre/sufficient-level? :info)
+  `(cond (logLevelSufficient? :info)
      (print (str ~@all));too ugly to use timbre logging here
      )
   )
@@ -266,13 +273,41 @@ CompilerException java.lang.RuntimeException: Unable to resolve symbol: toUpperC
      )
   )
 
+#_(defmacro epply
+"
+does `apply` if it's a function
+or eval + list* if it's a macro
+"
+  [funcOrMacro & args]
+  `(cond true;(macro? ~funcOrMacro)
+     (eval (list* '~funcOrMacro ~args)) ;thanks bbloom for eval + list*
+     :else
+     ;assumed is a fn?
+     (apply '~funcOrMacro ~args)
+    )
+  )
+
+(defn ^:private logAny [ & [logLevel :as all] ]
+  ;newline before any log msg 'cause hard to tell lines esp. when they span multiple lines due to wrap
+  (when (logLevelSufficient? logLevel)
+    (println);"\n"
+    )
+  #_(assumedTrue [
+                (macro? timbre/log)
+                "nolonger a macro, well our impl. must change"
+                ])
+  (timbre/log logLevel 
+    (clojure.string/join " " (rest all)); thanks gfredericks for opening my eyes to use join here
+    )
+  )
+
 (defmacro show_state []
   "show when namespace where the call to this macro resides
 got (re)loaded and/or compiled
 "
   `(do
     ;  (prn &form)
-    (when *compile-files* (println "compiling" *ns*))
+    (when *compile-files* (logCaller :debug "compiling" *ns*))
     ;compile like this:
     ;(compile (symbol (str *ns*)))
     ;or Ctrl+Alt+K  in eclipse+ccw
@@ -794,7 +829,7 @@ else it won't remember the full trace only last 1024 elements? or was it 1000 fo
   ;6. zsym is a macro ie. defn, returns :macro
   ;7. FIXME: handle this: (#(sym-state %) prn2) ;CompilerException java.lang.RuntimeException: Unable to resolve symbol: prn2 in this context, compiling:(NO_SOURCE_PATH:1:1)
   ;8. alsoFIXME: (#(sym-state %) prn) returns :undefined while (sym-state prn) return :bound
-;9. => (let [a 1] (sym-state a)) ;returns :bound
+;9. => (let [a 1] (sym-state a)) ;returns :undefined
   ;10. fix: (let [defn 1] (sym-state defn)) ; returns :macro
 
   `(try 
@@ -1007,9 +1042,10 @@ CompilerException java.lang.ClassCastException: clojure.lang.Cons cannot be cast
     )
   ))
 
-;TODO: handle all other cases
+;TODO: handle all other cases, still won't handle 
+;ie. (macro? timbre/log) when in a different namespace currently but executing the macro in the original namespace where timbre alias is defined
 (defmacro macro? [zsym]
-  `(macro-var? (var ~zsym))
+  `(= :macro (sym-state ~zsym))
   )
 
 (defmacro macro-var? [zvar]
@@ -1124,6 +1160,96 @@ don't pass a macro as the function
     (getLocation (addAndIgnoreNil shift 2)))
   )
 
+(deftest test_empty
+  (is (empty? nil))
+  (is (empty? '()))
+  (is (empty? (list)))
+  )
+
+
+(defmacro ^:private priv_functionget [& msg2]
+  `(fn [x#]
+     (logAny
+       (or ~'loglevel :debug) 
+       x# ~@msg2)
+     )
+  )
+
+#_(defn ^:private priv_functionget [& msg2]
+  '(fn [x#] 
+     (logAny
+       (or loglevel :debug) 
+       x# msg2)
+     )
+  )
+
+(defn assumedLogLevel [loglevel]
+  (assumedTrue [
+                (keyword? loglevel)
+                "loglevel must be a keyword ie. :info or :debug"
+                "you passed `" loglevel "`" 
+                ])
+  )
+
+(defn assumedShift [shift]
+  (assumedTrue [(number? shift)
+                "the shift must be a number, you passed `"
+                shift "`"
+                ])
+  )
+
+(defn showHere
+"
+optional inputs:
+shift = shift in stacktrace to finetune the shown location
+logLevel = ie. :info :debug etc. for timbre/log
+rest = strings to be joined with space between them; or nil to skip
+"
+  [& [shift loglevel  :as all]]
+  (showLocation (let [msg (nthrest all 2)]
+                  (cond (empty? msg)
+                    (priv_functionget)
+                    #_#(logAny
+                       (or loglevel :debug) 
+                       %)
+                    :else
+                    (priv_functionget
+                      "Msg: `\n"
+                      (clojure.string/join " " msg)
+                      "\n`"
+                      )
+                    #_#(logAny
+                       (or loglevel :debug) 
+                       %
+                       "Msg: `\n"
+                       (clojure.string/join " " msg)
+                       "\n`"
+                       )
+                    )
+                  )
+                  
+    (addAndIgnoreNil shift 2))
+  )
+
+
+
+(defn logShift [shift loglevel & anyMsg]
+  {:pre [(assumedLogLevel loglevel)
+         (assumedShift shift)
+         ]}
+  (apply showHere (addAndIgnoreNil shift 3) loglevel anyMsg)
+  )
+
+
+(defn logCaller [loglevel & anyMsg ]
+  {:pre [(assumedLogLevel loglevel)]}
+  (apply logShift 4 loglevel anyMsg)
+  )
+
+(defn log [loglevel & anyMsg]
+  {:pre [(assumedLogLevel loglevel)]}
+  (apply logShift 0 loglevel anyMsg)
+  )
 
 ;(q/show_state)
 ;(q/here)
