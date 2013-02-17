@@ -28,19 +28,24 @@
   *warn-on-reflection*
   true)
 
-(def ^:dynamic *conf* (r/getExistingKey h/KEY_InMemoryGraph))
+(r/defSym2Key KEY_InMemoryGraph :memory)
+(r/defSym2Key KEY_BerkeleyDB :bdbje)
+(r/defSym2Key KEY_Cassandra :cassandra)
+(r/defSym2Key KEY_HBase :hbase)
+
+(def ^:dynamic *conf* (r/getExistingKey KEY_InMemoryGraph))
 
 (defn beforeTests [aVar graphVar]
   (condp = *conf*
     ;case1
-    (r/getExistingKey h/KEY_InMemoryGraph)
+    (r/getExistingKey KEY_InMemoryGraph)
     (do
       (q/log :debug "memory")
       (var-set graphVar (g/open))
       )
     
     ;case2
-    (r/getExistingKey h/KEY_BerkeleyDB) 
+    (r/getExistingKey KEY_BerkeleyDB) 
     (do
       (var-set aVar (f/getUniqueFolder))
       (let [^java.io.File fdir @aVar]
@@ -69,13 +74,13 @@
   (h/shutdown @graphVar)
   (condp = *conf*
     ;case1
-    (r/getExistingKey h/KEY_InMemoryGraph)
+    (r/getExistingKey KEY_InMemoryGraph)
     (do
       (q/log :debug "memory graph afterTests fixture")
       )
     
     ;case2
-    (r/getExistingKey h/KEY_BerkeleyDB) 
+    (r/getExistingKey KEY_BerkeleyDB) 
     (do
       (q/assumedNotNil @aVar)
       (q/assumedTrue
@@ -224,8 +229,10 @@
 ;(q/gotests)
 
 (doall (for [everyGraphType (list 
-                       (r/getExistingKey h/KEY_InMemoryGraph)
-                       (r/getExistingKey h/KEY_BerkeleyDB)
+                       (r/getExistingKey KEY_InMemoryGraph)
+                       (r/getExistingKey KEY_BerkeleyDB)
+                       ;(r/getExistingKey KEY_Cassandra)
+                       ;(r/getExistingKey KEY_HBase)
                        )]
   (binding [
             *conf* everyGraphType

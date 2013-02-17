@@ -53,10 +53,6 @@ ie. it's non-nil now; so you could've just used hermes functions and that's why"
     )
   )
 
-;(def memGraph :memory)
-(r/defSym2Key KEY_InMemoryGraph :memory)
-(r/defSym2Key KEY_BerkeleyDB :bdbje)
-(println @r/-allKeysToSymbols)
 
 (defn
   open
