@@ -307,7 +307,8 @@ got (re)loaded and/or compiled
 "
   `(do
     ;  (prn &form)
-    (when *compile-files* (logCaller :debug "compiling" *ns*))
+    (when *compile-files* (log :debug "compiling" *ns*))
+    ;(when true (log :debug "compiling" *ns*))
     ;compile like this:
     ;(compile (symbol (str *ns*)))
     ;or Ctrl+Alt+K  in eclipse+ccw
@@ -319,9 +320,11 @@ got (re)loaded and/or compiled
     (pri "` caller line: `" '~(meta &form))
     (pri "` caller file: `" *file*)
     (priln "`")
+    
     nil
     )
   )
+
 
 
 (defmacro here [] ;thanks to S11001001
@@ -1292,7 +1295,15 @@ rest = strings to be joined with space between them; or nil to skip
   (apply logShift 0 loglevel anyMsg)
   )
 
+(defn show_state2 []
+  (logCaller 
+    :info 
+    "(re)loaded namespace `" (str *ns*) "`"
+    )
+  )
+
 ;(q/show_state)
 ;(q/here)
 (show_state)
+(show_state2)
 (gotests)
