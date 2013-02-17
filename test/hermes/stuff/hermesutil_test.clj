@@ -9,14 +9,14 @@
 
 
 (ns hermes.stuff.hermesutil-test
-  (:require [runtime.q :as q] :reload-all)
+  (:require [runtime.q :as q]); :reload-all)
   (:require [clojure.java.io :as io])
   (:require [hermes.core :as g]
             [hermes.type :as t]
             [hermes.vertex :as v])
   (:require [datest1.ret :as r])
   (:require [hermes.stuff.hermesutil :as h])
-  (:require [runtime.futils :as f] :reload-all)
+  (:require [runtime.futils :as f]); :reload-all)
   (:import  
     (com.thinkaurelius.titan.graphdb.database   StandardTitanGraph)
     (com.thinkaurelius.titan.graphdb.vertices   PersistStandardTitanVertex)
@@ -35,7 +35,8 @@
     ;case1
     (r/getExistingKey h/KEY_InMemoryGraph)
     (do
-      (println "memory")
+      (q/log :debug "memory")
+      (var-set graphVar (g/open))
       )
     
     ;case2
@@ -44,7 +45,7 @@
       (var-set aVar (f/getUniqueFolder))
       (let [^java.io.File fdir @aVar]
         (q/assumedNotNil fdir)
-        (q/info "using temporary folder: `\n" fdir "\n`")
+        (q/log :debug "using temporary folder: `\n" fdir "\n`")
         
         ;not explicit that we're using bdb:
         ;(g/open (.getAbsolutePath fdir))
@@ -66,17 +67,17 @@
 (defn afterTests [aVar graphVar]
   (q/assumedNotNil @graphVar)
   (h/shutdown @graphVar)
-  (q/assumedNotNil @aVar)
   (condp = *conf*
     ;case1
     (r/getExistingKey h/KEY_InMemoryGraph)
     (do
-      (println "memory")
+      (q/log :debug "memory graph afterTests fixture")
       )
     
     ;case2
     (r/getExistingKey h/KEY_BerkeleyDB) 
     (do
+      (q/assumedNotNil @aVar)
       (q/assumedTrue
         [
          (f/deleteFolderRecursively @aVar true)
@@ -88,6 +89,7 @@
     
     ;none of the above:
     (q/thro "unexpected *conf* value=`" *conf* "`")
+    )
   )
 
 (defn testsFixture [testsHere]
@@ -219,4 +221,27 @@
 
 ;last lines:
 (q/show_state)
-(q/gotests)
+;(q/gotests)
+
+(doall (for [everyGraphType (list 
+                       (r/getExistingKey h/KEY_InMemoryGraph)
+                       (r/getExistingKey h/KEY_BerkeleyDB)
+                       )]
+  (binding [
+            *conf* everyGraphType
+            ]
+    (let [ret (doall (q/gotests))
+          ;errors (:error ret)
+          ;fails (:fail ret)
+          ]
+      ret
+      #_(cond 
+        (or errors fails) ret
+        :else
+        (q/log :info ret)
+        )
+      )
+    )
+  )
+)
+

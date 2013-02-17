@@ -1292,7 +1292,7 @@ rest = strings to be joined with space between them; or nil to skip
 
 (defn log [loglevel & anyMsg]
   {:pre [(assumedValidLogLevel loglevel)]}
-  (apply logShift 0 loglevel anyMsg)
+  (apply logShift 3 loglevel anyMsg)
   )
 
 (defn show_state2 []

@@ -8,7 +8,7 @@
 ; You must not remove this notice, or any other, from this software.
 
 (ns demlinks.core
-  (:require [runtime.q :as q] :reload-all)
+  (:require [runtime.q :as q] )
   )
 
 (defn foo

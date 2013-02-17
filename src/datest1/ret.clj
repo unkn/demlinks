@@ -10,7 +10,7 @@
 (ns ^{:doc "random text2 namespace meta test, need repl restart if changed" :author "whatever"} 
   datest1.ret
   (:refer-clojure :exclude [sorted?])
-  (:require [runtime.q :as q] :reload-all)
+  (:require [runtime.q :as q] )
   (:refer-clojure :exclude [sorted?])
   ;(:use [clojure.core :as c])
   ;(:use clojure.tools.trace)

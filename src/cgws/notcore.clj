@@ -15,8 +15,8 @@
   (:import java.io.File)
   (:import java.io.BufferedReader)
   (:require [datest1.ret :as r])
-  (:require [runtime.q :as q] :reload-all)
-  (:require [runtime.futils :as f] :reload-all)
+  (:require [runtime.q :as q] )
+  (:require [runtime.futils :as f] )
   )
 
 (set! 

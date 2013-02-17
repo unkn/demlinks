@@ -1,5 +1,5 @@
 (ns hermes.stuff.hermesutil
-  (:require [runtime.q :as q] :reload-all)
+  (:require [runtime.q :as q] )
   (:require [hermes.core :as g]
             [hermes.type :as t]
             [hermes.vertex :as v])
@@ -56,6 +56,7 @@ ie. it's non-nil now; so you could've just used hermes functions and that's why"
 ;(def memGraph :memory)
 (r/defSym2Key KEY_InMemoryGraph :memory)
 (r/defSym2Key KEY_BerkeleyDB :bdbje)
+(println @r/-allKeysToSymbols)
 
 (defn
   open

@@ -9,7 +9,7 @@
 
 (ns datest1.core
   (:use [datomic.api :only (q db) :as d])
-  (:use [runtime.q :as q] :reload-all)
+  (:use [runtime.q :as q] )
 ;  (:require [clojure.pprint :as pprint])
   )
 

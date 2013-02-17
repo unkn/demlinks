@@ -1,5 +1,5 @@
 (ns runtime.futils
-  (:require [runtime.q :as q] :reload-all)
+  (:require [runtime.q :as q] )
   (:require [datest1.ret :as r])
   )
 

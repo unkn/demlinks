@@ -101,4 +101,5 @@ a different namespace, just in case some macros play bad with symbols
 expecting them to be in current namespace rather than in the namespace
 where they are defined.
 
-
+11. don't use :reload-all to save time loading and to keep the global state in some namespaces 
+like datest1.ret
