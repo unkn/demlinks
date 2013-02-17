@@ -1017,7 +1017,7 @@ CompilerException java.lang.ClassCastException: clojure.lang.Cons cannot be cast
   )
 
 
-(comment
+#_(comment
 (defn sym-info2 [zsym]
   (try
   (let [ss (sym-state zsym)]
@@ -1053,6 +1053,75 @@ CompilerException java.lang.ClassCastException: clojure.lang.Cons cannot be cast
 
 (defn sortedMap? [param]
   (and (map? param) (sorted? param))
+  )
+
+
+(defn addAndIgnoreNil
+"
+allowed no args, in case you pass two things which are both nil
+"
+  [& restt]
+  ;(apply (fnil + 0 0) one restt) ;thanks to gfredericks for ,((fnil + 0) nil 4)
+  (->> restt (filter identity) (apply + 0));thanks to gfredericks for ,(->> [nil 1 nil] (filter identity) (apply + 1))
+  )
+
+(deftest test_addAndIgnoreNil
+  (is (= 2 (addAndIgnoreNil nil 1 1)))
+  (is (= 2 (addAndIgnoreNil 1 nil 1)))
+  (is (= 2 (addAndIgnoreNil 1 1 nil)))
+  (is (= 2 (addAndIgnoreNil 2 nil)))
+  (is (= 2 (addAndIgnoreNil nil 2)))
+  (is (= 2 (addAndIgnoreNil 2)))
+  (is (= 0 (addAndIgnoreNil)))
+  (is (= 0 (addAndIgnoreNil nil)))
+  (is (= 0 (apply addAndIgnoreNil (take 100 (repeat nil)))))
+  (is (= 1 (apply addAndIgnoreNil 1 (take 100 (repeat nil)))))
+  (is (= 1 (apply addAndIgnoreNil (concat (take 100 (repeat nil)) '(1))) ))
+  (is (= 2 (apply addAndIgnoreNil 1 (concat (take 100 (repeat nil)) '(1))) ))
+  )
+
+(defn getLocation [& [shift]]
+  (let [
+        sta (.getStackTrace (new Exception "showLocation"))
+        seqsta (seq sta)
+        ste (nth 
+            seqsta
+            (addAndIgnoreNil shift 2)
+            )
+        ;fn (.getFileName ste)
+        ;linenum (.getLineNumber ste)
+        ;namespacee (.getClassName ste)
+        ]
+    #_{:file fn 
+     :line linenum 
+     :ns namespacee 
+     ;:sta seqsta
+     :ste ste
+     }
+    (clj-stacktrace.core/parse-trace-elem ste)
+    )
+  )
+
+
+;XXX: would be nice to allow skipping `showFunction` instead of having to set it to `nil` when just wanting to set `shift`
+;XXX: maybe allow macros to be passed not just functions
+(defn showLocation
+"
+optional input:
+- showFunction = to function to call with the map of location as parameter
+- shift = number to shift into the stacktrace, u shouldn't need to use this
+don't pass a macro as the function
+"
+  [& [showFunction shift]]
+  {:pre [
+         (assumedTrue [
+                      (or (nil? showFunction) (fn? showFunction))
+                      "you must pass a function, or not specify it or nil to use println"
+                      ])
+         ]}
+  (;apply showFunction
+    (or showFunction println ) 
+    (getLocation (addAndIgnoreNil shift 2)))
   )
 
 

@@ -30,6 +30,9 @@
                "something bad happened and the graph leaked to *graph* ie. it's non-nil now"] )
   )
 
+
+
+
 (defn
   open
   [& params]
@@ -104,4 +107,9 @@
 
 ;last lines:
 (q/show_state)
-(q/gotests)
+;(q/gotests)
+(q/showLocation)
+(defn x []
+  (q/showLocation)
+  )
+(x)
