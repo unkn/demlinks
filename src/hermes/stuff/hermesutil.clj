@@ -11,6 +11,10 @@
     )
   )
 
+(defn getLastOpenedGraphSeenByHermes []
+  g/*graph*
+  )
+
 (defn assumedNonNilGraph [graph]
   (q/assumedNotNil [graph "you passed nil graph"])
   )
@@ -28,7 +32,7 @@
 (defn assumeNotLeakedGraph
   []
   (q/assumedNil [
-               g/*graph*
+               (getLastOpenedGraphSeenByHermes)
                "something bad happened and the graph leaked to *graph* 
 ie. it's non-nil now; so you could've just used hermes functions and that's why"] )
   )
