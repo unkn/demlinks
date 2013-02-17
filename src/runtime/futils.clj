@@ -1,10 +1,7 @@
 (ns runtime.futils
   (:require [runtime.q :as q] )
-  (:require [datest1.ret :as r])
+  (:require [runtime.ret :as r])
   )
-
-(r/defSym2Key KEY_FileIsDirectory :Directory)
-(r/defSym2Key KEY_FileIsFile :File)
 
 
 
@@ -23,8 +20,8 @@
 (defn typeOfFile [file]
   (let [^java.io.File ffile (clojure.java.io/as-file file)]
     (cond
-      (isDir? ffile) {(r/getExistingKey KEY_FileIsDirectory) ffile}
-      (isFile? ffile) {(r/getExistingKey KEY_FileIsFile) ffile}
+      (isDir? ffile) {:Directory ffile}
+      (isFile? ffile) {:File ffile}
       )
     )
   )

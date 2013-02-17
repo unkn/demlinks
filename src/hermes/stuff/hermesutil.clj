@@ -3,7 +3,7 @@
   (:require [hermes.core :as g]
             [hermes.type :as t]
             [hermes.vertex :as v])
-  (:require [datest1.ret :as r])
+  (:require [runtime.ret :as r])
   (:import 
     (com.thinkaurelius.titan.graphdb.database   StandardTitanGraph)
     (com.thinkaurelius.titan.graphdb.vertices   PersistStandardTitanVertex)

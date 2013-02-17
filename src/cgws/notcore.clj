@@ -14,7 +14,7 @@
 (ns cgws.notcore
   (:import java.io.File)
   (:import java.io.BufferedReader)
-  (:require [datest1.ret :as r])
+  (:require [runtime.ret :as r])
   (:require [runtime.q :as q] )
   (:require [runtime.futils :as f] )
   )
@@ -58,7 +58,6 @@
         (transform_flatfiles_to_symlinks repo-path repoBranch))
       )
     )
-;(r/getIfExists :key {:map 1})
   )
 
 
@@ -186,11 +185,6 @@
     );let
   );defn
 
-(r/defSym2Key KEY_LinesCount :LinesCount)
-(r/defSym2Key KEY_PointsTo :PointsTo)
-(r/defSym2Key KEY_NonEmptyLinesCount :non_empty_lines_count)
-(r/defSym2Key KEY_FlatFile :flatfile)
-(r/defSym2Key KEY_isValid :valid?)
 
 (defn parse-flatfile-wannabe-symlink 
 "
@@ -209,22 +203,22 @@ which contains this line(basically without newlines):
           ^String pointsTo (first allLines)
           ]
       {
-       (r/getExistingKey KEY_isValid) (and (= 1 howManyLines) (empty? pointsTo))
-       (r/getExistingKey KEY_FlatFile) flat_file_symlink
-       (r/getExistingKey KEY_LinesCount) howManyLines
-       (r/getExistingKey KEY_NonEmptyLinesCount) howManyNonEmptyLines
-       (r/getExistingKey KEY_PointsTo) pointsTo
+       :valid? (and (= 1 howManyLines) (empty? pointsTo))
+       :FlatFile flat_file_symlink
+       :LinesCount howManyLines
+       :NonEmptyLinesCount howManyNonEmptyLines
+       :PointsTo pointsTo
        }
       )
     )
   )
 
 (defn getLinesCount [parsed_ff]
-  (r/getRetField parsed_ff KEY_LinesCount)
+  (r/getRetField parsed_ff :LinesCount)
   )
 
 (defn getPointsTo [parsed_ff]
-  (r/getRetField parsed_ff KEY_PointsTo)
+  (r/getRetField parsed_ff :PointsTo)
   )
 
 

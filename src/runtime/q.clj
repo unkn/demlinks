@@ -12,7 +12,7 @@
   (:refer clojure.test :exclude [deftest is testing use-fixtures])
   ;(:refer-clojure :exclude [sorted?])
   (:require [robert.hooke :as rh])
-  ;(:require [datest1.ret :as r])
+  ;(:require [runtime.ret :as r])
   ;(:refer-clojure :exclude [sorted?])
   (:require [taoensso.timbre :as timbre ;this should be used only in this namespace here, ever
          :only (trace debug info warn error fatal spy)])

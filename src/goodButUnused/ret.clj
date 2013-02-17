@@ -8,7 +8,8 @@
 ; You must not remove this notice, or any other, from this software.
 
 (ns ^{:doc "random text2 namespace meta test, need repl restart if changed" :author "whatever"} 
-  datest1.ret
+  ;datest1.ret
+  goodButUnused.ret ;well it's not that good, that's why mainly I've decided to not use it
   (:refer-clojure :exclude [sorted?])
   (:require [runtime.q :as q] )
   (:refer-clojure :exclude [sorted?])

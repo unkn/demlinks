@@ -94,6 +94,7 @@ so to be sure that doesn't happen ie.:
       )
     )
     
+    EDIT: wait, macros can't see the let symbols right? unless maybe via &env
 
 10. seems to me to be a good idea to use :require in the ns form when
 including some namespace AND to put the tests for that namespace in 
@@ -103,3 +104,6 @@ where they are defined.
 
 11. don't use :reload-all to save time loading and to keep the global state in some namespaces 
 like datest1.ret
+
+12. just use plain :keyhere instead of whatever I tried to use before wrapping it in calls and stuff
+
