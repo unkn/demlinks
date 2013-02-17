@@ -3,6 +3,7 @@
   (:require [hermes.core :as g]
             [hermes.type :as t]
             [hermes.vertex :as v])
+  (:require [datest1.ret :as r])
   (:import  
     (com.thinkaurelius.titan.graphdb.database   StandardTitanGraph)
     (com.thinkaurelius.titan.graphdb.vertices   PersistStandardTitanVertex)
@@ -52,6 +53,9 @@ ie. it's non-nil now; so you could've just used hermes functions and that's why"
     )
   )
 
+;(def memGraph :memory)
+(r/defSym2Key KEY_InMemoryGraph :memory)
+(r/defSym2Key KEY_BerkeleyDB :bdbje)
 
 (defn
   open

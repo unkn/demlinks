@@ -14,6 +14,7 @@
   (:require [hermes.core :as g]
             [hermes.type :as t]
             [hermes.vertex :as v])
+  (:require [datest1.ret :as r])
   (:require [hermes.stuff.hermesutil :as h])
   (:require [runtime.futils :as f] :reload-all)
   (:import  
@@ -27,21 +28,38 @@
   *warn-on-reflection*
   true)
 
+(def ^:dynamic *conf* (r/getExistingKey h/KEY_InMemoryGraph))
+
 (defn beforeTests [aVar graphVar]
-  (var-set aVar (f/getUniqueFolder))
-  (let [^java.io.File fdir @aVar]
-    (q/assumedNotNil fdir)
-    (q/info "using temporary folder: `\n" fdir "\n`")
-    
-    ;not explicit that we're using bdb:
-    ;(g/open (.getAbsolutePath fdir))
-    
-    ;more explicit (that's we're using bdb:
-    (var-set graphVar 
-      (g/open {:storage {:backend "berkeleyje"
-                         :directory (.getAbsolutePath fdir)}})
+  (condp = *conf*
+    ;case1
+    (r/getExistingKey h/KEY_InMemoryGraph)
+    (do
+      (println "memory")
       )
     
+    ;case2
+    (r/getExistingKey h/KEY_BerkeleyDB) 
+    (do
+      (var-set aVar (f/getUniqueFolder))
+      (let [^java.io.File fdir @aVar]
+        (q/assumedNotNil fdir)
+        (q/info "using temporary folder: `\n" fdir "\n`")
+        
+        ;not explicit that we're using bdb:
+        ;(g/open (.getAbsolutePath fdir))
+        
+        ;more explicit (that's we're using bdb:
+        (var-set graphVar 
+          (g/open {:storage {:backend "berkeleyje"
+                             :directory (.getAbsolutePath fdir)}})
+          )
+        
+        )
+      );do
+
+    ;none of the above:
+    (q/thro "unexpected *conf* value=`" *conf* "`")
     )
   )
 
@@ -49,13 +67,27 @@
   (q/assumedNotNil @graphVar)
   (h/shutdown @graphVar)
   (q/assumedNotNil @aVar)
-  (q/assumedTrue
-    [
-     (f/deleteFolderRecursively @aVar true)
-     "failed to delete temporary folder: `"
-     @aVar
-     "`"
-     ])
+  (condp = *conf*
+    ;case1
+    (r/getExistingKey h/KEY_InMemoryGraph)
+    (do
+      (println "memory")
+      )
+    
+    ;case2
+    (r/getExistingKey h/KEY_BerkeleyDB) 
+    (do
+      (q/assumedTrue
+        [
+         (f/deleteFolderRecursively @aVar true)
+         "failed to delete temporary folder: `"
+         @aVar
+         "`"
+         ])
+      )
+    
+    ;none of the above:
+    (q/thro "unexpected *conf* value=`" *conf* "`")
   )
 
 (defn testsFixture [testsHere]

@@ -1,6 +1,6 @@
 (ns runtime.futils
   (:require [runtime.q :as q] :reload-all)
-  (:require [datest1.ret :as r] :reload-all)
+  (:require [datest1.ret :as r])
   )
 
 (r/defSym2Key KEY_FileIsDirectory :Directory)

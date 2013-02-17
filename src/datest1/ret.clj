@@ -328,7 +328,7 @@ add_new_key [quoted_key_name thekey]
   )
 
 (defn afterTests []
-  (-cleanMaps)
+  ;(-cleanMaps)
   )
 
 (defn testsFixture [testsHere]
