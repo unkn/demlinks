@@ -581,13 +581,16 @@ ie. if pred is true? and (true? x) is false or nil it will throw
 ;                  ["\n`"])
 ;                )
               
-              (list `apply `str
-                (concat ['list "\n"
-                         "The fail msg is:\n`\n"] 
-                  ;evalled
-                  restOfFailMsg
-                  ["\n`"])
-                )
+              ;(do
+               ; (prn restOfFailMsg)
+                (list `apply `str
+                  (concat ['list "\n"
+                           "The fail msg is:\n`\n"] 
+                    ;evalled
+                    restOfFailMsg
+                    ["\n`"])
+                  )
+                ;)
 ;              )
               ;)
             )
@@ -1167,13 +1170,7 @@ don't pass a macro as the function
   )
 
 
-(defmacro ^:private priv_functionget [& msg2]
-  `(fn [x#]
-     (logAny
-       (or ~'loglevel :debug) 
-       x# ~@msg2)
-     )
-  )
+
 
 #_(defn ^:private priv_functionget [& msg2]
   '(fn [x#] 
@@ -1183,7 +1180,39 @@ don't pass a macro as the function
      )
   )
 
-(defn assumedLogLevel [loglevel]
+;TODO:something like (or x 1) but we check x against some invariants if it's non-truthy
+#_(defn fallback
+  [original & fallbacks]
+  
+  )
+
+(defn assumedValidIfPresent [validityfn presentfn thing & failmsg]
+  {:pre [(assumedTrue 
+           [
+            (ifn? validityfn)
+            "you didn't pass a valid ifn? as validityfn"
+            "you passed `"
+            validityfn
+            "`"
+            ]
+           [
+            (ifn? presentfn)
+            "you didn't pass a valid ifn? as presentfn"
+            "you passed `"
+            presentfn
+            "`"
+            ]
+           )]}
+  (cond (presentfn thing)
+    (assumedTrue [(validityfn thing)
+                  failmsg])
+    :else
+    ;not-present, not checked and return true
+    true
+    )
+  )
+
+(defn assumedValidLogLevel [loglevel]
   (assumedTrue [
                 (keyword? loglevel)
                 "loglevel must be a keyword ie. :info or :debug"
@@ -1191,11 +1220,19 @@ don't pass a macro as the function
                 ])
   )
 
-(defn assumedShift [shift]
+(defn assumedValidShift [shift]
   (assumedTrue [(number? shift)
                 "the shift must be a number, you passed `"
                 shift "`"
                 ])
+  )
+
+(defmacro ^:private priv_functionget [& msg2]
+  `(fn [x#]
+     (logAny
+       (or ~'loglevel :debug) ;TODO: check logLevel is valid
+       x# ~@msg2)
+     )
   )
 
 (defn showHere
@@ -1206,6 +1243,10 @@ logLevel = ie. :info :debug etc. for timbre/log
 rest = strings to be joined with space between them; or nil to skip
 "
   [& [shift loglevel  :as all]]
+  {:pre [
+         (assumedValidIfPresent assumedValidShift notnil? shift)
+         (assumedValidIfPresent assumedValidLogLevel notnil? loglevel)
+         ]}
   (showLocation (let [msg (nthrest all 2)]
                   (cond (empty? msg)
                     (priv_functionget)
@@ -1234,20 +1275,20 @@ rest = strings to be joined with space between them; or nil to skip
 
 
 (defn logShift [shift loglevel & anyMsg]
-  {:pre [(assumedLogLevel loglevel)
-         (assumedShift shift)
+  {:pre [(assumedValidLogLevel loglevel)
+         (assumedValidShift shift)
          ]}
   (apply showHere (addAndIgnoreNil shift 3) loglevel anyMsg)
   )
 
 
 (defn logCaller [loglevel & anyMsg ]
-  {:pre [(assumedLogLevel loglevel)]}
+  {:pre [(assumedValidLogLevel loglevel)]}
   (apply logShift 4 loglevel anyMsg)
   )
 
 (defn log [loglevel & anyMsg]
-  {:pre [(assumedLogLevel loglevel)]}
+  {:pre [(assumedValidLogLevel loglevel)]}
   (apply logShift 0 loglevel anyMsg)
   )
 
