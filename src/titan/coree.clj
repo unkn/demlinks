@@ -9,6 +9,7 @@
 
 (ns titan.coree
   (:require [runtime.q :as q])
+  (:require [clojure.java.io :as io])
   (:import 
     (com.thinkaurelius.titan.core TitanFactory)
     (com.thinkaurelius.titan.graphdb.database   StandardTitanGraph)
@@ -25,7 +26,12 @@
 
 (defn open [id & [conf]]
   (condp = id
-    :memory (TitanFactory/openInMemoryGraph)
+    :memory (do
+              (when-not (nil? conf)
+                (q/log :warn "ignored conf parameter `" conf "`")
+                )
+              (TitanFactory/openInMemoryGraph)
+              )
     :bdbje (cond
              (string? conf) (TitanFactory/open conf)
              (map? conf) (q/ni "not implemented" id conf)

@@ -24,7 +24,10 @@
    :required [:c :d :e]
    :pre [:a nil?]
    }
-  
+  ;TODO: throw on  extra aka unspecified  params
+  ;TODO: allow invariants functions for each param and throw when any of them fail(obviously)
+  ;TODO: ignore optional params that weren't passed on call
+  ;TODO: throw when required params aren't passed on call
   )
 
 (q/deftest test_calls1
