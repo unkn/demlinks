@@ -208,7 +208,21 @@ CompilerException java.lang.RuntimeException: Unable to resolve symbol: toUpperC
     )
   )
 
+(def exceptionThrownWhenBadParams
+  java.lang.RuntimeException
+  )
 
+(def exceptionThrownWhenSomethingUnexpectedHappened
+  java.lang.RuntimeException
+  )
+
+(defn throBadParams [ & all ]
+  (thro exceptionThrownWhenBadParams all)
+  )
+
+(defn throUnexpected [ & all ]
+  (thro exceptionThrownWhenSomethingUnexpectedHappened "something unexpected happened:" all)
+  )
 
 (defmacro priv_whenAssumptions_Execute [dynVar & executeForms]
   (when dynVar

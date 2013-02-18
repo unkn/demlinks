@@ -19,6 +19,8 @@
                  [com.taoensso/timbre "1.5.2"] ;logging/profiling, https://github.com/ptaoussanis/timbre
                  ;[slingshot "0.10.3"] ;for exceptions try/catch
                  [hermes "0.2.6"]
+                 [com.tinkerpop.blueprints/blueprints-core "2.2.0"]
+                 [com.thinkaurelius.titan/titan "0.2.0"]
                  ]
   
   ;; Emit warnings on all reflection calls.
