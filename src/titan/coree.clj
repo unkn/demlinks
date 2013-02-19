@@ -31,12 +31,20 @@
                 (q/log :warn "ignored conf parameter `" conf "`")
                 )
               (TitanFactory/openInMemoryGraph)
+              (q/log :debug "opened in memory graph")
               )
     :bdbje (cond
-             (string? conf) (TitanFactory/open conf)
-             (map? conf) (q/ni "not implemented" id conf)
+             (string? conf) (do
+                              (q/log :debug "opening " id " graph with conf " conf)
+                              (TitanFactory/open conf)
+                              (q/log :debug "opened " id " graph with conf " conf)
+                              )
+             (map? conf) (do
+                           (q/log :debug "opening " id " graph with conf " conf)
+                           (q/ni "not implemented" id conf)
+                           )
              :else
-             (q/throBadParams "you pass wrong conf type `" conf "`")
+             (q/throBadParams "you pass wrong conf type `" conf "` for " id)
              )
     (q/throBadParams 
       "you pass wrong params" 
@@ -50,10 +58,12 @@
 (defn shutdown
   [graph]
   {:pre [(assumedNonNilGraph graph)]}
+  (q/log :debug "shutting down graph " graph)
   (.shutdown 
     ;^StandardTitanGraph 
     ;^com.tinkerpop.blueprints.Graph 
     ^Graph graph)
+  (q/log :debug "graph got shut down" graph)
   graph
   )
 

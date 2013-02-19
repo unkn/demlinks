@@ -14,6 +14,8 @@ some_weird_multi_word_symbol
 	
 hmm this seems better than camelcase because Ctrl+leftarrow will stop at _
 while with camelcase it will skip entire identifier but maybe we want it to stop at each word in camelcase
+also looks like triple click can select aa-bb-cc entirely while double click will select only one of the words ie. bb
+ah, nevermind tripleclick selects entire line; but i could still use ctrl+shift+up to select aa-bb-cc
 
 2. fail-fast system
 basically, test for (both at compile time and runtime)errors and fail as soon as they're encountered

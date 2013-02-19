@@ -21,6 +21,7 @@
   ;(:use runtime.clazzez :reload-all) 
   ;(:use [runtime.q :as q] :reload-all)
   ;(:use [runtime.q.exceptions :as qex] :reload-all)
+  (:require [backtick])
   (:refer-clojure :exclude [sorted?])
   )
 ;FIXME: ccw, still getting this warning: WARNING: sorted? already refers to: #'clojure.core/sorted? in namespace: runtime.q, being replaced by: #'runtime.q/sorted?
@@ -29,6 +30,9 @@
   *warn-on-reflection*
   true)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;these should be kinda first:
+
+(backtick/defquote almostLikeBackTick clojure.core/resolve)
+;beware (almostLikeBackTick f) => nil
 
 
 
@@ -1314,6 +1318,7 @@ rest = strings to be joined with space between them; or nil to skip
     "(re)loaded namespace `" (str *ns*) "`"
     )
   )
+
 
 ;(q/show_state)
 ;(q/here)

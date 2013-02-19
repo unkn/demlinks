@@ -21,6 +21,8 @@
                  [hermes "0.2.6"]
                  [com.tinkerpop.blueprints/blueprints-core "2.2.0"]
                  [com.thinkaurelius.titan/titan "0.2.0"]
+                 [seesaw "1.4.3-SNAPSHOT"]
+                 [backtick "0.3.0-SNAPSHOT"] ;ie. (template {:a (+ 1 2) :b ~(+ 1 3)}) will eval only ~ parts
                  ]
   
   ;; Emit warnings on all reflection calls.
