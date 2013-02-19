@@ -9,6 +9,7 @@
 
 (ns util.funxions
   (:require [runtime.q :as q])
+  (:require [backtick])
   )
 
 ;check this:
@@ -38,12 +39,47 @@
 (def exceptionThrownWhenRequiredParamsNotSpecified
   java.lang.RuntimeException)
 
+;=> (defxn noes {:a ~(inc 1) :b firsta})
+;(clojure.core/apply clojure.core/hash-map (clojure.core/concat [(quote :a) (inc 1) (quote :b) (quote firsta)]))
+;#'util.funxions/noes
+;=> (noes)
+;{:a 2, :b firsta}
+;nil
+;=> (macroexpand-1 '(defxn noes {:a ~(inc 1) :b firsta}))
+;(clojure.core/defn noes [& all__99708__auto__] 
+;   (clojure.core/println 
+       ;(clojure.core/apply clojure.core/hash-map 
+         ;(clojure.core/concat [(quote :a) 
+                               ;(inc 1) 
+                               ;(quote :b) (quote firsta)]))))
 
-(deffunc foo
+
+(defmacro defxn ;def funxion
+  [fname ;funxion name
+   defblock; a map
+   & codeblocks ;multiple forms as code
+   ]
+  (let [x (
+            backtick/template
+            ;backtick/syntax-quote-fn 
+            ~defblock)
+        ;e (eval x)
+        ]
+    (println x)
+    ;(println e)
+    `(defn ~fname [& all#]
+       (println ~x)
+       )
+    )
+  )
+
+(clojure.pprint/pprint 
+
+(defxn foo
   ;`[clojure.set/join ~(+ 1 2)]
   ;if you want some form to be evaluate then place ~ before it
   ;this is the defblock
-  {
+  {:something {:a ~(+ 1 2)}
    ;aliases are supported to allow later renaming the params used within the defblock without worrying that you forgot to rename all instances
    :aliases {;p1 p2 where p1 is parameter name used in here and p2 is the actual name the param has in the function body
              ;all names are keywords to allow evaluating the entire defblock and they are actually symbols inside the function body
@@ -96,8 +132,11 @@
   ;TODO: throw when required params aren't passed on call
   (println firsta)
   )
+)
 
-(q/deftest test_calls1
+#_(defn foo [] 1)
+
+#_(q/deftest test_calls1
   (q/isthrown? exceptionThrownWhenRequiredParamsNotSpecified 
     (foo))
   (foo :c 1 :d 1 :e 1)

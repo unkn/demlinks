@@ -34,6 +34,23 @@
       (eval (backtick/syntax-quote-fn '{:a (+ 1 2) :b ~(+ 1 3)}))
       )
     )
+  
+  (t/is
+    (=
+      '{:a 3, :b some-undefined-symbol-for-the-win-123}
+      (backtick/template {:a ~(+ 1 2) :b some-undefined-symbol-for-the-win-123})
+      (eval (backtick/template-fn '{:a ~(+ 1 2) :b some-undefined-symbol-for-the-win-123}))
+      )
+    )
+  
+  (t/is
+    (=
+      '{:a 3, :b random.learning.backtick.backtick1/some-undefined-symbol-for-the-win-123}
+      `{:a 3, :b some-undefined-symbol-for-the-win-123}
+      (backtick/syntax-quote {:a ~(+ 1 2) :b some-undefined-symbol-for-the-win-123})
+      (eval (backtick/syntax-quote-fn '{:a ~(+ 1 2) :b some-undefined-symbol-for-the-win-123}))
+      )
+    )
   )
 
 

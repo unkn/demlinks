@@ -21,7 +21,7 @@
   ;(:use runtime.clazzez :reload-all) 
   ;(:use [runtime.q :as q] :reload-all)
   ;(:use [runtime.q.exceptions :as qex] :reload-all)
-  (:require [backtick])
+  ;(:require [backtick])
   (:refer-clojure :exclude [sorted?])
   )
 ;FIXME: ccw, still getting this warning: WARNING: sorted? already refers to: #'clojure.core/sorted? in namespace: runtime.q, being replaced by: #'runtime.q/sorted?
@@ -31,7 +31,7 @@
   true)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;these should be kinda first:
 
-(backtick/defquote almostLikeBackTick clojure.core/resolve)
+;(backtick/defquote almostLikeBackTick clojure.core/resolve) just use backtick/syntax-quote now
 ;beware (almostLikeBackTick f) => nil
 
 
