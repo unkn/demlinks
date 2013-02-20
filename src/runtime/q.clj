@@ -9,6 +9,7 @@
 
 (ns runtime.q
   (:refer-clojure :exclude [sorted?])
+  (:require [runtime.q :as q])
   (:refer clojure.test :exclude [deftest is testing use-fixtures])
   ;(:refer-clojure :exclude [sorted?])
   (:require [robert.hooke :as rh])
@@ -302,6 +303,22 @@ or eval + list* if it's a macro
      ;assumed is a fn?
      (apply '~funcOrMacro ~args)
     )
+  )
+
+(defmacro execWhenLogLevel [ & [logLevel :as all] ]
+"
+checked at runtime
+when timbre logLevel is at least the specified one
+then executes the passed forms
+"
+  `(when (logLevelSufficient? ~logLevel)
+    ~@(rest all)
+    )
+  )
+
+(deftest test_execWLL
+  (is (= 2 (q/execWhenLogLevel :info (println 1) 2)))
+  (is (= 3 (q/execWhenLogLevel :info 1 2 3)))
   )
 
 (defn ^:private logAny [ & [logLevel :as all] ]

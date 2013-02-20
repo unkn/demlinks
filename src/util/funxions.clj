@@ -64,7 +64,9 @@ CompilerException java.lang.RuntimeException: Unable to resolve symbol: fxn_defB
 ;=> (clojure.tools.macro/mexpand-all '(get_fxn *fxn_defBlock_symbol* defBlock))
 ;(do (def get_fxn_defBlock (fn* ([&form &env] *fxn_defBlock_symbol*))) (. (var get_fxn_defBlock) (setMacro)) (var get_fxn_defBlock))
 
-
+(q/deftest test_second
+  (q/is (= nil (second nil)))
+  )
 
 (defmacro defxn ;def funxion
   [fname ;funxion name
@@ -74,9 +76,11 @@ CompilerException java.lang.RuntimeException: Unable to resolve symbol: fxn_defB
   (let [lst (list 'backtick/template passedDefBlock)
         evaDefBlock (eval lst) ;the defblock after ~ are evaluated
         ;e (eval evaDefBlock)
+        aliases (second (find evaDefBlock :aliases)) ;can be nil
         ]
-    (clojure.pprint/pprint (list "evaDefBlock=" evaDefBlock)); x == `'~x
-    ;(println e)
+    (q/execWhenLogLevel :debug (clojure.pprint/pprint (list ":aliases=" aliases)))
+    (q/execWhenLogLevel :debug (clojure.pprint/pprint (list "evaDefBlock=" evaDefBlock)))
+    ; evaDefBlock == `'~evaDefBlock = `~*fxn_defBlock_symbol*
     `(defn ~fname [& all#]
        (let [~*fxn_defBlock_symbol* '~evaDefBlock
              ~*fxn_defBlockRaw_symbol* '~passedDefBlock
@@ -141,6 +145,7 @@ firsta
              ;p2 newvalue that you want to change and this one will be visible as symbol within the function body
              :a firsta ;p1=:a p2=:firsta
              :b b
+             :c ~(symbol "c")
              ;:c :b ;will throw because both :b and :c map to same :b
              }
    :optional {:a 0 
@@ -242,3 +247,7 @@ firsta
 (binding [*fxn_defBlock_symbol* 'abc]
   (println *fxn_defBlock_symbol*)
   (noes))
+
+
+(q/show_state2)
+(q/gotests)
