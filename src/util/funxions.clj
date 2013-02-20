@@ -20,6 +20,7 @@
 ;you need not bind this though, unless you really want to name it something
 ;but it won't clash with others, supposedly - there may be some case when it could clash let within a let
 (def ^:dynamic *fxn_defBlock_symbol* (gensym 'fxn_defBlock))
+(def ^:dynamic *fxn_defBlockRaw_symbol* (gensym 'fxn_defBlockRaw))
 
 
 (defmacro get_fxn
@@ -44,6 +45,7 @@ CompilerException java.lang.RuntimeException: Unable to resolve symbol: fxn_defB
   )
 
 (get_fxn *fxn_defBlock_symbol* defBlock) ;(defmacro get_fxn_defBlock ...)
+(get_fxn *fxn_defBlockRaw_symbol* defBlockRaw) ;(defmacro get_fxn_defBlockRaw ...)
 ;(defmacro get_fxn_defBlock2
 ;  []
 ;  ;like get the value of <the symbol returned by *fxn_defBlock_symbol*>
@@ -69,22 +71,19 @@ CompilerException java.lang.RuntimeException: Unable to resolve symbol: fxn_defB
    passedDefBlock; a map
    & codeblocks ;multiple forms as code
    ]
-  (let [lst (list
-            'backtick/template;-fn
-            ;backtick/syntax-quote-fn 
-            passedDefBlock)
-        x (eval lst)
-        ;e (eval x)
+  (let [lst (list 'backtick/template passedDefBlock)
+        evaDefBlock (eval lst) ;the defblock after ~ are evaluated
+        ;e (eval evaDefBlock)
         ]
-    ;(println x); x == `'~x
+    (clojure.pprint/pprint (list "evaDefBlock=" evaDefBlock)); x == `'~x
     ;(println e)
     `(defn ~fname [& all#]
-       (let [~*fxn_defBlock_symbol* '~x 
-             ~'fxn_rawDefBlock '~passedDefBlock
+       (let [~*fxn_defBlock_symbol* '~evaDefBlock
+             ~*fxn_defBlockRaw_symbol* '~passedDefBlock
              ;~'fxn_evalled ~e
              ]
-         ;(clojure.pprint/pprint (list "fxn_rawDefBlock" ~'fxn_rawDefBlock))
-         (clojure.pprint/pprint (list ~'*fxn_defBlock_symbol* ~*fxn_defBlock_symbol*));symbol and its value
+         ;(clojure.pprint/pprint (list ~'*fxn_defBlockRaw_symbol* ~*fxn_defBlockRaw_symbol*))
+         ;(clojure.pprint/pprint (list ~'*fxn_defBlock_symbol* ~*fxn_defBlock_symbol*));symbol and its value
          ;(println ~e)
          ~@codeblocks
          #_(= (~(:c x) ~(:d x))
@@ -130,6 +129,11 @@ firsta
   ;if you want some form to be evaluate then place ~ before it
   ;this is the defblock
   {;:something {:a ~(+ 1 2)}
+   :a (hash-map :a 1 :b 2)
+   :b ~(hash-map :a 3 :b 4 :a 5) ;that's one way to use dup keys and you wouldn't even catch the bug
+   :c {:a 6 :b 7 
+       ;:a 8 ;can't dup this, will throw
+       }
    ;aliases are supported to allow later renaming the params used within the defblock without worrying that you forgot to rename all instances
    :aliases {;p1 p2 where p1 is parameter name used in here and p2 is the actual name the param has in the function body
              ;all names are keywords to allow evaluating the entire defblock and they are actually symbols inside the function body
@@ -180,7 +184,7 @@ firsta
   ;TODO: allow invariants functions for each param and throw when any of them fail(obviously)
   ;TODO: ignore optional params that weren't passed on call
   ;TODO: throw when required params aren't passed on call
-  (clojure.pprint/pprint (get_fxn_defBlock));firsta)
+  (clojure.pprint/pprint (list "foocode" (get_fxn_defBlock)));firsta)
   )
 ;)
 
