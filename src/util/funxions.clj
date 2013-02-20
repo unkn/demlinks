@@ -87,7 +87,7 @@ CompilerException java.lang.RuntimeException: Unable to resolve symbol: fxn_defB
          (clojure.pprint/pprint (list ~'*fxn_defBlock_symbol* ~*fxn_defBlock_symbol*));symbol and its value
          ;(println ~e)
          ~@codeblocks
-         (= (~(:c x) ~(:d x))
+         #_(= (~(:c x) ~(:d x))
            (~(:e x) ~(:d x)))
          ;(prn ~(:c x) ~(:e x))
          )
@@ -106,7 +106,7 @@ CompilerException java.lang.RuntimeException: Unable to resolve symbol: fxn_defB
      )
 (catch Compile$CompilerException c c))
 
-;TODO: throw on dup keys
+;TODO: throw on dup keys; - this is already happening on "eval"
 
 #_(
 => (defxn noes {:a ~(inc (+ 1 2)) :b firsta}
@@ -125,7 +125,7 @@ firsta
 
 ;(clojure.pprint/pprint 
 
-#_(defxn foo
+(defxn foo
   ;`[clojure.set/join ~(+ 1 2)]
   ;if you want some form to be evaluate then place ~ before it
   ;this is the defblock
@@ -151,7 +151,7 @@ firsta
                 notnil? :all ;both spec and unspec
                 notnil? :all-specified; :all-sac
                 notnil? :except :unspecified
-                ~(partial > 0) :except :specified
+                ~(list partial > 0) :except :specified
                 (partial > 0) [:all [:not :specified] [:except [:a :c]] ]
                 ]
    ;invariants ran over all specified params but not over the unspecified(and thus optional ones which have the default value assigned)
@@ -180,7 +180,7 @@ firsta
   ;TODO: allow invariants functions for each param and throw when any of them fail(obviously)
   ;TODO: ignore optional params that weren't passed on call
   ;TODO: throw when required params aren't passed on call
-  (clojure.pprint/pprint fxn_defBlock);firsta)
+  (clojure.pprint/pprint (get_fxn_defBlock));firsta)
   )
 ;)
 
