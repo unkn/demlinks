@@ -332,4 +332,18 @@ java.lang.RuntimeException
      )
   )
 
+(defmacro evalSymbol [sym] ;XXX: useless
+"
+=> (def a 1)
+#'util.funxions/a
+=> (let [b 'a]
+     (evalSymbol b))
+1
+=> (let [a 2 b 'a]
+     (evalSymbol b))
+1
+"
+  `(eval ~sym)
+  )
+
 ;);comment, have this be last line!

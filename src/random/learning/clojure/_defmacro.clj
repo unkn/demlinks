@@ -32,3 +32,31 @@
 (xfn) ; == (xmacro) == calling (println)
 (xfn 1) ; == (xmacro 1) == calling (println 1)
 
+
+;check this out:
+=> (def b 'ax) 
+   (let [ax 1] [(= 'ax b) (= ax b)])
+;#'util.funxions/b
+;[true false]
+=> b
+;ax
+=> (let [ax 1] [(= 'ax b) (= ax (eval b))])
+;CompilerException java.lang.RuntimeException: Unable to resolve symbol: ax in this context, compiling:(NO_SOURCE_PATH:1:1) 
+
+;the only(?) way:
+=> (defmacro b [] `~'ax)
+;#'util.funxions/b
+=> (b)
+;CompilerException java.lang.RuntimeException: Unable to resolve symbol: ax in this context, compiling:(NO_SOURCE_PATH:1:1) 
+=> (let [ax 1] (= ax (b) ))
+true
+
+(let [ax 1] ;this let is invisible so you don't know ax is the name
+  (let [c (b)]
+    (= ax c ) ;ofc. ax is not directly known, just here to show c == ax 
+    )
+  )
+;true
+
+
+
