@@ -10,6 +10,7 @@
 (ns util.funxions
   (:require [runtime.q :as q])
   (:require [backtick])
+  (:require clojure.pprint)
   )
 
 ;check this:
@@ -56,22 +57,57 @@
 
 (defmacro defxn ;def funxion
   [fname ;funxion name
-   defblock; a map
+   passedDefBlock; a map
    & codeblocks ;multiple forms as code
    ]
-  (let [x (
-            backtick/template
+  (let [x (eval (list
+            'backtick/template;-fn
             ;backtick/syntax-quote-fn 
-            ~defblock)
+            passedDefBlock))
         ;e (eval x)
         ]
     (println x)
     ;(println e)
     `(defn ~fname [& all#]
-       (println ~x)
+       (let [~'fxn_defblock '~x 
+             ~'fxn_rawDefBlock '~passedDefBlock
+             ;~'fxn_evalled ~e
+             ]
+         (println "raw" ~'fxn_rawDefBlock)
+         (println "defblock" ~'fxn_defblock)
+         ;(println ~e)
+         ~@codeblocks
+         )
        )
     )
   )
+#_(
+=> (defxn noes {:a ~(inc (+ 1 2)) :b firsta}
+     (println "!!!" fxn_defblock)
+     (:b fxn_defblock)
+     )
+{:a 4, :b firsta}
+#'util.funxions/noes
+=> (noes)
+raw {:a (clojure.core/unquote (inc (+ 1 2))), :b firsta}
+defblock {:a 4, :b firsta}
+!!! {:a 4, :b firsta}
+firsta
+)
+
+#_(
+=> (defxn noes {:a ~(inc 1) :b firsta}
+     (println defblock)
+     )
+(clojure.core/apply clojure.core/hash-map (clojure.core/concat [(quote :a) (inc 1) (quote :b) (quote firsta)]))
+{:a 2, :b firsta}
+#'util.funxions/noes
+=> (noes)
+raw {:a (clojure.core/unquote (inc 1)), :b firsta}
+defblock {:a 2, :b firsta}
+{:a 2, :b firsta}
+nil
+)
 
 (clojure.pprint/pprint 
 
@@ -112,9 +148,9 @@
    ;invariants that are ran over the optional non-specified(on call) params
    ;invariants for the optional unspecified(at call) params; since you can't not specify any of the :required params
    :ou_invariants [notnil? :only [:a :b]
-                       (partial > 0) :all
-                       (partial > 1) :except [:a]
-                       ]
+                   (partial > 0) :all
+                   (partial > 1) :except [:a]
+                   ]
    
    ;maybe not implement this:
    ;:allow_extras false ;by default false, if to allow parameters that are none of the defined ones in defblock also collect them in extras as a vector in order of occurrence
@@ -130,7 +166,7 @@
   ;TODO: allow invariants functions for each param and throw when any of them fail(obviously)
   ;TODO: ignore optional params that weren't passed on call
   ;TODO: throw when required params aren't passed on call
-  (println firsta)
+  (clojure.pprint/pprint fxn_defblock);firsta)
   )
 )
 
@@ -142,7 +178,7 @@
   (foo :c 1 :d 1 :e 1)
   )
 
-(defn foo [& all]
+#_(defn foo [& all]
   (cond (odd? (count all))
     (println "odd")
     :else
@@ -155,3 +191,8 @@
 
 (foo 1)
 (foo 1 2)
+(defxn noes {:a ~(inc (+ 1 2)) :b firsta}
+     (println "!!!" fxn_defblock)
+     (:b fxn_defblock)
+     )
+(noes)
