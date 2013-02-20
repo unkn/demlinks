@@ -17,20 +17,37 @@
 (def exceptionThrownWhenRequiredParamsNotSpecified
   java.lang.RuntimeException)
 
-(def fxn_defBlock_symbol 'fxn_defBlock3)
+;you need not bind this though, unless you really want to name it something
+;but it won't clash with others, supposedly - there may be some case when it could clash let within a let
+(def ^:dynamic *fxn_defBlock_symbol* (gensym 'fxn_defBlock))
 
 
-(defmacro get_fxn [sym namee]
+(defmacro get_fxn
+"
+returns a macro that when called, evaluates the value of <the symbol returned by the symbol that you passed>
+=> (get_fxn *fxn_defBlock_symbol* defBlock)
+
+=> *fxn_defBlock_symbol*
+fxn_defBlock
+
+=> (macroexpand-1 '(get_fxn_defBlock))
+fxn_defBlock
+
+=> (get_fxn_defBlock)
+CompilerException java.lang.RuntimeException: Unable to resolve symbol: fxn_defBlock in this context, compiling:(NO_SOURCE_PATH:1:1) 
+;so evaluates fxn_defBlock in current context, ie. not like (eval fxn_defBlock) which wouldn't see those inside the let
+"
+  [sym namee]
   `(defmacro ~(symbol (str "get_fxn_" namee)) []
-     ~sym ;actually this is good here, i don't need the `~fxn_defBlock_symbol variant which seems to be the same thing O_o
+     ~sym ;actually this is good here, i don't need the `~*fxn_defBlock_symbol* variant which seems to be the same thing O_o
      )
   )
 
-(get_fxn fxn_defBlock_symbol defBlock)
+(get_fxn *fxn_defBlock_symbol* defBlock) ;(defmacro get_fxn_defBlock ...)
 ;(defmacro get_fxn_defBlock2
 ;  []
-;  ;like get the value of the symbol returned by fxn_defBlock_symbol
-;  `~fxn_defBlock_symbol
+;  ;like get the value of <the symbol returned by *fxn_defBlock_symbol*>
+;  `~*fxn_defBlock_symbol*
 ;  )
 ;=> (macroexpand-1 '(get_fxn_defBlock))
 ;fxn_defBlock3
@@ -38,12 +55,12 @@
 ;fxn_defBlock3
 ;=> (clojure.tools.macro/mexpand-all '(defmacro get_fxn_defBlock2
 ;     []
-;     ;like get the value of the symbol returned by fxn_defBlock_symbol
-;     `~fxn_defBlock_symbol
+;     ;like get the value of the symbol returned by *fxn_defBlock_symbol*
+;     `~*fxn_defBlock_symbol*
 ;     ))
-;(do (def get_fxn_defBlock2 (fn* ([&form &env] fxn_defBlock_symbol))) (. (var get_fxn_defBlock2) (setMacro)) (var get_fxn_defBlock2))
-;=> (clojure.tools.macro/mexpand-all '(get_fxn fxn_defBlock_symbol defBlock))
-;(do (def get_fxn_defBlock (fn* ([&form &env] fxn_defBlock_symbol))) (. (var get_fxn_defBlock) (setMacro)) (var get_fxn_defBlock))
+;(do (def get_fxn_defBlock2 (fn* ([&form &env] *fxn_defBlock_symbol*))) (. (var get_fxn_defBlock2) (setMacro)) (var get_fxn_defBlock2))
+;=> (clojure.tools.macro/mexpand-all '(get_fxn *fxn_defBlock_symbol* defBlock))
+;(do (def get_fxn_defBlock (fn* ([&form &env] *fxn_defBlock_symbol*))) (. (var get_fxn_defBlock) (setMacro)) (var get_fxn_defBlock))
 
 
 
@@ -62,12 +79,12 @@
     ;(println x); x == `'~x
     ;(println e)
     `(defn ~fname [& all#]
-       (let [~fxn_defBlock_symbol '~x 
+       (let [~*fxn_defBlock_symbol* '~x 
              ~'fxn_rawDefBlock '~passedDefBlock
              ;~'fxn_evalled ~e
              ]
          ;(clojure.pprint/pprint (list "fxn_rawDefBlock" ~'fxn_rawDefBlock))
-         (clojure.pprint/pprint (list ~'fxn_defBlock_symbol ~fxn_defBlock_symbol));symbol and its value
+         (clojure.pprint/pprint (list ~'*fxn_defBlock_symbol* ~*fxn_defBlock_symbol*));symbol and its value
          ;(println ~e)
          ~@codeblocks
          (= (~(:c x) ~(:d x))
@@ -211,10 +228,13 @@ firsta
              :d a ;"a" has to be resolvable in current ns where defxn is called and it will point to the same a, thus not be relative to *ns* once defxn executed
              :e ~(list partial > 1)
              }
-  (println "!!!" (eval fxn_defBlock2))
+  (println "!!!" (get_fxn_defBlock))
 ;  (:b fxn_defBlock)
 ;  (:c fxn_defBlock)
   )
 (println (noes))
 (def a 1)
 (println (noes))
+(binding [*fxn_defBlock_symbol* 'abc]
+  (println *fxn_defBlock_symbol*)
+  (noes))
