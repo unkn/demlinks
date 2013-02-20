@@ -59,4 +59,32 @@ true
 ;true
 
 
+(def fxn_defBlock_symbol 'fxn_defBlock3)
+
+
+(defmacro get_fxn [sym namee]
+  `(defmacro ~(symbol (str "get_fxn_" namee)) []
+     ~sym ;actually this is good here, i don't need the `~fxn_defBlock_symbol variant which seems to be the same thing O_o
+     )
+  )
+
+(get_fxn fxn_defBlock_symbol defBlock)
+(defmacro get_fxn_defBlock2
+  []
+  ;like get the value of the symbol returned by fxn_defBlock_symbol
+  `~fxn_defBlock_symbol
+  )
+=> (macroexpand-1 '(get_fxn_defBlock))
+fxn_defBlock3
+=> (macroexpand-1 '(get_fxn_defBlock2))
+fxn_defBlock3
+=> (clojure.tools.macro/mexpand-all '(defmacro get_fxn_defBlock2
+     []
+     ;like get the value of the <symbol returned by fxn_defBlock_symbol>
+     `~fxn_defBlock_symbol
+     ))
+(do (def get_fxn_defBlock2 (fn* ([&form &env] fxn_defBlock_symbol))) (. (var get_fxn_defBlock2) (setMacro)) (var get_fxn_defBlock2))
+=> (clojure.tools.macro/mexpand-all '(get_fxn fxn_defBlock_symbol defBlock))
+(do (def get_fxn_defBlock  (fn* ([&form &env] fxn_defBlock_symbol))) (. (var get_fxn_defBlock ) (setMacro)) (var get_fxn_defBlock ))
+
 
