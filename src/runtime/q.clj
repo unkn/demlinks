@@ -389,6 +389,25 @@ force this loglevel while executing forms
     )
   )
 
+;the following is inspired from http://blog.jayfields.com/2011/02/clojure-and.html
+(defmacro get-lexical-env []
+"
+=> (let [a 1 b (+ 1 2)]
+     (let [c (do \"a\" \"b\")]
+       (q/get-lexical-env)
+       )
+     )
+{a 1, b 3, c \"b\"}
+"
+  (let [envkeys (keys &env)]
+    `(zipmap (quote ~envkeys) (list ~@envkeys))
+    )
+  )
+
+(defmacro show-lexical-env []
+  `(prn (get-lexical-env))
+  )
+
 (defmacro show_state []
   "show when namespace where the call to this macro resides
 got (re)loaded and/or compiled
@@ -403,7 +422,7 @@ got (re)loaded and/or compiled
     ;it will only work once, unless you modify it
     
     (pri "(re)loaded namespace: `" (str *ns*))
-    (pri "` lexical env: `" '~&env)
+    (pri "` lexical env: `" (show-env))
     (pri "` caller form: `" '~&form)
     (pri "` caller line: `" '~(meta &form))
     (pri "` caller file: `" *file*)

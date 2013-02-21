@@ -108,3 +108,38 @@ fxn_defBlock3
 
 (defcomponent a (do "a" (str "b")))
 
+;;;;;;;;;;;;;;;;;
+(defmacro a [] (get &env 'b))
+;#'util.funxions/a
+(let [b 1] (a))
+;CompilerException java.lang.RuntimeException: Can't embed object in code, maybe print-dup not defined: clojure.lang.Compiler$LocalBinding@6d99ef1b, compiling:(NO_SOURCE_PATH:1:31) 
+
+;the following is from http://blog.jayfields.com/2011/02/clojure-and.html
+(defmacro show-env [] 
+  (println (keys &env)) 
+  `(println ~@(keys &env))
+  )
+;#'util.funxions/show-env
+=> (let [band "zeppelin" city "london"] (show-env))
+;(city band)
+;london zeppelin
+;nil
+
+(defmacro show-env [] 
+  (let [envkeys (keys &env)]
+    `(do
+       (prn (first (quote ~envkeys)))
+       (prn (first (list ~@envkeys)))
+       (prn (zipmap (quote ~envkeys) (list ~@envkeys)))
+       )
+    )
+  )
+
+=> (let [band "zeppelin" city "london"] (show-env))
+;city
+;"london"
+;{band "zeppelin", city "london"}
+;nil
+
+;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;
