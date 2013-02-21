@@ -19,7 +19,7 @@
 (def existing 2)
 (a1 existing)
 (a2 existing)
-
+s
 ;get the same behaviour for macro and fn, just pass thru the params
 ;xmacro and xfn act the same
 (defmacro xmacro [& all] `(println ~@all))
@@ -32,6 +32,7 @@
 (xfn) ; == (xmacro) == calling (println)
 (xfn 1) ; == (xmacro 1) == calling (println 1)
 
+;;;;;;;;;;;;;;
 
 ;check this out:
 => (def b 'ax) 
@@ -57,6 +58,8 @@ true
     )
   )
 ;true
+
+;;;;;;;;;;;;;;
 
 
 (def fxn_defBlock_symbol 'fxn_defBlock3)
@@ -87,4 +90,21 @@ fxn_defBlock3
 => (clojure.tools.macro/mexpand-all '(get_fxn fxn_defBlock_symbol defBlock))
 (do (def get_fxn_defBlock  (fn* ([&form &env] fxn_defBlock_symbol))) (. (var get_fxn_defBlock ) (setMacro)) (var get_fxn_defBlock ))
 
+
+;;;;;;;;;;;;;;
+(def component? number?)
+
+(defmacro defcomponent [name co]
+  `(let [c# ~co]
+     (assert (component? c#) 
+       (str "Not a valid IComponent passed:\nevaluated form: `" 
+         (pr-str c#) "`\noriginal form: `" 
+         '~co "`\nfull form: `" '~&form "`"
+         "\nlocation: " ~(meta &form) " file: " ~*file* 
+         ))
+     (def ~name c#)
+     )
+  )
+
+(defcomponent a (do "a" (str "b")))
 

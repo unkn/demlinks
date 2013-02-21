@@ -68,6 +68,19 @@ CompilerException java.lang.RuntimeException: Unable to resolve symbol: fxn_defB
   (q/is (= nil (second nil)))
   )
 
+;(defn x []
+;  (println)
+;  (q/assumedTrue [1 "fail"])
+;  (println)
+;)
+;(defn y []
+;  (println)
+;  (x)
+;  (println)
+;  )
+;(eval '(y))
+
+
 (defmacro defxn ;def funxion
   [fname ;funxion name
    passedDefBlock; a map

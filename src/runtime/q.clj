@@ -22,7 +22,7 @@
   ;(:use runtime.clazzez :reload-all) 
   ;(:use [runtime.q :as q] :reload-all)
   ;(:use [runtime.q.exceptions :as qex] :reload-all)
-  ;(:require [backtick])
+  (:require [backtick])
   (:refer-clojure :exclude [sorted?])
   )
 ;FIXME: ccw, still getting this warning: WARNING: sorted? already refers to: #'clojure.core/sorted? in namespace: runtime.q, being replaced by: #'runtime.q/sorted?
@@ -305,7 +305,7 @@ or eval + list* if it's a macro
     )
   )
 
-(defmacro execWhenLogLevel [ & [logLevel :as all] ]
+(defmacro when-logLevel [ & [logLevel :as all] ]
 "
 checked at runtime
 when timbre logLevel is at least the specified one
@@ -316,9 +316,63 @@ then executes the passed forms
     )
   )
 
-(deftest test_execWLL
-  (is (= 2 (q/execWhenLogLevel :info (println 1) 2)))
-  (is (= 3 (q/execWhenLogLevel :info 1 2 3)))
+(defmacro when-debug [& forms]
+  (backtick/syntax-quote (when-logLevel :debug ~@forms))
+  )
+
+(defmacro binding-LogLevel [logLevel & forms]
+"
+force this loglevel while executing forms
+"
+  `(let [save# (logLevelCurrent)
+          _# (logLevelSet ~logLevel)
+          ]
+    (try
+      (do
+        ~@forms
+        )
+      (finally
+        (logLevelSet save#)
+        )
+      )
+    )
+  )
+
+(deftest test_exec_whenloglevel_debug_binding
+  (let [save# (logLevelCurrent)
+        _# (logLevelSet :info)
+        ]
+    (try
+      (do
+        (is (= true (logLevelSufficient? :info)))
+        (is (= 2 (q/when-logLevel :info (println 1) 2)))
+        (is (= 3 (q/when-logLevel :info 1 2 3)))
+        (is (= nil (when-debug 4))) ;log level is :info which is not sufficient for :debug
+        (is (= nil (q/when-debug (println 4))))
+        (is (= nil (q/when-debug (println 4) 5)))
+        )
+    (finally
+      (logLevelSet save#)
+      )
+    )
+    )
+  
+  (binding-LogLevel :info
+    (is (= 'moo (when-logLevel :info 'moo)))
+    (is (= nil (when-debug 4)))
+    )
+  
+  (binding-LogLevel :debug
+    (is (= 'moo (when-logLevel :info 'moo))) ;still works cause :debug includes :info
+    (is (= 4 (when-debug 4)))
+    (is (= nil (q/when-debug (println 4))))
+    (is (= 5 (q/when-debug (println 4) 5)))
+    )
+  
+  (binding-LogLevel :warn
+    (is (= nil (when-debug 4)))
+    (is (= nil (when-logLevel :info 'moo)))
+    )
   )
 
 (defn ^:private logAny [ & [logLevel :as all] ]
@@ -670,7 +724,7 @@ ie. if pred is true? and (true? x) is false or nil it will throw
 each expression can be just a form ie. (= 1 2) or a vector like this:
 [(= 1 2) \"concatenated\" \"msg\" \"when fails\"]
 [(= 1 2)] ;msg ommited, it's equivalent to just (= 1 2)
-";TODO: above
+"
   [pred & allPassedForms]
     (assumptionBlock
       (cond (empty? allPassedForms)
@@ -1330,6 +1384,7 @@ rest = strings to be joined with space between them; or nil to skip
   )
 
 (defn show_state2 []
+  (when *compile-files* (log :debug "compiling" *ns*))
   (logCaller 
     :info 
     "(re)loaded namespace `" (str *ns*) "`"
