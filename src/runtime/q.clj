@@ -1083,13 +1083,7 @@ CompilerException java.lang.ClassCastException: clojure.lang.Cons cannot be cast
 (attachTimes #'dummy1)
 (attachTimes dummy1)
 
-(deftest test_addhook_on_same_var
-  (testing "rh/add-hook called more than once on the same var, still has effect only once"
-    (times? 1
-      (dummy1)
-      )
-    )
-  )
+
 
 
 (deftest a-test2  
@@ -1391,6 +1385,13 @@ rest = strings to be joined with space between them; or nil to skip
     )
   )
 
+(deftest test_addhook_on_same_var
+  (testing "rh/add-hook called more than once on the same var, still has effect only once"
+    (times? 1
+      (dummy1)
+      )
+    )
+  )
 
 ;(q/show_state)
 ;(q/here)

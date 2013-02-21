@@ -91,8 +91,8 @@ CompilerException java.lang.RuntimeException: Unable to resolve symbol: fxn_defB
         ;e (eval evaDefBlock)
         aliases (second (find evaDefBlock :aliases)) ;can be nil
         ]
-    (q/execWhenLogLevel :debug (clojure.pprint/pprint (list ":aliases=" aliases)))
-    (q/execWhenLogLevel :debug (clojure.pprint/pprint (list "evaDefBlock=" evaDefBlock)))
+    (q/when-logLevel :debug (clojure.pprint/pprint (list ":aliases=" aliases)))
+    (q/when-logLevel :debug (clojure.pprint/pprint (list "evaDefBlock=" evaDefBlock)))
     ; evaDefBlock == `'~evaDefBlock = `~*fxn_defBlock_symbol*
     `(defn ~fname [& all#]
        (let [~*fxn_defBlock_symbol* '~evaDefBlock
