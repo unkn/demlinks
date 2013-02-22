@@ -944,38 +944,69 @@ else it won't remember the full trace only last 1024 elements? or was it 1000 fo
   ;4. zsym is an expression ie. #() or (list 1 2 3), throws exception
   ;5. zsym is a special symbol ie. def   test this via (special-symbol? 'def) , returns :special
   ;6. zsym is a macro ie. defn, returns :macro
-  ;7. FIXME: handle this: (#(sym-state %) prn2) ;CompilerException java.lang.RuntimeException: Unable to resolve symbol: prn2 in this context, compiling:(NO_SOURCE_PATH:1:1)
+  ;//7. cannot be handled: handle this: (#(sym-state %) prn2) ;CompilerException java.lang.RuntimeException: Unable to resolve symbol: prn2 in this context, compiling:(NO_SOURCE_PATH:1:1)
   ;8. alsoFIXME: (#(sym-state %) prn) returns :undefined while (sym-state prn) return :bound
 ;9. => (let [a 1] (sym-state a)) ;returns :undefined
   ;10. fix: (let [defn 1] (sym-state defn)) ; returns :macro
+  ;so 9&10 see if it's in lexical env first
+  ;11. handle when passing a class
+  ;12. check out this case with symbol and class actually ends up being a class not a symbol passed to us
+;=> (eval (backtick/template (list 'sym-state ~(eval a))))
+;(sym-state java.lang.RuntimeException)
+;=> (eval (sym-state java.lang.RuntimeException))
+;:class
+;=> (eval (eval (backtick/template (list 'sym-state ~(eval a)))))
+;:non-symbol
 
-  `(try 
-     (let [qsym# (quote ~zsym)]
-           (if (not (symbol? qsym#)) ;ie. #() or (list 1 2 3)
-             (throw (new RuntimeException "do not pass a form - symbol expected")) 
-             ;else it's a symbol ie. def (special), defn (macro), somesymbol (symbol), someundefinedsymbol (symbol)
-             (let [thevar# (resolve qsym#)] 
-               (if (nil? thevar#) 
-                 (if (special-symbol? qsym#)
-                   :special
-                   :undefined
-                   )
-                 (if (bound? thevar#)
-;                   [:bound qsym#]
-                   (if (macro-var? thevar#)
-                     :macro
-                     :bound
+  (let [envkeys (keys &env)]
+    `(try 
+       (let [qsym# (quote ~zsym)
+             lexEnv# (zipmap (quote ~envkeys) (list ~@envkeys))
+             ]
+         (cond (not (symbol? qsym#)) ;ie. #() or (list 1 2 3)
+           ;(throw (new RuntimeException "do not pass a form - symbol expected"))
+           :non-symbol ;ie. 1 or 'a or "a" or '(1 2 3)
+           :else ;it's a symbol ie. def (special), defn (macro), somesymbol (symbol), someundefinedsymbol (symbol)
+           (do
+             (let [a# (find lexEnv# qsym#)]
+               (cond a#
+                 ;could also be bound outside, but also lexical, tho the latter will be in effect
+                 :lexical
+                 :else
+               ;not a lexical or whatever you call it
+                 (let [thevar# (resolve qsym#)] ;can resolve to a class ie. (resolve (quote java.lang.RuntimeException))
+                   (cond (nil? thevar#)
+                     (if (special-symbol? qsym#)
+                       :special
+                       :undefined
                      )
-                   :unbound
+                     
+                     (class? thevar#) :class
+                     
+                     :else
+                     (do
+                       (assumedTrue [(var? thevar#) "unexpected use case wasn't nil nor class nor var : `" thevar# "`" ]) 
+                       (cond (bound? thevar#) 
+                         (if (macro-var? thevar#)
+                           :macro
+                           :bound
+                           )
+                         :else
+                         :unbound
+                         )
+                       )
+                     )
                    )
-                 )
+               )
                )
              )
-           )
-     (catch ClassCastException cce# 
-       (rethro cce#))
+         )
+         )
+       (catch ClassCastException cce# ;FIXME: 11. handle when passing a class
+         (rethro cce#))
      )
-  )
+    );let
+  );macro
 
 
 (deftest a-test
@@ -996,7 +1027,9 @@ the undefined symbol is reached/executed
 
 Pass a symbol, not a form
 
-ie. does ,(eval (quote a)) which is same as just  ,a"
+ie. does ,(eval (quote a)) which is same as just  ,a
+note: it won't work for lexical symbols (inside a let) because it uses eval
+"
   [zsym]
   
 ;  (let [lexically-exists? (get &env zsym) resolvable? (resolve zsym) ]
@@ -1021,6 +1054,9 @@ ie. does ,(eval (quote a)) which is same as just  ,a"
 ;       )
 )
 
+(defmacro encast2 [zsym]
+  `~zsym
+  )
 
 (def initialTimes 0)
 (def unInitializedTimes -1)
@@ -1131,10 +1167,20 @@ CompilerException java.lang.ClassCastException: clojure.lang.Cons cannot be cast
 
 
 (defmacro sym-info [zsym]
-  `(let [ss# (sym-state ~zsym)] 
-     (if (not= :bound ss#)
-       {:state ss# :value ~zsym};nil} ; works: ~zsym};not-works: (encast ~zsym) -> when (#(sym-info %) prn) , CompilerException java.lang.RuntimeException: Unable to resolve symbol: p1__5531# in this context, compiling:(NO_SOURCE_PATH:1:1) 
+  `(let [ss# (sym-state ~zsym)]
+     (condp = ss#
+       #_(not-any? #(= ss# %) '(
+                                   :bound
+                                   :lexical
+                                   ))
+       :bound
        {:state ss# :value (encast ~zsym)}
+       :lexical
+       {:state ss# :value ~zsym} ;FIXME: this will always throw when symbol is undefined
+       ;:else
+       {:state ss# :value nil};~zsym};nil} ; works: ~zsym};not-works: (encast ~zsym) -> when (#(sym-info %) prn) , CompilerException java.lang.RuntimeException: Unable to resolve symbol: p1__5531# in this context, compiling:(NO_SOURCE_PATH:1:1)
+;       :else
+;       {:state ss# :value (encast ~zsym)}
        )
      )
   )
