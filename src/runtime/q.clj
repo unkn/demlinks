@@ -1343,7 +1343,7 @@ don't pass a macro as the function
 "
 optional inputs:
 shift = shift in stacktrace to finetune the shown location
-logLevel = ie. :info :debug etc. for timbre/log
+logLevel = ie. :info :debug etc.
 rest = strings to be joined with space between them; or nil to skip
 "
   [& [shift loglevel  :as all]]
