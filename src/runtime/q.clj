@@ -704,6 +704,7 @@ ie. if pred is true? and (true? x) is false or nil it will throw
 ;              )
               ;)
             )
+          envkeys (keys &env)
           ]
       `(do
          (let [pred# ~pred
@@ -711,7 +712,9 @@ ie. if pred is true? and (true? x) is false or nil it will throw
                evaled# ~x
                form# '~x
                self# '~(first &form)
-               yield# (pred# evaled#)]
+               yield# (pred# evaled#)
+               ;lexenv# (get-lexical-env)
+               ]
            (cond yield#
              whatAssumptionsReturnWhenTrue
              :else
@@ -728,6 +731,7 @@ ie. if pred is true? and (true? x) is false or nil it will throw
                       ")` which yielded `"
                       yield# "`"
                       ~failMsgIfAny
+                      " lexical env.: \n" (zipmap (quote ~envkeys) (list ~@envkeys))
                       "\n"
                       )
                )
