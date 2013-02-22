@@ -422,7 +422,7 @@ got (re)loaded and/or compiled
     ;it will only work once, unless you modify it
     
     (pri "(re)loaded namespace: `" (str *ns*))
-    (pri "` lexical env: `" (show-env))
+    (pri "` lexical env: `" (show-lexical-env))
     (pri "` caller form: `" '~&form)
     (pri "` caller line: `" '~(meta &form))
     (pri "` caller file: `" *file*)
