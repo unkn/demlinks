@@ -23,6 +23,7 @@
   ;(:use [runtime.q :as q] :reload-all)
   ;(:use [runtime.q.exceptions :as qex] :reload-all)
   (:require [backtick])
+  (:require clojure.pprint)
   (:refer-clojure :exclude [sorted?])
   )
 ;FIXME: ccw, still getting this warning: WARNING: sorted? already refers to: #'clojure.core/sorted? in namespace: runtime.q, being replaced by: #'runtime.q/sorted?
