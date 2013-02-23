@@ -89,18 +89,18 @@ CompilerException java.lang.RuntimeException: Unable to resolve symbol: fxn_defB
 this function takes only one parameter: a map with the parameters;
 or no parameters at all.
 "
-     {:pre [(q/assumedTruthy [(let [f# (first allParamsInAMap#)
-                                    s# (second allParamsInAMap#)
-                                    ]
-                                (or 
-                                  (nil? f#);means 0 params
-                                  (and ;if the above isn't true we're here, so there is a first params
-                                    (nil? s#);means 1 params at this point 
-                                    (map? f#);and that 1 param is a map
+       {:pre [(q/assumedTruthy [(let [f# (first allParamsInAMap#)
+                                      s# (second allParamsInAMap#)
+                                      ]
+                                  (or 
+                                    (nil? f#);means 0 params
+                                    (and ;if the above isn't true we're here, so there is a first params
+                                      (nil? s#);means 1 params at this point 
+                                      (map? f#);and that 1 param is a map
+                                      )
                                     )
                                   )
-                                )
-                              "pass 0 or 1 params and this must be a map with all the params, 
+                                "pass 0 or 1 params and this must be a map with all the params, 
 for function `" '~fname "` you passed `" allParamsInAMap# "`"])]}
        (let [~*fxn_defBlock_symbol* '~evaDefBlock
              ~*fxn_defBlockRaw_symbol* '~passedDefBlock
