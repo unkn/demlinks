@@ -19,8 +19,9 @@
 
 ;you need not bind this though, unless you really want to name it something
 ;but it won't clash with others, supposedly - there may be some case when it could clash let within a let
-(def ^:dynamic *fxn_defBlock_symbol* (gensym 'fxn_defBlock))
-(def ^:dynamic *fxn_defBlockRaw_symbol* (gensym 'fxn_defBlockRaw))
+(def ^:dynamic *fxn_defBlock_symbol* (gensym 'fxn_defBlock_))
+(def ^:dynamic *fxn_defBlockRaw_symbol* (gensym 'fxn_defBlockRaw_))
+(def ^:dynamic *fxn_defBlock_Aliases* (gensym 'fxn_defBlock_Aliases_))
 
 
 (defmacro get_fxn
@@ -46,6 +47,7 @@ CompilerException java.lang.RuntimeException: Unable to resolve symbol: fxn_defB
 
 (get_fxn *fxn_defBlock_symbol* defBlock) ;(defmacro get_fxn_defBlock ...)
 (get_fxn *fxn_defBlockRaw_symbol* defBlockRaw) ;(defmacro get_fxn_defBlockRaw ...)
+(get_fxn *fxn_defBlock_Aliases* defBlock_Aliases);(defmacro get_fxn_defBlock_Aliases ...)
 ;(defmacro get_fxn_defBlock2
 ;  []
 ;  ;like get the value of <the symbol returned by *fxn_defBlock_symbol*>
@@ -68,18 +70,6 @@ CompilerException java.lang.RuntimeException: Unable to resolve symbol: fxn_defB
   (q/is (= nil (second nil)))
   )
 
-;(defn x []
-;  (println)
-;  (q/assumedTrue [1 "fail"])
-;  (println)
-;)
-;(defn y []
-;  (println)
-;  (x)
-;  (println)
-;  )
-;(eval '(y))
-
 
 (defmacro defxn ;def funxion
   [fname ;funxion name
@@ -96,11 +86,12 @@ CompilerException java.lang.RuntimeException: Unable to resolve symbol: fxn_defB
     ; evaDefBlock == `'~evaDefBlock = `~*fxn_defBlock_symbol*
     `(defn ~fname [& allParamsInAMap#]
 "
-this function takes only one parameter: a map with the parameters
+this function takes only one parameter: a map with the parameters;
+or no parameters at all.
 "
-       {:pre [(q/assumedTruthy [(let [f# (first allParamsInAMap#)
-                                      s# (second allParamsInAMap#)
-                                      ]
+     {:pre [(q/assumedTruthy [(let [f# (first allParamsInAMap#)
+                                    s# (second allParamsInAMap#)
+                                    ]
                                 (or 
                                   (nil? f#);means 0 params
                                   (and ;if the above isn't true we're here, so there is a first params
@@ -113,11 +104,13 @@ this function takes only one parameter: a map with the parameters
 for function `" '~fname "` you passed `" allParamsInAMap# "`"])]}
        (let [~*fxn_defBlock_symbol* '~evaDefBlock
              ~*fxn_defBlockRaw_symbol* '~passedDefBlock
+             ~*fxn_defBlock_Aliases* '~aliases
              ;~'fxn_evalled ~e
              ]
          ;(clojure.pprint/pprint (list ~'*fxn_defBlockRaw_symbol* ~*fxn_defBlockRaw_symbol*))
          ;(clojure.pprint/pprint (list ~'*fxn_defBlock_symbol* ~*fxn_defBlock_symbol*));symbol and its value
-         (clojure.pprint/pprint  '~aliases)
+         ;(clojure.pprint/pprint  '~aliases)
+         (clojure.pprint/pprint (list ~'*fxn_defBlock_Aliases* ~*fxn_defBlock_Aliases*))
          ~@codeblocks
          #_(= (~(:c x) ~(:d x))
            (~(:e x) ~(:d x)))
@@ -219,7 +212,7 @@ firsta
   ;TODO: allow invariants functions for each param and throw when any of them fail(obviously)
   ;TODO: ignore optional params that weren't passed on call
   ;TODO: throw when required params aren't passed on call
-  (clojure.pprint/pprint (list "foocode" (get_fxn_defBlock)));firsta)
+  (clojure.pprint/pprint (list "infoocode" (get_fxn_defBlock)));firsta)
   )
 
 (q/deftest test_fxn1
@@ -274,6 +267,7 @@ firsta
 
 
 (def a 0)
+
 (defxn noes {:a 
              ~(inc (+ 1 2)) ;this will resolve at compile time?
              :b firsta 
@@ -282,16 +276,20 @@ firsta
              :e ~(list partial > 1)
              }
   (println "!!!" (get_fxn_defBlock))
+  (println "!!!" (get_fxn_defBlock_Aliases))
 ;  (:b fxn_defBlock)
 ;  (:c fxn_defBlock)
   )
+
 (println (noes))
 (def a 1)
 (println (noes))
+
 (binding [*fxn_defBlock_symbol* 'abc]
   (println *fxn_defBlock_symbol*)
-  (noes))
+  (noes)
+  )
 
-
+;last lines:
 (q/show_state2)
 (q/gotests)
