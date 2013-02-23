@@ -222,7 +222,7 @@ firsta
   (clojure.pprint/pprint (list "foocode" (get_fxn_defBlock)));firsta)
   )
 
-(q/deftest test_fxn
+(q/deftest test_fxn1
   (q/isAssumptionFailed (foo 1))
   (q/isAssumptionFailed (foo 'a-9dj0uerf02jivwrefj2iow))
   (q/isAssumptionFailed (foo 'a-9dj0uerf02jivwrefj2iow 'a-9dj0uerf02jivwrefj2iow))
@@ -278,7 +278,7 @@ firsta
              ~(inc (+ 1 2)) ;this will resolve at compile time?
              :b firsta 
              :c (partial > 1) ;the function will resolve at the time defxn is called 
-             :d a ;"a" has to be resolvable in current ns where defxn is called and it will point to the same a, thus not be relative to *ns* once defxn executed
+             :d a ;"a" has to be resolvable in current ns where defxn is called and it will point to the same a, thus will not be relative to *ns* once defxn executed
              :e ~(list partial > 1)
              }
   (println "!!!" (get_fxn_defBlock))

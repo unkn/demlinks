@@ -812,6 +812,13 @@ to be used within a deftest
     (assumedPred true? true [false] [true "msghere" " a" "b"]))
   (isthrown? *exceptionThrownBy_assumedPred* 
     (assumedPred true? true [true] [false "msghere" " a" "b"]))
+  
+  (isAssumptionFailed
+    (assumedPred true? false [true] [true "msghere" " a" "b"]))
+  (isAssumptionFailed
+    (assumedPred true? true [false] [true "msghere" " a" "b"]))
+  (isAssumptionFailed 
+    (assumedPred true? true [true] [false "msghere" " a" "b"]))
   )
 
 (defmacro throwIfNil 
@@ -856,11 +863,11 @@ ie. (defmacro something [param1 p2 & restparams] ... throwIfNil &form restparams
   `(assumedPred truthy? ~@allPassedForms)
   )
 
-(def ;^{:dynamic true} 
-  exceptionThrownBy_assumedTrue *exceptionThrownBy_assumedPred*)
+;(def ;^{:dynamic true} 
+;  exceptionThrownBy_assumedTrue *exceptionThrownBy_assumedPred*)
 
 ;(with-test
-  (defmacro assumedTrue;TODO: make it test only first form and rest be err msg without need to (str ..)
+  (defmacro assumedTrue
     [ & allPassedForms ]
     (throwIfNil &form allPassedForms)
     `(assumedPred true? ~@allPassedForms)
@@ -891,8 +898,8 @@ return true if assumption is correct
    ; )
   (is (assumptionCorrect? (assumedTrue (= 1 1) (= 2 2))))
   (when (assumptionsEnabled?)
-    (isthrown? exceptionThrownBy_assumedTrue (assumedTrue (= 1 2)) )
-    (isthrown? exceptionThrownBy_assumedTrue (assumedTrue (= 1 1) (= 2 1)) )
+    (isAssumptionFailed (assumedTrue (= 1 2)) )
+    (isAssumptionFailed (assumedTrue (= 1 1) (= 2 1)) )
     )
 )
 
