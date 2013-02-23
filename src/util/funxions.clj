@@ -81,14 +81,16 @@ CompilerException java.lang.RuntimeException: Unable to resolve symbol: fxn_defB
         ;e (eval evaDefBlock)
         aliases (second (find evaDefBlock :aliases)) ;can be nil
         ]
-    (q/when-debug (clojure.pprint/pprint (list ":aliases=" aliases)))
-    (q/when-debug (clojure.pprint/pprint (list "evaDefBlock=" evaDefBlock)))
+    ;(q/when-debug (clojure.pprint/pprint (list ":aliases=" aliases)))
+    ;(q/when-debug (clojure.pprint/pprint (list "evaDefBlock=" evaDefBlock)))
+    (q/when-debug (q/show-lexical-env))
     ; evaDefBlock == `'~evaDefBlock = `~*fxn_defBlock_symbol*
-    `(defn ~fname [& allParamsInAMap#]
+    `(defn ~fname 
 "
 this function takes only one parameter: a map with the parameters;
 or no parameters at all.
 "
+       [& allParamsInAMap#]
        {:pre [(q/assumedTruthy [(let [f# (first allParamsInAMap#)
                                       s# (second allParamsInAMap#)
                                       ]
@@ -102,7 +104,8 @@ or no parameters at all.
                                   )
                                 "pass 0 or 1 params and this must be a map with all the params, 
 for function `" '~fname "` you passed `" allParamsInAMap# "`"])]}
-       (let [~*fxn_defBlock_symbol* '~evaDefBlock
+       (let [
+             ~*fxn_defBlock_symbol* '~evaDefBlock
              ~*fxn_defBlockRaw_symbol* '~passedDefBlock
              ~*fxn_defBlock_Aliases* '~aliases
              ;~'fxn_evalled ~e
@@ -110,7 +113,7 @@ for function `" '~fname "` you passed `" allParamsInAMap# "`"])]}
          ;(clojure.pprint/pprint (list ~'*fxn_defBlockRaw_symbol* ~*fxn_defBlockRaw_symbol*))
          ;(clojure.pprint/pprint (list ~'*fxn_defBlock_symbol* ~*fxn_defBlock_symbol*));symbol and its value
          ;(clojure.pprint/pprint  '~aliases)
-         (clojure.pprint/pprint (list ~'*fxn_defBlock_Aliases* ~*fxn_defBlock_Aliases*))
+         ;(clojure.pprint/pprint (list ~'*fxn_defBlock_Aliases* ~*fxn_defBlock_Aliases*))
          ~@codeblocks
          #_(= (~(:c x) ~(:d x))
            (~(:e x) ~(:d x)))

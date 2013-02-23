@@ -405,7 +405,7 @@ force this loglevel while executing forms
   )
 
 (defmacro show-lexical-env []
-  `(prn (get-lexical-env))
+  `(clojure.pprint/pprint (get-lexical-env))
   )
 
 (defmacro show_state []
