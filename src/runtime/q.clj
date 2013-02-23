@@ -184,6 +184,9 @@ CompilerException java.lang.RuntimeException: Unable to resolve symbol: toUpperC
   `(thro ~ex)
   )
 
+(def exceptionThrownWhenBadParams
+  java.lang.RuntimeException
+  )
 
 (defn thro [ex & restt] 
   (cond
@@ -200,8 +203,8 @@ CompilerException java.lang.RuntimeException: Unable to resolve symbol: toUpperC
     (throw ex)
     
     :else 
-    (throw 
-         (new RuntimeException ;exception thrown when invalid params passed to thro
+    (throw (newInstanceOfClass exceptionThrownWhenBadParams
+         ;(new RuntimeException ;exception thrown when invalid params passed to thro
               (str
                 "you must pass a class/instance, you passed `"
                 ex " " (clojure.string/join " " restt)
@@ -212,9 +215,7 @@ CompilerException java.lang.RuntimeException: Unable to resolve symbol: toUpperC
     )
   )
 
-(def exceptionThrownWhenBadParams
-  java.lang.RuntimeException
-  )
+
 
 (def exceptionThrownWhenSomethingUnexpectedHappened
   java.lang.RuntimeException
@@ -706,6 +707,7 @@ ie. if pred is true? and (true? x) is false or nil it will throw
           envkeys (keys &env)
           ]
       `(do
+         ;(let [lexwithin# (quote ~(keys &env))]
          (let [pred# ~pred
                predQuote# (quote ~pred)
                evaled# ~x
@@ -728,14 +730,16 @@ ie. if pred is true? and (true? x) is false or nil it will throw
                       " "
                       (pr-str evaled#)
                       ")` which yielded `"
-                      yield# "`"
+                      yield# "`"; and lexical env within the expression was: "
+;                      (list lexwithin#)
                       ~failMsgIfAny
                       " lexical env.: \n" (zipmap (quote ~envkeys) (list ~@envkeys))
                       "\n"
                       )
                )
              )
-           )
+           );let1
+;         );let2
          );do
       );let
     )
@@ -787,6 +791,17 @@ each expression can be just a form ie. (= 1 2) or a vector like this:
         )
       )
     )
+
+(defmacro isAssumptionFailed
+"
+to be used within a deftest
+"
+  [& forms]
+  `(q/isthrown? 
+    *exceptionThrownBy_assumedPred*
+    ~@forms
+    )
+  )
 
 (deftest test_vecParams
   (is (= true (assumedPred true? true [true] [true "msghere" " a" "b"])))
