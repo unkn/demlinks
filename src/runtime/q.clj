@@ -89,7 +89,6 @@
     (throw 
       (eval 
         (list 'new 
-          ;AssertionError ;
           exceptionThrownWhenNotAClass
           (str 
             "you didn't pass a class, you passed `"

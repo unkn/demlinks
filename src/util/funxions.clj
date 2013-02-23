@@ -91,17 +91,29 @@ CompilerException java.lang.RuntimeException: Unable to resolve symbol: fxn_defB
         ;e (eval evaDefBlock)
         aliases (second (find evaDefBlock :aliases)) ;can be nil
         ]
-    (q/when-logLevel :debug (clojure.pprint/pprint (list ":aliases=" aliases)))
-    (q/when-logLevel :debug (clojure.pprint/pprint (list "evaDefBlock=" evaDefBlock)))
+    (q/when-debug (clojure.pprint/pprint (list ":aliases=" aliases)))
+    (q/when-debug (clojure.pprint/pprint (list "evaDefBlock=" evaDefBlock)))
     ; evaDefBlock == `'~evaDefBlock = `~*fxn_defBlock_symbol*
-    `(defn ~fname [& all#]
+    `(defn ~fname [& allParamsInAMap#]
+"
+this function takes only one parameter: a map with the parameters
+"
+       {:pre [(q/assumedTrue [(or 
+                                (= (count allParamsInAMap#) 0)
+                                (and
+                                  (= (count allParamsInAMap#) 1) 
+                                  (map? (first allParamsInAMap#))
+                                  )
+                                )
+                              "pass 0 or 1 params and this must be a map with all the params, 
+for function `" '~fname "` you passed `" allParamsInAMap# "`"])]}
        (let [~*fxn_defBlock_symbol* '~evaDefBlock
              ~*fxn_defBlockRaw_symbol* '~passedDefBlock
              ;~'fxn_evalled ~e
              ]
          ;(clojure.pprint/pprint (list ~'*fxn_defBlockRaw_symbol* ~*fxn_defBlockRaw_symbol*))
          ;(clojure.pprint/pprint (list ~'*fxn_defBlock_symbol* ~*fxn_defBlock_symbol*));symbol and its value
-         ;(println ~e)
+         (clojure.pprint/pprint  '~aliases)
          ~@codeblocks
          #_(= (~(:c x) ~(:d x))
            (~(:e x) ~(:d x)))
@@ -175,6 +187,7 @@ firsta
                 notnil? :except :unspecified
                 ~(list partial > 0) :except :specified
                 (partial > 0) [:all [:not :specified] [:except [:a :c]] ]
+                (partial > 0) (all-except :a)
                 ]
    ;invariants ran over all specified params but not over the unspecified(and thus optional ones which have the default value assigned)
    :spec_invariants [notnil? :only [:a :b :c :d :e]
