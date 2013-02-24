@@ -72,20 +72,43 @@ CompilerException java.lang.RuntimeException: Unable to resolve symbol: fxn_defB
 
 
 (defmacro defxn ;def funxion
+"
+input: 
+ fname = the name of the function to define, must be a symbol or use ~ to execute code which should resolve to a symbol
+ defBlock = a map describing the parameters; allows the use of ~;
+ codeblocks = zero, one or more forms which are to be part of the function body
+
+output:
+ the var of the defined function ie. just what defn returns
+
+note1: where you can use ~form you may also use (clojure.core/unquote form)
+note2: you cannot use ~ within a ~ , the nested ones won't be evaluated/touched and they are basically unbound so you'd get: IllegalStateException Attempting to call unbound fn: #'clojure.core/unquote
+
+"
   [fname ;funxion name
    passedDefBlock; a map
    & codeblocks ;multiple forms as code
    ]
-  (let [lst (list 'backtick/template passedDefBlock)
-        evaDefBlock (eval lst) ;the defblock after ~ are evaluated
-        ;e (eval evaDefBlock)
-        aliases (second (find evaDefBlock :aliases)) ;can be nil
+  (let [
+        readyforeval_fname (list 'backtick/template fname)
+        evaluated_fname (eval readyforeval_fname) ;the fname after ~ are evaluated
+        ;fn_name 
+        _ (q/assumedTrue [(symbol? evaluated_fname) "fname must be a symbol, you passed `" 
+                          fname "` which resolved to `" evaluated_fname "` of type `" (type evaluated_fname) "` . Maybe you want to use ~ to cause a resolve."])
         ]
-    ;(q/when-debug (clojure.pprint/pprint (list ":aliases=" aliases)))
-    ;(q/when-debug (clojure.pprint/pprint (list "evaDefBlock=" evaDefBlock)))
-    (q/when-debug (q/show-lexical-env))
-    ; evaDefBlock == `'~evaDefBlock = `~*fxn_defBlock_symbol*
-    `(defn ~fname 
+    (let [
+          lstBackTicked_passedDefBlock (list 'backtick/template passedDefBlock)
+          evaDefBlock (eval lstBackTicked_passedDefBlock) ;the defblock after ~ are evaluated
+          ;e (eval evaDefBlock)
+          ;_ (q/assumedTrue (symbol? fname))
+          _ (q/assumedTrue [(map? evaDefBlock) "the defBlock must be a map"])
+          aliases (second (find evaDefBlock :aliases)) ;can be nil
+          ]
+      ;(q/when-debug (clojure.pprint/pprint (list ":aliases=" aliases)))
+      ;(q/when-debug (clojure.pprint/pprint (list "evaDefBlock=" evaDefBlock)))
+      (q/when-debug (q/show-lexical-env))
+      ; evaDefBlock == `'~evaDefBlock = `~*fxn_defBlock_symbol*
+    `(defn ~evaluated_fname 
 "
 this function takes only one parameter: a map with the parameters;
 or no parameters at all.
@@ -121,6 +144,7 @@ for function `" '~fname "` you passed `" allParamsInAMap# "`"])]}
          )
        )
     )
+  )
   )
 
 #_(try ;can't catch it
@@ -171,7 +195,7 @@ firsta
              :a firsta ;p1=:a p2=:firsta
              :b b
              :c ~(symbol "c")
-             ;:c :b ;will throw because both :b and :c map to same :b
+             ;:c :b ;will throw because both :b and :c map to same :b ; this throw happens to be done by the clojure reader (or something)
              }
    :optional {:a 0 
               :b 0}
@@ -187,7 +211,7 @@ firsta
                 notnil? :except :unspecified
                 ~(list partial > 0) :except :specified
                 (partial > 0) [:all [:not :specified] [:except [:a :c]] ]
-                (partial > 0) (all-except :a)
+                (partial > 0) (fxn_allExcept :a)
                 ]
    ;invariants ran over all specified params but not over the unspecified(and thus optional ones which have the default value assigned)
    :spec_invariants [notnil? :only [:a :b :c :d :e]
@@ -230,6 +254,10 @@ firsta
   (q/isAssumptionFailed (foo 'a-9dj0uerf02jivwrefj2iow {}))
   (foo {})
   (foo)
+  )
+
+#_(q/deftest test_defxn1
+  (q/isAssumptionFailed (defxn 1 2)) ;XXX: all these happen at compiletime so we can't catch that
   )
 ;)
 
