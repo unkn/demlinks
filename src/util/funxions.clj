@@ -89,35 +89,33 @@ note2: you cannot use ~ within a ~ , the nested ones won't be evaluated/touched 
    passedDefBlock; a map
    & codeblocks ;multiple forms as code
    ]
-  `(let [
-         ;readyforeval_fname# (list 'backtick/template ~fname)
-         ;evaluated_fname# (eval readyforeval_fname#) 
-         evaluated_fname# (backtick/template ~fname);the fname after ~ are evaluated
-         ;fn_name 
-         _# (q/assumedTrue [
-                           (symbol? evaluated_fname#) 
-                           "fname must be a symbol, you passed `" 
-                           ~fname 
-                           "` which resolved to `" 
-                           evaluated_fname# 
-                           "` of type `" 
-                           (type evaluated_fname#) 
-                           "` . Maybe you want to use ~ to cause a resolve."]
-             )
-         
-         ;lstBackTicked_passedDefBlock# (list 'backtick/template ~passedDefBlock)
-         ;evaDefBlock# (eval lstBackTicked_passedDefBlock#) 
-         evaDefBlock# (backtick/template ~passedDefBlock);the defblock after ~ are evaluated
-         ;_ (q/assumedTrue (symbol? fname))
-         _# (q/assumedTrue [(map? evaDefBlock#) "the defBlock must be a map"])
-         
-         aliases# (second (find evaDefBlock# :aliases)) ;can be nil
-         ]
-     ;(q/when-debug (clojure.pprint/pprint (list ":aliases=" aliases#)))
-     ;(q/when-debug (clojure.pprint/pprint (list "evaDefBlock=" evaDefBlock#)))
-     (q/when-debug (q/show-lexical-env))
-     ; evaDefBlock == `'~evaDefBlock# = `~*fxn_defBlock_symbol*
-     (defn evaluated_fname# 
+  (let [
+        readyforeval_fname (list 'backtick/template fname)
+        evaluated_fname (eval readyforeval_fname) ;the fname after ~ are evaluated
+        ;fn_name 
+        _ (q/assumedTrue [
+                          (symbol? evaluated_fname) 
+                          "fname must be a symbol, you passed `" 
+                          fname 
+                          "` which resolved to `" 
+                          evaluated_fname 
+                          "` of type `" 
+                          (type evaluated_fname) 
+                          "` . Maybe you want to use ~ to cause a resolve."]
+            )
+        
+        lstBackTicked_passedDefBlock (list 'backtick/template passedDefBlock)
+        evaDefBlock (eval lstBackTicked_passedDefBlock) ;the defblock after ~ are evaluated
+        ;e (eval evaDefBlock)
+        ;_ (q/assumedTrue (symbol? fname))
+        _ (q/assumedTrue [(map? evaDefBlock) "the defBlock must be a map"])
+        aliases (second (find evaDefBlock :aliases)) ;can be nil
+        ]
+    ;(q/when-debug (clojure.pprint/pprint (list ":aliases=" aliases)))
+    ;(q/when-debug (clojure.pprint/pprint (list "evaDefBlock=" evaDefBlock)))
+    (q/when-debug (q/show-lexical-env))
+    ; evaDefBlock == `'~evaDefBlock = `~*fxn_defBlock_symbol*
+    `(defn ~evaluated_fname 
 "
 this function takes only one parameter: a map with the parameters;
 or no parameters at all.
@@ -137,13 +135,14 @@ or no parameters at all.
                                 "pass 0 or 1 params and this must be a map with all the params, 
 for function `" '~fname "` you passed `" allParamsInAMap# "`"])]}
        (let [
-             ~*fxn_defBlock_symbol* evaDefBlock#
+             ~*fxn_defBlock_symbol* '~evaDefBlock
              ~*fxn_defBlockRaw_symbol* '~passedDefBlock
-             ~*fxn_defBlock_Aliases* aliases#
+             ~*fxn_defBlock_Aliases* '~aliases
              ;~'fxn_evalled ~e
              ]
          ;(clojure.pprint/pprint (list ~'*fxn_defBlockRaw_symbol* ~*fxn_defBlockRaw_symbol*))
          ;(clojure.pprint/pprint (list ~'*fxn_defBlock_symbol* ~*fxn_defBlock_symbol*));symbol and its value
+         ;(clojure.pprint/pprint  '~aliases)
          ;(clojure.pprint/pprint (list ~'*fxn_defBlock_Aliases* ~*fxn_defBlock_Aliases*))
          ~@codeblocks
          #_(= (~(:c x) ~(:d x))
