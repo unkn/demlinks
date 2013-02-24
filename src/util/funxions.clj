@@ -89,7 +89,7 @@ note2: you cannot use ~ within a ~ , the nested ones won't be evaluated/touched 
    passedDefBlock; a map
    & codeblocks ;multiple forms as code
    ]
-  (let [
+  (let [;XXX: you cannot move these inside the ` because of what defn expects therefore you cannot catch any thrown exceptions here and stuck to using eval
         readyforeval_fname (list 'backtick/template fname)
         evaluated_fname (eval readyforeval_fname) ;the fname after ~ are evaluated
         ;fn_name 
