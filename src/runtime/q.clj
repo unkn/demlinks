@@ -546,7 +546,8 @@ got (re)loaded and/or compiled
   (isthrown? rte (thro rte))
   (isthrown? rte (thro rte "msg"))
   (isthrown? rte (thro rte2))
-  ;FIXME: won't work: (isthrown? rte2 (thro rte2));due to compiletime/runtime macro crap; let's just say I wanna transcend this level of programming and get up there into a graph-like based system in 3D, asap ffs!
+  ;FIXed: won't work: 
+  (isthrown? exceptionThrownWhenNotAClass (eval '(isthrown? rte2 (thro rte2))))
   (isthrown? java.lang.RuntimeException (thro java.lang.RuntimeException))
   (isthrown? rte (thro java.lang.RuntimeException))
   
