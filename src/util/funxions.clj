@@ -48,23 +48,6 @@ CompilerException java.lang.RuntimeException: Unable to resolve symbol: fxn_defB
 (get_fxn *fxn_defBlock_symbol* defBlock) ;(defmacro get_fxn_defBlock ...)
 (get_fxn *fxn_defBlockRaw_symbol* defBlockRaw) ;(defmacro get_fxn_defBlockRaw ...)
 (get_fxn *fxn_defBlock_Aliases* defBlock_Aliases);(defmacro get_fxn_defBlock_Aliases ...)
-;(defmacro get_fxn_defBlock2
-;  []
-;  ;like get the value of <the symbol returned by *fxn_defBlock_symbol*>
-;  `~*fxn_defBlock_symbol*
-;  )
-;=> (macroexpand-1 '(get_fxn_defBlock))
-;fxn_defBlock3
-;=> (macroexpand-1 '(get_fxn_defBlock2))
-;fxn_defBlock3
-;=> (clojure.tools.macro/mexpand-all '(defmacro get_fxn_defBlock2
-;     []
-;     ;like get the value of the symbol returned by *fxn_defBlock_symbol*
-;     `~*fxn_defBlock_symbol*
-;     ))
-;(do (def get_fxn_defBlock2 (fn* ([&form &env] *fxn_defBlock_symbol*))) (. (var get_fxn_defBlock2) (setMacro)) (var get_fxn_defBlock2))
-;=> (clojure.tools.macro/mexpand-all '(get_fxn *fxn_defBlock_symbol* defBlock))
-;(do (def get_fxn_defBlock (fn* ([&form &env] *fxn_defBlock_symbol*))) (. (var get_fxn_defBlock) (setMacro)) (var get_fxn_defBlock))
 
 (q/deftest test_second
   (q/is (= nil (second nil)))
@@ -262,8 +245,10 @@ firsta
   (foo)
   )
 
-#_(q/deftest test_defxn1
-  (q/isAssumptionFailed (defxn 1 2)) ;XXX: all these happen at compiletime so we can't catch that
+(q/deftest test_defxn1
+  (q/isAssumptionFailed (eval '(defxn 1 2))) 
+  (q/isAssumptionFailed (eval '(defxn ~'a 1)))
+  ;XXX: all these happen at compiletime so we can't catch that, we can using eval - thanks Tim Reinke on the ML
   )
 ;)
 
