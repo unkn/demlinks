@@ -13,6 +13,9 @@
   (:require clojure.pprint)
   )
 
+(set! 
+  *warn-on-reflection*
+  true)
 
 (def exceptionThrownWhenRequiredParamsNotSpecified
   java.lang.RuntimeException)
@@ -93,6 +96,7 @@ note2: you cannot use ~ within a ~ , the nested ones won't be evaluated/touched 
         ;_ (q/assumedTrue (symbol? fname))
         _ (q/assumedTrue [(map? evaDefBlock) "the defBlock must be a map"])
         aliases (second (find evaDefBlock :aliases)) ;can be nil
+        _ (q/assumedNotNil [aliases "you must specify :aliases"])
         ]
     ;(q/when-debug (clojure.pprint/pprint (list ":aliases=" aliases)))
     ;(q/when-debug (clojure.pprint/pprint (list "evaDefBlock=" evaDefBlock)))

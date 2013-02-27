@@ -279,9 +279,7 @@ CompilerException java.lang.RuntimeException: Unable to resolve symbol: toUpperC
   )
 
 (defmacro pri [& all]
-  `(cond (logLevelSufficient? :info)
-     (print (str ~@all));too ugly to use timbre logging here
-     )
+  `(print (str ~@all));too ugly to use timbre logging here
   )
 
 (defmacro priln [& all]
@@ -414,23 +412,27 @@ force this loglevel while executing forms
 got (re)loaded and/or compiled
 "
   `(do
-    ;  (prn &form)
-    (when *compile-files* (log :debug "compiling" *ns*))
-    ;(when true (log :debug "compiling" *ns*))
-    ;compile like this:
-    ;(compile (symbol (str *ns*)))
-    ;or Ctrl+Alt+K  in eclipse+ccw
-    ;it will only work once, unless you modify it
-    
-    (pri "(re)loaded namespace: `" (str *ns*))
-    (pri "` lexical env: `" (show-lexical-env))
-    (pri "` caller form: `" '~&form)
-    (pri "` caller line: `" '~(meta &form))
-    (pri "` caller file: `" *file*)
-    (priln "`")
-    
-    nil
-    )
+     ;  (prn &form)
+     (when *compile-files* (log :debug "compiling" *ns*))
+     (cond (logLevelSufficient? :info)
+       (do
+         ;(when true (log :debug "compiling" *ns*))
+         ;compile like this:
+         ;(compile (symbol (str *ns*)))
+         ;or Ctrl+Alt+K  in eclipse+ccw
+         ;it will only work once, unless you modify it
+         
+         (pri "(re)loaded namespace: `" (str *ns*))
+         (pri "` lexical env: `" (show-lexical-env))
+         (pri "` caller form: `" '~&form)
+         (pri "` caller line: `" '~(meta &form))
+         (pri "` caller file: `" *file*)
+         (priln "`")
+         
+         nil
+         )
+       )
+     )
   )
 
 
@@ -697,7 +699,7 @@ ie. if pred is true? and (true? x) is false or nil it will throw
                ; (prn restOfFailMsg)
                 (list `apply `str
                   (concat ['list "\n"
-                           "The fail msg is:\n`\n"] 
+                           "The FAIL MSG is:\n`\n"] 
                     ;evalled
                     restOfFailMsg
                     ["\n`"])
@@ -735,7 +737,12 @@ ie. if pred is true? and (true? x) is false or nil it will throw
                       yield# "`"; and lexical env within the expression was: "
 ;                      (list lexwithin#)
                       ~failMsgIfAny
-                      " lexical env.: \n" (zipmap (quote ~envkeys) (list ~@envkeys))
+                      " lexical env.: \n" 
+                      (with-out-str 
+                        (clojure.pprint/pprint 
+                          (zipmap (quote ~envkeys) (list ~@envkeys))
+                          )
+                        )
                       "\n"
                       )
                )
