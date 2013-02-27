@@ -668,7 +668,9 @@ got (re)loaded and/or compiled
   (map constantly all)
   )
 
-(def ^{:dynamic true} *exceptionThrownBy_assumedPred* AssertionError)
+(def ^{:dynamic true} *exceptionThrownBy_assumedPred* clojure.lang.ExceptionInfo
+  ;AssertionError
+  )
 ;(defn *exceptionThrownBy_assumedPred*_fn [] *exceptionThrownBy_assumedPred*)
 ;inspired from (source assert)
 (defmacro assumedPred1
@@ -723,9 +725,12 @@ ie. if pred is true? and (true? x) is false or nil it will throw
            (cond yield#
              whatAssumptionsReturnWhenTrue
              :else
-             (thro *exceptionThrownBy_assumedPred* 
-               (str self# 
-                 " failed, the following wasn't truthy: `(" 
+             (;thro *exceptionThrownBy_assumedPred*
+               thro 
+               (ex-info
+                 
+                 (str self# 
+                   " failed, the following wasn't truthy: `(" 
                       predQuote# 
                       " "
                       (pr-str form#) 
@@ -745,6 +750,8 @@ ie. if pred is true? and (true? x) is false or nil it will throw
                         )
                       "\n"
                       )
+                 {}
+                 )
                )
              )
            );let1
@@ -815,11 +822,11 @@ to be used within a deftest
 (deftest test_vecParams
   (is (= true (assumedPred true? true [true] [true "msghere" " a" "b"])))
   ;TODO: make these tests better:
-  (isthrown? *exceptionThrownBy_assumedPred* 
+  (q/isAssumptionFailed 
     (assumedPred true? false [true] [true "msghere" " a" "b"]))
-  (isthrown? *exceptionThrownBy_assumedPred* 
+  (q/isAssumptionFailed 
     (assumedPred true? true [false] [true "msghere" " a" "b"]))
-  (isthrown? *exceptionThrownBy_assumedPred* 
+  (q/isAssumptionFailed 
     (assumedPred true? true [true] [false "msghere" " a" "b"]))
   
   (isAssumptionFailed

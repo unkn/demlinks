@@ -96,7 +96,29 @@ note2: you cannot use ~ within a ~ , the nested ones won't be evaluated/touched 
         ;_ (q/assumedTrue (symbol? fname))
         _ (q/assumedTrue [(map? evaDefBlock) "the defBlock must be a map"])
         aliases (second (find evaDefBlock :aliases)) ;can be nil
-        _ (q/assumedNotNil [aliases "you must specify :aliases"])
+        _ (q/assumedTrue 
+            [(q/notnil? aliases) "you must specify :aliases"]
+            [(map? aliases) ":aliases must be a map"]
+            )
+        required (second (find evaDefBlock :required)) ;can be nil
+        _ (q/assumedTrue
+            [(or 
+               (nil? required)
+               (set? required)
+               )
+             ;it's non-mandatory, but if exists it must be a set!
+             "if specified, :required must be a set"
+             ]
+            )
+        optional (second (find evaDefBlock :optional)) ;can be nil
+        _ (q/assumedTrue
+            [(or
+               (nil? optional)
+               (map? optional)
+               )
+             "if specified, :optional must be a map"
+             ]
+            )
         ]
     ;(q/when-debug (clojure.pprint/pprint (list ":aliases=" aliases)))
     ;(q/when-debug (clojure.pprint/pprint (list "evaDefBlock=" evaDefBlock)))
@@ -252,6 +274,17 @@ firsta
 (q/deftest test_defxn1
   (q/isAssumptionFailed (eval '(defxn 1 2))) 
   (q/isAssumptionFailed (eval '(defxn ~'a 1)))
+  (q/isAssumptionFailed (eval '(defxn somename-12312973ryu2 {})))
+  ;TOOD: perhaps a better way to test for and throw assumption maybe like ex-info does
+  (q/isAssumptionFailed (eval '(defxn somename-12312973ryu2 {:aliases 1})))
+  (eval '(defxn somename-12312973ryu2 {:aliases {}}))
+  (q/isAssumptionFailed (eval '(defxn somename-12312973ryu2 {:aliases {} :optional 1})))
+  (eval '(defxn somename-12312973ryu2 {:aliases {} :optional {}}))
+  (q/isAssumptionFailed (eval '(defxn somename-12312973ryu2 {:aliases {} :optional {} :required {}})))
+  (eval '(defxn somename-12312973ryu2 {:aliases {} :optional {} :required #{}}))
+  (eval '(defxn somename-12312973ryu2 {:aliases {} :required #{}}))
+  (q/isAssumptionFailed (eval '(defxn somename-12312973ryu2 {:aliases 1 :optional {} :required #{}})))
+  (q/isAssumptionFailed (eval '(defxn somename-12312973ryu2 { :optional {} :required #{}})))
   ;XXX: all these happen at compiletime so we can't catch that, we can using eval - thanks Tim Reinke on the ML
   )
 ;)
@@ -294,9 +327,10 @@ firsta
 
 (def a 0)
 
-(defxn noes {:a 
+(defxn noes {:a
              ~(inc (+ 1 2)) ;this will resolve at compile time?
-             :b firsta 
+             :b firsta
+             :aliases {:a 1}
              :c (partial > 1) ;the function will resolve at the time defxn is called 
              :d a ;"a" has to be resolvable in current ns where defxn is called and it will point to the same a, thus will not be relative to *ns* once defxn executed
              :e ~(list partial > 1)
