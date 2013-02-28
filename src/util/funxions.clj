@@ -215,6 +215,7 @@ firsta
    :optional {:a 0 
               :b 0}
    :required #{:c :d :e}
+   :throwOnExtras true;if extra undefined in defBlock params are specified on call then throw
    
    ;supposedly i don't want to run invariants on the optional unspecified(at call) params
    ;because i plan not using those at all and I should have a function to check if that param was or not specified, can't just use a value ie. nil

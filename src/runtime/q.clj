@@ -765,6 +765,7 @@ if it's false(aka non-truthy) then it throws ex-info with the supplied map(ex-in
     )
   )
 
+
 (defmacro assumedPred
 "will throw when the first of the passed expressions evaluates to false or nil
 each expression can be just a form ie. (= 1 2) or a vector like this:
@@ -789,6 +790,26 @@ each expression can be just a form ie. (= 1 2) or a vector like this:
                     (vec 
                       (for [oneForm allPassedForms]
                         (do 
+                          (cond (not (map? oneForm))
+                            (throBadParams "non-map encountered `" oneForm "`")
+                            :else
+                            (let [;TODO: i need some kind of map processing
+                                  cnt (count oneForm)
+                                  _ (cond 
+                                      (> cnt 2)
+                                       (throBadParams "too many params specified in `" oneForm "`")
+                                      (< cnt 1)
+                                       (throBadParams "too few params specified in `" oneForm "` you must specify at least :expr")
+                                      )
+                                  expr (second (find oneForm :expr))
+                                  _ (cond (nil? expr)
+                                      (throBadParams "you didn't specify :expr key")
+                                      )
+                                  failmsg (second (find oneForm :failmsg))
+                                  _ (cond (nil? failmsg)
+                                      (throBadParams "you didn't specify :failmsg key")
+                                      )
+                                  ]
                           ;(println "oneFormOrig" oneForm)
                           (apply list `assumedPred1 pred 
                             (cond (not (vector? oneForm))
@@ -808,8 +829,8 @@ each expression can be just a form ie. (= 1 2) or a vector like this:
                                   oneForm)
                                 )
                               )
-                            )
-                          )
+                            ))
+                          ))
                         )
                       )
                     `whatAssumptionsReturnWhenTrue
