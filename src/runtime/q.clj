@@ -25,6 +25,7 @@
   (:require [backtick])
   (:require clojure.pprint)
   (:refer-clojure :exclude [sorted?])
+  (:import [clojure.lang ExceptionInfo])
   )
 ;FIXME: ccw, still getting this warning: WARNING: sorted? already refers to: #'clojure.core/sorted? in namespace: runtime.q, being replaced by: #'runtime.q/sorted?
 
@@ -676,9 +677,12 @@ got (re)loaded and/or compiled
 (defmacro assumedPred1
 "
 will throw if the passed expression does not satisfy predicate
-ie. if pred is true? and (true? x) is false or nil it will throw
+ie. if pred is true? and (true? x) is false it will throw
+so x will be tested against pred
+if it's false(aka non-truthy) then it throws ex-info with the supplied map(ex-info-map)
+ and some variant of fail msg
 "
-  [pred x & restOfFailMsg]
+  [pred x ex-info-map & restOfFailMsg]
   (assumptionBlock
     (let [failMsgIfAny 
           (when-not (empty? restOfFailMsg)
@@ -750,7 +754,7 @@ ie. if pred is true? and (true? x) is false or nil it will throw
                         )
                       "\n"
                       )
-                 {}
+                 ~ex-info-map
                  )
                )
              )
@@ -788,14 +792,21 @@ each expression can be just a form ie. (= 1 2) or a vector like this:
                           ;(println "oneFormOrig" oneForm)
                           (apply list `assumedPred1 pred 
                             (cond (not (vector? oneForm))
-                              (do
+                              #_(do
                                 ;(println "oneFormNowVec" (vector oneForm))
                                 (vector oneForm)
-                                )
-                              :else 
+                                );FIXME: we should make this a map not a map inside a vector
+                              (throBadParams "please pass the params inside a vector, the encountered form was: `" 
+                                oneForm "`")
+                              :else
                               (do
-                                ;(println "oneFormAlready" (vector oneForm))
-                                oneForm)
+                                (cond (< (count oneForm) 2)
+                                  (throBadParams "there must be at least 2 forms inside the vector: expr-to-test {:map-to-throw 'when-excepted}, you passed: `" 
+                                    oneForm "`")
+                                  :else
+                                  ;(println "oneFormAlready" (vector oneForm))
+                                  oneForm)
+                                )
                               )
                             )
                           )
@@ -820,10 +831,15 @@ to be used within a deftest
   )
 
 (deftest test_vecParams
-  (is (= true (assumedPred true? true [true] [true "msghere" " a" "b"])))
+  (is (= true (assumedPred true? [true {}] [true {} "msghere" " a" "b"])))
+  (q/isthrown? exceptionThrownWhenBadParams 
+    (eval '(is (= true (assumedPred true? true {})))))
+  (q/isthrown? exceptionThrownWhenBadParams
+    (eval '(is (= true (assumedPred true? true {} [true {}] [true {} "msghere" " a" "b"])))
+    ))
   ;TODO: make these tests better:
   (q/isAssumptionFailed 
-    (assumedPred true? false [true] [true "msghere" " a" "b"]))
+    (assumedPred true? [false {:a 1}] [true] [true "msghere" " a" "b"]))
   (q/isAssumptionFailed 
     (assumedPred true? true [false] [true "msghere" " a" "b"]))
   (q/isAssumptionFailed 
