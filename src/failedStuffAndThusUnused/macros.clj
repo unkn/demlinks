@@ -291,12 +291,15 @@ java.lang.RuntimeException
         ;_ (prn eex)
         ;_ (prn (class eex))
         ]
+    ;this will be reached before 'class?
+    ;(assert (set? (supers ex)) "oh rly");cause contains? doesn't work on ie. vector as you'd expect
      (cond
        
        ;if passed a class or symbol resolving to a class
        (and
          ;(instance? java.lang.Class eex)
          (class? eex)
+         ;(set? (supers eex));cause contains? doesn't work on ie. vector as you'd expect
          (contains? 
            (supers eex) 
            java.lang.Throwable

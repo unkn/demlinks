@@ -190,7 +190,9 @@ CompilerException java.lang.RuntimeException: Unable to resolve symbol: toUpperC
   java.lang.RuntimeException
   )
 
-(defn thro [ex & restt] 
+(defn thro [ex & restt]
+  ;would be reached before 'class? check
+  ;(assert (set? (supers ex)) "oh rly")
   (cond
     (and
       (class? ex)
@@ -663,6 +665,52 @@ got (re)loaded and/or compiled
     )
   )
 
+(defn assertExpectancyOnMap 
+  [inputMap 
+   {:keys [required optional ignore-extras]
+    :or {ignore-extras false} 
+    :as expectancyMap}
+   ]
+  (let [
+        _ (cond (not (map? inputMap))
+            (throBadParams "you didn't pass a map as input, you passed `" inputMap "`")
+            )
+        _ (cond (not (map? expectancyMap))
+            (throBadParams "you didn't pass a map as expectancyMap, you passed `" 
+              expectancyMap "`")
+            )
+;        _ (cond (nil? optional)
+;            (throBadParams ":optional is required")
+;            )
+        _ (cond (nil? required)
+            (throBadParams ":required is required :)")
+            )
+        _ (cond (not (empty? (clojure.set/intersection required optional)))
+            (throBadParams "you can't have the same element in both :required `" 
+              required "` and :optional `" optional "`")
+            )
+        _ (cond (not ignore-extras)
+            (let [extras (apply dissoc inputMap (clojure.set/union required optional))]
+              (cond (not (empty? extras))
+                (throBadParams "you passed extra parameters: "
+                  extras " and :ignore-extras was " 
+                  ignore-extras)
+                )
+              )
+            )
+        diff (clojure.set/difference required (set (keys inputMap)))
+        _ (cond (not (empty? diff))
+            (throBadParams "missing required keys: " diff)
+            )
+        ]
+    
+    inputMap
+    )
+  )
+
+(deftest test_expectancyTestOnMap;TODO:
+  (q/is (assertExpectancyOnMap {} {}))
+  )
 
 #_(defn someeval [& all]
   (map identity all)
@@ -790,29 +838,28 @@ each expression can be just a form ie. (= 1 2) or a vector like this:
                     (vec 
                       (for [oneForm allPassedForms]
                         (do 
-                          (cond (not (map? oneForm))
+                          (assertExpectancyOnMap oneForm 
+                            {:required #{:pred :expr}
+                             :optional #{:failmsg ;msg to show when failed 
+                                         :failobject ;object to return in ex-data when failed
+                                         }
+                             :ignore-extras false
+                             })
+                          (apply list `assumedPred1 pred oneForm)
+                          #_(cond (not (map? oneForm))
                             (throBadParams "non-map encountered `" oneForm "`")
                             :else
-                            (let [;TODO: i need some kind of map processing
-                                  cnt (count oneForm)
-                                  _ (cond 
-                                      (> cnt 2)
-                                       (throBadParams "too many params specified in `" oneForm "`")
-                                      (< cnt 1)
-                                       (throBadParams "too few params specified in `" oneForm "` you must specify at least :expr")
-                                      )
-                                  expr (second (find oneForm :expr))
-                                  _ (cond (nil? expr)
-                                      (throBadParams "you didn't specify :expr key")
-                                      )
-                                  failmsg (second (find oneForm :failmsg))
-                                  _ (cond (nil? failmsg)
-                                      (throBadParams "you didn't specify :failmsg key")
-                                      )
-                                  ]
-                          ;(println "oneFormOrig" oneForm)
-                          (apply list `assumedPred1 pred 
-                            (cond (not (vector? oneForm))
+                            (do
+                              (assertExpectancyOnMap oneForm 
+                                {:required #{:pred :expr}
+                                 :optional #{:failmsg ;msg to show when failed 
+                                             :failobject ;object to return in ex-data when failed
+                                             }
+                                 :ignore-extras false
+                                 })
+                              ;(println "oneFormOrig" oneForm)
+                          (apply list `assumedPred1 pred oneForm
+                            #_(cond (not (vector? oneForm))
                               #_(do
                                 ;(println "oneFormNowVec" (vector oneForm))
                                 (vector oneForm)
@@ -852,7 +899,14 @@ to be used within a deftest
   )
 
 (deftest test_vecParams
-  (is (= true (assumedPred true? [true {}] [true {} "msghere" " a" "b"])))
+  (is (= true (assumedPred 
+                {:pred true? :expr true} 
+                {:pred true? 
+                 :expr true
+                 :failmsg ["msghere" " a" "b"]}
+                )
+        )
+    )
   (q/isthrown? exceptionThrownWhenBadParams 
     (eval '(is (= true (assumedPred true? true {})))))
   (q/isthrown? exceptionThrownWhenBadParams
