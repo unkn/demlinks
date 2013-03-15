@@ -78,15 +78,15 @@ note2: you cannot use ~ within a ~ , the nested ones won't be evaluated/touched 
   (let [;XXX: you cannot move these inside the ` because of what defn expects therefore you cannot catch any thrown exceptions here and stuck to using eval
         readyforeval_fname (list 'backtick/template fname)
         evaluated_fname (eval readyforeval_fname) ;the fname after ~ are evaluated
-        ;fn_name 
+        ;fn_name
         _ (q/assumedTrue [
-                          (symbol? evaluated_fname) 
-                          "fname must be a symbol, you passed `" 
-                          fname 
-                          "` which resolved to `" 
-                          evaluated_fname 
-                          "` of type `" 
-                          (type evaluated_fname) 
+                          (symbol? evaluated_fname)
+                          "fname must be a symbol, you passed `"
+                          fname
+                          "` which resolved to `"
+                          evaluated_fname
+                          "` of type `"
+                          (type evaluated_fname)
                           "` . Maybe you want to use ~ to cause a resolve."]
             )
         
@@ -96,7 +96,7 @@ note2: you cannot use ~ within a ~ , the nested ones won't be evaluated/touched 
         ;_ (q/assumedTrue (symbol? fname))
         _ (q/assumedTrue [(map? evaDefBlock) "the defBlock must be a map"])
         aliases (second (find evaDefBlock :aliases)) ;can be nil
-        _ (q/assumedTrue 
+        _ (q/assumedTrue
             [(q/notnil? aliases) "you must specify :aliases"]
             [(map? aliases) ":aliases must be a map"]
             )
@@ -133,7 +133,7 @@ or no parameters at all.
        {:pre [(q/assumedTruthy [(let [f# (first allParamsInAMap#)
                                       s# (second allParamsInAMap#)
                                       ]
-                                  (or 
+                                  (or
                                     (nil? f#);means 0 params
                                     (and ;if the above isn't true we're here, so there is a first params
                                       (nil? s#);means 1 params at this point 
@@ -149,6 +149,7 @@ for function `" '~fname "` you passed `" allParamsInAMap# "`"])]}
              ~*fxn_defBlock_Aliases* '~aliases
              ;~'fxn_evalled ~e
              ]
+         ;TODO: working on this - currently incomplete
          ;(clojure.pprint/pprint (list ~'*fxn_defBlockRaw_symbol* ~*fxn_defBlockRaw_symbol*))
          ;(clojure.pprint/pprint (list ~'*fxn_defBlock_symbol* ~*fxn_defBlock_symbol*));symbol and its value
          ;(clojure.pprint/pprint  '~aliases)

@@ -7,7 +7,7 @@
             :comments "same as Clojure"
             }
   :dependencies [
-                 [org.clojure/clojure "1.5.0-RC17"]
+                 [org.clojure/clojure "1.5.0"]
                  [com.datomic/datomic-free "0.8.3803"] ;database
                  ;[midje "1.5-alpha7"];don't wanna use this because it compiles all .clj files even if it doesn't need to
                  [org.clojure/tools.trace "0.7.5"]
@@ -21,8 +21,9 @@
                  [hermes "0.2.6"]
                  [com.tinkerpop.blueprints/blueprints-core "2.2.0"]
                  [com.thinkaurelius.titan/titan "0.2.0"]
-                 [seesaw "1.4.3-SNAPSHOT"]
+                 [seesaw "1.4.3"]
                  [backtick "0.3.0-SNAPSHOT"] ;ie. (template {:a (+ 1 2) :b ~(+ 1 3)}) will eval only ~ parts
+                 [clj-ns-browser "1.3.1"]
                  ]
   
   ;; Emit warnings on all reflection calls.

@@ -665,10 +665,20 @@ got (re)loaded and/or compiled
     )
   )
 
-(defn assertExpectancyOnMap 
+(defn assertExpectancyOnMap
+"
+example call:
+(assertExpectancyOnMap inputMap
+  {:required #{:pred :expr}
+   :optional #{:failmsg 
+               :failobject
+              }
+  :ignore-extras false ;will throw when false and any non-optional and non-required are encountered
+  })
+"
   [inputMap 
    {:keys [required optional ignore-extras]
-    :or {ignore-extras false} 
+    :or {ignore-extras false}
     :as expectancyMap}
    ]
   (let [
@@ -693,7 +703,7 @@ got (re)loaded and/or compiled
             (let [extras (apply dissoc inputMap (clojure.set/union required optional))]
               (cond (not (empty? extras))
                 (throBadParams "you passed extra parameters: "
-                  extras " and :ignore-extras was " 
+                  extras " and :ignore-extras was "
                   ignore-extras)
                 )
               )
@@ -783,9 +793,9 @@ if it's false(aka non-truthy) then it throws ex-info with the supplied map(ex-in
                  
                  (str self# 
                    " failed, the following wasn't truthy: `(" 
-                      predQuote# 
+                      predQuote#
                       " "
-                      (pr-str form#) 
+                      (pr-str form#)
                       ")` was `("
                       predQuote#
                       " "
@@ -834,11 +844,12 @@ each expression can be just a form ie. (= 1 2) or a vector like this:
                      )
                 )
         :else ;thanks to gfredericks for inspiration of this now modified line:
-        (cons 'do (conj 
+        (cons ;return list
+          'do (conj 
                     (vec 
                       (for [oneForm allPassedForms]
                         (do 
-                          (assertExpectancyOnMap oneForm 
+                          (assertExpectancyOnMap oneForm
                             {:required #{:pred :expr}
                              :optional #{:failmsg ;msg to show when failed 
                                          :failobject ;object to return in ex-data when failed
