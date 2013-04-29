@@ -77,7 +77,7 @@
   ;; with using things like pomegranate at runtime and using Clojure 1.2.
   :bootclasspath false;false is needed here for JME3 specified in :resource-paths below; else it will fail with ClassNotFoundException com.jme3.app.SimpleApplication  java.net.URLClassLoader$1.run (URLClassLoader.java:366)
 
-  :resource-paths ["resources", "../jme3_engine/dist/lib/*"] ;needs eclipse project present: jme3_engine from trunk/engine ie. https://code.google.com/p/jmonkeyengine/source/browse/#svn%2Ftrunk%2Fengine
+  :resource-paths ["resources", "../jme3_engine/dist/lib/*"] ;needs eclipse project present: jme3_engine from trunk/engine ie. https://code.google.com/p/jmonkeyengine/source/browse/#svn%2Ftrunk%2Fengine  and make sure you ant build it once to create and populate dist/lib/ folder
     
   :plugins [
             ;[lein-midje "3.0-alpha3"];don't wanna use this because it compiles all .clj files even if it doesn't need to
