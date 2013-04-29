@@ -17,6 +17,11 @@
 			<attribute name="optional" value="true"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="src" path="/jme3_engine/dist/lib/*">
+		<attributes>
+			<attribute name="optional" value="true"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="lib" path="target/classes">
 		<attributes>
 			<attribute name="optional" value="true"/>

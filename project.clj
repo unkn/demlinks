@@ -7,7 +7,8 @@
             :comments "same as Clojure"
             }
   :dependencies [
-                 [org.clojure/clojure "1.5.0"]
+                 ;[org.clojure/clojure "1.5.1"]
+                 [org.clojure/clojure "1.6.0-master-SNAPSHOT"]
                  [com.datomic/datomic-free "0.8.3803"] ;database
                  ;[midje "1.5-alpha7"];don't wanna use this because it compiles all .clj files even if it doesn't need to
                  [org.clojure/tools.trace "0.7.5"]
@@ -24,6 +25,7 @@
                  [seesaw "1.4.3"]
                  [backtick "0.3.0-SNAPSHOT"] ;ie. (template {:a (+ 1 2) :b ~(+ 1 3)}) will eval only ~ parts
                  [clj-ns-browser "1.3.1"]
+                 [repetition-hunter "0.2.0"]
                  ]
   
   ;; Emit warnings on all reflection calls.
@@ -57,7 +59,7 @@
   
   ;;project JVM
   ;;wonder how this works on *nix boxes
-  :java-cmd "c:\\program files\\java\\jdk1.7.0_09\\bin\\java.exe"
+  :java-cmd "c:\\program files\\java\\jdk1.7.0_17\\bin\\java.exe"
   
   ;;required lein version
   :min-lein-version "2.0.0"
@@ -73,11 +75,14 @@
     
   ;; Enable bootclasspath optimization. This improves boot time but interferes
   ;; with using things like pomegranate at runtime and using Clojure 1.2.
-  :bootclasspath true
+  :bootclasspath false;false is needed here for JME3 specified in :resource-paths below; else it will fail with ClassNotFoundException com.jme3.app.SimpleApplication  java.net.URLClassLoader$1.run (URLClassLoader.java:366)
+
+  :resource-paths ["resources", "../jme3_engine/dist/lib/*"] ;needs eclipse project present: jme3_engine from trunk/engine ie. https://code.google.com/p/jmonkeyengine/source/browse/#svn%2Ftrunk%2Fengine
     
   :plugins [
             ;[lein-midje "3.0-alpha3"];don't wanna use this because it compiles all .clj files even if it doesn't need to
             ]
+  
   
   :repl-options [
                  :init (do (require 'clojure.repl) (println "here we are in" *ns*))

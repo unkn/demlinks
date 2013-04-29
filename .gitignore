@@ -16,3 +16,5 @@ pom.xml
 
 /.settings/ccw.repl.cmdhistory.prefs
 /.lein-repl-history
+/lwjgl64.dll
+/OpenAL64.dll
