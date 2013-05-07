@@ -6,6 +6,10 @@
             :distribution :repo
             :comments "same as Clojure"
             }
+  
+  :profiles {:dev {:dependencies [[alembic "0.1.0"]]}}
+  
+  
   :dependencies [
                  ;[org.clojure/clojure "1.5.1"]
                  [org.clojure/clojure "1.6.0-master-SNAPSHOT"]

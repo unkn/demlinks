@@ -1,6 +1,6 @@
 # DeMLinkS
 
-A Clojure library designed to ... 
+A Clojure library designed to ... be broken and not even compile :) 
 
 ## Usage
 
