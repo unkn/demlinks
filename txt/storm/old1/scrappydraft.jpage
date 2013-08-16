@@ -1,5 +1,0 @@
-Environment env = new Environment();
-Node node=new Node(env);
-node.getClass().getSimpleName()
-int size = 200;
-size >> 1

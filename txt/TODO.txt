@@ -1,8 +1,8 @@
 TODO:
 
-* must make a clojure editor (in jme3/3d or quil/2d) 'cause eclipse+ccw is not good enough, tho obviously what I wanna do here with demlinks will serve as editor anyway.
+* must make a code/text editor (in 2D/3D in Go) tho obviously what I wanna do here with demlinks will serve as editor anyway.
 
-* integrate something like quil or jme3 with datomic and clojure (preferably jme3 or 3D something)
+* integrate something 2D/3D with a key/value like database
 
   possibly start with 2D ? then evolve to 3D?
   but just in case something fails with 3D it should fall back to 2D and if something fails with 2D should fall 
@@ -18,7 +18,7 @@ TODO:
    such that if any of the latter upgrades fail, it would fall back to previous.(I remember I couldn't do it in java)
    
   
-* using datomic eventually, but maybe it's not a bad idea to use some text-base database, such that maybe we can use it
+* using datomic eventually, but maybe it's not a bad idea to use some text-based database, such that maybe we can use it
 to store lists such as this TODO list, so they're easily uploadable on github as opposed to being in a different place, for 
 example, I'd use trello for this, but it's in a different place than github (even tho there is some automation that can be
 done between the two). So maybe start small(er) and have something simple like in swing lists and moving things around and
@@ -34,9 +34,4 @@ implementation.
 * whenever is worth it, try using travis http://travis-ci.org/ to automate building demlinks
 	check this: https://travis-ci.org/technomancy/leiningen
 	
-	
-* investigate how to use this idea of watchers on refs in clojure to be able to do something like dependencies early on
-
-* check out this Date and defmethod thing here: http://briancarper.net/blog/456/
-
 

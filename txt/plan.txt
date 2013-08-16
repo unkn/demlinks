@@ -1,3 +1,5 @@
+TODO: recheck these, could be obsolete with Go, 16 aug 2013
+
 Crap that has to be done
 
 Node

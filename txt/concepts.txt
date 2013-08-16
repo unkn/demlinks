@@ -1,3 +1,4 @@
 
 https://en.wikipedia.org/wiki/Abstraction_principle_%28computer_programming%29
 https://en.wikipedia.org/wiki/Fail-fast
+https://en.wikipedia.org/wiki/Don%27t_repeat_yourself
