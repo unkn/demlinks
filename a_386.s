@@ -1,10 +1,9 @@
-//TODO: unsure if any changes are required here for the x86 version, this is what works on x64
 
 //this code is from here: https://groups.google.com/d/msg/golang-nuts/q01oIascmiU/wuoqrF_TOqgJ
 //thanks to Jonathan Barnard
 
 TEXT ·FlipByte(SB),7,$0
-		MOVQ	addr+0(FP), BP // This gets the address of the byte pointed to. 
+		MOVL	addr+0(FP), BP // This gets the address of the byte pointed to. 
     MOVL	0(BP), DX // This stores the byte in DX 
     MOVL	$8, CX // Use the CX register as a loop counter 
     XORL	AX, AX // Clear the AX register, to store the result in
