@@ -3,11 +3,18 @@ package demlinks
 import "fmt"
 import "testing"
 
-func Test_reverseByte_LookupTable(*testing.T) {
-	println("all numbers from 0 to 255 whose reverse is equal to itself:")
+func Test_reverseByte_LookupTable(t *testing.T) {
+	fmt.Println("all numbers from 0 to 255 whose reverse is equal to itself:")
+	b := new(byte)
 	for i, ri := range reverse {
 		if i == ri {
-			fmt.Println(i, ri, reverse[i])
+			*b = byte(i)
+			FlipByte(b)
+			fmt.Println(i, ri, reverse[i], *b)
+			if (i != ri) || (ri != reverse[i]) || (byte(i) != *b) {
+				t.Error("they weren't all the same")
+				return
+			}
 		}
 	}
 }
