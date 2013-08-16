@@ -9,6 +9,4 @@ FIXME
 ## License
 
 Copyright © 2005-2013 AtKaaZ
-
-Distributed under the Eclipse Public License,
-http://www.eclipse.org/legal/epl-v10.html
+licensed under The MIT License (MIT) see license.txt file
