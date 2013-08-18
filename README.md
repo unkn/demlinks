@@ -2,6 +2,10 @@
 
 it's ...something... work in progress ... for over 8 years now... it might get somewhere eventually :)
 
+## Me Learning Go
+
+in the "poc" folder (aka proof of concept)
+
 ## Usage
 
 FIXME

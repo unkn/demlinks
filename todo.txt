@@ -1,0 +1,11 @@
+test what happens if the defered function also panics
+
+
+add this: code.google.com/p/go/issues/detail?id=5790
+package main
+
+func main() {
+	i := 0
+	_ = 1 / i
+}
+

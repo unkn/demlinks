@@ -1,3 +1,5 @@
+//run with: go test
+
 package demlinks
 
 import "fmt"
@@ -27,7 +29,7 @@ func Test_reverseByte_func(*testing.T) {
 	}
 }
 
-//inspired from: http://play.golang.org/p/0EDi2vDnLv
+//inspired from: https://groups.google.com/d/msg/golang-nuts/q01oIascmiU/3z1G8Kdo9DsJ
 func reversef(x byte) byte {
 	x = (x&0x55)<<1 | (x&0xAA)>>1
 	x = (x&0x33)<<2 | (x&0xCC)>>2
@@ -35,7 +37,7 @@ func reversef(x byte) byte {
 	return x
 }
 
-//inspired from: http://play.golang.org/p/sDh5jQ83jY
+//inspired from: https://groups.google.com/d/msg/golang-nuts/q01oIascmiU/XOKX_hKqSNAJ
 var reverse = [256]int{
 	0, 128, 64, 192, 32, 160, 96, 224,
 	16, 144, 80, 208, 48, 176, 112, 240,
