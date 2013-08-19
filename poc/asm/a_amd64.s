@@ -2,6 +2,8 @@
 //this code is from here: https://groups.google.com/d/msg/golang-nuts/q01oIascmiU/wuoqrF_TOqgJ
 //thanks to Jonathan Barnard
 
+//also more info here: http://golang.org/src/cmd/vet/asmdecl.go?h=assembly
+
 TEXT ·FlipByte(SB),7,$0
     MOVQ	addr+0(FP), BP // This gets the address of the byte pointed to. 
     MOVL	0(BP), DX // This stores the byte in DX 
