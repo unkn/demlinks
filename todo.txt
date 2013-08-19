@@ -9,3 +9,6 @@ func main() {
 	_ = 1 / i
 }
 
+
+add this: http://golang.org/doc/faq#nil_error
+
