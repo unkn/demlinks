@@ -1,4 +1,5 @@
 // LookPath on Windows doesn't work as it should, issue created: http://code.google.com/p/go/issues/detail?id=6224
+//go run lp.go
 
 package main
 
