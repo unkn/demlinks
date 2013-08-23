@@ -54,7 +54,7 @@ can include line breaks.` // same string type
 	// non-ASCII literal.  Go source is UTF-8.
 	g := 'Σ' // rune type, an alias for uint32, holds a UTF-8 code point
 
-	f := 3.14195 // float64, an IEEE-754 64-bit floating point number
+	f := 3.14159 // float64, an IEEE-754 64-bit floating point number
 	c := 3 + 4i  // complex128, represented internally with two float64s
 
 	// Var syntax with an initializers.
@@ -71,9 +71,10 @@ can include line breaks.` // same string type
 	// Slices have dynamic size.  Arrays and slices each have advantages
 	// but use cases for slices are much more common.
 	s3 := []int{4, 5, 9}    // compare to a3.  no ellipsis here
-	s4 := make([]int, 4)    // allocates slice of 4 ints, initialized to all 0
+	s4 := make([]int, 4)    // allocates slice of 4 ints, initialized all to 0
 	var d2 [][]float64      // declaration only, nothing allocated here
-	bs := []byte("a slice") // type conversion syntax
+	bs := []byte("a slicΣ") // type conversion syntax
+	println(string(bs))
 
 	p, q := learnMemory() // declares p, q to be type pointer to int.
 	fmt.Println(*p, *q)   // * follows a pointer.  This prints two ints.
