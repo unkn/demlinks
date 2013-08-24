@@ -31,15 +31,20 @@ func main() {
 
 	//quitroutine := make(chan bool, 1)
 
-	ch := make(chan int, 1)
+	ch := make(chan int) //, 1)
 	go func() {
+		defer println("done goroutine")
 		for {
-			ch <- some()
+			select {
+			case ch <- some():
+				println("sent!") //sent what?
+			default:
+				println(",")
+			}
 			if quitroutine {
 				break
 			}
 		}
-		println("done goroutine")
 	}()
 
 F:
