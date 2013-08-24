@@ -12,3 +12,7 @@ func main() {
 
 add this: http://golang.org/doc/faq#nil_error
 
+investigate why: constant 0.2 truncated to integer
+in: time.Sleep(0.2 * time.Second)
+
+
