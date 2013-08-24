@@ -6,6 +6,7 @@ package main
 import "time"
 
 var closed bool = false
+var quitroutine = false
 
 //this is blocking, so goal is: need a way to quit it...
 func some() int {
@@ -28,12 +29,17 @@ func main() {
 		timeout <- true
 	}()
 
-	ch := make(chan int) //, 1)
+	//quitroutine := make(chan bool, 1)
+
+	ch := make(chan int, 1)
 	go func() {
 		for {
 			ch <- some()
-			println("done goroutine")
+			if quitroutine {
+				break
+			}
 		}
+		println("done goroutine")
 	}()
 
 F:
@@ -45,6 +51,7 @@ F:
 		case <-timeout:
 			// the read from ch has timed out
 			println("timeout")
+			quitroutine = true
 			break F
 		}
 	}
@@ -54,6 +61,9 @@ F:
 	closed = true
 	//go routine is still alive because it's blocked on ch send, unless ch has buffer 1
 	//run it with: go run -race a.go
+	println("waiting 5 sec before next step towards exit")
+	time.Sleep(5 * time.Second)
+
 	println("waiting 5 sec before exit")
-	time.Sleep(10 * time.Second)
+	time.Sleep(5 * time.Second)
 }
