@@ -50,6 +50,8 @@ func TestLookPath1(t *testing.T) {
 		"",
 	}
 
+	//should the entire test fail ie. FailNow() when one of them fails? hmm, maybe it's best that way
+
 	if err := myt.testFor(file, dir+file, paths); err != nil {
 		myt.Error(err)
 	} else {
