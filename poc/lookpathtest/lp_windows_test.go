@@ -11,7 +11,8 @@ import (
 )
 
 const PATHvar = "PATH"
-const PATH_separator = os.PathListSeparator
+const PATH_separator = string(os.PathListSeparator)
+const folders_separator = string(os.PathSeparator)
 const PATHEXT_separator = ";"
 const PATHEXTvar = "PATHEXT"
 const comspecvar = "COMSPEC"
@@ -21,24 +22,25 @@ func TestLookPath1(t *testing.T) {
 	//var myt TMine = TMine(*t)
 	myt := (*TMine)(t)
 
-	tmp, err := ioutil.TempDir("", "testWindowsLookPathTests")
-	if err != nil {
-		t.Fatalf("TempDir failed: %v", err)
+	tmp, err1 := ioutil.TempDir("", "testWindowsLookPathTests")
+	if err1 != nil {
+		myt.Fatalf("TempDir failed: %v", err1)
 	}
 	defer os.RemoveAll(tmp)
 
 	// myt.setEnv("COMSpec", "cmd.exe")
 	comspec := os.Getenv(comspecvar)
 	if comspec == "" {
-		t.Fatalf("%s must be set", comspecvar)
+		myt.Fatalf("%s must be set", comspecvar)
 	}
 
 	dir, file := filepath.Split(comspec)
 	// println(file)
 	if dir == "" {
-		t.Fatalf("Expected to have a path in %%%s%% 's value: `%s`", comspecvar, comspec)
+		myt.Fatalf("Expected to have a path in %%%s%% 's value: `%s`", comspecvar, comspec)
 	}
 
+	//TODO: paths in PATH with ending and without ending "\\"
 	//TODO: make one char be lowercase or uppercase in the file to look for
 	paths := []string{
 		dir,
@@ -48,7 +50,12 @@ func TestLookPath1(t *testing.T) {
 		"",
 	}
 
-	t.testFor(file, dir+file, paths)
+	if err := myt.testFor(file, dir+file, paths); err != nil {
+		myt.Error(err)
+	} else {
+		balddir := strings.TrimSuffix(dir, folders_separator)
+		myt.testFor(file, balddir+file, paths)
+	}
 
 }
 
@@ -66,18 +73,29 @@ type TMine testing.T
 	}
 }*/
 
-func (t *TMine) testFor(lookfor, expected string, paths []string) {
-	accval := ""
-	for _, val := range paths {
-		t.testWithPATH(val, lookfor, expected)
-		if !testing.Short() {
-			accval += PATH_separator + val
-			t.testWithPATH(accval, lookfor, expected)
-		}
-	}
+func (t *TMine) MyErrorf(format string, args ...interface{}) []interface{} {
+	t.Errorf(format, args...)
+	return args
 }
 
-func (t *TMine) testWithPATH(path, lookfor, expected string) {
+func (t *TMine) testFor(lookfor, expected string, paths []string) []interface{} {
+	accval := ""
+	for _, val := range paths {
+		if err := t.testWithPATH(val, lookfor, expected); err != nil {
+			return err
+		}
+		if !testing.Short() {
+			accval += PATH_separator + val
+			if err := t.testWithPATH(accval, lookfor, expected); err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
+}
+
+func (t *TMine) testWithPATH(path, lookfor, expected string) []interface{} {
 	t.setEnv(PATHvar, path)
 
 	pathexts := []string{
@@ -89,53 +107,58 @@ func (t *TMine) testWithPATH(path, lookfor, expected string) {
 
 	accval := ""
 	for _, val := range pathexts {
-		t.testWithPATHEXT(val, lookfor, expected)
-		if !t.Short() {
+		if err := t.testWithPATHEXT(val, lookfor, expected); err != nil {
+			return err
+		}
+		if !testing.Short() {
 			accval += PATHEXT_separator + val
-			t.testWithPATHEXT(accval, lookfor, expected)
+			if err := t.testWithPATHEXT(accval, lookfor, expected); err != nil {
+				return err
+			}
 		}
 	}
+
+	return nil
 }
 
-func (t *TMine) testWithPATHEXT(pathext, lookfor, expected string) {
+func (t *TMine) testWithPATHEXT(pathext, lookfor, expected string) []interface{} {
 	t.setEnv(PATHEXTvar, pathext)
-	t.expectFind(lookfor, expected)
+	return t.expectFind(lookfor, expected)
 }
 
-func (t *TMine) expectFind(lookfor, expected string) {
+func (t *TMine) expectFind(lookfor, expected string) []interface{} {
 	found, err := exec.LookPath(lookfor)
 	if err != nil {
-		t.Errorf("Failed to find `%s`, expected to find it as `%s` but got an error instead: `%s`", lookfor, expected, err)
-		return
+		return t.MyErrorf("Failed to find `%s`, expected to find it as `%s` but got an error instead: `%s`", lookfor, expected, err)
 	}
 
-	if (found != expected) && (strings.ToUpper(found) != strings.ToUpper(expected)) {
-		t.Errorf("Failed to find `%s`, expected to find it as `%s` but got `%s` instead.", lookfor, expected, found)
-		return
+	found = strings.ToUpper(found)
+	expected = strings.ToUpper(expected)
+	if found != expected { // && ( != strings.ToUpper(expected)) {
+		return t.MyErrorf("Failed to find `%s`, expected to find it as `%s` but got `%s` instead.", lookfor, expected, found)
 	}
 
-	t.ensureExitsAsFile(found)
+	return t.ensureExitsAsFile(found)
 }
 
 //as file or symlink to file, even if symlink is broken
-func (t *TMine) ensureExitsAsFile(fname string) {
+func (t *TMine) ensureExitsAsFile(fname string) []interface{} {
 	finfo, err := os.Stat(fname)
 	if err != nil {
-		t.Errorf("Expected `%s` to exist, error: `%s`", fname, err)
-		return
+		return t.MyErrorf("Expected `%s` to exist, error: `%s`", fname, err)
 	}
 	if !finfo.IsDir() {
 		//could be symlink file
 		//TODO: test if searched file is symlinkd or symlinkfile or dir or normal file, also readonly file, sysfile, hidden file + dirs
 		//also when symlinkfile is broken (points to nothing)
-		return
+		return nil
 	}
-	t.Errorf("Expected `%s` to exist as a file, but it's got unexpected mode `%s`", fname, finfo.Mode())
+	return t.MyErrorf("Expected `%s` to exist as a file, but it's got unexpected mode `%s`", fname, finfo.Mode())
 }
 
 func (t *TMine) setEnv(key, value string) {
 	if err := os.Setenv(key, value); err != nil {
-		t.Fatalf(err)
+		t.Fatal(err)
 	}
 
 	if now_val := os.Getenv(key); value != now_val {
