@@ -26,7 +26,10 @@ func TestLookPath1(t *testing.T) {
 	if err1 != nil {
 		myt.Fatalf("TempDir failed: %v", err1)
 	}
-	defer os.RemoveAll(tmp)
+	//TODO: defer os.RemoveAll(tmp)
+
+	//going to try LookPath for comspec var first, this is probably not needed and we can do away with just the tmp dir part
+	//but just wanted to have one real thing
 
 	// myt.setEnv("COMSpec", "cmd.exe")
 	comspec := os.Getenv(comspecvar)
@@ -40,8 +43,8 @@ func TestLookPath1(t *testing.T) {
 		myt.Fatalf("Expected to have a path in %%%s%% 's value: `%s`", comspecvar, comspec)
 	}
 
-	//TODO: paths in PATH with ending and without ending "\\"
-	//TODO: make one char be lowercase or uppercase in the file to look for
+	//TODO: paths in PATH with & without suffix of "\\"
+	//TODO: make one char be lowercase or uppercase in the file to look for, and also in PATH env var
 	paths := []string{
 		dir,
 		os.Getenv(PATHvar),
@@ -50,7 +53,8 @@ func TestLookPath1(t *testing.T) {
 		"",
 	}
 
-	//should the entire test fail ie. FailNow() when one of them fails? hmm, maybe it's best that way
+	//TODO: should the entire test fail ie. FailNow() when one of them fails? hmm, maybe it's best that way
+	//because otherwise there will be too many errors reported anyway
 
 	if err := myt.testFor(file, dir+file, paths); err != nil {
 		myt.Error(err)
@@ -59,6 +63,36 @@ func TestLookPath1(t *testing.T) {
 		myt.testFor(file, balddir+file, paths)
 	}
 
+	//C:\folder1\folder2\file
+	//C:\folder1\folder2\file.
+	//C:\folder1\folder2\file.ext
+	//C:\folder1\folder2\file.extension
+	//C:\folder1\folder2\file.multi.dot.extension
+	//C:\folder1\folder2\file.multi.dot.ext
+	//C:\folder1\folder2\file.multi.dot.
+	//replace dot with from "" until "dotext"
+	//replace ext with from "" until "extension"
+	//replace file with from "" until "fileover8chars"
+	//also use spaces for each step in the above ie. for dot(above^) ""," ", "d", "d "," d"," d ", "do", " do","do ", " do " etc...
+	//if testing.Short() then don't iterate that many variants
+	//replace folder1 or 2 with same concept as for ext/dot/file
+	//also do uppercase variants, maybe just all upper, all lower, and one char upper and rest lower (and reverse of this)
+
+	//TODO: try to make a bunch of 0 bytes files in tmp folder that we got, and dirs + symlinks / combinations
+	//and then do try those as if they were to be found by LookPath, obvious set the PATH to point to tmp folder
+
+	//TODO: use no ext tmp folder, and then an ext one, and then combine with ones with spaces in name and then in ext
+	//TODO: and then try multiple dots in the name
+
+	f, err := ioutil.TempFile(tmp, "prefix")
+	if err != nil {
+		myt.Fatalf("unable to create a temp file in temp folder `%s`, error: `%s`", tmp, err)
+	}
+	println(f.Name())
+	//filepath.Join(tmp,f.Name())
+	//os.Symlink(tmp+, newname)
+
+	//TODO: must check if os.Symlink is really not implemented on Windows, if it's not then try to implement it prior to this
 }
 
 //adding extra "methods" to testing.T to avoid having to pass it as an arg
