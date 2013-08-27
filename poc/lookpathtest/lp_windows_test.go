@@ -2,6 +2,7 @@ package exec_test
 
 import (
 	"container/list"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"os/exec"
@@ -27,7 +28,9 @@ func TestLookPath1(t *testing.T) {
 		myt.Quitf("TempDir failed: %v", err1)
 	} else {
 		//TODO: see why this folder doesn't get removed when tests pass, but only when they fail https://groups.google.com/forum/#!topic/golang-nuts/lpg45Bjj5HI
-		defer os.RemoveAll(tmp)
+		defer func() {
+			fmt.Println(os.RemoveAll(tmp))
+		}()
 	}
 
 	//going to try LookPath for comspec var first, this is probably not needed and we can do away with just the tmp dir part
@@ -65,7 +68,7 @@ func TestLookPath1(t *testing.T) {
 	//because otherwise there will be too many errors reported anyway
 
 	//println(dir, filepath.Join(dir, file))
-	myt.testFor(file, filepath.Join(dir, file), paths)
+	//myt.testFor(file, filepath.Join(dir, file), paths)
 	_, _ = file, paths
 
 	//myt.testFor(file, filepath.Join(balddir, file), paths)
@@ -95,13 +98,15 @@ func TestLookPath1(t *testing.T) {
 	//TODO: use no ext tmp folder, and then an ext one, and then combine with ones with spaces in name and then in ext
 	//TODO: and then try multiple dots in the name
 
-	f, err := ioutil.TempFile(tmp, "prefix")
-	if err != nil {
+	var f1 *os.File
+	if f, err := ioutil.TempFile(tmp, "prefix"); err != nil {
 		myt.Quitf("unable to create a temp file in temp folder `%s`, error: `%s`", tmp, err)
-		// } else {
+	} else {
+		defer f.Close() //yep still need to close this before deleting my temp folder
+		f1 = f
 		// defer os.Remove(f) //no need
 	}
-	println(f.Name())
+	println(f1.Name())
 	//filepath.Join(tmp,f.Name())
 	//os.Symlink(tmp+, newname)
 
