@@ -26,6 +26,7 @@ func TestLookPath1(t *testing.T) {
 	if err1 != nil {
 		myt.Quitf("TempDir failed: %v", err1)
 	} else {
+		//TODO: see why this folder doesn't get removed when tests pass, but only when they fail https://groups.google.com/forum/#!topic/golang-nuts/lpg45Bjj5HI
 		defer os.RemoveAll(tmp)
 	}
 
@@ -48,6 +49,7 @@ func TestLookPath1(t *testing.T) {
 	//TODO: make one char be lowercase or uppercase in the file to look for, and also in PATH env var
 
 	balddir := strings.TrimSuffix(dir, folders_separator)
+	// paths := MyCollection.New(
 	paths := []string{
 		balddir,
 		dir,
@@ -55,6 +57,7 @@ func TestLookPath1(t *testing.T) {
 		tmp,
 		".",
 		"",
+		// )
 	}
 
 	//myt.ensureExitsAsFile(tmp)
@@ -63,6 +66,7 @@ func TestLookPath1(t *testing.T) {
 
 	//println(dir, filepath.Join(dir, file))
 	myt.testFor(file, filepath.Join(dir, file), paths)
+	_, _ = file, paths
 
 	//myt.testFor(file, filepath.Join(balddir, file), paths)
 
@@ -105,24 +109,30 @@ func TestLookPath1(t *testing.T) {
 
 }
 
-type MyCollection list.List
-
-//XXX: wicked https://groups.google.com/d/msg/golang-nuts/RA9be0XNvGc/kS8nD5hlAeYJ
-func (t *MyCollection) GetACopy() *MyCollection {
-	a := (*MyCollection)(list.New())
-	//a.Init()
-	b := list.New()
-	b.PushBackList(list.New())      //works
-	b.PushBackList((*list.List)(t)) //works
-	t.PushBackList(b)               //doesn't work
-	a.PushBackList((*list.List)(t)) //doesn't work
-	return a
+type MyCollection struct {
+	*list.List
 }
 
-func (t MyCollection) GetNewWithMovedToFront(newfront string) {
-	a := GetACopy(t)
-	e := Element(newfront)
-	a.MoveToFront(&e)
+// func NewCol(args ...[]interface{}) {
+// 	for _, i := range args {
+
+// 	}
+// }
+
+//TODO: remove this line://something I didn't know: https://groups.google.com/d/msg/golang-nuts/RA9be0XNvGc/kS8nD5hlAeYJ
+func (t *MyCollection) GetACopy() *MyCollection {
+	a := list.New()
+	a.PushBackList(t.List)
+	b := new(MyCollection)
+	b.List = a
+	return b
+}
+
+func (t *MyCollection) GetNewWithMovedToFront(newfront string) *MyCollection {
+	a := t.GetACopy()
+	e := new(list.Element)
+	e.Value = newfront
+	a.MoveToFront(e)
 	return a
 }
 
