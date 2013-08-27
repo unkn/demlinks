@@ -1,7 +1,7 @@
 package exec_test
 
 import (
-	// "fmt"
+	"container/list"
 	"io/ioutil"
 	"os"
 	"os/exec"
@@ -18,15 +18,16 @@ const PATHEXTvar = "PATHEXT"
 const comspecvar = "COMSPEC"
 
 func TestLookPath1(t *testing.T) {
-	println("testing...")
+	println("testing...") //TODO: remove this line when all done
 	//var myt TMine = TMine(*t)
 	myt := (*TMine)(t)
 
 	tmp, err1 := ioutil.TempDir("", "testWindowsLookPathTests")
 	if err1 != nil {
 		myt.Quitf("TempDir failed: %v", err1)
+	} else {
+		defer os.RemoveAll(tmp)
 	}
-	//TODO: defer os.RemoveAll(tmp)
 
 	//going to try LookPath for comspec var first, this is probably not needed and we can do away with just the tmp dir part
 	//but just wanted to have one real thing
@@ -45,7 +46,10 @@ func TestLookPath1(t *testing.T) {
 
 	//TODO: paths in PATH with & without suffix of "\\"
 	//TODO: make one char be lowercase or uppercase in the file to look for, and also in PATH env var
+
+	balddir := strings.TrimSuffix(dir, folders_separator)
 	paths := []string{
+		balddir,
 		dir,
 		os.Getenv(PATHvar),
 		tmp,
@@ -57,9 +61,10 @@ func TestLookPath1(t *testing.T) {
 	//done: should the entire test fail ie. FailNow() when one of them fails? hmm, maybe it's best that way
 	//because otherwise there will be too many errors reported anyway
 
-	myt.testFor(file, dir+file, paths)
-	balddir := strings.TrimSuffix(dir, folders_separator)
-	myt.testFor(file, balddir+file, paths)
+	//println(dir, filepath.Join(dir, file))
+	myt.testFor(file, filepath.Join(dir, file), paths)
+
+	//myt.testFor(file, filepath.Join(balddir, file), paths)
 
 	//C:\folder1\folder2\file
 	//C:\folder1\folder2\file.
@@ -89,6 +94,8 @@ func TestLookPath1(t *testing.T) {
 	f, err := ioutil.TempFile(tmp, "prefix")
 	if err != nil {
 		myt.Quitf("unable to create a temp file in temp folder `%s`, error: `%s`", tmp, err)
+		// } else {
+		// defer os.Remove(f) //no need
 	}
 	println(f.Name())
 	//filepath.Join(tmp,f.Name())
@@ -96,6 +103,27 @@ func TestLookPath1(t *testing.T) {
 
 	//TODO: must check if os.Symlink is really not implemented on Windows, if it's not then try to implement it prior to this
 
+}
+
+type MyCollection list.List
+
+//XXX: wicked https://groups.google.com/d/msg/golang-nuts/RA9be0XNvGc/kS8nD5hlAeYJ
+func (t *MyCollection) GetACopy() *MyCollection {
+	a := (*MyCollection)(list.New())
+	//a.Init()
+	b := list.New()
+	b.PushBackList(list.New())      //works
+	b.PushBackList((*list.List)(t)) //works
+	t.PushBackList(b)               //doesn't work
+	a.PushBackList((*list.List)(t)) //doesn't work
+	return a
+}
+
+func (t MyCollection) GetNewWithMovedToFront(newfront string) {
+	a := GetACopy(t)
+	e := Element(newfront)
+	a.MoveToFront(&e)
+	return a
 }
 
 //adding extra "methods" to testing.T to avoid having to pass it as an arg
