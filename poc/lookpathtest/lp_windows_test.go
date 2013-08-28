@@ -79,7 +79,6 @@ func TestLookPath1(t *testing.T) {
 		tmp,
 		".",
 		"",
-		// )
 	})
 	_, _ = file, paths
 
@@ -88,7 +87,6 @@ func TestLookPath1(t *testing.T) {
 		tmp,
 		".",
 		"",
-		// )
 	})
 
 	//C:\folder1\folder2\file
