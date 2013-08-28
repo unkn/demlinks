@@ -2,13 +2,15 @@ package exec_test
 
 import (
 	"container/list"
-	"fmt"
+	"errors"
+	// "fmt"
 	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
 	"testing"
+	"time"
 )
 
 const PATHvar = "PATH"
@@ -27,9 +29,12 @@ func TestLookPath1(t *testing.T) {
 	if err1 != nil {
 		myt.Quitf("TempDir failed: %v", err1)
 	} else {
-		//TODO: see why this folder doesn't get removed when tests pass, but only when they fail https://groups.google.com/forum/#!topic/golang-nuts/lpg45Bjj5HI
 		defer func() {
-			fmt.Println(os.RemoveAll(tmp))
+			//seen(kinda): see why this folder doesn't get removed when tests pass, but only when they fail https://groups.google.com/forum/#!topic/golang-nuts/lpg45Bjj5HI
+			//workaround for issue: http://code.google.com/p/go/issues/detail?id=6266
+			for err := errors.New("impossibiru"); err != nil; err = os.RemoveAll(tmp) {
+				time.Sleep(100 * time.Millisecond)
+			}
 		}()
 	}
 
@@ -68,10 +73,23 @@ func TestLookPath1(t *testing.T) {
 	//because otherwise there will be too many errors reported anyway
 
 	//println(dir, filepath.Join(dir, file))
-	//myt.testFor(file, filepath.Join(dir, file), paths)
+	myt.testFor(file, filepath.Join(dir, file), []string{
+		balddir,
+		dir,
+		tmp,
+		".",
+		"",
+		// )
+	})
 	_, _ = file, paths
 
-	//myt.testFor(file, filepath.Join(balddir, file), paths)
+	myt.testFor(file, filepath.Join(balddir, file), []string{
+		dir,
+		tmp,
+		".",
+		"",
+		// )
+	})
 
 	//C:\folder1\folder2\file
 	//C:\folder1\folder2\file.
