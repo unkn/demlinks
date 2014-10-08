@@ -1,0 +1,60 @@
+> I think, we need to allow for ANY extension.
+
+from my tests, windows only works if the extension is specified but is not empty
+so in this case ANY extension should be any non-empty extension string
+
+here's an example: both files "l" and "l.1" exist there, but only "l.1" (where "1" is the non-empty extension, as opposed the "" empty extension for the "l" file) will be picked up by windows
+
+PATHEXT=.BAT
+
+Mon 08/26/2013 19:11:24.26 C:\Users\user>"s:\Documents\!screenshots\l"
+'"s:\Documents\!screenshots\l"' is not recognized as an internal or external command,
+operable program or batch file.
+
+Mon 08/26/2013 19:11:27.33 C:\Users\user>"s:\Documents\!screenshots\l."
+'"s:\Documents\!screenshots\l."' is not recognized as an internal or external command,
+operable program or batch file.
+
+Mon 08/26/2013 19:11:34.03 C:\Users\user>"s:\Documents\!screenshots\l.1"
+
+Mon 08/26/2013 19:11:37.16 C:\Users\user>PATH=s:\Documents\!screenshots\
+
+Mon 08/26/2013 19:12:02.26 C:\Users\user>l
+'l' is not recognized as an internal or external command,
+operable program or batch file.
+
+Mon 08/26/2013 19:12:03.80 C:\Users\user>l.
+'l.' is not recognized as an internal or external command,
+operable program or batch file.
+
+Mon 08/26/2013 19:12:05.01 C:\Users\user>l.1
+
+Mon 08/26/2013 19:12:06.33 C:\Users\user>
+
+
+but, in case PATHEXT=.
+
+Mon 08/26/2013 19:15:10.13 C:\Users\user>set PATHEXT=.
+
+Mon 08/26/2013 19:15:12.05 C:\Users\user>"s:\Documents\!screenshots\l."
+'"s:\Documents\!screenshots\l."' is not recognized as an internal or external command,
+operable program or batch file.
+
+Mon 08/26/2013 19:15:19.39 C:\Users\user>"s:\Documents\!screenshots\l"
+
+Mon 08/26/2013 19:15:21.62 C:\Users\user>
+
+
+
+note that if specifying a dot extension just like above and below, windows won't find it, oddly enough
+and i think it should except that it's a bug
+
+Tue 08/27/2013 14:29:44.07 c:\temp>f.1
+Access is denied.
+
+Tue 08/27/2013 14:30:25.40 c:\temp>f.
+'f.' is not recognized as an internal or external command,
+operable program or batch file.
+
+Tue 08/27/2013 14:30:26.37 c:\temp>f
+Access is denied.
