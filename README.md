@@ -1,16 +1,13 @@
 # DeMLinkS
 
-it's ...something... work in progress ... for over 8 years now... it might get somewhere eventually :)
-
-## Me Learning Go
-
-in the "poc" folder (aka proof of concept)
+FIXME: a work in progress for over 10 years now; getting there... eventually :)
 
 ## Usage
 
-FIXME
+FIXME: nothing here yet, we'll go the Rust way soon.
 
 ## License
 
-Copyright © 2005-2013 AtKaaZ
-licensed under The MIT License (MIT) see license.txt file
+Copyright © 2005-2015 Emanuel Czirai (aka zazdxscf)
+Licensed under Apache License Version 2.0  (see file: LICENSE )
+
