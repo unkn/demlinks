@@ -1,6 +1,6 @@
-# DeMLinkS
+# DeMLinkS aka  d mental links
 
-FIXME: a work in progress for over 10 years now; getting there... eventually :)
+(work in progress) something to improve accessibility
 
 ## Usage
 
