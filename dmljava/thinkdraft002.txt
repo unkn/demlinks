@@ -1,0 +1,22 @@
+about database and transactions...
+
+
+A database is in a consistent state X.
+If something wants to modify the database such that it will be in another state Y,
+then a transaction T will be linked with the last DB state (currently X).
+Linked in such a way that will tell the system the transaction is open on state X.
+All modifications will be done within this transaction such that any reads will 
+pass thru T then thru X and any writes will only be stored in T only.
+When T is commited, X+T may get to state Y, but state X won't be destroyed 
+if it has links to other transactions. Links that imply open transactions.
+If all transactions are done on state X then X may be disposed of. And only the
+next state Y can be kept , whereas Y is the result of X+all transactions started on X.
+
+
+A transaction TT within a transaction T implies that from the point of view of TT
+X+T becomes a DB state Y such that, TT is started on Y. And so on of deeper 
+transaction within transaction levels.
+A Sibling transaction has access to the above sibling transaction in the sense that
+it sees all modifications done by it.
+
+AtKaaZ, 15 Dec 2008.
