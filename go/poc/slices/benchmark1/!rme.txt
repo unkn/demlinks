@@ -1,1 +1,0 @@
-sources from: https://groups.google.com/d/msg/golang-nuts/ZknonZHL6CU/HY1Wxtl-QbAJ
