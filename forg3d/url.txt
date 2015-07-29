@@ -1,4 +1,0 @@
-http://www.biomedcentral.com/1752-0509/3/26
-gone: Project home page: http://kokki.uku.fi/bioinformatics/forg3d/ 
-because the DNS lookup failed.
-
