@@ -1,0 +1,23 @@
+These are the demlinks paper sheets which I used irl as I was brainstorming through time
+Copyright (C) 2006-2015 Emanuel Czirai, licensed under CC BY 4.0
+Original location of all this: https://github.com/zazdxscf/demlinks  in subfolders txt/papersheets/
+
+----
+*.JPG = exported with gimp (to clean exif and any/all metadata) but image unmodified(kinda, since it's jpeg => re-econded on export) 
+  - well exif didn't get cleaned! so I used:
+  exiv2 -da rm filenamehere.JPG
+  which gives this:
+
+Error: XMP Toolkit error 203: Duplicate property or field node
+Warning: Failed to decode XMP metadata.
+
+----
+*.jpg = exported(no exif due to copy/paste in new window) with contents modified(eg. cropped)
+----
+
+
+All jpg (case insensitive) were tested for consistency using jpeginfo (in gentoo), this command:
+find . -type f -iname '*.jpg' -exec jpeginfo -c {} \; | grep -E "WARNING|ERROR"
+(manually retyped here, due to missing copy/paste functionality atm - virtualbox)
+
+
