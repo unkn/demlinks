@@ -1,8 +1,8 @@
-# DeMLinkS aka  d mental links
+# dmentaLnx  (formerly known as demLinks)
 
-(work in progress) something to improve accessibility
+dmentaLnx is (a work in progress) something to improve accessibility... (FIXME)
 
-Original location of all this: https://github.com/zazdxscf/demlinks
+Original location of all this: https://github.com/zazdxscf/dmentaLnx
 
 ## Usage
 
