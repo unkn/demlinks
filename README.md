@@ -2,6 +2,8 @@
 
 (work in progress) something to improve accessibility
 
+Original location of all this: https://github.com/zazdxscf/demlinks
+
 ## Usage
 
 FIXME: nothing here yet, we'll go the Rust way soon.
