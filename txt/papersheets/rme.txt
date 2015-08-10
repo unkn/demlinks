@@ -1,6 +1,6 @@
 These are the dmentaLnx (formerly known as demlinks) paper sheets which I used irl as I was brainstorming through time
 Copyright (C) 2002-2015 Emanuel Czirai, licensed under CC BY 4.0
-Original location of all this: https://github.com/zazdxscf/dmentaLnx  in subfolders txt/papersheets/
+Original location of all this: https://github.com/zazdxscf/dmentaLnx  in subfolders of txt/papersheets/
 
 ----
 *.JPG = exported with gimp (to clean exif and any/all metadata) but image unmodified(kinda, since it's jpeg => re-econded on export) 
