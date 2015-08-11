@@ -1,0 +1,37 @@
+TODO:
+
+* must make a code/text editor (in 2D/3D in Go) tho obviously what I wanna do here with demlinks will serve as editor anyway.
+
+* integrate something 2D/3D with a key/value like database
+
+  possibly start with 2D ? then evolve to 3D?
+  but just in case something fails with 3D it should fall back to 2D and if something fails with 2D should fall 
+   back to swing and if swing fails should fallback to console or something, but the point is, if an exception or a bunch
+   need to be shown/reported, they should be reported in this order on the thing that is still "alive" while the thing on 
+   top of it clearly failed. However the thing here is, some exception may be reported on ie. 2D but then after like under 
+   1 sec the 2D may fail and that exception is lost(imagine 2D screen would close upon fail) and the swing part would report
+   the reason why 2D failed, but not the reason why 3D failed(which was reported in 2D), so must find a way to maybe carry
+   over the exceptions to the lower level even though they might've been displayed on the higher level, however, we don't
+   want the exceptions to be duplicated on all lower levels(swing+console in this case) while the 
+   higher level(2D in this case) is still "alive".
+  So it would be really good to can upgrade some instance of a class(or something) from console, to swing, to 2D, to 3D
+   such that if any of the latter upgrades fail, it would fall back to previous.(I remember I couldn't do it in java)
+   
+  
+* using datomic eventually, but maybe it's not a bad idea to use some text-based database, such that maybe we can use it
+to store lists such as this TODO list, so they're easily uploadable on github as opposed to being in a different place, for 
+example, I'd use trello for this, but it's in a different place than github (even tho there is some automation that can be
+done between the two). So maybe start small(er) and have something simple like in swing lists and moving things around and
+have them persist on some text files that are playing nice with git ie. one element per line.
+ Actually if I think about it here, starting from a flat-file database and upgrading (at runtime obviously) to a db like 
+datomic, while supporting fails so that for example, I start by adding some stuff to flat-file db then datomic stuff gets 
+inited and all that stuff I added should also be added to datomic db so that each would be independent, hmm, and if datomic
+crashes, then all that was added to datomic would be added to the flat-text file... but in fact this would be different than
+the point above (the prev star * with the exceptions), because I'd literally have to duplicate(replicate) all writes to both
+flat-file and datomic, in order to be sure this fall-back would work okay in case something excepts in my datomic code 
+implementation.
+  
+* whenever is worth it, try using travis http://travis-ci.org/ to automate building demlinks
+	check this: https://travis-ci.org/technomancy/leiningen
+	
+

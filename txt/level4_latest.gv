@@ -1,0 +1,71 @@
+digraph G {
+	 ratio = fill;
+ rankdir=UD
+	node [style=filled];
+{rank=sink; allPrevElementCapsules; "allElements of ElementCapsules" ;allNextElementCapsules}
+{rank=same; allHEADs; allTAILs;AllListOrderedOfSymbols; }
+{rank=same; list1; list2; list3; list4;}
+
+
+
+	AllListOrderedOfSymbols-> list1 [color="0.002 0.999 0.999"];
+	AllListOrderedOfSymbols-> list2 [color="0.002 0.999 0.999"];
+	AllListOrderedOfSymbols-> list3 [color="0.002 0.999 0.999"];
+	AllListOrderedOfSymbols-> list4 [color="0.002 0.999 0.999"];
+
+
+list1->ElementCapsule1
+list1->ElementCapsule2
+list1->ElementCapsule3
+list1->ElementCapsule4
+list1->ElementCapsule5
+
+list2->ElementCapsule6
+list2->ElementCapsule7
+list2->ElementCapsule8
+
+list3->ElementCapsule9
+
+allHEADs->ElementCapsule1 [color = "blue"]
+allHEADs->ElementCapsule6 [color = "blue"]
+allHEADs->ElementCapsule9 [color = "blue"]
+
+allTAILs->ElementCapsule5 [color = "brown"]
+allTAILs->ElementCapsule8 [color = "brown"]
+allTAILs->ElementCapsule9 [color = "brown"]
+ElementCapsule9->unique40
+ElementCapsule9->unique50->"symbol2 as first and last element"
+ElementCapsule9->unique60
+
+ElementCapsule1->unique1	
+ElementCapsule1->unique2
+ElementCapsule1->unique3
+
+allPrevElementCapsules -> { unique1  unique40 } [color = "yellow"]
+"allElements of ElementCapsules"->{unique2 unique50} [color = "cyan"]
+allNextElementCapsules->{unique3 unique60} [color = "orange"]
+unique3->ElementCapsule2
+unique2->"symbol1 as first element"
+unique2 [ color ="cyan"]
+unique50 [ color ="cyan"]
+
+allElementCapsules->{ElementCapsule1 ElementCapsule2 ElementCapsule3 ElementCapsule4 ElementCapsule5 ElementCapsule6 ElementCapsule7 ElementCapsule8 ElementCapsule9} [color="green"];
+
+AllListOrderedOfSymbols [color="0.650 0.200 1.000"];
+allHEADs[color="0.650 0.200 1.000"];
+allTAILs [color="0.650 0.200 1.000"];
+allElementCapsules [color="0.650 0.200 1.00"];
+allPrevElementCapsules [color="0.650 0.200 1.000"];
+"allElements of ElementCapsules" [color="0.650 0.200 1.000"];
+allNextElementCapsules [color="0.650 0.200 1.000"];
+"symbol1 as first element" [color="0.150 0.800 0.600"];
+"symbol2 as first and last element" [color="0.150 0.800 0.600"];
+list1 [color="0.150 0.200 0.600"];
+list2 [color="0.150 0.200 0.600"];
+list3 [color="0.150 0.200 0.600"];
+list4 [color="0.150 0.200 0.600"];
+
+{rank=same; allElementCapsules;unique2}
+
+
+}

@@ -1,0 +1,49 @@
+digraph G {
+	 ratio = fill;
+ rankdir=UD
+	node [style=filled];
+
+{rank = same; AllDomains;AllDomainSets; AllPtrs2Set}
+
+AllDomains [label = "AllDomains in ADSets"]
+
+AllDomains -> domain1unique [color = green]
+AllDomains [color="0.650 0.200 1.000"];
+domain1unique->C
+domain1unique [ color = green ]
+C->{B D E F H}
+A->{B H E} [color="0.002 0.999 0.999"];
+unique9->A
+unique9 [color = brown]
+AllDomainSets->unique67
+AllDomainSets [color="0.650 0.200 1.000"];
+
+unique67->{unique9 domain1unique} [ color = blue ]
+
+unique9 [label = "set1unique9"]
+unique11 [label ="set2unique11"]
+
+unique67 [ label="set1 (unique)" color = yellow]
+
+AllPtrs2Set -> unique9  [color = brown]
+AllPtrs2Set [color="0.650 0.200 1.000"];
+
+
+AllDomains->domain2unique  [color = green]
+domain2unique->A
+domain2unique [ color = green ]
+
+unique11 -> D
+unique11 [color = brown]
+D-> { B E} [color=orange]
+AllPtrs2Set->unique11 [color = brown]
+
+C [  color=blue fontcolor = white ]
+
+A [color =red label= "A\n is both set and domain\n tho not in the same set\n but this is why we need\n uniques as intermediaries" ]
+D [color = orange label ="D\n is set and someone's child"]
+
+set2-> { unique11 domain2unique } [color=purple]
+AllDomainSets -> set2
+set2 [ label ="set2 (unique)" color = yellow]
+}

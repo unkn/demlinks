@@ -1,0 +1,24 @@
+digraph G {
+	 ratio = fill;
+ rankdir=LR
+	node [style=filled];
+
+I->J
+A->{B C D E F G H}
+K->X
+L->{U W Y}
+
+verticalorder->isNotDefinedNorPreserved
+horizontalOrder->isDefinedAsLeftIsFirstAndRightIsSecond
+cyclical1->cyclical2
+cyclical1 [label="cyclical"]
+cyclical2 [label="cyclical"]
+
+Long1->Long2
+
+left->right
+first->second
+
+key->value
+
+}

@@ -1,0 +1,42 @@
+TODO: recheck these, could be obsolete with Go, 16 aug 2013
+
+Crap that has to be done
+
+Node
+======================
+NodeList parentsList
+NodeList childrenList
+* a Node node2 that exists in node1.childrenList WILL 
+	ALSO have node1 in node2.parentsList  
+----------------------
+appendChild(Node);
+appendParent(Node);
+hasChild(Node);
+hasParent(Node);
+removeChild(Node);
+removeParent(Node);
+insertChildAfter(newChild, afterWhatChildNode);
+insertParentAfter(newParent, afterWhatParentNode);
+insertChildBefore...
+insertParentBefore...
+
+NodeList
+======================
+* order counts
+* no null elements
+* elements are unique
+
+getFirstNode()
+getLastNode()
+getNodeAfter(Node)
+getNodeBefore(Node)
+bool hasNode(Node)
+appendNode(Node);
+insertNode(Node, position) - is position supposed to be only FIRST/LAST?! guess so
+insertAfterNode(Node new, Node n)
+insertBeforeNode(Node new, Node n)
+removeNode(Node)
+size()
+isEmpty()
+
+

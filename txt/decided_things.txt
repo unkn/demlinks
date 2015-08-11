@@ -1,0 +1,8 @@
+These are the things that are decided to be used, one way or another.
+Things that are depreciated or obsolete won't be here.
+
+TODO: FIXME: update these, most are obsolete! 16 aug 2013
+
+4. give almost no regard to efficiency and size; give most regard to accessibility and consistency; 
+also state your assumptions ie. assert (x==y);
+
